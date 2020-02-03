@@ -121,7 +121,7 @@ struct GMT_MAP_PANEL {
 
 /*! Plot a map inset box in psbasemap */
 struct GMT_MAP_INSET {
-	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
+	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
 	int justify;		/* Gave center of inset */
 	bool plot;		/* true if we want to draw the inset */
 	bool oblique;		/* true if we want got <w/s/e/n>r instead of <w/e/s/n> */

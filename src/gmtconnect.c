@@ -59,7 +59,7 @@ struct GMTCONNECT_CTRL {
 		bool active;
 		char *file;
 	} Q;
-	struct T {	/* -T[<cutoff[<unit>][+s<sdist>]] */
+	struct T {	/* -T[<cutoff>[+s<sdist>]] */
 		bool active[2];
 		int mode;
 		double dist[2];

@@ -115,7 +115,7 @@ struct GRDTRACK_CTRL {
 		double factor;			/* Set via +c<factor> */
 		char *file;			/* Output file for stack */
 	} S;
-	struct GRDTRACK_T {	/* -T[<radius>[<unit>]][+p|e] */
+	struct GRDTRACK_T {	/* -T[<radius>][+p|e] */
 		bool active;
 		double radius;		/* Max radius to search */
 		int dmode;		/* Distance mode; could be negative */
@@ -158,8 +158,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>[<unit>]/<ds>[/<spacing>][+a][+l|r][+v]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+i<step>[<unit>]][+l<length>[<unit>]][+n<np][+o<az>][+r<radius>[<unit>]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[<unit>]>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a][+l|r][+v]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -179,7 +179,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Create equidistant cross-profiles from input line segments. Append 2-3 parameters:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1. <length>[<unit>]: The full-length of each cross profile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1. <length>: The full-length of each cross profile.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append distance unit u (%s); it also applies to <ds>, <spacing>.\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default unit is meter (geographic grids) or user unit (Cartesian grids).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. <dz>: The sampling interval along the cross-profiles, in units of u.\n");
@@ -196,15 +196,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   are <lon/lat> or a 2-character XY key that uses the \"pstext\"-style justification format\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   format to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the global minimum and maximum locations in the grid.  Note: No track file is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i<inc>[<unit>] to set the sampling increment [Default is 0.5 x min of (x_inc, y_inc)]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i<inc> to set the sampling increment [Default is 0.5 x min of (x_inc, y_inc)]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +d to insert an extra output column with distances following the coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>[<unit>].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +c yields a continuous segment if two end points are identical [separate segments].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>[<unit>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius>[<unit>] defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note: [<unit>] is optional unit.  Only ONE unit type from %s can be used throughout.\n", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  is optional unit.  Only ONE unit type from %s can be used throughout.\n", GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Mixing of units is not allowed [Default unit is km if geographic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_Option (API, "R,V");

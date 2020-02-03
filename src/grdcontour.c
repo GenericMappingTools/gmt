@@ -72,7 +72,7 @@ struct GRDCONTOUR_CTRL {
 		int mode;	/* -2: Negative contours, -1 also do 0, +1 : Positive contours with 0, +2: only positive, 0: given range */
 		double low, high;
 	} L;
-	struct GRDCONTOUR_Q {	/* -Q[<cut>[<unit>]][+z] */
+	struct GRDCONTOUR_Q {	/* -Q[<cut>][+z] */
 		bool active;
 		bool zero;	/* True if we should skip zero-contour */
 		bool project;	/* True if we need distances in plot units */
@@ -184,7 +184,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A[-|[+]<int>|<list>][<labelinfo>] [%s] [-C<contours>] [%s]\n", name, GMT_B_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p]\n", GMT_CONTG, API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[<cpt>]] %s%s[-Q[<cut>[<unit>]][+z]] [%s]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[<cpt>]] %s%s[-Q[<cut>][+z]] [%s]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);

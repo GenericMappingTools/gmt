@@ -49,7 +49,7 @@ struct INSET_CTRL {
 		bool active;
 		unsigned int mode;	/* INSET_BEGIN|END*/
 	} In;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+t][+u] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+t][+u] */
 		bool active;
 		struct GMT_MAP_INSET inset;
 	} D;
@@ -57,7 +57,7 @@ struct INSET_CTRL {
 		bool active;
 		/* The panel is a member of GMT_MAP_INSET */
 	} F;
-	struct M {	/* -M<margin>[<unit>] | <xmargin>[<unit>]/<ymargin>[<unit>]  | <wmargin>[<unit>]/<emargin>[<unit>]/<smargin>[<unit>]/<nmargin>[<unit>]  */
+	struct M {	/* -M<margin> | <xmargin>/<ymargin>  | <wmargin>/<emargin>/<smargin>/<nmargin>  */
 		bool active;
 		double margin[4];
 	} M;

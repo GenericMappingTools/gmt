@@ -446,7 +446,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t       DVD:	 640 x  480	24 x 18 cm	 9.6 x 7.2 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Current PROJ_LENGTH_UNIT determines if you get SI or US canvas dimensions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set a custom canvas with dimensions and dots-per-unit manually by\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     providing <width>[<unit>]x<height>[<unit>]x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     providing <width>x<height>x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set the <prefix> used for movie files and directory names.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set number of frames, create times from <min>/<max>/<inc>[+n] or give file with frame-specific information.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <min>/<max>/<inc> is used then +n is used to indicate that <inc> is in fact number of frames instead.\n");
