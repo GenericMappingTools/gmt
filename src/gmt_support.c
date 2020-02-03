@@ -12014,7 +12014,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	 *    Note: the [+s<file>] is only valid in classic mode (via psbasemap)
 	 *
 	 * For backwards compatibility we also check the deprecated form of (1):
-	 *    <xmin/xmax/ymin/ymax>
+	 *    [<unit>]<xmin/xmax/ymin/ymax>
 	 */
 	unsigned int col_type[2], k = 0, error = 0;
 	int n;
@@ -12103,10 +12103,10 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 				B->translate = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map inset attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
 	}
-	else {	/* Did the <xmin/xmax/ymin/ymax> thing - this is exact so justify, offsets do not apply. */
+	else {	/* Did the [<unit>]<xmin/xmax/ymin/ymax> thing - this is exact so justify, offsets do not apply. */
 		char *c = NULL, p[GMT_LEN128] = {""};
 		unsigned int pos;
-		/* Syntax is -D<xmin/xmax/ymin/ymax>[+s<file>][+t][+u<unit>] or old -D<xmin/xmax/ymin/ymax>[+s<file>][+t] */
+		/* Syntax is -D<xmin/xmax/ymin/ymax>[+s<file>][+t][+u<unit>] or old -D[<unit>]<xmin/xmax/ymin/ymax>[+s<file>][+t] */
 		if ((c = gmt_first_modifier (GMT, text, "rsu"))) {
 			/* Syntax is -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+t][+u<unit>] */
 			pos = 0;	/* Reset to start of new word */
