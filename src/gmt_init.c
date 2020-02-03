@@ -4025,9 +4025,9 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = implicit = true;	/* If no axis were named we default to both x and y */
 
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
-	gmt_handle5_plussign (GMT, text, "aLlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
-	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +p, +S|s or +u */
-	while (text[k] && !(text[k] == '+' && strchr ("aLlpSsu", text[k+1]))) k++;
+	gmt_handle5_plussign (GMT, text, "afLlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +f, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
+	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +f, +p, +S|s or +u */
+	while (text[k] && !(text[k] == '+' && strchr ("afLlpSsu", text[k+1]))) k++;
 	gmt_M_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
 	gmt_handle5_plussign (GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
@@ -4080,6 +4080,14 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 						}
 						else if (!implicit)
 							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -B: The +a modifier only applies to the x and y axes; selection for %c-axis ignored\n", the_axes[no]);
+						break;
+					case 'f':	/* Select fancy annotatinos with trailing W|E|S|N */
+						if (!gmt_M_is_geographic (GMT, GMT_IN)) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot use +f for Cartesian basemaps\n");
+							error++;
+						}
+						else
+							GMT->current.plot.calclock.geo.wesn = 1;
 						break;
 					case 'L':	/* Force horizontal axis label */
 						GMT->current.map.frame.axis[no].label_mode = 1;
@@ -15187,16 +15195,26 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			}
 			if (!error) {
 				if (GMT->current.setting.run_mode == GMT_MODERN) {
-					if (item[0] == '\0')
-						error = gmtlib_parse_B_option (GMT, "af");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
-					else if (item[0] == 'x' && item[1] == '\0')
-						error = gmtlib_parse_B_option (GMT, "xaf");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
-					else if (item[0] == 'y' && item[1] == '\0')
-						error = gmtlib_parse_B_option (GMT, "yaf");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
-					else if (item[0] == 'z' && item[1] == '\0')
-						error = gmtlib_parse_B_option (GMT, "zaf");	/* Default -B setting if just -B is given since -B is not a shorthand under modern mode */
-					else
-						error = gmtlib_parse_B_option (GMT, item);
+					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any, such as +f */
+					if (item[0] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Enable W|E|S|N suffices */
+					if (c) c[0] = '\0';	/* Temporarily chop off modifiers */
+					code[0] = item[0]; code[1] = (item[0]) ? item[1] : '\0';
+					if (code[0] == '\0') {	/* Default is -Baf if nothing given */
+						strcpy (args, "af");	if (c) strcat (args, c);
+					}
+					else if (code[0] == 'x' && code[1] == '\0') {	/* If indicating x we do -Bxaf */
+						strcpy (args, "xaf");	if (c) strcat (args, c);
+					}
+					else if (code[0] == 'y' && code[1] == '\0') {	/* If indicating y we do -Byaf */
+						strcpy (args, "yaf");	if (c) strcat (args, c);
+					}
+					else if (code[0] == 'z' && code[1] == '\0') {	/* If indicating z we do -Bzaf */
+						strcpy (args, "zaf");	if (c) strcat (args, c);
+					}
+					else	/* Keep what we got */
+						strcpy (args, item);
+					error = gmtlib_parse_B_option (GMT, args);
+					if (c) c[0] = '+';	/* Restore modifiers */
 				}
 				else
 					error = gmtlib_parse_B_option (GMT, item);
