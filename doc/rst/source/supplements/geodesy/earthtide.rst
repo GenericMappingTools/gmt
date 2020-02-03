@@ -72,7 +72,7 @@ Optional Arguments
     Select which component to write to individual grids. Requires **-G**.
     Append comma-separated codes for available components: **x** or **e** for the east component;
     **y** or **n** for the north component; and **z** or **v** for the vertical component.
-    For example, **-Ce**\ ,\ **v**, will write 2 grids. One with east and other with the vertical components.
+    For example, **-Ce**,\ **v**, will write 2 grids. One with east and other with the vertical components.
     If **-G** is set but not **-C** then the default is to write the vertical component.
 
 .. _-I:
