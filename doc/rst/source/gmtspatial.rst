@@ -19,7 +19,7 @@ Synopsis
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\|\ **i**] ]
 [ |-N|\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**] ]
-[ |-Q|[**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
+[ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
 [ |-T|\ [*clippolygon*] ]
@@ -147,7 +147,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**[**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]]
+**-Q**\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]]
     Measure the area of all polygons or length of line segments. Use
     **-Q+h** to append the area to each polygons segment header [Default
     simply writes the area to stdout]. For polygons we also compute the

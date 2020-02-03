@@ -63,7 +63,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**
+**-S**\ [*unit*]
     For geographical grids, append a unit from
     **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**
     [Default is meter (**e**)].
