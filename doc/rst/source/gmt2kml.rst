@@ -23,7 +23,7 @@ Synopsis
 [ |-N|\ [**t**\|\ *col*\|\ *name\_template*\|\ *name*] ]
 [ **-O**]
 [ |-Q|\ **a**\|\ **i**\ *az* ]
-[ |-Q|\ **s**\ *scale*\ [*unit*] ]
+[ |-Q|\ **s**\ *scale* ]
 [ |-R|\ **e**\|\ *w/e/s/n* ]
 [ |-S|\ **c**\|\ **n**\ *scale*] ]
 [ |-T|\ *title*\ [/*foldername*] ]
@@ -208,7 +208,7 @@ Optional Arguments
     will plot.  If outside then switch by 180 degrees.  Alternatively,
     use **-Qi** to set a fixed direction with no further variation.
 
-**-Qs**\ *scale*\ [*unit*]
+**-Qs**\ *scale*
     Required setting for wiggle plots (i.e., it requires **-Fw**).
     Sets a wiggle scale in *z*-data units per the user's units (given
     via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale

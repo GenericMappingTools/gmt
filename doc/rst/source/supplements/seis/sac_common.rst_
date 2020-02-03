@@ -126,11 +126,11 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**i**]\ *scale*\ [*unit*]
+**-S**\ [**i**]\ *scale*
     Sets time scale in seconds per *unit* while plotting on geographic plots.
     Append **c**, **i**, or **p** to indicate cm, inch or points as the unit.
     Use :term:`PROJ_LENGTH_UNIT` if *unit* is omitted.
-    Use **-Si**\ *scale*\ [*unit*] to give the reciprocal scale,
+    Use **-Si**\ *scale* to give the reciprocal scale,
     i.e. cm per second or inch per second.
 
 .. _-T:

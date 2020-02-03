@@ -14,14 +14,14 @@ Synopsis
 
 **gmt select** [ *table* ]
 [ |SYN_OPT-Area| ]
-[ |-C|\ *pointfile*\ **+d**\ *dist*\ [*unit*] ]
+[ |-C|\ *pointfile*\ **+d**\ *dist* ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ [**fn**] ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *gridmask* ]
 [ |-I|\ [**cfglrsz**] ]
 [ |-J|\ *parameters* ]
-[ |-L|\ *linefile*\ **+d**\ *dist*\ [*unit*]\ [**+p**] ]
+[ |-L|\ *linefile*\ **+d**\ *dist*\ [**+p**] ]
 [ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
 [ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
@@ -71,7 +71,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *pointfile*\ **+d**\ *dist*\ [*unit*]
+**-C**\ *pointfile*\ **+d**\ *dist*
     Pass all records whose location is within *dist* of any of the
     points in the ASCII file *pointfile*. If *dist* is zero then the 3rd
     column of *pointfile* must have each point's individual radius of
@@ -145,7 +145,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *linefile*\ **+d**\ *dist*\ [*unit*]\ [**+p**]
+**-L**\ *linefile*\ **+d**\ *dist*\ [**+p**]
     Pass all records whose location is within *dist* of any of the line
     segments in the ASCII multiple-segment file *linefile*. If *dist* is
     zero then we will scan each sub-header in the *linefile* for an

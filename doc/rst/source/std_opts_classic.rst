@@ -24,9 +24,9 @@ Common Options (Classic Mode)
      - Plot time-stamp on plot :ref:`(...) <-U_full>`
    * - **-V**\ [*verbosity*]
      - Run in verbose mode :ref:`(...) <-V_full>`
-   * - **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**]\ *xshift*\ [*unit*]
+   * - **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**]\ *xshift*
      - Shift plot origin in *x*-direction :ref:`(...) <-XY_full>`
-   * - **-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**]\ *yshift*\ [*unit*]
+   * - **-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**]\ *yshift*
      - Shift plot origin in *y*-direction :ref:`(...) <-XY_full>`
    * - **-a**\ [*col*\ =]\ *name*\ [,\ *...*]
      - Associates aspatial data with columns :ref:`(...) <-aspatial_full>`
@@ -40,7 +40,7 @@ Common Options (Classic Mode)
      - Filter data records that match the given pattern :ref:`(...) <-e_full>`
    * - **-f**\ [**i**\|\ **o**]\ *colinfo*
      - Set formatting of ASCII input or output :ref:`(...) <-f_full>`
-   * - **-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [*unit*][**+n**\|\ **p**]
+   * - **-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [**+n**\|\ **p**]
      - Segment data by detecting gaps :ref:`(...) <-g_full>`
    * - **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
      - ASCII [*I*\|\ *O*] tables have header record[s] :ref:`(...) <-h_full>`

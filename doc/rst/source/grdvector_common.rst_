@@ -71,12 +71,12 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**i**\|\ **l**]\ *scale*\ [*unit*]
+**-S**\ [**i**\|\ **l**]\ *scale*
     Sets scale for vector plot length in data units per plot distance measurement
     unit [1]. Append **c**, **i**, or **p** to indicate the measurement
     unit (cm, inch, or point); if no unit is given we use the default value that
     is controlled by :term:`PROJ_LENGTH_UNIT`. Alternatively,
-    use **-Sl**\ *length*\ [*unit*] to set a fixed plot length for all vectors.  Vectors given
+    use **-Sl**\ *length* to set a fixed plot length for all vectors.  Vectors given
     via plot unit scaling will plot as straight vectors and their lengths are not
     affected by map projection and coordinate locations.
     For geographic data you may alternatively give *scale* in data units per

@@ -24,7 +24,7 @@ Synopsis
 [ |-L|\ *low/high*\|\ **n**\|\ **N**\|\ **P**\|\ **p** ]
 [ |-N|\ [*cpt*] ]
 [ |-O| ] [ |-P| ]
-[ |-Q|\ [*cut*\ [*unit*]][**+z**] ]
+[ |-Q|\ [*cut*][**+z**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
 [ |-T|\ [**h**\|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]] ]

@@ -52,7 +52,7 @@ Optional Arguments
 
 .. _-J:
 
-**-JX**\ *width*\ [*unit*]
+**-JX**\ *width*
     The only valid projection is linear plot with specified ternary width.
 
 .. _-L:

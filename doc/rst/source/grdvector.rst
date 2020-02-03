@@ -19,7 +19,7 @@ Synopsis
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
 [ |-N| ] [ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**i**\|\ **l**]\ *scale*\ [*unit*] ]
+[ |-S|\ [**i**\|\ **l**]\ *scale* ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |-W|\ *pen* ]

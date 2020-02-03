@@ -24,8 +24,8 @@ Synopsis
 [ |-N|\ **d**\|\ **s**\ *unit* ]
 [ |-Q|\ **a**\|\ **c**\|\ **v**\ *min*/*max* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **a**\ *startdist*\ [*unit*] ]
-[ |-S|\ **b**\ *stopdist*\ [*unit*] ]
+[ |-S|\ **a**\ *startdist* ]
+[ |-S|\ **b**\ *stopdist* ]
 [ |-T|\ [**m**\|\ **e**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *weight* ]
@@ -332,7 +332,7 @@ Optional Arguments
     **x** is the sensor (**2** or **1**) *not* indicated by the
     **msens** data field (defaults to **2** if unspecified).
 
-    **-Amc**\ *offset*\ [*unit*] applies a correction to compensate
+    **-Amc**\ *offset* applies a correction to compensate
     for the fact that the magnetic field was not acquired at the same
     position as the ship's position [i.e., the navigation]. This is
     accomplished by re-interpolating the total magnetic field to what it
@@ -423,12 +423,12 @@ Optional Arguments
 
 .. _-S:
 
-**-Sa**\ *startdist*\ [*unit*]
+**-Sa**\ *startdist*
     Do not list data that are less than *startdist* meter along track
     from port of departure. Append **e** for meter, **f** for feet,
     **k** for km, **m** for miles, **n** for nautical miles, or **u**
     for survey feet [Default is 0e (meters)].
-**-Sb**\ *stopdist*\ [*unit*]
+**-Sb**\ *stopdist*
     Do not list data that are *stopdist* or more meters along track from
     port of departure. Append **e** for meter, **f** for feet, **k** for
     km, **m** for miles, **n** for nautical miles, or **u** for survey

@@ -25,7 +25,7 @@ Synopsis
 [ |-O| ]
 [ |-P| ]
 [ |-Q| ]
-[ |-S|\ [**i**]\ *scale*\ [*unit*] ]
+[ |-S|\ [**i**]\ *scale* ]
 [ |-T|\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]

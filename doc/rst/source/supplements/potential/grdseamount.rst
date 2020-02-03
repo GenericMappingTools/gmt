@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*] ]
 [ |-C|\ **c**\|\ **d**\|\ **g**\|\ **p** ]
-[ |-D|\ [*unit*] ]
+[ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
 [ |-G|\ *grdfile* ]
@@ -25,7 +25,7 @@ Synopsis
 [ |-M|\ *list* ] [ |-N|\ *norm* ]
 [ |-Q|\ *bmode*/*qmode* ]
 [ |-S|\ *scale* ]
-[ |-T|\ *t0*\ [*unit*]\ [/*t1*\ [*unit*]/*dt*\ [*unit*]\|\ *n*]\ [**+l**] ]
+[ |-T|\ *t0*\ [/*t1*/*dt*\|\ *n*]\ [**+l**] ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -144,7 +144,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [*unit*]\ [/*t1*\ [*unit*]/*dt*\ [*unit*]\|\ *n*]\ [**+l**]
+**-T**\ *t0*\ [/*t1*/*dt*\|\ *n*]\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
     [Default is one step, with no time dependency].  For a single specific time, just
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
