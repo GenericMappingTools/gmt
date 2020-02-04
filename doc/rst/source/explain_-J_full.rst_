@@ -273,7 +273,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jp_full:
 
-    **-Jp**\ [**a**]\ *scale*\ [*/origin*][**+r**\|\ **+z**] or **-JP**\ [**a**]\ *width*\ [*/origin*][**r**\|\ **z**]
+    **-Jp**\ [**a**]\ *scale*\ [*/origin*][**+r**\|\ **z**] or **-JP**\ [**a**]\ *width*\ [*/origin*][**+r**\|\ **z**]
     (Polar coordinates (*theta*, *r*))
 
     Optionally insert **a** after **-Jp** [or **-JP**] if *theta* is azimuths CW

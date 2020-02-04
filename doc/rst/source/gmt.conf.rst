@@ -80,7 +80,7 @@ THEMATIC SUB-SECTIONS             *prefix*
         in CMYK but interpolates in RGB).
 
     **COLOR_NAN**
-        Color used for the non-defined areas of images (i.e., where z == NaN) [127.5].
+        Color used for the non-defined areas of images (i.e., where z = NaN) [127.5].
 
 
 .. _DIR Parameters:
@@ -88,9 +88,7 @@ THEMATIC SUB-SECTIONS             *prefix*
 .. glossary::
 
     **DIR_CACHE**
-        Cache directory where we save files downloaded when using external URL addresses, the
-        files called **@earth_relief_**\ *res*\ **.grd** or other remote filenames starting
-        in @ (e.g., @hotspots.txt) [~/.gmt].
+        Cache directory where we save remote filenames starting in **@** (e.g., @hotspots.txt) [~/.gmt/cache].
 
     **DIR_DATA**
         Session data directory. Overrides the value of the environment variable **$GMT_DATADIR**
@@ -233,27 +231,16 @@ THEMATIC SUB-SECTIONS             *prefix*
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
-        +D Output longitude in the range [0,360]
-
-        -D Output longitude in the range [-360,0]
-
-        D Use :term:`FORMAT_FLOAT_OUT` for floating point degrees.
-
-        ddd Fixed format integer degrees
-
-        : delimiter used
-
-        mm Fixed format integer arc minutes
-
-        ss Fixed format integer arc seconds
-
-        .xxx Floating fraction of previous integer field, fixed width.
-
-        F Encode sign using WESN suffix
-
-        G Same as F but with a leading space before suffix
-
-        The default is D.
+        - **D**: Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default].
+        - **+D**: Output longitude in the range [0,360]
+        - **-D**: Output longitude in the range [-360,0]
+        - **ddd**: Fixed format integer degrees
+        - **:**: delimiter used
+        - **mm**: Fixed format integer arc minutes
+        - **ss**: Fixed format integer arc seconds
+        - **.xxx**: Floating fraction of previous integer field, fixed width.
+        - **F**: Encode sign using WESN suffix
+        - **G**: Same as **F** but with a leading space before suffix
 
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax) to be used when plotting double
@@ -353,8 +340,8 @@ THEMATIC SUB-SECTIONS             *prefix*
         FFTW can "learn" how to optimally compute Fourier transforms on the
         current hardware and OS by computing several FFTs and measuring
         their execution time. This so gained "Wisdom" will be stored in and
-        reloaded from the file fftw_wisdom_<hostname> in $GMT_USERDIR or, if
-        $GMT_USERDIR is not writable, in the current directory. To use this
+        reloaded from the file fftw_wisdom_<hostname> in **$GMT_USERDIR** or, if
+        **$GMT_USERDIR** is not writable, in the current directory. To use this
         feature append *planner_flag*, which can be one of *measure*,
         *patient*, and *exhaustive*; see FFTW reference for details. The
         default FFTW planner flag is *estimate*, i.e., pick a (probably
@@ -948,39 +935,27 @@ THEMATIC SUB-SECTIONS             *prefix*
         if a specific media size is desired then the :term:`PS_MEDIA` may be specified as well.
         The following formats (and their widths and heights in points) are recognized:
 
-        Media width height
-
-        * A0 2380 3368
-        * A1 1684 2380
-        * A2 1190 1684
-        * A3 842 1190
-        * A4 595 842
-        * A5 421 595
-        * A6 297 421
-        * A7 210 297
-        * A8 148 210
-        * A9 105 148
-        * A10 74 105
-        * B0 2836 4008
-        * B1 2004 2836
-        * B2 1418 2004
-        * B3 1002 1418
-        * B4 709 1002
-        * B5 501 709
-        * archA 648 864
-        * archB 864 1296
-        * archC 1296 1728
-        * archD 1728 2592
-        * archE 2592 3456
-        * flsa 612 936
-        * halfletter 396 612
-        * statement 396 612
-        * note 540 720
-        * letter 612 792
-        * legal 612 1008
-        * 11x17 792 1224
-        * tabloid 792 1224
-        * ledger 1224 792
+        ======== ======== ======== ========== ======== ========
+        Media    width    height   Media      width    height
+        ======== ======== ======== ========== ======== ========
+        A0       2380     3368     archA        648     864
+        A1       1684     2380     archB        864     1296
+        A2       1190     1684     archC        1296    1728
+        A3       842      1190     archD        1728    2592
+        A4       595      842      archE        2592    3456
+        A5       421      595      flsa         612     936
+        A6       297      421      halfletter   396     612
+        A7       210      297      statement    396     612
+        A8       148      210      note         540     720
+        A9       105      148      letter       612     792
+        A10      74       105      legal        612     1008
+        B0       2836     4008     11x17        792     1224
+        B1       2004     2836     tabloid      792     1224
+        B2       1418     2004     ledger       1224    792
+        B3       1002     1418
+        B4       709      1002
+        B5       501      709
+        ======== ======== ======== ========== ======== ========
 
         For a completely custom format (e.g., for large format plotters) you
         may also specify WxH, where W and H are in points unless you append
@@ -1066,19 +1041,17 @@ THEMATIC SUB-SECTIONS             *prefix*
         units are. Choose from one of the preset systems below (epoch and
         units are indicated):
 
-        JD -4713-11-25T12:00:00 d (Julian Date)
-
-        MJD 1858-11-17T00:00:00 d (Modified Julian Date)
-
-        J2000 2000-01-01T12:00:00 d (Astronomical time)
-
-        S1985 1985-01-01T00:00:00 s (Altimetric time)
-
-        UNIX 1970-01-01T00:00:00 s (UNIX time)
-
-        RD0001 0001-01-01T00:00:00 s
-
-        RATA 0000-12-31T00:00:00 d
+        ============ ====================== =========== =====================
+        TIME_SYSTEM  TIME_EPOCH             TIME_UNIT   Notes
+        ============ ====================== =========== =====================
+        JD           -4713-11-25T12:00:00   d           Julian Date
+        MJD          1858-11-17T00:00:00    d           Modified Julian Date
+        J2000        2000-01-01T12:00:00    d           Astronomical time
+        S1985        1985-01-01T00:00:00    s           Altimetric time
+        UNIX         1970-01-01T00:00:00    s           UNIX time
+        RD0001       0001-01-01T00:00:00    s
+        RATA         0000-12-31T00:00:00    d
+        ============ ====================== =========== =====================
 
         This parameter is not stored in the **gmt.conf** file but is
         translated to the respective values of :term:`TIME_EPOCH` and

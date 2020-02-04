@@ -270,10 +270,10 @@ Consequently, the polar transformation is defined by providing
 
 -  Optionally, append /\ *origin* in degrees to indicate an angular offset [0]
 
--  Optionally, append **r** to reverse the radial direction (here,
+-  Optionally, append **+r** to reverse the radial direction (here,
    *south* and *north* must be elevations in 0–90 range).
 
--  Optionally, append **z** to annotate depths rather than radius.
+-  Optionally, append **+z** to annotate depths rather than radius.
 
 As an example of this projection we will create a gridded data set in
 polar coordinates :math:`z(\theta, r) = r^2 \cdot \cos{4\theta}` using

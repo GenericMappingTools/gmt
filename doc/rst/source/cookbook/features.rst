@@ -2496,14 +2496,14 @@ Directory parameters
 --------------------
 
 GMT versions prior to GMT 5 relied solely on several environment variables
-($GMT_SHAREDIR, $GMT_DATADIR, $GMT_USERDIR, and $GMT_TMPDIR), pointing
+(**$GMT_SHAREDIR**, **$GMT_DATADIR**, **$GMT_USERDIR**, and **$GMT_TMPDIR**), pointing
 to folders with data files and program settings. Beginning with version
 5, some of these locations are now (also or exclusively) configurable
 with the :doc:`/gmtset` utility.
 When an environment variable has an equivalent parameter in the :doc:`/gmt.conf` file,
 then the parameter setting will take precedence over the environment variable.
 
-Variable $GMT_SHAREDIR
+Variable **$GMT_SHAREDIR**
     was sometimes required in previous GMT versions to locate the GMT
     share directory where all run-time support files such as coastlines,
     custom symbols, PostScript macros, color tables, and much more reside.
@@ -2511,7 +2511,7 @@ Variable $GMT_SHAREDIR
     guess of the location of its share folder. Setting this variable is
     usually not required and recommended only under special circumstances.
 
-Variable $GMT_DATADIR and parameter DIR_DATA
+Variable **$GMT_DATADIR** and parameter :term:`DIR_DATA`
     may point to one or more directories where large and/or widely used
     data files can be placed. All GMT programs look in these directories
     when a file is specified on the command line and it is not present in
@@ -2522,32 +2522,33 @@ Variable $GMT_DATADIR and parameter DIR_DATA
     name that ends in a trailing slash (/) will be searched recursively
     (not under Windows).
 
-Variable $GMT_USERDIR
+Variable **$GMT_USERDIR**
     may point to a directory where the user places custom configuration
     files (e.g., an alternate ``coastline.conf`` file, preferred default
     settings in ``gmt.conf``, custom symbols and color palettes, math
     macros for :doc:`/gmtmath` and :doc:`/grdmath`, and shorthands for
-    gridfile extensions via ``gmt.io``). When $GMT_USERDIR is not defined,
-    then the default value $HOME/.gmt will be assumed. Users may also place their own
+    gridfile extensions via ``gmt.io``). When **$GMT_USERDIR** is not defined,
+    then the default value **$HOME**/.gmt will be assumed. Users may also place their own
     data files in this directory as GMT programs will search for files
-    given on the command line in both DIR_DATA and $GMT_USERDIR.
+    given on the command line in both :term:`DIR_DATA` and **$GMT_USERDIR**.
 
-Variable $GMT_CACHEDIR
+Variable **$GMT_CACHEDIR**
     may point to a directory where the user places cached data files
-    downloaded from the GMT data server. When $GMT_CACHEDIR is not defined,
-    then the default value $HOME/.gmt/cache will be assumed. The cache
+    downloaded from the GMT data server. When **$GMT_CACHEDIR** is not defined,
+    then the default value **$HOME**/.gmt/cache will be assumed. The cache
     directory can be emptied by running gmt **gmt clear cache**.
 
-Variable $GMT_TMPDIR
+Variable **$GMT_TMPDIR**
     may indicate the location, where GMT will write its state parameters
-    via the two files ``gmt.history`` and ``gmt.conf``. If $GMT_TMPDIR is not
-    set, these files are written to the current directory.
+    via the two files ``gmt.history`` and ``gmt.conf``. If **$GMT_TMPDIR** is not
+    set, these files are written to GMT session directory [for modern mode] or
+    the current directory [for classic mode].
 
-Parameter DIR_DCW
+Parameter :term:`DIR_DCW`
     specifies where to look for the optional Digital Charts of the World
     database (for country coloring or selections).
 
-Parameter DIR_GSHHG
+Parameter :term:`DIR_GSHHG`
     specifies where to look for the required
     Global Self-consistent Hierarchical High-resolution Geography database.
 
