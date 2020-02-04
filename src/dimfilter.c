@@ -1084,7 +1084,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 #ifdef OBSOLETE
 		if (Ctrl->E.active && n_bad_planes) GMT_Report (API, GMT_MSG_WARNING, "Unable to detrend data at %" PRIu64 " nodes\n", n_bad_planes);
 #endif
-		if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_WARNING, "%d multiple modes found\n", GMT_n_multiples);
+		if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_INFORMATION, "%d separate modes found by the mode filter\n", GMT_n_multiples);
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Write filtered grid\n");
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);

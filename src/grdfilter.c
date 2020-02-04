@@ -1320,7 +1320,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	}
 
 	if (n_nan) GMT_Report (API, GMT_MSG_WARNING, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
-	if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_WARNING, "%d multiple modes found by the mode filter\n", GMT_n_multiples);
+	if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_INFORMATION, "%d separate modes found by the mode filter\n", GMT_n_multiples);
 
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.R.active[GSET]) {	/* Must resample result so grids are coregistered */
