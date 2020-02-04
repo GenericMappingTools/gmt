@@ -4081,7 +4081,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 						else if (!implicit)
 							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -B: The +a modifier only applies to the x and y axes; selection for %c-axis ignored\n", the_axes[no]);
 						break;
-					case 'f':	/* Select fancy annotatinos with trailing W|E|S|N */
+					case 'f':	/* Select fancy annotations with trailing W|E|S|N */
 						if (gmt_M_x_is_lon(GMT,GMT_IN) || gmt_M_y_is_lat(GMT,GMT_IN))
 							GMT->current.plot.calclock.geo.wesn = 1;
 						else
