@@ -3,13 +3,13 @@
 # Key difference is that all the multisegment header text is lost of course
 # Build two ascii files
 echo "> Seg 1 File 1" > one.txt
-gmt math -T2010-12-01T/2010-12-31T/1 --TIME_UNIT=d TROW = >> one.txt
+gmt math -T2010-12-01T/2010-12-31T/1d TROW = >> one.txt
 echo "> Seg 2 File 1" >> one.txt
-gmt math -T2011-01-01T/2011-01-311T/1 --TIME_UNIT=d TROW 100 ADD = >> one.txt
+gmt math -T2011-01-01T/2011-01-311T/1d TROW 100 ADD = >> one.txt
 echo "> Seg 1 File 2" > two.txt
-gmt math -T2011-02-01T/2011-02-28T/1 --TIME_UNIT=d TROW 200 ADD = >> two.txt
+gmt math -T2011-02-01T/2011-02-28T/1d TROW 200 ADD = >> two.txt
 echo "> Seg 2 File 2" >> two.txt
-gmt math -T2011-03-01T/2011-03-31T/1 --TIME_UNIT=d TROW 100 ADD = >> two.txt
+gmt math -T2011-03-01T/2011-03-31T/1d TROW 100 ADD = >> two.txt
 # Then convert to native binary
 gmt convert one.txt -bo2d > one.bin
 gmt convert two.txt -bo2d > two.bin
