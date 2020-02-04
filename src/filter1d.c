@@ -1056,7 +1056,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 		Return (API->error, "Error in End_IO\n");
 	}
 
-	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_WARNING, "%d multiple modes found\n", F.n_multiples);
+	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_INFORMATION, "%d separate modes found by the mode filter\n", F.n_multiples);
 
 	free_space_filter1d (GMT, &F);
 
