@@ -104,7 +104,9 @@
 
 #define USER_MEDIA_OFFSET 1000
 
-#define GMT_def(case_val) *GMT->session.u2u[GMT_INCH][gmtlib_unit_lookup(GMT, GMT->current.setting.given_unit[case_val], GMT->current.setting.proj_length_unit)], GMT->current.setting.given_unit[case_val]
+
+#define GMT_def_scale(case_val) GMT->session.u2u[GMT_INCH][gmtlib_unit_lookup(GMT, GMT->current.setting.given_unit[case_val], GMT->current.setting.proj_length_unit)]
+#define GMT_def_unit(case_val) GMT->current.setting.given_unit[case_val]
 
 #define GMT_more_than_once(GMT,active) (gmt_M_check_condition (GMT, active, "Option -%c given more than once\n", option))
 
@@ -10796,14 +10798,14 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_OFFSET_PRIMARY:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_offset[GMT_PRIMARY] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_PRIMARY));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_offset[GMT_PRIMARY] * GMT_def_scale(GMTCASE_MAP_ANNOT_OFFSET_PRIMARY), GMT_def_unit(GMTCASE_MAP_ANNOT_OFFSET_PRIMARY));
 			break;
 		case GMTCASE_ANNOT_OFFSET_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_OFFSET_SECONDARY:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_offset[GMT_SECONDARY] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_SECONDARY));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_offset[GMT_SECONDARY] * GMT_def_scale(GMTCASE_MAP_ANNOT_OFFSET_SECONDARY), GMT_def_unit(GMTCASE_MAP_ANNOT_OFFSET_SECONDARY));
 			break;
 		case GMTCASE_OBLIQUE_ANNOTATION:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -10824,7 +10826,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_MIN_SPACING:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_min_spacing GMT_def(GMTCASE_MAP_ANNOT_MIN_SPACING));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_min_spacing * GMT_def_scale(GMTCASE_MAP_ANNOT_MIN_SPACING), GMT_def_unit(GMTCASE_MAP_ANNOT_MIN_SPACING));
 			break;
 		case GMTCASE_Y_AXIS_TYPE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -10902,21 +10904,21 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_FRAME_WIDTH:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_frame_width GMT_def(GMTCASE_MAP_FRAME_WIDTH));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_frame_width * GMT_def_scale(GMTCASE_MAP_FRAME_WIDTH), GMT_def_unit(GMTCASE_MAP_FRAME_WIDTH));
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
 			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -10933,21 +10935,21 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			snprintf (value, GMT_LEN256, "%s", gmt_putpen (GMT, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]));
 			break;
 		case GMTCASE_MAP_HEADING_OFFSET:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_heading_offset GMT_def(GMTCASE_MAP_HEADING_OFFSET));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_heading_offset * GMT_def_scale(GMTCASE_MAP_HEADING_OFFSET), GMT_def_unit(GMTCASE_MAP_HEADING_OFFSET));
 			break;
 		case GMTCASE_LABEL_OFFSET:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_LABEL_OFFSET:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_label_offset GMT_def(GMTCASE_MAP_LABEL_OFFSET));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_label_offset * GMT_def_scale(GMTCASE_MAP_LABEL_OFFSET), GMT_def_unit(GMTCASE_MAP_LABEL_OFFSET));
 			break;
 		case GMTCASE_LINE_STEP:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_LINE_STEP:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_line_step GMT_def(GMTCASE_MAP_LINE_STEP));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_line_step * GMT_def_scale(GMTCASE_MAP_LINE_STEP), GMT_def_unit(GMTCASE_MAP_LINE_STEP));
 			break;
 		case GMTCASE_UNIX_TIME:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -10962,22 +10964,22 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_LOGO_POS:
 			snprintf (value, GMT_LEN256, "%s/%g%c/%g%c", GMT_just_string[GMT->current.setting.map_logo_justify],
-			GMT->current.setting.map_logo_pos[GMT_X] GMT_def(GMTCASE_MAP_LOGO_POS),
-			GMT->current.setting.map_logo_pos[GMT_Y] GMT_def(GMTCASE_MAP_LOGO_POS));
+			GMT->current.setting.map_logo_pos[GMT_X] * GMT_def_scale(GMTCASE_MAP_LOGO_POS), GMT_def_unit(GMTCASE_MAP_LOGO_POS),
+			GMT->current.setting.map_logo_pos[GMT_Y] * GMT_def_scale(GMTCASE_MAP_LOGO_POS), GMT_def_unit(GMTCASE_MAP_LOGO_POS));
 			break;
 		case GMTCASE_X_ORIGIN:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ORIGIN_X:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_X] GMT_def(GMTCASE_MAP_ORIGIN_X));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_X] * GMT_def_scale(GMTCASE_MAP_ORIGIN_X), GMT_def_unit(GMTCASE_MAP_ORIGIN_X));
 			break;
 		case GMTCASE_Y_ORIGIN:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ORIGIN_Y:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_Y] GMT_def(GMTCASE_MAP_ORIGIN_Y));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_Y] * GMT_def_scale(GMTCASE_MAP_ORIGIN_Y), GMT_def_unit(GMTCASE_MAP_ORIGIN_Y));
 			break;
 		case GMTCASE_POLAR_CAP:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -10990,7 +10992,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				snprintf (value, GMT_LEN256, "%g/%g", GMT->current.setting.map_polar_cap[0], GMT->current.setting.map_polar_cap[1]);
 			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_scale_height GMT_def(GMTCASE_MAP_SCALE_HEIGHT));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_scale_height * GMT_def_scale(GMTCASE_MAP_SCALE_HEIGHT), GMT_def_unit(GMTCASE_MAP_SCALE_HEIGHT));
 			break;
 		case GMTCASE_MAP_TICK_LENGTH:
 		case GMTCASE_TICK_LENGTH:
@@ -10999,13 +11001,13 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_TICK_LENGTH_PRIMARY:
 			snprintf (value, GMT_LEN256, "%g%c/%g%c",
-			GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] GMT_def(GMTCASE_MAP_TICK_LENGTH_PRIMARY),
-			GMT->current.setting.map_tick_length[GMT_TICK_UPPER] GMT_def(GMTCASE_MAP_TICK_LENGTH_PRIMARY));
+			GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] * GMT_def_scale(GMTCASE_MAP_TICK_LENGTH_PRIMARY), GMT_def_unit(GMTCASE_MAP_TICK_LENGTH_PRIMARY),
+			GMT->current.setting.map_tick_length[GMT_TICK_UPPER] * GMT_def_scale(GMTCASE_MAP_TICK_LENGTH_PRIMARY), GMT_def_unit(GMTCASE_MAP_TICK_LENGTH_PRIMARY));
 			break;
 		case GMTCASE_MAP_TICK_LENGTH_SECONDARY:
 			snprintf (value, GMT_LEN256, "%g%c/%g%c",
-			GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] GMT_def(GMTCASE_MAP_TICK_LENGTH_SECONDARY),
-			GMT->current.setting.map_tick_length[GMT_TICK_LOWER] GMT_def(GMTCASE_MAP_TICK_LENGTH_SECONDARY));
+			GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] * GMT_def_scale(GMTCASE_MAP_TICK_LENGTH_SECONDARY), GMT_def_unit(GMTCASE_MAP_TICK_LENGTH_SECONDARY),
+			GMT->current.setting.map_tick_length[GMT_TICK_LOWER] * GMT_def_scale(GMTCASE_MAP_TICK_LENGTH_SECONDARY), GMT_def_unit(GMTCASE_MAP_TICK_LENGTH_SECONDARY));
 			break;
 		case GMTCASE_MAP_TICK_PEN:
 		case GMTCASE_TICK_PEN:
@@ -11023,7 +11025,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_TITLE_OFFSET:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_title_offset GMT_def(GMTCASE_MAP_TITLE_OFFSET));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_title_offset * GMT_def_scale(GMTCASE_MAP_TITLE_OFFSET), GMT_def_unit(GMTCASE_MAP_TITLE_OFFSET));
 			break;
 		case GMTCASE_VECTOR_SHAPE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
