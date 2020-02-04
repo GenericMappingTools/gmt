@@ -6641,7 +6641,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'U':	/* Plot time mark and [optionally] command line */
 
 			gmt_message (GMT, "\t-U Plot GMT Unix System Time stamp [and optionally appended text or command line].\n");
-			gmt_message (GMT, "\t   You may also set the justification point via +j<codle> [BL] and the relative position of stamp [-54p/-54p].\n");
+			gmt_message (GMT, "\t   You may also set the justification point via +j<code> [BL] and an optional offset [-54p/-54p].\n");
 			gmt_message (GMT, "\t   [Add +c to have the command line plotted [%s].\n", GMT_choice[GMT->current.setting.map_logo]);
 			break;
 
