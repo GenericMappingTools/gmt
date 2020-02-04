@@ -102,7 +102,7 @@ GMT_LOCAL int clear_sessions (struct GMTAPI_CTRL *API) {
 	unsigned int n_dirs, k;
 	char **dirlist = NULL, *here = NULL;
 	if (access (API->session_dir, F_OK)) {
-		GMT_Report (API, GMT_MSG_WARNING, "No directory named %s\n", API->session_dir);
+		GMT_Report (API, GMT_MSG_INFORMATION, "No directory named %s\n", API->session_dir);
 		return GMT_FILE_NOT_FOUND;
 	}
 	if ((here = getcwd (NULL, 0)) == NULL) {	/* Get the current directory */
