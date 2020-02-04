@@ -30,6 +30,10 @@
 ## Section 1: Installation paths
 ##
 
+if (EXISTS ${GMT_SOURCE_DIR}/cmake/ConfigGMT.cmake)
+	include (${GMT_SOURCE_DIR}/cmake/ConfigGMT.cmake)
+endif ()
+
 # ============================================================================
 # Basic setup begins here.  All settings are optional.  In most cases, setting
 # CMAKE_INSTALL_PREFIX should be all you need to do in order to build GMT with
