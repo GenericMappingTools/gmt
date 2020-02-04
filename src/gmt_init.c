@@ -12951,7 +12951,7 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 			}
 		}
 		if (opt->next && opt->next->option == GMT_OPT_INFILE) {	/* Found a -ext[,ext,ext,...] <prefix> pair */
-			if (strchr (opt->next->arg, ' '))
+			if (strchr (opt->next->arg, ' '))	/* File name has spaces, must surround it in single quotes */
 				snprintf (session, GMT_LEN128, "\'%s\' %s", opt->next->arg, figure);
 			else
 				snprintf (session, GMT_LEN128, "%s %s", opt->next->arg, figure);
@@ -16433,14 +16433,14 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 				char ext[GMT_LEN8] = {""};
 				strcpy (ext, gmt_session_format[gcode[f]]);	/* Set extension */
 				gmt_str_tolower (ext);	/* In case it was PNG */
-				/* File names with spaces with be given in single quotes - remove those here */
+				/* File names with spaces will be given in single quotes - remove those here when making single command string */
 				if (fig[k].prefix[0] == '\'') start = 1, fig[k].prefix[end] = '\0';	/* Remove the quote */
 				if (dir[0])
 					snprintf (cmd, GMT_BUFSIZ, "%s/%s.%s", dir, &fig[k].prefix[start], ext);
 				else
 					snprintf (cmd, GMT_BUFSIZ, "%s.%s", &fig[k].prefix[start], ext);
 				if (fig[k].prefix[0] == '\'') fig[k].prefix[end] = '\'';	/* Restore the quote */
-				gmt_filename_set (cmd);
+				gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
 				if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to call docs\n");
 					gmt_M_free (API->GMT, fig);
