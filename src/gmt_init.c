@@ -16883,10 +16883,13 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	char file[PATH_MAX] = {""}, dir[PATH_MAX] = {""};
 	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"};
 	int err = 0, fig, error = GMT_NOERROR;
+	size_t start = 0, end = strlen (API->session_dir) - 1;
 	struct stat S;
 
-	snprintf (dir, PATH_MAX, "%s/gmt%d.%s", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
+	if (strchr ("\'\"", API->session_dir[0]) && strchr ("\'\"", API->session_dir[end])) start++, API->session_dir[end] = '\0';	/* Remove quotes */
+	snprintf (dir, PATH_MAX, "%s/gmt%d.%s", &API->session_dir[start], GMT_MAJOR_VERSION, API->session_name);
 	API->gwf_dir = strdup (dir);
+	if (start) API->session_dir[end] = API->session_dir[0];	/* Restore quotes */
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 
 	switch (mode) {
