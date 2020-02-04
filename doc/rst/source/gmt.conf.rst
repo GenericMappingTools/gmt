@@ -664,8 +664,8 @@ THEMATIC SUB-SECTIONS             *prefix*
 
     **MAP_LOGO_POS**
         (**-U**) Sets the justification and the position of the
-        logo/timestamp box relative to the current plots lower left corner
-        of the plot [+jBL+o-54p/-54p].
+        logo/timestamp box relative to the current plot's lower left corner
+        (i.e., map origin) [BL/-54p/-54p].
 
     **MAP_ORIGIN_X**
         (**-X**) Sets the x-coordinate of the origin on the paper for a
