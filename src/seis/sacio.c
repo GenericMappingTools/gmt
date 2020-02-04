@@ -349,6 +349,7 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 	if (nn <= 0 || (ar = (float *)calloc((size_t)nn, SAC_DATA_SIZEOF)) == NULL) {
 		fprintf(stderr, "Error allocating memory for reading %s n=%d\n", name, nn);
 		fclose(strm);
+		free(ar);
 		return NULL;
 	}
 
