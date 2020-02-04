@@ -29,7 +29,8 @@ jobs:
   steps:
   - bash: |
       set -x -e
-      sudo apt-get install -y cppcheck
+      sudo snap install cppcheck
+      cppcheck --version
     displayName: Install cppcheck
 
   - bash: bash ci/run-cppcheck.sh
