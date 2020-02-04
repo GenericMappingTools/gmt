@@ -677,6 +677,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+char *noquote_name (char *file) {
+	if (file[0] == '\'') {	/* Skip single quotes */
+		size_t len = strlen (file);
+		return (strndup (&file[1], len-2));
+	}
+	else
+		return strdup (file);
+}
+
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psconvert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -723,7 +732,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 			case 'F':	/* Set explicitly the output file name */
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
-					Ctrl->F.file = strdup (opt->arg);
+					Ctrl->F.file = noquote_name (opt->arg);
 					gmt_filename_get (Ctrl->F.file);
 				}
 				else
@@ -1447,15 +1456,6 @@ GMT_LOCAL int get_extension_period (char *file) {
 }
 
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
-
-char *noquote_name (char *file) {
-	if (file[0] == '\'') {	/* Skip single quotes */
-		size_t len = strlen (file);
-		return (strndup (&file[1], len-2));
-	}
-	else
-		return strdup (file);
-}
 
 GMT_LOCAL int make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) {
 	struct stat S;
