@@ -738,6 +738,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 		if (!access (file, F_OK))	{	/* Subplot information file already exists, two begin subplot commands? */
 			GMT_Report (API, GMT_MSG_ERROR, "Subplot information file already exists: %s\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "Please run 'gmt clear sessions' (or equivalent if from Julia, Matlab, etc) to solve this issue.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		/* COmpute dimensions such as ticks and distance from tick to top of annotation etc */
