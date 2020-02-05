@@ -20,9 +20,6 @@ include ("${CMAKE_SOURCE_DIR}/cmake/ConfigDefault.cmake")
 # A "GMTSettings.cmake" in the source tree overrides the basic defaults.
 if (EXISTS ${GMT_SOURCE_DIR}/cmake/GMTSettings.cmake)
 	include (${GMT_SOURCE_DIR}/cmake/GMTSettings.cmake)
-else ()	# Default is to copy the support data into the build shared dir
-	set (COPY_GSHHG TRUE)
-	set (COPY_DCW TRUE)
 endif ()
 
 # A "ConfigUser.cmake" in the source tree overrides the advanced defaults.

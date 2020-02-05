@@ -74,6 +74,10 @@ if (NOT UNITS)
 	set (UNITS "SI")
 endif (NOT UNITS)
 
+# Copy coastline support data to the installation
+set (COPY_GSHHG TRUE)
+set (COPY_DCW TRUE)
+
 # The max RMS error in graphicmagick comparisons of PS files
 if (NOT DEFINED GRAPHICSMAGICK_RMS)
 	set (GRAPHICSMAGICK_RMS "0.003")
