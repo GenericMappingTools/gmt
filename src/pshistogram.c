@@ -408,7 +408,7 @@ GMT_LOCAL int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, doubl
 	/* Get mode */
 
 	gmt_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
-	if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d multiple modes found\n", n_multiples);
+	if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "The histogram has multiple (%d) modes (peaks)\n", n_multiples);
 
 	/* Get MAD for L1 */
 

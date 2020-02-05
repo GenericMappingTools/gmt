@@ -505,7 +505,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
 		 * space, and then replace all ASCII 31 with space at the end (we do the same for tab using ASCII 29 GS (group separator) */
 		for (k = 0, quoted = false; txt_in[k]; k++) {
-			if (txt_in[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
+			if (txt_in[k] == '\"' || txt_in[k] == '\'') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
 			else if (quoted && txt_in[k] == '\t') txt_in[k] = GMT_ASCII_GS;
 			else if (quoted && txt_in[k] == ' ')  txt_in[k] = GMT_ASCII_US;
 		}

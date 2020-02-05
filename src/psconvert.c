@@ -723,7 +723,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 			case 'F':	/* Set explicitly the output file name */
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
-					Ctrl->F.file = strdup (opt->arg);
+					Ctrl->F.file = gmt_strdup_noquote (opt->arg);
 					gmt_filename_get (Ctrl->F.file);
 				}
 				else
@@ -1448,15 +1448,6 @@ GMT_LOCAL int get_extension_period (char *file) {
 
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
-char *noquote_name (char *file) {
-	if (file[0] == '\'') {	/* Skip single quotes */
-		size_t len = strlen (file);
-		return (strndup (&file[1], len-2));
-	}
-	else
-		return strdup (file);
-}
-
 GMT_LOCAL int make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) {
 	struct stat S;
 	int err = stat (dir, &S);
@@ -1650,14 +1641,14 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		Ctrl->In.n_files = (unsigned int)T->n_records;
 		ps_names = gmt_M_memory (GMT, NULL, T->n_records, char *);
 		for (k = 0; k < T->table[0]->segment[0]->n_rows; k++)	/* Set pointers */
-			ps_names[k] = noquote_name (T->table[0]->segment[0]->text[k]);
+			ps_names[k] = gmt_strdup_noquote (T->table[0]->segment[0]->text[k]);
 	}
 	else if (Ctrl->In.n_files) {	/* One or more files given on command line */
 		ps_names = gmt_M_memory (GMT, NULL, Ctrl->In.n_files, char *);
 		j = 0;
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option != '<') continue;
-			ps_names[j++] = noquote_name (opt->arg);
+			ps_names[j++] = gmt_strdup_noquote (opt->arg);
 		}
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to complete the half-baked PS file */
@@ -1668,7 +1659,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Hidden PS file %s found\n", GMT->current.ps.filename);
 			ps_names = gmt_M_memory (GMT, NULL, 1, char *);
-			ps_names[0] = noquote_name (GMT->current.ps.filename);
+			ps_names[0] = gmt_strdup_noquote (GMT->current.ps.filename);
 			Ctrl->In.n_files = 1;
 		}
 		if (access (ps_names[0], F_OK) == 0) {	/* File exist, so complete it */

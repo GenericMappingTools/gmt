@@ -99,6 +99,7 @@ int main (int argc, char *argv[]) {
 	/* Check EOF indicator */
 	if (!feof (fp_in)) {
 		fprintf (stderr, FAILURE_PREFIX "error: did not reach eof.\n");
+		fclose (fp_in);
 		fclose (fp_out);
 		return EXIT_FAILURE;
 	}
