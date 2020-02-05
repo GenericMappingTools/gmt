@@ -14,7 +14,7 @@ Synopsis
 
 **gmt project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
 [ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
-[ |-G|\ *dist*\ [/*colat*][**+c**\|\ h**] ]
+[ |-G|\ *dist*\ [/*colat*][**+c**\|\ **h**] ]
 [ |-L|\ [**w**\|\ *l\_min*/*l\_max*] ]
 [ |-N| ] [ |-Q| ] [ |-S| ]
 [ |-T|\ *px*/*py* ]
