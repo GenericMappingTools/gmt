@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt which** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**c**\ \|\ **l**\ \|\ **u**] ] [ |SYN_OPT-V| ] [ |SYN_OPT--| ]
+**gmt which** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**c**\|\ **l**\|\ **u**] ] [ |SYN_OPT-V| ] [ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -61,7 +61,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [**c**\ \|\ **l**\ \|\ **u**]
+**-G**\ [**c**\|\ **l**\|\ **u**]
     If a file argument is a downloadable file (either a complete URL, a @file for
     downloading from the GMT data server, or @earth_relief_xxy) we will try
     to download the file if it is not found in your local data or cache dirs.

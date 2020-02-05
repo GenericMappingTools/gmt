@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------
  *
- *  Copyright (c) 2005-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *  Copyright (c) 2005-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *  See README file for copying and redistribution conditions.
  *
  *  File:       mgd77.c
@@ -13,6 +13,7 @@
  *  Version:     1.2
  *  Revised:     1-MAR-2006
  *  Revised:    21-JAN-2015     IGRF2015
+ *  Revised:    22-DEC-2019     IGRF2020
  *
  *-------------------------------------------------------------------------*/
 
@@ -108,7 +109,7 @@ int MGD77_nc_status (struct GMT_CTRL *GMT, int status) {
 	 * appropriate action if the status != NC_NOERR
 	 */
 	if (status != NC_NOERR) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s\n", nc_strerror (status));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", nc_strerror (status));
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	return GMT_OK;
@@ -270,8 +271,8 @@ static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *
 	F->n_MGD77_paths = 0;
 
 	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Path file %s for MGD77 files not found.\n", file);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Will only look in current directory and %s for such files.\n", F->MGD77_HOME);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Path file %s for MGD77 files not found.\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Will only look in current directory and %s for such files.\n", F->MGD77_HOME);
 		F->MGD77_datadir = gmt_M_memory (GMT, NULL, 1, char *);
 		F->MGD77_datadir[0] = gmt_M_memory (GMT, NULL, strlen (F->MGD77_HOME) + 1, char);
 		strcpy (F->MGD77_datadir[0], F->MGD77_HOME);
@@ -350,7 +351,7 @@ int MGD77_Get_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, char *
 	for (i = 0, id = MGD77_NOT_SET; id < 0 && i < MGD77_N_HEADER_ITEMS; i++) if (!strcmp (MGD77_Header_Lookup[i].name, item)) id = i;
 
 	if (id == MGD77_NOT_SET) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_Get_Header_Item returns %d for item %s\n", id, item);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_Get_Header_Item returns %d for item %s\n", id, item);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR);
 	}
 
@@ -885,19 +886,19 @@ static int MGD77_Read_Header_Sequence (struct GMT_CTRL *GMT, FILE *fp, char *rec
 		got = fgetc (fp);		/* Read the first character from the file stream */
 		ungetc (got, fp);		/* Put the character back on the stream */
 		if (! (got == '4' || got == '1')) {	/* 4 means pre-Y2K header/file */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "MGD77_Read_Header: No header record present\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "MGD77_Read_Header: No header record present\n");
 			return (MGD77_NO_HEADER_REC);
 		}
 	}
 	if (fgets (record, MGD77_HEADER_LENGTH + 3, fp) == NULL) {		/* +3 to account for an eventual '\r' and '\n\0' */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_Read_Header: Failure to read header sequence %02d\n", seq);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_Read_Header: Failure to read header sequence %02d\n", seq);
 		return (MGD77_ERROR_READ_HEADER_ASC);
 	}
 	gmt_chop (record);
 
 	got = atoi (&record[78]);
 	if (got != seq) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_Read_Header: Expected header sequence %02d says it is %02d\n", seq, got);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_Read_Header: Expected header sequence %02d says it is %02d\n", seq, got);
 		return (MGD77_WRONG_HEADER_REC);
 	}
 	return (MGD77_NO_ERROR);
@@ -938,7 +939,7 @@ int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 
 	for (i = 0; i < F->n_out_columns; i++) {	/* This is not really needed if MGD77_Select_All_Columns did things, but just in case */
 		if (MGD77_Info_from_Abbrev (GMT, F->desired_column[i], H, &set, &item) == MGD77_NOT_SET) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Requested column %s not in data set!\n", F->desired_column[i]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Requested column %s not in data set!\n", F->desired_column[i]);
 			return (MGD77_ERROR_NOSUCHCOLUMN);
 		}
 		F->order[i].item = item;
@@ -955,7 +956,7 @@ int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 	for (i = 0; i < F->n_constraints; i++) {	/* Determine column and info numbers from column name */
 		F->Constraint[i].col = MGD77_Get_Column (GMT, F->Constraint[i].name, F);
 		if (F->Constraint[i].col == -1) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Requested column %s is not a data column [for auxiliary data tests use -D, -Q, -S]!\n", F->Constraint[i].name);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Requested column %s is not a data column [for auxiliary data tests use -D, -Q, -S]!\n", F->Constraint[i].name);
 			return (MGD77_ERROR_NOSUCHCOLUMN);
 		}
 		set = F->order[F->Constraint[i].col].set;
@@ -992,12 +993,12 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 	gmt_M_memset (H, 1, struct MGD77_HEADER);		/* Completely wipe existing header */
 	if (F->format == MGD77_FORMAT_M77) {		/* Can compute # records from file size because format is fixed */
 		if (stat (F->path, &buf)) {	/* Inquiry about file failed somehow */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to stat file %s\n", F->path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to stat file %s\n", F->path);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
 		if (!fgets (line, GMT_BUFSIZ, F->fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading M77 record\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading M77 record\n");
 			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 		}
 		rewind (F->fp);					/* Go back to beginning of file */
@@ -1020,7 +1021,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 	}
 	if (F->format == MGD77_FORMAT_TBL) {		/* Skip the column header for tables */
 		if (!fgets (line, GMT_BUFSIZ, F->fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading TXT record\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading TXT record\n");
 			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 		}
 	}
@@ -1053,13 +1054,13 @@ static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, stru
 	H->n_records -= MGD77T_N_HEADER_RECORDS;	/* Adjust for the 2 records in the header block */
 
 	if (!fgets (line, GMT_BUFSIZ, F->fp)) {		/* Skip the column header  */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading MGD77T record\n");
 		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 	}
 
 	MGD77_header = gmt_M_memory (GMT, NULL, MGD77T_HEADER_LENGTH, char);
 	if (!fgets (MGD77_header, GMT_BUFSIZ, F->fp)) {			/* Read the entire header record  */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading MGD77T record\n");
 		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 	}
 	gmt_chop (MGD77_header);	/* Get rid of CR or LF */
@@ -1188,7 +1189,7 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	gmt_chop (line);	/* Get rid of CR or LF */
 
 	if ((len = strlen(line)) != MGD77_RECORD_LENGTH) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Incorrect record length (%" PRIuS "), skipped\n%s\n", len, line);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Incorrect record length (%" PRIuS "), skipped\n%s\n", len, line);
 		return (MGD77_WRONG_DATA_REC_LEN);
 	}
 
@@ -1684,7 +1685,7 @@ int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 
 	entry = MGD77_Info_from_Abbrev (GMT, "lon", &S->H, &t_set, &t_id);
 	if (entry == MGD77_NOT_SET) {	/* Not good */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Longitude not present!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Longitude not present!\n");
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 
@@ -1703,12 +1704,12 @@ int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 		}
 	}
 	if (crossed_dateline && crossed_greenwich)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Longitude crossing both Dateline and Greenwich; not adjusted!\n");
-	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliancy */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Longitude crossing both Dateline and Greenwich; not adjusted!\n");
+	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliance */
 		for (rec = 0; rec < S->H.n_records; rec++)
 			if (values[rec] < 0.0) values[rec] += 360.0;
 	}
-	else if (crossed_greenwich) {	/* Cruise is crossing Greenwich; switch to -180/+180 format for COARDS compliancy */
+	else if (crossed_greenwich) {	/* Cruise is crossing Greenwich; switch to -180/+180 format for COARDS compliance */
 		for (rec = 0; rec < S->H.n_records; rec++)
 			if (values[rec] > 180.0) values[rec] -= 360.0;
 	}
@@ -1780,7 +1781,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 	/* It is assumed that MGD77_Prep_Header_cdf has been called */
 
 	if (H->no_time) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Data set %s has no time values\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Data set %s has no time values\n", file);
 		MGD77_nc_status (GMT, nc_def_dim (F->nc_id, "record_no", NC_UNLIMITED, &F->nc_recid));	/* Define unlimited record dimension */
 		time_id = MGD77_NOT_SET;
 	}
@@ -1905,7 +1906,7 @@ static int MGD77_Write_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_
 					MGD77_nc_status (GMT, nc_put_vara_double (F->nc_id, S->H.info[set].col[id].var_id, start, count, x));
 				}
 				if (n_bad) {	/* Report what we found */
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "%s [%s] had %d values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
 						F->NGDC_id, S->H.info[set].col[id].abbrev, n_bad, MGD77_Low_val[S->H.info[set].col[id].type],
 						MGD77_High_val[S->H.info[set].col[id].type], MGD77_NaN_val[S->H.info[set].col[id].type]);
 				}
@@ -2017,7 +2018,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 		switch (S->H.info[c].col[id].adjust) {
 			case MGD77_COL_ADJ_TWT:		/* Must undo PDR wrap-around only */
 				if (gmt_M_is_zero (S->H.PDR_wrap)) {
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "PDR unwrapping requested but period = 0. Wrapping deactivated\n");
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "PDR unwrapping requested but period = 0. Wrapping deactivated\n");
 				}
 				else {
 					E.needed[E77_AUX_FIELD_TWT] = 1;
@@ -2336,7 +2337,7 @@ static int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, struc
 
 	MGD77_nc_status (GMT, nc_inq_unlimdim (F->nc_id, &F->nc_recid));		/* Get id of unlimited dimension */
 	if (F->nc_recid == -1) {	/* We are in deep trouble */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No record dimension in file %s - cannot read contents\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No record dimension in file %s - cannot read contents\n", file);
 		return (MGD77_ERROR_NOT_MGD77PLUS);
 	}
 	MGD77_nc_status (GMT, nc_inq_dimname (F->nc_id, F->nc_recid, name));	/* Get dimension name */
@@ -2635,7 +2636,7 @@ int MGD77_Read_File (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, 
 			err = MGD77_Read_File_cdf (GMT, file, F, S);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad format (%d)!\n", F->format);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad format (%d)!\n", F->format);
 			err = MGD77_UNKNOWN_FORMAT;
 	}
 	return (err);
@@ -2654,7 +2655,7 @@ int MGD77_Write_Data (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F,
 			err = MGD77_Write_Data_cdf (GMT, file, F, S);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad format (%d)!\n", F->format);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad format (%d)!\n", F->format);
 			err = MGD77_UNKNOWN_FORMAT;
 	}
 	return (err);
@@ -2673,7 +2674,7 @@ int MGD77_Read_Data (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, 
 			err = MGD77_Read_Data_cdf (GMT, file, F, S);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad format (%d)!\n", F->format);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad format (%d)!\n", F->format);
 			err = MGD77_UNKNOWN_FORMAT;
 	}
 	return (err);
@@ -2704,12 +2705,12 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 	}
 
 	if (has_suffix != MGD77_NOT_SET && !MGD77_format_allowed[has_suffix]) {	/* Filename clashes with allowed extensions */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File has suffix (%s) that is set to be ignored!\n", MGD77_suffix[has_suffix]);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "File has suffix (%s) that is set to be ignored!\n", MGD77_suffix[has_suffix]);
 		return (MGD77_FILE_NOT_FOUND);
 	}
 	hard_path = (track[0] == '/' || track[1] == ':');	/* Hard path given */
 	if (has_suffix == MGD77_NOT_SET && hard_path) {	/* Hard path given without extension */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Hard path (%s) without extension given;\n\tonly look for matching file in the implied directory.\n", track);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Hard path (%s) without extension given;\n\tonly look for matching file in the implied directory.\n", track);
 	}
 
 	if (has_suffix != MGD77_NOT_SET) {	/* Hard path given (assumes X: is beginning of DOS path for arbitrary drive letter X) */
@@ -2740,7 +2741,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 			f_stop  = MGD77_FORMAT_TBL;
 			break;
 		default:	/* Bad */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad file format specified given (%d)\n", F->format);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad file format specified given (%d)\n", F->format);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			break;
 	}
@@ -2800,21 +2801,21 @@ int MGD77_Open_File (struct GMT_CTRL *GMT, char *leg, struct MGD77_CONTROL *F, i
 	if (rw == MGD77_READ_MODE) {	/* Reading a file */
 		mode[0] = 'r';
 		if (MGD77_Get_Path (GMT, F->path, leg, F)) {
-   			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find leg %s\n", leg);
+   			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot find leg %s\n", leg);
      			return (MGD77_FILE_NOT_FOUND);
   		}
 	}
 	else if (rw == MGD77_UPDATE_MODE) {	/* Updating a file */
 		mode[0] = 'a';
 		if (MGD77_Get_Path (GMT, F->path, leg, F)) {
-   			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find leg %s\n", leg);
+   			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot find leg %s\n", leg);
      			return (MGD77_FILE_NOT_FOUND);
   		}
 	}
 	else if (rw == MGD77_WRITE_MODE) {		/* Writing to a new file; leg is assumed to be complete name */
 		int k, has_suffix = MGD77_NOT_SET;
 		if (F->format == MGD77_FORMAT_ANY || F->format == MGD77_NOT_SET) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Format type not set for output file %s\n", leg);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Format type not set for output file %s\n", leg);
 			return (MGD77_ERROR_OPEN_FILE);
 		}
 		mode[0] = 'w';
@@ -2832,7 +2833,7 @@ int MGD77_Open_File (struct GMT_CTRL *GMT, char *leg, struct MGD77_CONTROL *F, i
 	/* For netCDF format we do not open file - this is done differently later */
 
 	if (F->format != MGD77_FORMAT_CDF && (F->fp = fopen (F->path, mode)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open %s\n", F->path);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not open %s\n", F->path);
 		return (MGD77_ERROR_OPEN_FILE);
 	}
 
@@ -2961,7 +2962,7 @@ GMT_LOCAL int MGD77_Read_Header_Record_m77_nohdr (struct GMT_CTRL *GMT, char *fi
 	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
 	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
 		if (stat (F->path, &buf)) {	/* Inquiry about file failed somehow */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to stat file %s\n\n", F->path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to stat file %s\n\n", F->path);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 #ifdef WIN32
@@ -2977,7 +2978,7 @@ GMT_LOCAL int MGD77_Read_Header_Record_m77_nohdr (struct GMT_CTRL *GMT, char *fi
 
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
 		if ((not_used = fgets (line, BUFSIZ, F->fp)) == NULL) {		/* Skip the column header  */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to read record from file %s\n\n", F->path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read record from file %s\n\n", F->path);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 		rewind (F->fp);					/* Go back to beginning of file */
@@ -3026,7 +3027,7 @@ GMT_LOCAL int MGD77_Read_Header_Record_m77t_nohdr (struct GMT_CTRL *GMT, char *f
 	rewind (F->fp);					/* Go back to beginning of file */
 
 	if ((not_used = fgets (line, BUFSIZ, F->fp)) == NULL) {		/* Skip the column header  */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to read column header from file %s\n\n", F->path);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read column header from file %s\n\n", F->path);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 
@@ -3124,7 +3125,7 @@ int MGD77_Read_File_nohdr (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTRO
 			err = MGD77_Read_File_cdf_nohdr (GMT, file, F, S);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad format (%d)!\n", F->format);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad format (%d)!\n", F->format);
 			err = MGD77_UNKNOWN_FORMAT;
 	}
 
@@ -3244,7 +3245,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 	P = (F->original || F->format != MGD77_FORMAT_CDF) ? H->mgd77[MGD77_ORIG] : H->mgd77[MGD77_REVISED];
 
 	if (!H->meta.verified) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_Verify_Header called before MGD77_Verify_Prep\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_Verify_Header called before MGD77_Verify_Prep\n");
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 
@@ -3525,7 +3526,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 				else	/* 4-digit year given */
 					rfEnd = y;
 				/* IGRF is typically definitive up to the ref field code year (e.g., IGRF-85 is definitive to 1985), then predictive for five years */
-				rfEnd += 5; 
+				rfEnd += 5;
 				rfStart = rfEnd - 5;
 			}
 			else {
@@ -3832,7 +3833,7 @@ int MGD77_Write_File (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F,
 			err = MGD77_Write_File_cdf (GMT, file, F, S);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad format (%d)!\n", F->format);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad format (%d)!\n", F->format);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	return (err);
@@ -3879,7 +3880,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, cha
 	}
 
 	if (match == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No header item matched your string %s\n", item);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No header item matched your string %s\n", item);
 		return -1;
 	}
 	if (match > 1) {	/* More than one.  See if any of the multiple matches is a full name */
@@ -3895,7 +3896,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, cha
 			return 0;
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "More than one item matched your string %s:\n", item);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "More than one item matched your string %s:\n", item);
 			for (i = 0; i < match; i++) gmt_message (GMT, "	-> %s\n", MGD77_Header_Lookup[pick[i]].name);
 			return -2;
 		}
@@ -3945,7 +3946,7 @@ int MGD77_Select_Format (struct GMT_CTRL *GMT, int format) {
 		MGD77_format_allowed[format] = true;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Bad file format (%d) selected!\n", format);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad file format (%d) selected!\n", format);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	return GMT_OK;
@@ -3969,7 +3970,7 @@ int MGD77_Process_Ignore (struct GMT_CTRL *GMT, char code, char *format) {
 				MGD77_Ignore_Format (GMT, MGD77_FORMAT_M7T);
 				break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Option -%c Bad format (%c)!\n", code, format[i]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c Bad format (%c)!\n", code, format[i]);
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				break;
 		}
@@ -4166,10 +4167,10 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 		else {	/* Desired output column */
 			for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j < i; j++) if (!strcmp (word, F->desired_column[j])) k = j;
 			if (k != MGD77_NOT_SET) {	/* Mentioned before */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column \"%s\" given more than once.\n", word);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Column \"%s\" given more than once.\n", word);
 			}
 			if (F->desired_column[i]) {	/* Allocated before */
-				if (option) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column \"%s\" given more than once.\n", word);
+				if (option) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Column \"%s\" given more than once.\n", word);
 				gmt_M_str_free (F->desired_column[i]);
 			}
 			F->desired_column[i] = strdup (word);
@@ -4190,7 +4191,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 		else if (p[0] == '-')
 			F->Bit_test[i].match = 0;
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bit-test flag (%s) is not in +<col> or -<col> format.\n", p);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bit-test flag (%s) is not in +<col> or -<col> format.\n", p);
 			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 		}
 		strncpy (F->Bit_test[i].name, &p[1], MGD77_COL_ABBREV_LEN-1);
@@ -4297,7 +4298,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 	if (flist) {	/* Just read and return the list of files in the given file list; skip leading = in filename */
 		FILE *fp = NULL;
 		if ((fp = gmt_fopen (GMT, flist, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open file list %s\n", flist);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open file list %s\n", flist);
 			return (-1);
 		}
 		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
@@ -4345,7 +4346,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #ifdef HAVE_DIRENT_H_
 			/* Here we have either <agency> or <agency><vessel> code or blank for all */
 			if ((dir = opendir (F->MGD77_datadir[j])) == NULL) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open directory %s\n", F->MGD77_datadir[j]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open directory %s\n", F->MGD77_datadir[j]);
 				continue;
 			}
 			while ((entry = readdir (dir)) != NULL) {
@@ -4355,11 +4356,11 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[j]);
 			/* coverity[tainted_string] */
 			if (system (line)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "System call [%s] returned error.\n", line);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "System call [%s] returned error.\n", line);
 				continue;
 			}
 			if ((fp = fopen (".tmpdir", "r")) == NULL) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "System call failed to create .tmpdir file.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "System call failed to create .tmpdir file.\n");
 				continue;
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
@@ -4379,7 +4380,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #else
 			fclose (fp);
 			if (gmt_remove_file (GMT, ".tmpdir"))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to remove the .tmpdir file.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to remove the .tmpdir file.\n");
 #endif /* HAVE_DIRENT_H_ */
 		}
 		all = false;	/* all is only true once (or never) inside this loop */
@@ -4508,7 +4509,7 @@ void MGD77_Set_Unit (struct GMT_CTRL *GMT, char *dist, double *scale, int way) {
 }
 
 int MGD77_Fatal_Error (struct GMT_CTRL *GMT, int error) {
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error [%d]: ", error);
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error [%d]: ", error);
 	switch (error) {
 		case MGD77_NO_HEADER_REC:
 			gmt_message (GMT, "Header record not found");
@@ -4629,27 +4630,27 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 
 	gmt_getsharepath (GMT, "mgg", "carter", ".d", buffer, R_OK);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
- 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Cannot open r %s\n", buffer);
+ 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Cannot open r %s\n", buffer);
 		return (-1);
 	}
 
 	for (i = 0; i < 5; i++) {	/* Skip 4 headers, read 1 line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading Carter records\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading Carter records\n");
         	fclose (fp);
 			return (-1);
 		}
 	}
 
 	if ((i = atoi (buffer)) != N_CARTER_CORRECTIONS) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
        	fclose (fp);
 		return(-1);
 	}
 
 	for (i = 0; i < N_CARTER_CORRECTIONS; i++) {
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Could not read correction # %d\n", i);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Could not read correction # %d\n", i);
        		fclose (fp);
 			return (-1);
 		}
@@ -4660,21 +4661,21 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 
 	for (i = 0; i < 2; i++) {	/* Skip 1 headers, get next line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading Carter offset records\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading Carter offset records\n");
        		fclose (fp);
 			return (-1);
 		}
 	}
 
 	if ((i = atoi (buffer)) != N_CARTER_OFFSETS) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
        	fclose (fp);
 		return (-1);
 	}
 
 	for (i = 0; i < N_CARTER_OFFSETS; i++) {
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Could not read offset # %d\n", i);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Could not read offset # %d\n", i);
        		fclose (fp);
 			return (-1);
 		}
@@ -4685,21 +4686,21 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 
 	for (i = 0; i < 2; i++) {	/* Skip 1 headers, get next line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading Carter zone records\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading Carter zone records\n");
        		fclose (fp);
 			return (-1);
 		}
 	}
 
 	if ((i = atoi (buffer)) != N_CARTER_BINS) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);
        	fclose (fp);
 		return (-1);
 	}
 
 	for (i = 0; i < N_CARTER_BINS; i++) {
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Could not read offset # %d\n", i);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Could not read offset # %d\n", i);
        		fclose (fp);
 			return (-1);
 		}
@@ -4720,7 +4721,7 @@ int MGD77_carter_get_bin (struct GMT_CTRL *GMT, double lon, double lat, int *bin
 	int latdeg, londeg;
 
 	if (lat < -90.0 || lat > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in MGD77_carter_get_bin: Latitude domain error (%g)\n", lat);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in MGD77_carter_get_bin: Latitude domain error (%g)\n", lat);
 		return (-1);
 	}
 	while (lon >= 360.0) lon -= 360.0;
@@ -4740,7 +4741,7 @@ int MGD77_carter_get_zone (struct GMT_CTRL *GMT, int bin, struct MGD77_CARTER *C
 		range.  */
 
 	if (!C->initialized && MGD77_carter_init(GMT, C) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in MGD77_carter_get_zone: Initialization failure.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in MGD77_carter_get_zone: Initialization failure.\n");
 		return (-1);
 	}
 
@@ -4782,15 +4783,15 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 		return (0);
 	}
 	if (!C->initialized && MGD77_carter_init(GMT, C) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: Initialization failure.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (twt_in_msec < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: Negative twt: %g msec\n", twt_in_msec);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: Negative twt: %g msec\n", twt_in_msec);
 		return (-1);
 	}
 
@@ -4805,7 +4806,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 	i = C->carter_offset[zone-1] + low_hundred - 1;	/* -1 'cause .f indices */
 
 	if (i >= (C->carter_offset[zone] - 1) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
 		return (-1);
 	}
 
@@ -4814,7 +4815,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 	if (part_in_100 > 0.0) {	/* We have to interpolate the table  */
 
 		if ( i == (C->carter_offset[zone] - 2) ) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
 			return (-1);
 		}
 
@@ -4841,15 +4842,15 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *GMT, int zone, double depth_in
 		return (0);
 	}
 	if (!C->initialized && MGD77_carter_init (GMT, C) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_twt_from_depth: Initialization failure.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_twt_from_depth: Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_twt_from_depth: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_twt_from_depth: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (depth_in_corr_m < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_twt_from_depth: Negative depth: %g m\n", depth_in_corr_m);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_twt_from_depth: Negative depth: %g m\n", depth_in_corr_m);
 		return(-1);
 	}
 
@@ -4862,7 +4863,7 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *GMT, int zone, double depth_in
 	min = C->carter_offset[zone-1] - 1;
 
 	if (depth_in_corr_m > C->carter_correction[max]) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_twt_from_depth: Depth too big: %g m.\n", depth_in_corr_m);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_twt_from_depth: Depth too big: %g m.\n", depth_in_corr_m);
 		return (-1);
 	}
 
@@ -4952,465 +4953,496 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
   *
   *	Joaquim Luis 21-JAN-2010
   *	Updated for IGRF 11th generation
+  *
+  *	22-DEC-2019
+  *	Updated for IGRF 13th generation
   */
 
      /* Initialized data */
-     static double gh[3450] = {
-       -31543.,-2298., 5922., -677., 2905.,-1061.,  924., 1121., /* g0 (1900) */
-         1022.,-1469., -330., 1256.,    3.,  572.,  523.,  876.,
-          628.,  195.,  660.,  -69., -361., -210.,  134.,  -75.,
-         -184.,  328., -210.,  264.,   53.,    5.,  -33.,  -86.,
-         -124.,  -16.,    3.,   63.,   61.,   -9.,  -11.,   83.,
-         -217.,    2.,  -58.,  -35.,   59.,   36.,  -90.,  -69.,
-           70.,  -55.,  -45.,    0.,  -13.,   34.,  -10.,  -41.,
-           -1.,  -21.,   28.,   18.,  -12.,    6.,  -22.,   11.,
-            8.,    8.,   -4.,  -14.,   -9.,    7.,    1.,  -13.,
-            2.,    5.,   -9.,   16.,    5.,   -5.,    8.,  -18.,
-            8.,   10.,  -20.,    1.,   14.,  -11.,    5.,   12.,
-           -3.,    1.,   -2.,   -2.,    8.,    2.,   10.,   -1.,
-           -2.,   -1.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    6.,   -4.,    4.,    0.,
-            0.,   -2.,    2.,    4.,    2.,    0.,    0.,   -6.,
-       -31464.,-2298., 5909., -728., 2928.,-1086., 1041., 1065., /* g1 (1905) */
-         1037.,-1494., -357., 1239.,   34.,  635.,  480.,  880.,
-          643.,  203.,  653.,  -77., -380., -201.,  146.,  -65.,
-         -192.,  328., -193.,  259.,   56.,   -1.,  -32.,  -93.,
-         -125.,  -26.,   11.,   62.,   60.,   -7.,  -11.,   86.,
-         -221.,    4.,  -57.,  -32.,   57.,   32.,  -92.,  -67.,
-           70.,  -54.,  -46.,    0.,  -14.,   33.,  -11.,  -41.,
-            0.,  -20.,   28.,   18.,  -12.,    6.,  -22.,   11.,
-            8.,    8.,   -4.,  -15.,   -9.,    7.,    1.,  -13.,
-            2.,    5.,   -8.,   16.,    5.,   -5.,    8.,  -18.,
-            8.,   10.,  -20.,    1.,   14.,  -11.,    5.,   12.,
-           -3.,    1.,   -2.,   -2.,    8.,    2.,   10.,    0.,
-           -2.,   -1.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    6.,   -4.,    4.,    0.,
-            0.,   -2.,    2.,    4.,    2.,    0.,    0.,   -6.,
-       -31354.,-2297., 5898., -769., 2948.,-1128., 1176., 1000., /* g2 (1910) */
-         1058.,-1524., -389., 1223.,   62.,  705.,  425.,  884.,
-          660.,  211.,  644.,  -90., -400., -189.,  160.,  -55.,
-         -201.,  327., -172.,  253.,   57.,   -9.,  -33., -102.,
-         -126.,  -38.,   21.,   62.,   58.,   -5.,  -11.,   89.,
-         -224.,    5.,  -54.,  -29.,   54.,   28.,  -95.,  -65.,
-           71.,  -54.,  -47.,    1.,  -14.,   32.,  -12.,  -40.,
-            1.,  -19.,   28.,   18.,  -13.,    6.,  -22.,   11.,
-            8.,    8.,   -4.,  -15.,   -9.,    6.,    1.,  -13.,
-            2.,    5.,   -8.,   16.,    5.,   -5.,    8.,  -18.,
-            8.,   10.,  -20.,    1.,   14.,  -11.,    5.,   12.,
-           -3.,    1.,   -2.,   -2.,    8.,    2.,   10.,    0.,
-           -2.,   -1.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    6.,   -4.,    4.,    0.,
-            0.,   -2.,    2.,    4.,    2.,    0.,    0.,   -6.,
-       -31212.,-2306., 5875., -802., 2956.,-1191., 1309.,  917., /* g3 (1915) */
-         1084.,-1559., -421., 1212.,   84.,  778.,  360.,  887.,
-          678.,  218.,  631., -109., -416., -173.,  178.,  -51.,
-         -211.,  327., -148.,  245.,   58.,  -16.,  -34., -111.,
-         -126.,  -51.,   32.,   61.,   57.,   -2.,  -10.,   93.,
-         -228.,    8.,  -51.,  -26.,   49.,   23.,  -98.,  -62.,
-           72.,  -54.,  -48.,    2.,  -14.,   31.,  -12.,  -38.,
-            2.,  -18.,   28.,   19.,  -15.,    6.,  -22.,   11.,
-            8.,    8.,   -4.,  -15.,   -9.,    6.,    2.,  -13.,
-            3.,    5.,   -8.,   16.,    6.,   -5.,    8.,  -18.,
-            8.,   10.,  -20.,    1.,   14.,  -11.,    5.,   12.,
-           -3.,    1.,   -2.,   -2.,    8.,    2.,   10.,    0.,
-           -2.,   -1.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    6.,   -4.,    4.,    0.,
-            0.,   -2.,    1.,    4.,    2.,    0.,    0.,   -6.,
-       -31060.,-2317., 5845., -839., 2959.,-1259., 1407.,  823., /* g4 (1920) */
-         1111.,-1600., -445., 1205.,  103.,  839.,  293.,  889.,
-          695.,  220.,  616., -134., -424., -153.,  199.,  -57.,
-         -221.,  326., -122.,  236.,   58.,  -23.,  -38., -119.,
-         -125.,  -62.,   43.,   61.,   55.,    0.,  -10.,   96.,
-         -233.,   11.,  -46.,  -22.,   44.,   18., -101.,  -57.,
-           73.,  -54.,  -49.,    2.,  -14.,   29.,  -13.,  -37.,
-            4.,  -16.,   28.,   19.,  -16.,    6.,  -22.,   11.,
-            7.,    8.,   -3.,  -15.,   -9.,    6.,    2.,  -14.,
-            4.,    5.,   -7.,   17.,    6.,   -5.,    8.,  -19.,
-            8.,   10.,  -20.,    1.,   14.,  -11.,    5.,   12.,
-           -3.,    1.,   -2.,   -2.,    9.,    2.,   10.,    0.,
-           -2.,   -1.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    6.,   -4.,    4.,    0.,
-            0.,   -2.,    1.,    4.,    3.,    0.,    0.,   -6.,
-       -30926.,-2318., 5817., -893., 2969.,-1334., 1471.,  728., /* g5 (1925) */
-         1140.,-1645., -462., 1202.,  119.,  881.,  229.,  891.,
-          711.,  216.,  601., -163., -426., -130.,  217.,  -70.,
-         -230.,  326.,  -96.,  226.,   58.,  -28.,  -44., -125.,
-         -122.,  -69.,   51.,   61.,   54.,    3.,   -9.,   99.,
-         -238.,   14.,  -40.,  -18.,   39.,   13., -103.,  -52.,
-           73.,  -54.,  -50.,    3.,  -14.,   27.,  -14.,  -35.,
-            5.,  -14.,   29.,   19.,  -17.,    6.,  -21.,   11.,
-            7.,    8.,   -3.,  -15.,   -9.,    6.,    2.,  -14.,
-            4.,    5.,   -7.,   17.,    7.,   -5.,    8.,  -19.,
-            8.,   10.,  -20.,    1.,   14.,  -11.,    5.,   12.,
-           -3.,    1.,   -2.,   -2.,    9.,    2.,   10.,    0.,
-           -2.,   -1.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    6.,   -4.,    4.,    0.,
-            0.,   -2.,    1.,    4.,    3.,    0.,    0.,   -6.,
-       -30805.,-2316., 5808., -951., 2980.,-1424., 1517.,  644., /* g6 (1930) */
-         1172.,-1692., -480., 1205.,  133.,  907.,  166.,  896.,
-          727.,  205.,  584., -195., -422., -109.,  234.,  -90.,
-         -237.,  327.,  -72.,  218.,   60.,  -32.,  -53., -131.,
-         -118.,  -74.,   58.,   60.,   53.,    4.,   -9.,  102.,
-         -242.,   19.,  -32.,  -16.,   32.,    8., -104.,  -46.,
-           74.,  -54.,  -51.,    4.,  -15.,   25.,  -14.,  -34.,
-            6.,  -12.,   29.,   18.,  -18.,    6.,  -20.,   11.,
-            7.,    8.,   -3.,  -15.,   -9.,    5.,    2.,  -14.,
-            5.,    5.,   -6.,   18.,    8.,   -5.,    8.,  -19.,
-            8.,   10.,  -20.,    1.,   14.,  -12.,    5.,   12.,
-           -3.,    1.,   -2.,   -2.,    9.,    3.,   10.,    0.,
-           -2.,   -2.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    6.,   -4.,    4.,    0.,
-            0.,   -2.,    1.,    4.,    3.,    0.,    0.,   -6.,
-       -30715.,-2306., 5812.,-1018., 2984.,-1520., 1550.,  586., /* g7 (1935) */
-         1206.,-1740., -494., 1215.,  146.,  918.,  101.,  903.,
-          744.,  188.,  565., -226., -415.,  -90.,  249., -114.,
-         -241.,  329.,  -51.,  211.,   64.,  -33.,  -64., -136.,
-         -115.,  -76.,   64.,   59.,   53.,    4.,   -8.,  104.,
-         -246.,   25.,  -25.,  -15.,   25.,    4., -106.,  -40.,
-           74.,  -53.,  -52.,    4.,  -17.,   23.,  -14.,  -33.,
-            7.,  -11.,   29.,   18.,  -19.,    6.,  -19.,   11.,
-            7.,    8.,   -3.,  -15.,   -9.,    5.,    1.,  -15.,
-            6.,    5.,   -6.,   18.,    8.,   -5.,    7.,  -19.,
-            8.,   10.,  -20.,    1.,   15.,  -12.,    5.,   11.,
-           -3.,    1.,   -3.,   -2.,    9.,    3.,   11.,    0.,
-           -2.,   -2.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    6.,   -4.,    4.,    0.,
-            0.,   -1.,    2.,    4.,    3.,    0.,    0.,   -6.,
-       -30654.,-2292., 5821.,-1106., 2981.,-1614., 1566.,  528., /* g8 (1940) */
-         1240.,-1790., -499., 1232.,  163.,  916.,   43.,  914.,
-          762.,  169.,  550., -252., -405.,  -72.,  265., -141.,
-         -241.,  334.,  -33.,  208.,   71.,  -33.,  -75., -141.,
-         -113.,  -76.,   69.,   57.,   54.,    4.,   -7.,  105.,
-         -249.,   33.,  -18.,  -15.,   18.,    0., -107.,  -33.,
-           74.,  -53.,  -52.,    4.,  -18.,   20.,  -14.,  -31.,
-            7.,   -9.,   29.,   17.,  -20.,    5.,  -19.,   11.,
-            7.,    8.,   -3.,  -14.,  -10.,    5.,    1.,  -15.,
-            6.,    5.,   -5.,   19.,    9.,   -5.,    7.,  -19.,
-            8.,   10.,  -21.,    1.,   15.,  -12.,    5.,   11.,
-           -3.,    1.,   -3.,   -2.,    9.,    3.,   11.,    1.,
-           -2.,   -2.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    6.,   -4.,    4.,    0.,
-            0.,   -1.,    2.,    4.,    3.,    0.,    0.,   -6.,
-       -30594.,-2285., 5810.,-1244., 2990.,-1702., 1578.,  477., /* g9 (1945) */
-         1282.,-1834., -499., 1255.,  186.,  913.,  -11.,  944.,
-          776.,  144.,  544., -276., -421.,  -55.,  304., -178.,
-         -253.,  346.,  -12.,  194.,   95.,  -20.,  -67., -142.,
-         -119.,  -82.,   82.,   59.,   57.,    6.,    6.,  100.,
-         -246.,   16.,  -25.,   -9.,   21.,  -16., -104.,  -39.,
-           70.,  -40.,  -45.,    0.,  -18.,    0.,    2.,  -29.,
-            6.,  -10.,   28.,   15.,  -17.,   29.,  -22.,   13.,
-            7.,   12.,   -8.,  -21.,   -5.,  -12.,    9.,   -7.,
-            7.,    2.,  -10.,   18.,    7.,    3.,    2.,  -11.,
-            5.,  -21.,  -27.,    1.,   17.,  -11.,   29.,    3.,
-           -9.,   16.,    4.,   -3.,    9.,   -4.,    6.,   -3.,
-            1.,   -4.,    8.,   -3.,   11.,    5.,    1.,    1.,
-            2.,  -20.,   -5.,   -1.,   -1.,   -6.,    8.,    6.,
-           -1.,   -4.,   -3.,   -2.,    5.,    0.,   -2.,   -2.,
-       -30554.,-2250., 5815.,-1341., 2998.,-1810., 1576.,  381., /* ga (1950) */
-         1297.,-1889., -476., 1274.,  206.,  896.,  -46.,  954.,
-          792.,  136.,  528., -278., -408.,  -37.,  303., -210.,
-         -240.,  349.,    3.,  211.,  103.,  -20.,  -87., -147.,
-         -122.,  -76.,   80.,   54.,   57.,   -1.,    4.,   99.,
-         -247.,   33.,  -16.,  -12.,   12.,  -12., -105.,  -30.,
-           65.,  -55.,  -35.,    2.,  -17.,    1.,    0.,  -40.,
-           10.,   -7.,   36.,    5.,  -18.,   19.,  -16.,   22.,
-           15.,    5.,   -4.,  -22.,   -1.,    0.,   11.,  -21.,
-           15.,   -8.,  -13.,   17.,    5.,   -4.,   -1.,  -17.,
-            3.,   -7.,  -24.,   -1.,   19.,  -25.,   12.,   10.,
-            2.,    5.,    2.,   -5.,    8.,   -2.,    8.,    3.,
-          -11.,    8.,   -7.,   -8.,    4.,   13.,   -1.,   -2.,
-           13.,  -10.,   -4.,    2.,    4.,   -3.,   12.,    6.,
-            3.,   -3.,    2.,    6.,   10.,   11.,    3.,    8.,
-       -30500.,-2215., 5820.,-1440., 3003.,-1898., 1581.,  291., /* gb (1955) */
-         1302.,-1944., -462., 1288.,  216.,  882.,  -83.,  958.,
-          796.,  133.,  510., -274., -397.,  -23.,  290., -230.,
-         -229.,  360.,   15.,  230.,  110.,  -23.,  -98., -152.,
-         -121.,  -69.,   78.,   47.,   57.,   -9.,    3.,   96.,
-         -247.,   48.,   -8.,  -16.,    7.,  -12., -107.,  -24.,
-           65.,  -56.,  -50.,    2.,  -24.,   10.,   -4.,  -32.,
-            8.,  -11.,   28.,    9.,  -20.,   18.,  -18.,   11.,
-            9.,   10.,   -6.,  -15.,  -14.,    5.,    6.,  -23.,
-           10.,    3.,   -7.,   23.,    6.,   -4.,    9.,  -13.,
-            4.,    9.,  -11.,   -4.,   12.,   -5.,    7.,    2.,
-            6.,    4.,   -2.,    1.,   10.,    2.,    7.,    2.,
-           -6.,    5.,    5.,   -3.,   -5.,   -4.,   -1.,    0.,
-            2.,   -8.,   -3.,   -2.,    7.,   -4.,    4.,    1.,
-           -2.,   -3.,    6.,    7.,   -2.,   -1.,    0.,   -3.,
-       -30421.,-2169., 5791.,-1555., 3002.,-1967., 1590.,  206., /* gc (1960) */
-         1302.,-1992., -414., 1289.,  224.,  878., -130.,  957.,
-          800.,  135.,  504., -278., -394.,    3.,  269., -255.,
-         -222.,  362.,   16.,  242.,  125.,  -26., -117., -156.,
-         -114.,  -63.,   81.,   46.,   58.,  -10.,    1.,   99.,
-         -237.,   60.,   -1.,  -20.,   -2.,  -11., -113.,  -17.,
-           67.,  -56.,  -55.,    5.,  -28.,   15.,   -6.,  -32.,
-            7.,   -7.,   23.,   17.,  -18.,    8.,  -17.,   15.,
-            6.,   11.,   -4.,  -14.,  -11.,    7.,    2.,  -18.,
-           10.,    4.,   -5.,   23.,   10.,    1.,    8.,  -20.,
-            4.,    6.,  -18.,    0.,   12.,   -9.,    2.,    1.,
-            0.,    4.,   -3.,   -1.,    9.,   -2.,    8.,    3.,
-            0.,   -1.,    5.,    1.,   -3.,    4.,    4.,    1.,
-            0.,    0.,   -1.,    2.,    4.,   -5.,    6.,    1.,
-            1.,   -1.,   -1.,    6.,    2.,    0.,    0.,   -7.,
-       -30334.,-2119., 5776.,-1662., 2997.,-2016., 1594.,  114., /* gd (1965) */
-         1297.,-2038., -404., 1292.,  240.,  856., -165.,  957.,
-          804.,  148.,  479., -269., -390.,   13.,  252., -269.,
-         -219.,  358.,   19.,  254.,  128.,  -31., -126., -157.,
-          -97.,  -62.,   81.,   45.,   61.,  -11.,    8.,  100.,
-         -228.,   68.,    4.,  -32.,    1.,   -8., -111.,   -7.,
-           75.,  -57.,  -61.,    4.,  -27.,   13.,   -2.,  -26.,
-            6.,   -6.,   26.,   13.,  -23.,    1.,  -12.,   13.,
-            5.,    7.,   -4.,  -12.,  -14.,    9.,    0.,  -16.,
-            8.,    4.,   -1.,   24.,   11.,   -3.,    4.,  -17.,
-            8.,   10.,  -22.,    2.,   15.,  -13.,    7.,   10.,
-           -4.,   -1.,   -5.,   -1.,   10.,    5.,   10.,    1.,
-           -4.,   -2.,    1.,   -2.,   -3.,    2.,    2.,    1.,
-           -5.,    2.,   -2.,    6.,    4.,   -4.,    4.,    0.,
-            0.,   -2.,    2.,    3.,    2.,    0.,    0.,   -6.,
-       -30220.,-2068., 5737.,-1781., 3000.,-2047., 1611.,   25., /* ge (1970) */
-         1287.,-2091., -366., 1278.,  251.,  838., -196.,  952.,
-          800.,  167.,  461., -266., -395.,   26.,  234., -279.,
-         -216.,  359.,   26.,  262.,  139.,  -42., -139., -160.,
-          -91.,  -56.,   83.,   43.,   64.,  -12.,   15.,  100.,
-         -212.,   72.,    2.,  -37.,    3.,   -6., -112.,    1.,
-           72.,  -57.,  -70.,    1.,  -27.,   14.,   -4.,  -22.,
-            8.,   -2.,   23.,   13.,  -23.,   -2.,  -11.,   14.,
-            6.,    7.,   -2.,  -15.,  -13.,    6.,   -3.,  -17.,
-            5.,    6.,    0.,   21.,   11.,   -6.,    3.,  -16.,
-            8.,   10.,  -21.,    2.,   16.,  -12.,    6.,   10.,
-           -4.,   -1.,   -5.,    0.,   10.,    3.,   11.,    1.,
-           -2.,   -1.,    1.,   -3.,   -3.,    1.,    2.,    1.,
-           -5.,    3.,   -1.,    4.,    6.,   -4.,    4.,    0.,
-            1.,   -1.,    0.,    3.,    3.,    1.,   -1.,   -4.,
-       -30100.,-2013., 5675.,-1902., 3010.,-2067., 1632.,  -68., /* gf (1975) */
-         1276.,-2144., -333., 1260.,  262.,  830., -223.,  946.,
-          791.,  191.,  438., -265., -405.,   39.,  216., -288.,
-         -218.,  356.,   31.,  264.,  148.,  -59., -152., -159.,
-          -83.,  -49.,   88.,   45.,   66.,  -13.,   28.,   99.,
-         -198.,   75.,    1.,  -41.,    6.,   -4., -111.,   11.,
-           71.,  -56.,  -77.,    1.,  -26.,   16.,   -5.,  -14.,
-           10.,    0.,   22.,   12.,  -23.,   -5.,  -12.,   14.,
-            6.,    6.,   -1.,  -16.,  -12.,    4.,   -8.,  -19.,
-            4.,    6.,    0.,   18.,   10.,  -10.,    1.,  -17.,
-            7.,   10.,  -21.,    2.,   16.,  -12.,    7.,   10.,
-           -4.,   -1.,   -5.,   -1.,   10.,    4.,   11.,    1.,
-           -3.,   -2.,    1.,   -3.,   -3.,    1.,    2.,    1.,
-           -5.,    3.,   -2.,    4.,    5.,   -4.,    4.,   -1.,
-            1.,   -1.,    0.,    3.,    3.,    1.,   -1.,   -5.,
-       -29992.,-1956., 5604.,-1997., 3027.,-2129., 1663., -200., /* gg (1980) */
-         1281.,-2180., -336., 1251.,  271.,  833., -252.,  938.,
-          782.,  212.,  398., -257., -419.,   53.,  199., -297.,
-         -218.,  357.,   46.,  261.,  150.,  -74., -151., -162.,
-          -78.,  -48.,   92.,   48.,   66.,  -15.,   42.,   93.,
-         -192.,   71.,    4.,  -43.,   14.,   -2., -108.,   17.,
-           72.,  -59.,  -82.,    2.,  -27.,   21.,   -5.,  -12.,
-           16.,    1.,   18.,   11.,  -23.,   -2.,  -10.,   18.,
-            6.,    7.,    0.,  -18.,  -11.,    4.,   -7.,  -22.,
-            4.,    9.,    3.,   16.,    6.,  -13.,   -1.,  -15.,
-            5.,   10.,  -21.,    1.,   16.,  -12.,    9.,    9.,
-           -5.,   -3.,   -6.,   -1.,    9.,    7.,   10.,    2.,
-           -6.,   -5.,    2.,   -4.,   -4.,    1.,    2.,    0.,
-           -5.,    3.,   -2.,    6.,    5.,   -4.,    3.,    0.,
-            1.,   -1.,    2.,    4.,    3.,    0.,    0.,   -6.,
-       -29873.,-1905., 5500.,-2072., 3044.,-2197., 1687., -306., /* gi (1985) */
-         1296.,-2208., -310., 1247.,  284.,  829., -297.,  936.,
-          780.,  232.,  361., -249., -424.,   69.,  170., -297.,
-         -214.,  355.,   47.,  253.,  150.,  -93., -154., -164.,
-          -75.,  -46.,   95.,   53.,   65.,  -16.,   51.,   88.,
-         -185.,   69.,    4.,  -48.,   16.,   -1., -102.,   21.,
-           74.,  -62.,  -83.,    3.,  -27.,   24.,   -2.,   -6.,
-           20.,    4.,   17.,   10.,  -23.,    0.,   -7.,   21.,
-            6.,    8.,    0.,  -19.,  -11.,    5.,   -9.,  -23.,
-            4.,   11.,    4.,   14.,    4.,  -15.,   -4.,  -11.,
-            5.,   10.,  -21.,    1.,   15.,  -12.,    9.,    9.,
-           -6.,   -3.,   -6.,   -1.,    9.,    7.,    9.,    1.,
-           -7.,   -5.,    2.,   -4.,   -4.,    1.,    3.,    0.,
-           -5.,    3.,   -2.,    6.,    5.,   -4.,    3.,    0.,
-            1.,   -1.,    2.,    4.,    3.,    0.,    0.,   -6.,
-       -29775.,-1848., 5406.,-2131., 3059.,-2279., 1686., -373., /* gj (1990) */
-         1314.,-2239., -284., 1248.,  293.,  802., -352.,  939.,
-          780.,  247.,  325., -240., -423.,   84.,  141., -299.,
-         -214.,  353.,   46.,  245.,  154., -109., -153., -165.,
-          -69.,  -36.,   97.,   61.,   65.,  -16.,   59.,   82.,
-         -178.,   69.,    3.,  -52.,   18.,    1.,  -96.,   24.,
-           77.,  -64.,  -80.,    2.,  -26.,   26.,    0.,   -1.,
-           21.,    5.,   17.,    9.,  -23.,    0.,   -4.,   23.,
-            5.,   10.,   -1.,  -19.,  -10.,    6.,  -12.,  -22.,
-            3.,   12.,    4.,   12.,    2.,  -16.,   -6.,  -10.,
-            4.,    9.,  -20.,    1.,   15.,  -12.,   11.,    9.,
-           -7.,   -4.,   -7.,   -2.,    9.,    7.,    8.,    1.,
-           -7.,   -6.,    2.,   -3.,   -4.,    2.,    2.,    1.,
-           -5.,    3.,   -2.,    6.,    4.,   -4.,    3.,    0.,
-            1.,   -2.,    3.,    3.,    3.,   -1.,    0.,   -6.,
-       -29692.,-1784., 5306.,-2200., 3070.,-2366., 1681., -413., /* gk (1995) */
-         1335.,-2267., -262., 1249.,  302.,  759., -427.,  940.,
-          780.,  262.,  290., -236., -418.,   97.,  122., -306.,
-         -214.,  352.,   46.,  235.,  165., -118., -143., -166.,
-          -55.,  -17.,  107.,   68.,   67.,  -17.,   68.,   72.,
-         -170.,   67.,   -1.,  -58.,   19.,    1.,  -93.,   36.,
-           77.,  -72.,  -69.,    1.,  -25.,   28.,    4.,    5.,
-           24.,    4.,   17.,    8.,  -24.,   -2.,   -6.,   25.,
-            6.,   11.,   -6.,  -21.,   -9.,    8.,  -14.,  -23.,
-            9.,   15.,    6.,   11.,   -5.,  -16.,   -7.,   -4.,
-            4.,    9.,  -20.,    3.,   15.,  -10.,   12.,    8.,
-           -6.,   -8.,   -8.,   -1.,    8.,   10.,    5.,   -2.,
-           -8.,   -8.,    3.,   -3.,   -6.,    1.,    2.,    0.,
-           -4.,    4.,   -1.,    5.,    4.,   -5.,    2.,   -1.,
-            2.,   -2.,    5.,    1.,    1.,   -2.,    0.,   -7.,
-            0.,    0.,    0.,    0.,    0.,    0.,    0.,    0.,
-            0.,    0.,    0.,    0.,    0.,    0.,    0.,    0.,
-            0.,    0.,    0.,    0.,    0.,    0.,    0.,    0.,
-            0.,    0.,    0.,    0.,    0.,    0.,    0.,    0.,
-            0.,    0.,    0.,    0.,    0.,    0.,    0.,    0.,
-            0.,    0.,    0.,    0.,    0.,    0.,    0.,    0.,
-            0.,    0.,    0.,    0.,    0.,    0.,    0.,    0.,
-            0.,    0.,    0.,    0.,    0.,    0.,    0.,    0.,
-            0.,    0.,    0.,    0.,    0.,    0.,    0.,    0.,
-            0.,    0.,    0.,
-       -29619.4,-1728.2, 5186.1,-2267.7, 3068.4,-2481.6, 1670.9, /* gl (2000) */
-         -458.0, 1339.6,-2288.0, -227.6, 1252.1,  293.4,  714.5,
-         -491.1,  932.3,  786.8,  272.6,  250.0, -231.9, -403.0,
-          119.8,  111.3, -303.8, -218.8,  351.4,   43.8,  222.3,
-          171.9, -130.4, -133.1, -168.6,  -39.3,  -12.9,  106.3,
-           72.3,   68.2,  -17.4,   74.2,   63.7, -160.9,   65.1,
-           -5.9,  -61.2,   16.9,    0.7,  -90.4,   43.8,   79.0,
-          -74.0,  -64.6,    0.0,  -24.2,   33.3,    6.2,    9.1,
-           24.0,    6.9,   14.8,    7.3,  -25.4,   -1.2,   -5.8,
-           24.4,    6.6,   11.9,   -9.2,  -21.5,   -7.9,    8.5,
-          -16.6,  -21.5,    9.1,   15.5,    7.0,    8.9,   -7.9,
-          -14.9,   -7.0,   -2.1,    5.0,    9.4,  -19.7,    3.0,
-           13.4,   -8.4,   12.5,    6.3,   -6.2,   -8.9,   -8.4,
-           -1.5,    8.4,    9.3,    3.8,   -4.3,   -8.2,   -8.2,
-            4.8,   -2.6,   -6.0,    1.7,    1.7,    0.0,   -3.1,
-            4.0,   -0.5,    4.9,    3.7,   -5.9,    1.0,   -1.2,
-            2.0,   -2.9,    4.2,    0.2,    0.3,   -2.2,   -1.1,
-           -7.4,    2.7,   -1.7,    0.1,   -1.9,    1.3,    1.5,
-           -0.9,   -0.1,   -2.6,    0.1,    0.9,   -0.7,   -0.7,
-            0.7,   -2.8,    1.7,   -0.9,    0.1,   -1.2,    1.2,
-           -1.9,    4.0,   -0.9,   -2.2,   -0.3,   -0.4,    0.2,
-            0.3,    0.9,    2.5,   -0.2,   -2.6,    0.9,    0.7,
-           -0.5,    0.3,    0.3,    0.0,   -0.3,    0.0,   -0.4,
-            0.3,   -0.1,   -0.9,   -0.2,   -0.4,   -0.4,    0.8,
-           -0.2,   -0.9,   -0.9,    0.3,    0.2,    0.1,    1.8,
-           -0.4,   -0.4,    1.3,   -1.0,   -0.4,   -0.1,    0.7,
-            0.7,   -0.4,    0.3,    0.3,    0.6,   -0.1,    0.3,
-            0.4,   -0.2,    0.0,   -0.5,    0.1,   -0.9,
-       -29554.63, -1669.05,  5077.99, -2337.24, 3047.69, -2594.50, 1657.76, /* gm (2005) */
-         -515.43,  1336.30, -2305.83,  -198.86, 1246.39,   269.72,  672.51,
-         -524.72,   920.55,  797.96,    282.07,  210.65,  -225.23, -379.86,
-          145.15,   100.00, -305.36,   -227.00,  354.41,    42.72,  208.95,
-          180.25,  -136.54, -123.45,   -168.05,  -19.57,   -13.55,  103.85,
-           73.60,    69.56,  -20.33,     76.74,   54.75,  -151.34,   63.63,
-          -14.58,   -63.53,   14.58,      0.24,  -86.36,    50.94,   79.88,
-          -74.46,   -61.14,   -1.65,    -22.57,   38.73,     6.82,   12.30,
-           25.35,     9.37,   10.93,      5.42,  -26.32,     1.94,   -4.64,
-           24.80,     7.62,   11.20,    -11.73,  -20.88,    -6.88,    9.83,
-          -18.11,   -19.71,   10.17,     16.22,    9.36,     7.61,  -11.25,
-          -12.76,    -4.87,   -0.06,      5.58,    9.76,   -20.11,    3.58,
-           12.69,    -6.94,   12.67,      5.01,   -6.72,   -10.76,   -8.16,
-           -1.25,     8.10,    8.76,      2.92,   -6.66,    -7.73,   -9.22,
-            6.01,    -2.17,   -6.12,      2.19,    1.42,     0.10,   -2.35,
-            4.46,    -0.15,    4.76,      3.06,   -6.58,     0.29,   -1.01,
-            2.06,    -3.47,    3.77,     -0.86,   -0.21,    -2.31,   -2.09,
-           -7.93,     2.95,   -1.60,      0.26,   -1.88,     1.44,    1.44,
-           -0.77,    -0.31,   -2.27,      0.29,    0.90,    -0.79,   -0.58,
-            0.53,    -2.69,    1.80,     -1.08,    0.16,    -1.58,    0.96,
-           -1.90,     3.99,   -1.39,     -2.15,   -0.29,    -0.55,    0.21,
-            0.23,     0.89,    2.38,     -0.38,   -2.63,     0.96,    0.61,
-           -0.30,     0.40,    0.46,      0.01,   -0.35,     0.02,   -0.36,
-            0.28,     0.08,   -0.87,     -0.49,   -0.34,    -0.08,    0.88,
-           -0.16,    -0.88,   -0.76,      0.30,    0.33,     0.28,    1.72,
-           -0.43,    -0.54,    1.18,     -1.07,   -0.37,    -0.04,    0.75,
-            0.63,    -0.26,    0.21,      0.35,    0.53,    -0.05,    0.38,
-            0.41,    -0.22,   -0.10,     -0.57,   -0.18,    -0.82,
-       -29496.57, -1586.42, 4944.26,  -2396.06, 3026.34, -2708.54,	/* gp (2010) */
-         1668.17,  -575.73, 1339.85,  -2326.54, -160.40,  1232.10,
-          251.75,   633.73, -537.03,    912.66,  808.97,   286.48,
-          166.58,  -211.03, -356.83,    164.46,   89.40,  -309.72,
-         -230.87,   357.29,   44.58,    200.26,  189.01,  -141.05,
-         -118.06,  -163.17,   -0.01,     -8.03,  101.04,    72.78,
-           68.69,   -20.90,   75.92,     44.18, -141.40,    61.54,
-          -22.83,   -66.26,   13.10,      3.02,  -78.09,    55.40,
-           80.44,   -75.00,  -57.80,     -4.55,  -21.20,    45.24,
-            6.54,    14.00,   24.96,     10.46,    7.03,     1.64,
-          -27.61,     4.92,   -3.28,     24.41,    8.21,    10.84,
-          -14.50,   -20.03,   -5.59,     11.83,  -19.34,   -17.41,
-           11.61,    16.71,   10.85,      6.96,  -14.05,   -10.74,
-           -3.54,     1.64,    5.50,      9.45,  -20.54,     3.45,
-           11.51,    -5.27,   12.75,      3.13,   -7.14,   -12.38,
-           -7.42,    -0.76,    7.97,      8.43,    2.14,    -8.42,
-           -6.08,   -10.08,    7.01,     -1.94,   -6.24,     2.73,
-            0.89,    -0.10,   -1.07,      4.71,   -0.16,     4.44,
-            2.45,    -7.22,   -0.33,     -0.96,    2.13,    -3.95,
-            3.09,    -1.99,   -1.03,     -1.97,   -2.80,    -8.31,
-            3.05,    -1.48,    0.13,     -2.03,    1.67,     1.65,
-           -0.66,    -0.51,   -1.76,      0.54,    0.85,    -0.79,
-           -0.39,     0.37,   -2.51,      1.79,   -1.27,     0.12,
-           -2.11,     0.75,   -1.94,      3.75,   -1.86,    -2.12,
-           -0.21,    -0.87,    0.30,      0.27,    1.04,     2.13,
-           -0.63,    -2.49,    0.95,      0.49,   -0.11,     0.59,
-            0.52,     0.00,   -0.39,      0.13,   -0.37,     0.27,
-            0.21,    -0.86,   -0.77,     -0.23,    0.04,     0.87,
-           -0.09,    -0.89,   -0.87,      0.31,    0.30,     0.42,
-            1.66,    -0.45,   -0.59,      1.08,   -1.14,    -0.31,
-           -0.07,     0.78,    0.54,     -0.18,    0.10,     0.38,
-            0.49,     0.02,    0.44,      0.42,   -0.25,    -0.26,
-           -0.53,    -0.26,   -0.79,
-       -29442.0,  -1501.0,  4797.1,-2445.1, 3012.9,-2845.6, 1676.7,  /* gq (2015) */
-         -641.9,   1350.7, -2352.3, -115.3, 1225.6,  244.9,  582.0,
-         -538.4,    907.6,   813.7,  283.3,  120.4, -188.7, -334.9,
-          180.9,     70.4,  -329.5, -232.6,  360.1,   47.3,  192.4,
-          197.0,   -140.9,  -119.3, -157.5,   16.0,    4.1,  100.2,
-           70.0,     67.7,   -20.8,   72.7,   33.2, -129.9,   58.9,
-          -28.9,    -66.7,    13.2,    7.3,  -70.9,   62.6,   81.6,
-          -76.1,    -54.1,    -6.8,  -19.5,   51.8,    5.7,   15.0,
-           24.4,      9.4,     3.4,   -2.8,  -27.4,    6.8,   -2.2,
-           24.2,      8.8,    10.1,  -16.9,  -18.3,   -3.2,   13.3,
-          -20.6,    -14.6,    13.4,   16.2,   11.7,    5.7,  -15.9,
-           -9.1,     -2.0,     2.1,    5.4,    8.8,  -21.6,    3.1,
-           10.8,     -3.3,    11.8,    0.7,   -6.8,  -13.3,   -6.9,
-           -0.1,      7.8,     8.7,    1.0,   -9.1,   -4.0,  -10.5,
-            8.4,     -1.9,    -6.3,    3.2,    0.1,   -0.4,    0.5,
-            4.6,     -0.5,     4.4,    1.8,   -7.9,   -0.7,   -0.6,
-            2.1,     -4.2,     2.4,   -2.8,   -1.8,   -1.2,   -3.6,
-           -8.7,      3.1,    -1.5,   -0.1,   -2.3,    2.0,    2.0,
-           -0.7,     -0.8,    -1.1,    0.6,    0.8,   -0.7,   -0.2,
-            0.2,     -2.2,     1.7,   -1.4,   -0.2,   -2.5,    0.4,
-           -2.0,      3.5,    -2.4,   -1.9,   -0.2,   -1.1,    0.4,
-            0.4,      1.2,     1.9,   -0.8,   -2.2,    0.9,    0.3,
-            0.1,      0.7,     0.5,   -0.1,   -0.3,    0.3,   -0.4,
-            0.2,      0.2,    -0.9,   -0.9,   -0.1,    0.0,    0.7,
-            0.0,     -0.9,    -0.9,    0.4,    0.4,    0.5,    1.6,
-           -0.5,     -0.5,     1.0,   -1.2,   -0.2,   -0.1,    0.8,
-            0.4,     -0.1,    -0.1,    0.3,    0.4,    0.1,    0.5,
-            0.5,     -0.3,    -0.4,   -0.4,   -0.3,   -0.8,
-           10.3,     18.1,   -26.6,   -8.7,   -3.3,  -27.4,    2.1,  /* sv (2015) */
-          -14.1,      3.4,    -5.5,    8.2,   -0.7,   -0.4,  -10.1,
-            1.8,     -0.7,     0.2,   -1.3,   -9.1,    5.3,    4.1,
-            2.9,     -4.3,    -5.2,   -0.2,    0.5,    0.6,   -1.3,
-            1.7,     -0.1,    -1.2,    1.4,    3.4,    3.9,    0.0,
-           -0.3,     -0.1,     0.0,   -0.7,   -2.1,    2.1,   -0.7,
-           -1.2,      0.2,     0.3,    0.9,    1.6,    1.0,    0.3,
-           -0.2,      0.8,    -0.5,    0.4,    1.3,   -0.2,    0.1,
-           -0.3,     -0.6,    -0.6,   -0.8,    0.1,    0.2,   -0.2,
-            0.2,      0.0,    -0.3,   -0.6,    0.3,    0.5,    0.1,
-           -0.2,      0.5,     0.4,   -0.2,    0.1,   -0.3,   -0.4,
-            0.3,      0.3,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0,    0.0,
-            0.0,      0.0,     0.0,    0.0,    0.0,    0.0
+     static double gh[3645] = {
+       -31543., -2298.,  5922.,  -677.,  2905., -1061.,   924.,  1121., /* g0 (1900) */
+         1022., -1469.,  -330.,  1256.,     3.,   572.,   523.,   876.,
+          628.,   195.,   660.,   -69.,  -361.,  -210.,   134.,   -75.,
+         -184.,   328.,  -210.,   264.,    53.,     5.,   -33.,   -86.,
+         -124.,   -16.,     3.,    63.,    61.,    -9.,   -11.,    83.,
+         -217.,     2.,   -58.,   -35.,    59.,    36.,   -90.,   -69.,
+           70.,   -55.,   -45.,     0.,   -13.,    34.,   -10.,   -41.,
+           -1.,   -21.,    28.,    18.,   -12.,     6.,   -22.,    11.,
+            8.,     8.,    -4.,   -14.,    -9.,     7.,     1.,   -13.,
+            2.,     5.,    -9.,    16.,     5.,    -5.,     8.,   -18.,
+            8.,    10.,   -20.,     1.,    14.,   -11.,     5.,    12.,
+           -3.,     1.,    -2.,    -2.,     8.,     2.,    10.,    -1.,
+           -2.,    -1.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     6.,    -4.,     4.,     0.,
+            0.,    -2.,     2.,     4.,     2.,     0.,     0.,    -6.,
+       -31464., -2298.,  5909.,  -728.,  2928., -1086.,  1041.,  1065., /* g1 (1905) */
+         1037., -1494.,  -357.,  1239.,    34.,   635.,   480.,   880.,
+          643.,   203.,   653.,   -77.,  -380.,  -201.,   146.,   -65.,
+         -192.,   328.,  -193.,   259.,    56.,    -1.,   -32.,   -93.,
+         -125.,   -26.,    11.,    62.,    60.,    -7.,   -11.,    86.,
+         -221.,     4.,   -57.,   -32.,    57.,    32.,   -92.,   -67.,
+           70.,   -54.,   -46.,     0.,   -14.,    33.,   -11.,   -41.,
+            0.,   -20.,    28.,    18.,   -12.,     6.,   -22.,    11.,
+            8.,     8.,    -4.,   -15.,    -9.,     7.,     1.,   -13.,
+            2.,     5.,    -8.,    16.,     5.,    -5.,     8.,   -18.,
+            8.,    10.,   -20.,     1.,    14.,   -11.,     5.,    12.,
+           -3.,     1.,    -2.,    -2.,     8.,     2.,    10.,     0.,
+           -2.,    -1.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     6.,    -4.,     4.,     0.,
+            0.,    -2.,     2.,     4.,     2.,     0.,     0.,    -6.,
+       -31354., -2297.,  5898.,  -769.,  2948., -1128.,  1176.,  1000., /* g2 (1910) */
+         1058., -1524.,  -389.,  1223.,    62.,   705.,   425.,   884.,
+          660.,   211.,   644.,   -90.,  -400.,  -189.,   160.,   -55.,
+         -201.,   327.,  -172.,   253.,    57.,    -9.,   -33.,  -102.,
+         -126.,   -38.,    21.,    62.,    58.,    -5.,   -11.,    89.,
+         -224.,     5.,   -54.,   -29.,    54.,    28.,   -95.,   -65.,
+           71.,   -54.,   -47.,     1.,   -14.,    32.,   -12.,   -40.,
+            1.,   -19.,    28.,    18.,   -13.,     6.,   -22.,    11.,
+            8.,     8.,    -4.,   -15.,    -9.,     6.,     1.,   -13.,
+            2.,     5.,    -8.,    16.,     5.,    -5.,     8.,   -18.,
+            8.,    10.,   -20.,     1.,    14.,   -11.,     5.,    12.,
+           -3.,     1.,    -2.,    -2.,     8.,     2.,    10.,     0.,
+           -2.,    -1.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     6.,    -4.,     4.,     0.,
+            0.,    -2.,     2.,     4.,     2.,     0.,     0.,    -6.,
+       -31212., -2306.,  5875.,  -802.,  2956., -1191.,  1309.,   917., /* g3 (1915) */
+         1084., -1559.,  -421.,  1212.,    84.,   778.,   360.,   887.,
+          678.,   218.,   631.,  -109.,  -416.,  -173.,   178.,   -51.,
+         -211.,   327.,  -148.,   245.,    58.,   -16.,   -34.,  -111.,
+         -126.,   -51.,    32.,    61.,    57.,    -2.,   -10.,    93.,
+         -228.,     8.,   -51.,   -26.,    49.,    23.,   -98.,   -62.,
+           72.,   -54.,   -48.,     2.,   -14.,    31.,   -12.,   -38.,
+            2.,   -18.,    28.,    19.,   -15.,     6.,   -22.,    11.,
+            8.,     8.,    -4.,   -15.,    -9.,     6.,     2.,   -13.,
+            3.,     5.,    -8.,    16.,     6.,    -5.,     8.,   -18.,
+            8.,    10.,   -20.,     1.,    14.,   -11.,     5.,    12.,
+           -3.,     1.,    -2.,    -2.,     8.,     2.,    10.,     0.,
+           -2.,    -1.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     6.,    -4.,     4.,     0.,
+            0.,    -2.,     1.,     4.,     2.,     0.,     0.,    -6.,
+       -31060., -2317.,  5845.,  -839.,  2959., -1259.,  1407.,   823., /* g4 (1920) */
+         1111., -1600.,  -445.,  1205.,   103.,   839.,   293.,   889.,
+          695.,   220.,   616.,  -134.,  -424.,  -153.,   199.,   -57.,
+         -221.,   326.,  -122.,   236.,    58.,   -23.,   -38.,  -119.,
+         -125.,   -62.,    43.,    61.,    55.,     0.,   -10.,    96.,
+         -233.,    11.,   -46.,   -22.,    44.,    18.,  -101.,   -57.,
+           73.,   -54.,   -49.,     2.,   -14.,    29.,   -13.,   -37.,
+            4.,   -16.,    28.,    19.,   -16.,     6.,   -22.,    11.,
+            7.,     8.,    -3.,   -15.,    -9.,     6.,     2.,   -14.,
+            4.,     5.,    -7.,    17.,     6.,    -5.,     8.,   -19.,
+            8.,    10.,   -20.,     1.,    14.,   -11.,     5.,    12.,
+           -3.,     1.,    -2.,    -2.,     9.,     2.,    10.,     0.,
+           -2.,    -1.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     6.,    -4.,     4.,     0.,
+            0.,    -2.,     1.,     4.,     3.,     0.,     0.,    -6.,
+       -30926., -2318.,  5817.,  -893.,  2969., -1334.,  1471.,   728., /* g5 (1925) */
+         1140., -1645.,  -462.,  1202.,   119.,   881.,   229.,   891.,
+          711.,   216.,   601.,  -163.,  -426.,  -130.,   217.,   -70.,
+         -230.,   326.,   -96.,   226.,    58.,   -28.,   -44.,  -125.,
+         -122.,   -69.,    51.,    61.,    54.,     3.,    -9.,    99.,
+         -238.,    14.,   -40.,   -18.,    39.,    13.,  -103.,   -52.,
+           73.,   -54.,   -50.,     3.,   -14.,    27.,   -14.,   -35.,
+            5.,   -14.,    29.,    19.,   -17.,     6.,   -21.,    11.,
+            7.,     8.,    -3.,   -15.,    -9.,     6.,     2.,   -14.,
+            4.,     5.,    -7.,    17.,     7.,    -5.,     8.,   -19.,
+            8.,    10.,   -20.,     1.,    14.,   -11.,     5.,    12.,
+           -3.,     1.,    -2.,    -2.,     9.,     2.,    10.,     0.,
+           -2.,    -1.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     6.,    -4.,     4.,     0.,
+            0.,    -2.,     1.,     4.,     3.,     0.,     0.,    -6.,
+       -30805., -2316.,  5808.,  -951.,  2980., -1424.,  1517.,   644., /* g6 (1930) */
+         1172., -1692.,  -480.,  1205.,   133.,   907.,   166.,   896.,
+          727.,   205.,   584.,  -195.,  -422.,  -109.,   234.,   -90.,
+         -237.,   327.,   -72.,   218.,    60.,   -32.,   -53.,  -131.,
+         -118.,   -74.,    58.,    60.,    53.,     4.,    -9.,   102.,
+         -242.,    19.,   -32.,   -16.,    32.,     8.,  -104.,   -46.,
+           74.,   -54.,   -51.,     4.,   -15.,    25.,   -14.,   -34.,
+            6.,   -12.,    29.,    18.,   -18.,     6.,   -20.,    11.,
+            7.,     8.,    -3.,   -15.,    -9.,     5.,     2.,   -14.,
+            5.,     5.,    -6.,    18.,     8.,    -5.,     8.,   -19.,
+            8.,    10.,   -20.,     1.,    14.,   -12.,     5.,    12.,
+           -3.,     1.,    -2.,    -2.,     9.,     3.,    10.,     0.,
+           -2.,    -2.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     6.,    -4.,     4.,     0.,
+            0.,    -2.,     1.,     4.,     3.,     0.,     0.,    -6.,
+       -30715., -2306.,  5812., -1018.,  2984., -1520.,  1550.,   586., /* g7 (1935) */
+         1206., -1740.,  -494.,  1215.,   146.,   918.,   101.,   903.,
+          744.,   188.,   565.,  -226.,  -415.,   -90.,   249.,  -114.,
+         -241.,   329.,   -51.,   211.,    64.,   -33.,   -64.,  -136.,
+         -115.,   -76.,    64.,    59.,    53.,     4.,    -8.,   104.,
+         -246.,    25.,   -25.,   -15.,    25.,     4.,  -106.,   -40.,
+           74.,   -53.,   -52.,     4.,   -17.,    23.,   -14.,   -33.,
+            7.,   -11.,    29.,    18.,   -19.,     6.,   -19.,    11.,
+            7.,     8.,    -3.,   -15.,    -9.,     5.,     1.,   -15.,
+            6.,     5.,    -6.,    18.,     8.,    -5.,     7.,   -19.,
+            8.,    10.,   -20.,     1.,    15.,   -12.,     5.,    11.,
+           -3.,     1.,    -3.,    -2.,     9.,     3.,    11.,     0.,
+           -2.,    -2.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     6.,    -4.,     4.,     0.,
+            0.,    -1.,     2.,     4.,     3.,     0.,     0.,    -6.,
+       -30654., -2292.,  5821., -1106.,  2981., -1614.,  1566.,   528., /* g8 (1940) */
+         1240., -1790.,  -499.,  1232.,   163.,   916.,    43.,   914.,
+          762.,   169.,   550.,  -252.,  -405.,   -72.,   265.,  -141.,
+         -241.,   334.,   -33.,   208.,    71.,   -33.,   -75.,  -141.,
+         -113.,   -76.,    69.,    57.,    54.,     4.,    -7.,   105.,
+         -249.,    33.,   -18.,   -15.,    18.,     0.,  -107.,   -33.,
+           74.,   -53.,   -52.,     4.,   -18.,    20.,   -14.,   -31.,
+            7.,    -9.,    29.,    17.,   -20.,     5.,   -19.,    11.,
+            7.,     8.,    -3.,   -14.,   -10.,     5.,     1.,   -15.,
+            6.,     5.,    -5.,    19.,     9.,    -5.,     7.,   -19.,
+            8.,    10.,   -21.,     1.,    15.,   -12.,     5.,    11.,
+           -3.,     1.,    -3.,    -2.,     9.,     3.,    11.,     1.,
+           -2.,    -2.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     6.,    -4.,     4.,     0.,
+            0.,    -1.,     2.,     4.,     3.,     0.,     0.,    -6.,
+       -30594., -2285.,  5810., -1244.,  2990., -1702.,  1578.,   477., /* g9 (1945) */
+         1282., -1834.,  -499.,  1255.,   186.,   913.,   -11.,   944.,
+          776.,   144.,   544.,  -276.,  -421.,   -55.,   304.,  -178.,
+         -253.,   346.,   -12.,   194.,    95.,   -20.,   -67.,  -142.,
+         -119.,   -82.,    82.,    59.,    57.,     6.,     6.,   100.,
+         -246.,    16.,   -25.,    -9.,    21.,   -16.,  -104.,   -39.,
+           70.,   -40.,   -45.,     0.,   -18.,     0.,     2.,   -29.,
+            6.,   -10.,    28.,    15.,   -17.,    29.,   -22.,    13.,
+            7.,    12.,    -8.,   -21.,    -5.,   -12.,     9.,    -7.,
+            7.,     2.,   -10.,    18.,     7.,     3.,     2.,   -11.,
+            5.,   -21.,   -27.,     1.,    17.,   -11.,    29.,     3.,
+           -9.,    16.,     4.,    -3.,     9.,    -4.,     6.,    -3.,
+            1.,    -4.,     8.,    -3.,    11.,     5.,     1.,     1.,
+            2.,   -20.,    -5.,    -1.,    -1.,    -6.,     8.,     6.,
+           -1.,    -4.,    -3.,    -2.,     5.,     0.,    -2.,    -2.,
+       -30554., -2250.,  5815., -1341.,  2998., -1810.,  1576.,   381., /* ga (1950) */
+         1297., -1889.,  -476.,  1274.,   206.,   896.,   -46.,   954.,
+          792.,   136.,   528.,  -278.,  -408.,   -37.,   303.,  -210.,
+         -240.,   349.,     3.,   211.,   103.,   -20.,   -87.,  -147.,
+         -122.,   -76.,    80.,    54.,    57.,    -1.,     4.,    99.,
+         -247.,    33.,   -16.,   -12.,    12.,   -12.,  -105.,   -30.,
+           65.,   -55.,   -35.,     2.,   -17.,     1.,     0.,   -40.,
+           10.,    -7.,    36.,     5.,   -18.,    19.,   -16.,    22.,
+           15.,     5.,    -4.,   -22.,    -1.,     0.,    11.,   -21.,
+           15.,    -8.,   -13.,    17.,     5.,    -4.,    -1.,   -17.,
+            3.,    -7.,   -24.,    -1.,    19.,   -25.,    12.,    10.,
+            2.,     5.,     2.,    -5.,     8.,    -2.,     8.,     3.,
+          -11.,     8.,    -7.,    -8.,     4.,    13.,    -1.,    -2.,
+           13.,   -10.,    -4.,     2.,     4.,    -3.,    12.,     6.,
+            3.,    -3.,     2.,     6.,    10.,    11.,     3.,     8.,
+       -30500., -2215.,  5820., -1440.,  3003., -1898.,  1581.,   291., /* gb (1955) */
+         1302., -1944.,  -462.,  1288.,   216.,   882.,   -83.,   958.,
+          796.,   133.,   510.,  -274.,  -397.,   -23.,   290.,  -230.,
+         -229.,   360.,    15.,   230.,   110.,   -23.,   -98.,  -152.,
+         -121.,   -69.,    78.,    47.,    57.,    -9.,     3.,    96.,
+         -247.,    48.,    -8.,   -16.,     7.,   -12.,  -107.,   -24.,
+           65.,   -56.,   -50.,     2.,   -24.,    10.,    -4.,   -32.,
+            8.,   -11.,    28.,     9.,   -20.,    18.,   -18.,    11.,
+            9.,    10.,    -6.,   -15.,   -14.,     5.,     6.,   -23.,
+           10.,     3.,    -7.,    23.,     6.,    -4.,     9.,   -13.,
+            4.,     9.,   -11.,    -4.,    12.,    -5.,     7.,     2.,
+            6.,     4.,    -2.,     1.,    10.,     2.,     7.,     2.,
+           -6.,     5.,     5.,    -3.,    -5.,    -4.,    -1.,     0.,
+            2.,    -8.,    -3.,    -2.,     7.,    -4.,     4.,     1.,
+           -2.,    -3.,     6.,     7.,    -2.,    -1.,     0.,    -3.,
+       -30421., -2169.,  5791., -1555.,  3002., -1967.,  1590.,   206., /* gc (1960) */
+         1302., -1992.,  -414.,  1289.,   224.,   878.,  -130.,   957.,
+          800.,   135.,   504.,  -278.,  -394.,     3.,   269.,  -255.,
+         -222.,   362.,    16.,   242.,   125.,   -26.,  -117.,  -156.,
+         -114.,   -63.,    81.,    46.,    58.,   -10.,     1.,    99.,
+         -237.,    60.,    -1.,   -20.,    -2.,   -11.,  -113.,   -17.,
+           67.,   -56.,   -55.,     5.,   -28.,    15.,    -6.,   -32.,
+            7.,    -7.,    23.,    17.,   -18.,     8.,   -17.,    15.,
+            6.,    11.,    -4.,   -14.,   -11.,     7.,     2.,   -18.,
+           10.,     4.,    -5.,    23.,    10.,     1.,     8.,   -20.,
+            4.,     6.,   -18.,     0.,    12.,    -9.,     2.,     1.,
+            0.,     4.,    -3.,    -1.,     9.,    -2.,     8.,     3.,
+            0.,    -1.,     5.,     1.,    -3.,     4.,     4.,     1.,
+            0.,     0.,    -1.,     2.,     4.,    -5.,     6.,     1.,
+            1.,    -1.,    -1.,     6.,     2.,     0.,     0.,    -7.,
+       -30334., -2119.,  5776., -1662.,  2997., -2016.,  1594.,   114., /* gd (1965) */
+         1297., -2038.,  -404.,  1292.,   240.,   856.,  -165.,   957.,
+          804.,   148.,   479.,  -269.,  -390.,    13.,   252.,  -269.,
+         -219.,   358.,    19.,   254.,   128.,   -31.,  -126.,  -157.,
+          -97.,   -62.,    81.,    45.,    61.,   -11.,     8.,   100.,
+         -228.,    68.,     4.,   -32.,     1.,    -8.,  -111.,    -7.,
+           75.,   -57.,   -61.,     4.,   -27.,    13.,    -2.,   -26.,
+            6.,    -6.,    26.,    13.,   -23.,     1.,   -12.,    13.,
+            5.,     7.,    -4.,   -12.,   -14.,     9.,     0.,   -16.,
+            8.,     4.,    -1.,    24.,    11.,    -3.,     4.,   -17.,
+            8.,    10.,   -22.,     2.,    15.,   -13.,     7.,    10.,
+           -4.,    -1.,    -5.,    -1.,    10.,     5.,    10.,     1.,
+           -4.,    -2.,     1.,    -2.,    -3.,     2.,     2.,     1.,
+           -5.,     2.,    -2.,     6.,     4.,    -4.,     4.,     0.,
+            0.,    -2.,     2.,     3.,     2.,     0.,     0.,    -6.,
+       -30220., -2068.,  5737., -1781.,  3000., -2047.,  1611.,    25., /* ge (1970) */
+         1287., -2091.,  -366.,  1278.,   251.,   838.,  -196.,   952.,
+          800.,   167.,   461.,  -266.,  -395.,    26.,   234.,  -279.,
+         -216.,   359.,    26.,   262.,   139.,   -42.,  -139.,  -160.,
+          -91.,   -56.,    83.,    43.,    64.,   -12.,    15.,   100.,
+         -212.,    72.,     2.,   -37.,     3.,    -6.,  -112.,     1.,
+           72.,   -57.,   -70.,     1.,   -27.,    14.,    -4.,   -22.,
+            8.,    -2.,    23.,    13.,   -23.,    -2.,   -11.,    14.,
+            6.,     7.,    -2.,   -15.,   -13.,     6.,    -3.,   -17.,
+            5.,     6.,     0.,    21.,    11.,    -6.,     3.,   -16.,
+            8.,    10.,   -21.,     2.,    16.,   -12.,     6.,    10.,
+           -4.,    -1.,    -5.,     0.,    10.,     3.,    11.,     1.,
+           -2.,    -1.,     1.,    -3.,    -3.,     1.,     2.,     1.,
+           -5.,     3.,    -1.,     4.,     6.,    -4.,     4.,     0.,
+            1.,    -1.,     0.,     3.,     3.,     1.,    -1.,    -4.,
+       -30100., -2013.,  5675., -1902.,  3010., -2067.,  1632.,   -68., /* gf (1975) */
+         1276., -2144.,  -333.,  1260.,   262.,   830.,  -223.,   946.,
+          791.,   191.,   438.,  -265.,  -405.,    39.,   216.,  -288.,
+         -218.,   356.,    31.,   264.,   148.,   -59.,  -152.,  -159.,
+          -83.,   -49.,    88.,    45.,    66.,   -13.,    28.,    99.,
+         -198.,    75.,     1.,   -41.,     6.,    -4.,  -111.,    11.,
+           71.,   -56.,   -77.,     1.,   -26.,    16.,    -5.,   -14.,
+           10.,     0.,    22.,    12.,   -23.,    -5.,   -12.,    14.,
+            6.,     6.,    -1.,   -16.,   -12.,     4.,    -8.,   -19.,
+            4.,     6.,     0.,    18.,    10.,   -10.,     1.,   -17.,
+            7.,    10.,   -21.,     2.,    16.,   -12.,     7.,    10.,
+           -4.,    -1.,    -5.,    -1.,    10.,     4.,    11.,     1.,
+           -3.,    -2.,     1.,    -3.,    -3.,     1.,     2.,     1.,
+           -5.,     3.,    -2.,     4.,     5.,    -4.,     4.,    -1.,
+            1.,    -1.,     0.,     3.,     3.,     1.,    -1.,    -5.,
+       -29992., -1956.,  5604., -1997.,  3027., -2129.,  1663.,  -200., /* gg (1980) */
+         1281., -2180.,  -336.,  1251.,   271.,   833.,  -252.,   938.,
+          782.,   212.,   398.,  -257.,  -419.,    53.,   199.,  -297.,
+         -218.,   357.,    46.,   261.,   150.,   -74.,  -151.,  -162.,
+          -78.,   -48.,    92.,    48.,    66.,   -15.,    42.,    93.,
+         -192.,    71.,     4.,   -43.,    14.,    -2.,  -108.,    17.,
+           72.,   -59.,   -82.,     2.,   -27.,    21.,    -5.,   -12.,
+           16.,     1.,    18.,    11.,   -23.,    -2.,   -10.,    18.,
+            6.,     7.,     0.,   -18.,   -11.,     4.,    -7.,   -22.,
+            4.,     9.,     3.,    16.,     6.,   -13.,    -1.,   -15.,
+            5.,    10.,   -21.,     1.,    16.,   -12.,     9.,     9.,
+           -5.,    -3.,    -6.,    -1.,     9.,     7.,    10.,     2.,
+           -6.,    -5.,     2.,    -4.,    -4.,     1.,     2.,     0.,
+           -5.,     3.,    -2.,     6.,     5.,    -4.,     3.,     0.,
+            1.,    -1.,     2.,     4.,     3.,     0.,     0.,    -6.,
+       -29873., -1905.,  5500., -2072.,  3044., -2197.,  1687.,  -306., /* gi (1985) */
+         1296., -2208.,  -310.,  1247.,   284.,   829.,  -297.,   936.,
+          780.,   232.,   361.,  -249.,  -424.,    69.,   170.,  -297.,
+         -214.,   355.,    47.,   253.,   150.,   -93.,  -154.,  -164.,
+          -75.,   -46.,    95.,    53.,    65.,   -16.,    51.,    88.,
+         -185.,    69.,     4.,   -48.,    16.,    -1.,  -102.,    21.,
+           74.,   -62.,   -83.,     3.,   -27.,    24.,    -2.,    -6.,
+           20.,     4.,    17.,    10.,   -23.,     0.,    -7.,    21.,
+            6.,     8.,     0.,   -19.,   -11.,     5.,    -9.,   -23.,
+            4.,    11.,     4.,    14.,     4.,   -15.,    -4.,   -11.,
+            5.,    10.,   -21.,     1.,    15.,   -12.,     9.,     9.,
+           -6.,    -3.,    -6.,    -1.,     9.,     7.,     9.,     1.,
+           -7.,    -5.,     2.,    -4.,    -4.,     1.,     3.,     0.,
+           -5.,     3.,    -2.,     6.,     5.,    -4.,     3.,     0.,
+            1.,    -1.,     2.,     4.,     3.,     0.,     0.,    -6.,
+       -29775., -1848.,  5406., -2131.,  3059., -2279.,  1686.,  -373., /* gj (1990) */
+         1314., -2239.,  -284.,  1248.,   293.,   802.,  -352.,   939.,
+          780.,   247.,   325.,  -240.,  -423.,    84.,   141.,  -299.,
+         -214.,   353.,    46.,   245.,   154.,  -109.,  -153.,  -165.,
+          -69.,   -36.,    97.,    61.,    65.,   -16.,    59.,    82.,
+         -178.,    69.,     3.,   -52.,    18.,     1.,   -96.,    24.,
+           77.,   -64.,   -80.,     2.,   -26.,    26.,     0.,    -1.,
+           21.,     5.,    17.,     9.,   -23.,     0.,    -4.,    23.,
+            5.,    10.,    -1.,   -19.,   -10.,     6.,   -12.,   -22.,
+            3.,    12.,     4.,    12.,     2.,   -16.,    -6.,   -10.,
+            4.,     9.,   -20.,     1.,    15.,   -12.,    11.,     9.,
+           -7.,    -4.,    -7.,    -2.,     9.,     7.,     8.,     1.,
+           -7.,    -6.,     2.,    -3.,    -4.,     2.,     2.,     1.,
+           -5.,     3.,    -2.,     6.,     4.,    -4.,     3.,     0.,
+            1.,    -2.,     3.,     3.,     3.,    -1.,     0.,    -6.,
+       -29692., -1784.,  5306., -2200.,  3070., -2366.,  1681.,  -413., /* gk (1995) */
+         1335., -2267.,  -262.,  1249.,   302.,   759.,  -427.,   940.,
+          780.,   262.,   290.,  -236.,  -418.,    97.,   122.,  -306.,
+         -214.,   352.,    46.,   235.,   165.,  -118.,  -143.,  -166.,
+          -55.,   -17.,   107.,    68.,    67.,   -17.,    68.,    72.,
+         -170.,    67.,    -1.,   -58.,    19.,     1.,   -93.,    36.,
+           77.,   -72.,   -69.,     1.,   -25.,    28.,     4.,     5.,
+           24.,     4.,    17.,     8.,   -24.,    -2.,    -6.,    25.,
+            6.,    11.,    -6.,   -21.,    -9.,     8.,   -14.,   -23.,
+            9.,    15.,     6.,    11.,    -5.,   -16.,    -7.,    -4.,
+            4.,     9.,   -20.,     3.,    15.,   -10.,    12.,     8.,
+           -6.,    -8.,    -8.,    -1.,     8.,    10.,     5.,    -2.,
+           -8.,    -8.,     3.,    -3.,    -6.,     1.,     2.,     0.,
+           -4.,     4.,    -1.,     5.,     4.,    -5.,     2.,    -1.,
+            2.,    -2.,     5.,     1.,     1.,    -2.,     0.,    -7.,
+            0.,     0.,     0.,     0.,     0.,     0.,     0.,     0.,
+            0.,     0.,     0.,     0.,     0.,     0.,     0.,     0.,
+            0.,     0.,     0.,     0.,     0.,     0.,     0.,     0.,
+            0.,     0.,     0.,     0.,     0.,     0.,     0.,     0.,
+            0.,     0.,     0.,     0.,     0.,     0.,     0.,     0.,
+            0.,     0.,     0.,     0.,     0.,     0.,     0.,     0.,
+            0.,     0.,     0.,     0.,     0.,     0.,     0.,     0.,
+            0.,     0.,     0.,     0.,     0.,     0.,     0.,     0.,
+            0.,     0.,     0.,     0.,     0.,     0.,     0.,     0.,
+            0.,     0.,     0.,
+        -29619.4,  -1728.2,   5186.1,  -2267.7,   3068.4,  -2481.6,   1670.9, /* gl (2000) */
+          -458.0,   1339.6,  -2288.0,   -227.6,   1252.1,    293.4,    714.5,
+          -491.1,    932.3,    786.8,    272.6,    250.0,   -231.9,   -403.0,
+           119.8,    111.3,   -303.8,   -218.8,    351.4,     43.8,    222.3,
+           171.9,   -130.4,   -133.1,   -168.6,    -39.3,    -12.9,    106.3,
+            72.3,     68.2,    -17.4,     74.2,     63.7,   -160.9,     65.1,
+            -5.9,    -61.2,     16.9,      0.7,    -90.4,     43.8,     79.0,
+           -74.0,    -64.6,      0.0,    -24.2,     33.3,      6.2,      9.1,
+            24.0,      6.9,     14.8,      7.3,    -25.4,     -1.2,     -5.8,
+            24.4,      6.6,     11.9,     -9.2,    -21.5,     -7.9,      8.5,
+           -16.6,    -21.5,      9.1,     15.5,      7.0,      8.9,     -7.9,
+           -14.9,     -7.0,     -2.1,      5.0,      9.4,    -19.7,      3.0,
+            13.4,     -8.4,     12.5,      6.3,     -6.2,     -8.9,     -8.4,
+            -1.5,      8.4,      9.3,      3.8,     -4.3,     -8.2,     -8.2,
+             4.8,     -2.6,     -6.0,      1.7,      1.7,      0.0,     -3.1,
+             4.0,     -0.5,      4.9,      3.7,     -5.9,      1.0,     -1.2,
+             2.0,     -2.9,      4.2,      0.2,      0.3,     -2.2,     -1.1,
+            -7.4,      2.7,     -1.7,      0.1,     -1.9,      1.3,      1.5,
+            -0.9,     -0.1,     -2.6,      0.1,      0.9,     -0.7,     -0.7,
+             0.7,     -2.8,      1.7,     -0.9,      0.1,     -1.2,      1.2,
+            -1.9,      4.0,     -0.9,     -2.2,     -0.3,     -0.4,      0.2,
+             0.3,      0.9,      2.5,     -0.2,     -2.6,      0.9,      0.7,
+            -0.5,      0.3,      0.3,      0.0,     -0.3,      0.0,     -0.4,
+             0.3,     -0.1,     -0.9,     -0.2,     -0.4,     -0.4,      0.8,
+            -0.2,     -0.9,     -0.9,      0.3,      0.2,      0.1,      1.8,
+            -0.4,     -0.4,      1.3,     -1.0,     -0.4,     -0.1,      0.7,
+             0.7,     -0.4,      0.3,      0.3,      0.6,     -0.1,      0.3,
+             0.4,     -0.2,      0.0,     -0.5,      0.1,     -0.9,
+       -29554.63, -1669.05,  5077.99, -2337.24,  3047.69, -2594.50,  1657.76, /* gm (2005) */
+         -515.43,  1336.30, -2305.83,  -198.86,  1246.39,   269.72,   672.51,
+         -524.72,   920.55,   797.96,   282.07,   210.65,  -225.23,  -379.86,
+          145.15,   100.00,  -305.36,  -227.00,   354.41,    42.72,   208.95,
+          180.25,  -136.54,  -123.45,  -168.05,   -19.57,   -13.55,   103.85,
+           73.60,    69.56,   -20.33,    76.74,    54.75,  -151.34,    63.63,
+          -14.58,   -63.53,    14.58,     0.24,   -86.36,    50.94,    79.88,
+          -74.46,   -61.14,    -1.65,   -22.57,    38.73,     6.82,    12.30,
+           25.35,     9.37,    10.93,     5.42,   -26.32,     1.94,    -4.64,
+           24.80,     7.62,    11.20,   -11.73,   -20.88,    -6.88,     9.83,
+          -18.11,   -19.71,    10.17,    16.22,     9.36,     7.61,   -11.25,
+          -12.76,    -4.87,    -0.06,     5.58,     9.76,   -20.11,     3.58,
+           12.69,    -6.94,    12.67,     5.01,    -6.72,   -10.76,    -8.16,
+           -1.25,     8.10,     8.76,     2.92,    -6.66,    -7.73,    -9.22,
+            6.01,    -2.17,    -6.12,     2.19,     1.42,     0.10,    -2.35,
+            4.46,    -0.15,     4.76,     3.06,    -6.58,     0.29,    -1.01,
+            2.06,    -3.47,     3.77,    -0.86,    -0.21,    -2.31,    -2.09,
+           -7.93,     2.95,    -1.60,     0.26,    -1.88,     1.44,     1.44,
+           -0.77,    -0.31,    -2.27,     0.29,     0.90,    -0.79,    -0.58,
+            0.53,    -2.69,     1.80,    -1.08,     0.16,    -1.58,     0.96,
+           -1.90,     3.99,    -1.39,    -2.15,    -0.29,    -0.55,     0.21,
+            0.23,     0.89,     2.38,    -0.38,    -2.63,     0.96,     0.61,
+           -0.30,     0.40,     0.46,     0.01,    -0.35,     0.02,    -0.36,
+            0.28,     0.08,    -0.87,    -0.49,    -0.34,    -0.08,     0.88,
+           -0.16,    -0.88,    -0.76,     0.30,     0.33,     0.28,     1.72,
+           -0.43,    -0.54,     1.18,    -1.07,    -0.37,    -0.04,     0.75,
+            0.63,    -0.26,     0.21,     0.35,     0.53,    -0.05,     0.38,
+            0.41,    -0.22,    -0.10,    -0.57,    -0.18,    -0.82,
+       -29496.57, -1586.42,  4944.26, -2396.06,  3026.34, -2708.54, /* gp (2010) */
+         1668.17,  -575.73,  1339.85, -2326.54,  -160.40,  1232.10,
+          251.75,   633.73,  -537.03,   912.66,   808.97,   286.48,
+          166.58,  -211.03,  -356.83,   164.46,    89.40,  -309.72,
+         -230.87,   357.29,    44.58,   200.26,   189.01,  -141.05,
+         -118.06,  -163.17,    -0.01,    -8.03,   101.04,    72.78,
+           68.69,   -20.90,    75.92,    44.18,  -141.40,    61.54,
+          -22.83,   -66.26,    13.10,     3.02,   -78.09,    55.40,
+           80.44,   -75.00,   -57.80,    -4.55,   -21.20,    45.24,
+            6.54,    14.00,    24.96,    10.46,     7.03,     1.64,
+          -27.61,     4.92,    -3.28,    24.41,     8.21,    10.84,
+          -14.50,   -20.03,    -5.59,    11.83,   -19.34,   -17.41,
+           11.61,    16.71,    10.85,     6.96,   -14.05,   -10.74,
+           -3.54,     1.64,     5.50,     9.45,   -20.54,     3.45,
+           11.51,    -5.27,    12.75,     3.13,    -7.14,   -12.38,
+           -7.42,    -0.76,     7.97,     8.43,     2.14,    -8.42,
+           -6.08,   -10.08,     7.01,    -1.94,    -6.24,     2.73,
+            0.89,    -0.10,    -1.07,     4.71,    -0.16,     4.44,
+            2.45,    -7.22,    -0.33,    -0.96,     2.13,    -3.95,
+            3.09,    -1.99,    -1.03,    -1.97,    -2.80,    -8.31,
+            3.05,    -1.48,     0.13,    -2.03,     1.67,     1.65,
+           -0.66,    -0.51,    -1.76,     0.54,     0.85,    -0.79,
+           -0.39,     0.37,    -2.51,     1.79,    -1.27,     0.12,
+           -2.11,     0.75,    -1.94,     3.75,    -1.86,    -2.12,
+           -0.21,    -0.87,     0.30,     0.27,     1.04,     2.13,
+           -0.63,    -2.49,     0.95,     0.49,    -0.11,     0.59,
+            0.52,     0.00,    -0.39,     0.13,    -0.37,     0.27,
+            0.21,    -0.86,    -0.77,    -0.23,     0.04,     0.87,
+           -0.09,    -0.89,    -0.87,     0.31,     0.30,     0.42,
+            1.66,    -0.45,    -0.59,     1.08,    -1.14,    -0.31,
+           -0.07,     0.78,     0.54,    -0.18,     0.10,     0.38,
+            0.49,     0.02,     0.44,     0.42,    -0.25,    -0.26,
+           -0.53,    -0.26,    -0.79,
+       -29441.46, -1501.77,  4795.99, -2445.88,  3012.20, -2845.41,  1676.35, /* gq (2015) */
+         -642.17,  1350.33, -2352.26,  -115.29,  1225.85,   245.04,   581.69,
+         -538.70,   907.42,   813.68,   283.54,   120.49,  -188.43,  -334.85,
+          180.95,    70.38,  -329.23,  -232.91,   360.14,    46.98,   192.35,
+          196.98,  -140.94,  -119.14,  -157.40,    15.98,     4.30,   100.12,
+           69.55,    67.57,   -20.61,    72.79,    33.30,  -129.85,    58.74,
+          -28.93,   -66.64,    13.14,     7.35,   -70.85,    62.41,    81.29,
+          -75.99,   -54.27,    -6.79,   -19.53,    51.82,     5.59,    15.07,
+           24.45,     9.32,     3.27,    -2.88,   -27.50,     6.61,    -2.32,
+           23.98,     8.89,    10.04,   -16.78,   -18.26,    -3.16,    13.18,
+          -20.56,   -14.60,    13.33,    16.16,    11.76,     5.69,   -15.98,
+           -9.10,    -2.02,     2.26,     5.33,     8.83,   -21.77,     3.02,
+           10.76,    -3.22,    11.74,     0.67,    -6.74,   -13.20,    -6.88,
+           -0.10,     7.79,     8.68,     1.04,    -9.06,    -3.89,   -10.54,
+            8.44,    -2.01,    -6.26,     3.28,     0.17,    -0.40,     0.55,
+            4.55,    -0.55,     4.40,     1.70,    -7.92,    -0.67,    -0.61,
+            2.13,    -4.16,     2.33,    -2.85,    -1.80,    -1.12,    -3.59,
+           -8.72,     3.00,    -1.40,     0.00,    -2.30,     2.11,     2.08,
+           -0.60,    -0.79,    -1.05,     0.58,     0.76,    -0.70,    -0.20,
+            0.14,    -2.12,     1.70,    -1.44,    -0.22,    -2.57,     0.44,
+           -2.01,     3.49,    -2.34,    -2.09,    -0.16,    -1.08,     0.46,
+            0.37,     1.23,     1.75,    -0.89,    -2.19,     0.85,     0.27,
+            0.10,     0.72,     0.54,    -0.09,    -0.37,     0.29,    -0.43,
+            0.23,     0.22,    -0.89,    -0.94,    -0.16,    -0.03,     0.72,
+           -0.02,    -0.92,    -0.88,     0.42,     0.49,     0.63,     1.56,
+           -0.42,    -0.50,     0.96,    -1.24,    -0.19,    -0.10,     0.81,
+            0.42,    -0.13,    -0.04,     0.38,     0.48,     0.08,     0.48,
+            0.46,    -0.30,    -0.35,    -0.43,    -0.36,    -0.71,
+        -29404.8,  -1450.9,   4652.5,  -2499.6,   2982.0,  -2991.6,   1677.0, /* gr (2020) */
+          -734.6,   1363.2,  -2381.2,    -82.1,   1236.2,    241.9,    525.7,
+          -543.4,    903.0,    809.5,    281.9,     86.3,   -158.4,   -309.4,
+           199.7,     48.0,   -349.7,   -234.3,    363.2,     47.7,    187.8,
+           208.3,   -140.7,   -121.2,   -151.2,     32.3,     13.5,     98.9,
+            66.0,     65.5,    -19.1,     72.9,     25.1,   -121.5,     52.8,
+           -36.2,    -64.5,     13.5,      8.9,    -64.7,     68.1,     80.6,
+           -76.7,    -51.5,     -8.2,    -16.9,     56.5,      2.2,     15.8,
+            23.5,      6.4,     -2.2,     -7.2,    -27.2,      9.8,     -1.8,
+            23.7,      9.7,      8.4,    -17.6,    -15.3,     -0.5,     12.8,
+           -21.1,    -11.7,     15.3,     14.9,     13.7,      3.6,    -16.5,
+            -6.9,     -0.3,      2.8,      5.0,      8.4,    -23.4,      2.9,
+            11.0,     -1.5,      9.8,     -1.1,     -5.1,    -13.2,     -6.3,
+             1.1,      7.8,      8.8,      0.4,     -9.3,     -1.4,    -11.9,
+             9.6,     -1.9,     -6.2,      3.4,     -0.1,     -0.2,      1.7,
+             3.6,     -0.9,      4.8,      0.7,     -8.6,     -0.9,     -0.1,
+             1.9,     -4.3,      1.4,     -3.4,     -2.4,     -0.1,     -3.8,
+            -8.8,      3.0,     -1.4,      0.0,     -2.5,      2.5,      2.3,
+            -0.6,     -0.9,     -0.4,      0.3,      0.6,     -0.7,     -0.2,
+            -0.1,     -1.7,      1.4,     -1.6,     -0.6,     -3.0,      0.2,
+            -2.0,      3.1,     -2.6,     -2.0,     -0.1,     -1.2,      0.5,
+             0.5,      1.3,      1.4,     -1.2,     -1.8,      0.7,      0.1,
+             0.3,      0.8,      0.5,     -0.2,     -0.3,      0.6,     -0.5,
+             0.2,      0.1,     -0.9,     -1.1,      0.0,     -0.3,      0.5,
+             0.1,     -0.9,     -0.9,      0.5,      0.6,      0.7,      1.4,
+            -0.3,     -0.4,      0.8,     -1.3,      0.0,     -0.1,      0.8,
+             0.3,      0.0,     -0.1,      0.4,      0.5,      0.1,      0.5,
+             0.5,     -0.4,     -0.5,     -0.4,     -0.4,     -0.6,
+             5.7,      7.4,    -25.9,    -11.0,     -7.0,    -30.2,     -2.1, /* sv (2020) */
+           -22.4,      2.2,     -5.9,      6.0,      3.1,     -1.1,    -12.0,
+             0.5,     -1.2,     -1.6,     -0.1,     -5.9,      6.5,      5.2,
+             3.6,     -5.1,     -5.0,     -0.3,      0.5,      0.0,     -0.6,
+             2.5,      0.2,     -0.6,      1.3,      3.0,      0.9,      0.3,
+            -0.5,     -0.3,      0.0,      0.4,     -1.6,      1.3,     -1.3,
+            -1.4,      0.8,      0.0,      0.0,      0.9,      1.0,     -0.1,
+            -0.2,      0.6,      0.0,      0.6,      0.7,     -0.8,      0.1,
+            -0.2,     -0.5,     -1.1,     -0.8,      0.1,      0.8,      0.3,
+             0.0,      0.1,     -0.2,     -0.1,      0.6,      0.4,     -0.2,
+            -0.1,      0.5,      0.4,     -0.3,      0.3,     -0.4,     -0.1,
+             0.5,      0.4,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0,      0.0,
+             0.0,      0.0,      0.0,      0.0,      0.0,      0.0
 	 };
 
 	int i, j, k, l, m, n, ll, lm, kmx, nmx, nc;
@@ -5419,12 +5451,12 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
 	double p[105], q[105], r, t, a2, b2;
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
 
-	if (date < 1900.0 || date > 2020.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your date (%g) is outside valid extrapolated range for IGRF (1900-2020)\n", date);
+	if (date < 1900.0 || date > 2025.0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your date (%g) is outside valid extrapolated range for IGRF (1900-2025)\n", date);
 		return (MGD77_BAD_IGRFDATE);
 	}
 
-	if (date < 2015.) {
+	if (date < 2020.) {
 		t = 0.2 * (date - 1900.);
 		ll = (int) t;
 		one = (double) ll;
@@ -5448,7 +5480,7 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
 		}
 	}
 	else {
-		t = date - 2015.;
+		t = date - 2020.;
 		tc = 1.;
 		if (isv == 1) {
 			t = 1.;
@@ -5622,7 +5654,7 @@ double MGD77_Theoretical_Gravity (struct GMT_CTRL *GMT, double lon, double lat, 
 			break;
 		default:	/* Unrecognized */
 			g = GMT->session.d_NaN;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized theoretical gravity formula code (%d)\n", version);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized theoretical gravity formula code (%d)\n", version);
 			break;
 	}
 
@@ -5690,7 +5722,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 	FILE *fp = NULL;
 
 	if ((fp = gmt_fopen (GMT, tablefile, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table %s not found!\n", tablefile);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Correction table %s not found!\n", tablefile);
 		GMT_exit (GMT, GMT_FILE_NOT_FOUND); return GMT_FILE_NOT_FOUND;
 	}
 
@@ -5713,7 +5745,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 				p = basis;
 				if (strchr ("CcSsEe", p[0])) p += 3;	/* Need cos, sin, or exp */
 				if (p[0] != '(') {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
 					gmt_fclose (GMT, fp);
 					gmt_M_free (GMT, list);
 					GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
@@ -5721,7 +5753,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 				p++;
 				while (p && *p != '(') p++;	/* Skip the opening parentheses */
 				if (p[0] != '(') {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table format error line %d, term = %s: Expected 2nd opening parenthesis!\n", rec, arguments);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Correction table format error line %d, term = %s: Expected 2nd opening parenthesis!\n", rec, arguments);
 					gmt_fclose (GMT, fp);
 					gmt_M_free (GMT, list);
 					GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
@@ -5816,7 +5848,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 	};
 
 	if ((fp = gmt_fopen (GMT, tablefile, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table %s not found!\n", tablefile);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Correction table %s not found!\n", tablefile);
 		GMT_exit (GMT, GMT_FILE_NOT_FOUND); return GMT_FILE_NOT_FOUND;
 	}
 
@@ -5846,7 +5878,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 				c->modifier = &MGD77_Copy;
 				c->origin = 0.0;
 				c->power = c->scale = 1.0;
-				c->id = -1;	/* Means it is jus a constant factor - no fancy calculations needed */
+				c->id = -1;	/* Means it is just a constant factor - no fancy calculations needed */
 			}
 			else {	/* factor*basis */
 				sscanf (word, "%[^*]*%s", factor, basis);
@@ -5867,7 +5899,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 				else					/* Nothing, just copy value */
 					c->modifier = &MGD77_Copy;
 				if (p[0] != '(') {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
 					for (pos = 0; pos < n_cruises; pos++) gmt_M_free (GMT, C_table[pos]);
 					gmt_M_free (GMT, C_table);
 					gmt_M_free (GMT, c);
@@ -5877,7 +5909,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 				c->scale = (p[0] == '(') ? 1.0 : atof (p);
 				while (p && *p != '(') p++;	/* Skip the opening parentheses */
 				if (p[0] != '(') {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table format error line %d, term = %s: Expected 2nd opening parenthesis!\n", rec, arguments);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Correction table format error line %d, term = %s: Expected 2nd opening parenthesis!\n", rec, arguments);
 					GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 				}
 				p++;
@@ -5892,7 +5924,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 				if ((c->id = MGD77_Match_List (GMT, name, n_fields, field_names)) == MGD77_NOT_SET) {;	/* Not a recognized column */
 					for (i = 0; i < n_aux; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check auxiliaries */
 					if (c->id == MGD77_NOT_SET) { /* Not an auxiliary column either */
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column %s not found - requested by the correction table %s!\n", name, tablefile);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Column %s not found - requested by the correction table %s!\n", name, tablefile);
 						GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 					}
 					c->id += MGD77_MAX_COLS;	/* To flag this is an aux column */
@@ -5919,7 +5951,7 @@ void MGD77_Init_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRTABLE *CORR, 
 		for (current = CORR[col].term; current; current = current->next) {
 			if (gmt_M_is_dnan (current->origin) && value) current->origin = value[current->id][0];
 			if (gmt_M_is_dnan (current->origin)) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Correction origin = T has NaN in 1st record, reset to 0!\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Correction origin = T has NaN in 1st record, reset to 0!\n");
 				current->origin = 0.0;
 			}
 		}

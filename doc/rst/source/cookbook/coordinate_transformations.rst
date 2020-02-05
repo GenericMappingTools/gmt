@@ -48,7 +48,7 @@ nature of *f* itself.
 
 Two subsets of linear will be discussed separately; these are a polar
 (cylindrical) projection and a linear projection applied to geographic
-coordinates (with a 360º periodicity in the *x*-coordinate). We
+coordinates (with a 360° periodicity in the *x*-coordinate). We
 will show examples of all of these projections using dummy data sets
 created with :doc:`/gmtmath`, a "Reverse
 Polish Notation" (RPN) calculator that operates on or creates table data:
@@ -127,13 +127,13 @@ Geographic coordinates
 While the Cartesian linear projection is primarily designed for regular
 floating point *x*,\ *y* data, it is sometimes necessary to plot
 geographical data in a linear projection. This poses a problem since
-longitudes have a 360º periodicity. GMT therefore needs to be informed
+longitudes have a 360° periodicity. GMT therefore needs to be informed
 that it has been given geographical coordinates even though a linear
 transformation has been chosen. We do so by adding a **g** (for
 geographical) or **d** (for degrees) directly after **-R** or by
 appending a **g** or **d** to the end of the **-Jx** (or **-JX**)
 option. As an example, we want to plot a crude world map centered on
-125ºE. Our command will be
+125°E. Our command will be
 
 .. literalinclude:: /_verbatim/GMT_linear_d.txt
 
@@ -160,12 +160,12 @@ we append **T** after the axis scale (or width), while for the latter we
 append **t** at the end of the **-Jx** (or **-JX**) option. However,
 other command line arguments (like the **-R** option) may already
 specify whether the time coordinate is absolute or relative. An absolute
-time entry must be given as [*date*\ ]\ **T**\ [*clock*\ ] (with *date*
+time entry must be given as [*date*]\ **T**\ [*clock*] (with *date*
 given as *yyyy*\ [-*mm*\ [-*dd*]], *yyyy*\ [-*jjj*], or
 *yyyy*\ [-**W**\ *ww*\ [-*d*]], and *clock* using the
 *hh*\ [:*mm*\ [:*ss*\ [*.xxx*]]] 24-hour clock format) whereas the
 relative time is simply given as the units of time since the epoch
-followed by **t** (see :ref:`TIME_UNIT <TIME_UNIT>` and :ref:`TIME_EPOCH <TIME_EPOCH>` for
+followed by **t** (see :term:`TIME_UNIT` and :term:`TIME_EPOCH` for
 information on specifying the time unit and the epoch). As a simple
 example, we will make a plot of a school week calendar
 (Figure :ref:`Linear transformation of calendar coordinates <GMT_linear_cal>`).
@@ -244,7 +244,7 @@ This transformation converts polar coordinates (angle :math:`\theta` and
 radius *r*) to positions on a plot. Now :math:`x' = f(\theta,r)`
 and :math:`y' = g(\theta,r)`, hence it is similar to a regular map
 projection because *x* and *y* are coupled and *x*
-(i.e., :math:`\theta`) has a 360º periodicity. With input and output
+(i.e., :math:`\theta`) has a 360° periodicity. With input and output
 points both in the plane it is a **two-dimensional** projection. The
 transformation comes in two flavors:
 
@@ -265,15 +265,15 @@ Consequently, the polar transformation is defined by providing
 
 -  scale in inches/unit (**-Jp**) or full width of plot in inches (**-JP**)
 
--  Optionally, insert **a** after **p\ \| \ P** to indicate CW
+-  Optionally, insert **a** after **p\| \ P** to indicate CW
    azimuths rather than CCW directions
 
 -  Optionally, append /\ *origin* in degrees to indicate an angular offset [0]
 
--  Optionally, append **r** to reverse the radial direction (here,
+-  Optionally, append **+r** to reverse the radial direction (here,
    *south* and *north* must be elevations in 0–90 range).
 
--  Optionally, append **z** to annotate depths rather than radius.
+-  Optionally, append **+z** to annotate depths rather than radius.
 
 As an example of this projection we will create a gridded data set in
 polar coordinates :math:`z(\theta, r) = r^2 \cdot \cos{4\theta}` using

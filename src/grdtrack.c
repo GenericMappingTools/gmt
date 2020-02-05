@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>RVabdefghijnos" GMT_OPT("HMmQ")
+#define THIS_MODULE_OPTIONS "-:>RVabdefghijnoqs" GMT_OPT("HMmQ")
 
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 
@@ -115,7 +115,7 @@ struct GRDTRACK_CTRL {
 		double factor;			/* Set via +c<factor> */
 		char *file;			/* Output file for stack */
 	} S;
-	struct GRDTRACK_T {	/* -T[<radius>[unit]][+p|e] */
+	struct GRDTRACK_T {	/* -T[<radius>][+p|e] */
 		bool active;
 		double radius;		/* Max radius to search */
 		int dmode;		/* Distance mode; could be negative */
@@ -158,9 +158,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a][+l|r][+v]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+i<step>[u]][+l<length>[u]][+n<np][+o<az>][+r<radius>[u]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[unit]>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a][+l|r][+v]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -179,7 +179,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Create equidistant cross-profiles from input line segments. Append 2-3 parameters:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1. <length>[u]: The full-length of each cross profile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1. <length>: The full-length of each cross profile.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append distance unit u (%s); it also applies to <ds>, <spacing>.\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default unit is meter (geographic grids) or user unit (Cartesian grids).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. <dz>: The sampling interval along the cross-profiles, in units of u.\n");
@@ -196,15 +196,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   are <lon/lat> or a 2-character XY key that uses the \"pstext\"-style justification format\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   format to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the global minimum and maximum locations in the grid.  Note: No track file is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i<inc>[u] to set the sampling increment [Default is 0.5 x min of (x_inc, y_inc)]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i<inc> to set the sampling increment [Default is 0.5 x min of (x_inc, y_inc)]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +d to insert an extra output column with distances following the coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>[u].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +c yields a continuous segment if two end points are identical [separate segments].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>[u].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius>[u] defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note: [u] is optional unit.  Only ONE unit type can be used throughout.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  is optional unit.  Only ONE unit type from %s can be used throughout.\n", GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Mixing of units is not allowed [Default unit is km if geographic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_Option (API, "R,V");
@@ -223,7 +223,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to instead replace input lon, lat with that of nearest node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Can only be used with a single non-IMG grid and incompatible with -A, -C, -D, -E, -S.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Only output z-values [Default gives all columns].\n");
-	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,j,n,o,s,:,.");
+	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,j,n,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -236,7 +236,7 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 	Ctrl->G.scale[ng] = 1.0;
 	if (strchr (record, ',') && !strchr (record, '?')) {	/* IMG grid file with required parameters */
 		if ((j = sscanf (record, "%[^,],%lf,%d,%lf", line, &Ctrl->G.scale[ng], &Ctrl->G.mode[ng], &Ctrl->G.lat[ng])) < 3) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -G: Give imgfile, scale, mode [and optionally max_lat]\n");
 			return (0);
 		}
 		else if (gmt_check_filearg (GMT, '<', line, GMT_IN, GMT_IS_GRID))
@@ -244,8 +244,8 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 		else
 			return (0);
 		Ctrl->G.type[ng] = 1;
-		n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Syntax error -G: mode must be in 0-3 range\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Syntax error -G: max latitude should be positive\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Option -G: mode must be in 0-3 range\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Option -G: max latitude should be positive\n");
 		if (n_errors) return (0);
 	}
 	else {	/* Regular grid file */
@@ -296,7 +296,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
 					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
 					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
-					default: GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+					default: GMT_Report (API, GMT_MSG_ERROR, "Option -G: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
 				}
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
@@ -329,11 +329,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				if (gmt_M_is_geographic (API->GMT, GMT_IN) && n_units && Ctrl->C.unit != 'e' && !strchr (opt->arg, 'e'))
 					n_units = 0;	/* Weird case where user did -fg but did not specify units on all three items and got default e unintentionally */
 				if (n_units) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Only <length> takes a unit which is shared with <ds> [and <spacing>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Only <length> takes a unit which is shared with <ds> [and <spacing>]\n");
 					n_errors++;
 				}
 				if (n_modes) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Cannot imply different distance modes for <length> and <ds> [and/or <spacing>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Cannot imply different distance modes for <length> and <ds> [and/or <spacing>]\n");
 					n_errors++;
 				}
 				break;
@@ -347,7 +347,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				break;
 			case 'G':	/* Input grid file */
 				if (ng == MAX_GRIDS) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids (max = %d)\n", MAX_GRIDS);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids (max = %d)\n", MAX_GRIDS);
 					n_errors++;
 					break;
 				}
@@ -355,7 +355,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					FILE *fp = NULL;
 					char file[PATH_MAX] = {""};
 					if ((fp = gmt_fopen (GMT, &c[2], "r")) == NULL) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Error opening list file %s\n", &c[2]);
+						GMT_Report (API, GMT_MSG_WARNING, "Error opening list file %s\n", &c[2]);
 						n_errors++;
 						break;
 					}
@@ -367,7 +367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 						else
 							ng++;
 						if (ng > MAX_GRIDS) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
 							n_errors++;
 						}
 					}
@@ -379,7 +379,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					else
 						ng++;
 					if (ng > MAX_GRIDS) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
 						n_errors++;
 					}
 				}
@@ -421,7 +421,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					case 'U': Ctrl->S.mode = STACK_UPPERN;  break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Bad mode (%c) given to -S.\n", (int)opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Bad mode (%c) given to -S.\n", (int)opt->arg[0]);
 						break;
 				}
 				pos = 0;
@@ -436,7 +436,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 							break;
 						default:
 							n_errors++;
-							GMT_Report (API, GMT_MSG_NORMAL, "Bad modifier (%s) given to -S.\n", p[0]);
+							GMT_Report (API, GMT_MSG_ERROR, "Bad modifier (%s) given to -S.\n", p[0]);
 							break;
 					}
 				}
@@ -464,19 +464,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 		}
 	}
 	Ctrl->G.n_grids = ng;
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode & GMT_LEFT_ONLY && Ctrl->C.mode & GMT_RIGHT_ONLY, "Syntax error -C: Cannot chose both +l and +r modifiers.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Syntax error -S: Requires -C.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode & GMT_LEFT_ONLY && Ctrl->C.mode & GMT_RIGHT_ONLY, "Option -C: Cannot chose both +l and +r modifiers.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Option -S: Requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] ||
 	                                   Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]),
-	                                   "Syntax error -S: Must specify at least one modifier.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Syntax error -S: +c<factor> must be positive.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
+	                                   "Option -S: Must specify at least one modifier.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Option -S: +c<factor> must be positive.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Option -D: Must specify file name.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.n_grids == 0, "Must specify -G at least once\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0),
-	                                   "Syntax error -C: Arguments must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	                                   "Option -C: Arguments must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.n_grids == 1 && Ctrl->G.type[0] == 0),
-	                                   "Syntax error -T: Only one non-img input grid can be specified\n");
+	                                   "Option -T: Only one non-img input grid can be specified\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -525,7 +525,7 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 					l_mode[id] = GMT_FLATEARTH;
 				}
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Negative increment is not allowed\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Negative increment is not allowed\n");
 					error++;
 				}
 			}
@@ -566,7 +566,7 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 		if (*mode == 0) *mode = GMT_GREATCIRCLE;	/* Default to great circle distances if no other mode was implied */
 	}
-	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E:  All lines must have the same distance units\n");
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E:  All lines must have the same distance units\n");
 	/* Process args so any i|l|r+<dist> becomes i|l|r <dist> as the + will cause trouble otherwise.  This + for geodesics have already been processed */
 	while ((c = strstr (args, "+i+"))) c[2] = ' ';
 	while ((c = strstr (args, "+l+"))) c[2] = ' ';
@@ -771,7 +771,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -782,7 +782,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	sprintf (run_cmd, "# %s %s", GMT->init.module_name, cmd);	/* Build command line argument string */
 	gmt_M_free (GMT, cmd);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid(s)\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid(s)\n");
 
 	gmt_M_memset (wesn, 4, double);
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
@@ -802,7 +802,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
 
 			if (!gmt_grd_setregion (GMT, GC[g].G->header, wesn, BCR_BILINEAR)) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "No data within specified region\n");
+				GMT_Report (API, GMT_MSG_WARNING, "No data within specified region\n");
 				gmt_M_free (GMT, GC);
 				Return (GMT_NOERROR);
 			}
@@ -844,7 +844,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
 			if (!GMT->current.map.dist[GMT_MAP_DIST].arc) Ctrl->E.step *= GMT->current.proj.DIST_M_PR_DEG;	/* Convert from degrees to meters or from min/secs to degrees */
 			Ctrl->E.step *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scale to chosen unit */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Default sampling interval in -E is %g %c (may be overridden by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Default sampling interval in -E is %g %c (may be overridden by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
 		}
 		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
 			gmt_grd_minmax (GMT, GC[0].G, xyz);
@@ -866,7 +866,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		struct GMT_DATASEGMENT *S = NULL;
 
 		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->A.loxo) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Loxodrome mode ignored for Cartesian data.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}
 		if (!Ctrl->E.active) {
@@ -877,11 +877,11 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (Din->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
+				GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			if (Ctrl->C.dist_mode == GMT_GEODESIC) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
 				Ctrl->C.dist_mode = GMT_GREATCIRCLE;
 			}
 			if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.dist_mode = 1 + GMT_LOXODROME;
@@ -905,7 +905,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			if (some_outside) GMT_Report (API, GMT_MSG_VERBOSE, "Some points along your lines were outside the grid domain(s).\n");
+			if (some_outside) GMT_Report (API, GMT_MSG_WARNING, "Some points along your lines were outside the grid domain(s).\n");
 
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->D.file, Dtmp) != GMT_NOERROR) {
 				Return (API->error);
@@ -945,7 +945,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		if (some_outside) GMT_Report (API, GMT_MSG_VERBOSE, "Some points along your profiles were outside the grid domain(s).\n");
+		if (some_outside) GMT_Report (API, GMT_MSG_WARNING, "Some points along your profiles were outside the grid domain(s).\n");
 		if (Dout->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
 		if (Ctrl->S.active) {	/* Compute the stacked profiles */
@@ -1081,7 +1081,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				n_points++;
 			}
 		}
-		if (some_outside) GMT_Report (API, GMT_MSG_VERBOSE, "Some points along your profiles were outside the grid domain(s).\n");
+		if (some_outside) GMT_Report (API, GMT_MSG_WARNING, "Some points along your profiles were outside the grid domain(s).\n");
 		T = Dout->table[0];
 		T->n_headers = 2;
 		T->header = gmt_M_memory (GMT, NULL, T->n_headers, char *);
@@ -1125,7 +1125,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			out = gmt_M_memory (GMT, NULL, n_out, double);
 			Out = gmt_new_record (GMT, out, NULL);
 		}
-	
+
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 
 		if (Ctrl->T.active) {	/* Want to find nearest non-NaN if the node we find is NaN */
@@ -1154,7 +1154,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			}
 
 			/* Data record to process */
-			in = In->data;	/* Only need to process numerical part here */
+			if ((in = In->data) == NULL) {	/* Only need to process numerical part here */
+				GMT_Report (API, GMT_MSG_ERROR, "Record %" PRIu64 " did not have two coordinates - skipped.\n", n_read);
+				continue;
+			}
 			if (n_out == 0) {	/* First time we need to determine # of columns and allocate output vector */
 				n_lead = (unsigned int)gmt_get_cols (GMT, GMT_IN);	/* Get total # of input cols */
 				n_out = n_lead + Ctrl->G.n_grids;	/* Get total # of output cols */
@@ -1166,7 +1169,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Out = gmt_new_record (GMT, out, NULL);
 				Out->text = (GMT->current.io.trailing_text[GMT_OUT]) ? In->text : NULL;
 			}
-			
+
 			n_read++;
 
 			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);
@@ -1220,10 +1223,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, out);
 		gmt_M_free (GMT, Out);
 	}
-	if (some_outside) GMT_Report (API, GMT_MSG_VERBOSE, "Some input points were outside the grid domain(s).\n");
+	if (some_outside) GMT_Report (API, GMT_MSG_WARNING, "Some input points were outside the grid domain(s).\n");
 	/* Clean up */
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Sampled %" PRIu64 " points from grid %s (%d x %d)\n",
+		GMT_Report (API, GMT_MSG_INFORMATION, "Sampled %" PRIu64 " points from grid %s (%d x %d)\n",
 			n_points, Ctrl->G.file[g], GC[g].G->header->n_columns, GC[g].G->header->n_rows);
 		if (Ctrl->G.type[g] == 0) {	/* Regular GMT grid */
 			if (GMT_Destroy_Data (API, &GC[g].G) != GMT_NOERROR)

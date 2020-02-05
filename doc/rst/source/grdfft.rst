@@ -13,13 +13,13 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfft** *ingrid* [ *ingrid2* ]
-[ |-G|\ *outfile*\ \|\ *table* ]
+[ |-G|\ *outfile*\|\ *table* ]
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
-[ |-D|\ [*scale*\ \|\ **g**] ]
-[ |-E|\ [**r**\ \|\ **x**\ \|\ **y**][\ **+w**\ [**k**]][**+n**] ]
-[ |-F|\ [**r**\ \|\ **x**\ \|\ **y**]\ *params* ]
-[ |-I|\ [*scale*\ \|\ **g**] ]
+[ |-D|\ [*scale*\|\ **g**] ]
+[ |-E|\ [**r**\|\ **x**\|\ **y**][**+w**\ [**k**]][**+n**] ]
+[ |-F|\ [**r**\|\ **x**\|\ **y**]\ *params* ]
+[ |-I|\ [*scale*\|\ **g**] ]
 [ |-N|\ *params* ]
 [ |-S|\ *scale* ]
 [ |SYN_OPT-V| ]
@@ -38,7 +38,7 @@ the data before writing the new values to an output file. The horizontal
 dimensions of the grid are assumed to be in meters. Geographical grids
 may be used by specifying the |SYN_OPT-f| option that scales degrees to
 meters. If you have grids with dimensions in km, you could change this
-to meters using :doc:`grdedit` or scale the output with :doc:`grdmath`. 
+to meters using :doc:`grdedit` or scale the output with :doc:`grdmath`.
 
 Required Arguments
 ------------------
@@ -68,7 +68,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*scale*\ \|\ **g**]
+**-D**\ [*scale*\|\ **g**]
     Differentiate the field, i.e., take d(field)/dz. This is equivalent
     to multiplying by kr in the frequency domain (kr is radial wave
     number). Append a scale to multiply by (kr \* *scale*) instead.
@@ -78,8 +78,8 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **+w**\ [**k**]][**+n**]
-    Estimate power spectrum in the radial direction [**r**\ ]. Place
+**-E**\ [**r**\|\ **x**\|\ **y**][**+w**\ [**k**]][**+n**]
+    Estimate power spectrum in the radial direction [**r**]. Place
     **x** or **y** immediately after **-E** to compute the spectrum in
     the x or y direction instead. No grid file is created. If one grid
     is given then f (i.e., frequency or wave number), power[f],
@@ -96,11 +96,11 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**r**\ \|\ **x**\ \|\ **y**]\ *params*
+**-F**\ [**r**\|\ **x**\|\ **y**]\ *params*
     Filter the data. Place **x** or **y** immediately after **-F** to
-    filter *x* or *y* direction only; default is isotropic [**r**\ ].
+    filter *x* or *y* direction only; default is isotropic [**r**].
     Choose between a cosine-tapered band-pass, a Gaussian band-pass
-    filter, or a Butterworth band-pass filter. 
+    filter, or a Butterworth band-pass filter.
 
     Cosine-taper:
         Specify four wavelengths *lc*/*lp*/*hp*/*hc* in correct units (see |SYN_OPT-f|)
@@ -121,7 +121,7 @@ Optional Arguments
         lowpass filter, give a hyphen (-) for the *hi* or *lo* wavelength,
         respectively. E.g., **-F**-/30 will lowpass the data using a
         Gaussian filter with half-weight at 30, while **-F**\ 400/- will
-        highpass the data. 
+        highpass the data.
     Butterworth band-pass:
         Append *lo*/*hi*/*order*,
         the two wavelengths in correct units (see |SYN_OPT-f|) and the filter
@@ -135,14 +135,14 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outfile*\ \|\ *table*
+**-G**\ *outfile*\|\ *table*
     Filename for output netCDF grid file OR 1-D data table (see **-E**).
     This is optional for -E (spectrum written to stdout) but mandatory for
     all other options that require a grid output.
 
 .. _-I:
 
-**-I**\ [*scale*\ \|\ **g**]
+**-I**\ [*scale*\|\ **g**]
     Integrate the field, i.e., compute integral\_over\_z (field \* dz).
     This is equivalent to divide by kr in the frequency domain (kr is
     radial wave number). Append a scale to divide by (kr \* *scale*)
@@ -156,7 +156,7 @@ Optional Arguments
 
 **-S**\ *scale*
     Multiply each element by *scale* in the space domain (after the
-    frequency domain operations). [Default is 1.0]. 
+    frequency domain operations). [Default is 1.0].
 
 .. _-V:
 

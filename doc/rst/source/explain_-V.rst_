@@ -1,2 +1,2 @@
-**-V**\ [*level*\ ] :ref:`(more ...) <-V_full>`
-    Select verbosity level [c]. |Add_-V|
+**-V**\ [*level*] :ref:`(more ...) <-V_full>`
+    Select verbosity level [**w**]. |Add_-V|

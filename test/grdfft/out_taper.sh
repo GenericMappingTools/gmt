@@ -16,14 +16,14 @@ cat << EOF > box
 EOF
 
 scl=0.008
-x=`gmt math -Q 512 2 DIV $scl MUL =`
-xoff=`gmt math -Q 512 300 SUB 2 DIV $scl MUL NEG =`
-yoff=`gmt math -Q 200 $scl MUL 0.5 ADD =`
-yoffe=`gmt math -Q 384 $scl MUL 0.5 ADD =`
+x=$(gmt math -Q 512 2 DIV $scl MUL =)
+xoff=$(gmt math -Q 512 300 SUB 2 DIV $scl MUL NEG =)
+yoff=$(gmt math -Q 200 $scl MUL 0.5 ADD =)
+yoffe=$(gmt math -Q 384 $scl MUL 0.5 ADD =)
 gmt makecpt -Cpolar -T-1/1 > t.cpt
 gmt grdimage t.nc -Jx${scl}i -Ct.cpt -P -Ba -BWSne -K > $ps
 gmt grd2xyz t_tmp2.nc | awk '{if ($2 == 100) print $1, $3}' > tmp
-R=`gmt info tmp -I10/3`
+R=$(gmt info tmp -I10/3)
 gmt psxy $R -JX3.5i/1.6i -O -K -W1p,green -Bxaf -Byafg10 -BWSne -X3i tmp >> $ps
 gmt psxy -R -J -O -K -W0.5p,- << EOF >> $ps
 >
@@ -47,5 +47,5 @@ gmt psxy -R -J -O -K -W2p,green << EOF >> $ps
 EOF
 echo "400 192 Point symmetry" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 100% outwardtaper" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
-gmt psscale -Ct.cpt -D${x}i/${yoffe}i+w4i/0.1i+h+jTC -O -K -B0.5 >> $ps
+gmt psscale -Ct.cpt -Dx${x}i/${yoffe}i+w4i/0.1i+h+jTC -O -K -B0.5 >> $ps
 gmt psxy -R -J -O -T >> $ps

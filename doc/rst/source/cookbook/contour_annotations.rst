@@ -34,10 +34,10 @@ a line to be labeled. The codes are:
 
 **d**:
     Full syntax is
-    **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**][/\ *frac*].
+    **d**\ *dist*\ [**c**\|\ **i**\|\ **p**][/\ *frac*].
     Place labels according to the distance measured along the projected
     line on the map. Append the unit you want to measure distances in
-    [Default is taken from :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. Starting at the
+    [Default is taken from :term:`PROJ_LENGTH_UNIT`]. Starting at the
     beginning of a line, place labels every *dist* increment of distance
     along the line. To ensure that closed lines whose total length is
     less than *dist* get annotated, we may append *frac* which will
@@ -47,7 +47,7 @@ a line to be labeled. The codes are:
 
 **D**:
     Full syntax is
-    **D**\ *dist*\ [**d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][/\ *frac*].
+    **D**\ *dist*\ [**d**\|\ **m**\|\ **s**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**][/\ *frac*].
     This option is similar to **d** except the original data must be
     referred to geographic coordinates (and a map projection must have
     been chosen) and actual Earth [36]_ surface distances along the
@@ -59,13 +59,13 @@ a line to be labeled. The codes are:
 
 **f**:
     Full syntax is
-    **f**\ *fix.txt*\ [/*slop*\ [**c**\ \|\ **i**\ \|\ **p**]].
+    **f**\ *fix.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]].
     Here, an ASCII file *fix.txt* is given which must contain records
     whose first two columns hold the coordinates of points along the
     lines at which locations the labels should be placed. Labels will
     only be placed if the coordinates match the line coordinates to
     within a distance of *slop* (append unit or we use
-    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`). The default *slop* is zero, meaning only
+    :term:`PROJ_LENGTH_UNIT`). The default *slop* is zero, meaning only
     exact coordinate matches will do.
 
 **l**:
@@ -78,7 +78,7 @@ a line to be labeled. The codes are:
     slash), or they can be two-character codes that refer to
     predetermined points relative to the map region. These codes are
     taken from the :doc:`/text` justification keys
-    [**L**\ \|\ **C**\ \|\ **R**][**B**\ \|\ **M**\ \|\ **T**]
+    [**L**\|\ **C**\|\ **R**][**B**\|\ **M**\|\ **T**]
     so that the first character determines the *x*-coordinate and
     the second determines the *y*-coordinate. In
     :doc:`/grdcontour`, you can also use
@@ -86,7 +86,7 @@ a line to be labeled. The codes are:
     the grid's global maximum and minimum, respectively. For example,
     the *line* **LT**/**RB** is a diagonal from the upper left to the
     lower right map corner, while **Z-**/135W/15S is a line from the
-    grid minimum to the point (135ºW, 15ºS).
+    grid minimum to the point (135°W, 15°S).
 
 **L**:
     Same as **l** except we will treat the lines given as great circle
@@ -96,7 +96,7 @@ a line to be labeled. The codes are:
 
 **n**:
     Full syntax is
-    **n**\ *number*\ [/*minlength*\ [**c**\ \|\ **i**\ \|\ **p**]].
+    **n**\ *number*\ [/*minlength*\ [**c**\|\ **i**\|\ **p**]].
     Place *number* of labels along each line regardless of total line
     length. The line is divided into *number* segments and the labels
     are placed at the centers of these segments. Optionally, you may
@@ -105,7 +105,7 @@ a line to be labeled. The codes are:
 
 **N**:
     Full syntax is
-    **N**\ *number*\ [/*minlength*\ [**c**\ \|\ **i**\ \|\ **p**]].
+    **N**\ *number*\ [/*minlength*\ [**c**\|\ **i**\|\ **p**]].
     Similar to code **n** but here labels are placed at the ends of each
     segment (for *number* >= 2). A special case arises for
     *number = 1* when a single label will be placed according to
@@ -142,7 +142,7 @@ to specify exactly what are the attributes of the labels. It turns out
 that there are quite a few possible attributes that we may want to
 control, hence understanding how to specify these attributes becomes
 important. In the contouring programs, one or more attributes may be
-appended to the **-A** option using the format +\ *code*\ [*args*\ ] for
+appended to the **-A** option using the format +\ *code*\ [*args*] for
 each attribute, whereas for the line plotting programs these attributes
 are appended to the **-Sq** option following a colon (:) that separates
 the label codes from the placement algorithm. Several of the attributes
@@ -166,7 +166,7 @@ universally. These codes are:
     the label baseline) by the given amounts. If these should be
     different amounts please separate them by a slash; otherwise the
     single value applies to both directions. Append the distance units
-    of your choice (**c\ \|\ i\ \|\ m\ \|\ p**), or
+    of your choice (**c\|\ i\|\ m\|\ p**), or
     give % to indicate that the clearance should be this fixed
     percentage of the label font size in use. The default is 15%.
 
@@ -181,12 +181,12 @@ universally. These codes are:
 **+f**:
     Specifies the desired label font, including size or color. See
     :doc:`/text` for font names or numbers.
-    The default font is given by :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`.
+    The default font is given by :term:`FONT_ANNOT_PRIMARY`.
 
 **+g**:
     Selects opaque rather than the default transparent text boxes. You
     may optionally append the color you want to fill the label boxes;
-    the default is the same as :ref:`PS_PAGE_COLOR <PS_PAGE_COLOR>`.
+    the default is the same as :term:`PS_PAGE_COLOR`.
 
 **+j**:
     Selects the justification of the label relative to the placement
@@ -194,7 +194,7 @@ universally. These codes are:
     (**CM** in :doc:`/text` justification
     parlance) and this is indeed the default setting. Override by using
     this option and append another justification key code from
-    [**L**\ \|\ **C**\ \|\ **R**\ ][**B**\ \|\ **M**\ \|\ **T**\ ].
+    [**L**\|\ **C**\|\ **R**][**B**\|\ **M**\|\ **T**].
     Note for curved text (**+v**) only vertical justification will be
     affected.
 
@@ -212,7 +212,7 @@ universally. These codes are:
 **+r**:
     Do *not* place labels at points along the line whose local radius of
     curvature falls below the given threshold value. Append the radius
-    unit of your choice (**c**\ \|\ **i**\ \|\ **p**) [Default is 0].
+    unit of your choice (**c**\|\ **i**\|\ **p**) [Default is 0].
 
 **+u**:
     Append the chosen *unit* to the label. Normally a space will
@@ -259,9 +259,9 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
 
     **+Ld**:
         Take the Cartesian plot distances along the line as the label;
-        append **c**\ \|\ **i**\ \|\ **p** as the unit [Default is
-        :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. The label will be formatted according
-        to the :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` string, *unless* label placement
+        append **c**\|\ **i**\|\ **p** as the unit [Default is
+        :term:`PROJ_LENGTH_UNIT`]. The label will be formatted according
+        to the :term:`FORMAT_FLOAT_OUT` string, *unless* label placement
         was determined from map distances along the segment lines, in
         which case we determine the appropriate format from the distance
         value itself.
@@ -269,7 +269,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
     **+LD**:
         Calculate actual Earth surface distances and use the distance at
         the label placement point as the label; append
-        **d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**
+        **d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**
         to specify the unit [If not given we default to **d**\ egrees,
         *unless* label placement was determined from map distances along
         the segment lines, in which case we use the same unit specified
@@ -290,7 +290,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
     **+Lx**:
         As **h** but use the multi-segment headers in the *cross.d* file
         instead. This choice obviously requires the crossing segments
-        location algorithm (code **x\ \|\ X**) to be in effect.
+        location algorithm (code **x\|\ X**) to be in effect.
 
 Examples of Contour Label Placement
 -----------------------------------

@@ -40,15 +40,15 @@ It is a part of the GMT supplemental archive, so it can be installed
 automatically via install_gmt.
 
 Psmeca plots seismic moment tensor and/or double couples on a map.
-Pscoupe plots seismic moment tensor and/or double couples on a 
-cross-section. 
+Pscoupe plots seismic moment tensor and/or double couples on a
+cross-section.
 Pspolar plots polarities on the lower half-sphere.
 Psvelo plots velocity ellipses, strain crosses, or strain wedges on a map.
 
 For examples, see the directory test/meca.
 
 
-Genevieve Patau  
+Genevieve Patau
 
 Institut de Physique du Globe de Paris
 Departement de Sismologie
@@ -66,7 +66,7 @@ April 5, 2013,
 Thanks for your message. Yes, I agree that psvelo and psmeca and their derivatives should be
 licensed under the Lesser GNU public license. When Genevieve Patau and I wrote the original
 code in 1992, we were both government employees of France. I am not aware of any
-restrictions on the intellectual property. 
+restrictions on the intellectual property.
 
 Sincerely,
 

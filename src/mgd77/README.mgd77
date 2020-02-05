@@ -38,7 +38,7 @@ Note that the functionality provided by the mgg supplement's gmt2bin,
 binlegs and getlegs have now been generalized to any track data by the
 tools in the x2sys package.
 
-The support file mgd77_paths.txt is put in the 
+The support file mgd77_paths.txt is put in the
 GMT/share/mgd77 subdirectory directory.
 
 To install these programs, simply type

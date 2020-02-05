@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * grd.h contains the definition for a GMT-SYSTEM Version >= 2 grd file
  *
  * grd is stored in rows going from west (xmin) to east (xmax)
- * first row in file has yvalue = north (ymax).  
+ * first row in file has yvalue = north (ymax).
  * This is SCANLINE orientation.
  *
  * Author:	Paul Wessel
@@ -28,7 +28,7 @@
 
 /*!
  * \file gmt_grd.h
- * \brief Definition for a GMT-SYSTEM Version >= 2 grd file 
+ * \brief Definition for a GMT-SYSTEM Version >= 2 grd file
  */
 
 #ifndef GMT_GRID_H

@@ -18,9 +18,9 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-|-F|\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
+|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
 [ |-A|\ *autolabel* ]
-[ |-C|\ [*side*]\ /*clearance*\ [**u**]]
+[ |-C|\ [*side*]\ /*clearance*]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
 [ |-M|\ *margins* ]
@@ -50,7 +50,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*\ ][**+c**\ *dx/dy*\ ][**+g**\ *fill*\ ][**+p**\ *pen*\ ][**+w**\ *pen*\ ]
+**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
     Specify the dimensions of the figure.  There are two different ways to do this:
     (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
     a single subplot.
@@ -91,14 +91,14 @@ Optional Arguments
     This sets the tag of the first, top-left subplot and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
     as part of the tag (Note: In UNIX shells you may need to escape these parentheses.)
-    Use **+j**\ \|\ **J**\ *refpoint* to specify where the tag should be placed in the subplot [TL].
+    Use **+j**\|\ **J**\ *refpoint* to specify where the tag should be placed in the subplot [TL].
     Note: **+j** sets the justification of the tag to *refpoint* (suitable for interior tags)
     while **+J** instead selects the mirror opposite (suitable for exterior tags).
     Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
-    requested via **+g** or **+p** [3p/3p, i.e., 15% of the :ref:`FONT_TAG size <FONT_TAG>` dimension].
+    requested via **+g** or **+p** [3p/3p, i.e., 15% of the :term:`FONT_TAG` size dimension].
     Append **+g**\ *fill* to paint the tag's text box with *fill* [no painting].
     Append **+o**\ *dx*\ [/*dy*] to offset the tag's reference point in the direction implied
-    by the justification [4p/4p, i.e., 20% of the :ref:`FONT_TAG size <FONT_TAG>`].
+    by the justification [4p/4p, i.e., 20% of the :term:`FONT_TAG` size].
     Append **+p**\ *pen* to draw the outline of the tag's text box using selected *pen* [no outline].
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*side*]\ /*clearance*\ [**u**\ ]
+**-C**\ [*side*]\ /*clearance*
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
     or **y** for both **s** and **n**.  No *side* means all sides. The option is repeatable to set aside space
@@ -160,7 +160,7 @@ Optional Arguments
 
 **-T**\ *heading*
     While individual subplots can have titles (see **-S** or **-B**), the entire figure may also have a
-    overarching *heading* [no heading]. Font is determined by setting :ref:`FONT_HEADING <FONT_HEADING>`.
+    overarching *heading* [no heading]. Font is determined by setting :term:`FONT_HEADING`.
 
 .. _-V:
 
@@ -176,7 +176,7 @@ Optional Arguments
 Synopsis (set mode)
 -------------------
 
-**gmt subplot set** [ *row,col*\ \|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
+**gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance* ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot.
 Note: If any **-J** option is passed with **?** as scale or width when plotting subplots,
@@ -203,7 +203,7 @@ Optional Arguments
 
 .. _subplot_set-C2:
 
-**-C**\ *side*\ /*clearance*\ [**u**\ ]
+**-C**\ *side*\ /*clearance*
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can

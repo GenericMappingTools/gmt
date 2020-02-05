@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt hotspotter** [*tables*\ ] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt hotspotter** [*tables*] |-E|\ *rotfile* |-G|\ *CVAgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-N|\ *upper_age* ]
@@ -24,6 +24,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -108,6 +109,7 @@ Optional Arguments
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-ocols.rst_
+.. include:: ../../explain_-qi.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_

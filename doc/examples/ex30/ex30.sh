@@ -7,7 +7,7 @@
 #
 # Draw generic x-y axes with arrows
 gmt begin ex30
-	gmt basemap -R0/360/-1.25/1.75 -JX8i/6i -Bx90f30+u@. -By1g10 -BWS+t"Two Trigonometric Functions" \
+	gmt basemap -R0/360/-1.25/1.75 -JX20c/15c -Bx90f30+u@. -By1g10 -BWS+t"Two Trigonometric Functions" \
 		--MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5
 
 	# Draw sine an cosine curves
@@ -29,7 +29,7 @@ gmt begin ex30
 	EOF
 
 	# Draw a circle and indicate the 0-70 degree angle
-	echo 0 0 | gmt plot -R-1/1/-1/1 -Jx1.5i -X3.625i -Y2.75i -Sc2i -W1p -N
+	echo 0 0 | gmt plot -R-1/1/-1/1 -Jx3.8c -X9c -Y7c -Sc5c -W1p -N
 	gmt plot -W1p <<- EOF
 	> x-gridline  -Wdefault
 	-1	0
@@ -51,12 +51,12 @@ gmt begin ex30
 	-0.3333	0
 	EOF
 
-	gmt text -Dj0.05i -F+f+a+j <<- EOF
+	gmt text -Dj4p -F+f+a+j <<- EOF
 	-0.16666 0 12p,Times-Roman 0 CT x
 	-0.3333 0.2888675 12p,Times-Roman 0 RM y
 	0.22 0.27 12p,Symbol -30 CB a
 	-0.33333 0.6 12p,Times-Roman 30 LB 120@.
 	EOF
 
-	echo 0 0 0.5 0 120 | gmt plot -Sm0.15i+e -W1p -Gblack --PROJ_LENGTH_UNIT=inch
+	echo 0 0 1.25c 0 120 | gmt plot -Sm0.4c+e -W1p -Gblack
 gmt end show

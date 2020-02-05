@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2005-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
+ *    Copyright (c) 2005-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
  *	File:	mgd77magref.h
  *
  *	MGD77 Magnetic Reference Fields for mgd77sniffer
@@ -10,9 +10,9 @@
  *		Michael Chandler and Paul Wessel
  *		School of Ocean and Earth Science and Technology
  *		University of Hawaii
- * 
+ *
  *	Date:	1-Aug-2005
- * 
+ *
  *  References:
  *    Langel, R. A., 1987. The Main Field. In Geomagnetism, Volume I,
  *      (Ed. J. A. Jacobs). London: Academic Press, pp249-512.

@@ -30,39 +30,25 @@ The following codes for *rr*\ *u* are supported:
 
 .. _tbl-earth_relief:
 
-    +------+------------------+--------+--------------------------------------------------+
-    | Code | Dimensions       | Size   | Description                                      |
-    +======+==================+========+==================================================+
-    | 01d  |     361 x    181 | 106 KB | 1 arc degree global relief (SRTM15+V2 @ 111 km)  |
-    +------+------------------+--------+--------------------------------------------------+
-    | 30m  |     721 x    361 | 363 KB | 30 arc minute global relief (SRTM15+V2 @ 55 km)  |
-    +------+------------------+--------+--------------------------------------------------+
-    | 20m  |    1081 x    541 | 759 KB | 20 arc minute global relief (SRTM15+V2 @ 37 km)  |
-    +------+------------------+--------+--------------------------------------------------+
-    | 15m  |    1441 x    721 | 1.3 MB | 15 arc minute global relief (SRTM15+V2 @ 28 km)  |
-    +------+------------------+--------+--------------------------------------------------+
-    | 10m  |    2161 x   1081 | 2.8 MB | 10 arc minute global relief (SRTM15+V2 @ 18 km)  |
-    +------+------------------+--------+--------------------------------------------------+
-    | 06m  |    3601 x   1801 | 7.3 MB | 6 arc minute global relief (SRTM15+V2 @ 10 km)   |
-    +------+------------------+--------+--------------------------------------------------+
-    | 05m  |    4321 x   2161 |  10 MB | 5 arc minute global relief (SRTM15+V2 @ 9 km)    |
-    +------+------------------+--------+--------------------------------------------------+
-    | 04m  |    5401 x   2701 |  16 MB | 4 arc minute global relief (SRTM15+V2 @ 7.5 km)  |
-    +------+------------------+--------+--------------------------------------------------+
-    | 03m  |    7201 x   3601 |  27 MB | 3 arc minute global relief (SRTM15+V2 @ 5.6 km)  |
-    +------+------------------+--------+--------------------------------------------------+
-    | 02m  |   10801 x   5401 |  58 MB | 2 arc minute global relief (SRTM15+V2 @ 3.7 km)  |
-    +------+------------------+--------+--------------------------------------------------+
-    | 01m  |   21601 x  10801 | 214 MB | 1 arc minute global relief (SRTM15+V2 @ 1.9 km)  |
-    +------+------------------+--------+--------------------------------------------------+
-    | 30s  |   43201 x  21601 | 765 MB | 30 arc second global relief (SRTM15+V2 @ 0.9 km) |
-    +------+------------------+--------+--------------------------------------------------+
-    | 15s  |   86400 x  43200 | 2.6 GB | 15 arc second global relief (SRTM15+V2)          |
-    +------+------------------+--------+--------------------------------------------------+
-    | 03s  |  432001 x 216001 | 6.8 GB | 3 arc second global relief (SRTM3S)              |
-    +------+------------------+--------+--------------------------------------------------+
-    | 01s  | 1296001 x 432001 |  41 GB | 1 arc second global relief (SRTM1S)              |
-    +------+------------------+--------+--------------------------------------------------+
+==== ================= =======  ==================================================
+Code Dimensions        Size     Description
+==== ================= =======  ==================================================
+01d       361 x    181  106 KB  1 arc degree global relief (SRTM15+V2 @ 111 km)
+30m       721 x    361  363 KB  30 arc minute global relief (SRTM15+V2 @ 55 km)
+20m      1081 x    541  759 KB  20 arc minute global relief (SRTM15+V2 @ 37 km)
+15m      1441 x    721  1.3 MB  15 arc minute global relief (SRTM15+V2 @ 28 km)
+10m      2161 x   1081  2.8 MB  10 arc minute global relief (SRTM15+V2 @ 18 km)
+06m      3601 x   1801  7.3 MB  6 arc minute global relief (SRTM15+V2 @ 10 km)
+05m      4321 x   2161   10 MB  5 arc minute global relief (SRTM15+V2 @ 9 km)
+04m      5401 x   2701   16 MB  4 arc minute global relief (SRTM15+V2 @ 7.5 km)
+03m      7201 x   3601   27 MB  3 arc minute global relief (SRTM15+V2 @ 5.6 km)
+02m     10801 x   5401   58 MB  2 arc minute global relief (SRTM15+V2 @ 3.7 km)
+01m     21601 x  10801  214 MB  1 arc minute global relief (SRTM15+V2 @ 1.9 km)
+30s     43201 x  21601  765 MB  30 arc second global relief (SRTM15+V2 @ 0.9 km)
+15s     86400 x  43200  2.6 GB  15 arc second global relief (SRTM15+V2)
+03s    432001 x 216001  6.8 GB  3 arc second global relief (SRTM3S)
+01s   1296001 x 432001   41 GB  1 arc second global relief (SRTM1S)
+==== ================= =======  ==================================================
 
 All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
 the SRTM data organized in sub-directories srtm1 and srtm3 within the server directory.
@@ -99,10 +85,17 @@ Data Space Concerns
 There are several ways you can control the amount of space taken up by your own server directory:
 
 #. You can set an upper file size limit for download via the GMT default setting
-   :ref:`GMT_DATA_SERVER_LIMIT <GMT_DATA_SERVER_LIMIT>`; the default is unlimited.
+   :term:`GMT_DATA_SERVER_LIMIT`; the default is unlimited.
 #. You can remove the entire server directory via gmt :doc:`/clear` data.
 #. You can be clever and set up a crontab job that deletes data files you have not
    touched in, say, 6 months (or some other interval).
+
+Offline Usage
+-------------
+
+If you anticipate to be without an Internet connection (or a very slow one), you can download
+all the remote files prior to losing connection, using the shell script gmt_getremote.sh in
+share/tools.  It also allows you to download all the cache files used for examples.
 
 Data References
 ---------------

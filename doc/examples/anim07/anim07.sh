@@ -33,7 +33,7 @@ gmt begin
 	# Plot age grid first using age cpt
 	gmt grdimage @age.3.20.nc -Is.nc -C@crustal_age.cpt -JG\${MOVIE_COL0}/0/6i -X0 -Y0
 	# Clip to expose land areas only
-	gmt coast -Gc
+	gmt coast -G
 	# Overlay relief over land only using dem cpt
 	gmt grdimage @earth_relief_20m -Is.nc -Ct.cpt
 	# Undo clipping and overlay gridlines
@@ -41,5 +41,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Tlongitudes.txt -Nanim07 -H2 -Z $opt
+gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Tlongitudes.txt -Nanim07 -H2 -Pa -Z $opt
 rm -rf main.sh pre.sh

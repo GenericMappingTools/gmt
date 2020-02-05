@@ -16,18 +16,18 @@ Synopsis
 |SYN_OPT-R|
 [ |SYN_OPT-Area| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [**l**\ \|\ **r**/]\ *fill* ]
+[ |-C|\ *fill*\ [**+l**\|\ **r**] ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ *dcw* ]
 [ |-F|\ *box* ]
-[ |-G|\ *fill*\ \|\ **c** ]
+[ |-G|\ [*fill*] ]
 [ |-I|\ *river*\ [/\ *pen*] ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
 [ |-M| ]
 [ |-N|\ *border*\ [/*pen*] ]
 [ |-Q| ]
-[ |-S|\ *fill*\ \|\ **c** ]
+[ |-S|\ [*fill*] ]
 [ |-T|\ *rose* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -64,14 +64,14 @@ gridded topography is only seen over land, using a Mercator map at scale
 0.1 inch/degree, use::
 
     gmt begin
-      gmt coast -R-30/30/-40/40 -Jm0.1i -B -Gc
+      gmt coast -R-30/30/-40/40 -Jm0.1i -B -G
       gmt grdimage @earth_relief_05m
       gmt coast -Q
     gmt end show
 
 To plot Great Britain, Italy, and France in blue with a red outline and
 Spain, Portugal and Greece in yellow (no outline), and pick up the plot
-domain form the extents of these countries, use::
+domain from the extents of these countries, use::
 
     gmt coast -JM6i -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow -pdf map
 

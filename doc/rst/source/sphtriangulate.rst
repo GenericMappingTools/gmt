@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt sphtriangulate** [ *table* ] [ |-A| ] [ |-C| ] [ |-D| ]
-[ |-L|\ *unit* ] [ |-N|\ *file* ] [ |-Q|\ **d**\ \|\ **v** ]
+[ |-L|\ *unit* ] [ |-N|\ *file* ] [ |-Q|\ **d**\|\ **v** ]
 [ |-T| ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -21,6 +21,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-j| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -94,7 +95,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ **d**\ \|\ **v**
+**-Q**\ **d**\|\ **v**
     Append **d** for Delaunay triangles or **v** for Voronoi polygons [Delaunay].
     If **-bo** is used then **-N** may be used to specify a separate file where the
     polygon information normally is written.
@@ -125,6 +126,8 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
+
+.. include:: explain_-qi.rst_
 
 .. include:: explain_distcalc.rst_
 

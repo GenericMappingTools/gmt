@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
 /**
  * \file block_subs.h
- * \brief Code included into the three blockm*_func.c files 
+ * \brief Code included into the three blockm*_func.c files
  *
  * This code is included into the three blockm*_func.c files which each
  * will define their names (e.g., BLOCKMEAN).  That definition controls
@@ -85,6 +85,33 @@ struct BLOCK_CTRL {
 		bool weighted[2];
 		bool sigma[2];
 	} W;
+};
+
+GMT_LOCAL struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all the block* modules */
+	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
+	{ 0, 'A', "fields", "", "", "", "" },
+	{ 0, 'C', "center", "", "", "", "" },
+#if defined(BLOCKMODE)	/* Only blockmode has a -D option */
+	{ 0, 'D', "bin-width", "", "", "a,c,h,l", "average,center,high,low" },
+#endif
+#if defined(BLOCKMEAN)
+	{ 0, 'E', "extend", "", "", "P,p", "prop-simple,prop-weighted" },
+#elif defined(BLOCKMODE)
+	{ 0, 'E', "extend", "r,s", "record,source", "l,h", "lower,higher" },
+#else
+	{ 0, 'E', "extend", "b,r,s", "box-whisker,record,source", "l,h", "lower,higher" },
+#endif
+	{ 0, 'G', "gridfile", "", "", "", "" },
+	{ '/', 'I', "increment", "", "", "e,n", "exact,number" },
+#if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode have a -Q option */
+	{ 0, 'Q', "quicker", "", "", "", "" },
+#endif
+	{ 0, 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
+#if defined(BLOCKMEDIAN)	/* Only blockmedian has a -T option */
+	{ 0, 'T', "quantile", "", "", "", "" },
+#endif
+	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
+	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
 };
 
 #if 0
@@ -177,9 +204,9 @@ struct BLK_DATA {
 /*! Allocate and initialize a new control structure */
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {
 	struct BLOCK_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 #if defined(BLOCKMODE)	/* Only used by blockmode */
 	C->D.mode = BLOCKMODE_LOW;
@@ -195,8 +222,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	unsigned int k;
 	if (!C) return;
 	for (k = 0; k < C->G.n; k++)
-		gmt_M_str_free (C->G.file[k]);	
-	gmt_M_free (GMT, C);	
+		gmt_M_str_free (C->G.file[k]);
+	gmt_M_free (GMT, C);
 }
 
 #if !defined(BLOCKMEAN)	/* Not used by blockmean */

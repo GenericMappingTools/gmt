@@ -15,7 +15,7 @@ Required Arguments
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
- 
+
 .. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
@@ -29,7 +29,7 @@ Optional Arguments
 **-A**\ [**c**][*size*][**+i**\ *spacing*]
     Append **c** to annotate using the MGD77 cruise ID [Default uses the
     filename prefix]. Optional *size* is the font size in points. The
-    leg annotation font is controlled by :ref:`FONT_LABEL <FONT_LABEL>`. By default,
+    leg annotation font is controlled by :term:`FONT_LABEL`. By default,
     each leg is annotated every time it enters the map region.
     Alternatively, append **+i**\ *spacing* to place this label every
     *spacing* units apart along the track. Append one of the units **k**
@@ -56,7 +56,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ **d**\ \|\ **t**\ \|\ **n**\ *gap*
+**-G**\ **d**\|\ **t**\|\ **n**\ *gap*
     Let successive point separations exceeding **d**\ *gap* (km) or
     **t**\ *gap* (minutes) indicate a break in the track where we should
     not draw a line [no gaps recognized]. Repeat to use both types of
@@ -83,18 +83,18 @@ Optional Arguments
 
 .. _-S:
 
-**-Sa**\ *startdist*\ [**u**]
+**-Sa**\ *startdist*
     Do not plot data that are less than *startdist* meter along track
     from port of departure. Append **k** for km, **m** for miles, or
     **n** for nautical miles [Default is 0 meters].
-**-Sb**\ *stopdist*\ [**u**]
+**-Sb**\ *stopdist*
     Do not plot data that are more than *stopdist* meter along track
     from port of departure. Append **k** for km, **m** for miles, or
     **n** for nautical miles [Default is end of track].
 
 .. _-T:
 
-**-TT**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc*
+**-TT**\|\ **t**\|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc*
     Controls the attributes of the three kinds of markers (**T** for the
     first time marker in a new day, **t** for additional time markers in
     the same day, and **d** for distance markers). For each of these you
@@ -120,10 +120,10 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
- 
+
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_perspective.rst_
- 
+
 .. include:: ../../explain_-t.rst_
-    
+
 .. include:: ../../explain_help.rst_

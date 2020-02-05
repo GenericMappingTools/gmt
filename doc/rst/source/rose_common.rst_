@@ -7,7 +7,7 @@ Description
 and plot a windrose diagram.  Add **-i**\ 0 if your file only has azimuth values.
 Optionally (with **-A**), polar histograms may be drawn (sector diagram
 or rose diagram). Options include full circle and half circle plots. The
-outline of the windrose is drawn with the same color as **MAP\_DEFAULT\_PEN**. 
+outline of the windrose is drawn with the same color as **MAP\_DEFAULT\_PEN**.
 
 Required Arguments
 ------------------
@@ -28,7 +28,7 @@ Optional Arguments
 **-A**\ *sector_width*\ [**+r**]
     Gives the sector width in degrees for sector and rose diagram.
     [Default 0 means windrose diagram]. Append **+r** to draw rose
-    diagram instead of sector diagram. 
+    diagram instead of sector diagram.
 
 .. _-B:
 
@@ -53,12 +53,12 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ **m**\ \|\ [**+w**\ ]\ *mode_file*
+**-E**\ **m**\|\ [**+w**]\ *mode_file*
     Plot vectors showing the principal directions given in the *mode_file*
     file. Alternatively, specify **-Em** to compute and plot mean direction. See
     **-M** to control the vector attributes.  Finally, to instead save the
-    computed mean direction and other statistics, use [**m**\ ]\ **+w**\ *mode_file*.
-    The eight items saved to a single record are: 
+    computed mean direction and other statistics, use [**m**]\ **+w**\ *mode_file*.
+    The eight items saved to a single record are:
     *mean_az, mean_r, mean_resultant, max_r, scaled_mean_r, length_sum, n, sign@alpha*,
     where the last term is 0 or 1 depending on whether the mean resultant is significant
     at the level of confidence set via **-Q**.
@@ -83,13 +83,13 @@ Optional Arguments
 
 .. _-J:
 
-**-JX**\ *diameter*\ [*unit*]
+**-JX**\ *diameter*
     Sets the diameter of the rose diagram.  Only this form of the projection machinery
-    is supported.  If not given we default to 6 inches (or 7.5 cm).
+    is supported for this module.  If not given, then we default to a diameter of 7.5 cm.
 
 .. _-L:
 
-**-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*]
+**-L**\ [*wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*]
     Specify labels for the 0, 90, 180, and 270 degree marks. For
     full-circle plot the default is WEST,EAST,SOUTH,NORTH and for
     half-circle the default is 90W,90E,-,0. A - in any entry disables
@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*alpha*\ ]
+**-Q**\ [*alpha*]
     Sets the confidence level used to determine if the mean resultant
     is significant (i.e., Lord Rayleigh test for uniformity) [0.05].
     Note: The critical values are approximated [Berens, 2009] and
@@ -151,7 +151,7 @@ Optional Arguments
 **-W**\ *pen*
     Set pen attributes for sector outline or rose plot. [Default is no
     outline]. Use **-Wv**\ *pen* to change pen used to draw vector
-    (requires **-E**) [Default is same as sector outline]. 
+    (requires **-E**) [Default is same as sector outline].
 
 .. _-X:
 
@@ -159,7 +159,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ **u**\ \|\ *scale*
+**-Z**\ **u**\|\ *scale*
     Multiply the data radii by *scale*. E.g., use **-Z**\ 0.001 to
     convert your data from m to km. To exclude the radii from
     consideration, set them all to unity with **-Zu** [Default is no
@@ -167,9 +167,9 @@ Optional Arguments
 
 **-:**
     Input file has (azimuth,radius) pairs rather than the expected
-    (radius,azimuth). 
+    (radius,azimuth).
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -185,6 +185,8 @@ Optional Arguments
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
+
+.. include:: explain_-qi.rst_
 
 .. include:: explain_-t.rst_
 

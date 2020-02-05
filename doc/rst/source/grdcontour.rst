@@ -13,21 +13,21 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdcontour** *grid*
-|-J|\ *parameters* [ |-A|\ [**-**\ \|\ *contours*][*labelinfo*] ]
+|-J|\ *parameters* [ |-A|\ [**-**\|\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *contours*\ \|\ *cpt* ]
+[ |-C|\ *contours*\|\ *cpt* ]
 [ |-D|\ *template* ]
-[ |-F|\ [**l**\ \|\ **r**] ]
-[ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
-[ |-L|\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p** ]
+[ |-F|\ [**l**\|\ **r**] ]
+[ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
+[ |-L|\ *low/high*\|\ **n**\|\ **N**\|\ **P**\|\ **p** ]
 [ |-N|\ [*cpt*] ]
-[ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
+[ |-Q|\ [*cut*][**+z**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
-[ |-T|\ [**h**\ \|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
+[ |-T|\ [**h**\|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
+[ |-W|\ [*type*]\ *pen*\ [**+c**\ [**l**\|\ **f**]] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |-Z|\ [**+s**\ *factor*][**+o**\ *shift*][**+p**] ]
@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
@@ -43,6 +44,8 @@ Synopsis
 .. include:: grdcontour_common.rst_
 
 .. include:: grdcontour_notes.rst_
+
+.. include:: auto_legend_info.rst_
 
 Examples
 --------

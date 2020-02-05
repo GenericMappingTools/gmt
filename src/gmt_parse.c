@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
  * GMT_Destroy_Options  : Delete the linked option list
  * GMT_Create_Args      : Convert a struct option list back to an array of text args
  * GMT_Destroy_Args     : Delete the array of text args
- * GMT_Create_Cmd       : Convert a struct option list to a single command text. 
+ * GMT_Create_Cmd       : Convert a struct option list to a single command text.
  * GMT_Destroy_Cmd      : Delete the command string
  * GMT_Make_Option      : Create a single option structure given arguments
  * GMT_Find_Option      : Find a specified option in the linked option list
@@ -56,7 +56,7 @@
  * \file gmt_parse.c
  * \brief Public function prototypes for GMT API option parsing.
  */
- 
+
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
@@ -90,7 +90,7 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	bool ignore5 = false;	/* true if label, title, prefix, suffix */
 	bool custom = false;	/* True if -B[p|s][x|y|z]c<filename> was given; then we relax checing for .c (old second) */
 	char mod = 0;
-	
+
 	if (!in || in[0] == 0) return (9);	/* Just a safety precaution, 9 means "either" syntax but it is an empty string */
 	last = strlen (in);
 	for (k = 0; k < last; k++) {	/* Count digits.  If none then it is GMT5 and we can return */
@@ -165,9 +165,9 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 		return (4);
 	}
 	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
-		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
-		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "parse_B_arg_inspector: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
+		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_ERROR, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
+		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_ERROR, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
 		return (-1);
 	}
 	else {
@@ -188,7 +188,7 @@ GMT_LOCAL int parse_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	struct GMT_OPTION *opt = NULL;
 	unsigned int n4_expected = 0, n_B = 0, gmt4 = 0, gmt5 = 0, k;
 	int verdict;
-	
+
 	for (opt = options; opt; opt = opt->next) {	/* Loop over all given options */
 		if (opt->option != 'B') continue;	/* Skip anything but -B options */
 		n_B++;					/* Count how many (max 2 in GMT4 if -Bp|s given) */
@@ -218,7 +218,7 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<n_columns>/<ny> we need access
 	 * to grid increments dx/dy, usually given via a -I option.  Hence, we here
 	 * make sure that if such a -R option is given we first process -I */
-	
+
 	struct GMT_OPTION *opt = NULL;
 	bool got_extended_R = false;
 	for (opt = options; opt; opt = opt->next) {
@@ -226,7 +226,7 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 			got_extended_R = true;
 	}
 	if (!got_extended_R) return 0;	/* No such situation */
-	
+
 	/* Now look for -Idx[/dy] option */
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == 'I' && opt->arg[0]) {
@@ -237,11 +237,11 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	}
 	if (GMT->common.R.active[ISET])
 		return 0;
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "-R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
 	return 1;
 }
 
-#define Return { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found no history for option -%s\n", str); return (-1); }
+#define Return { GMT_Report (GMT->parent, GMT_MSG_ERROR, "Found no history for option -%s\n", str); return (-1); }
 
 /*! . */
 GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
@@ -276,7 +276,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	}
 	for (k = 0, B_id = GMT_NOTSET; k < GMT_N_UNIQUE && B_id == GMT_NOTSET; k++)
 		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
-
+	assert (B_id != GMT_NOTSET);
 	check_B = (strncmp (GMT->init.module_name, "psscale", 7U) && strncmp (GMT->init.module_name, "docs", 4U));
 	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && check_B) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
 		char file[PATH_MAX] = {""};
@@ -445,7 +445,7 @@ GMT_LOCAL struct GMT_OPTION *fix_gdal_files (struct GMT_OPTION *opt) {
 		char t[GMT_LEN256] = {""};
 		pch[0] = '\0';
 		strncpy (t, opt->arg, GMT_LEN256-1);
-		strcat (t, "=gd"); 
+		strcat (t, "=gd");
 		pch[0] = '+';			/* Restore what we have erased 2 lines above */
 		strncat(t, pch, GMT_LEN256-1);
 		gmt_M_str_free (opt->arg);	/* free it so that we can extend it */
@@ -493,7 +493,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		}
 		return (head);
 	}
-	
+
 	G = API->GMT;	/* GMT control structure */
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
 		unsigned int pos = 0, new_n_args = 0, k;
@@ -505,7 +505,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
 		 * space, and then replace all ASCII 31 with space at the end (we do the same for tab using ASCII 29 GS (group separator) */
 		for (k = 0, quoted = false; txt_in[k]; k++) {
-			if (txt_in[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
+			if (txt_in[k] == '\"' || txt_in[k] == '\'') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
 			else if (quoted && txt_in[k] == '\t') txt_in[k] = GMT_ASCII_GS;
 			else if (quoted && txt_in[k] == ' ')  txt_in[k] = GMT_ASCII_US;
 		}
@@ -532,14 +532,14 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		n_args = n_args_in;
 	}
 	if (args == NULL && n_args) return_null (API, GMT_ARGV_LIST_NULL);	/* Conflict between # of args and args being NULL */
-	
+
 	for (arg = 0; arg < n_args; arg++) {	/* Loop over all command arguments */
 
 		if (!args[arg]) continue;	/* Skip any NULL arguments quietly */
 
 		/* Note: The UNIX command line will never see redirections like >, >>, and < pass as arguments, so when we check for these
 		 * below it is because command-strings passed from external APIs may contain things like '-Fap -O -K >> plot.ps' */
-		
+
 		if (args[arg][0] == '=' && args[arg][1] && !gmt_access (API->GMT, &args[arg][1], F_OK)) {	/* Gave a file list which we must expand into options */
 			char **flist = NULL;
 			uint64_t n_files, f;
@@ -547,7 +547,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			if ((new_opt = GMT_Make_Option (API, '=', &args[arg][1])) == NULL)	/* Make option with the listing name flagged as option -= */
 				return_null (API, error);	/* Create the new option structure given the args, or return the error */
 			head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Create_Options: Must expand list file %s\n", args[arg]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Create_Options: Must expand list file %s\n", args[arg]);
 			for (f = 0; f < n_files; f++) {	/* Now expand all the listed files into options */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Options: Adding input file: %s\n", flist[f]);
 				if ((new_opt = GMT_Make_Option (API, GMT_OPT_INFILE, flist[f])) == NULL)
@@ -653,7 +653,7 @@ int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 
 	current = *head;
 	if (current && current->option < 0) {
-		GMT_Report(API, GMT_MSG_NORMAL, "WARNING in GMT_Destroy_Options(): GMT_OPTION struct has junk. Returning before crash\n");
+		GMT_Report(API, GMT_MSG_ERROR, "GMT_Destroy_Options(): GMT_OPTION struct has junk. Returning before crash\n");
 		*head = NULL;
 		return (GMT_OK);	/* Should we return an error state instead? */
 	}
@@ -754,7 +754,7 @@ char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
 		*argc = arg;
 		txt = gmt_M_memory (G, txt, *argc, char *);
 	}
-	
+
 	return (txt);	/* Pass back the char** array to the calling module */
 }
 
@@ -886,7 +886,7 @@ struct GMT_OPTION * GMT_Find_Option (void *V_API, char option, struct GMT_OPTION
 	struct GMT_OPTION *current = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
-	
+
 	for (current = head; current && current->option != option; current = current->next);	/* Linearly search for the specified option */
 	return (current);	/* NULL if not found */
 }
@@ -907,14 +907,14 @@ int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 	char buffer[BUFSIZ] = {""};
 	size_t in = 0, out = 0;
-	size_t s_length; 
+	size_t s_length;
 	bool quote = false;	/* We are outside any quoted text */
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	 /* GMT_Create_Session has not been called */
 	if (opt == NULL) return_error (V_API, GMT_OPTION_IS_NULL);	 /* We passed NULL as the option */
 	if (arg == NULL) return_error (V_API, GMT_ARG_IS_NULL);		 /* We passed NULL as the argument */
 	if (opt->arg == NULL) return_error (V_API, GMT_ARG_IS_NULL); /* We passed NULL as the option argument */
-	s_length = strlen (arg); 
+	s_length = strlen (arg);
 	if ((s_length + strlen (opt->arg)) > BUFSIZ) return_error (V_API, GMT_DIM_TOO_LARGE);		/* Don't have room */
 
 	while (opt->arg[in]) {
@@ -996,7 +996,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	char list[2] = {0, 0}, critical_opt_order[] = GMT_CRITICAL_OPT_ORDER;
 	unsigned int i, n_errors;
 	struct GMTAPI_CTRL *API = NULL;
-	const unsigned int s_length = (unsigned int)strlen(critical_opt_order); 
+	const unsigned int s_length = (unsigned int)strlen(critical_opt_order);
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 
@@ -1009,7 +1009,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = parse_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
 
 	n_errors = parse_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
-	
+
 	/* First parse the common options in the order they appear in GMT_CRITICAL_OPT_ORDER */
 	for (i = 0; i < s_length; i++) {	/* These are the GMT options that must be parsed in this particular order, if present */
 		if (strchr (given_options, critical_opt_order[i]) == NULL) continue;	/* Not a selected option */
@@ -1034,6 +1034,6 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	API->GMT->current.options = options;
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
 	if (gmt_M_is_geographic (API->GMT, GMT_IN)) API->GMT->current.io.warn_geo_as_cartesion = false;	/* Don't need this warning */
-	
+
 	return (GMT_OK);
 }

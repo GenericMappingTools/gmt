@@ -24,7 +24,7 @@ URL="\${SITE}?\${TIME}&\${MAG}&\${ORDER}"
 gmt begin
 	gmt convert \$URL -i2,1,3,4+s50,0 -hi1 > q.txt
 	gmt makecpt -Cred,green,blue -T0,70,300,10000 -H > movie_dem.cpt
-	gmt math -T2018-01-01T/2018-12-31T/2 --TIME_UNIT=d TNORM 40 MUL 200 ADD = times.txt
+	gmt math -T2018-01-01T/2018-12-31T/2d TNORM 40 MUL 200 ADD = times.txt
 gmt end
 EOF
 # 2. Set up main script
@@ -36,5 +36,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Ttimes.txt -Nanim08 -Gblack -H2 -Lc1 -Z --FONT_TAG=20p,Helvetica,white --FORMAT_CLOCK_MAP=- $opt
+gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Ttimes.txt -Nanim08 -Gblack -H2 -Z -Lc0+f20p,Helvetica,white --FORMAT_CLOCK_MAP=- $opt
 rm -rf main.sh pre.sh

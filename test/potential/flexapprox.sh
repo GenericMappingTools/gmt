@@ -18,17 +18,17 @@ echo 0 0 $r $h | gmt grdseamount -R-511000/511000/-511000/511000 -I2000 -Cd -Glo
 # we compute the ratio of the exact and approximate volumes and adjust the flexure for this difference.
 # Do this by counting number of nonzero entries, multiply by prism volumes dx*dx*h
 gmt grdmath load.nc 0 NAN = tmp.nc
-n_nan=`gmt grdinfo -M tmp.nc -C | cut -f16`
-disc_vol_grid=`gmt math -Q 512 512 MUL $n_nan SUB 2000 2000 MUL MUL $h MUL =`
-disc_vol_exact=`gmt math -Q $r $r MUL PI MUL $h MUL =`
-scale=`gmt math -Q $disc_vol_exact $disc_vol_grid DIV =`
+n_nan=$(gmt grdinfo -M tmp.nc -C | cut -f16)
+disc_vol_grid=$(gmt math -Q 512 512 MUL $n_nan SUB 2000 2000 MUL MUL $h MUL =)
+disc_vol_exact=$(gmt math -Q $r $r MUL PI MUL $h MUL =)
+scale=$(gmt math -Q $disc_vol_exact $disc_vol_grid DIV =)
 # Traditional rhoi = rhol
-gmt gravfft load.nc -Gflex_a.nc -Q -Nf+l -T$Te/$rhol/$rhom/$rhow       
-z0=`echo -511000 -511000 | gmt grdtrack -Gflex_a.nc -o2`
+gmt gravfft load.nc -Gflex_a.nc -Q -Nf+l -T$Te/$rhol/$rhom/$rhow
+z0=$(echo -511000 -511000 | gmt grdtrack -Gflex_a.nc -o2)
 gmt grdmath flex_a.nc $z0 SUB = flex_a.nc
 # Approximate rhoi < rhol
 gmt gravfft load.nc -Gflex_c.nc -Q -Nf+l -T$Te/$rhol/$rhom/$rhow/$rhoi
-z0=`echo -511000 -511000 | gmt grdtrack -Gflex_c.nc -o2`
+z0=$(echo -511000 -511000 | gmt grdtrack -Gflex_c.nc -o2)
 gmt grdmath flex_c.nc $z0 SUB = flex_c.nc
 gmt grdtrack -Gflex_a.nc+Uk -Gflex_c.nc+Uk -ELM/RM > result.txt
 # Plot the exact single-domain case

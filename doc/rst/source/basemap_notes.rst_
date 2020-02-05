@@ -7,7 +7,7 @@ However, some applications requires special control on which annotations
 to plot and even replace the annotation with other labels. This is
 achieved by using **c**\ *intfile* in the **-B** option, where *intfile*
 contains all the information about annotations, ticks, and even
-gridlines. Each record is of the form *coord* *type* [*label*\ ], where
+gridlines. Each record is of the form *coord* *type* [*label*], where
 *coord* is the coordinate for this annotation (or tick or gridline),
 *type* is one or more letters from **a** (annotation), **i** interval
 annotation, **f** tickmark, and **g** gridline. Note that **a** and

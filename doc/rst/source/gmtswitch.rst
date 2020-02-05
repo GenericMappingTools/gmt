@@ -54,7 +54,7 @@ The fastest way to get up and running is this:
 1. Edit/Create ~/.gmtversions and add the paths to all GMT installations
     you have or care to consider. Each path goes on separate lines and
     points to the top dir of each distribution, e.g.,
-    /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT4.5.7
+    /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/gmt-4.5.18
 
 2. In your .bashrc or .[t]csrh or wherever you are maintaining your PATH
     or path variable, remove any directories you have added that contain
@@ -78,12 +78,12 @@ The fastest way to get up and running is this:
 Examples
 --------
 
-To switch to GMT version 4.5.7 (assuming it was installed as such and not
+To switch to GMT version 4.5.18 (assuming it was installed as such and not
 via a package manager), try
 
   ::
 
-    gmtswitch GMT4.5.7
+    gmtswitch gmt-4.5.18
 
 To switch to the default (your top choice), do
 

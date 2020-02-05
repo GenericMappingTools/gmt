@@ -3,7 +3,7 @@
 # Draw fault planes and points that should lie on them
 # K. Feigl, 2015-11-08
 
-ps=seis_09.ps
+ps=pspolar_02.ps
 
 gmt psbasemap -R-8/8/-10/10 -JX7i -P -Xc -K -B+t"circles should plot on curves" > $ps
 
@@ -23,7 +23,7 @@ gmt psmeca -R -J -P -M -Sa6i -N -W1p -O -K -h4 -C -T << EOF >> $ps
 #  0     0.   1.        0    90     0. 5.5   0.   0.   test90-90
   0     0.   1.   $STRIKEF $DIP     0. 5.5   0.   0.   $COUNTER
 EOF
- 
+
 # and polarities observed
 gmt pspolar -R -J -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3 << EOF >> $ps
 # ID strike plunge Compression/Dilatation

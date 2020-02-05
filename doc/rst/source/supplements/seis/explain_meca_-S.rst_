@@ -1,22 +1,22 @@
-**-S**\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-S**\ *<format><scale>*\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+    Selects the meaning of the columns in the data file.
+    *scale* adjusts the scaling of the radius of the "beach ball", which will be proportional to
+    the magnitude. *scale* is the size for magnitude = 5 (i.e. scalar seismic moment M0 = 4.0E23 dynes-cm).
+    The color or shade of the compressive quadrants can
+    be specified with the **-G** option. The color or shade of the extensive
+    quadrants can be specified with the **-E** option.
+    For each beachball, a text string can be specified to appear near the beachball [optional].
+    Append **+a**\ *angle* to change the angle of the text string;
+    append **+f**\ *font* to change its font (size,fontname,color); append **+j**\ *justify* to change
+    the text location relative to the beachball (default is above the beachball);
+    append **+o** to offset the text string by *dx/dy*.
 
-    Selects the meaning of the columns in the data file. In order to use
-    the same file to plot cross-sections, depth is in third column.
+    In order to use the same file to plot cross-sections, depth is in third column.
     Nevertheless, it is possible to use "old style" **psvelomeca** input
     files without depth in third column using the **-Fo** option.
 
 **-Sa**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
-
-    Focal mechanisms in Aki and Richards convention. *scale* adjusts the
-    scaling of the radius of the "beach ball", which will be proportional to
-    the magnitude. *scale* is the size for magnitude = 5. Use the **-T** option to
-    render the beach ball transparent by drawing only the nodal planes and
-    the circumference. The color or shade of the compressive quadrants can
-    be specified with the **-G** option. The color or shade of the extensive
-    quadrants can be specified with the **-E** option. Append **+f**\ *font*
-    to change the font of the text string; append **+j**\ *justify* to change
-    the text location relative to the beachball (default is above the beachball);
-    append **+o** to offset the text string by *dx/dy*.
+    Focal mechanisms in Aki and Richards convention.
     Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
@@ -38,20 +38,10 @@
     columns (1,2) and (8,9).
 
     **10**:
-    Text string to appear above or below the beach ball (optional).
+    Text string to appear near the beach ball (optional).
 
 **-Sc**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
-
-    Focal mechanisms in Global CMT convention. *scale* adjusts the scaling
-    of the radius of the "beach ball", which will be proportional to the
-    magnitude. *scale* is the size for magnitude = 5 (that is M0 = 4.0E23 dynes-cm).
-    Use the **-T** option to render the beach ball transparent by drawing
-    only the nodal planes and the circumference. The color or shade of the
-    compressive quadrants can be specified with the **-G** option. The color
-    or shade of the extensive quadrants can be specified with the **-E** option.
-    Append **+f**\ *font* to change the font of the text string;
-    append **+j**\ *justify* to change the text location relative to the beachball
-    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Focal mechanisms in Global CMT convention.
     Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
@@ -76,23 +66,15 @@
     columns (1,2) and (12,13).
 
     **14**:
-    Text string to appear above or below the beach ball (optional).
+    Text string to appear near the beach ball (optional).
 
 **-Sm\|d\|z**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
-
-    Seismic moment tensor. *scale* adjusts
-    the scaling of the radius of the "beach ball", which will be
-    proportional to the magnitude. *scale* is the size for magnitude = 5
-    (that is scalar seismic moment = 4.0E23 dynes-cm).
-    **-T**\ *0* option overlays best double couple transparently.
-    Use **-Sm** to plot the full seismic moment tensor (i.e. isotropic + double couple + CLVD parts).
-    Use **-Sd** to plot only the double couple part of moment tensor.
-    Use **-Sz** to plot the anisotropic part of moment tensor (zero trace, i.e. double couple + CLVD parts).
-    The color or shade of the compressive quadrants can be specified with the **-G** option. The color
-    or shade of the extensive quadrants can be specified with the **-E** option.
-    Append **+f**\ *font* to change the font of the text string;
-    append **+j**\ *justify* to change the text location relative to the beachball
-    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Seismic moment tensor.
+    **-Sm** plots the full seismic moment tensor.
+    **-Sz** plots the deviatoric part of the moment tensor (zero trace).
+    **-Sd** plots the closest double couple defined from the moment tensor (zero trace and zero determinant).
+    Global CMT moment tensors are deviatoric, so **-Sm** and **-Sz** will produce the same result,
+    but **-Sd** will not, unless the input moment tensor is already a double couple.
     Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
@@ -114,19 +96,10 @@
     columns (1,2) and (11,12).
 
     **13**:
-    Text string to appear above or below the beach ball (optional).
+    Text string to appear near the beach ball (optional).
 
 **-Sp**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
-
-    Focal mechanisms given with partial data on both planes. *scale* adjusts
-    the scaling of the radius of the "beach ball", which will be
-    proportional to the magnitude. *scale* is the size for magnitude = 5
-    The color or shade of the compressive quadrants can be specified with the **-G**
-    option. The color or shade of the extensive quadrants can be specified
-    with the **-E** option.
-    Append **+f**\ *font* to change the font of the text string;
-    append **+j**\ *justify* to change the text location relative to the beachball
-    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Focal mechanisms given with partial data on both planes.
     Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
@@ -154,23 +127,13 @@
     columns (1,2) and (9,10).
 
     **11**:
-    Text string to appear above or below the beach ball (optional).
+    Text string to appear near the beach ball (optional).
 
 **-Sx\|y\|t**\ *scale*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
-
-    Principal axis. *scale* adjusts the scaling of the radius of the "beach
-    ball", which will be proportional to the magnitude. Scale is the size
-    for magnitude = 5 (that is seismic scalar moment = 4\*10e+23 dynes-cm)
-    in inch (unless **c**, **i**, or **p** is appended). (**-T**\ *0*
-    option overlays best double couple transparently.) Use **-Sx** to plot
-    standard Global CMT. Use **-Sy** to plot only the double couple part of
-    moment tensor. Use **-St** to plot zero trace moment tensor. The color
-    or shade of the compressive quadrants can be specified with the **-G**
-    option. The color or shade of the extensive quadrants can be specified
-    with the **-E** option.
-    Append **+f**\ *font* to change the font of the text string;
-    append **+j**\ *justify* to change the text location relative to the beachball
-    (default is above the beachball); append **+o** to offset the text string by *dx/dy*.
+    Principal axis.
+    Use **-Sx** to plot full seismic moment tensor.
+    Use **-Sy** to plot the closest double couple defined from the moment tensor (zero trace and zero determinant).
+    Use **-St** to plot the deviatoric part of the moment tensor (zero trace).
     Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
@@ -192,4 +155,4 @@
     columns (1,2) and (14,15).
 
     **16**:
-    Text string to appear above or below the beach ball (optional).
+    Text string to appear near the beach ball (optional).

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by median estimation"
 #define THIS_MODULE_KEYS	"<D{,>D},GG),A->"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>RVabdefghior" GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:>RVabdefghioqr" GMT_OPT("FH")
 
 #include "block_subs.h"
 
@@ -52,8 +52,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[b]] [-Er|s[+l|h]] [-Q] [-T<q>] [%s] [-W[i][o][+s]]\n", GMT_V_OPT);
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[b]] [-Er|s[+l|h]] [-G<grdfile>] [-Q] [-T<q>] [%s] [-W[i][o][+s]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -87,7 +87,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +s read/write standard deviations instead, with w = 1/s.\n");
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W is set).\n");
-	GMT_Option (API, "bo,d,e,f,h,i,o,r,:,.");
+	GMT_Option (API, "bo,d,e,f,h,i,o,q,r,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -126,14 +126,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 							else if (!strcmp (p, "q75"))
 								Ctrl->A.selected[4] = true;
 							else {
-								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized field argument %s in -A!\n", p);
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", p);
 								n_errors++;
 							}
 							break;
 						case 'h':	Ctrl->A.selected[5] = true;	break;
 						case 'w':	Ctrl->A.selected[6] = true;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized field argument %s in -A!\n", p);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", p);
 							n_errors++;
 							break;
 					}
@@ -160,7 +160,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 							else if (opt->arg[2] == 'h' || opt->arg[2] == '\0')	/* E.g., let Er+ be thought of as -Er+h */
 								Ctrl->E.mode = BLK_DO_INDEX_HI;
 							else {	/* Neither +l, +h, or just + is bad */
-								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized argument -E%s!\n", opt->arg);
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized argument -E%s!\n", opt->arg);
 								n_errors++;
 							}
 							break;
@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 				break;
 			case 'G':	/* Write output grid(s) */
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G can only be set once!\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
 				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
@@ -231,22 +231,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 	if (Ctrl->G.active && !Ctrl->E.active) {	/* See if we need to auto-supply -E or -Eb */
 		if (Ctrl->A.selected[1]) {	/* s cannot go with the quantiles, so check */
 			if (Ctrl->A.selected[3] || Ctrl->A.selected[4]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot combine s with q25 or q75.\n");
-				n_errors++; 
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot combine s with q25 or q75.\n");
+				n_errors++;
 			}
 			else {	/* Plain -E is added */
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifies s, l, or h.  -E was added.\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "-E is required if -A specifies s, l, or h.  -E was added.\n");
 				Ctrl->E.active = true;
 				Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */
 			}
 		}
 		else if (Ctrl->A.selected[3] || Ctrl->A.selected[4]) {	/* Need q25 or q75 and s not set, so add -Eb */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-Eb is required if -A specifies q25 or q75.  -Eb was added.\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "-Eb is required if -A specifies q25 or q75.  -Eb was added.\n");
 			Ctrl->E.active = true;
 			Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report low, 25%, 75% and high in cols 4-7 */
 		}
 		else if (Ctrl->A.selected[2] || Ctrl->A.selected[5]) {	/* Plain -E is added */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifies s, l, or h.  -E was added.\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "-E is required if -A specifies s, l, or h.  -E was added.\n");
 			Ctrl->E.active = true;
 			Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */
 		}
@@ -257,31 +257,31 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->parent->external && Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->parent->external && Ctrl->A.active && !Ctrl->G.active, "Option -A requires -G\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->parent->external && Ctrl->G.active && !Ctrl->A.active,
-	                                   "Syntax error: -G requires -A\n");
+	                                   "Option -G requires -A\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->E.mode == BLK_DO_INDEX_LO ||
 	                                   Ctrl->E.mode == BLK_DO_INDEX_HI),
-	                                   "Syntax error: -Es|r are incompatible with -G\n");
+	                                   "Option -Es|r are incompatible with -G\n");
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (Ctrl->A.active && Ctrl->A.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
-			n_errors++; 
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
+			n_errors++;
 		}
 		else if (!Ctrl->A.active)	/* Set default z output grid */
 			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
 			if (Ctrl->A.selected[6] && !Ctrl->W.weighted[GMT_OUT]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifies w.\n");
-				n_errors++; 
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-W or -Wo is required if -A specifies w.\n");
+				n_errors++;
 			}
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.quantile <= 0.0 || Ctrl->T.quantile >= 1.0,
-	                                   "Syntax error: 0 < q < 1 for quantile in -T [0.5]\n");
+	                                   "Option -T: Select 0 < q < 1 for quantile [0.5]\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
-	                                   "Syntax error -I option: Must specify positive increment(s)\n");
+	                                   "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -395,7 +395,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -404,7 +404,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (GridOut, BLK_N_FIELDS, struct GMT_GRID *);	/* Initialize all pointers to NULL */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
@@ -413,7 +413,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	half_dx = 0.5 * Grid->header->inc[GMT_X];
 	go_quickly = (Ctrl->Q.active) ? 1 : 0;
 	if (Ctrl->C.active && go_quickly == 1) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "-C overrides -Q\n");
+		GMT_Report (API, GMT_MSG_WARNING, "-C overrides -Q\n");
 		go_quickly = 0;
 	}
 	if (Ctrl->C.active) go_quickly = 2;			/* Flag used in output calculation */
@@ -438,9 +438,9 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	}
 	if (!(Ctrl->E.mode & BLK_DO_EXTEND4)) quantile[0] = Ctrl->T.quantile;	/* Just get the single quantile [median] */
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		snprintf (format, GMT_LEN512, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
 	}
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
@@ -526,11 +526,11 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	}
 
 	if (n_read == 0) {	/* Blank/empty input files */
-		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced\n");
+		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
 		Return (GMT_NOERROR);
 	}
 	if (n_pitched == 0) {	/* No points inside region */
-		GMT_Report (API, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced\n");
+		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
 		Return (GMT_NOERROR);
 	}
 
@@ -555,7 +555,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, GridOut[NF]) != GMT_NOERROR) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remarks[k], GridOut[NF])) Return (API->error);
 			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
-			for (node = 0; node < G->header->size; node++) 
+			for (node = 0; node < G->header->size; node++)
 				GridOut[NF]->data[node] = GMT->session.f_NaN;
 			NF++;	/* Number of actual field grids */
 		}
@@ -666,7 +666,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
+	GMT_Report (API, GMT_MSG_INFORMATION, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	if (emode) {
 		gmt_M_str_free (GMT->current.io.o_format[i_col]);	/* Free the temporary integer format */

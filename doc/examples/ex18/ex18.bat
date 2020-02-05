@@ -11,13 +11,13 @@ gmt begin ex18
 	gmt set PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %%g
 	REM Define location of Pratt seamount and the 400 km diameter
 	echo -142.65 56.25 400 > pratt.txt
-	gmt subplot begin 2x1 -A+JTL+o0.2i -Fs6i/3.5i -M0.2i/0.35i -R@AK_gulf_grav.nc -JM5.5i -B -BWSne
+	gmt subplot begin 2x1 -A+JTL+o0.5c -Fs15c/9c -M0.5c/1c -R@AK_gulf_grav.nc -JM5.5i -B -BWSne
 		gmt subplot set 0,0
 		gmt makecpt -Crainbow -T-60/60
 		gmt grdimage @AK_gulf_grav.nc -I+d
 		gmt coast -Di -Ggray -Wthinnest
-		gmt colorbar -DJCB+o0/0.35i -Bxaf -By+l"mGal"
-		gmt text pratt.txt -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB+tPratt
+		gmt colorbar -DJCB+o0/1c -Bxaf -By+l"mGal"
+		gmt text pratt.txt -D08p -F+f12p,Helvetica-Bold+jLB+tPratt
 		gmt plot pratt.txt -SE- -Wthinnest
 		REM Then draw 10 mGal contours and overlay 50 mGal contour in green
 		gmt subplot set 1,0
@@ -35,8 +35,8 @@ gmt begin ex18
 		REM add it to the file centers.txt
 		gmt spatial -Q -fg sm_*_C.txt > centers.txt
 		REM Only plot the ones within 200 km
-		gmt select -Cpratt.txt+d200k centers.txt -fg | gmt plot -SC0.04i -Gred -Wthinnest
-		gmt plot -ST0.1i -Gyellow -Wthinnest pratt.txt
+		gmt select -Cpratt.txt+d200k centers.txt -fg | gmt plot -SC0.1c -Gred -Wthinnest
+		gmt plot -ST0.25c -Gyellow -Wthinnest pratt.txt
 		REM Then report the volume and area of these seamounts only
 		REM by masking out data outside the 200 km-radius circle
 		REM and then evaluate area/volume for the 50 mGal contour
@@ -49,10 +49,10 @@ gmt begin ex18
 		set /p area=<area.txt
 		set /p volumn=<volumn.txt
 
-		echo ^> -149 52.5 14p 2.6i j > tmp.txt
+		echo ^> -149 52.5 14p 6.6c j > tmp.txt
 		echo Volumes: %volumn% mGal\264km@+2@+ >> tmp.txt
 		echo Areas: %area% km@+2@+ >> tmp.txt
-		gmt text tmp.txt -M -Gwhite -Wthin -Dj0.3i -F+f14p,Helvetica-Bold+jLB -C0.1i
+		gmt text tmp.txt -M -Gwhite -Wthin -Dj0.7c -F+f14p,Helvetica-Bold+jLB -C8p
 	gmt subplot end
 gmt end show
 del sm_*.txt tmp.nc mask.nc pratt.txt center* tmp.txt

@@ -14,8 +14,8 @@ Synopsis
 
 **gmt grdproject** *in_grdfile* |-G|\ *out_grdfile* |-J|\ *parameters*
 [ |-C|\ [*dx/dy*] ]
-[ |-D|\ *xinc*\ [*unit*][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*][\ **+e**\ \|\ **n**]] ]
-[ |-E|\ *dpi* ] [ |-F|\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**\ ] ] [ |-I| ] [ |-M|\ **c**\ \|\ **i**\ \|\ **p** ]
+[ |-D|\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]] ]
+[ |-E|\ *dpi* ] [ |-F|\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**] ] [ |-I| ] [ |-M|\ **c**\|\ **i**\|\ **p** ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-n| ]
@@ -44,7 +44,7 @@ of nodes, or resolution. Nodes not constrained by input data are set to
 NaN.
 
 The **-R** option can be used to select a map region larger or smaller
-than that implied by the extent of the grid file. 
+than that implied by the extent of the grid file.
 
 Required Arguments
 ------------------
@@ -55,7 +55,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *out_grdfile*
-    Specify the name of the output grid file. (See GRID FILE FORMATS below.) 
+    Specify the name of the output grid file. (See GRID FILE FORMATS below.)
 
 .. _-J:
 
@@ -67,7 +67,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*dx/dy*\ ]
+**-C**\ [*dx/dy*]
     Let projected coordinates be relative to projection center [Default
     is relative to lower left corner]. Optionally, add offsets in the
     projected units to be added (or subtracted when **-I** is set) to
@@ -76,10 +76,29 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *xinc*\ [*unit*\ ][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*\ ][\ **+e**\ \|\ **n**]]
-    Set the grid spacing for the new grid. Append **m** for arc minute,
-    **s** for arc second. If neither **-D** nor **-E** are set then we
+**-D**\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]]
+    Set the grid spacing for the new grid.  If neither **-D** nor **-E** are set then we
     select the same number of output nodes as there are input nodes.
+    Optionally append a suffix modifier.
+    **Geographical (degrees) coordinates**: Append
+    **m** to indicate arc minutes or **s** to indicate arc seconds. If one
+    of the units **e**, **f**, **k**, **M**, **n** or **u** is appended
+    instead, the increment is assumed to be given in meter, foot, km, Mile,
+    nautical mile or US survey foot, respectively, and will be converted to
+    the equivalent degrees longitude at the middle latitude of the region
+    (the conversion depends on :term:`PROJ_ELLIPSOID`). If *y_inc* is given
+    but set to 0 it will be reset equal to *x_inc*; otherwise it will be
+    converted to degrees latitude. **All coordinates**: If **+e** is appended
+    then the corresponding max *x* (*east*) or *y* (*north*) may be slightly
+    adjusted to fit exactly the given increment [by default the increment
+    may be adjusted slightly to fit the given domain]. Finally, instead of
+    giving an increment you may specify the *number of nodes* desired by
+    appending **+n** to the supplied integer argument; the increment is then
+    recalculated from the number of nodes and the domain. The resulting
+    increment value depends on whether you have selected a
+    gridline-registered or pixel-registered grid; see :ref:`GMT File Formats` for
+    details. Note: if **-R**\ *grdfile* is used then the grid spacing (and registration) have
+    already been initialized; use **-D** (and **-r**) to override the values.
 
 .. _-E:
 
@@ -88,13 +107,13 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**\ ]
+**-F**\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
-    actual projected meters [**e**\ ]. To specify other units, append
+    actual projected meters [**e**]. To specify other units, append
     **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
     mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
     (point). Without **-F**, the output (or input, see **-I**) are in
-    the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see **-M**).
+    the units specified by :term:`PROJ_LENGTH_UNIT` (but see **-M**).
 
 .. _-I:
 
@@ -103,16 +122,16 @@ Optional Arguments
 
 .. _-M:
 
-**-Mc**\ \|\ **i**\ \|\ **p**
+**-Mc**\|\ **i**\|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
-    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` in :doc:`gmt.conf`]. Cannot be used with **-F**.
+    :term:`PROJ_LENGTH_UNIT` in :doc:`gmt.conf`]. Cannot be used with **-F**.
 
 .. _-R:
 
 .. |Add_-R| replace:: You may ask to project only
     a subset of the grid by specifying a smaller input *w/e/s/n* region
-    [Default is the region given by the grid file]. 
+    [Default is the region given by the grid file].
 .. include:: explain_-R.rst_
 
 .. _-V:
@@ -156,7 +175,7 @@ as the measure unit:
 
    ::
 
-    gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Mm -Gtopo.nc -V
+    gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Gtopo.nc -V
 
 To inversely transform the file data.nc (which is in Mercator meters with Greenwich
 as the central longitude and a false easting of -4 and produced on the ellipse WGS-72)

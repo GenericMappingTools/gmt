@@ -3,7 +3,7 @@
 Description
 -----------
 
-Reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *files* [or standard input] and
+Reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *table* [or standard input] and
 plots symbols
 at those locations on a ternary diagram. If a symbol is selected and no symbol size
 given, then we will interpret the fourth column of the input data
@@ -19,12 +19,12 @@ Either **-M** (for dumping data) or **-R** and **-J** must be selected.
 Optional Arguments
 ------------------
 
-.. |Add_intables| replace:: Use **-T** to ignore all input files, including standard input (see below).
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 .. _-B:
 
-**-B**\ [**a**\ \|\ **b**\ \|\ **c**\ ]\ *args*
+**-B**\ [**a**\|\ **b**\|\ **c**]\ *args*
     For ternary diagrams the three sides are referred to as **a**, **b**, and **c**.  Thus,
     to give specific settings for one of these axis you must include the
     axis letter before the arguments.  If all axes have the same arguments
@@ -52,14 +52,14 @@ Optional Arguments
 
 .. _-J:
 
-**-JX**\ *width* \[*unit*]
+**-JX**\ *width*
     The only valid projection is linear plot with specified ternary width.
 
 .. _-L:
 
 **-L**\ *a*\ /*b*\ /*c*
     Set the labels for the three diagram vertices [none].  These are placed a
-    distance of 3 times the :ref:`MAP_LABEL_OFFSET <MAP_LABEL_OFFSET>`
+    distance of 3 times the :term:`MAP_LABEL_OFFSET`
     setting from their respective corners.
 
 .. _-M:
@@ -105,8 +105,6 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
 
-.. include:: explain_-aspatial.rst_
-
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_
 
@@ -124,6 +122,8 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
+.. include:: explain_-qi.rst_
+
 .. include:: explain_colon.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
@@ -132,7 +132,3 @@ Optional Arguments
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_distunits.rst_
-
-.. include:: explain_vectors.rst_

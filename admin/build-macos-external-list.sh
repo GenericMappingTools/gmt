@@ -10,10 +10,10 @@
 # 1. Separate install command to avoid version number in GraphicsMagick directory name
 # 2. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
 
-if [ `which cmake` = "/opt/local/bin/cmake" ]; then
+if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
 	top=/opt/local
-elif [ `which cmake` = "/usr/local/bin/cmake" ]; then
+elif [ $(which cmake) = "/usr/local/bin/cmake" ]; then
 	distro=HomeBrew
 	top=/usr/local
 else
@@ -36,7 +36,7 @@ EXESHARED="gdal /opt/share/ghostscript /opt/local/lib/proj6/share/proj"
 # 2a. Add the executables to the list given their paths
 rm -f /tmp/raw.lis
 for P in ${EXEONLY} ${EXEPLUSLIBS}; do
-	path=`which $P`
+	path=$(which $P)
 	if [ -L $path ]; then # A symlink
 		grealpath $path >> /tmp/raw.lis
 	else
@@ -49,7 +49,7 @@ for P in $EXELINKS; do
 done
 # 2c. Call otool -L recursively to list shared libraries used but exclude system libraries
 cc admin/otoolr.c -o build/otoolr
-build/otoolr `pwd` ${EXEPLUSLIBS} >> /tmp/raw.lis
+build/otoolr $(pwd) ${EXEPLUSLIBS} >> /tmp/raw.lis
 # 4. sort into unique list then separate executables from libraries
 sort -u /tmp/raw.lis > /tmp/final.lis
 grep dylib /tmp/final.lis > /tmp/libraries.lis
@@ -80,7 +80,7 @@ if [ ! "X$EXESHARED" = "X" ]; then
 	echo "install (DIRECTORY"
 fi
 for P in $EXESHARED; do
-	if [ $P = `basename $P` ]; then
+	if [ $P = $(basename $P) ]; then
 		echo "	$top/share/$P"
 	else
 		echo "	$P"

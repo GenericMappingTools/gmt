@@ -10,8 +10,9 @@ Atlantic ocean, where fracture zones and mid-ocean ridge segments have
 been plotted. We also would like to plot earthquake locations and
 available isochrons. We have obtained one file, ``quakes_07.txt``, which contains the
 position and magnitude of available earthquakes in the region. We choose
-to use magnitude/100 for the symbol-size in inches. The digital fracture
-zone traces (``fz_07.txt``) and isochrons (0 isochron as ``ridge_07.txt``, the rest as ``isochron_07.txt``) were
+to use magnitude/40 for the symbol-size in cm. The digital fracture
+zone traces (``fz_07.txt``) and isochrons (0 isochron as ``ridge_07.txt``,
+the rest as ``isochron_07.txt``) were
 digitized from available maps [1]_. We create the final location map
 with the following script:
 

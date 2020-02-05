@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 
 /*!
  * \file gmt_symbol.h
- * \brief Miscellaneous definitions and structures related to symbols 
+ * \brief Miscellaneous definitions and structures related to symbols
  */
 
 #ifndef GMT_SYMBOLS_H
@@ -52,7 +52,7 @@ enum gmt_enum_panel {
 	GMT_PANEL_FILL		= 8,
 	GMT_PANEL_OUTLINE	= 16
 };
-	
+
 /*! Definition of structure used for holding information about a reference point */
 struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
 	double x;		/* X position of reference point */
@@ -121,7 +121,7 @@ struct GMT_MAP_PANEL {
 
 /*! Plot a map inset box in psbasemap */
 struct GMT_MAP_INSET {
-	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
+	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
 	int justify;		/* Gave center of inset */
 	bool plot;		/* true if we want to draw the inset */
 	bool oblique;		/* true if we want got <w/s/e/n>r instead of <w/e/s/n> */

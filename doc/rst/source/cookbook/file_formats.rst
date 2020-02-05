@@ -21,18 +21,18 @@ The first data record may be preceded by one or more header records. Any
 records that begins with '#' is considered a header or comment line and
 are always processed correctly. If your data file has leading header
 records that do *not* start with '#' then you must make sure to use the
-**-h** option and set the parameter :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` in the :doc:`/gmt.conf` file
+**-h** option and set the parameter :term:`IO_N_HEADER_RECS` in the :doc:`/gmt.conf` file
 (GMT default is one header record if **-h** is given; you may also use
 **-h**\ *nrecs* directly). Alternatively, you can override the header record marker '#'
-by modifying the :ref:`IO_HEADER_MARKER <IO_HEADER_MARKER>` default setting.
+by modifying the :term:`IO_HEADER_MARKER` default setting.
 Fields within a record must be separated by
 spaces, tabs, commas, or semi-colons. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
-[±]\ *dd*\ [:*mm*\ [:*ss*\ [.\ *xx...*\ ]]][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ \|\ **w**\ \|\ **e**\ \|\ **s**\ \|\ **n**\ ]
+[±]\ *dd*\ [:*mm*\ [:*ss*\ [.\ *xx...*]]][**W**\|\ **E**\|\ **S**\|\ **N**\|\ **w**\|\ **e**\|\ **s**\|\ **n**]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. GMT is expected to handle most CVS (Comma-Separated Values)
 files, including numbers given in double quotes.  On output, fields will be separated by the character
-given by the parameter :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>`, which by default is a TAB.
+given by the parameter :term:`IO_COL_SEPARATOR`, which by default is a TAB.
 
 Optional segment header records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -49,19 +49,19 @@ outlined except that they have segment headers interspersed with data
 records that signal the start of a new segment. The segment headers may
 be of any format, but all must have the same character in the first
 column. The unique character is by default '\ >\ ', but you can
-override that by modifying the :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` default setting.
+override that by modifying the :term:`IO_SEGMENT_MARKER` default setting.
 Programs can examine the segment headers to see if they contain **-D**
 for a distance value, **-W** and **-G** options for specifying pen and
 fill attributes for individual segments, **-Z** to change color via a
 CPT, **-L** for label specifications, or **-T** for general-purpose
 text descriptions. These settings (and occasionally others) will
 override the corresponding command line options. GMT also provides for
-two special values for :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` that can make
+two special values for :term:`IO_SEGMENT_MARKER` that can make
 interoperability with other software packages easier. Choose the marker
 **B** to have blank lines recognized as segment breaks, or use **N** to
 have data records whose fields equal NaN mean segment breaks (e.g., as
 used by Matlab or Octave). When these markers are used then no other
-segment header will be considered. Note that :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` can
+segment header will be considered. Note that :term:`IO_SEGMENT_MARKER` can
 be set differently for input and output.  Finally, if a segment represents
 a closed polygon that is a hole inside another polygon you indicate this
 by including **-Ph** in the segment header.  This setting will be read
@@ -208,8 +208,8 @@ hard disk I/O).  It is therefore convenient to deflate grids with spatial
 dependence (levels 1–3 give the best speed/size-tradeoff).
 
 You may control the size of the chunks of data and compression with the
-configuration parameters :ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>`
-and :ref:`IO_NC 4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>` as specified in
+configuration parameters :term:`IO_NC4_CHUNK_SIZE`
+and :term:`IO_NC4_DEFLATION_LEVEL` as specified in
 :doc:`/gmt.conf` and you can check the netCDF format with :doc:`/grdinfo`.
 
 Classic netCDF files were the *de facto* standard until netCDF 4.0 was released
@@ -218,7 +218,7 @@ library and are thus capable of reading netCDF files generated with GMT 5,
 this includes official GMT releases since revision 4.5.8.  In rare occasions,
 when you have to load netCDF files with old software, you may be forced to
 export your grids in the old classic format.  This can be achieved by setting
-:ref:`IO_NC4_CHUNK_SIZE <IO_NC4_CHUNK_SIZE>` to **c**\ lassic.
+:term:`IO_NC4_CHUNK_SIZE` to **c**\ lassic.
 
 Further reading:
 
@@ -300,7 +300,7 @@ Geographical
        "south pole condition" is used at :math:`y_{min}`, else a default
        condition is used there.
 
-    "Pole conditions" use a 180º phase-shift of the data, requiring 180
+    "Pole conditions" use a 180° phase-shift of the data, requiring 180
     modulo :math:`x_{inc} = 0`.
 
 Default

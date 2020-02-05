@@ -12,17 +12,17 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2kml** *grid* 
+**gmt grd2kml** *grid*
 [ |-C|\ *cpt* ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
 [ |-H|\ *factor* ]
-[ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
+[ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-L|\ *tilesize* ]
 [ |-N|\ *prefix* ]
 [ |-Q| ]
 [ |-T|\ *title* ]
-[ |-W|\ *cfile*\ \|\ *pen* ]
+[ |-W|\ *cfile*\|\ *pen* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -54,16 +54,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cpt*
-    Name of the color palette table (CPT). Alternatively,
-    supply the name of a GMT color master dynamic CPT [turbo] to
-    automatically determine a continuous CPT from
-    the grid's z-range.  If the dynamic CPT has a default range then
-    that range will be imposed instead.
-    Another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
-    to build a linear continuous CPT from those colors automatically, scaled to fit the data range.
-    In this case *color1*, etc., can be a *r/g/b* triplet, a color name,
-    or an HTML hexadecimal color (e.g. #aabbcc ).
+.. include:: use_cpt_grd.rst_
 
 .. _-E:
 
@@ -92,7 +83,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*]
+**-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere (affects the ambient light).
     Alternatively, derive an intensity grid from the input data grid *grid*
@@ -133,7 +124,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *cfile*\ \|\ *pen*
+**-W**\ *cfile*\|\ *pen*
     Supply a file with records each holding a contour value and a contour pen.
     We then overlay the selected contour lines on top of the image [no contours].
     If *cfile* is not a valid file we assume you instead gave a *pen* and want

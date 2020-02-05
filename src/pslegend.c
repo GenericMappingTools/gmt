@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Plot a legend"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"jr"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYpt" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYpqt" GMT_OPT("c")
 
 struct PSLEGEND_CTRL {
 	struct PSLEGND_C {	/* -C<dx>[/<dy>] */
@@ -102,11 +102,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>[/<dy>]] [-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s%s%s[%s] [-S<scale>]\n", GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)
-		GMT_Message (API, GMT_TIME_NONE, "\t[-T<file>] [%s] [%s] [%s]\n\t[%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-T<file>] [%s] [%s] [%s]\n\t[%s]%s[%s]\n\t[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]%s[%s]\n\t[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout specification from <specfile> [or stdin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <specfile> format).\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t(See module documentation for more information and <specfile> format).\n\n");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -127,7 +127,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Scale all symbol sizes by <scale> [1].\n");
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)
 		GMT_Message (API, GMT_TIME_NONE, "\t-T Write hidden legend specfile to <file>.\n");
-	GMT_Option (API, "U,V,X,c,p,t,.");
+	GMT_Option (API, "U,V,X,c,p,qi,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -188,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 					Ctrl->D.refpoint->mode = GMT_REFPOINT_PLOT;
 					Ctrl->D.justify = PSL_TC;	/* Backwards compatible default justification */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s", xx, yy, txt_a, txt_b, txt_c, txt_d, txt_e);
-					n_errors += gmt_M_check_condition (GMT, n < 3, "Error: Old syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
+					n_errors += gmt_M_check_condition (GMT, n < 3, "Old syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
 					if (n_errors) break;
 					if (xx[0] == 'x') {
 						Ctrl->D.refpoint->x = gmt_M_to_inch (GMT, &xx[1]);
@@ -278,7 +278,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 				if (opt->arg[0])
 					Ctrl->T.file = strdup (opt->arg);
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -T requires a filename\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T requires a filename\n");
 					n_errors++;
 				}
 				break;
@@ -297,17 +297,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.off[GMT_X] < 0.0 || Ctrl->C.off[GMT_Y] < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Syntax error: The -D option is required!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error: The -S option cannot set a zero scale!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.off[GMT_X] < 0.0 || Ctrl->C.off[GMT_Y] < 0.0, "Option -C: clearances cannot be negative!\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "The -D option is required!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale <= 0.0, "The -S option cannot set a zero scale!\n");
 
 	if (!Ctrl->D.refpoint) return (GMT_PARSE_ERROR);	/* Need to exit because next ones to not apply */
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] < 0.0, "Syntax error -D option: legend box height cannot be negative!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] < 0.0, "Option -D: legend box height cannot be negative!\n");
 	if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 		static char *kind = "gjJnx";	/* The five types of refpoint specifications */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Option -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -334,10 +334,10 @@ GMT_LOCAL void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, 
 	for (col = 0; col < n_cols; col++) {
 		if (!fill[col]) continue;	/* No fill for this cell */
 		if (gmt_getfill (GMT, fill[col], &F)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to interpret %s as a valid fill, skipped\n", fill[col]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to interpret %s as a valid fill, skipped\n", fill[col]);
 			continue;
 		}
-		gmt_setfill (GMT, &F, false);
+		gmt_setfill (GMT, &F, 0);
 		dim[0] = xoff[col+1] - xoff[col];
 		PSL_plotsymbol (GMT->PSL, x0 + 0.5 * (xoff[col+1] + xoff[col]), y0, dim, PSL_RECT);
 	}
@@ -350,7 +350,7 @@ GMT_LOCAL struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, stru
 	struct GMT_DATASET *D = NULL;
 	if (Din) return Din;	/* Already done this */
 	if (D == NULL && (D = GMT_Create_Data (API, GMT_IS_DATASET, geometry, mode, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for pslegend\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for pslegend\n");
 		return (NULL);
 	}
 	/* Initialize counters to zero */
@@ -382,14 +382,14 @@ GMT_LOCAL double get_image_aspect (struct GMTAPI_CTRL *API, char *file) {
 	if (strstr (file, ".eps") || strstr (file, ".ps") || strstr (file, ".epsi") || strstr (file, ".epsf")) {	/* EPS file */
 		struct imageinfo h;
 		if (PSL_loadeps (API->GMT->PSL, file, &h, NULL)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read EPS file %s, no pattern set\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to read EPS file %s, no pattern set\n", file);
 			return (-1.0);
 		}
 		aspect = (double)h.height / (double)h.width;
 		return aspect;
 	}
 	if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to read image %s, no pattern set\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to read image %s, no pattern set\n", file);
 		return (-1.0);
 	}
 	aspect = (double)I->header->n_rows / (double)I->header->n_columns;
@@ -432,7 +432,7 @@ int GMT_legend (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: legend\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: legend\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_pslegend (V_API, mode, args);
@@ -466,7 +466,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2], C_rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0, shrink[4] = {0.0, 0.0, 0.0, 0.0};
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
-	
+
 	struct imageinfo header;
 	struct PSLEGEND_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -495,7 +495,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -506,7 +506,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	gmt_M_memset (S, N_DAT, struct GMT_DATASEGMENT *);
 	gmt_M_memset (krow, N_DAT, uint64_t);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input text table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
 	if (gmt_M_compat_check (GMT, 4)) {
 		/* Since pslegend v4 used '>' to indicate a paragraph record we avoid confusion with multiple segment-headers by *
 		 * temporarily setting # as segment header flag since all headers are skipped anyway */
@@ -514,7 +514,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	}
 
 	if (gmt_legend_file (API, legend_file) == 1) {	/* Running modern mode and we have a hidden legend file to read */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing hidden legend specfile %s\n", legend_file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing hidden legend specfile %s\n", legend_file);
 		if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, legend_file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -537,7 +537,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		legend_item = gmt_M_memory (GMT, NULL, In->n_records, struct PSLEGEND_TXT);	/* Array to hold all labels */
 		do_width = true;
 	}
-	
+
 	/* First attempt to compute the legend height */
 
 	one_line_spacing = Ctrl->D.spacing * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
@@ -617,11 +617,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						sscanf (&line[2], "%s %s %s", image, size, key);
 						first = gmt_download_file_if_not_found (GMT, image, GMT_CACHE_DIR);
 						if (gmt_getdatapath (GMT, &image[first], path, R_OK) == NULL) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", &image[first]);
+							GMT_Report (API, GMT_MSG_ERROR, "Cannot find/open file %s.\n", &image[first]);
 							continue;
 						}
 						if ((aspect = get_image_aspect (API, path)) < 0.0) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", &image[first]);
+							GMT_Report (API, GMT_MSG_ERROR, "Trouble reading %s! - Skipping.\n", &image[first]);
 							continue;
 						}
 						height += gmt_M_to_inch (GMT, size) * aspect;
@@ -681,7 +681,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						while ((gmt_strtok (&line[2], " \t", &pos, p))) {
 							n_columns++;
 							if (n_columns == PSLEGEND_MAX_COLS) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
+								GMT_Report (API, GMT_MSG_ERROR, "Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
@@ -696,7 +696,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through on purpose */
 							GMT_Report (API, GMT_MSG_COMPAT, "Paragraph text header flag > is deprecated; use P instead\n");
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized record (%s)\n", line);
+							GMT_Report (API, GMT_MSG_ERROR, "Unrecognized record (%s)\n", line);
 							Return (GMT_RUNTIME_ERROR);
 							break;
 						}
@@ -716,7 +716,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						text[0] = '\0';
 						n_scan = sscanf (line, "%*s %*s %*s %s %*s %*s %s %[^\n]", size, txt_b, text);
 						/* Find the largest symbol size specified */
-						x = gmt_M_to_inch (GMT, size);
+						if ((c = strrchr (size, '/')))	/* Front, use the last arg as size since closest to height */
+							x = gmt_M_to_inch (GMT, &c[1]);
+						else
+							x = (strcmp (size, "-")) ? gmt_M_to_inch (GMT, size) : 0.0;
 						if (x > def_size) def_size = x;
 						if (n_scan > 1 && strcmp (txt_b, "-")) {
 							x = gmt_M_to_inch (GMT, txt_b);
@@ -742,7 +745,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						break;
 
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized record (%s)\n", line);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized record (%s)\n", line);
 						Return (GMT_RUNTIME_ERROR);
 					break;
 				}
@@ -752,19 +755,20 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	if (do_width) {
 		if (max_cols > 1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Must specify -D...+w<width> if more than one symbol column (N = %d)\n", max_cols);
+			GMT_Report (API, GMT_MSG_ERROR, "Must specify -D...+w<width> if more than one symbol column (N = %d)\n", max_cols);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (!in_PS_ok) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Must specify -D...+w<width> if codes other than D, H, L, S, V are used\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Must specify -D...+w<width> if codes other than D, H, L, S, V are used\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
 	if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
 		def_size = 0.5 / 2.54;	/* In inches */
-	if (def_dx2 == 0.0)	/* No dist to texl label given; default to 2x*/
+	if (def_dx2 == 0.0)	/* No dist to text label given; default to 2x default symbol size */
 		def_dx2 = Ctrl->S.scale * GMT_LEGEND_DX2_MUL * def_size;	/* In inches */
+	GMT_Report (API, GMT_MSG_DEBUG, "Default symbol size = %g and default distance to text label is %g\n", def_size, def_dx2);
 
 	if (n_char) {	/* Typesetting paragraphs, make a guesstimate of number of typeset lines */
 		int n_lines;
@@ -780,15 +784,15 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	scl = gmt_convert_units (GMT, "1", GMT_INCH, GMT->current.setting.proj_length_unit);
 	if (Ctrl->D.dim[GMT_Y] == 0.0) {	/* Use the computed height */
 		Ctrl->D.dim[GMT_Y] = height;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height not given, use estimated height of %g %s.\n", scl*height,
+		GMT_Report (API, GMT_MSG_INFORMATION, "Legend height not given, using estimated height of %g %s.\n", scl*height,
 			GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	}
 	else
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Legend height given as %g %s; estimated height is %g %s.\n",
+		GMT_Report (API, GMT_MSG_INFORMATION, "Legend height given as %g %s; estimated height is %g %s.\n",
 		            scl*Ctrl->D.dim[GMT_Y], GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 		            scl*height, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	if (do_width) Ctrl->D.dim[GMT_X] = Ctrl->D.dim[GMT_Y];	/* Temporarily needed in gmt_map_setup */
-	
+
 	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
 		gmt_M_memset (wesn, 4, double);
@@ -799,7 +803,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 		if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Cannot use -B if no -R -J */
 			GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = false;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Disabling your -B option since -R -J was not set\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Disabling your -B option since -R -J were not set\n");
 		}
 	}
 	else if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
@@ -852,7 +856,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		PSL_defunits (PSL, "PSL_legend_box_width", Ctrl->D.dim[GMT_X]);
 	}
 	PSL_defunits (PSL, "PSL_legend_box_height", Ctrl->D.dim[GMT_Y]);
-	
+
 	gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 	/* Allow for justification and offset so that the reference point is the plot location of the bottom left corner of box */
@@ -880,10 +884,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active) {	/* First place legend frame fill */
 		if (do_width) {	/* Doing it all via PostScript settings */
 			if (Ctrl->F.panel->mode & GMT_PANEL_ROUNDED)
-				GMT_Report (API, GMT_MSG_VERBOSE, "Disabling your -F... +r modifier since not implemented yet for automatic width setting\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Disabling your -F... +r modifier since not implemented yet for automatic width setting\n");
 			PSL_command (PSL, "V\n");
 			if (Ctrl->F.panel->mode & GMT_PANEL_SHADOW) {	/* Draw offset background shadow first */
-				gmt_setfill (GMT, &Ctrl->F.panel->sfill, false);	/* The shadow has no outline */
+				gmt_setfill (GMT, &Ctrl->F.panel->sfill, 0);	/* The shadow has no outline */
 				PSL_setcurrentpoint (PSL, Ctrl->F.panel->off[GMT_X], Ctrl->F.panel->off[GMT_Y]);
 				PSL_command (PSL, "PSL_legend_box_width 0 D 0 PSL_legend_box_height D PSL_legend_box_width neg 0 D P FO N\n");
 			}
@@ -893,7 +897,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			if (Ctrl->F.panel->mode & GMT_PANEL_INNER) {	/* Also draw secondary frame on the inside */
 				PSL_defunits (PSL, "PSL_legend_box_shrink", 2.0 * Ctrl->F.panel->gap);
 				gmt_setpen (GMT, &Ctrl->F.panel->pen2);	/* Set inner border pen */
-				gmt_setfill (GMT, NULL, true);	/* Never fill for inner frame */
+				gmt_setfill (GMT, NULL, 1);	/* Never fill for inner frame */
 				PSL_setcurrentpoint (PSL, Ctrl->F.panel->gap, Ctrl->F.panel->gap);
 				PSL_command (PSL, "PSL_legend_box_width PSL_legend_box_shrink sub 0 D 0 PSL_legend_box_height PSL_legend_box_shrink sub D PSL_legend_box_width PSL_legend_box_shrink sub neg 0 D P FO N\n");
 			}
@@ -959,7 +963,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: gmt psscale %s\n", buffer);
 						status = GMT_Call_Module (API, "psscale", GMT_MODULE_CMD, buffer);	/* Plot the colorbar */
 						if (status) {
-							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psscale returned error %d.\n", status);
+							GMT_Report (API, GMT_MSG_ERROR, "GMT_psscale returned error %d.\n", status);
 							Return (GMT_RUNTIME_ERROR);
 						}
 						row_base_y -= row_height;
@@ -976,7 +980,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						else if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, txtcolor)) != 0)
 							Return (GMT_RUNTIME_ERROR);	/* If given z=value then we look up colors */
 						if (gmt_getrgb (GMT, txtcolor, C_rgb)) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Text color %s not recognized!\n", txtcolor);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Text color %s not recognized!\n", txtcolor);
 							Return (GMT_RUNTIME_ERROR);
 						}
 						break;
@@ -984,7 +988,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 					case 'D':	/* Delimiter record: D [offset] <pen>|- [-|=|+] */
 						n_scan = sscanf (&line[2], "%s %s %s", txt_a, txt_b, txt_c);
 						if (n_scan < 1) {	/* Clearly a bad record */
-							GMT_Report (API, GMT_MSG_NORMAL, "Not enough arguments given to D operator\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Not enough arguments given to D operator\n");
 							Return (GMT_RUNTIME_ERROR);
 						}
 						if (n_scan == 2) {	/* Either got D <offset> <pen OR D <pen> <flag> */
@@ -1041,7 +1045,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, p)) != 0) Return (GMT_RUNTIME_ERROR);	/* If given z=value then we look up colors */
 							if (strcmp (p, "-")) fill[n_col++] = strdup (p);
 							if (n_col > n_columns) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Exceeding specified N columns (%d) in F operator (%d)\n", n_columns, n_col);
+								GMT_Report (API, GMT_MSG_ERROR, "Exceeding specified N columns (%d) in F operator (%d)\n", n_columns, n_col);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
@@ -1109,11 +1113,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						sscanf (&line[2], "%s %s %s", image, size, key);
 						first = gmt_download_file_if_not_found (GMT, image, GMT_CACHE_DIR);
 						if (gmt_getdatapath (GMT, &image[first], path, R_OK) == NULL) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", &image[first]);
+							GMT_Report (API, GMT_MSG_ERROR, "Cannot find/open file %s.\n", &image[first]);
 							Return (GMT_FILE_NOT_FOUND);
 						}
 						if ((aspect = get_image_aspect (API, path)) < 0.0) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", &image[first]);
+							GMT_Report (API, GMT_MSG_ERROR, "Trouble reading %s! - Skipping.\n", &image[first]);
 							continue;
 						}
 						justify = gmt_just_decode (GMT, key, PSL_NO_DEF);
@@ -1125,7 +1129,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: gmt psimage %s\n", buffer);
 						status = GMT_Call_Module (API, "psimage", GMT_MODULE_CMD, buffer);	/* Plot the image */
 						if (status) {
-							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psimage returned error %d.\n", status);
+							GMT_Report (API, GMT_MSG_ERROR, "GMT_psimage returned error %d.\n", status);
 							Return (GMT_RUNTIME_ERROR);
 						}
 						row_base_y -= row_height;
@@ -1245,7 +1249,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						else {	/* Must use -R -J as supplied to pslegend */
 							gmt_set_missing_options (GMT, "RJ");	/* If mode is modern, -R -J exist in the history, and if an overlay we may add these from history automatically */
 							if (!GMT->common.R.active[RSET] || !GMT->common.J.active) {
-								GMT_Report (API, GMT_MSG_NORMAL, "The M record must have map -R -J if -Dx and no -R -J is used\n");
+								GMT_Report (API, GMT_MSG_ERROR, "The M record must have map -R -J if -Dx and no -R -J is used\n");
 								Return (GMT_RUNTIME_ERROR);
 							}
 							sprintf (buffer, "-R%s -J%s -O -K -L%s", GMT->common.R.string, GMT->common.J.string, mapscale);
@@ -1255,7 +1259,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: gmt psbasemap %s\n", buffer);
 						status = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, buffer);	/* Plot the scale */
 						if (status) {
-							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psbasemap returned error %d.\n", status);
+							GMT_Report (API, GMT_MSG_ERROR, "GMT_psbasemap returned error %d.\n", status);
 							Return (GMT_RUNTIME_ERROR);
 						}
 						if (gave_label && just == 'b') row_base_y -= d_off;
@@ -1271,7 +1275,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						while ((gmt_strtok (&line[2], " \t", &pos, p))) {
 							col_width[n_columns++] = atof (p);
 							if (n_columns == PSLEGEND_MAX_COLS) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
+								GMT_Report (API, GMT_MSG_ERROR, "Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
@@ -1300,7 +1304,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s %s", xx, yy, size, angle, font, key, lspace, tw, jj);
 							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 							if (!(n == 0 || n == 9)) {
-								GMT_Report (API, GMT_MSG_NORMAL, "The > record must have 0 or 9 arguments (only %d found)\n", n);
+								GMT_Report (API, GMT_MSG_ERROR, "The > record must have 0 or 9 arguments (only %d found)\n", n);
 								Return (GMT_RUNTIME_ERROR);
 							}
 							if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[GMT_PRIMARY].size);
@@ -1309,7 +1313,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							did_old = true;
 						}
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized record (%s)\n", line);
+							GMT_Report (API, GMT_MSG_ERROR, "Unrecognized record (%s)\n", line);
 							Return (GMT_RUNTIME_ERROR);
 							break;
 						}
@@ -1318,7 +1322,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 							if (!(n == 0 || n == 8)) {
-								GMT_Report (API, GMT_MSG_NORMAL, "The P record must have 0 or 8 arguments (only %d found)\n", n);
+								GMT_Report (API, GMT_MSG_ERROR, "The P record must have 0 or 8 arguments (only %d found)\n", n);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
@@ -1424,7 +1428,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							D[FRONT]->n_records += 2;
 							n_fronts++;
 							if (n_fronts == GMT_SMALL_CHUNK) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Can handle max %d front lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
+								GMT_Report (API, GMT_MSG_ERROR, "Can handle max %d front lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
 								return (API->error);
 							}
 						}
@@ -1446,7 +1450,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							D[QLINE]->n_records += 2;
 							n_quoted_lines++;
 							if (n_quoted_lines == GMT_SMALL_CHUNK) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Can handle max %d quoted/decorated lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
+								GMT_Report (API, GMT_MSG_ERROR, "Can handle max %d quoted/decorated lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
 								return (API->error);
 							}
 						}
@@ -1514,7 +1518,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								else if ((c = strchr (symbol, '+')) != NULL) {	/* GMT5 syntax: Pass along all the given modifiers */
 									strcpy (sub, symbol);
 									if ((c = strstr (sub, "+j")) != NULL && c[2] != 'c') {	/* Got justification, check if it is +jc */
-										GMT_Report (API, GMT_MSG_NORMAL, "Vector justification changed from +j%c to +jc\n", c[2]);
+										GMT_Report (API, GMT_MSG_ERROR, "Vector justification changed from +j%c to +jc\n", c[2]);
 										c[2] = 'c';	/* Replace with centered justification */
 									}
 									else	/* Add +jc */
@@ -1706,7 +1710,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						break;
 
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized record (%s)\n", line);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized record (%s)\n", line);
 						Return (GMT_RUNTIME_ERROR);
 					break;
 				}
@@ -1831,7 +1835,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			D[PAR]->n_records = D[PAR]->table[0]->n_records;
 			S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
 		}
-			
+
 		/* Create option list, register D[PAR] as input source */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, D[PAR], string) != GMT_NOERROR) {
 			Return (API->error);
@@ -1854,7 +1858,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	}
 	if (do_width)	/* Adjust for mismatch between width and actual width */
 		PSL_command (PSL, "PSL_legend_box_width PSL_legend_box_height sub %d 2 div mul 0 translate\n", (Ctrl->D.justify%4)-1);
-	
+
 	PSL_setorigin (PSL, shrink[XLO], shrink[YLO], 0.0, PSL_FWD);	/* Undo any damage for adjustments due to subplot set -C */
 
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */
@@ -1885,9 +1889,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	}
 
 	if (legend_file[0] && gmt_remove_file (GMT, legend_file)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to delete current legend file %s\n", legend_file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to delete current legend file %s\n", legend_file);
 		Return (API->error);
 	}
-	
+
 	Return (GMT_NOERROR);
 }

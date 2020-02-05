@@ -14,10 +14,10 @@ x0=0.5
 # gmt math -T-3/3/0.1 T $b MUL $a ADD $x0 STEPT $c MUL ADD 0 0.1 NRAND ADD = stepdata.txt
 gmt math -A@stepdata.txt+r -N4/1 -C0 1 ADD -C1 T ADD -C2 0.5 STEPT ADD -Ca LSQFIT = solution.txt
 # For this example we use the coefficients to evaluate the function the hard way
-q=(`cat solution.txt`)
+q=($(cat solution.txt))
 gmt math -T-3/3/0.1 T ${q[1]} MUL ${q[0]} ADD 0.5 STEPT ${q[2]} MUL ADD = stepfit_lsq.txt
 gmt math -A@stepdata.txt+r -N4/1 -C0 1 ADD -C1 T ADD -C2 0.5 STEPT ADD -Ca SVDFIT = solution.txt
-q=(`cat solution.txt`)
+q=($(cat solution.txt))
 gmt math -T-3/3/0.1 T ${q[1]} MUL ${q[0]} ADD 0.5 STEPT ${q[2]} MUL ADD = stepfit_svd.txt
 gmt psxy -R-3/3/0/4 -JX6.5i/4i -P -Baf -BWSne @stepdata.txt -Sc0.15c -Gblue -K -Xc > $ps
 gmt psxy -R -J -O -K stepfit_lsq.txt -W2p >> $ps

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -113,17 +113,17 @@ GMT_LOCAL double proj_robinson_spline (struct GMT_CTRL *GMT, double xp, double *
 
 GMT_LOCAL void proj_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure -R and -J agree for global plots; J given priority */ {
 	double lon0 = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
-	
+
 	if (GMT->current.map.is_world && lon0 != *clon) {
 		GMT->common.R.wesn[XLO] = *clon - 180.0;
 		GMT->common.R.wesn[XHI] = *clon + 180.0;
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
 			*clon, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 	}
 	else if (!GMT->current.map.is_world) {
 		lon0 = *clon - 360.0;
 		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += 360.0;
-		if (lon0 > GMT->common.R.wesn[XHI]) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Central meridian outside region\n");
+		if (lon0 > GMT->common.R.wesn[XHI]) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian outside region\n");
 	}
 }
 
@@ -971,7 +971,7 @@ void gmt_vlamb (struct GMT_CTRL *GMT, double rlong0, double rlat0, double pha, d
 	GMT->current.proj.pole = (GMT->current.proj.north_pole) ? 90.0 : -90.0;
 	sincosd (pha, &sin_pha, &cos_pha);
 	sincosd (phb, &sin_phb, &cos_phb);
-	
+
 	t_pha = tand (45.0 - 0.5 * pha) / pow ((1.0 - GMT->current.proj.ECC *
 		sin_pha) / (1.0 + GMT->current.proj.ECC * sin_pha), GMT->current.proj.half_ECC);
 	m_pha = cos_pha / d_sqrt (1.0 - GMT->current.proj.ECC2 * sin_pha * sin_pha);
@@ -2482,7 +2482,7 @@ void gmt_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_X,   GMT_N_ROBINSON, GMT->current.proj.n_yx_coeff);
 		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
 	}
-	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Interpolation failed in gmt_vrobinson?\n");
+	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Interpolation failed in gmt_vrobinson?\n");
 }
 
 void gmt_robinson (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {

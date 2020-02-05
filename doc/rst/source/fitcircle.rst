@@ -15,6 +15,7 @@ Synopsis
 
 **gmt fitcircle** [ *table* ] |-L|\ *norm* [ |-F|\ *flags* ] [ |-S|\ [*lat*] ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -23,6 +24,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -73,7 +75,7 @@ Optional Arguments
 
 *table*
     One or more ASCII [or binary, see **-bi**] files containing lon,lat [or lat,lon; see
-    **-:**\ [**i**\ \|\ **o**]] values in the first 2 columns. If no
+    **-:**\ [**i**\|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
 
 .. _-F:
@@ -100,6 +102,9 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. |Add_-a| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
@@ -121,6 +126,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_colon.rst_
 

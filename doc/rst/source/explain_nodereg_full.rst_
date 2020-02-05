@@ -1,7 +1,7 @@
 .. _nodereg_full:
 
-**-r**\ [**g**\ \|\ **p**\ ]
-    Force **g**\ridline or **p**\ ixel node registration [Just **-r** sets pixel registration].
+**-r**\ [**g**\|\ **p**]
+    Force **g**\ridline or **p**\ ixel node registration [gridline]. Just **-r** sets pixel registration.
     If no **-r** is given then gridline registration is selected.
     (Node registrations are defined in Section :ref:`option_nodereg`
     of the GMT Technical Reference and Cookbook.)

@@ -14,11 +14,11 @@ Synopsis
 
 **gmt grdinterpolate** *3Dgrid* | *grd1 grd2 ...*
 |-G|\ *outgrid*
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
-[ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **2**] ]
+**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
+[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ **i**\ *levels*\ \|\ **o** ]
+[ |-Z|\ **i**\ *levels*\|\ **o** ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -50,20 +50,20 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] \|\ |-T|\ *file*\ \|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`.
+    For details on array creation, see `Generate 1D Array`_.
 
 Optional Arguments
 ------------------
 
 .. _-F:
 
-**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **2**]
+**-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
-    :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
+    :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
     by appending **+1** or **+2**, respectively.
 
@@ -81,7 +81,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Zi**\ *levels*\ \|\ **o**
+**-Zi**\ *levels*\|\ **o**
     Use **-Zi** to obtain the *levels* and then we read the corresponding number of
     2-D input grids given on the command line [Default is a single 3-D data cube].
     The *levels* are specified the same way as in **-T**.
@@ -92,6 +92,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: explain_array.rst_
+
 Time Coordinates
 ----------------
 
@@ -99,7 +101,7 @@ Time coordinates in netCDF grids, be it the x, y, or z coordinate, will
 be recognized as such. The variable's **unit** attribute is parsed to
 determine the unit and epoch of the time coordinate in the grid. Values
 are then converted to the internal time system specified by
-:ref:`TIME_UNIT <TIME_UNIT>` and :ref:`TIME_EPOCH <TIME_EPOCH>` in the
+:term:`TIME_UNIT` and :term:`TIME_EPOCH` in the
 :doc:`gmt.conf` file or on the
 command line. The default output is relative time in that time system,
 or absolute time when using the option **-f0T**, **-f1T**, or **-f2T**

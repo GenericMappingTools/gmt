@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ int main () {
 	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);	/* This allocates memory for the plot and returns it via ID */
 	if (status) {
-		GMT_Report (API, GMT_MSG_NORMAL, "GMT_pscoast returned error %d\n", status);
+		GMT_Report (API, GMT_MSG_ERROR, "GMT_pscoast returned error %d\n", status);
 		exit (EXIT_FAILURE);
 	}
 
@@ -51,7 +51,7 @@ int main () {
 	/* 4. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, cmd);	/* This appends to the same plot */
 	if (status) {
-		GMT_Report (API, GMT_MSG_NORMAL, "GMT_psbasemap returned error %d\n", status);
+		GMT_Report (API, GMT_MSG_ERROR, "GMT_psbasemap returned error %d\n", status);
 		exit (EXIT_FAILURE);
 	}
 

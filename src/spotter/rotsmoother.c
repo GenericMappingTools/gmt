@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 2016-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *   Copyright (c) 2016-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -173,7 +173,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 					struct GMT_DATASET *T = NULL;
 					struct GMT_DATASEGMENT *S = NULL;
 					if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Error reading file %s\n", opt->arg);
 						n_errors++;
 						continue;
 					}
@@ -198,7 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 					if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0'))	/* Gave number of points instead; calculate inc */
 						inc = (max - min) / (inc - 1.0);
 					if (inc <= 0.0) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Age increment must be positive\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -T: Age increment must be positive\n");
 						n_errors++;
 					}
 					else {
@@ -229,8 +229,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 	if (!Ctrl->A.active) n_in++;	/* Got time in input column 3 */
 	if (Ctrl->W.active) n_in++;		/* Got weights as extra column */
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %u columns\n", n_in);
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->N.active + Ctrl->S.active + Ctrl->W.active) > 1, "Syntax error: Only one of -N, -S, -Z can be set.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Binary input data (-bi) must have at least %u columns\n", n_in);
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->N.active + Ctrl->S.active + Ctrl->W.active) > 1, "Only one of -N, -S, -Z can be set.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -279,7 +279,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -291,7 +291,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 	/* Read the rotation data from file or stdin */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
 	if (!Ctrl->A.active) n_in++;	/* Got time */
 	if (Ctrl->W.active) n_in++;		/* Got weights */
@@ -369,8 +369,8 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (!Ctrl->A.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Range of input ages   = %g/%g\n", min_rot_age, max_rot_age);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Range of input angles = %g/%g\n", min_rot_angle, max_rot_angle);
+	if (!Ctrl->A.active) GMT_Report (API, GMT_MSG_INFORMATION, "Range of input ages   = %g/%g\n", min_rot_age, max_rot_age);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Range of input angles = %g/%g\n", min_rot_angle, max_rot_angle);
 
 	if ((error = GMT_Set_Columns (API, GMT_OUT, n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		gmt_M_free (GMT, D);
@@ -415,7 +415,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 			if (D[rot].wxyasn[K_AGE] > t_hi) stop = true;
 		last = rot - 1;	/* Index to first rotation outside this time interval */
 		n_use = last - first;	/* Number of rotations in the interval */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
 		if (n_use < n_minimum) continue;	/* Need at least 1 or 2 poles to do anything useful */
 
 		/* Now extimate the average rotation */
@@ -474,7 +474,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		out[GMT_X] = lon_mean_pole;
 		out[GMT_Y] = gmt_lat_swap (GMT, lat_mean_pole, GMT_LATSWAP_O2G);	/* Convert back from geocentric to geodetic */
 		out[GMT_Z] = mean_rot_age;	out[3] = mean_rot_angle;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean opening angle %8.4f vs median opening angle %8.4f\n", mean_rot_angle, med_angle);	/* Report mean and median angle for testing */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Mean opening angle %8.4f vs median opening angle %8.4f\n", mean_rot_angle, med_angle);	/* Report mean and median angle for testing */
 		n_total_use += n_use;
 		n_out++;
 
@@ -525,7 +525,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 		gmt_M_memcpy (Ccopy, C, 9, double);	/* Duplicate since it will get trodden on */
 		if (gmt_jacobi (GMT, Ccopy, matrix_dim, matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
-			GMT_Report (API, GMT_MSG_NORMAL, "Eigenvalue routine gmt_jacobi failed to converge in 50 sweeps.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Eigenvalue routine gmt_jacobi failed to converge in 50 sweeps.\n");
 		}
 
 		/* In addition to reporting the covariance, we will report the azimuth of the major axis and the
@@ -582,8 +582,8 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	}
 
 	if (n_out == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No smoothed poles created - is filterwidth too small?\n");
-		if (n_total_use != n_read) GMT_Report (API, GMT_MSG_NORMAL, "Read %ld poles, used %7ld\n", n_read, n_total_use);
+		GMT_Report (API, GMT_MSG_ERROR, "No smoothed poles created - is filterwidth too small?\n");
+		if (n_total_use != n_read) GMT_Report (API, GMT_MSG_ERROR, "Read %ld poles, used %7ld\n", n_read, n_total_use);
 	}
 
 	/* Free up memory used for the array */

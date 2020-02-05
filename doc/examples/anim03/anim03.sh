@@ -11,7 +11,7 @@ if [ $# -eq 0 ]; then	# Just make master PostScript frame 27 (az = 135)
 	ps=anim03.ps
 else	# Make animated GIF, infinitely looping
 	opt="-A+l"
-fi	
+fi
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
 gmt begin
@@ -28,5 +28,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -C4ix2.5ix100 -Nanim03 -Tangles.txt -Sbpre.sh -D10 -Z $opt
+gmt movie main.sh -C4ix2.5ix100 -Nanim03 -Tangles.txt -Sbpre.sh -D10 -Pb -Z $opt
 rm -rf main.sh pre.sh

@@ -28,10 +28,11 @@ However, in some cases it would be more practical to specify map
 *height* instead of *width*, while in other situations it would be nice
 to set either the *shortest* or *longest* map dimension. Users may
 select these alternatives by appending a character code to their map
-dimension. To specify map *height*, append **h** to the given dimension;
-to select the minimum map dimension, append **-**, whereas you may
-append **+** to select the maximum map dimension. Without the modifier
-the map width is selected by default.
+dimension. To specify map *height*, append **+dh** to the given dimension;
+to select the minimum map dimension, append **+dl**, whereas you may
+append **+du** to select the maximum map dimension. Without the modifier
+the map width is selected by default [**+dw**].  All dimensions are called
+*plot-units* below and are numbers followed by units **c**, **i**, or **p**.
 
 In GMT version 4.3.0 we noticed we ran out of the alphabet for
 1-letter (and sometimes 2-letter) projection codes. To allow more
@@ -64,22 +65,22 @@ the projection in GMT you need to provide the following information:
 
 -  Two standard parallels.
 
--  Map scale in inch/degree or 1:xxxxx notation (**-Jb**), or map width (**-JB**).
+-  Map scale in plot-units/degree or 1:xxxxx notation (**-Jb**), or map width (**-JB**).
 
 Note that you must include the "1:" if you choose to specify the scale
-that way. E.g., you can say 0.5 which means 0.5 inch/degree or 1:200000
-which means 1 inch on the map equals 200,000 inches along the standard
+that way. E.g., you can say 0.5c which means 0.5 cm/degree or 1:200000
+which means 1 unit on the map equals 200,000 units along the standard
 parallels. The projection center defines the origin of the rectangular
 map coordinates. As an example we will make a map of the region near
-Taiwan. We choose the center of the projection to be at 125ºE/20ºN and
-25ºN and 45ºN as our two standard parallels. We desire a map that is 5
-inches wide. The complete command needed to generate the map below is
+Taiwan. We choose the center of the projection to be at 125°E/20°N and
+25°N and 45°N as our two standard parallels. We desire a map that is 12
+cm wide. The complete command needed to generate the map below is
 therefore given by:
 
    ::
 
     gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt coast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest -A250 -pdf GMT_albers
+    gmt coast -R110/140/20/35 -JB125/20/25/45/12c -Bag -Dl -Ggreen -Wthinnest -A250 -pdf GMT_albers
 
 .. figure:: /_images/GMT_albers.*
    :width: 500 px
@@ -102,7 +103,7 @@ projection, i.e.,
 
 -  Two standard parallels.
 
--  Map scale in inch/degree or 1:xxxxx notation (**-Jd**), or map width (**-JD**).
+-  Map scale in plot-unts/degree or 1:xxxxx notation (**-Jd**), or map width (**-JD**).
 
 The equidistant conic projection is often used for atlases with maps of
 small countries. As an example, we generate a map of Cuba:
@@ -110,7 +111,7 @@ small countries. As an example, we generate a map of Cuba:
    ::
 
     gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    gmt coast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red -Glightgreen -Wthinnest -pdf GMT_equidistant_conic
+    gmt coast -R-88/-70/18/24 -JD-79/21/19/23/12c -Bag -Di -N1/thick,red -Glightgreen -Wthinnest -pdf GMT_equidistant_conic
 
 .. figure:: /_images/GMT_equidistant_conic.*
    :width: 500 px
@@ -136,10 +137,10 @@ same information as for the Albers projection, i.e.,
 
 -  Two standard parallels.
 
--  Map scale in inch/degree or 1:xxxxx notation (**-Jl**), or map width (**-JL**).
+-  Map scale in plot-untes/degree or 1:xxxxx notation (**-Jl**), or map width (**-JL**).
 
 The Lambert conformal projection has been used for basemaps for all the
-48 contiguous States with the two fixed standard parallels 33ºN and 45ºN.
+48 contiguous States with the two fixed standard parallels 33°N and 45°N.
 We will generate a map of the continental USA using these parameters.
 Note that with all the projections you have the option of selecting a
 rectangular border rather than one defined by meridians and parallels.
@@ -148,7 +149,7 @@ use degrees west for longitudes. The generating commands used were
 
    ::
 
-    gmt set MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
+    gmt set MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.15c
     gmt coast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -pdf GMT_lambert_conic
 
 .. figure:: /_images/GMT_lambert_conic.*
@@ -159,9 +160,9 @@ use degrees west for longitudes. The generating commands used were
 
 
 The choice for projection center does not affect the projection but it
-indicates which meridian (here 100ºW) will be vertical on the map. The
+indicates which meridian (here 100°W) will be vertical on the map. The
 standard parallels were originally selected by Adams to provide a
-maximum scale error between latitudes 30.5ºN and 47.5ºN of 0.5–1%. Some
+maximum scale error between latitudes 30.5°N and 47.5°N of 0.5–1%. Some
 areas, like Florida, experience scale errors of up to 2.5%.
 
 (American) polyconic projection (**-Jpoly** **-JPoly**) :ref:`... <-Jpoly_full>`
@@ -185,11 +186,11 @@ further away from the central meridian. As a consequence, no parallel is
 standard because conformity is lost with the lengthening of the meridians.
 
 Below we reproduce the illustration by *Snyder* [1987], with a gridline
-every 10 and annotations only every 30º in longitude:
+every 10 and annotations only every 30° in longitude:
 
    ::
 
-    gmt coast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest -pdf GMT_polyconic
+    gmt coast -R-180/-20/0/90 -JPoly/10c -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest -pdf GMT_polyconic
 
 .. figure:: /_images/GMT_polyconic.*
    :width: 500 px
@@ -234,12 +235,12 @@ way is that for this and many other projections, lines of equal
 longitude and latitude are not straight lines and are thus poor choices
 for map boundaries. Instead we require that the map boundaries be
 rectangular by defining the corners of a rectangular map boundary. Using
-0ºE/40ºS (lower left) and 60ºE/10ºS (upper right) as our corners we try
+0°E/40°S (lower left) and 60°E/10°S (upper right) as our corners we try
 
    ::
 
     gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt coast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 -Wthinnest -pdf GMT_lambert_az_rect
+    gmt coast -R0/-40/60/-10+r -JA30/-30/12c -Bag -Dl -A500 -Gp10+r300 -Wthinnest -pdf GMT_lambert_az_rect
 
 .. figure:: /_images/GMT_lambert_az_rect.*
    :width: 500 px
@@ -248,7 +249,7 @@ rectangular by defining the corners of a rectangular map boundary. Using
    Rectangular map using the Lambert azimuthal equal-area projection.
 
 
-Note that an "r" is appended to the **-R** option to inform GMT that
+Note that an **+r** is appended to the **-R** option to inform GMT that
 the region has been selected using the rectangle technique, otherwise it
 would try to decode the values as *west, east, south, north* and report
 an error since *'east'* < *'west'*.
@@ -261,7 +262,7 @@ Here, you must specify the world as your region (**-Rg** or
 
    ::
 
-    gmt coast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -pdf GMT_lambert_az_hemi
+    gmt coast -Rg -JA280/30/12c -Bg -Dc -A1000 -Gnavy -pdf GMT_lambert_az_hemi
 
 .. figure:: /_images/GMT_lambert_az_hemi.*
    :width: 400 px
@@ -301,11 +302,11 @@ center of projection. The requirements are
 
 -  Scale as 1:xxxxx (true scale at pole), slat/1:xxxxx (true scale at
    standard parallel slat), or radius/latitude where radius is distance
-   on map in inches from projection center to a particular
+   on map in plot-units from projection center to a particular
    oblique latitude (**-Js**), or simply map width (**-JS**).
 
 A default map scale factor of 0.9996 will be applied by default
-(although you may change this with :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`). However,
+(although you may change this with :term:`PROJ_SCALE_FACTOR`). However,
 the setting is ignored when a standard parallel has been specified since
 the scale is then implicitly given. We will look at two different types
 of maps.
@@ -320,7 +321,7 @@ An example is given by
 
    ::
 
-    gmt coast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue -Sseashell -pdf GMT_stereographic_polar
+    gmt coast -R-30/30/60/72 -Js0/90/12c/60 -B10g -Dl -A250 -Groyalblue -Sseashell -pdf GMT_stereographic_polar
 
 .. figure:: /_images/GMT_stereographic_polar.*
    :width: 500 px
@@ -342,7 +343,7 @@ Figure :ref:`Polar stereographic <GMT_stereographic_rect>`:
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 30
-    gmt coast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray -pdf GMT_stereographic_rect
+    gmt coast -R-25/59/70/72+r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray -pdf GMT_stereographic_rect
 
 .. _GMT_stereographic_rect:
 
@@ -359,12 +360,12 @@ General stereographic map
 In terms of usage this projection is identical to the Lambert azimuthal
 equal-area projection. Thus, one can make both rectangular and
 hemispheric maps. Our example shows Australia using a projection pole at
-130ºE/30ºS. The command used was
+130°E/30°S. The command used was
 
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 0
-    gmt coast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue -Wthinnest -pdf GMT_stereographic_general
+    gmt coast -R100/-42/160/-8+r -JS130/-30/12c -Bag -Dl -A500 -Ggreen -Slightblue -Wthinnest -pdf GMT_stereographic_general
 
 .. figure:: /_images/GMT_stereographic_general.*
    :width: 500 px
@@ -385,7 +386,7 @@ flexible, and thus requires many input variables. Those are listed and
 explained below, with the values used in
 Figure :ref:`Perspective projection <GMT_perspective>` between brackets.
 
--  Longitude and latitude of the projection center (4ºE/52ºN).
+-  Longitude and latitude of the projection center (4°E/52°N).
 
 -  Altitude of the viewer above sea level in kilometers (230 km). If
    this value is less than 10, it is assumed to be the distance of the
@@ -397,20 +398,20 @@ Figure :ref:`Perspective projection <GMT_perspective>` between brackets.
    are looking, measured clockwise from north.
 
 -  Tilt in degrees (60). This is the viewing angle relative to zenith.
-   So a tilt of 0º is looking straight down, 60º is looking from 30º above
+   So a tilt of 0° is looking straight down, 60° is looking from 30° above
    the horizon.
 
 -  Twist in degrees (180). This is the boresight rotation (clockwise) of
-   the image. The twist of 180º in the example mimics the fact that the
+   the image. The twist of 180° in the example mimics the fact that the
    Space Shuttle flies upside down.
 
 -  Width and height of the viewpoint in degrees (60). This number
    depends on whether you are looking with the naked eye (in which case
-   you view is about 60º wide), or with binoculars, for example.
+   you view is about 60° wide), or with binoculars, for example.
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in inches from projection center to a particular
-   oblique latitude (**-Jg**), or map width (**-JG**) (5 inches).
+   map in plot-units from projection center to a particular
+   oblique latitude (**-Jg**), or map width (**-JG**) (e.g., 12 cm).
 
 The imagined view of northwest Europe from a Space Shuttle at 230 km
 looking due east is thus accomplished by the following
@@ -418,7 +419,7 @@ looking due east is thus accomplished by the following
 
    ::
 
-    gmt coast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i -pdf GMT_perspective
+    gmt coast -Rg -JG4/52/230/90/60/180/60/60/12c -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest -Slightblue --MAP_ANNOT_MIN_SPACING=0.6c -pdf GMT_perspective
 
 .. _GMT_perspective:
 
@@ -451,15 +452,15 @@ To specify the orthographic projection the same options **-Jg** or
    to the edge (<= 90, default is 90).
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in inches from projection center to a particular
+   map in plot-units from projection center to a particular
    oblique latitude (**-Jg**), or map width (**-JG**).
 
-Our example of a perspective view centered on 75ºW/40ºN can therefore be
+Our example of a perspective view centered on 75°W/40°N can therefore be
 generated by the following :doc:`/coast` command:
 
    ::
 
-    gmt coast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle -pdf GMT_orthographic
+    gmt coast -Rg -JG-75/41/12c -Bg -Dc -A5000 -Gpink -Sthistle -pdf GMT_orthographic
 
 .. figure:: /_images/GMT_orthographic.*
    :width: 400 px
@@ -487,17 +488,17 @@ To specify the azimuthal equidistant projection you must supply:
    to the edge (<= 180, default is 180).
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in inches from projection center to a particular
+   map in plot-units from projection center to a particular
    oblique latitude (**-Je**), or map width (**-JE**).
 
-Our example of a global view centered on 100ºW/40ºN can therefore be
+Our example of a global view centered on 100°W/40°N can therefore be
 generated by the following :doc:`/coast`
-command. Note that the antipodal point is 180º away from the center, but
+command. Note that the antipodal point is 180° away from the center, but
 in this projection this point plots as the entire map perimeter:
 
    ::
 
-    gmt coast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -pdf GMT_az_equidistant
+    gmt coast -Rg -JE-100/40/12c -Bg -Dc -A10000 -Glightgray -Wthinnest -pdf GMT_az_equidistant
 
 .. figure:: /_images/GMT_az_equidistant.*
    :width: 400 px
@@ -527,15 +528,15 @@ To specify the Gnomonic projection you must supply:
    to the edge (< 90, default is 60).
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in inches from projection center to a particular
+   map in plot-units from projection center to a particular
    oblique latitude (**-Jf**), or map width (**-JF**).
 
 Using a horizon of 60, our example of this projection centered on
-120ºW/35ºN can therefore be generated by the following :doc:`/coast` command:
+120°W/35°N can therefore be generated by the following :doc:`/coast` command:
 
    ::
 
-    gmt coast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest -pdf GMT_gnomonic
+    gmt coast -Rg -JF-120/35/60/12c -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest -pdf GMT_gnomonic
 
 .. figure:: /_images/GMT_gnomonic.*
    :width: 500 px
@@ -590,15 +591,15 @@ are optional and have defaults):
 -  Standard parallel for true scale [Equator]. When supplied, central
    meridian must be supplied as well.
 
--  Scale along the equator in inch/degree or 1:xxxxx (**-Jm**), or map
+-  Scale along the equator in plot-units/degree or 1:xxxxx (**-Jm**), or map
    width (**-JM**).
 
-Our example presents a world map at a scale of 0.012 inch pr degree
-which will give a map 4.32 inch wide. It was created with the command:
+Our example presents a world map at a scale of 0.03 cm per degree
+which will give a map 10.8-cm wide. It was created with the command:
 
    ::
 
-    gmt coast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred --MAP_FRAME_TYPE=fancy+ -pdf GMT_mercator
+    gmt coast -R0/360/-70/70 -Jm0.03c -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred --MAP_FRAME_TYPE=fancy+ -pdf GMT_mercator
 
 .. figure:: /_images/GMT_mercator.*
    :width: 500 px
@@ -617,8 +618,8 @@ Transverse Mercator projection (**-Jt** **-JT**) :ref:`... <-Jt_full>`
 The transverse Mercator was invented by Lambert in 1772. In this
 projection the cylinder touches a meridian along which there is no
 distortion. The distortion increases away from the central meridian and
-goes to infinity at 90º from center. The central meridian, each meridian
-90º away from the center, and equator are straight lines; other parallels
+goes to infinity at 90° from center. The central meridian, each meridian
+90° away from the center, and equator are straight lines; other parallels
 and meridians are complex curves. The projection is defined by
 specifying:
 
@@ -626,18 +627,18 @@ specifying:
 
 -  Optionally, the latitude of origin (default is the equator).
 
--  Scale along the equator in inch/degree or 1:xxxxx (**-Jt**), or map
+-  Scale along the equator in plot-units/degree or 1:xxxxx (**-Jt**), or map
    width (**-JT**).
 
 The optional latitude of origin defaults to Equator if not specified.
 Although defaulting to 1, you can change the map scale factor via the
-:ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>` parameter. Our example shows a transverse
-Mercator map of south-east Europe and the Middle East with 35ºE as the
+:term:`PROJ_SCALE_FACTOR` parameter. Our example shows a transverse
+Mercator map of south-east Europe and the Middle East with 35°E as the
 central meridian:
 
    ::
 
-    gmt coast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest -Sseashell -pdf GMT_transverse_merc
+    gmt coast -R20/30/50/45+r -Jt35/0.5c -Bag -Dl -A250 -Glightbrown -Wthinnest -Sseashell -pdf GMT_transverse_merc
 
 .. figure:: /_images/GMT_transverse_merc.*
    :width: 500 px
@@ -647,16 +648,16 @@ central meridian:
 
 
 The transverse Mercator can also be used to generate a global map - the
-equivalent of the 360º Mercator map. Using the command
+equivalent of the 360° Mercator map. Using the command
 
    ::
 
-    gmt coast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 -Slightblue -G0 -pdf GMT_TM
+    gmt coast -R0/360/-80/80 -JT330/-45/10c -Ba30g -BWSne -Dc -A2000 -Slightblue -G0 -pdf GMT_TM
 
 we made the map illustrated in Figure :ref:`Global transverse Mercator
 <GMT_TM>`. Note that
 when a world map is given (indicated by **-R**\ *0/360/s/n*), the
-arguments are interpreted to mean oblique degrees, i.e., the 360º range
+arguments are interpreted to mean oblique degrees, i.e., the 360° range
 is understood to mean the extent of the plot along the central meridian,
 while the "south" and "north" values represent how far from the central
 longitude we want the plot to extend. These values correspond to
@@ -678,7 +679,7 @@ Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**) :ref:`... <-Ju_
 A particular subset of the transverse Mercator is the Universal
 Transverse Mercator (UTM) which was adopted by the US Army for
 large-scale military maps. Here, the globe is divided into 60 zones
-between 84ºS and 84ºN, most of which are 6 wide. Each of these UTM zones
+between 84°S and 84°N, most of which are 6 wide. Each of these UTM zones
 have their unique central meridian. Furthermore, each zone is divided
 into latitude bands but these are not needed to specify the projection
 for most cases. See Figure :ref:`Universal Transverse Mercator
@@ -700,12 +701,12 @@ When selecting UTM you must specify:
    in the southern hemisphere or append the latitude modifiers C–H, J–N,
    P–X) to specify an exact UTM grid zone.
 
--  Scale along the equator in inch/degree or 1:xxxxx (**-Ju**), or map
+-  Scale along the equator in plot-units/degree or 1:xxxxx (**-Ju**), or map
    width (**-JU**).
 
 In order to minimize the distortion in any given zone, a scale factor of
 0.9996 has been factored into the formulae. (although a standard, you
-can change this with :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`). This makes the UTM
+can change this with :term:`PROJ_SCALE_FACTOR`). This makes the UTM
 projection a *secant* projection and not a *tangent* projection like the
 transverse Mercator above. The scale only varies by 1 part in 1,000 from
 true scale at equator. The ellipsoidal projection expressions are
@@ -723,40 +724,40 @@ complex curves. The projection was developed in the early 1900s by
 several workers. Several parameters must be provided to define the
 projection. GMT offers three different definitions:
 
-#. Option **-Jo**\ [**a**\ \|\ **A**] or **-JO**\ [**a**\ \|\ **A**]:
+#. Option **-Jo**\ [**a**\|\ **A**] or **-JO**\ [**a**\|\ **A**]:
 
    -  Longitude and latitude of projection center.
 
    -  Azimuth of the oblique equator.
 
-   -  Scale in inch/degree or 1:xxxxx along oblique equator (**-Jo**),
+   -  Scale in plot-units/degree or 1:xxxxx along oblique equator (**-Jo**),
       or map width (**-JO**).
 
-#. Option **-Jo**\ [**b**\ \|\ **B**] or **-JO**\ [**b**\ \|\ **B**]:
+#. Option **-Jo**\ [**b**\|\ **B**] or **-JO**\ [**b**\|\ **B**]:
 
    -  Longitude and latitude of projection center.
 
    -  Longitude and latitude of second point on oblique equator.
 
-   -  Scale in inch/degree or 1:xxxxx along oblique equator (**-Jo**),
+   -  Scale in plot-units/degree or 1:xxxxx along oblique equator (**-Jo**),
       or map width (**-JO**).
 
-#. Option **-Joc**\ \|\ **C** or **-JOc**\ \|\ **C**:
+#. Option **-Joc**\|\ **C** or **-JOc**\|\ **C**:
 
    -  Longitude and latitude of projection center.
 
    -  Longitude and latitude of projection pole.
 
-   -  Scale in inch/degree or 1:xxxxx along oblique equator (**-Jo**),
+   -  Scale in plot-units/degree or 1:xxxxx along oblique equator (**-Jo**),
       or map width (**-JO**).
 
-For all three definitions, the upper case **A**\ \|\ **B**\ \|\ **C** means we
+For all three definitions, the upper case **A**\|\ **B**\|\ **C** means we
 will allow projection poles in the southern hemisphere [By default we map any such
 poles to their antipodes in the north hemisphere].  Our example was produced by the command
 
    ::
 
-    gmt coast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood -Wthinnest -TdjTR+w0.4i+f2+l+o0.15i -Sazure --FONT_TITLE=8p --MAP_TITLE_OFFSET=0.05i -pdf GMT_obl_merc
+    gmt coast -R270/20/305/25+r -JOc280/25.5/22/69/12c -Bag -Di -A250 -Gburlywood -Wthinnest -TdjTR+w1c+f2+l+o0.4c -Sazure --FONT_TITLE=8p --MAP_TITLE_OFFSET=4p -pdf GMT_obl_merc
 
 .. figure:: /_images/GMT_obl_merc.*
    :width: 500 px
@@ -768,7 +769,7 @@ poles to their antipodes in the north hemisphere].  Our example was produced by 
 
 It uses definition 3 for an oblique view of some Caribbean islands. Note
 that we define our region using the rectangular system described
-earlier. If we do not append an "r" to the **-R** string then the
+earlier. If we do not append **+r** to the **-R** string then the
 information provided with the **-R** option is assumed to be oblique
 degrees about the projection center rather than the usual geographic
 coordinates. This interpretation is chosen since in general the
@@ -807,20 +808,20 @@ analysis that led to the development of the ellipsoidal formulae. The
 projection is neither conformal nor equal-area, and behaves as a
 compromise between the two end-members. The distortion is zero along the
 central meridian. It is best suited for mapping regions of north-south
-extent. The central meridian, each meridian 90º away, and equator are
+extent. The central meridian, each meridian 90° away, and equator are
 straight lines; all other meridians and parallels are complex curves.
 The requirements to define this projection are:
 
 -  Longitude and latitude of central point.
 
--  Scale in inch/degree or as 1:xxxxx (**-Jc**), or map width (**-JC**).
+-  Scale in plot-units/degree or as 1:xxxxx (**-Jc**), or map width (**-JC**).
 
-A detailed map of the island of Sardinia centered on the 8º45'E meridian
+A detailed map of the island of Sardinia centered on the 8°45'E meridian
 using the Cassini projection can be obtained by running the command:
 
    ::
 
-    gmt coast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -LjBR+c40+w100+f+o0.15i/0.2i -Gspringgreen -Dh -Sazure -Wthinnest -Ia/thinner --FONT_LABEL=12p -pdf GMT_cassini
+    gmt coast -R7:30/38:30/10:30/41:30+r -JC8.75/40/6c -Bafg -LjBR+c40+w100+f+o0.4c/0.5c -Gspringgreen -Dh -Sazure -Wthinnest -Ia/thinner --FONT_LABEL=12p -pdf GMT_cassini
 
 .. figure:: /_images/GMT_cassini.*
    :width: 400 px
@@ -845,7 +846,7 @@ defined by:
 
 -  Standard parallel [Equator].
 
--  Scale in inch/degree or as 1:xxxxx (**-Jq**), or map width (**-JQ**).
+-  Scale in plot-units/degree or as 1:xxxxx (**-Jq**), or map width (**-JQ**).
 
 The first two of these are optional and have defaults. When the standard
 parallel is defined, the central meridian must be supplied as well.
@@ -855,7 +856,7 @@ obtained by running the command:
 
    ::
 
-    gmt coast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -pdf GMT_equi_cyl
+    gmt coast -Rg -JQ12c -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -pdf GMT_equi_cyl
 
 .. figure:: /_images/GMT_equi_cyl.*
    :width: 500 px
@@ -873,17 +874,17 @@ Table :ref:`JQ <tbl-JQ>`.
 
 +-----------------------------------------------------+--------+
 +=====================================================+========+
-| Grafarend and Niermann, minimum linear distortion   | 61.7º  |
+| Grafarend and Niermann, minimum linear distortion   | 61.7°  |
 +-----------------------------------------------------+--------+
-| Ronald Miller Equirectangular                       | 50.5º  |
+| Ronald Miller Equirectangular                       | 50.5°  |
 +-----------------------------------------------------+--------+
-| Ronald Miller, minimum continental distortion       | 43.5º  |
+| Ronald Miller, minimum continental distortion       | 43.5°  |
 +-----------------------------------------------------+--------+
-| Grafarend and Niermann                              | 42º    |
+| Grafarend and Niermann                              | 42°    |
 +-----------------------------------------------------+--------+
-| Ronald Miller, minimum overall distortion           | 37.5º  |
+| Ronald Miller, minimum overall distortion           | 37.5°  |
 +-----------------------------------------------------+--------+
-| Plate Carrée, Simple Cylindrical, Plain/Plane       | 0º     |
+| Plate Carrée, Simple Cylindrical, Plain/Plane       | 0°     |
 +-----------------------------------------------------+--------+
 
 Cylindrical equal-area projections (**-Jy** **-JY**) :ref:`... <-Jy_full>`
@@ -898,7 +899,7 @@ straight lines. The requirements to define this projection are:
 
 -  The standard parallel.
 
--  Scale in inch/degree or as 1:xxxxx (**-Jy**), or map width (**-JY**)
+-  Scale in plot-units/degree or as 1:xxxxx (**-Jy**), or map width (**-JY**)
 
 While you may choose any value for the standard parallel and obtain your
 own personal projection, there are seven choices of standard parallels
@@ -908,28 +909,28 @@ that result in known (or named) projections. These are listed in Table :ref:`JY 
 
 +-------------------+---------------------+
 +===================+=====================+
-| Balthasart        | 50º                 |
+| Balthasart        | 50°                 |
 +-------------------+---------------------+
-| Gall              | 45º                 |
+| Gall              | 45°                 |
 +-------------------+---------------------+
-| Hobo-Dyer         | 37º30' (= 37.5º)    |
+| Hobo-Dyer         | 37°30' (= 37.5°)    |
 +-------------------+---------------------+
-| Trystan Edwards   | 37º24' (= 37.4º)    |
+| Trystan Edwards   | 37°24' (= 37.4°)    |
 +-------------------+---------------------+
-| Caster            | 37º04' (= 37.0666º) |
+| Caster            | 37°04' (= 37.0666°) |
 +-------------------+---------------------+
-| Behrman           | 30º                 |
+| Behrman           | 30°                 |
 +-------------------+---------------------+
-| Lambert           | 0º                  |
+| Lambert           | 0°                  |
 +-------------------+---------------------+
 
-For instance, a world map centered on the 35ºE meridian using the Behrman
+For instance, a world map centered on the 35°E meridian using the Behrman
 projection (Figure :ref:`Behrman cylindrical projection <GMT_general_cyl>`)
 can be obtained by running the command:
 
    ::
 
-    gmt coast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue -Wthinnest -pdf GMT_general_cyl
+    gmt coast -R-145/215/-90/90 -JY35/30/12c -B45g45 -Dc -A10000 -Sdodgerblue -Wthinnest -pdf GMT_general_cyl
 
 .. _GMT_general_cyl:
 
@@ -957,9 +958,9 @@ this projection. Specify the projection by:
 
 -  Optionally, the central meridian (default is the middle of your map).
 
--  Scale in inch/degree or as 1:xxxxx (**-Jj**), or map width (**-JJ**).
+-  Scale in plot-units/degree or as 1:xxxxx (**-Jj**), or map width (**-JJ**).
 
-For instance, a world map centered on the 90ºE meridian at a map scale of
+For instance, a world map centered on the 90°E meridian at a map scale of
 1:400,000,000 (Figure :ref:`Miller projection <GMT_miller>`) can be obtained as
 follows:
 
@@ -993,7 +994,7 @@ parallels, equidistant from the equator. The projections are defined by:
 -  The standard parallel (default is the Equator). When used, central
    meridian needs to be given as well.
 
--  Scale in inch/degree or as 1:xxxxx (**-Jcyl_stere**), or map width
+-  Scale in plot-units/degree or as 1:xxxxx (**-Jcyl_stere**), or map width
    (**-JCyl_stere**)
 
 Some of the selections of the standard parallel are named for the
@@ -1004,26 +1005,26 @@ cartographer or publication that popularized the projection
 
 +---------------------------------------------------------+-------------+
 +=========================================================+=============+
-| Miller's modified Gall                                  | 66.159467º  |
+| Miller's modified Gall                                  | 66.159467°  |
 +---------------------------------------------------------+-------------+
-| Kamenetskiy's First                                     | 55º         |
+| Kamenetskiy's First                                     | 55°         |
 +---------------------------------------------------------+-------------+
-| Gall's stereographic                                    | 45º         |
+| Gall's stereographic                                    | 45°         |
 +---------------------------------------------------------+-------------+
-| Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second   | 30º         |
+| Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second   | 30°         |
 +---------------------------------------------------------+-------------+
-| Braun's cylindrical                                     | 0º          |
+| Braun's cylindrical                                     | 0°          |
 +---------------------------------------------------------+-------------+
 
 A map of the world, centered on the Greenwich meridian, using the Gall's
-stereographic projection (standard parallel is 45º,
+stereographic projection (standard parallel is 45°,
 Figure :ref:`Gall's stereographic projection <GMT_gall_stereo>`),
 is obtained as follows:
 
    ::
 
     gmt set FORMAT_GEO_MAP dddA
-    gmt coast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack -Gseashell4 -Santiquewhite1 -pdf GMT_gall_stereo
+    gmt coast -R-180/180/-60/80 -JCyl_stere/0/45/12c -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack -Gseashell4 -Santiquewhite1 -pdf GMT_gall_stereo
 
 .. _GMT_gall_stereo:
 
@@ -1059,13 +1060,13 @@ defined by selecting:
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Jh**), or map width (**-JH**).
+-  Scale along equator in plot-units/degree or 1:xxxxx (**-Jh**), or map width (**-JH**).
 
 A view of the Pacific ocean using the Dateline as central meridian is accomplished thus
 
    ::
 
-    gmt coast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk -pdf GMT_hammer
+    gmt coast -Rg -JH12c -Bg -Dc -A10000 -Gblack -Scornsilk -pdf GMT_hammer
 
 .. figure:: /_images/GMT_hammer.*
    :width: 500 px
@@ -1089,13 +1090,13 @@ longitudes and latitudes into rectangular *x*/*y* coordinates:
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Jw**), or map width (**-JW**).
+-  Scale along equator in plot-units/degree or 1:xxxxx (**-Jw**), or map width (**-JW**).
 
 An example centered on Greenwich can be generated thus:
 
    ::
 
-    gmt coast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue -pdf GMT_mollweide
+    gmt coast -Rd -JW12c -Bg -Dc -A10000 -Gtomato1 -Sskyblue -pdf GMT_mollweide
 
 .. figure:: /_images/GMT_mollweide.*
    :width: 500 px
@@ -1125,14 +1126,14 @@ use it you must enter
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Jr**), or map width (**-JR**).
+-  Scale along equator in plot-units/degree or 1:xxxxx (**-Jr**), or map width (**-JR**).
 
 Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection
 <GMT_winkel>` was created by this command:
 
    ::
 
-    gmt coast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -pdf GMT_winkel
+    gmt coast -Rd -JR12c -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -pdf GMT_winkel
 
 .. _GMT_winkel:
 
@@ -1158,14 +1159,14 @@ enter
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Jn**), or map width
+-  Scale along equator in plot-units/degree or 1:xxxxx (**-Jn**), or map width
    (**-JN**).
 
 Again centered on Greenwich, the example below was created by this command:
 
    ::
 
-    gmt coast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -pdf GMT_robinson
+    gmt coast -Rd -JN12c -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -pdf GMT_robinson
 
 .. figure:: /_images/GMT_robinson.*
    :width: 500 px
@@ -1181,7 +1182,7 @@ The Eckert IV and VI projections, presented by the German cartographer
 Max Eckert-Greiffendorff in 1906, are pseudo-cylindrical equal-area
 projections. Central meridian and all parallels are straight lines;
 other meridians are equally spaced elliptical arcs (IV) or sinusoids
-(VI). The scale is true along latitudes 40º30' (IV) and 49º16' (VI). Their
+(VI). The scale is true along latitudes 40°30' (IV) and 49°16' (VI). Their
 main use is in thematic world maps. To select Eckert IV you must use
 **-JKf** (**f** for "four") while Eckert VI is selected with **-JKs**
 (**s** for "six"). If no modifier is given it defaults to Eckert VI. In
@@ -1189,7 +1190,7 @@ addition, you must enter
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Jk**), or map width
+-  Scale along equator in plot-units/degree or 1:xxxxx (**-Jk**), or map width
    (**-JK**).
 
 Centered on the Dateline, the Eckert IV example below was created by
@@ -1197,7 +1198,7 @@ this command:
 
    ::
 
-    gmt coast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -pdf GMT_eckert4
+    gmt coast -Rg -JKf12c -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -pdf GMT_eckert4
 
 .. figure:: /_images/GMT_eckert4.*
    :width: 500 px
@@ -1227,14 +1228,14 @@ parallels (and central meridian). To use it, you need to select:
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Ji**), or map width
+-  Scale along equator in plot-units/degree or 1:xxxxx (**-Ji**), or map width
    (**-JI**).
 
 A simple world map using the sinusoidal projection is therefore obtained by
 
    ::
 
-     gmt coast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Gcoral4 -Sazure3 -pdf GMT_sinusoidal
+     gmt coast -Rd -JI12c -Bxg30 -Byg15 -Dc -A10000 -Gcoral4 -Sazure3 -pdf GMT_sinusoidal
 
 .. figure:: /_images/GMT_sinusoidal.*
    :width: 500 px
@@ -1245,20 +1246,20 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
 To reduce distortion of shape the interrupted sinusoidal projection was
 introduced in 1927. Here, three symmetrical segments are used to cover
-the entire world. Traditionally, the interruptions are at 160ºW, 20ºW, and
-60ºE. To make the interrupted map we must call
+the entire world. Traditionally, the interruptions are at 160°W, 20°W, and
+60°E. To make the interrupted map we must call
 :doc:`/coast` for each segment and superpose
 the results. To produce an interrupted world map (with the traditional
-boundaries just mentioned) that is 5.04 inches wide we use the scale
-5.04/360 = 0.014 and offset the subsequent plots horizontally by their
-widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
+boundaries just mentioned) that is 14.4 cm wide we use the scale
+14.4/360 = 0.04 and offset the subsequent plots horizontally by their
+widths (140\ :math:`\cdot`\ 0.04 and 80\ :math:`\cdot`\ 0.04):
 
    ::
 
      gmt begin GMT_sinus_int
-       gmt coast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc -Gdarkred -Sazure
-       gmt coast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkgreen -Sazure -X1.96i
-       gmt coast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkblue -Sazure -X1.12i
+       gmt coast -R200/340/-90/90 -Ji0.035c -Bxg30 -Byg15 -A10000 -Dc -Gdarkred -Sazure
+       gmt coast -R-20/60/-90/90 -Ji0.035c -Bxg30 -Byg15 -Dc -A10000 -Gdarkgreen -Sazure -X5.6c
+       gmt coast -R60/200/-90/90 -Ji0.035c -Bxg30 -Byg15 -Dc -A10000 -Gdarkblue -Sazure -X3.2c
      gmt end show
 
 .. figure:: /_images/GMT_sinus_int.*
@@ -1283,13 +1284,13 @@ world enclosed in a circle. To use it you must enter
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Jv**), or map width (**-JV**).
+-  Scale along equator in plot-units/degree or 1:xxxxx (**-Jv**), or map width (**-JV**).
 
 Centered on the Dateline, the example below was created by this command:
 
     ::
 
-      gmt coast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -Scornsilk -A10000 -Wthinnest -pdf GMT_grinten
+      gmt coast -Rg -JV10c -Bxg30 -Byg15 -Dc -Glightgray -Scornsilk -A10000 -Wthinnest -pdf GMT_grinten
 
 .. figure:: /_images/GMT_grinten.*
    :width: 400 px
@@ -1310,5 +1311,5 @@ Centered on the Dateline, the example below was created by this command:
    every 5. To project values for intermediate latitudes one must
    interpolate the table. Different interpolants may result in slightly
    different maps. GMT uses the
-   interpolant selected by the parameter :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in the
+   interpolant selected by the parameter :term:`GMT_INTERPOLANT` in the
    file.

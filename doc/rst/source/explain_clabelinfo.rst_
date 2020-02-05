@@ -5,7 +5,7 @@
 
     **+c**\ *dx*\ [/*dy*]
        Sets the clearance between label and optional text box. Append
-       **c**\ \|\ **i**\ \|\ **p** to specify the unit or % to indicate a
+       **c**\|\ **i**\|\ **p** to specify the unit or % to indicate a
        percentage of the label font size [15%].
 
     **+d**
@@ -22,7 +22,7 @@
        Sets the desired font [Default **FONT\_ANNOT\_PRIMARY** with its
        size changed to 9p].
 
-    **+g**\ [*color*\ ]
+    **+g**\ [*color*]
        Selects opaque text boxes [Default is transparent]; optionally
        specify the color [Default is **PS\_PAGE\_COLOR**].
 
@@ -35,7 +35,7 @@
 
     **+n**\ *dx*\ [/*dy*]
         Nudges the placement of labels by the specified amount (append
-        **c**\ \|\ **i**\ \|\ **p** to specify the units). Increments
+        **c**\|\ **i**\|\ **p** to specify the units). Increments
         are considered in the coordinate system defined by the
         orientation of the contour (contour is *x*, normal to contour is *y*);
         use **+N** to force increments in the overall
@@ -46,7 +46,7 @@
         Not applicable for curved text (**+v**) and only makes sense for
         opaque text boxes.
 
-    **+p**\ [*pen*\ ]
+    **+p**\ [*pen*]
         Draws the outline of text boxes [Default is no outline];
         optionally specify pen for outline [Default selects width = 0.25p,
         color = black, style = solid].
@@ -55,7 +55,7 @@
         Will not place labels where the contours's radius of curvature is
         less than *min\_rad* [Default is 0].
 
-    **+t**\ [*file*\ ]
+    **+t**\ [*file*]
         Saves contour label x, y, angle, and text to *file* [Contour\_labels.txt].
 
     **+u**\ *unit*
@@ -70,7 +70,7 @@
         Specifies how many (*x*,\ *y*) points will be used to estimate
         label angles [automatic].
 
-    **+x**\ [*first,last*\ ]
+    **+x**\ [*first,last*]
 	Adds *first* and *last* to these two labels [,'] placed at either end of a quoted line.
 	This modifier is only allowed when **-SqN**\ 2 is used to place a label at the
 	start and stop of a line (the default adds a prime to the end label).

@@ -1,6 +1,6 @@
 .. _-s_full:
 
-**-s**\ [*cols*\ ][\ **+a**\ \|\ **+r**]
+**-s**\ [*cols*][**+a**\|\ **r**]
     Suppress output for records whose *z*-value equals NaN [Default
     outputs all records]. Append **+a** to skip records where at least
     one field equal NaN, or append **+r** to reverse the suppression, i.e.,

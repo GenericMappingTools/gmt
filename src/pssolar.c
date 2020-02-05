@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -117,7 +117,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C] [-G<fill>|c] [-I[lon/lat][+d<date>][+z<TZ>]] [%s] %s\n", name, GMT_B_OPT, GMT_J_OPT, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C] [-G[<fill>]] [-I[lon/lat][+d<date>][+z<TZ>]] [%s] %s\n", name, GMT_B_OPT, GMT_J_OPT, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N] %s ", API->O_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "%s[-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", API->P_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t%s[%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
@@ -129,7 +129,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "B");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report selected via -I in a single line of numbers only.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
-	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip path instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   6) leave off <fill> to issue clip paths instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Print current sun position. Append lon/lat to print also the times of\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Sunrise, Sunset, Noon and length of the day.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute sun parameters\n");
@@ -179,10 +179,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				Ctrl->G.active = true;
-				if (opt->arg[0] == 'c' && !opt->arg[1])
+				if (opt->arg[0] == '\0' || (opt->arg[0] == 'c' && !opt->arg[1]))
 					Ctrl->G.clip = true;
-				else if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					gmt_fill_syntax (GMT, 'G', NULL, " "); n_errors++;
+				else if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+					gmt_fill_syntax (GMT, 'G', NULL, " ");
+					n_errors++;
 				}
 				break;
 			case 'I':		/* Infos -I[x/y][+d<date>][+z<TZ>] */
@@ -191,7 +192,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 					Ctrl->I.position = true;
 					if (opt->arg[0] != '+') {		/* Then it must be a location */
 						n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->I.lon, &Ctrl->I.lat) != 2,
-					                                     "Syntax error: Expected -I[<lon>/<lat>]\n");
+					                                     "Expected -I[<lon>/<lat>]\n");
 					}
 					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
 						parse_date_tz(pch, &date, &TZ);
@@ -238,7 +239,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				else 		/* Then the default */
 					{Ctrl->T.night = true;		Ctrl->T.radius[0] = 90.833;}
 				if (pch) pch[0] = '+';	/* Restore it */
-					
+
 				break;
 			case 'W':		/* Pen */
 				Ctrl->W.active = true;
@@ -255,10 +256,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 	}
 
 	for (j = 0; j < 4; j++)	/* Count requested terminators */
-		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;	
+		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 	if (!Ctrl->I.active && !Ctrl->M.active) {	/* Allow plotting without specifying -R and/or -J */
@@ -272,10 +273,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.clip, "Syntax error: -N requires -Gc\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->T.n_terminators > 1, "Syntax error: Can only select one terminator when using -Gc\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->T.active + Ctrl->I.active) > 1, "Syntax error: Cannot combine -T and -I\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->I.active, "Option -C requires -I\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.clip, "Option -N requires -Gc\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->T.n_terminators > 1, "Can only select one terminator when using -Gc\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files allowed\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->T.active + Ctrl->I.active) > 1, "Cannot combine -T and -I\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -287,7 +289,7 @@ GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/solar_params.m  */
 	/* http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html */
 	/* Compute the day-night terminator and the civil, nautical and astronomical twilights
-	   as well as several other solar parameters such sunrise, senset, Sun position, etc... */
+	   as well as several other solar parameters such sunrise, sunset, Sun position, etc... */
 	int    TZ, year, month, day, hour, min;
 	struct tm *UTC;
 	time_t right_now = time (NULL);
@@ -399,12 +401,13 @@ int GMT_solar (void *V_API, int mode, void *args) {
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
 		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
-		bool print_postion = false;
+		bool print_postion = false, dump_data = false;
 		if (API->error) return (API->error);    /* Set or get option list */
 		print_postion = (GMT_Find_Option (API, 'I', options) != NULL);
+		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
 		gmt_M_free_options (mode);
-		if (!print_postion) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: solar\n");
+		if (!(print_postion || dump_data)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: solar\n");
 			return (GMT_NOT_A_VALID_MODULE);
 		}
 	}
@@ -435,7 +438,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -469,7 +472,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			out[9] = Sun->EQ_time;
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			gmt_M_free (GMT, Out);
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) { 
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
@@ -489,24 +492,30 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 
-			sprintf (record, "\tSun current position:    long = %f\tlat = %f", -Sun->HourAngle, Sun->SolarDec);
+			sprintf (record, "Sun current position:");
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			sprintf (record, "\t                      Azimuth = %.4f\tElevation = %.4f", Sun->SolarAzim, Sun->SolarElevation);
+			sprintf (record, "\tLongitude = %f", -Sun->HourAngle);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "\tLatitude  = %f", Sun->SolarDec);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "\tAzimuth   = %.4f", Sun->SolarAzim);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "\tElevation = %.4f", Sun->SolarElevation);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			if (Ctrl->I.position) {
 				if (isnan(Sun->Sunrise)) {
-					sprintf(record, "\tSunrise? No, not yet, sun is under the horizon.");
+					sprintf(record, "\nSunrise? No, not yet, sun is under the horizon.");
 					GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 				}
 				else {
 					hour = (int)(Sun->Sunrise * 24);	min = irint((Sun->Sunrise * 24 - hour) * 60);
-					sprintf(record, "\tSunrise  = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "\n\tSunrise   = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 					hour = (int)(Sun->Sunset * 24);		min = irint((Sun->Sunset * 24 - hour) * 60);
-					sprintf(record, "\tSunset   = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "\tSunset    = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 					hour = (int)(Sun->SolarNoon * 24);	min = irint((Sun->SolarNoon * 24 - hour) * 60);
-					sprintf(record, "\tNoon     = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "\tNoon      = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 					hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
-					sprintf(record, "\tDuration = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					sprintf(record, "\tDuration  = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
 				}
 			}
 			gmt_M_free (GMT, Out);
@@ -560,7 +569,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	else {	/* Plotting the terminator as line, polygon, or clip path */
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
-		
+
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
 			gmt_M_free (GMT, Sun);
 			Return (GMT_PROJECTION_ERROR);

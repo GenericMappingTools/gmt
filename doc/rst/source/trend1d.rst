@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt trend1d** [ *table* ] |-F|\ **xymrw**\ \|\ **p**\ \|\ **P**\ \|\ **c** |-N|\ *params*
+**gmt trend1d** [ *table* ] |-F|\ **xymrw**\|\ **p**\|\ **P**\|\ **c** |-N|\ *params*
 [ |-C|\ *condition_number* ]
 [ |-I|\ [*confidence_level*] ]
 [ |SYN_OPT-V| ]
@@ -23,6 +23,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -36,14 +37,14 @@ on standard input [or *file*] and fits a regression model y = f(x) + e
 by [weighted] least squares. The functional form of f(x) may be chosen
 as polynomial or Fourier or a mix of the two, and the fit may be made robust by iterative
 reweighting of the data. The user may also search for the number of
-terms in f(x) which significantly reduce the variance in y. 
+terms in f(x) which significantly reduce the variance in y.
 
 Required Arguments
 ------------------
 
 .. _-F:
 
-**-F**\ **xymrw**\ \|\ **p**\ \|\ **P**\ \|\ **c**
+**-F**\ **xymrw**\|\ **p**\|\ **P**\|\ **c**
     Specify up to five letters from the set {**x y m r w**\ } in any
     order to create columns of ASCII [or binary] output. **x** = x,
     **y** = y, **m** = model f(x), **r** = residual y - **m**, **w** =
@@ -54,7 +55,7 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ [**p**\ \|\ **P**\ \|\ **f**\ \|\ **F**\ \|\ **c**\ \|\ **C**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ ]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
+**-N**\ [**p**\|\ **P**\|\ **f**\|\ **F**\|\ **c**\|\ **C**\|\ **s**\|\ **S**\|\ **x**]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
     Specify the components of the (possibly mixed) model.  Append
     one or more comma-separated model components.  Each component is
     of the form **T**\ *n*, where **T** indicates the basis function and
@@ -116,10 +117,10 @@ Optional Arguments
     fit]. Append **+s** to instead read data uncertainties (one sigma)
     and create weights as 1/sigma^2 [Default reads only the first 2 columns].
 
-.. |Add_-bi| replace:: [Default is 2 (or 3 if **-W** is set) columns]. 
+.. |Add_-bi| replace:: [Default is 2 (or 3 if **-W** is set) columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-5 columns as given by **-F**]. 
+.. |Add_-bo| replace:: [Default is 1-5 columns as given by **-F**].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -135,6 +136,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_colon.rst_
 

@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt defaults** [ |-D|\ [**u**\ \|\ **s**] ]
+**gmt defaults** [ |-D|\ [**u**\|\ **s**] ]
 
 |No-spaces|
 
@@ -42,7 +42,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**u**\ \|\ **s**]
+**-D**\ [**u**\|\ **s**]
     Print the system GMT defaults settings to standard output. Append **u**
     for US defaults or **s** for SI defaults. [**-D** alone gives the
     version selected at compile time; If **-D** is omitted, the user's

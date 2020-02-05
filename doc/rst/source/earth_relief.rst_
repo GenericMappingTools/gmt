@@ -7,36 +7,22 @@ grids are saved in your ~/.gmt/server directory while any individual SRTM tile i
 Files are only downloaded once and are later accessed from ~/.gmt.  You can clear your data
 via gmt :doc:`clear` data.
 
-+------------------+------------+--------+--------------------------------------------------------------+
-|     Dataset      | Resolution |  Size  |                           Description                        |
-+==================+============+========+==============================================================+
-| earth_relief_01s |  1 arc sec |  41 Gb | 1 arc second global relief (SRTM1S)                          |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_03s |  3 arc sec | 6.8 Gb | 3 arc second global relief (SRTM3S)                          |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_15s | 15 arc sec | 2.6 Gb | 15 arc second global relief (SRTM15+V2)                      |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_30s | 30 arc sec | 765 Mb | 30 arc second global relief (SRTM15+V2 @ 0.9 km)             |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_01m |  1 arc min | 214 Mb | 1 arc minute global relief (SRTM15+V2 @ 1.9 km)              |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_02m |  2 arc min |  58 Mb | 2 arc minute global relief (SRTM15+V2 @ 3.7 km)              |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_03m |  3 arc min |  27 Mb | 3 arc minute global relief (SRTM15+V2 @ 5.6 km)              |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_04m |  4 arc min |  16 Mb | 4 arc minute global relief (SRTM15+V2 @ 7.5 km)              |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_05m |  5 arc min |  10 Mb | 5 arc minute global relief (SRTM15+V2 @ 9 km)                |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_06m |  6 arc min | 7.3 Mb | 6 arc minute global relief (SRTM15+V2 @ 10 km)               |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_10m | 10 arc min | 2.8 Mb | 10 arc minute global relief (SRTM15+V2 @ 18 km)              |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_15m | 20 arc min | 1.3 Mb | 15 arc minute global relief (SRTM15+V2 @ 28 km)              |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_20m | 20 arc min | 759 Kb | 20 arc minute global relief (SRTM15+V2 @ 37 km)              |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_30m | 30 arc min | 363 Kb | 30 arc minute global relief (SRTM15+V2 @ 55 km)              |
-+------------------+------------+--------+--------------------------------------------------------------+
-| earth_relief_01d |  1 arc deg | 106 Kb | 1 arc degree global relief (SRTM15+V2 @ 111 km)              |
-+------------------+------------+--------+--------------------------------------------------------------+
+================== ============ ========== ======================================================
+Dataset            Resolution   Size                             Description
+================== ============ ========== ======================================================
+earth_relief_01s     1 arc sec     41 Gb     1 arc second global relief (SRTM1S)
+earth_relief_03s     3 arc sec    6.8 Gb     3 arc second global relief (SRTM3S)
+earth_relief_15s    15 arc sec    2.6 Gb     15 arc second global relief (SRTM15+V2)
+earth_relief_30s    30 arc sec    765 Mb     30 arc second global relief (SRTM15+V2 @ 0.9 km)
+earth_relief_01m     1 arc min    214 Mb     1 arc minute global relief (SRTM15+V2 @ 1.9 km)
+earth_relief_02m     2 arc min     58 Mb     2 arc minute global relief (SRTM15+V2 @ 3.7 km)
+earth_relief_03m     3 arc min     27 Mb     3 arc minute global relief (SRTM15+V2 @ 5.6 km)
+earth_relief_04m     4 arc min     16 Mb     4 arc minute global relief (SRTM15+V2 @ 7.5 km)
+earth_relief_05m     5 arc min     10 Mb     5 arc minute global relief (SRTM15+V2 @ 9 km)
+earth_relief_06m     6 arc min    7.3 Mb     6 arc minute global relief (SRTM15+V2 @ 10 km)
+earth_relief_10m    10 arc min    2.8 Mb     10 arc minute global relief (SRTM15+V2 @ 18 km)
+earth_relief_15m    20 arc min    1.3 Mb     15 arc minute global relief (SRTM15+V2 @ 28 km)
+earth_relief_20m    20 arc min    759 Kb     20 arc minute global relief (SRTM15+V2 @ 37 km)
+earth_relief_30m    30 arc min    363 Kb     30 arc minute global relief (SRTM15+V2 @ 55 km)
+earth_relief_01d     1 arc deg    106 Kb     1 arc degree global relief (SRTM15+V2 @ 111 km)
+================== ============ ========== ======================================================

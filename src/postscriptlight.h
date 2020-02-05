@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2009-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -49,6 +49,7 @@ extern "C" {
 
 #define PSL_POINTS_PER_INCH	72.0
 #define PSL_DOTS_PER_INCH	1200.0	/* Effective dots per inch resolution */
+#define PSL_DOTS_PER_INCH_PATTERN	300.0	/* Effective dots per inch resolution for a bitmap pattern -Gp */
 #define PSL_ALL_CLIP		INT_MAX	/* Terminates all clipping */
 
 /* PSL codes for geometric symbols as expected by PSL_plotsymbol */
@@ -210,16 +211,22 @@ enum PSL_enum_txt {PSL_TXT_INIT	= 1,
 
 enum PSL_enum_txtmode {PSL_TXTMODE_HYPHEN	= 0,
 	PSL_TXTMODE_MINUS			= 1};
-	
+
 /* Verbosity levels */
 
-enum PSL_enum_verbose {PSL_MSG_QUIET = 0,	/* No messages whatsoever */
-	PSL_MSG_NORMAL,		/* Default output, e.g., warnings and errors only */
-	PSL_MSG_TICTOC,		/* To print a tic-toc elapsed time message */
-	PSL_MSG_COMPAT,		/* Compatibility warnings */
-	PSL_MSG_VERBOSE,	/* Warnings level -V */
-	PSL_MSG_LONG_VERBOSE,	/* Longer verbose, -Vl in some programs */
-	PSL_MSG_DEBUG};		/* Debug messages for developers mostly */
+enum PSL_enum_verbose {
+	PSL_MSG_QUIET = 0,		/* No messages whatsoever */
+	PSL_MSG_ERROR,			/* Errors only */
+	PSL_MSG_WARNING,		/* Warnings */
+	PSL_MSG_TICTOC,			/* Tic-toc elapsed time message */
+	PSL_MSG_INFORMATION,	/* Informational messages */
+	PSL_MSG_COMPAT,			/* Compatibility warnings */
+	PSL_MSG_DEBUG,			/* Debug messages */
+	/* For API backwards compatibility only */
+	PSL_MSG_NORMAL = 1,			/* Now PSL_MSG_ERROR */
+	PSL_MSG_VERBOSE = 4,		/* Now PSL_MSG_WARNING */
+	PSL_MSG_LONG_VERBOSE = 5	/* Now PSL_MSG_INFORMATION */
+	};
 
 /* Color spaces */
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2008-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
 #define THIS_MODULE_PURPOSE	"Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere"
 #define THIS_MODULE_KEYS	"<D{,ND(,QD(,GG},Q-("
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVbdehijrs" GMT_OPT("F")
+#define THIS_MODULE_OPTIONS "-:RVbdehijqrs" GMT_OPT("F")
 
 enum sphdist_modes {
 	SPHD_DIST = 0,
@@ -104,7 +104,7 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 			PH->pole = -1;
 			PH->lat_limit = P->min[GMT_Y];
 			P->min[GMT_Y] = -90.0;
-			
+
 		}
 		else {	/* N */
 			PH->pole = +1;
@@ -135,10 +135,10 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s [-C] [-En|z|d[<dr>]]\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<unit>] [-N<nodetable>] [-Q<voronoitable>] [%s] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -163,7 +163,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default performs Voronoi construction on input data first].\n");
 	GMT_Option (API, "Rg");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
-	GMT_Option (API, "V,bi2,di,e,h,i,j,r,s,:,.");
+	GMT_Option (API, "V,bi2,di,e,h,i,j,qi,r,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -219,7 +219,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 			case 'L':
 				Ctrl->L.active = true;
 				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
+					GMT_Report (API, GMT_MSG_ERROR, "Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
 				}
 				else
@@ -240,10 +240,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 	}
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->common.b.active[GMT_IN] && !Ctrl->N.active, "Syntax error: Binary input data (-bi) with -Q also requires -N.\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Binary input data (-bi) must have at least 3 columns\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->common.b.active[GMT_IN] && !Ctrl->N.active, "Binary input data (-bi) with -Q also requires -N.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -264,7 +264,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	double first_x = 0.0, first_y = 0.0, prev_x = 0.0, prev_y = 0.0, X[3];
 	double *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL;
-	
+
 	gmt_grdfloat f_val = 0.0, *z_val = NULL;
 
 	struct GMT_GRID *Grid = NULL;
@@ -289,7 +289,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	gmt_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -308,18 +308,18 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	/* Now we are ready to take on some input values */
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
 		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -Q files */
 		if ((Qin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (Qin->n_columns < 2) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->Q.file, (int)Qin->n_columns);
+			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->Q.file, (int)Qin->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 		Table = Qin->table[0];	/* Only one table in a file */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " segments\n", Table->n_segments);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " segments\n", Table->n_segments);
 	 	lon = gmt_M_memory (GMT, NULL, Table->n_segments, double);
 	 	lat = gmt_M_memory (GMT, NULL, Table->n_segments, double);
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
@@ -328,23 +328,23 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			if ((error = GMT_Set_Columns (API, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				Return (error);
 			}
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read Nodes from %s ...", Ctrl->N.file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Read Nodes from %s ...", Ctrl->N.file);
 			gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -N files */
 			if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			if (Nin->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)Nin->n_columns);
+				GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)Nin->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 			NTable = Nin->table[0];	/* Only one table in a file with a single segment */
 			if (NTable->n_segments != 1) {
-				GMT_Report (API, GMT_MSG_NORMAL, "File %s can only have 1 segment!\n", Ctrl->N.file);
+				GMT_Report (API, GMT_MSG_ERROR, "File %s can only have 1 segment!\n", Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (Table->n_segments != NTable->n_records) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
+				GMT_Report (API, GMT_MSG_ERROR, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			gmt_M_memcpy (lon, NTable->segment[0]->data[GMT_X], NTable->n_records, double);
@@ -352,16 +352,16 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			if (GMT_Destroy_Data (API, &Nin) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " records\n", NTable->n_records);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " records\n", NTable->n_records);
 		}
 		else {	/* Get extract them from the segment header */
 			for (node = 0; node < Table->n_segments; node++) {
 				if (Table->segment[node]->header == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "No node-information found in the segment headers - must abort\n");
+					GMT_Report (API, GMT_MSG_ERROR, "No node-information found in the segment headers - must abort\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (sscanf (Table->segment[node]->header, "%*s %*d %lf %lf", &lon[node], &lat[node]) != 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Could not obtain node-information from the segment headers - must abort\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Could not obtain node-information from the segment headers - must abort\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}
@@ -379,7 +379,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			Return (API->error);	/* Enables data input and sets access mode */
 		}
 
-		GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
+		GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */
 
 		n_alloc = 0;
 		if (!Ctrl->C.active) gmt_M_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
@@ -442,8 +442,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		if (!Ctrl->C.active) gmt_M_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		gmt_M_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
-		if (n_dup) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Do Voronoi construction using %" PRIu64 " points\n", n);
+		if (n_dup) GMT_Report (API, GMT_MSG_WARNING, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
 		gmt_stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
@@ -464,7 +464,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start processing distance grid\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Start processing distance grid\n");
 
 	grid_lon = Grid->x;
 	grid_lat = Grid->y;
@@ -480,7 +480,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		V = &T.V;
 
 	for (node = 0; node < n; node++) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing polygon %7ld\r", node);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing polygon %7ld\r", node);
 		if (Ctrl->Q.active) {	/* Just point to next polygon */
 			P = Table->segment[node];
 		}
@@ -524,7 +524,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				case SPHD_VALUES:	f_val = z_val[node];	break;
 				default:	break;	/* Must compute distances below */
 			}
-			
+
 		}
 
 		/* Here we have the polygon in P */
@@ -558,7 +558,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				else
 					col = p_col;
 				side = gmt_inonout (GMT, grid_lon[col], grid_lat[row], P);
-				
+
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = gmt_M_ijp (Grid->header, row, col);
 				if (Ctrl->E.mode == SPHD_DIST)
@@ -572,7 +572,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing polygon %7ld\n", node);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing polygon %7ld\n", node);
 
 	if (!Ctrl->Q.active) {
 		gmt_free_segment (GMT, &P);
@@ -596,7 +596,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	}
 
 	if (n_set > Grid->header->nm) n_set = Grid->header->nm;	/* Not confuse the public */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Spherical distance calculation completed, %" PRIu64 " nodes visited (at least once)\n", n_set);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Spherical distance calculation completed, %" PRIu64 " nodes visited (at least once)\n", n_set);
 
 	Return (GMT_NOERROR);
 }

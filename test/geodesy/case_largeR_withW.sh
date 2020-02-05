@@ -6,7 +6,7 @@
 # GRAPHICSMAGICK_RMS = 0.0435
 ps=case_largeR_withW.ps
 # Use real GPS data with uncertainties
-data=`gmt which -G @wus_gps_final_crowell.txt`
+data=$(gmt which -G @wus_gps_final_crowell.txt)
 #  Large region
 R=122.5W/115W/33N/38N
 # blockmean interval

@@ -19,13 +19,13 @@ Synopsis
 [ |-E|\ *resolution* ]
 [ |-F|\ *out_name* ]
 [ |-G|\ *ghost_path* ]
-[ |-H|\ *factor*\ ]
+[ |-H|\ *factor* ]
 [ |-I| ]
 [ |-L|\ *listfile* ]
-[ **-Mb**\ \|\ **f**\ *pslayer* ]
-[ |-Q|\ [**g**\ \|\ **p**\ \|\ **t**][1\|2\|4] ]
+[ **-Mb**\|\ **f**\ *pslayer* ]
+[ |-Q|\ [**g**\|\ **p**\|\ **t**][1\|2\|4] ]
 [ |-S| ]
-[ |-T|\ **b**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s**\ \|\ **t**\ [**+m**\ ]\ ]
+[ |-T|\ **b**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *params* ]
 [ |-Z| ]
@@ -64,30 +64,31 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+g**\ *paint*\ ][**+m**\ *margins*][**+n**][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]][**+u**]
+**-A**\ [**+f**\ *fade*][**+g**\ *paint*][**+m**\ *margins*][**+n**][**+p**\ [*pen*]][**+r**][**+s**\ [**m**]\|\ **S**\ *width*/\ *height*][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **+n** to leave the BoundingBoxes as they are
     (e.g., to override any automatic setting of **-A** by **-W**).
     Append **+u** to first remove any GMT-produced time-stamps.
     Optionally, append **+m** to specify extra margins to extend the bounding box.
     Give either one (uniform), two (x and y) or four (individual sides)
-    margins; append unit [Default is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`].
+    margins; append unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
 
     Use the **-A+s**\ *new_width* to resize the output image to exactly *new_width* units.
-    The default is to use what is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`
+    The default is to use what is set by :term:`PROJ_LENGTH_UNIT`
     but you can append a new unit and/or impose different width and height. What happens
     here is that Ghostscript will do the re-interpolation work and the final image will
     retain the DPI resolution set by **-E**.  Use **-A+sm** to set a maximum size and
     the new width are only imposed if the original figure width exceeds it. Append
-    /\ *new_height* to also also impose a maximum height in addition to the width.
+    /\ *new_height* to also impose a maximum height in addition to the width.
     Alternatively use **-A+S**\ *scale* to scale the image by a constant factor.
 
-    Use the **-A+r** to round the HighRes BoundingBox instead of using the `ceil` function.
+    Use the **-A+r** to round the HighRes BoundingBox instead of using the ``ceil`` function.
     This is going against Adobe Law but can be useful when creating very small images
     where the difference of one pixel might matter.
     If **-V** is used we also report the dimensions of the illustration.
+    Use **-A+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
     Use **-A+g**\ *paint* to paint the BoundingBox behind the illustration and
-    use **-A+p**\ [\ *pen*] to draw the BoundingBox outline (append a pen or accept
+    use **-A+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
     the default pen of 0.25p,black).
 
 .. _-C:
@@ -162,14 +163,14 @@ Optional Arguments
 
 .. _-M:
 
-**-Mb**\ \|\ **f**\ *pslayer*
+**-Mb**\|\ **f**\ *pslayer*
     Sandwich the current *psfile* between an optional background (**-Mb**) and
     optional foreground (**-Mf**) Postscript plots.  These files are expected
     to be stand-alone plots that will align when stacked.
 
 .. _-Q:
 
-**-Q**\ [**g**\ \|\ **p**\ \|\ **t**][1\|2\|4]
+**-Q**\ [**g**\|\ **p**\|\ **t**][1\|2\|4]
     Set the anti-aliasing options for **g**\ raphics or **t**\ ext.
     Append the size of the subsample box (1, 2, or 4) [4]. For vector
     formats the default is no anti-aliasing (same as *bits* = 1).
@@ -185,7 +186,7 @@ Optional Arguments
 
 .. _-T:
 
-**-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s**\ \|\ **t**\ [**+m**\ ]
+**-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**]
     Sets the output format, where **b** means BMP, **e** means EPS,
     **E** means EPS with PageSize command, **f** means PDF, **F** means
     multi-page PDF, **j** means JPEG, **g** means PNG, **G** means
@@ -251,9 +252,10 @@ Optional Arguments
     building a multi-component KML file then you can issue a KML snipped
     without the KML header and trailer by using the **+o**\ *foldername*
     modification; it will enclose the image and associated KML code
-    within a KML folder of the specified name. See the KML documentation
-    for further explanation
-    (http://code.google.com/apis/kml/documentation/).
+    within a KML folder of the specified name. See the
+    `KML documentation <https://code.google.com/apis/kml/documentation/>`_
+    for further explanation.
+
     Note: If any of your titles or names contain a plus symbol next to
     a letter it can be confused with an option modifier. Escape such
     plus signs by placing a backslash in front of it.  Alternatively,
@@ -273,7 +275,7 @@ Optional Arguments
 
     For example the command::
 
-        gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps
+        gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside -ps cara
 
     adds this comment line::
 
@@ -351,59 +353,43 @@ Examples
 
 .. include:: explain_example.rst_
 
-To convert the file psfile.ps to PNG using a tight BoundingBox:
-
-   ::
+To convert the file psfile.ps to PNG using a tight BoundingBox::
 
     gmt psconvert psfile.ps -A -Tg
 
 To convert the file map.ps to PDF, extend the BoundingBox by 0.2 cm,
-fill it with lightblue paint and draw outline with a thick pen:
-
-   ::
+fill it with lightblue paint and draw outline with a thick pen::
 
     gmt psconvert map.ps -A+m0.2c+glightblue+pthick -Tf
 
-To create a 5 cm PNG version at 300 dpi of our example_01.ps file
-
-   ::
+To create a 5 cm PNG version at 300 dpi of our example_01.ps file::
 
     gmt psconvert example_01.ps -A+s5c -Tg
 
-To create a 3 pages PDF file from 3 individual PS files
-
-   ::
+To create a 3 pages PDF file from 3 individual PS files::
 
     gmt psconvert -TF -Fabc a.ps b.ps c.ps
 
 To create a simple linear map with :doc:`coast` and convert it to tif with a
-.tfw the tight BoundingBox computation.
+.tfw the tight BoundingBox computation::
 
-   ::
-
-    gmt coast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -G200 --MAP_FRAME_TYPE=inside > cara.ps
+    gmt coast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -G200 --MAP_FRAME_TYPE=inside -ps cara
     gmt psconvert cara.ps -Tt -W
 
 To create a Mercator version of the above example and use GDAL to
-produce a true geotiff file.
+produce a true geotiff file::
 
-   ::
-
-    gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -G200 --MAP_FRAME_TYPE=inside > cara.ps
+    gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -G200 --MAP_FRAME_TYPE=inside -ps cara
     gdalwarp -s_srs +proj=merc cara.tif carageo.tiff
 
-To create a Polar Stereographic geotiff file of Patagonia
+To create a Polar Stereographic geotiff file of Patagonia::
 
-   ::
-
-    gmt coast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
+    gmt coast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -Bg2 --MAP_FRAME_TYPE=inside -ps patagonia
     gmt psconvert patagonia.ps -Tt -W+g -V
 
-To create a simple KML file for use in Google Earth, try
+To create a simple KML file for use in Google Earth, try::
 
-   ::
-
-    gmt grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -B0g2 --MAP_FRAME_TYPE=inside > tile.ps
+    gmt grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -B0g2 --MAP_FRAME_TYPE=inside -ps tile
     gmt psconvert tile.ps -Tg -W+k+t"my title"+l256/-1 -V
 
 (These commands assume that Ghostscript can be found in your system's path.)

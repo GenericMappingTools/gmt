@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -158,7 +158,7 @@ struct GMT_GRID_HEADER_HIDDEN {
 	int xy_dim[2];                   /* NetCDF: dimension order of x and y; normally {1, 0} */
 	size_t t_index[3];               /* NetCDF: index of higher coordinates */
 	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
-	size_t n_alloc;                  /* Bytes allocated for this grid */	
+	size_t n_alloc;                  /* Bytes allocated for this grid */
 	unsigned int stride;             /* NetCDF: distance between two rows in the in-memory grid */
 	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
 	char   flags[4];                 /* Flags used for ESRI grids */

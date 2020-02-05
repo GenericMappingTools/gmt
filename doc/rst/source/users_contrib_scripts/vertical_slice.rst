@@ -32,7 +32,7 @@ yet they can be tricky.
 
 Regards, Eduardo.-
 
--- 
+--
 Eduardo A. Suarez
 Facultad de Ciencias Astronomicas y Geofisicas - UNLP
 
@@ -88,7 +88,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  gmt coast -R -JM -JZ -Bxa2f1g0.5 -Bya1f1g0.5 -Bza250f50g250+l"Km" -B+b -BwESn -Df -A0/0/1 \
      -N1/0.5p,black,-..- -W0.5p,black -p -O -K >> mag.ps
  #
- # calculate max X projected 
+ # calculate max X projected
  #
  xMax=`echo '-60 -40' | gmt mapproject -R-75/-60/-50/-40 -JM-67.5/-45/16 | awk '{print $2}'`
  #

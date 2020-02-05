@@ -13,13 +13,13 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt mgd77magref** [ *inputfile* ]
-[ |-A|\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**] ]
+[ |-A|\ [**+a**\ *alt*\ ][**+t**\ *date*\ ][**+y**] ]
 [ |-C|\ *cm4file* ]
 [ |-D|\ *Dstfile* ]
 [ |-E|\ *f107file* ]
 [ |-F|\ *flags* ]
 [ |-G| ]
-[ |-S|\ **c**\ \|\ **l**\ *low/high* ]
+[ |-S|\ **c**\|\ **l**\ *low/high* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-f| ]
@@ -33,7 +33,7 @@ Description
 -----------
 
 **mgd77magref** will evaluate the IGRF or the CM4 geomagnetic models at
-the specified locations and times. 
+the specified locations and times.
 
 Required Arguments
 ------------------
@@ -61,24 +61,24 @@ Optional Arguments
     be biased (non reliable). New indices files may be retrieved from
     from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the
     *Dst* coefficients) and
-    http://umbra.nascom.nasa.gov/sdb/yohkoh/ys_dbase/indices_flux_raw/Penticton_Absolute/monthly/MONTHPLT.ABS 
+    http://umbra.nascom.nasa.gov/sdb/yohkoh/ys_dbase/indices_flux_raw/Penticton_Absolute/monthly/MONTHPLT.ABS
     (The *F10.7* index file is a MONTHPLT.ABS). NOTE: since the *Dst* files
     in the .../DST/ directory are still only up to 2006, for GMT4.5.3 and after
     we extended the *Dst* until August 2009 by reformatting the data in the
     preliminary file Est_Ist_index_0_mean.pli, which is at
     ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/. But since
-    this site is now also outdated, we now get the DST indices from 
+    this site is now also outdated, we now get the DST indices from
     http://wdc.kugi.kyoto-u.ac.jp/dstae/index.html However, for the most recent
     dates those indices are "Quick Look" (the best are the "Definitive" type).
     Because the *F10.7* from the MONTHPLT.ABS file mentioned above are apparently
     no being updated, we found another place where they are, which is:
     ftp://ftp.ngdc.noaa.gov/STP/space-weather/solar-data/solar-features/
     solar-radio/noontime-flux/penticton/penticton_absolute/listings/
-    listing_drao_noontime-flux-absolute_monthly.txt 
+    listing_drao_noontime-flux-absolute_monthly.txt
 
 .. _-A:
 
-**-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**]
+**-A**\ [**+a**\ *alt*\ ][**+t**\ *date*\ ][**+y**]
     Adjusts how the input record is interpreted. Append **+a** to set a
     fixed *altitude* (in km) that should apply to all data records
     [Default expects *altitude* to be in the 3rd column of all records].
@@ -86,7 +86,7 @@ Optional Arguments
     records [Default expects *time* to be in the 4th column of all
     records]. Finally, append **+y** to indicate that all times are
     specified as decimal years [Default is ISO *date*\ T\ *colck* format, see
-    :ref:`TIME_EPOCH <TIME_EPOCH>`].
+    :term:`TIME_EPOCH`].
 
 .. _-C:
 
@@ -203,11 +203,11 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-    
-.. |Add_-bi| replace:: [Default is 4 input columns unless **-A** is used]. 
+
+.. |Add_-bi| replace:: [Default is 4 input columns unless **-A** is used].
 .. include:: ../../explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is reflected by **-F**]. 
+.. |Add_-bo| replace:: [Default is reflected by **-F**].
 .. include:: ../../explain_-bo.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -155,7 +155,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C<cpt>]\n", name, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s]\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>]\n\t%s[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
@@ -308,10 +308,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 			case 'G':	/* truncate incoming CPT */
 				Ctrl->G.active = true;
 				j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += gmt_M_check_condition (GMT, j < 2, "Syntax error -G option: Must specify z_low/z_high\n");
+				n_errors += gmt_M_check_condition (GMT, j < 2, "Option -G: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high), "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high), "Option -G: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'I':
 				Ctrl->I.active = true;
@@ -533,21 +533,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->D.refpoint) {
 		if (!(Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP || Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)) {	/* Only -DJ|j takes auto-width */
-			n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->D.dim[GMT_X]) < GMT_CONV4_LIMIT , "Syntax error -D option: scale length must be nonzero\n");
-			n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] <= 0.0, "Syntax error -D option: scale width must be positive\n");
+			n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->D.dim[GMT_X]) < GMT_CONV4_LIMIT , "Option -D: scale length must be nonzero\n");
+			n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] <= 0.0, "Option -D: scale width must be positive\n");
 		}
 		if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 			static char *kind = "gjJnx";	/* The five types of refpoint specifications */
-			n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
-			n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
+			n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
+			n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Option -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Syntax error -L option: Cannot be used if -B option sets increments.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Syntax error -N option: The dpi must be > 0.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Syntax error -Z option: No file given\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Syntax error -W option: Scale cannot be zero\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files are allowed\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Option -L: Cannot be used if -B option sets increments.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Option -N: The dpi must be > 0.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Option -Z: No file given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Option -Z: Cannot access file %s\n", Ctrl->Z.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Option -W: Scale cannot be zero\n");
 
 	if (!Ctrl->C.active && (c = gmt_get_current_cpt (API->GMT))) {
 		Ctrl->C.active = true;	/* Select current CPT */
@@ -610,7 +610,7 @@ void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	vdim[6] = 0.75;
 	vdim[7] = (double)(PSL_VEC_END|PSL_VEC_FILL);
 	vdim[9] = (double)PSL_VEC_ARROW;
-	gmt_setfill (GMT, &black, false);
+	gmt_setfill (GMT, &black, 0);
 	gmt_setpen (GMT, &pen);
 	PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.0, "", 0, black.rgb);
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
@@ -632,8 +632,8 @@ EXTERN_MSC void gmt_xy_axis2 (struct GMT_CTRL *GMT, double x0, double y0, double
 GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0;
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify;
-	int this_just, p_val;
-	bool reverse, all = true, use_image, center = false, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
+	int this_just, p_val, center = 0;
+	bool reverse, all = true, use_image, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.active, need_image;
 	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""}, endash;
 	static char *method[2] = {"polygons", "colorimage"};
@@ -751,7 +751,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	/* So if CPT has pattern AND continuous color sections then use_image is false but we still need to do an image later */
 	need_image = (P->has_pattern && P->is_continuous);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar will be plotted using %s\n", method[use_image]);
-	
+
 	if (Ctrl->D.emode & (reverse+1)) elength[XLO] =  Ctrl->D.elength;
 	if (Ctrl->D.emode & (2-reverse)) elength[XHI] =  Ctrl->D.elength;
 	if (!strncmp (PSL->init.encoding, "Standard", 8U))
@@ -762,7 +762,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		endash = '-';	/* Use hyphen */
 
 	if ((gap >= 0.0 || Ctrl->L.interval) && !P->is_continuous) {	/* Want to center annotations for discrete colortable, using lower z0 value */
-		center = (Ctrl->L.interval || gap >= 0.0);
+		center = (Ctrl->L.interval || gap >= 0.0) ? 1 : 0;
 		if (gap > 0.0) skip_lines = true;
 		gap *= 0.5;
 		if (Ctrl->L.interval) {
@@ -874,7 +874,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			/* Adjust if there is +n NaNmarker */
 			if (Ctrl->D.emode & 4)	/* Add NaN rectangle on left side */
 				dim[XLO] += 2.0 * Ctrl->D.elength + gap + fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + 3.25 * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
-			
+
 			x_center = 0.5 * length + 0.5 * (dim[XHI] - dim[XLO]); y_center = 0.5 * width + 0.5 * (dim[YHI] - dim[YLO]);
 			panel->width = length + dim[XHI] + dim[XLO];	panel->height = width + dim[YHI] + dim[YLO];
 		}
@@ -1040,11 +1040,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->bfn[id].fill) != NULL)
-				gmt_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, 0);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, false);
+				PSL_setfill (PSL, rgb, 0);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
@@ -1056,11 +1056,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
 			if ((f = P->bfn[GMT_NAN].fill) != NULL)
-				gmt_setfill (GMT, f, true);
+				gmt_setfill (GMT, f, 1);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[GMT_NAN].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, true);
+				PSL_setfill (PSL, rgb, 1);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, 0.0, PSL_MR, 0);
@@ -1072,11 +1072,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->bfn[id].fill) != NULL)
-				gmt_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, 0);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, false);
+				PSL_setfill (PSL, rgb, 0);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
@@ -1291,11 +1291,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->bfn[id].fill) != NULL)
-				gmt_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, 0);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, false);
+				PSL_setfill (PSL, rgb, 0);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
@@ -1307,11 +1307,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
 			if ((f = P->bfn[GMT_NAN].fill) != NULL)
-				gmt_setfill (GMT, f, true);
+				gmt_setfill (GMT, f, 1);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[GMT_NAN].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, true);
+				PSL_setfill (PSL, rgb, 1);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, -90.0, PSL_TC, 0);
@@ -1323,11 +1323,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->bfn[id].fill) != NULL)
-				gmt_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, 0);
 			else {
 				gmt_M_rgb_copy (rgb, P->bfn[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-				PSL_setfill (PSL, rgb, false);
+				PSL_setfill (PSL, rgb, 0);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
 			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
@@ -1500,7 +1500,7 @@ int GMT_colorbar (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: colorbar\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: colorbar\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psscale (V_API, mode, args);
@@ -1522,6 +1522,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -1534,7 +1535,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_ALL;
 	GMT->current.map.frame.draw = false;	/* No -B parsed explicitly yet */
@@ -1544,19 +1545,19 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input CPT\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input CPT\n");
 	if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (Ctrl->D.extend && P->is_wrapping) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot use +e for cycling color bar; +e deactivated\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot use +e for cycling color bar; +e deactivated\n");
 		Ctrl->D.extend = false;
 		Ctrl->D.emode &= 4;	/* This removes any 1,2,3 of selected but leaves 4 for nan */
 	}
 
 	if (P->has_range)	/* Convert from normalized to default CPT z-range */
 		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
-	
+
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)
@@ -1569,15 +1570,15 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = true;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is for categorical data.\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "CPT is for categorical data.\n");
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "  CPT range from %g to %g\n", P->data[0].z_low, P->data[P->n_colors-1].z_high);
+	GMT_Report (API, GMT_MSG_INFORMATION, "  CPT range from %g to %g\n", P->data[0].z_low, P->data[P->n_colors-1].z_high);
 
 	if (Ctrl->Q.active) {	/* Take log of all z values */
 		for (i = 0; i < P->n_colors; i++) {
 			if (P->data[i].z_low <= 0.0 || P->data[i].z_high <= 0.0) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: All z-values must be positive for logarithmic scale\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -Q: All z-values must be positive for logarithmic scale\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			P->data[i].z_low  = d_log10 (GMT, P->data[i].z_low);
@@ -1643,7 +1644,10 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 0;	/* Reset no_scaling flag */
 	}
 
-	if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
+	if (!GMT->current.map.frame.draw && (PH = gmt_get_C_hidden (P)) && PH->auto_scale) {	/* No -B given yet we have raw auto-scaling */
+		gmtlib_parse_B_option (GMT, "af");
+	}
+	else if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
 		char p[GMT_LEN256] = {""}, group_sep[2] = {" "}, *tmp = NULL;
 		unsigned int pos = 0;
 		GMT_Report (API, GMT_MSG_DEBUG, "Clean re reparse -B settings\n");
@@ -1664,7 +1668,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		}
 		z_width = D->table[0]->segment[0]->data[GMT_X];
 		if (D->table[0]->segment[0]->n_rows < (uint64_t)P->n_colors) {
-			GMT_Report (API, GMT_MSG_NORMAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_ERROR, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}

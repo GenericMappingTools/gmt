@@ -13,11 +13,11 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt earthtide**
-|-T|\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
+|-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
 |-G|\ *grdfile*
 [ |-C|\ *x|e,y|n,z|v* ]
 [ |SYN_OPT-I| ]
-[ |-L|\ *lon/lat* ] 
+[ |-L|\ *lon/lat* ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-V| ]
@@ -45,7 +45,7 @@ Either **-G**, **-S** or **-L**
     Write one or more tide component directly to grids; no table data are written to standard output.
     If more than one component are specified via **-C** then *grdfile* must contain the format flag %s
     so that we can embed the component code in the file names (*n* for north; *e* for east and *v* for vertical).
-    If only one component is selected with **-C** than no code is appended to grid name (an no need to 
+    If only one component is selected with **-C** than no code is appended to grid name (an no need to
     set the format flag %s). The grid(s) are computed at the time set by **-T**, if that option is used, or
     at the *now* time calculated in UTC from the computer clock.
 
@@ -68,11 +68,11 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *x|e,y|n,z|v*
+**-C**\ **x**\|\ **e**,\ **y**\|\ **n**,\ **z**\|\ **v**
     Select which component to write to individual grids. Requires **-G**.
     Append comma-separated codes for available components: **x** or **e** for the east component;
     **y** or **n** for the north component; and **z** or **v** for the vertical component.
-    For example, **-C**\ *e,v*, will write 2 grids. One with east and other with the vertical components.
+    For example, **-Ce**,\ **v**, will write 2 grids. One with east and other with the vertical components.
     If **-G** is set but not **-C** then the default is to write the vertical component.
 
 .. _-I:
@@ -88,13 +88,14 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc*. Append +n to indicate *inc* is the number of t-values
     to produce over the range instead. Append a valid time unit (d|h|m|s) to the increment. If only *min* is given then
     we use that date and time for the calculations.  If no **-T** is provided get
     current time in UTC from the computer clock. If no **-G** or **-S** are provided then **-T** is interpreted to mean compute
     a time-series at the location specified by **-L**, thus then **-L** becomes mandatory.
     When **-G** and **-T**, only first time T series is considered. Finally, dates may range from 1901 through 2099.
+    For details on array creation, see `Generate 1D Array`_.
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
@@ -111,6 +112,7 @@ Optional Arguments
 
 .. include:: ../../explain_help.rst_
 
+.. include:: /explain_array.rst_
 
 Examples
 --------

@@ -62,27 +62,24 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ \ **+w**\ *length*\ [**+j**\ *justify*]\ [**+a**\ **l**\ \|\ **r**\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+l**\ [*label*]]
+**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ \ **+w**\ *length*\ [**+j**\ *justify*]\ [**+a**\ **l**\|\ **r**]\ [**+o**\ *dx*\ [/*dy*]]\ [**+l**\ [*label*]]
     Defines the reference point on the map for the vertical scale bar using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+
+    .. include:: explain_refpoint.rst_
+
     Append **+w** followed by the *length* or the scale bar in data (*z*) units.
     By default, the anchor point on the scale is assumed to be the middle left corner (ML), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
-    Add **+o** to offset the vertical scale bar by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Move scale label to the left side with **+al** [Default is to the right of the scale].
     Append **+l** to set the *z* unit label that is used in the scale label [no unit].
     The **FONT\_ANNOT\_PRIMARY** is used for the font setting.
 
 .. _-F:
 
-**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*]]]
+**-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the vertical scale bar using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the scale panel [no fill].
@@ -100,7 +97,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*\ [**+n**\ ][**+p**\ ] :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ *fill*\ [**+n**][**+p**] :ref:`(more ...) <-Gfill_attrib>`
     Set fill shade, color or pattern for positive and/or negative
     wiggles [Default is no fill]. Optionally, append **+p** to fill
     positive areas (this is the default behavior). Append **+n** to fill
@@ -118,7 +115,7 @@ Optional Arguments
 
 **-T**\ *pen*
     Draw track [Default is no track]. Append pen attributes to use
-    [Defaults: width = 0.25p, color = black, style = solid]. 
+    [Defaults: width = 0.25p, color = black, style = solid].
 
 .. _-U:
 
@@ -134,7 +131,7 @@ Optional Arguments
 **-W**\ *pen*
     Specify outline pen attributes [Default is no outline].
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -156,6 +153,8 @@ Optional Arguments
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
+
+.. include:: explain_-qi.rst_
 
 .. include:: explain_-t.rst_
 

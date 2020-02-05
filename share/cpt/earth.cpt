@@ -1,10 +1,10 @@
 #
 # Color table for Earth's relief combining the bathy
-# and dem4 CPTs with a hinge at 0.
+# and dem4 CPTs with a HARD hinge at 0.
 # Designed by P. Wessel, SOEST
 #------------------------------------------------
 # COLOR_MODEL = RGB
-# HINGE = 0
+# HARD_HINGE
 # RANGE = -11000/9000
 #------------------------------------------------
 -1	black			-0.875	31/40/79

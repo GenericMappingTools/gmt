@@ -1,12 +1,12 @@
 /*
- *	Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
 /*!
  * \file gmt_sharedlibs.h
- * \brief Structures needed by the various shared libraries. 
+ * \brief Structures needed by the various shared libraries.
  */
 
 #pragma once

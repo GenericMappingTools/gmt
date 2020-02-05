@@ -1,16 +1,16 @@
-**-N**\ [**a**\ \|\ **f**\ \|\ **m**\ \|\ **r**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ [\ **+d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][**+v**][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+**-N**\ [**a**\|\ **f**\|\ **m**\|\ **r**\|\ **s**\|\ *nx/ny*][**+a**\|\ **d**\|\ **h**\|\ **l**][**+e**\|\ **n**\|\ **m**][**+t**\ *width*][**+v**][**+w**\ [*suffix*]][**+z**\ [**p**]]
     Choose or inquire about suitable grid dimensions for FFT and set
     optional parameters. Control the FFT dimension:
-    
-    	**-Na** lets the FFT select dimensions yielding the most accurate result. 
 
-        **-Nf** will force the FFT to use the actual dimensions of the data. 
+    	**-Na** lets the FFT select dimensions yielding the most accurate result.
 
-    	**-Nm** lets the FFT select dimensions using the least work memory. 
+        **-Nf** will force the FFT to use the actual dimensions of the data.
 
-    	**-Nr** lets the FFT select dimensions yielding the most rapid calculation. 
+    	**-Nm** lets the FFT select dimensions using the least work memory.
 
-        **-Ns** will present a list of optional dimensions, then exit. 
+    	**-Nr** lets the FFT select dimensions yielding the most rapid calculation.
+
+        **-Ns** will present a list of optional dimensions, then exit.
 
         **-N**\ *nx/ny* will do FFT on array size *nx/ny* (must be >= grid file size). Default chooses
         dimensions >= data which optimize speed and accuracy of FFT. If FFT
@@ -41,7 +41,7 @@
         available [0%].
 
 	Control messages being reported:
-        **+v** will report suitable dimensions during processing. 
+        **+v** will report suitable dimensions during processing.
 
     Control writing of temporary results:
     For detailed investigation you can write the intermediate grid being passed

@@ -12,17 +12,18 @@ resets the font to the starting font, @- toggles subscripts on/off, @+
 toggles superscript on/off, @# toggles small caps on/off, @;\ *color*;
 changes the font color (@;; resets it), @:\ *size*: changes the font
 size (@:: resets it), and @\_ toggles underline on/off. @@ prints the @
-sign. @e, @o, @a, @E, @O, @A give the accented Scandinavian characters.
+sign while @. prints the degree symbol. @a, @c, @e, @i, @n, @o, @s, @u, @A, @C, @E, @N, @O, and @U
+give various accented European characters, as indicated in Table :ref:`escape <tbl-shorthand>`.
 Composite characters (overstrike) may be indicated with the
 @!<char1><char2> sequence, which will print the two characters on top of
 each other. To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section :ref:`Char-esc-seq` and
 Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and Cookbook. Note that
-:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` must be set to an extended character set in your
+:term:`PS_CHAR_ENCODING` must be set to an extended character set in your
 :doc:`gmt.conf` file in order to use the accented characters. Using the
 **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (**-M**)). 
+characters, except in paragraph mode (**-M**)).
 
 Required Arguments
 ------------------
@@ -48,7 +49,7 @@ Optional Arguments
     *y*\ [, *font*, *angle*, *justify*], *text*). The attributes in
     brackets can alternatively be set directly via **-F**. If no files
     are given, **text** will read standard input. *font* is a font
-    specification with format [*size*,][\ *font*,][*color*\ ] where
+    specification with format [*size*,][*font*,][*color*] where
     *size* is text size in points, *font* is the font to use, and
     *color* sets the font color. To draw outline fonts you append
     =\ *pen* to the font specification. The *angle* is measured in degrees
@@ -64,7 +65,7 @@ Optional Arguments
 
 **-A**
     Angles are given as azimuths; convert them to directions using the
-    current projection. 
+    current projection.
 
 .. _-B:
 
@@ -72,20 +73,20 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*dx/dy*\ ][\ **+to**\ \|\ **O**\ \|\ **c**\ \|\ **C**\ ]
+**-C**\ [*dx/dy*][**+to**\|\ **O**\|\ **c**\|\ **C**]
     Adjust the clearance between the text and the surrounding box [15%].
     Only used if **-W** or **-G** are specified. Append the unit you
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
-    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) or % for a percentage of the font size.
+    :term:`PROJ_LENGTH_UNIT`) or % for a percentage of the font size.
     Optionally, use modifier **+t** to set the shape of the textbox when using **-G** and/or **-W**.
     Append lower case **o** to get a straight rectangle [Default].
     Append upper case **O** to get a rounded rectangle. In paragraph
     mode (**-M**) you can also append lower case **c** to get a concave
-    rectangle or append upper case **C** to get a convex rectangle. 
+    rectangle or append upper case **C** to get a convex rectangle.
 
 .. _-D:
 
-**-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*\ ]]
+**-D**\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]]
     Offsets the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
     [0/0]. If *dy* is not specified then it is set equal to *dx*. Use
     **-Dj** to offset the text away from the point instead (i.e., the
@@ -97,9 +98,9 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]]
+**-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*] \|\ **t**\ *text*\|\ **z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
-    annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
+    annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
     on the data point. Use this option to override these defaults by
     specifying up to three text attributes (font, angle, and
     justification) directly on the command line. Use **+f** to set the
@@ -130,12 +131,12 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *color*
+**-G**\ [*fill*][**+n**]
     Sets the shade or color used for filling the text box [Default is no
-    fill]. Alternatively, use **-Gc** to plot the text and then use the
+    fill]. Alternatively, give no *fill* to plot text and then use the
     text dimensions (and **-C**) to build clip paths and turn clipping on.
     This clipping can then be turned off later with :doc:`clip` **-C**.
-    To **not** plot the text but activate clipping, use **-GC** instead.
+    To **not** plot the text but activate clipping, use **-G+n** instead.
 
 .. _-L:
 
@@ -150,7 +151,7 @@ Optional Arguments
     [Default is **>**]. Starting in the 3rd column, we expect to find
     information pertaining to the typesetting of a text paragraph (the
     remaining lines until next segment header). The information expected
-    is (*x y* [*font angle justify*\ ] *linespace parwidth parjust*),
+    is (*x y* [*font angle justify*] *linespace parwidth parjust*),
     where *x y font angle justify* are defined above (*font*, *angle*,
     and *justify* can be set via **-F**), while *linespace* and
     *parwidth* are the linespacing and paragraph width, respectively.
@@ -165,11 +166,11 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip text at map boundaries [Default will clip]. 
+    Do NOT clip text at map boundaries [Default will clip].
 
 .. _-Q:
 
-**-Q**\ **l**\ \|\ **u**
+**-Q**\ **l**\|\ **u**
     Change all text to either **l**\ ower or **u**\ pper case [Default
     leaves all text as is].
 
@@ -197,7 +198,7 @@ Optional Arguments
 **-Z**
     For 3-D projections: expect each item to have its own level given in
     the 3rd column, and **-N** is implicitly set. (Not implemented for
-    paragraph mode). 
+    paragraph mode).
 
 .. include:: explain_-aspatial.rst_
 
@@ -219,8 +220,10 @@ Optional Arguments
 
 .. include:: explain_colon.rst_
 
-.. |Add_perspective| replace:: (Not implemented for paragraph mode). 
+.. |Add_perspective| replace:: (Not implemented for paragraph mode).
 .. include:: explain_perspective.rst_
+
+.. include:: explain_-qi.rst_
 
 .. include:: explain_-t.rst_
 If no transparency is appended then we will read it from the last column per data record instead.

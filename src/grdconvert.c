@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,19 +48,19 @@ struct GRDCONVERT_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCONVERT_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDCONVERT_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -89,10 +89,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 			GMT_Message (API, GMT_TIME_NONE, "\t%s\n", grdformats[i]);
 	}
 #ifdef HAVE_GDAL
-	GMT_Message (API, GMT_TIME_NONE, "\n	When <id>=gd on output, the grid will be saved using the GDAL library.\n");
-	GMT_Message (API, GMT_TIME_NONE, "	Specify <driver> and optionally <dataType>. Driver names are as in GDAL\n		(e.g., netCDF, GTiFF, etc.)\n");
-	GMT_Message (API, GMT_TIME_NONE, "	<dataType> is u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n		integer.  Default type is float32.\n");
-	GMT_Message (API, GMT_TIME_NONE, "	Both driver names and data types are case insensitive.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tWhen <id>=gd on output, the grid will be saved using the GDAL library.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tSpecify <driver> and optionally <dataType>. Driver names are as in GDAL\n\t(e.g., netCDF, GTiFF, etc.)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<dataType> is u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n\tinteger.  Default type is float32.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tBoth driver names and data types are case insensitive.\n");
 #endif
 	return (GMT_MODULE_USAGE);
 }
@@ -125,7 +125,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 				}
 				else {
 					n_in++;
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Specify only one input file\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Specify only one input file\n");
 					n_errors++;
 				}
 				break;
@@ -143,7 +143,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 			case 'G':
 				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Specify only one output file\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Specify only one output file\n");
 					n_errors++;
 				}
 				else
@@ -160,7 +160,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->In.file && Ctrl->G.file), "Syntax error: Must specify both input and output file names\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->In.file && Ctrl->G.file), "Must specify both input and output file names\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -192,7 +192,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -213,17 +213,17 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	if (type[GMT_OUT] == GMT_GRID_IS_SD) {
 		/* Golden Surfer format 7 is read-only */
-		GMT_Report (API, GMT_MSG_NORMAL, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRID_IS_SD]);
+		GMT_Report (API, GMT_MSG_ERROR, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRID_IS_SD]);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
 		if (Ctrl->In.file[0] == '=') strcpy (fname[GMT_IN], "<stdin>");
 		if (Ctrl->G.file[0] == '=') strcpy (fname[GMT_OUT], "<stdout>");
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Translating file %s (format %s) to file %s (format %s)\n",
+		GMT_Report (API, GMT_MSG_INFORMATION, "Translating file %s (format %s) to file %s (format %s)\n",
 		            fname[GMT_IN], GMT->session.grdformat[type[GMT_IN]], fname[GMT_OUT], GMT->session.grdformat[type[GMT_OUT]]);
 		if (hmode && GMT->session.grdformat[type[GMT_OUT]][0] != 'c' && GMT->session.grdformat[type[GMT_OUT]][0] != 'n')
-			GMT_Report (API, GMT_MSG_VERBOSE, "No grd header will be written\n");
+			GMT_Report (API, GMT_MSG_WARNING, "No grd header will be written\n");
 	}
 
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
@@ -240,7 +240,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 		if (!global && (GMT->common.R.wesn[XLO] < (Grid->header->wesn[XLO]-noise[GMT_X]) || GMT->common.R.wesn[XHI] > (Grid->header->wesn[XHI]+noise[GMT_X]))) error++;
 		if (GMT->common.R.wesn[YLO] < (Grid->header->wesn[YLO]-noise[GMT_Y]) || GMT->common.R.wesn[YHI] > (Grid->header->wesn[YHI]+noise[GMT_Y])) error++;
 		if (error) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Subset exceeds data domain!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, Grid) == NULL) {
@@ -253,8 +253,8 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Check in case grid really is geographic */
 		if (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && gmt_M_180_range (Grid->header->wesn[YLO], Grid->header->wesn[YHI])) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Input grid says it is Cartesian but has exactly 360 by 180 degree range.\n");
-			GMT_Report (API, GMT_MSG_VERBOSE, "Use -fg to ensure the output grid will be identified as geographic.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Input grid says it is Cartesian but has exactly 360 by 180 degree range.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Use -fg to ensure the output grid will be identified as geographic.\n");
 		}
 	}
 	Grid->header->type = type[GMT_OUT];

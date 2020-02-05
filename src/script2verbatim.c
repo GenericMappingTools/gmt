@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -77,6 +77,7 @@ int main (int argc, char *argv[]) {
 	fp_out = fopen (argv[++arg], "w");
 	if (fp_out == NULL) {
 		fprintf (stderr, FAILURE_PREFIX "error opening output file %s.\n", argv[arg]);
+		fclose (fp_in);
 		return EXIT_FAILURE;
 	}
 
@@ -87,6 +88,8 @@ int main (int argc, char *argv[]) {
 		++line_num;
 		if (len > 0 && line[len-1] != '\n') {
 			fprintf (stderr, FAILURE_PREFIX "line %d too long: %s\n", line_num, line);
+			fclose (fp_in);
+			fclose (fp_out);
 			return EXIT_FAILURE;
 		}
 		if (filter (line, strip_comments))
@@ -96,6 +99,8 @@ int main (int argc, char *argv[]) {
 	/* Check EOF indicator */
 	if (!feof (fp_in)) {
 		fprintf (stderr, FAILURE_PREFIX "error: did not reach eof.\n");
+		fclose (fp_in);
+		fclose (fp_out);
 		return EXIT_FAILURE;
 	}
 

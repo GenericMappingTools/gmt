@@ -12,11 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt makecpt** [ |-A|\ *transparency*\ [**+a**\ ] ]
+**gmt makecpt** [ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [**i**\ \|\ **o**] ]
+[ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**\ ][**+c**\ ]]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -24,8 +24,8 @@ Synopsis
 [ |-N| ]
 [ |-Q| ]
 [ |-S|\ *mode* ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
-[ |-V|\ [*level*\ ] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
+[ |-V|\ [*level*] ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
@@ -56,15 +56,15 @@ wherever values are undefined.
 
 If the master CPT includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
-:ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
-and :ref:`COLOR_NAN <COLOR_NAN>` from
+:term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
+and :term:`COLOR_NAN` from
 the :doc:`gmt.conf` file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master CPT. When
-there is no :ref:`COLOR_MODEL <COLOR_MODEL>` entry in the master CPT, the
-:ref:`COLOR_MODEL <COLOR_MODEL>` specified in the :doc:`gmt.conf` file or on the command
+there is no :term:`COLOR_MODEL` entry in the master CPT, the
+:term:`COLOR_MODEL` specified in the :doc:`gmt.conf` file or on the command
 line will be used.
 
 Required Arguments
@@ -77,30 +77,23 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *transparency*\ [**+a**\ ]
+**-A**\ *transparency*\ [**+a**]
     Sets a constant level of transparency (0-100) for all color slices.
     Append **+a** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
 
 .. _-C:
 
-**-C**\ *cpt*
-    Selects the master color table CPT to use in the interpolation.
-    Choose among the built-in tables (type **makecpt** to see the list)
-    or give the name of an existing CPT [Default gives the turbo CPT].
-    Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous cpt from those colors automatically.
-    In this case *color*\ **n** can be a r/g/b triplet, a color name,
-    or an HTML hexadecimal color (e.g. #aabbcc ).
+.. include:: create_cpt.rst_
 
 .. _-D:
 
-**-D**\ [**i**\ \|\ **o**]
+**-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output CPT [Default uses
     the colors specified in the master file, or those defined by the
-    parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`, and
-    :ref:`COLOR_NAN <COLOR_NAN>`]. Append **i** to match the colors for the lowest and
+    parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
+    :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) CPT.
 
 .. _-E:
@@ -116,7 +109,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**][**+c**\ ]]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
@@ -142,8 +135,8 @@ Optional Arguments
 **-I**\ [**c**][**z**]
     Append **c** [Default] to reverse the sense of color progression in the master CPT. Also
     exchanges the foreground and background colors, including those
-    specified by the parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>` and
-    :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
+    specified by the parameters :term:`COLOR_BACKGROUND` and
+    :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
     this change of *z*-direction happens before **-G** and **-T** values are used
     so the latter much be compatible with the changed *z*-range.
@@ -154,10 +147,10 @@ Optional Arguments
 **-M**
     Overrule background, foreground, and NaN colors specified in the
     master CPT with the values of the parameters
-    :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
-    and :ref:`COLOR_NAN <COLOR_NAN>`
+    :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
+    and :term:`COLOR_NAN`
     specified in the :doc:`gmt.conf` file or on the command line. When
-    combined with **-D**, only :ref:`COLOR_NAN <COLOR_NAN>` is considered.
+    combined with **-D**, only :term:`COLOR_NAN` is considered.
 
 .. _-N:
 
@@ -175,19 +168,19 @@ Optional Arguments
 
 **-S**\ *mode*
     Determine a suitable range for the **-T** option from the input table(s) (or stdin).
-    Choose from several types of range determinations: 
-    **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**\ ] will use the data min/max but rounded
+    Choose from several types of range determinations:
+    **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will
     make a symmetric range around the average (i.e., mean)
     and ±\ *scl* * *sigma*, **-Sm**\ *scl* will make a symmetric range around the median
-    and ±\ *scl* * *L1_scale*, **-Sp**\ *scl* will make symmetric range around mode and
+    and ±\ *scl* * *L1_scale*, **-Sp**\ *scl* will make symmetric range around mode (i.e., LMS; least median of squares) and
     ±\ *scl* * *LMS_scale*, while **-Sq**\ *low/high* sets the range from *low* quartile
     to *high* quartile (in percentages).  We use the last data column for this calculation;
     use **i** if you need to adjust the column orders.
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+b**\ \|\ **l**\ \|\ **n**\ ]\|\ *file*\ \|\ *list*\ ]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If **-T** is
     not given, the existing range in the master CPT will be used intact.
@@ -206,18 +199,14 @@ Optional Arguments
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the color table, until colors for all
     intervals are assigned. This is particularly useful in combination
-    with a categorical color table, like "categorical". Cannot be used
-    in combination with **-Z**.  Alternatively, use **-Ww** to produce
-    a wrapped (cyclic) color table that endlessly repeats its range.
+    with a categorical color table, like "categorical". Alternatively,
+    use **-Ww** to produce a wrapped (cyclic) color table that endlessly
+    repeats its range.
 
 .. _-Z:
 
 **-Z**
-    Creates a continuous CPT [Default is discontinuous, i.e.,
-    constant colors for each interval]. This option has no effect when no **-T**
-    is used, or when using **-T**\ *z_min*/*z_max*; in the first case the input
-    CPT remains untouched, in the second case it is only scaled to match the
-    range *z_min*/*z_max*.
+    Force a continuous CPT when building from a list of colors and a list of *z*-values [discrete].
 
 .. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
@@ -243,17 +232,18 @@ and ocean across the shoreline, for instance).  CPTs with a hinge will
 have their two parts stretched to the required range separately, i.e.,
 the bottom part up to the hinge will be stretched independently of the
 part from the hinge to the top, according to the prescribed new range.
-If the selected range does not include the hinge then no such partitioning
-takes place.
+Hinges are either *hard* or *soft*.  Soft hinges must be *activated* by
+appending **+h**\ [*hinge*] to the CPT name.
+If the selected range does not include an activated soft or hard hinge then
+we only resample colors from the half of the CPT that pertains to the range.
+See :ref:`Of Colors and Color Legends` for more information.
 
-Color Aliasing
---------------
+Discrete versus Continuous CPT
+------------------------------
 
-For best result when **-T -Z** is used we recommend you do no append
-a specific *z_inc*.  This way the original CPT is used exactly
-as is but the *z* boundaries are adjusted to match the stated limits.
-Otherwise you may, depending on the nature of the input CPT, miss
-aspects of the color changes by aliasing the signal.
+All CPTs can be stretched, but only continuous CPTs can be sampled
+at new nodes (i.e., by given an increment in **-T**).  We impose this
+limitation to avoid aliasing the original CPT.
 
 Examples
 --------
@@ -272,7 +262,7 @@ continuous default turbo rainbow of colors:
 
    ::
 
-    gmt makecpt -T-2/6 -Z > colors.cpt
+    gmt makecpt -T-2/6 > colors.cpt
 
 To use the GEBCO look-alike CPT with its default range for bathymetry, run
 
@@ -286,7 +276,7 @@ the remote ata table v3206_06.txt (with lon, lat, depths), run
 
    ::
 
-    gmt makecpt -Cgebco @v3206_06.txt -i2 -Z -E24 > my_depths.cpt
+    gmt makecpt -Cgebco @v3206_06.txt -E24 > my_depths.cpt
 
 To use the gebco color table but reverse the z-values so it can be used for
 positive depth values, try
@@ -300,15 +290,15 @@ hypocenters between 0 and 100 km, green for 100-300 km, and blue for deep (300-1
 earthquakes, use
 
    ::
-   
+
     gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
 
 To make a continuous CPT from white to blue as z goes from
 3 to 10, try
 
    ::
-   
-    gmt makecpt -Cwhite,blue -T3,10 -Z > cold.cpt
+
+    gmt makecpt -Cwhite,blue -T3/10 > cold.cpt
 
 To make a wrapped (cyclic) CPT from the jet table over the interval
 0 to 500, i.e., the color will be wrapped every 500 z-units so that
@@ -318,7 +308,7 @@ we always get a color regardless of the *z* value, try
 
     gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
 
-.. include:: explain_cpt.rst_
+.. include:: cpt_notes.rst_
 
 Bugs
 ----

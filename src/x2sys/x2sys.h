@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -188,7 +188,7 @@ struct X2SYS_BIX_TRACK {
 	uint32_t track_flag;
 	struct X2SYS_BIX_TRACK *next_track;
 };
-	
+
 struct X2SYS_BIX_TRACK_INFO {
 	char *trackname;
 	uint32_t track_id;

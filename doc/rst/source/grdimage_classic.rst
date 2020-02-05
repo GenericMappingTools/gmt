@@ -16,11 +16,11 @@ Synopsis
 [ |-A|\ *out_img*\ [**=**\ *driver*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [**r**\ ] ]
-[ |-E|\ [\ **i**\ \|\ *dpi*] ] |-J|\ *parameters*
-[ |-G|\ *color*\ [**+b**\ \|\ **+f**] ]
-[ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
-[ |-J|\ **z**\ \|\ **-Z**\ *parameters* ]
+[ |-D|\ [**r**] ]
+[ |-E|\ [**i**\|\ *dpi*] ] |-J|\ *parameters*
+[ |-G|\ *color*\ [**+b**\|\ **+f**] ]
+[ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
+[ |-J|\ **z**\|\ **-Z**\ *parameters* ]
 [ |-K| ] [ |-M| ] [ |-N| ]
 [ |-O| ] [ |-P| ] [ |-Q| ]
 [ |SYN_OPT-Rz| ]

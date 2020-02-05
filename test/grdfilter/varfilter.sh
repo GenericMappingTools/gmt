@@ -12,8 +12,8 @@ gmt begin varfilter ps
 	gmt grdmath -R-20/20/-20/20 -I0.25 X 0 GE 2 MUL Y 0 GE ADD 1 ADD 5 MUL = fw.grd
 	# Make the plot
 	gmt subplot begin 2x2 -Fs3i -SR -SC -T"Variable Filter Width" -M0.5c
-	gmt makecpt -T0/1 -Cwhite,black -H -Z > t.cpt
-	gmt makecpt -T0/0.005 -Cjet -H -Z > f.cpt
+	gmt makecpt -T0/1 -Cwhite,black -H > t.cpt
+	gmt makecpt -T0/0.005 -Cjet -H > f.cpt
 	gmt grdimage in.grd -c0 -Ct.cpt
 	gmt basemap -c1
 	gmt grdimage fw.grd -Cjet -t50

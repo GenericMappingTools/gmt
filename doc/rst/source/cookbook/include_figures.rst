@@ -9,35 +9,34 @@ to a document, an article, a report, your dissertation, a poster, a web
 page, or a presentation. Of course, you could try the old-fashioned
 scissors and glue stick. More likely, you want to incorporate your
 graphics electronically into the document. Depending on the application,
-the GMT PostScript file will need to be converted to Encapsulated
-PostScript (EPS), Portable Document Format (PDF), or some raster
+it is best to set your GMT script to produce the most suitable format,
+such as Encapsulated PostScript (EPS), Portable Document Format (PDF), or some raster
 format (e.g., JPEG, PNG, or TIFF) in order to incorporate them into the
 document.
 
 -  When creating a document intended for printing (article,
    dissertation, or poster) it is best to preserve the scalable vector
-   characteristics of the PostScript file. Many applications can
-   directly incorporate PostScript in the form of EPS files. Modern
-   programs will often allow the inclusion of PDF files. Either way, the
+   characteristics of the default PDF file. Modern
+   programs will often allow the inclusion of PDF files. That way, the
    sharpness of lines and fonts will be preserved and can be scaled up
    or down as required.
 
 -  When the aim is to display the graphics on a computer screen or
-   present it using a projector, it is wise to convert the
-   PostScript into a raster format. Although applications like
-   PowerPoint can do this for you, you can best take the
+   present it using a projector, it is wise to select
+   a raster format. Although applications like
+   PowerPoint can convert PDF to a ratser for you, you can best take the
    conversion into your own hands for the best results.
 
-A large number of questions to the GMT-Help mailing list are related to
-these rendering issues, showing that something as seemingly
-straightforward as incorporating a PostScript file into a document is
-a far from trivial exercise. This Chapter will show how to include
-GMT graphics into documents and how to achieve the best quality results.
+Using GMT modern mode you simply select the format most suitable for your
+purpuse when running :doc:`/begin` or :doc:`/figure`.
+
+The remainder of this Chapter will show how to include GMT classicly produced
+PostScript graphics into documents and how to achieve the best quality results.
 
 Making GMT Encapsulated PostScript Files
 ------------------------------------------
 
-GMT produces freeform PostScript files. Note that a freeform
+GMT classic mode produces freeform PostScript files. Note that a freeform
 PostScript file may contain special operators (such as
 ``Setpagedevice``) that is specific to printers (e.g., selection of
 paper tray). Some previewers may not
@@ -240,7 +239,7 @@ files to PNG.
 The **-P** option of :doc:`/psconvert` may
 also come in handy. When you have *not* supplied the **-P** option in
 your first GMT plot command, your plot will be in Landscape mode. That
-means that the plot will be rotated 90º (anti-clockwise) to fit
+means that the plot will be rotated 90° (anti-clockwise) to fit
 on a Portrait mode page when coming out of the printer. The **-P**
 option of :doc:`/psconvert` will undo that
 rotation, so that you do not have to do so within your document. This
@@ -288,7 +287,7 @@ you will need to rotate the plot as well. For example,
 
      \includegraphics[angle=-90,width=0.8\textwidth]{myplot}
 
-will rotate the image 90º clockwise and scale it such that its width
+will rotate the image 90° clockwise and scale it such that its width
 (after rotation) will be 80% of the width of the text column.
 
 GMT graphics in **PowerPoint**

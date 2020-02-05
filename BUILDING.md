@@ -14,7 +14,8 @@ For general users:
   * [Fedora](#fedora)
   * [Archlinux](#archlinux)
   * [FreeBSD](#freebsd)
-  * [macOS with homebrew](#macos-with-homebrew)
+  * [macOS with Homebrew](#macos-with-homebrew)
+  * [macOS with MacPorts](#macos-with-macports)
   * [Windows](#windows)
 - [Getting GMT source codes](#getting-gmt-source-codes)
 - [Configuring](#configuring)
@@ -196,9 +197,9 @@ Install the gmt dependencies with:
     # to build the documentation
     sudo pkg install py36-sphinx
 
-### macOS with homebrew
+### macOS with Homebrew
 
-For macOS with [homebrew](https://brew.sh/) installed, you can install the dependencies with:
+For macOS with [Homebrew](https://brew.sh/) installed, you can install the dependencies with:
 
     # Install necessary dependencies
     brew install cmake curl netcdf
@@ -214,6 +215,26 @@ For macOS with [homebrew](https://brew.sh/) installed, you can install the depen
 
     # to build the documentation
     brew install sphinx-doc
+
+### macOS with MacPorts
+
+For macOS with [MacPorts](https://www.macports.org/) installed, you can install the dependencies with::
+
+    # Install necessary dependencies
+    sudo port install cmake curl netcdf
+
+    # Install optional dependencies
+    sudo port install gdal +hdf5 +netcdf +openjpeg
+    sudo port install pcre2 fftw-3-single glib2 ghostscript
+
+    # to enable movie-making
+    sudo port install GraphicsMagick ffmpeg
+
+    # to enable testing
+    sudo port install GraphicsMagick
+
+    # to build the documentation
+    sudo port install py38-sphinx
 
 ### Windows
 

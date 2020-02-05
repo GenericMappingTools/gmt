@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -69,7 +69,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtget", "gmtget", "core", "Get individual GMT default settings", ">D}"},
 	{"gmtinfo", "gmtinfo", "core", "Get information about data tables", "<D{,>D}"},
 	{"gmtlogo", "gmtlogo", "core", "Plot the GMT logo", ">X}"},
-	{"gmtmath", "gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", "<D{,AD(=,TD(,>D}"},
+	{"gmtmath", "gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", "<D(,AD(=,TD(,>D}"},
 	{"gmtread", "gmtread", "core", "Read GMT objects into external API", "-T-,<?{,>?}"},
 	{"gmtregress", "gmtregress", "core", "Linear regression of 1-D data sets", "<D{,>D}"},
 	{"gmtselect", "gmtselect", "core", "Select data table subsets based on multiple spatial criteria", "<D{,CD(=,FD(,LD(=,>D},GG("},
@@ -116,7 +116,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"makecpt", "makecpt", "core", "Make GMT color palette tables", ">C},ED(,SD(,TD(,<D("},
 	{"mapproject", "mapproject", "core", "Forward and inverse map transformations, datum conversions and geodesy", "<D{,LD(=,>D},W-("},
 	{"mask", "psmask", "core", "Clip or mask map areas with no data table coverage", "<D{,DDD,C-(,>X},LG)@<D{,DD),C-(,LG)"},
-	{"movie", "movie", "core", "Create animation sequences and movies", "<T("},
+	{"movie", "movie", "core", "Create animation sequences and movies", "<D("},
 	{"nearneighbor", "nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", "<D{,GG}"},
 	{"plot", "psxy", "core", "Plot lines, polygons, and symbols in 2-D", "<D{,CC(,T-<,>X},S?(=2"},
 	{"plot3d", "psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2"},
@@ -166,7 +166,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtget", "gmtget", "core", "Get individual GMT default settings", ">D}", &GMT_gmtget},
 	{"gmtinfo", "gmtinfo", "core", "Get information about data tables", "<D{,>D}", &GMT_gmtinfo},
 	{"gmtlogo", "gmtlogo", "core", "Plot the GMT logo", ">X}", &GMT_gmtlogo},
-	{"gmtmath", "gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", "<D{,AD(=,TD(,>D}", &GMT_gmtmath},
+	{"gmtmath", "gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", "<D(,AD(=,TD(,>D}", &GMT_gmtmath},
 	{"gmtread", "gmtread", "core", "Read GMT objects into external API", "-T-,<?{,>?}", &GMT_gmtread},
 	{"gmtregress", "gmtregress", "core", "Linear regression of 1-D data sets", "<D{,>D}", &GMT_gmtregress},
 	{"gmtselect", "gmtselect", "core", "Select data table subsets based on multiple spatial criteria", "<D{,CD(=,FD(,LD(=,>D},GG(", &GMT_gmtselect},
@@ -213,7 +213,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"makecpt", "makecpt", "core", "Make GMT color palette tables", ">C},ED(,SD(,TD(,<D(", &GMT_makecpt},
 	{"mapproject", "mapproject", "core", "Forward and inverse map transformations, datum conversions and geodesy", "<D{,LD(=,>D},W-(", &GMT_mapproject},
 	{"mask", "psmask", "core", "Clip or mask map areas with no data table coverage", "<D{,DDD,C-(,>X},LG)@<D{,DD),C-(,LG)", &GMT_mask},
-	{"movie", "movie", "core", "Create animation sequences and movies", "<T(", &GMT_movie},
+	{"movie", "movie", "core", "Create animation sequences and movies", "<D(", &GMT_movie},
 	{"nearneighbor", "nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", "<D{,GG}", &GMT_nearneighbor},
 	{"plot", "psxy", "core", "Plot lines, polygons, and symbols in 2-D", "<D{,CC(,T-<,>X},S?(=2", &GMT_plot},
 	{"plot3d", "psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2", &GMT_plot3d},

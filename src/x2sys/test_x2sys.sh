@@ -104,9 +104,9 @@ gv $PS &
 
 # Solve for constants
 gmt x2sys_solve COE.txt -TFAKE -Cz -Ec -V > $X2SYS_HOME/FAKE/corr_const.lis
-A=`grep trackA corr.lis | cut -f3`
-B=`grep trackB corr.lis | cut -f3`
-C=`grep trackC corr.lis | cut -f3`
+A=$(grep trackA corr.lis | cut -f3)
+B=$(grep trackB corr.lis | cut -f3)
+C=$(grep trackC corr.lis | cut -f3)
 
 # Correct tracks
 gmt x2sys_datalist -TFAKE -Lcorr_const.lis trackAc.xydz > trackAcc.xydz

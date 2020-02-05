@@ -80,7 +80,7 @@ out parameters for pre-processing. The available types are
   We ensure the angles fall in the 0-360 range and any macro test can rely on this range.
 
   **l** Length, i.e., an additional length scale (in cm, inch, or point as
-  per :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) in addition to the given symbol size.
+  per :term:`PROJ_LENGTH_UNIT`) in addition to the given symbol size.
 
   **o** Other, i.e., a numerical quantity to be passed to the custom symbol unchanged.
 
@@ -122,43 +122,43 @@ are constants.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | texture       | **T**      | Change current pen and fill            |                                            |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| star          | **a**      | Plot a star                            | :math:`x, y`,\ *size*                      |
+| star          | **a**      | Plot a star                            | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| circle        | **c**      | Plot a circle                          | :math:`x, y`,\ *size*                      |
+| circle        | **c**      | Plot a circle                          | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| diamond       | **d**      | Plot a diamond                         | :math:`x, y`,\ *size*                      |
+| diamond       | **d**      | Plot a diamond                         | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | ellipse       | **e**      | Plot a ellipse                         | :math:`x, y, \alpha`,\ *major*,\ *minor*   |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| octagon       | **g**      | Plot an octagon                        | :math:`x, y`,\ *size*                      |
+| octagon       | **g**      | Plot an octagon                        | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| hexagon       | **h**      | Plot a hexagon                         | :math:`x, y`,\ *size*                      |
+| hexagon       | **h**      | Plot a hexagon                         | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| invtriangle   | **i**      | Plot an inverted triangle              | :math:`x, y`,\ *size*                      |
+| invtriangle   | **i**      | Plot an inverted triangle              | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| rotrectangle  | **j**      | Plot an rotated rectangle              | :math:`x, y, \alpha`,\ *width*,\ *height*  |
+| rotrectangle  | **j**      | Plot an rotated rectangle              | :math:`x, y, \alpha, width, height`        |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| letter        | **l**      | Plot a letter                          | :math:`x, y`,\ *size*, *string*            |
+| letter        | **l**      | Plot a letter                          | :math:`x, y, size, string`                 |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | marc          | **m**      | Plot a math arc (no heads)             | :math:`x, y, r, \alpha_1, \alpha_2`        |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| pentagon      | **n**      | Plot a pentagon                        | :math:`x, y`,\ *size*                      |
+| pentagon      | **n**      | Plot a pentagon                        | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| plus          | **+**      | Plot a plus sign                       | :math:`x, y`,\ *size*                      |
+| plus          | **+**      | Plot a plus sign                       | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| rect          | **r**      | Plot a rectangle                       | :math:`x, y`, *width*, *height*            |
+| rect          | **r**      | Plot a rectangle                       | :math:`x, y, width, height`                |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| square        | **s**      | Plot a square                          | :math:`x, y`,\ *size*                      |
+| square        | **s**      | Plot a square                          | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| triangle      | **t**      | Plot a triangle                        | :math:`x, y`,\ *size*                      |
+| triangle      | **t**      | Plot a triangle                        | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | wedge         | **w**      | Plot a wedge                           | :math:`x, y, d, \alpha_1, \alpha_2`        |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| cross         | **x**      | Plot a cross                           | :math:`x, y`,\ *size*                      |
+| cross         | **x**      | Plot a cross                           | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| x-dash        | **-**      | Plot a x-dash                          | :math:`x, y`,\ *size*                      |
+| x-dash        | **-**      | Plot a x-dash                          | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| y-dash        | **y**      | Plot a y-dash                          | :math:`x, y`,\ *size*                      |
+| y-dash        | **y**      | Plot a y-dash                          | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 
 Note for **R**\: if an **a** is appended to the angle then :math:`\alpha` is considered
@@ -219,10 +219,10 @@ The string itself, if obtained from the symbol definition file,
 may contain special codes that will be expanded given information from the current record.  You
 can embed the codes %X or %Y to add the current longitude (or x) and latitude (or y) in
 your label string. You may also use $n (*n* is 1, 2, etc.) to embed a numerical symbol variable as text.
-It will be formatted according to :ref:`FORMAT_FLOAT_MAP <FORMAT_FLOAT_MAP>`,
-unless you append the modifiers **+X** (format as longitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`),
-**+Y** (format as latitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`), or **+T** (format as calendar time via
-:ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.
+It will be formatted according to :term:`FORMAT_FLOAT_MAP`,
+unless you append the modifiers **+X** (format as longitude via :term:`FORMAT_GEO_MAP`),
+**+Y** (format as latitude via :term:`FORMAT_GEO_MAP`), or **+T** (format as calendar time via
+:term:`FORMAT_DATE_MAP` and :term:`FORMAT_CLOCK_MAP`.
 
 Text alignment and font attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

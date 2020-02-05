@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -73,8 +73,10 @@
 #define GMT_CONV12_LIMIT 1.0e-12	/* Tight limit for gaps/overlaps in CPT z-values */
 #define GMT_CONV8_LIMIT	 1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_CONV6_LIMIT	 1.0e-6		/* 1 ppm */
+#define GMT_CONV5_LIMIT	 1.0e-5		/* 10 ppm */
 #define GMT_CONV4_LIMIT	 1.0e-4		/* Less tight convergence limit or "close to zero" limit */
 
+#define GMT_ASCII_ES	27	/* ASCII code for escape (used to prevent +? strings in plain text from being seen as modifiers) */
 #define GMT_ASCII_GS	29	/* ASCII code for group separator (temporarily replacing tabs) */
 #define GMT_ASCII_RS	30	/* ASCII code for record separator (temporarily replacing spaces in filenames) */
 #define GMT_ASCII_US	31	/* ASCII code for unit separator (temporarily replacing spaces in quoted text) */
@@ -121,6 +123,7 @@ enum GMT_enum_length {
 	GMT_LEN256      = 256U,         /* Max size of some text items */
 	GMT_LEN512      = 512U,         /* Max size of other text items */
 	GMT_LEN1024     = 1024U,        /* For file names (antecipating web fnames) */
+	GMT_MAX_RANGES  = 64U,          /* Limit on number of row ranges given in -q */
 	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
 	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
 	GMT_MSGSIZ      = 16384U,       /* Size of char record for messages and report */
@@ -209,11 +212,11 @@ enum GMT_swap_direction {
 #define GMT_IMAGE_LAYOUT	"TRBa"	/* Standard GMT scanline band-interleaved image */
 
 #define GMT_CPT_CONTINUOUS	8	/* Final CPT should be continuous */
-#define GMT_CPT_TEMPORARY	16	/* CPT was built from list of colors, e.g., red,green,255,blue,... */
+#define GMT_CPT_TEMPORARY	1024	/* CPT was built from list of colors, e.g., red,green,255,blue,... */
 #define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 
-/* Default CPTs are initialized in gmt_init.c; see end of gmtinit_new_GMT_ctrl */ 
+/* Default CPTs are initialized in gmt_init.c; see end of gmtinit_new_GMT_ctrl */
 #define GMT_DEFAULT_CPT		0	/* Default index into GMT->init.cpt[] array */
 #define GMT_N_CPT		3		/* Number of default CPT types (see GMT->init.cpt in gmt_init.c) */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
@@ -253,6 +256,13 @@ enum GMT_enum_inside {
 	GMT_OUTSIDE = 0,
 	GMT_ONEDGE,
 	GMT_INSIDE};
+
+/*! Codes for -q selections */
+enum GMT_enum_skiprows {
+	GMT_RANGE_ROW_IN   = 1,
+	GMT_RANGE_DATA_IN  = 2,
+	GMT_RANGE_ROW_OUT  = 3,
+	GMT_RANGE_DATA_OUT = 4};
 
 /*! Return codes from parsing region modifiers +r,+R,+e */
 enum GMT_enum_region {
@@ -416,7 +426,7 @@ enum GMT_enum_anchors {	/* Various anchor strings */
 enum GMT_enum_scales {	/* Various scale issues */
 	GMT_SCALE_MAP = 1,
 	GMT_SCALE_FREE = 2};
-		
+
 enum GMT_enum_radius {	/* Various "average" radii for an ellipsoid with axes a,a,b */
 	GMT_RADIUS_MEAN = 0,	/* Mean radius IUGG R_1 = (2*a+b)/3 = a (1 - f/3) */
 	GMT_RADIUS_AUTHALIC,	/* Authalic radius 4*pi*r^2 = surface area of ellipsoid, R_2 = sqrt (0.5a^2 + 0.5b^2 (tanh^-1 e)/e) */
@@ -487,6 +497,8 @@ enum GMT_enum_sph {GMT_DIST_M = 10,	/* 2-D lon, lat data, convert distance to me
 	GMT_DIST_DEG = 20,	/* 2-D lon, lat data, convert distance to spherical degree */
 	GMT_DIST_COS = 30};	/* 2-D lon, lat data, convert distance to cos of spherical degree */
 
+enum enum_item {MOVIE_ITEM_IS_LABEL = 0,	/* Item is a frame counter or time label in movie */
+	MOVIE_ITEM_IS_PROG_INDICATOR};			/* Item is a progress indicator symbol in movie */
 
 /* Help us with big and little endianness */
 #ifdef WORDS_BIGENDIAN

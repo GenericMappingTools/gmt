@@ -17,13 +17,13 @@ gmt begin ex43
 	grep -v "^#" %file% > B.txt
 	gawk "{if ($7 == 0) printf \"%%dp\n\", NR}" A.txt > sed.txt
 	gmt makecpt -Clightred,green -T0/2/1 -F+c -N
-	gmt basemap -R0.01/1e6/0.1/1e5 -JX6il -Ba1pf3 -Bx+l"Log@-10@- body weight (kg)" -By+l"Log@-10@- brain weight (g)" -BWSne+glightblue -X1.5i -Y4i
-	gmt plot -R-2/6/-1/5 -JX6i rls_line.txt -L+yt -Glightgoldenrod
-	sed -n -f sed.txt B.txt | gmt text -R0.01/1e6/0.1/1e5 -JX6il -F+f12p+jRM -Dj0.15i
-	gmt plot -R-2/6/-1/5 -JX6i -L+d+p0.25p,- -Gcornsilk1 rls_line.txt
+	gmt basemap -R0.01/1e6/0.1/1e5 -JX15cl -Ba1pf3 -Bx+l"Log@-10@- body weight (kg)" -By+l"Log@-10@- brain weight (g)" -BWSne+glightblue -Y12c
+	gmt plot -R-2/6/-1/5 -JX15c rls_line.txt -L+yt -Glightgoldenrod
+	sed -n -f sed.txt B.txt | gmt text -R0.01/1e6/0.1/1e5 -JX15cl -F+f12p+jRM -Dj10p
+	gmt plot -R-2/6/-1/5 -JX15c -L+d+p0.25p,- -Gcornsilk1 rls_line.txt
 	gmt plot rls_line.txt -W3p
 	gmt plot ls_line.txt -W1p,-
-	gmt plot -Sc0.15i -C -Wfaint -i0,1,6 model.txt
+	gmt plot -Sc0.4c -C -Wfaint -i0,1,6 model.txt
 	gmt text A.txt -F+f8p+jCM+r1 -B0
 	REM Build legend
 	echo H 18p,Times-Roman Index of Animals > legend.txt
@@ -31,7 +31,7 @@ gmt begin ex43
 	echo N 7 43 7 43 >> legend.txt
 	gawk -F"\t" "{printf \"L - C %%d.\nL - L %%s\n\", NR, $NF}" B.txt >> legend.txt
 	gmt legend -DjBR+w2.5i+o0.4c -F+p1p+gwhite+s+c3p+r legend.txt --FONT_LABEL=8p
-	gmt basemap -R0.5/28.5/-10/4 -JX6i/2i -Y-2.9i -B+glightgoldenrod
+	gmt basemap -R0.5/28.5/-10/4 -J15c/5c -Y-7.5c -B+glightgoldenrod
 	echo ^> > lines.txt
 	echo 0	-2.5	>> lines.txt
 	echo 30	-2.5	>> lines.txt

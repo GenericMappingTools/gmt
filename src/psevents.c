@@ -1,6 +1,6 @@
 /*
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Plot event symbols and labels for a moment in time"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X}"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhip"
+#define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhipq"
 
 enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_SYMBOL = 0,
@@ -44,6 +44,7 @@ enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_PLATEAU = 2,
 	PSEVENTS_DECAY = 3,
 	PSEVENTS_FADE = 4,
+	PSEVENTS_LENGTH = 5,
 	PSEVENTS_VAL1 = 0,
 	PSEVENTS_VAL2 = 1,
 	PSEVENTS_INFINITE = 0,
@@ -52,7 +53,7 @@ enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_VAR_ENDTIME = 3
 };
 
-#define PSEVENTS_MODS "dfoOpr"
+#define PSEVENTS_MODS "dfloOpr"
 
 /* Control structure for psevents */
 
@@ -65,10 +66,10 @@ struct PSEVENTS_CTRL {
 		bool active;
 		char *string;
 	} D;
-	struct PSEVENTS_E {	/* 	-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>] */
+	struct PSEVENTS_E {	/* 	-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>] */
 		bool active[2];
 		bool trim[2];
-		double dt[2][5];
+		double dt[2][6];
 	} E;
 	struct PSEVENTS_F {	/*	-F[+f<fontinfo>+a<angle>+j<justification>+r|z] */
 		bool active;
@@ -91,7 +92,7 @@ struct PSEVENTS_CTRL {
 		bool active;
 		char *file;
 	} Q;
-	struct PSEVENTS_S {	/* 	-S<symbol>[<size>[u]] */
+	struct PSEVENTS_S {	/* 	-S<symbol>[<size>] */
 		bool active;
 		unsigned int mode;
 		char *symbol;
@@ -111,36 +112,36 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct PSEVENTS_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSEVENTS_CTRL);
-	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */ 	
+	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->C.file);	
-	gmt_M_str_free (C->D.string);	
-	gmt_M_str_free (C->F.string);	
-	gmt_M_str_free (C->G.color);	
-	gmt_M_str_free (C->Q.file);	
-	gmt_M_str_free (C->S.symbol);	
-	gmt_M_str_free (C->W.pen);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->D.string);
+	gmt_M_str_free (C->F.string);
+	gmt_M_str_free (C->G.color);
+	gmt_M_str_free (C->Q.file);
+	gmt_M_str_free (C->S.symbol);
+	gmt_M_str_free (C->W.pen);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -S<symbol>[<size>[u]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][r[<first>]|z[<fmt>]][+j<justify>]] [-G<color>] [-L[t|<length>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -S<symbol>[<size>]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] [-G<color>] [-L[t|<length>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Mi|s|t<val1>[+c<val2]] [-Q<prefix>] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Append symbol code and optionally <size>[u].  If no size we read it from the data file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Append symbol code and optionally <size>.  If no size we read it from the data file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify the time for preparing events.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -157,6 +158,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +p<dt> sets the length of the plateau after event happens [no plateau].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +d<dt> sets the decay-time after the plateau [no decay].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +f<dt> sets the fade-time after the event ends [no fade time].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +l<dt> sets alternative label duration [same as symbol].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify values for text attributes that apply to all text records:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +a<angle> specifies the baseline angle for all text [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use +A to force text-baselines in the -90/+90 range.\n");
@@ -176,8 +178,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "K,O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Save intermediate events symbol and labels files; append file prefix [temporary files deleted].\n");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", 0);
-	GMT_Option (API, "V,bi2,c,di,e,f,h,i,p,:,.");
-	
+	GMT_Option (API, "V,bi2,c,di,e,f,h,i,p,qi,:,.");
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -188,7 +190,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos, n_col = 3, k, id = 0;
+	unsigned int n_errors = 0, pos, n_col = 3, k = 0, id = 0;
 	char *c = NULL, txt[GMT_LEN128] = {""}, *t_string = NULL;
 	struct GMT_OPTION *opt = NULL;
 
@@ -200,7 +202,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 				break;
 
 			/* Processes program-specific parameters */
-			
+
 			case 'C':	/* Set a cpt for converting z column to color */
 				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
@@ -213,14 +215,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 
 			case 'E':	/* Set event times. If -T is abstime then these are in units of TIME_UNIT [s] */
 				switch (opt->arg[0]) {
-					case 's':	id = 0;	k = 1;	break;
-					case 't':	id = 1;	k = 1;	break;
-					default:	id = 0;	k = 0;	break;
+					case 's':	id = PSEVENTS_SYMBOL;	k = 1;	break;
+					case 't':	id = PSEVENTS_TEXT;		k = 1;	break;
+					default:	id = PSEVENTS_SYMBOL;	k = 0;	break;
 				}
 				Ctrl->E.active[id] = true;
 				if (gmt_validate_modifiers (GMT, &opt->arg[k], 'C', PSEVENTS_MODS)) n_errors++;
 				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL) {	/* This should not happen given the above check, but Coverity prefers it */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E: No modifiers given?\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: No modifiers given?\n");
 					n_errors++;
 					break;
 				}
@@ -233,6 +235,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 						case 'r': Ctrl->E.dt[id][PSEVENTS_RISE]    = atof (&txt[1]);	break;	/* Rise duration */
 						case 'O': Ctrl->E.trim[id] = true;	/* Offset start but not end.  Fall through to case 'o' */
 						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt[1]);	break;	/* Event time offset */
+						case 'l':	/* Event length override for text */
+							if (id == PSEVENTS_SYMBOL) {
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E[s]: The +l modifier is only allowed for -Et\n");
+								n_errors++;
+							}
+							else
+								Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH] = atof (&txt[1]);
+							break;
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
@@ -246,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 				Ctrl->F.active = true;
 				Ctrl->F.string = strdup (opt->arg);
 				break;
-				
+
 			case 'G':	/* Set a fixed symbol color */
 				Ctrl->G.active = true;
 				Ctrl->G.color = strdup (opt->arg);
@@ -272,7 +282,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 					case 's':	id = 1;	k = 1;	break;	/* Size settings */
 					case 't':	id = 2;	k = 1;	break;	/* Transparency settings */
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -M: Directive %c not valid\n", opt->arg[1]);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Directive %c not valid\n", opt->arg[1]);
 						n_errors++;
 						break;
 				}
@@ -331,7 +341,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 					}
 				}
 				else {	/* Odd symbols not yet possible in this module */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S: Cannot (yet) handle symbol code %c\n", opt->arg[0]);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Cannot (yet) handle symbol code %c\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
@@ -361,15 +371,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 		n_errors += gmt_verify_expectations (GMT, type, gmt_scanf_arg (GMT, t_string, type, false, &Ctrl->T.now), t_string);
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: -T<now> is a required option.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T: -T<now> is a required option.\n");
 		n_errors++;
 	}
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_col, "Syntax error: Binary input data (-bi) must have at least %u columns.\n", n_col);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Syntax error: Cannot specify both -C and -G.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (!Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active), "Syntax error: Must specify at least one of -C, -G, -W to plot visible symbols.\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_col, "Binary input data (-bi) must have at least %u columns.\n", n_col);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both -C and -G.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (!Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active), "Must specify at least one of -C, -G, -W to plot visible symbols.\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -383,7 +393,7 @@ int GMT_events (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: events\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: events\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psevents (V_API, mode, args);
@@ -391,27 +401,27 @@ int GMT_events (void *V_API, int mode, void *args) {
 
 int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
-	
-	bool do_coda = false;
-	
+
+	bool do_coda, finite_duration;
+
 	int error;
-	
+
 	unsigned int n_cols_needed = 3, s_in = 2, t_in = 2, d_in = 3, s_col = 2, i_col = 3, t_col = 4;
-	
+
 	uint64_t n_total_read = 0, n_symbols_plotted = 0, n_labels_plotted = 0;
-	
+
 	double out[6] = {0, 0, 0, 0, 0, 0}, t_end = DBL_MAX, *in = NULL;
 	double t_event, t_rise, t_plateau, t_decay, t_fade, x, size;
-	
+
 	FILE *fp_symbols = NULL, *fp_labels = NULL;
-	
+
 	struct PSEVENTS_CTRL *Ctrl = NULL;
 	struct GMT_RECORD *In = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	
+
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -422,17 +432,17 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the psevents main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
-	
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
+
 	/* Now we are ready to take on some input values */
-	
+
 	/* We read as points. */
 	if (Ctrl->C.active) n_cols_needed++;	/* Must allow for z in input */
 	if (Ctrl->S.mode) n_cols_needed++;	/* Must allow for size in input */
@@ -450,6 +460,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 	if (Ctrl->S.mode) t_in++, d_in++;	/* Must allow for size in input before time and length */
 	/* Determine if there is a coda phase where symbols remain visible after the event ends: */
 	do_coda = (Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2] > 0.0 || !gmt_M_is_zero (Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2]) || Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] < 100.0);
+	finite_duration = (Ctrl->L.mode != PSEVENTS_INFINITE);
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -467,14 +478,15 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
-		
+
 		in = In->data;	/* The numerical part */
 		n_total_read++;	/* Successfully read an input record */
-		
+
 		if (Ctrl->E.active[PSEVENTS_SYMBOL]) {	/* Plot event symbols */
+			t_end = DBL_MAX;	/* Infinite duration until overridden below */
 			t_event = in[t_in] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_OFFSET];	/* Nominal (or offset) start of this event */
 			t_rise = t_event - Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE];		/* Earliest time to plot anything at all for this event */
-			if (Ctrl->T.now < t_rise) goto Do_text;	/* This event is still in the future so we skip it */
+			if (Ctrl->T.now < t_rise) goto Do_txt;	/* This event is still in the future so we skip it */
 			/* Compute the last time we need to plot the event [infinity] */
 			if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION)	/* Only show the event as stable during this fixed interval */
 				t_end = t_event + Ctrl->L.length;
@@ -483,27 +495,27 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 			else if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)	/* Only show the event as stable until its end time */
 				t_end = in[d_in];
 			if (t_end < DBL_MAX && Ctrl->E.trim[PSEVENTS_SYMBOL]) t_end -= Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_OFFSET];	/* Offset applied to t_end */
-			if (!do_coda && Ctrl->T.now > (t_end + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE])) goto Do_text;	/* Event is in the past and there is no coda, so skip plotting it */
-		
+			t_fade = t_end + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE];		/* End of the fade phase */
+			if (!do_coda && Ctrl->T.now > t_fade) goto Do_txt;	/* Event is in the past and there is no coda, so skip plotting it */
+
 			/* Here we must plot one phase of this event */
-		
+
 			if (n_symbols_plotted == 0) {	/* Open output events file the first time */
 				if (Ctrl->Q.active)	/* We want a persistent file to survive this process */
 					sprintf (tmp_file_symbols, "%s_symbols.txt", Ctrl->Q.file);
 				else	/* Temporariy file to be deleted after use */
 					sprintf (tmp_file_symbols, "%s/GMT_psevents_symbols_%d.txt", API->tmp_dir, (int)getpid());
 				if ((fp_symbols = fopen (tmp_file_symbols, "w")) == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s\n", tmp_file_symbols);
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s\n", tmp_file_symbols);
 					if (fp_labels) fclose (fp_labels);
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}
 			out[GMT_X] = in[GMT_X];	out[GMT_Y] = in[GMT_Y];	/* Pass out the input coordinates unchanged */
 			if (Ctrl->C.active) out[GMT_Z] = in[GMT_Z];	/* Also pass along the optional z-value */
-		
+
 			t_plateau = t_event + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_PLATEAU];	/* End of the plateau phase */
 			t_decay = t_plateau + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];	/* End of the decay phase */
-			t_fade = t_end + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE];		/* End of the fade phase */
 			size = (Ctrl->S.mode) ? in[s_in] : Ctrl->S.size;	/* Fixed or variable nominal symbol size */
 			if (Ctrl->T.now < t_event) {	/* We are within the rise phase */
 				x = pow ((Ctrl->T.now - t_rise)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE], 2.0);	/* Quadratic function that goes from 0 to 1 */
@@ -522,13 +534,13 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Reduction of intensity down to 0 */
 				out[t_col] = 0.0;
 			}
-			else if (!do_coda && Ctrl->T.now < t_end) {	/* We are within the normal display phase with nominal symbol size */
+			else if (finite_duration && Ctrl->T.now < t_end) {	/* We are within the normal display phase with nominal symbol size */
 				out[s_col] = size;
-				out[i_col] = out[t_col] = 0.0;	/* No transparency during normal phase */
+				out[i_col] = out[t_col] = 0.0;	/* No intensity or transparency during normal phase */
 			}
-			else if (!do_coda && Ctrl->T.now < t_fade) {	/* We are within the fade phase */
-				x = pow ((t_fade - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE], 2.0);	/* uadratic function that goes from 1 to 0 */
-				out[s_col] = size * x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];	/* Reduction of size down to coda size */
+			else if (finite_duration && Ctrl->T.now <= t_fade) {	/* We are within the fade phase */
+				x = pow ((t_fade - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE], 2.0);	/* Quadratic function that goes from 1 to 0 */
+				out[s_col] = size * (x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2]);	/* Reduction of size down to coda size */
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Reduction of intensity down to coda intensity */
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
 			}
@@ -544,64 +556,57 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 			n_symbols_plotted++;	/* Count output symbols */
 		}
 
-Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing text strings */
+Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing text strings */
+			t_end = DBL_MAX;	/* Infinite duration until overridden below */
 			t_event = in[t_in] + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_OFFSET];	/* Nominal (or offset) start of this event */
 			t_rise = t_event - Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_RISE];	/* Earliest time to plot anything at all for this event */
 			if (Ctrl->T.now < t_rise) continue;	/* This event is still in the future */
 			/* Compute the last time we need to plot the event [infinity] */
-			if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION)	/* Only show the label during this fixed interval */
+			if (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH] > 0.0)	/* Overriding with specific label duration */
+				t_end = t_event + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_LENGTH];
+			else if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION)	/* Only show the label during this fixed interval given via -L or -Et+l */
 				t_end = t_event + Ctrl->L.length;
-			else if (Ctrl->L.mode == PSEVENTS_VAR_DURATION)	/* Only show the label during its individual interval */
+			else if (Ctrl->L.mode == PSEVENTS_VAR_DURATION)	/* Only show the label during its individual interval read from file */
 				t_end = t_event + in[d_in];
-			else if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)	/* Only show the label until its end time */
+			else if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)	/* Only show the label until its end time read from file */
 				t_end = in[d_in];
-			if (t_end < DBL_MAX && Ctrl->E.trim[PSEVENTS_TEXT]) t_end -= Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_OFFSET];	/* No offset applied to t_end */
-			if (!do_coda && Ctrl->T.now > (t_end + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE])) continue;	/* Event is in the past and there is no coda */
-		
+			if (t_end < DBL_MAX && Ctrl->E.trim[PSEVENTS_TEXT]) t_end -= Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_OFFSET];	/* Offset applied to t_end */
+			t_fade = t_end + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE];	/* End of the fade phase */
+			if (!do_coda && Ctrl->T.now > t_fade) continue;				/* Event is in the past and there is no coda */
+
 			/* Here we must plot a label during one phase of this event */
-		
+
 			if (n_labels_plotted == 0) {	/* Open output events file the first time */
 				if (Ctrl->Q.active)	/* We want a persistent file to survive this process */
 					sprintf (tmp_file_labels, "%s_labels.txt", Ctrl->Q.file);
 				else	/* Temporariy file to be deleted after use */
 					sprintf (tmp_file_labels, "%s/GMT_psevents_labels_%d.txt", API->tmp_dir, (int)getpid());
 				if ((fp_labels = fopen (tmp_file_labels, "w")) == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s\n", tmp_file_labels);
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s\n", tmp_file_labels);
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}
 			out[GMT_X] = in[GMT_X];	out[GMT_Y] = in[GMT_Y];	/* Pass out the input coordinates unchanged */
-			
-			t_plateau = t_event + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_PLATEAU];	/* End of the plateau phase */
-			t_decay = t_plateau + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_DECAY];	/* End of the decay phase */
-			t_fade = t_end + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE];		/* End of the fade phase */
-			size = (Ctrl->S.mode) ? in[s_in] : Ctrl->S.size;	/* Fixed or variable nominal symbol size */
+
+			/* Labels have variable transparency during optional rise and fade, and fully opaque during normal section, and skipped oterhwise unless coda */
+
 			if (Ctrl->T.now < t_event) {	/* We are within the rise phase */
 				x = pow ((Ctrl->T.now - t_rise)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_RISE], 2.0);	/* Quadratic function that goes from 1 to 0 */
 				out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);		/* Magnification of opacity */
 			}
-			else if (Ctrl->T.now < t_plateau) {	/* We are within the plateau phase, keep everything constant */
-				out[GMT_Z] = 0.0;	/* No transparency during plateau phase */
-			}
-			else if (Ctrl->T.now < t_decay) {	/* We are within the decay phase */
-				//x = pow ((t_decay - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_DECAY], 2.0);	/* Quadratic function that goes from 1 to 0 */
-				out[GMT_Z] = 0.0;	/* No transparency during decay phase */
-			}
-			else if (!do_coda && Ctrl->T.now < t_end) {	/* We are within the normal display phase with nominal symbol size */
-				out[GMT_Z] = 0.0;	/* No transparency during plateau phase */
-			}
-			else if (!do_coda && Ctrl->T.now < t_fade) {	/* We are within the fade phase */
+			else if (finite_duration && Ctrl->T.now < t_end)	/* We are within the plateau, decay or normal phases, keep everything constant */
+				out[GMT_Z] = 0.0;	/* No transparency during these  phases */
+			else if (finite_duration && Ctrl->T.now <= t_fade) {	/* We are within the fade phase */
 				x = pow ((t_fade - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE], 2.0);	/* Quadratic function that goes from 1 to 0 */
 				out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
 			}
-			else if (do_coda) {	/* If there is a coda then the label is visible given those final attributes */
+			else if (do_coda)	/* If there is a coda then the label is visible given its coda attributes */
 				out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
-			}
 			fprintf (fp_labels, "%.16g\t%.16g\t%g\t%s\n", out[GMT_X], out[GMT_Y], out[GMT_Z], In->text);
 			n_labels_plotted++;	/* Count output labels */
 		}
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		if (fp_symbols) fclose (fp_symbols);
 		if (fp_labels) fclose (fp_labels);
@@ -612,13 +617,13 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 		if (fp_labels) fclose (fp_labels);
 		Return (GMT_PROJECTION_ERROR);
 	}
-	
+
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 	gmt_map_basemap (GMT);	/* Plot basemap if requested */
-	
+
 	if (fp_symbols) { /* Here we have event symbols to plot as an overlay via a call to psxy */
 		fclose (fp_symbols);	/* First close the file so symbol output is flushed */
 		/* Build psxy command with fixed options and those that depend on -C -G -W.
@@ -634,7 +639,7 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 			Return (API->error);
 		}
 		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_symbols)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove file %s\n", tmp_file_symbols);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove file %s\n", tmp_file_symbols);
 			if (fp_labels) fclose (fp_labels);
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -651,17 +656,17 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 			Return (API->error);
 		}
 		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_labels)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove file %s\n", tmp_file_labels);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove file %s\n", tmp_file_labels);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	
+
 	/* Finalize plot and we are done */
-	
+
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Events read: %" PRIu64 " Event symbols plotted: %" PRIu64 " Event labels plotted: %" PRIu64 "\n", n_total_read, n_symbols_plotted, n_labels_plotted);
-	
+	GMT_Report (API, GMT_MSG_INFORMATION, "Events read: %" PRIu64 " Event symbols plotted: %" PRIu64 " Event labels plotted: %" PRIu64 "\n", n_total_read, n_symbols_plotted, n_labels_plotted);
+
 	Return (GMT_NOERROR);
 }

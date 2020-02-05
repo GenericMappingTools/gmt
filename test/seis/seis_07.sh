@@ -94,7 +94,7 @@ echo 3.0 0.0 0.0  1.0  0.0 -1.0  0.0  0.0  0.0 23 0 0 Thrust      | gmt psmeca -
 echo 4.0 1.0 0.0  1.0  1.0 -2.0  0.0  0.0  0.0 23 0 0 Horiz. CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
 # Horizontal CLVD
 echo 4.0 0.0 0.0  1.0 -2.0  1.0  0.0  0.0  0.0 23 0 0 Horiz. CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Vertical CLVD-L1 
+# Vertical CLVD-L1
 echo 5.0 1.0 0.0 -2.0  1.0  1.0  0.0  0.0  0.0 23 0 0 Vertical CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -K -J -O >> $ps
 # Vertical CLVD
 echo 5.0 0.0 0.0  2.0 -1.0 -1.0  0.0  0.0  0.0 23 0 0 Vertical CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps

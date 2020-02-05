@@ -14,7 +14,7 @@ Synopsis
 
 **gmt pscoupe** [ *files* ] |-J|\ *parameters*
 |SYN_OPT-R| |-A|\ *parameters*
-|-S|\ *<format><scale>*\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+|-S|\ *<format><scale>*\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ |-E|\ *fill* ]
 [ |-F|\ *mode*\ [*args*] ]
@@ -24,7 +24,7 @@ Synopsis
 [ |-M| ] [ |-N| ]
 [ |-O| ]
 [ |-Q| ]
-[ |-T|\ *nplane*\ [/*pen*\ ] ]
+[ |-T|\ *nplane*\ [/*pen*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -36,13 +36,14 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
 .. include:: coupe_common.rst_
 
-.. include:: ../../common_classic_sup.rst_
+.. include:: ../../common_classic.rst_
 
 .. include:: meca_notes.rst_
 

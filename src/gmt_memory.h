@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
 /*!
  * \file gmt_M_memory.h
- * \brief 
+ * \brief
  */
 
 #ifndef GMT_MEMORY_H
@@ -25,7 +25,7 @@
 
 enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 	GMT_INITIAL_MEM_COL_ALLOC	= 2U,
-	GMT_INITIAL_MEM_ROW_ALLOC	= 2097152U	/* 2^21 */	
+	GMT_INITIAL_MEM_ROW_ALLOC	= 2097152U	/* 2^21 */
 };
 
 /*! Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */

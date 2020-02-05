@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
+ *    Copyright (c) 2004-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
  *	File:	mgd77sniffer.c
  *
  *	mgd77sniffer scans MGD77 files for errors in three ways: one, point-
@@ -374,7 +374,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F] [-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] or -G<fieldabbrev>,<grid>] [-H]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-L<custom_limits_file>] [-M] [-N]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [-Z<level>] [%s] [%s] [%s] [%s]\n\n"
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [-Z<level>] [%s] [%s] [%s] [%s]\n\n",
 	 	GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -517,10 +517,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t\tL --> d[depth] excessive\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\tO --> d[mtf1] excessive\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\tetc.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\nEXAMPLES:\n\tAlong-track excessive value and gradient checking:\n\t\tmgd77sniffer 08010001\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tDump cruise gradients:\n\t\tmgd77sniffer 08010001 -Ds\n");
+	GMT_Message (API, GMT_TIME_NONE, "\nEXAMPLES:\n\tAlong-track excessive value and gradient checking:\n\t\tgmt mgd77sniffer 08010001\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tDump cruise gradients:\n\t\tgmt mgd77sniffer 08010001 -Ds\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tTo compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2 min gravity version 11, try\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tmgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t\tgmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1\n\n");
 	return (GMT_MODULE_USAGE);
 }
 
@@ -606,7 +606,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 
 	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_LEN64);
@@ -662,7 +662,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				break;
 			case 'A':	/* adjust slope and intercept */
 				if (!error && sscanf (opt->arg, "%[^,]", abbrev) != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Give field abbreviation, slope and intercept\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Give field abbreviation, slope and intercept\n");
 					error = true;
 				}
 				/* Find what column number this field corresponds to (i.e. depth == 11) */
@@ -670,11 +670,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				while (strcmp (abbrev, mgd77defs[col].abbrev) && col < MGD77_N_NUMBER_FIELDS)
 					col++;
 				if (col == MGD77_N_NUMBER_FIELDS) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: invalid field abbreviation\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: invalid field abbreviation\n");
 					error = true;
 				}
 				if (!error && sscanf (opt->arg, "%[^,],%lf,%lf", abbrev, &adjustScale[col], &adjustDC[col]) != 3) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Give field abbreviation,slope,intercept\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Give field abbreviation,slope,intercept\n");
 					error = true;
 				}
 				adjustData = true;
@@ -725,7 +725,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					n_out_columns = 12;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unrecognized option -%c%s\n",\
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option -%c%s\n",\
 					opt->option, opt->arg);
 					error = true;
 				}
@@ -746,13 +746,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				if (n_comma == 4) { 	/* Mercator grid */
 					this_grid[n_grids].format = 1;
 					if (sscanf (opt->arg, "%[^,],%[^,],%lf,%d,%lf", this_grid[n_grids].abbrev, this_grid[n_grids].fname, &this_grid[n_grids].scale, &this_grid[n_grids].mode, &this_grid[n_grids].max_lat) < 4) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give field abbreviation, img grid file, scale, mode [, and optionally max lat]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Give field abbreviation, img grid file, scale, mode [, and optionally max lat]\n");
 						error = true;
 					}
 				}
 				else {	/* Regular grid */
 					if (!error && this_grid[n_grids].format == 0 && sscanf (opt->arg, "%[^,],%s", this_grid[n_grids].abbrev, this_grid[n_grids].fname) != 2) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give field abbreviation and grid file\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Give field abbreviation and grid file\n");
 						error = true;
 					}
 					else {
@@ -767,7 +767,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						while (strcmp (this_grid[n_grids].abbrev, mgd77defs[this_grid[n_grids].col].abbrev) && this_grid[n_grids].col < MGD77_N_NUMBER_FIELDS)
 							this_grid[n_grids].col++;
 						if (this_grid[n_grids].col == MGD77_N_NUMBER_FIELDS) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: invalid field abbreviation\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -G: invalid field abbreviation\n");
 							error = true;
 						}
 						if (!strcmp (this_grid[n_grids].abbrev,"depth")) this_grid[n_grids].sign = -1;
@@ -785,14 +785,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'b')
 					forced = false;
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unrecognized option -%c%s\n", opt->option,\
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option -%c%s\n", opt->option,\
 					opt->arg);
 					error = true;
 				}
 				break;
 			case 'I':	/* Pass ranges of data records to ignore for output to E77 */
 				if (!error && sscanf (opt->arg, "%[^,],%d,%d", BadSection[n_bad_sections].abbrev, &BadSection[n_bad_sections].start, &BadSection[n_bad_sections].stop) != 3) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Give field abbreviation,rec1,recN\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Give field abbreviation,rec1,recN\n");
 					error = true;
 				}
 				/* Find what column number this field corresponds to (i.e. depth == 11) */
@@ -800,13 +800,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				while (strcmp (BadSection[n_bad_sections].abbrev, mgd77defs[col].abbrev) && col < MGD77_N_NUMBER_FIELDS)
 					col++;
 				if (col == MGD77_N_NUMBER_FIELDS) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: invalid field abbreviation\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: invalid field abbreviation\n");
 					error = true;
 				}
 				bad_sections = true;
 				BadSection[n_bad_sections++].col = col;
 				if (n_bad_sections == MAX_BAD_SECTIONS) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Max number of sections (%d) reached\n", MAX_BAD_SECTIONS);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Max number of sections (%d) reached\n", MAX_BAD_SECTIONS);
 					error = true;
 				}
 				break;
@@ -834,14 +834,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					for (j = 0; j<MGD77_N_NUMBER_FIELDS; j++) maxSlope[j] = mgd77snifferdefs[j].maxTimeGrad;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option -%c%s\n", opt->option, opt->arg);
 					error = true;
 				}
 				break;
 			case 'T':	/* Specify maximum gap between records */
 				maxGap = atof (opt->arg);
 				if (maxGap < 0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -M option: max gap cannot be negative\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -M: max gap cannot be negative\n");
 					error = true;
 				}
 				break;
@@ -865,7 +865,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						do_regression = true;
 						warn[SUMMARY_WARN] = true;
 					} else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option -%c%s\n", opt->option, opt->arg);
 						error = true;
 					}
 				}
@@ -883,37 +883,37 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 	/* ENSURE VALID USE OF OPTIONS */
 	if (n_cruises != 0 && !strcmp(display,"LIMITS")) {
-		GMT_Report (API, GMT_MSG_NORMAL, "omit cruise ids for -Dl option.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "omit cruise ids for -Dl option.\n");
 		Return (API->error);
 	}
 	else if (GMT->common.b.active[GMT_OUT] && !display) {
-		GMT_Report (API, GMT_MSG_NORMAL, "-b option requires -D.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "-b option requires -D.\n");
 		Return (API->error);
 	}
 	else if (custom_warn && strcmp(display,"")) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Incompatible options -D and -W.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Incompatible options -D and -W.\n");
 		Return (API->error);
 	}
 	else if (!strcmp(display,"DIFFS") && n_grids == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "-Dd option requires -G.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "-Dd option requires -G.\n");
 		Return (API->error);
 	}
 	if (east < west || south > north) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Region set incorrectly\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Region set incorrectly\n");
 		Return (API->error);
 	}
 	if (adjustData && n_cruises > 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "-A adjustments valid for only one cruise.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "-A adjustments valid for only one cruise.\n");
 		Return (API->error);
 	}
 	if (!strcmp(display,"DTC") && ! dist_to_coast) {
-		GMT_Report (API, GMT_MSG_NORMAL, "-Dn option requires -Gnav\n");
+		GMT_Report (API, GMT_MSG_ERROR, "-Dn option requires -Gnav\n");
 		Return (API->error);
 	}
 	if (simulate && n_grids > 0) {
 		for (i = 0; i < n_grids; i++) {
 			if (sscanf (this_grid[i].fname, "%lf/%lf", &sim_m[i], &sim_b[i]) != 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give m/b for simulated grid.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -G: Give m/b for simulated grid.\n");
 				Return (API->error);
 			}
 		}
@@ -922,7 +922,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths <= 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No cruises found\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No cruises found\n");
 		Return (GMT_NO_INPUT);
 	}
 
@@ -939,7 +939,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	mgd77snifferdefs[MGD77_YEAR].maxValue = (double) systemTime->tm_year + 1900;
 	if (custom_limit_file) {
 		if ((custom_fp = gmt_fopen (GMT, custom_limit_file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Could not open custom limit file %s\n", custom_limit_file);
+			GMT_Report (API, GMT_MSG_ERROR, "Could not open custom limit file %s\n", custom_limit_file);
 			MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 			Return (API->error);
 	 	}
@@ -957,7 +957,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error in custom limits file [%s]\n", custom_limit_line);
+					GMT_Report (API, GMT_MSG_ERROR, "Error in custom limits file [%s]\n", custom_limit_line);
 					gmt_fclose (GMT, custom_fp);
 					MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 					Return (API->error);
@@ -1118,12 +1118,12 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", M.NGDC_id);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Now processing cruise %s\n", M.NGDC_id);
 
 		if (!strcmp(display,"E77")) {
 			sprintf (outfile,"%s.e77",M.NGDC_id);
 			if ((fpout = fopen (outfile, "w")) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Could not open E77 output file %s\n", outfile);
+				GMT_Report (API, GMT_MSG_ERROR, "Could not open E77 output file %s\n", outfile);
 				MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 				if (n_grids > 0) {
 					gmt_M_free (GMT, MaxDiff);
@@ -1135,7 +1135,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 		/* Read MGD77 header */
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &H))
-			GMT_Report (API, GMT_MSG_NORMAL, "Cruise %s has no header.\n", M.NGDC_id);
+			GMT_Report (API, GMT_MSG_ERROR, "Cruise %s has no header.\n", M.NGDC_id);
 
 		/* Allocate memory for data records */
 		n_alloc = GMT_CHUNK;
@@ -1164,9 +1164,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					for (k = 0; k < nvalues; k++)
 						D[k].number[i] = D[k].number[i] * adjustScale[i] + adjustDC[i];
 					sprintf (text, GMT->current.setting.format_float_out, adjustScale[i]);
-					GMT_Report (API, GMT_MSG_NORMAL, "(%s) Scaled by %s and ", mgd77defs[i].abbrev,text);
+					GMT_Report (API, GMT_MSG_ERROR, "(%s) Scaled by %s and ", mgd77defs[i].abbrev,text);
 					sprintf (text, GMT->current.setting.format_float_out, adjustDC[i]);
-					GMT_Report (API, GMT_MSG_NORMAL, "%s added\n",text);
+					GMT_Report (API, GMT_MSG_ERROR, "%s added\n",text);
 				}
 			}
 		}
@@ -1178,7 +1178,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					D[i].number[BadSection[k].col] = MGD77_NaN;	/* and set them to NaN */
 				}
 				if (i == nvalues) M.bit_pattern[0] -= (1 << BadSection[k].col); /* Turn off this field if all values have been flagged as bad */
-				GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s): Resetting %d user-flagged records to NaN prior to analysis\n",M.NGDC_id,mgd77snifferdefs[BadSection[k].col].abbrev,i);
+				GMT_Report (API, GMT_MSG_WARNING, "%s (%s): Resetting %d user-flagged records to NaN prior to analysis\n",M.NGDC_id,mgd77snifferdefs[BadSection[k].col].abbrev,i);
 			}
 		}
 
@@ -1249,7 +1249,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		/* Adjust along-track gradient type for time */
 		if (!strcmp(derivative,"TIME") && !gotTime) {
 			/*derivative = "SPACE";*/
-			if (warn[TIME_WARN]) GMT_Report (API, GMT_MSG_NORMAL, "Warning: cruise contains no time - time gradients invalid.\n");
+			if (warn[TIME_WARN]) GMT_Report (API, GMT_MSG_WARNING, "Cruise contains no time - time gradients invalid.\n");
 		}
 
 		/* Allocate memory for error array */
@@ -1261,7 +1261,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		   theoretically possible that the majority of fixes are flagged when
 		   the initial navigation fix is bad. In this case, try flipping flags */
 		if (gotTime) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Checking for bad navigation\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Checking for bad navigation\n");
 
 			for (curr = 0; curr < nvalues; curr++) {
 				if (gmt_M_is_dnan(D[curr].time)) {
@@ -1421,7 +1421,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				this_grid[i].g_pts = 0;
 				/* Skip if cruise lacks data field */
 				if (!(M.bit_pattern[0] & (1 << this_grid[i].col)) && strcmp (this_grid[i].abbrev, "nav")) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Warning: %s field not present in MGD77 file\n", this_grid[i].abbrev);
+					GMT_Report (API, GMT_MSG_WARNING, "Field %s not present in MGD77 file\n", this_grid[i].abbrev);
 					continue;
 				}
 
@@ -1482,7 +1482,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				MaxDiff[i] = 0.0;
 
 				if (this_grid[i].g_pts < 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Insufficient grid samples for %s comparison\n", this_grid[i].abbrev);
+					GMT_Report (API, GMT_MSG_ERROR, "Insufficient grid samples for %s comparison\n", this_grid[i].abbrev);
 					continue;
 				}
 			}
@@ -1522,7 +1522,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 					/* Do regression */
 					if (k > 2) {
-						GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Comparing %s and %s using RLS regression\n",this_grid[i].abbrev,this_grid[i].fname);
+						GMT_Report (API, GMT_MSG_INFORMATION, "Comparing %s and %s using RLS regression\n",this_grid[i].abbrev,this_grid[i].fname);
 						if (!decimateData && forced) {
 							regress_rls (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, stats, this_grid[i].col);
 							decimated = false;
@@ -1534,7 +1534,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							max = mgd77snifferdefs[this_grid[i].col].maxValue;
 							npts = decimate (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, min, max, mgd77snifferdefs[this_grid[i].col].delta, &decimated_new, &decimated_orig,&extreme,this_grid[i].abbrev);
 							if ((1.0*extreme)/k > .05) { /* Many outliers - decimate again */
-								GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id,this_grid[i].abbrev);
+								GMT_Report (API, GMT_MSG_WARNING, "%s (%s) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id,this_grid[i].abbrev);
 								npts = decimate (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, mgd77snifferdefs[this_grid[i].col].binmin, mgd77snifferdefs[this_grid[i].col].binmax,\
 								mgd77snifferdefs[this_grid[i].col].delta, &decimated_new, &decimated_orig, &extreme, this_grid[i].abbrev);
 							}
@@ -1548,14 +1548,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									regress_rls (GMT, grid_val, ship_val, (nvalues - this_grid[i].n_nan), stats, this_grid[i].col);
 									decimated = false;
 									tcrit = gmt_tcrit (GMT, 0.975, (double)(nvalues - this_grid[i].n_nan) - 2.0);
-									GMT_Report (API, GMT_MSG_VERBOSE, "Regression on undecimated data due to insufficient bins\n");
+									GMT_Report (API, GMT_MSG_WARNING, "Regression on undecimated data due to insufficient bins\n");
 								} else {
 									regress_rls (GMT, decimated_new, decimated_orig, npts, stats, this_grid[i].col);
 									decimated = true;
 									regress_rls (GMT, grid_val, ship_val, (nvalues - this_grid[i].n_nan), stats2, this_grid[i].col);
 									if ((stats[MGD77_RLS_CORR] < stats2[MGD77_RLS_CORR] && stats2[MGD77_RLS_SIG] == 1.0) || \
 										(stats[MGD77_RLS_SIG] == 0.0 && stats2[MGD77_RLS_SIG] == 1.0)) {
-										GMT_Report (API, GMT_MSG_VERBOSE, "Regression on undecimated data due to better correlation\n");
+										GMT_Report (API, GMT_MSG_WARNING, "Regression on undecimated data due to better correlation\n");
 										for (j=0; j<MGD77_N_STATS; j++) stats[j] = stats2[j];
 										npts=(nvalues - this_grid[i].n_nan);
 										decimated = false;
@@ -1624,9 +1624,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 											D[n].number[this_grid[i].col] /= test_slope[j];
 											diff[i][n] = D[n].number[this_grid[i].col] - G[i][n]; /* Re-compute cruise - grid differences */
 										}
-										if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+										if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
 											sprintf (text, GMT->current.setting.format_float_out, test_slope[j]);
-											GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s) Scaled by %s for internal along-track analysis\n",\
+											GMT_Report (API, GMT_MSG_WARNING, "%s (%s) Scaled by %s for internal along-track analysis\n",\
 											M.NGDC_id,this_grid[i].abbrev, text);
 										}
 		#endif
@@ -1691,7 +1691,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									D[n].number[this_grid[i].col] -= stats[MGD77_RLS_ICEPT];
 									diff[i][n] = D[n].number[this_grid[i].col] - G[i][n]; /* Re-compute cruise - grid differences */
 								}
-								GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s) Offset corrected by %s for internal along-track analysis\n",\
+								GMT_Report (API, GMT_MSG_WARNING, "%s (%s) Offset corrected by %s for internal along-track analysis\n",\
 									M.NGDC_id,this_grid[i].abbrev, fstats[MGD77_RLS_ICEPT]);
 		#endif
 							}
@@ -1807,7 +1807,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else {
 						/* Turn off this empty field */
 						M.bit_pattern[0] -= (1 << this_grid[i].col);
-						GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s) Insufficient bins for regression (%d found)\n",\
+						GMT_Report (API, GMT_MSG_WARNING, "%s (%s) Insufficient bins for regression (%d found)\n",\
 						M.NGDC_id,this_grid[i].abbrev, k);
 					}
 					/* Free up regression array memory */
@@ -1840,11 +1840,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					n++;
 				}
 				if (n < 2) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Not enough points, skipping faa regression\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Not enough points, skipping faa regression\n");
 					continue;
 				}
-				if (m == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Comparing reported with recomputed (gobs - IGF80) faa using RLS regression\n");
-				else GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
+				if (m == 0) GMT_Report (API, GMT_MSG_INFORMATION, "Comparing reported with recomputed (gobs - IGF80) faa using RLS regression\n");
+				else GMT_Report (API, GMT_MSG_INFORMATION, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
 				if (!decimateData && forced) {
 					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
 					decimated = false;
@@ -1855,7 +1855,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].minValue, mgd77snifferdefs[MGD77_FAA].maxValue,\
 					mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					if ((1.0*extreme)/n > .05) { /* Many outliers - decimate again */
-						GMT_Report (API, GMT_MSG_VERBOSE, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
+						GMT_Report (API, GMT_MSG_WARNING, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
 						npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].binmin, mgd77snifferdefs[MGD77_FAA].binmax,\
 						mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					}
@@ -1869,14 +1869,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
 							decimated = false;
 							tcrit = gmt_tcrit (GMT, 0.975, (double)n - 2.0);
-							GMT_Report (API, GMT_MSG_VERBOSE, "Regression on undecimated data due to insufficient bins\n");
+							GMT_Report (API, GMT_MSG_WARNING, "Regression on undecimated data due to insufficient bins\n");
 						} else {
 							regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_FAA);
 							decimated = true;
 							regress_rls (GMT, new_anom, old_anom, n, stats2, MGD77_FAA);
 							if ((stats[MGD77_RLS_CORR] < stats2[MGD77_RLS_CORR] && stats2[MGD77_RLS_SIG] == 1.0) || \
 								(stats[MGD77_RLS_SIG] == 0.0 && stats2[MGD77_RLS_SIG] == 1.0)) {
-								GMT_Report (API, GMT_MSG_VERBOSE, "Regression on undecimated data due to better correlation\n");
+								GMT_Report (API, GMT_MSG_WARNING, "Regression on undecimated data due to better correlation\n");
 								for (k=0; k<MGD77_N_STATS; k++) stats[k] = stats2[k];
 								npts=n;
 								decimated = false;
@@ -1892,7 +1892,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				(m == 1) ? sprintf (text,"+eot ") : sprintf (text," ");
 				if (stats[MGD77_RLS_SIG] == 1.0) {
 					if (((1.0 < (stats[MGD77_RLS_SLOPE]-range) || 1.0 > (stats[MGD77_RLS_SLOPE]+range)) || (0.0 < (stats[MGD77_RLS_ICEPT]-range2) || 0.0 > (stats[MGD77_RLS_ICEPT]+range2)))) {
-						if (m == 0) { 
+						if (m == 0) {
 							if (!strcmp(display,"E77"))
 								fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d). [Recompute]\n",E77_REVIEW,E77_ERROR,M.NGDC_id,\
 								(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
@@ -1912,7 +1912,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
                                                 	}
 						}
 					} else {
-						if (m == 0) { 
+						if (m == 0) {
 							if (!strcmp(display,"E77"))
 								fprintf (fpout, "%c-%c-%s-faa-%.02d: Anomaly equivalent to gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",E77_APPLY,E77_INFO,M.NGDC_id,\
 								(int)(E77_HDR_ANOM_FAA+(m*9)),text,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
@@ -1929,8 +1929,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
                                                                 sprintf (buffer, "%s (faa) anomaly equivalent to gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",M.NGDC_id,text,fstats[MGD77_RLS_SLOPE],\
                                                                 fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
                                                                 gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
-                                                        }	
-						}	
+                                                        }
+						}
 					}
 					if (m == 1 && stats[MGD77_RLS_CORR] > lastCorr) {
 						if (!strcmp(display,"E77"))
@@ -1972,7 +1972,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].minValue, mgd77snifferdefs[MGD77_FAA].maxValue,\
 					mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					if ((1.0*extreme)/n > .05) { /* Many outliers - decimate again */
-						GMT_Report (API, GMT_MSG_VERBOSE, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
+						GMT_Report (API, GMT_MSG_WARNING, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
 						npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].binmin, mgd77snifferdefs[MGD77_FAA].binmax,\
 						mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					}
@@ -1985,7 +1985,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					for (k=0; k<MGD77_N_STATS; k++) stats2[k] = stats[k];
 					grav_formula = (int)m;
 				}
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Regression statistics for gravity formula (%d) test (m: %.3f b: %.3f rms: %.3f r: %.6f sig: %d dec: %d)\n",m,stats[MGD77_RLS_SLOPE],\
+				GMT_Report (API, GMT_MSG_INFORMATION, "Regression statistics for gravity formula (%d) test (m: %.3f b: %.3f rms: %.3f r: %.6f sig: %d dec: %d)\n",m,stats[MGD77_RLS_SLOPE],\
 					stats[MGD77_RLS_ICEPT],stats[MGD77_RLS_RMS],stats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 			}
 			for (k=0; k<MGD77_N_STATS; k++) sprintf (fstats[k],GMT->current.setting.format_float_out,stats2[k]);
@@ -2083,7 +2083,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				n++;
 			}
 			if (n > 0) { /* must have time records for mag recalculation */
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Comparing reported and recomputed mag using RLS regression\n");
+				GMT_Report (API, GMT_MSG_INFORMATION, "Comparing reported and recomputed mag using RLS regression\n");
 				if (!decimateData && forced) {
 					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_MAG);
 					decimated = false;
@@ -2094,7 +2094,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_MAG].minValue, mgd77snifferdefs[MGD77_MAG].maxValue,\
 					mgd77snifferdefs[MGD77_MAG].delta, &decimated_new, &decimated_orig, &extreme, "nmag");
 					if ((1.0*extreme)/n > .05) { /* Many outliers - decimate again */
-						GMT_Report (API, GMT_MSG_VERBOSE, "%s (mag) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
+						GMT_Report (API, GMT_MSG_WARNING, "%s (mag) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
 						npts = decimate (GMT,new_anom, old_anom, n, mgd77snifferdefs[MGD77_MAG].binmin, mgd77snifferdefs[MGD77_MAG].binmax,\
 						mgd77snifferdefs[MGD77_MAG].delta, &decimated_new, &decimated_orig, &extreme, "nmag");
 					}
@@ -2108,14 +2108,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_MAG);
 							decimated = false;
 							tcrit = gmt_tcrit (GMT, 0.975, (double)n - 2.0);
-							GMT_Report (API, GMT_MSG_VERBOSE, "Regression on undecimated data due to insufficient bins\n");
+							GMT_Report (API, GMT_MSG_WARNING, "Regression on undecimated data due to insufficient bins\n");
 						} else {
 							regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_MAG);
 							decimated = true;
 							regress_rls (GMT, new_anom, old_anom, n, stats2, MGD77_MAG);
 							if ((stats[MGD77_RLS_CORR] < stats2[MGD77_RLS_CORR] && stats2[MGD77_RLS_SIG] == 1.0) || \
 								(stats[MGD77_RLS_SIG] == 0.0 && stats2[MGD77_RLS_SIG] == 1.0)) {
-								GMT_Report (API, GMT_MSG_VERBOSE, "Regression on undecimated data due to better correlation\n");
+								GMT_Report (API, GMT_MSG_WARNING, "Regression on undecimated data due to better correlation\n");
 								for (k=0; k<MGD77_N_STATS; k++) stats[k] = stats2[k];
 								npts=n;
 								decimated = false;
@@ -2219,7 +2219,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		}
 
 		/* CHECK SANITY ALONG-TRACK */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Checking for along-track errors\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Checking for along-track errors\n");
 		lastLat = D[0].number[MGD77_LATITUDE];
 		lastLon = D[0].number[MGD77_LONGITUDE];
 		ds = distance[0] = 0.0;
@@ -2456,7 +2456,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				tracking winning cruises when running histogram scripts */
 				if (!gmt_M_is_dnan(speed) && fabs(speed) > max_speed) {
 					E[curr].flags[E77_NAV] |= NAV_HISPD;
-					GMT_Report (API, GMT_MSG_NORMAL, "%s - Excessive speed %f %s\n",placeStr, speed, speed_units);
+					GMT_Report (API, GMT_MSG_ERROR, "%s - Excessive speed %f %s\n",placeStr, speed, speed_units);
 				}
 #endif
 
@@ -2535,7 +2535,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							   cruises when running histogram scripts */
 							if (fabs(gradient) > maxSlope[i]) {
 								E[curr].flags[E77_SLOPE] |= (1 << i);
-								GMT_Report (API, GMT_MSG_NORMAL, "%s - excessive %s gradient %f\n", placeStr, mgd77defs[i].abbrev, gradient);
+								GMT_Report (API, GMT_MSG_ERROR, "%s - excessive %s gradient %f\n", placeStr, mgd77defs[i].abbrev, gradient);
 							}
 #endif
 						}
@@ -2841,7 +2841,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 		/* OUTPUT E77 ERROR FORMAT */
 		if (!strcmp(display,"E77")) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Generating errata table %s.e77\n",M.NGDC_id);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Generating errata table %s.e77\n",M.NGDC_id);
 			/* Echo out the user-specified invalid data records */
 			for (i = 0; i < n_bad_sections; i++) {
 				fprintf (fpout, "%c-%c-%s-%s-%.02d: Invalid data records: [%d-%d]\n",E77_APPLY,E77_ERROR,M.NGDC_id,\

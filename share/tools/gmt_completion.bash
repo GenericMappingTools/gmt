@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # If you source this file from your .bashrc, bash should be able to
@@ -40,7 +40,7 @@ _gmt()
     opts=( --help --show-datadir --show-bindir --version )
 
     # strip off any leading "gmt" in module names:
-    progs=(`gmt --show-modules | sed -e 's/^gmt//g'`)
+    progs=($(gmt --show-modules | sed -e 's/^gmt//g'))
 
     # complete first arg
     if [[ ${COMP_CWORD} -eq 1 ]]; then

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -288,14 +288,19 @@ enum GMT_enum_time {
 };
 
 /* Verbosity levels */
-enum GMT_enum_verbose {GMT_MSG_QUIET = 0,   /* No messages whatsoever */
-	GMT_MSG_NORMAL		= 1,        /* Default output, e.g., warnings and errors only */
-	GMT_MSG_TICTOC		= 2,        /* To print a tic-toc elapsed time message */
-	GMT_MSG_COMPAT		= 3,        /* Compatibility warnings */
-	GMT_MSG_VERBOSE		= 4,        /* Verbose level */
-	GMT_MSG_LONG_VERBOSE	= 5,        /* Longer verbose, -Vl in some programs */
-	GMT_MSG_DEBUG		= 6        /* Debug messages for developers mostly */
-}; 
+enum GMT_enum_verbose {
+	GMT_MSG_QUIET		= 0,   	/* No messages whatsoever */
+	GMT_MSG_ERROR		= 1,	/* Errors only */
+	GMT_MSG_WARNING		= 2,	/* Adds warnings */
+	GMT_MSG_TICTOC		= 3,	/* Add timings */
+	GMT_MSG_INFORMATION	= 4,	/* Adds informational messages */
+	GMT_MSG_COMPAT		= 5,	/* Compatibility warnings */
+	GMT_MSG_DEBUG		= 6,	/* Debug messages for developers mostly */
+	/* For API backwards compatibility only */
+	GMT_MSG_NORMAL			= 1,	/* Now GMT_MSG_ERROR */
+	GMT_MSG_VERBOSE			= 4,	/* Now GMT_MSG_WARNING  */
+	GMT_MSG_LONG_VERBOSE	= 5		/* Now GMT_MSG_INFORMATION */
+};
 
 /* GMT_RECORD Declaration */
 
@@ -390,7 +395,7 @@ struct GMT_GRID_HEADER {
 	char title[GMT_GRID_TITLE_LEN80];      /* name of data set */
 	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
-	
+
 	/* Items not stored in the data file for grids but explicitly used in macros computing node numbers */
 	size_t nm;                       /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
 	size_t size;                     /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
@@ -414,7 +419,7 @@ struct GMT_GRID_HEADER {
 };
 
 /* grd is stored in rows going from west (xmin) to east (xmax)
- * first row in file has yvalue = north (ymax).  
+ * first row in file has yvalue = north (ymax).
  * This is SCANLINE orientation.*/
 
 /*-----------------------------------------------------------------------------------------
@@ -563,15 +568,18 @@ enum GMT_enum_cpt {
 enum GMT_enum_cptflags {
 	GMT_CPT_NO_BNF     = 1,
 	GMT_CPT_EXTEND_BNF = 2,
-	GMT_CPT_HINGED     = 4,
-	GMT_CPT_TIME       = 8,
+	GMT_CPT_HARD_HINGE = 4,
+	GMT_CPT_SOFT_HINGE = 8,
+	GMT_CPT_TIME       = 16,
+	GMT_CPT_COLORLIST  = 32,
+	GMT_CPT_HINGED     = 4	/* Backwards compatibility with 6.0 API */
 };
 
 /* Here is the definition of the GMT_PALETTE structure that is used in programs
  * that deals with coloring of items as a function of z-lookup.  Note that rgb
  * arrays have 4 items as the 4th value could be a non-zero transparency (when supported).
  */
- 
+
 struct GMT_LUT {
 	double z_low, z_high, i_dz;
 	double rgb_low[4], rgb_high[4], rgb_diff[4];
@@ -636,8 +644,8 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	double *x, *y;                  /* Vector of coordinates */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
 #ifdef GMT_BACKWARDS_API
-	int *ColorMap; 
-	int nIndexedColors; 
+	int *ColorMap;
+	int nIndexedColors;
 #endif
 };
 

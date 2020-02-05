@@ -14,7 +14,7 @@ Synopsis
 
 **gmt connect** [ *table* ] [ |-C|\ [*closed*] ]
 [ |-D|\ [*template*] ] [ |-L|\ [*linkfile*] ]
-[ |-Q|\ [*template*] ] [ |-T|\ [*cutoff*\ [*unit*][**+s**\ *sdist*]] ]
+[ |-Q|\ [*template*] ] [ |-T|\ [*cutoff*\ [**+s**\ *sdist*]] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -24,6 +24,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -100,7 +101,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*cutoff*\ [*unit*][**+s**\ *sdist*]]
+**-T**\ [*cutoff*\ [**+s**\ *sdist*]]
     Specifies the separation tolerance in the data coordinate units [0]; for geographic data
     append distance unit (see `Units`_). If two lines have end-points that
     are closer than the *cutoff* they will be joined. Optionally, append
@@ -139,6 +140,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_colon.rst_
 

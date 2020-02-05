@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script creates, removes, or lists symbolic links for each GMT
@@ -30,10 +30,10 @@ elif [ "X$1" = "Xcreate" ]; then
 else
 	mode=0
 fi
-bin=`gmt --show-bindir`
-cwd=`pwd`
+bin=$(gmt --show-bindir)
+cwd=$(pwd)
 
-gmt_modules=`gmt --show-classic`
+gmt_modules=$(gmt --show-classic)
 compat_modules="minmax gmtstitch gmtdp grdreformat ps2raster originator"
 
 cd $bin

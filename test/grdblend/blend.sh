@@ -67,7 +67,7 @@ gmt psxy -R -J -O -K -W0.5p,- -L << EOF >> $ps
 1	9
 EOF
 echo 10 10 blend | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
-gmt psscale -Ct.cpt -D3.25i/1.5i+w2.8i/0.15i+jML -O -K -B1 >> $ps
+gmt psscale -Ct.cpt -Dx3.25i/1.5i+w2.8i/0.15i+jML -O -K -B1 >> $ps
 gmt grdblend ?.nc -Co -R0/10/0/10 -I0.1 -Gblend.nc
 gmt grdimage blend.nc -Ct.cpt -J -O -X-3.5i -Y3.3i -B2 -BWsne -K >> $ps
 gmt psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
@@ -76,7 +76,7 @@ gmt grdblend ?.nc -Cf -R0/10/0/10 -I0.1 -Gblend.nc
 gmt grdimage blend.nc -Ct.cpt -J -O -X3.5i -B2 -BWsne -K >> $ps
 gmt psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
 echo 10 10 first | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
-gmt psscale -Ct.cpt -D3.25i/1.5i+w2.8i/0.15i+jML -O -K -B1 >> $ps
+gmt psscale -Ct.cpt -Dx3.25i/1.5i+w2.8i/0.15i+jML -O -K -B1 >> $ps
 gmt grdblend ?.nc -Cl -R0/10/0/10 -I0.1 -Gblend.nc
 gmt grdimage blend.nc -Ct.cpt -J -O -X-3.5i -Y3.3i -B2 -BWsne -K >> $ps
 echo 10 10 low | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
@@ -85,5 +85,5 @@ gmt grdblend ?.nc -Cu -R0/10/0/10 -I0.1 -Gblend.nc
 gmt grdimage blend.nc -Ct.cpt -J -O -X3.5i -B2 -BWsne -K >> $ps
 gmt psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
 echo 10 10 high | gmt pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
-gmt psscale -Ct.cpt -D3.25i/1.5i+w2.8i/0.15i+jML -O -B1 >> $ps
+gmt psscale -Ct.cpt -Dx3.25i/1.5i+w2.8i/0.15i+jML -O -B1 >> $ps
 

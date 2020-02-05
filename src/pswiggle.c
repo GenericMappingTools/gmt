@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
  * Version:	6 API
  *
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pswiggle"
@@ -38,7 +38,7 @@
 #define THIS_MODULE_PURPOSE	"Plot z = f(x,y) anomalies along tracks"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy" GMT_OPT("EHMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqtxy" GMT_OPT("EHMmc")
 
 #define PSWIGGLE_POS	0
 #define PSWIGGLE_NEG	1
@@ -93,9 +93,9 @@ struct PSWIGGLE_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSWIGGLE_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct PSWIGGLE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.mode = 1;	/* Default is -A0 */
 	C->T.pen = C->W.pen = GMT->current.setting.map_default_pen;
@@ -109,8 +109,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* De
 	if (!C) return;
 	if (C->D.scale.refpoint) gmt_free_refpoint (GMT, &C->D.scale.refpoint);
 	gmt_M_free (GMT, C->D.scale.panel);
-	gmt_M_str_free (C->S.label);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->S.label);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, uint64_t n_in, double zscale, unsigned int adjust_az, double start_az, double stop_az, int fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, int paint_wiggle, int negative, int outline, int track) {
@@ -146,7 +146,7 @@ GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *
 			}
 			else
 				x_inc = y_inc = 0.0;
-		
+
 			GMT->current.plot.x[n] = x[i] + x_inc;
 			GMT->current.plot.y[n] = y[i] + y_inc;
 			n++;
@@ -168,7 +168,7 @@ GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *
 
 	if (paint_wiggle) { /* First shade wiggles */
 		PSL_comment (PSL, "%s wiggle\n", negative ? "Negative" : "Positive");
-		gmt_setfill (GMT, fill, false);
+		gmt_setfill (GMT, fill, 0);
 		PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n);
 	}
 
@@ -220,13 +220,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -Z<scale>[<unit>]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -Z<scale>\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<azimuth>]] [%s] [-C<center>] [-D[g|j|J|n|x]<refpoint>+w<length>[+a][+j<justify>][+o<dx>[/<dy>]][+l<label>]]\n", GMT_B_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>[+n][+p]] [-I<az>] [%s] %s%s%s[-T<trackpen>] [%s]\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s]\n\t[%s] %s[%s] [%s] [%s] [%s]\n\t[%s] ",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -259,8 +259,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give the wiggle scale in data-units per %s.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append any unit from among %s [c].\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_Option (API, "bi3,c,di,e,f,g,h,i,p,s,t,:,.");
-	
+	GMT_Option (API, "bi3,c,di,e,f,g,h,i,p,qi,t,:,.");
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -305,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 					GMT->common.g.active = true;
 					if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
 						sprintf (txt_a, "d%s", &opt->arg[1]);
-					else if (gmt_M_is_geographic (GMT, GMT_IN))	
+					else if (gmt_M_is_geographic (GMT, GMT_IN))
 						sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
 					else
 						sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
@@ -325,7 +325,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				break;
 			case 'G':	/* -G<fill>[+n][+p] */
 				j = 0;	neg = pos = false;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "np"))) {	/* Gave +n and/or +p */
+				if ((c = strstr (opt->arg, "+n+p")) || (c = strstr (opt->arg, "+p+n")) || (c = strstr (opt->arg, "+n")) || (c = strstr (opt->arg, "+p"))) {	/* Gave +n and/or +p */
 					pp = 0;	txt_a[0] = 0;
 					while (gmt_getmodopt (GMT, 'G', c, "np", &pp, txt_a, &n_errors) && n_errors == 0) {
 						switch (txt_a[0]) {
@@ -382,7 +382,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 						units++;
 						Ctrl->S.label = strdup (units);
 					}
-					n_errors += gmt_M_check_condition (GMT, k != 3, "Syntax error -S option: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
+					n_errors += gmt_M_check_condition (GMT, k != 3, "Option -S: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -420,10 +420,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 		Ctrl->G.fill[PSWIGGLE_NEG] = Ctrl->G.fill[PSWIGGLE_POS];
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->W.active || Ctrl->G.active[0] || Ctrl->G.active[1]), "Syntax error: Must specify at least one of -G, -W\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: scale must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->W.active || Ctrl->G.active[0] || Ctrl->G.active[1]), "Must specify at least one of -G, -W\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Option -Z: scale must be nonzero\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -443,7 +443,7 @@ int GMT_wiggle (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: wiggle\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: wiggle\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_pswiggle (V_API, mode, args);
@@ -452,9 +452,9 @@ int GMT_wiggle (void *V_API, int mode, void *args) {
 int GMT_pswiggle (void *V_API, int mode, void *args) {
 	bool negative;
 	int error = 0;
-	
+
 	unsigned int tbl;
-	
+
 	uint64_t row, seg, j;
 	size_t n_alloc = GMT_CHUNK;
 
@@ -481,14 +481,14 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -530,7 +530,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (D->n_columns < 3) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 3 are needed\n", (int)D->n_columns);
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 3 are needed\n", (int)D->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 
@@ -543,8 +543,8 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
 		TH = gmt_get_DT_hidden (T);
-		
-                GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", TH->file[GMT_IN]);
+
+                GMT_Report (API, GMT_MSG_INFORMATION, "Working on file %s\n", TH->file[GMT_IN]);
 		PSL_comment (PSL, "File %s\n", TH->file[GMT_IN]);
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
@@ -554,7 +554,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 			lon = T->segment[seg]->data[GMT_X];	/* lon, lat, z are just shorthands */
 			lat = T->segment[seg]->data[GMT_Y];
 			z = T->segment[seg]->data[GMT_Z];
-			
+
 			if (Ctrl->C.active) for (row = 0; row < T->segment[seg]->n_rows; row++) z[row] -= Ctrl->C.value;	/* Remove center value */
 
 			gmt_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
@@ -586,14 +586,14 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 				if (!gmt_M_is_dnan (z[row])) j++;
 				if (j == n_alloc) alloc_space (GMT, &n_alloc, &xx, &yy, &zz);
 			}
-	
+
 			if (j > 1) {
 				negative = zz[j-1] < 0.0;
 				plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, Ctrl->A.mode, start_az, stop_az, Ctrl->I.active, fix_az, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
 			}
 		}
 	}
-	
+
 	gmt_map_clip_off (GMT);
 	gmt_map_basemap (GMT);
 

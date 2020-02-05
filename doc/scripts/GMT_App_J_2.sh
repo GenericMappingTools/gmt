@@ -37,7 +37,7 @@
 #
 # Impulse response:
 #   Let r be measured in units relative to the filter width.
-#   The filter width defines a diameter, so the impulse 
+#   The filter width defines a diameter, so the impulse
 #   response is non-zero only for r < 0.5, as for x above.
 #   So the graph of the impulse response h(r) for 0 < r < 0.5
 #   is identical to the graph for h(x) for 0 < x < 0.5 above.
@@ -76,7 +76,7 @@ gmt begin GMT_App_J_2
 gmt set FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
 gmt math -T0/5/0.01 T SINC = | gmt plot -R0/5/-0.3/1 -JX4i/2i -Bxa1f0.2+l"Frequency (cycles per filter width)" -Bya0.2f0.1g1+l"Gain" -BWeSn -Wthick
 gmt math -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | grep -v '^>' | $AWK '{ if ($1 == 1) print 1, 0.5; else print $0}' | gmt plot -Wthick,-
-gmt math -T0/5/0.01 T PI MUL DUP MUL 18 DIV NEG EXP = | gmt plot -Wthick,. 
+gmt math -T0/5/0.01 T PI MUL DUP MUL 18 DIV NEG EXP = | gmt plot -Wthick,.
 gmt text -F+f9p,Times-Roman+j << END
 2.2	0.6	LM	Solid Line:
 2.2	0.5	LM	Dotted Line:

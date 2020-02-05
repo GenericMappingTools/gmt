@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,7 @@ EXTERN_MSC int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *
 
 /* gmt_init.c: */
 
+EXTERN_MSC int gmt_set_length_unit (struct GMT_CTRL *GMT, char unit);
 EXTERN_MSC unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]);
 EXTERN_MSC void gmt_reset_history (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_reload_history (struct GMT_CTRL *GMT);
@@ -75,7 +76,7 @@ EXTERN_MSC bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file
 EXTERN_MSC int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int dim, struct GMT_MODEL *M);
 EXTERN_MSC struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsigned int pad);
 EXTERN_MSC void gmt_end (struct GMT_CTRL *GMT);
-EXTERN_MSC struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy);
+EXTERN_MSC struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy);
 EXTERN_MSC struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy);
 EXTERN_MSC void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy);
 EXTERN_MSC int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM *time_system);
@@ -291,7 +292,7 @@ EXTERN_MSC int gmt_access (struct GMT_CTRL *GMT, const char *filename, int mode)
 EXTERN_MSC FILE *gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode);
 EXTERN_MSC char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int mode);	/* Look for data file */
 EXTERN_MSC char *gmt_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *stem, const char *suffix, char *path, int mode);	/* Look for shared file */
-EXTERN_MSC char *gmt_strncpy (char *dest, const char *source, size_t num); 
+EXTERN_MSC char *gmt_strncpy (char *dest, const char *source, size_t num);
 EXTERN_MSC void gmt_write_segmentheader (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols);		/* Write segment header back out */
 EXTERN_MSC void gmt_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, unsigned int direction, uint64_t col);
 EXTERN_MSC void gmt_lon_range_adjust (unsigned int range, double *lon);		/* Adjust the longitude given the desired range */
@@ -343,6 +344,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *file, bool *interpolate, bool *force_continuous);
 EXTERN_MSC void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, double inc[]);
 EXTERN_MSC void gmt_rgb_to_hsv (double rgb[], double hsv[]);
 EXTERN_MSC void gmt_hsv_to_rgb (double rgb[], double hsv[]);
@@ -509,11 +511,6 @@ EXTERN_MSC void gmt_ECEF_init (struct GMT_CTRL *GMT, struct GMT_DATUM *D);
 EXTERN_MSC void gmt_datum_init (struct GMT_CTRL *GMT, struct GMT_DATUM *from, struct GMT_DATUM *to, bool heights);
 EXTERN_MSC int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D);
 EXTERN_MSC void gmt_conv_datum (struct GMT_CTRL *GMT, double in[], double out[]);
-#ifdef PRJ4
-EXTERN_MSC void gmt_conv_datum_seven (struct GMT_CTRL *GMT, double in[], double out[]);
-EXTERN_MSC void gmt_ECEF_forward_fw (struct GMT_CTRL *GMT, double in[], double out[]);
-EXTERN_MSC void gmt_ECEF_inverse_dest_datum (struct GMT_CTRL *GMT, double in[], double out[]);
-#endif
 EXTERN_MSC struct GMT_DATASEGMENT *gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon, double plat, double colat, uint64_t m);
 
 /* gmt_shore.c: */

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2012-2019
+# Copyright (c) 2012-2020
 # by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
@@ -27,8 +27,8 @@ set -e
 
 LIB=$1
 # Make sure we get both upper- and lower-case versions of the tag
-U_TAG=`echo $LIB | tr '[a-z]' '[A-Z]'`
-L_TAG=`echo $LIB | tr '[A-Z]' '[a-z]'`
+U_TAG=$(echo $LIB | tr '[a-z]' '[A-Z]')
+L_TAG=$(echo $LIB | tr '[A-Z]' '[a-z]')
 
 if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current directory and set LIB_STRING
 	grep "#define THIS_MODULE_LIB		" */*.c | gawk -F: '{print $1}' | sort -u > /tmp/tmp.lis

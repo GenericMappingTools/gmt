@@ -22,7 +22,7 @@ we want the labels to have that same orientation (i.e., the angle with
 the baseline must be 50). We do this by extracting the last record from
 each track and select segment header as textstring when running
 the output through :doc:`text </text>`. Note we
-offset the positions by -0.05 inch with **-D** in order to have a small
+offset the positions by 4 points with **-D** in order to have a small
 gap between the profile and the label:
 
 .. literalinclude:: /_verbatim/ex09.txt

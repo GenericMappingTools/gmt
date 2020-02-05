@@ -14,14 +14,14 @@ Synopsis
 
 **gmt select** [ *table* ]
 [ |SYN_OPT-Area| ]
-[ |-C|\ *pointfile*\ **+d**\ *dist*\ [*unit*] ]
+[ |-C|\ *pointfile*\ **+d**\ *dist* ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ [**fn**] ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *gridmask* ]
 [ |-I|\ [**cfglrsz**] ]
 [ |-J|\ *parameters* ]
-[ |-L|\ *linefile*\ **+d**\ *dist*\ [*unit*]\ [**+p**] ]
+[ |-L|\ *linefile*\ **+d**\ *dist*\ [**+p**] ]
 [ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
 [ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
@@ -34,6 +34,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -70,7 +71,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *pointfile*\ **+d**\ *dist*\ [*unit*]
+**-C**\ *pointfile*\ **+d**\ *dist*
     Pass all records whose location is within *dist* of any of the
     points in the ASCII file *pointfile*. If *dist* is zero then the 3rd
     column of *pointfile* must have each point's individual radius of
@@ -78,7 +79,7 @@ Optional Arguments
     **-fg** to indicate spherical distances and append a distance unit
     (see `Units`_). Alternatively, if **-R** and **-J** are used then
     geographic coordinates are projected to map coordinates (in cm,
-    inch, or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before
+    inch, or points, as determined by :term:`PROJ_LENGTH_UNIT`) before
     Cartesian distances are compared to *dist*.
 
 .. _-D:
@@ -115,7 +116,7 @@ Optional Arguments
 
 **-G**\ *gridmask*
     Pass all locations that are inside the valid data area of the grid *gridmask*.
-	Nodes that are outside are either NaN or zero.
+    Nodes that are outside are either NaN or zero.
 
 .. _-I:
 
@@ -144,7 +145,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *linefile*\ **+d**\ *dist*\ [*unit*]\ [**+p**]
+**-L**\ *linefile*\ **+d**\ *dist*\ [**+p**]
     Pass all records whose location is within *dist* of any of the line
     segments in the ASCII multiple-segment file *linefile*. If *dist* is
     zero then we will scan each sub-header in the *linefile* for an
@@ -153,7 +154,7 @@ Optional Arguments
     **-fg** to indicate spherical distances append a distance unit (see
     `Units`_). Alternatively, if **-R** and **-J** are used then geographic
     coordinates are projected to map coordinates (in cm, inch, m, or
-    points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before Cartesian
+    points, as determined by :term:`PROJ_LENGTH_UNIT`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points
     whose orthogonal projections onto the nearest line-segment fall
     within the segments endpoints [Default considers points "beyond" the
@@ -225,6 +226,8 @@ Optional Arguments
 
 .. include:: explain_-ocols.rst_
 
+.. include:: explain_-q.rst_
+
 .. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
@@ -243,7 +246,7 @@ Note On Processing ASCII Input Records
 
 Unless you are using the **-:** option, selected ASCII input records are
 copied verbatim to output. That means that options like **-foT** and
-settings like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` and :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>` will not
+settings like :term:`FORMAT_FLOAT_OUT` and :term:`FORMAT_GEO_OUT` will not
 have any effect on the output. On the other hand, it allows selecting
 records with diverse content, including character strings, quoted or
 not, comments, and other non-numerical content.
@@ -255,7 +258,7 @@ If options **-C** or **-L** are selected then distances are Cartesian
 and in user units; use **-fg** to imply spherical distances in km and
 geographical (lon, lat) coordinates. Alternatively, specify **-R** and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
-or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`).
+or points, as determined by :term:`PROJ_LENGTH_UNIT`).
 
 This program has evolved over the years. Originally, the **-R** and
 **-J** were mandatory in order to handle geographic data, but now there

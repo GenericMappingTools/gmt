@@ -16,11 +16,11 @@ Synopsis
 |SYN_OPT-R|
 [ |SYN_OPT-Area| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [**l**\ \|\ **r**/]\ *fill* ]
+[ |-C|\ *fill*\ [**+l**\|\ **r**] ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ *dcw* ]
 [ |-F|\ *box* ]
-[ |-G|\ *fill*\ \|\ **c** ]
+[ |-G|\ [*fill*] ]
 [ |-I|\ *river*\ [/\ *pen*] ]
 [ |-K| ]
 [ |-L|\ *scalebar* ]
@@ -29,7 +29,7 @@ Synopsis
 [ |-O| ]
 [ |-P| ]
 [ |-Q| ]
-[ |-S|\ *fill*\ \|\ **c** ]
+[ |-S|\ [*fill*] ]
 [ |-T|\ *rose* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -65,13 +65,13 @@ To initiate a clip path for Africa so that the subsequent colorimage of
 gridded topography is only seen over land, using a Mercator map at scale
 0.1 inch/degree, use::
 
-    gmt pscoast -R-30/30/-40/40 -Jm0.1i -B5 -Gc -P -K > africa.ps
+    gmt pscoast -R-30/30/-40/40 -Jm0.1i -B5 -G -P -K > africa.ps
     gmt grdimage -J -R @earth_relief_05m -Cgeo -O -K >> africa.ps
     gmt pscoast -Q -O >> africa.ps
 
 To plot Great Britain, Italy, and France in blue with a red outline and
 Spain, Portugal and Greece in yellow (no outline), and pick up the plot
-domain form the extents of these countries, use::
+domain from the extents of these countries, use::
 
     gmt pscoast -JM6i -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow -P > map.ps
 

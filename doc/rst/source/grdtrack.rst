@@ -13,25 +13,26 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
-[ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ |-C|\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\ \|\ **r**][**+v**] ] [|-D|\ *dfile* ]
+[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
+[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**] ] [|-D|\ *dfile* ]
 [ |-E|\ *line* ]
-[ |-N| ] 
+[ |-N| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
+[ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ] [ |-Z| ]
-[ |SYN_OPT-b| ] 
-[ |SYN_OPT-d| ] 
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
-[ |SYN_OPT-f| ] 
-[ |SYN_OPT-g| ] 
-[ |SYN_OPT-h| ] 
-[ |SYN_OPT-i| ] 
-[ |SYN_OPT-j| ] 
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
-[ **-:**\ [**i**\ \|\ **o**] ]
+[ **-:**\ [**i**\|\ **o**] ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -69,7 +70,7 @@ Required Arguments
     constrained points and NaN elsewhere, and (3) Img file
     with constraints coded, return 1 at constraints and 0 elsewhere, and
     optionally the max latitude in the IMG file [80.738]. You may repeat
-    **-G** as many times as you have grids you wish to sample. 
+    **-G** as many times as you have grids you wish to sample.
     Alternatively, use **-G+l**\ *list* to pass a list of file names.
     The grids are sampled and results are output in the order given.
     (See GRID FILE FORMAT below.)
@@ -84,7 +85,7 @@ Optional Arguments
 
 .. _-A:
 
-**-Af**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**]
+**-Af**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
     For track resampling (if **-C** or **-E** are set) we can select how this is to
     be performed. Append **f** to keep original points, but add
     intermediate points if needed [Default], **m** as **f**, but first
@@ -93,12 +94,12 @@ Optional Arguments
     to resample at equidistant locations; input points are not
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
-    **+l** if distances should be measured along rhumb lines
-    (loxodromes). Ignored unless **-C** is used.
+    **+l** if geographic distances should be measured along rhumb lines
+    (loxodromes) instead of great circles. Ignored unless **-C** is used.
 
 .. _-C:
 
-**-C**\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\ \|\ **r**][**+v**]
+**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
@@ -129,7 +130,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+c**][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [**u**]
+**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+c**][**+d**][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*
     Instead of reading input track coordinates, specify profiles via
     coordinates and modifiers. The format of each *line* is
     *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
@@ -139,10 +140,10 @@ Optional Arguments
     which will connect segments with shared joints into a single segment.
     In addition to line coordinates, you can use Z-, Z+ to mean the global
     minimum and maximum locations in the grid (only available if a
-    single grid is given via **-G**). You may append 
-    **+i**\ *inc*\ [**u**] to set the sampling interval; if not given then
+    single grid is given via **-G**). You may append
+    **+i**\ *inc* to set the sampling interval; if not given then
     we default to half the minimum grid interval.  Instead of two coordinates
-    you can specify an origin and one of **+a**, **+o**, or **+r**. 
+    you can specify an origin and one of **+a**, **+o**, or **+r**.
     The **+a** sets the azimuth of a profile of given
     length starting at the given origin, while **+o** centers the profile
     on the origin; both require **+l**. For circular sampling specify
@@ -162,7 +163,7 @@ Optional Arguments
 
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
-    [Default only output points within grid domain]. 
+    [Default only output points within grid domain].
 
 .. _-R:
 
@@ -190,7 +191,7 @@ Optional Arguments
     group for each sampled grid. The leading column holds cross distance,
     while the first four columns in a group hold stacked value, deviation, min
     value, and max value, respectively. If *method* is one of
-    **a**\ \|\ **m**\ \|\ **p** then we also write the lower and upper
+    **a**\|\ **m**\|\ **p** then we also write the lower and upper
     confidence bounds (see **+c**). When one or more of **+a**, **+d**,
     and **+r** are used then we also append the stacking results to the end of each
     row, for all cross-profiles. The order is always stacked value
@@ -200,14 +201,14 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*radius*\ [**u**]][**+e**\ \|\ **p**]
+**-T**\ [*radius*][**+e**\|\ **p**]
    To be used with normal grid sampling, and limited to a single, non-IMG grid.
    If the nearest node to the input point is NaN, search outwards until we find
    the nearest non-NaN node and report that value instead.  Optionally specify
    a search radius which limits the consideration to points within this distance
    from the input point.  To report the location of the nearest node and its
    distance from the input point, append **+e**. The default unit for geographic
-   grid distances is spherical degrees.  Use *radius*\ [**u**] to change the unit
+   grid distances is spherical degrees.  Use *radius* to change the unit
    and give *radius* = 0 if you do not want to limit the radius search.
    To instead replace the input point with the coordinates of the nearest node, append **+p**.
 
@@ -223,12 +224,12 @@ Optional Arguments
 
 **-:**
     Toggles between (longitude,latitude) and (latitude,longitude)
-    input/output. [Default is (longitude,latitude)]. 
+    input/output. [Default is (longitude,latitude)].
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is one more than input]. 
+.. |Add_-bo| replace:: [Default is one more than input].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -253,6 +254,8 @@ Optional Arguments
 .. include:: explain_-n.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_-s.rst_
 

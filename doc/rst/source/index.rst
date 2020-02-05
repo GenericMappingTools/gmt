@@ -18,6 +18,7 @@ Quick links
    - :doc:`GMT Colors <gmtcolors>`
    - :doc:`35 Postscript Fonts </cookbook/postscript_fonts>`
    - :doc:`Built-in CPTs </cookbook/cpts>`
+   - :doc:`Built-in patterns </cookbook/predefined_patterns>`
    - :doc:`Octal Codes of Characters </cookbook/octal_codes>`
    - :ref:`Pen Syntax <-Wpen_attrib>`
    - :ref:`Fill Syntax <-Gfill_attrib>`
@@ -71,7 +72,8 @@ Quick links
 
    Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
    Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+   reStructuredText Cheatsheet <rst_cheatsheet>
+   Debugging GMT <debug>
    GMT C API <api>
    PostScriptLight C API <postscriptlight>
-   Debugging GMT <debug>
 

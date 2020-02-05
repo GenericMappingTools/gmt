@@ -1,6 +1,6 @@
 .. _-Jproj4_full:
 
-**-J<proj4>**\ \|\ **EPSG:n**
+**-J<proj4>**\|\ **EPSG:n**
    Starting at GMT6 it is possible to use the *PROJ.4* library to do coordinate and datum transforms.
    This is achieved via GDAL so it requires that GMT build is linked to that library. It is, however,
    beyond the scope of this manual to document the *PROJ.4* syntax (that is the syntax of the *proj*
@@ -28,4 +28,4 @@
    available to use. Another aspect that is not present in *PROJ.4*, because it's not a mapping library,
    is how to set the map scale or map dimension. We introduced the two extensions **+width=**\ *size* and
    **+scale=**\ *1:xxxx* that work exactly like the *map width* and *scale* in classical GMT. It is also allowed
-   to provide the scale (but NOT the width) by appending the string "/1:xxx" to the end of the projection parameters. 
+   to provide the scale (but NOT the width) by appending the string "/1:xxx" to the end of the projection parameters.

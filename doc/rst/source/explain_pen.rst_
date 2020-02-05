@@ -8,8 +8,8 @@ Specifying Pens
     comma-delimited list of *width*, *color* and *style*, each of which
     is optional. *width* can be indicated as a measure (in **p**\ oints
     (this is the default), **c**\ entimeters, or **i**\ nches) or as
-    **faint**, **default**, **thin**\ [**ner**\ \|\ **nest**],
-    **thick**\ [**er**\ \|\ **est**], **fat**\ [**ter**\ \|\ **test**],
+    **faint**, **default**, **thin**\ [**ner**\|\ **nest**],
+    **thick**\ [**er**\|\ **est**], **fat**\ [**ter**\|\ **test**],
     or **obese**. *color* specifies a gray shade or color (see
     `Specifying Color`_ above). *style* can be any of 'solid', 'dashed'
     'dotted', 'dashdot', or 'dotdash', or a custom combination of dashes '-' and

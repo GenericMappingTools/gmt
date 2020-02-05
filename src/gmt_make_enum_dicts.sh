@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #
-# Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script just makes the include snippet gmt_enum_dict.h
@@ -13,7 +13,7 @@ grep GMT_OPT_ /tmp/junk1.txt | awk '{print $1, substr($2,1,2)} '> /tmp/junk3.txt
 while read key value; do
 	printf "%s %d\n" $key "$value" >> /tmp/junk2.txt
 done < /tmp/junk3.txt
-n=`wc -l < /tmp/junk2.txt | awk '{printf "%d\n", $1}'`
+n=$(wc -l < /tmp/junk2.txt | awk '{printf "%d\n", $1}')
 COPY_YEAR=$(date +%Y)
 NOW=$(date +%d-%B-%Y)
 cat << EOF > gmt_enum_dict.h

@@ -14,7 +14,7 @@ Synopsis
 
 **gmt mgd77sniffer** *GEODAS-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
 [ |-C|\ *maxspd* ]
-[ |-D|\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*] ]
+[ |-D|\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [*r*] ]
 [ |-E| ]
 [ |-G|\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* or |-G|\ *fieldabbrev*,\ *grid* ]
 [ |-H| ]
@@ -23,10 +23,10 @@ Synopsis
 [ |-M| ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **d**\ \|\ **s**\ \|\ **t** ]
+[ |-S|\ **d**\|\ **s**\|\ **t** ]
 [ |-T|\ *gap* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x** ]
+[ |-W|\ **c**\|\ **g**\|\ **o**\|\ **s**\|\ **t**\|\ **v**\|\ **x** ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
@@ -48,7 +48,7 @@ optionally output (**-De** option) using a computer-parseable format
 (see E77 ERROR FORMAT description below). Default error thresholds are
 derived from histograms of all MGD77 geophysical data collected between
 1952 and January, 2006. Thresholds are adjustable with the **-L**
-option. Grids for comparison with cruise data may be downloaded via the web. 
+option. Grids for comparison with cruise data may be downloaded via the web.
 
 Required Arguments
 ------------------
@@ -74,11 +74,11 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*]
+**-D**\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [*r*]
     Suppress default warning output and only dump cruise data row-by-row
     such as values, gradients, grid-cruise differences, E77 error
     summaries for each record, re-created MGD77 records or sniffer
-    limits. Append r to include all records (default omits records where
+    limits. Append *r* to include all records (default omits records where
     navigation errors were detected).
 
     **-Dd** output differences between cruise and grid data. Requires
@@ -184,7 +184,7 @@ Optional Arguments
 .. _-H:
 
 **-H**
-    (with **-G**\ \|\ **g** only) disable (or force) decimation during
+    (with **-G**\|\ **g** only) disable (or force) decimation during
     RLS analysis of ship and gridded data. By default mgd77sniffer
     analyses both the full and decimated data sets then reports RLS
     statistics for the higher correlation regression.
@@ -253,7 +253,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **d**\ \|\ **s**\ \|\ **t**
+**-S**\ **d**\|\ **s**\|\ **t**
     Specify gradient type for along-track excessive slope checking.
     **-Sd** Calculate change in z values along track (dz). Output is
     given in geophysical units, e.g., mGal.
@@ -270,14 +270,14 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x**
+**-W**\ **c**\|\ **g**\|\ **o**\|\ **s**\|\ **t**\|\ **v**\|\ **x**
     Print out only certain warning types for verbose error messages.
     Comma delimit any combination of **c\|g\|o\|s\|t\|v\|x**: where
     (**c**) type code warnings, (**g**)radient out of range,
-    (**o**)ffsets from grid (requires **-G**\ \|\ **g**), (**s**)peed
+    (**o**)ffsets from grid (requires **-G**\|\ **g**), (**s**)peed
     out of range, (**t**)ime warnings, (**v**)alue out of range, (**x**)
     warning summaries. By default ALL warning messages are printed.Not
-    compatible with any **-D** options. 
+    compatible with any **-D** options.
 
 .. _-V:
 
@@ -285,7 +285,7 @@ Optional Arguments
 
 **-Z**
     Flag regression statistics that are outside the specified confidence
-    level. (i.e., **-Z**\ 5 flags coefficients m, b, rms, and r that fall outside 95%.) 
+    level. (i.e., **-Z**\ 5 flags coefficients m, b, rms, and r that fall outside 95%.)
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
