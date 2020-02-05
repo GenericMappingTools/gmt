@@ -147,7 +147,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *dist*\ [/*colat*][**+c**\|\ h**]
+**-G**\ *dist*\ [/*colat*][**+c**\|\ **h**]
     Generate mode. No input is read. Create (*r*, *s*, *p*) output
     points every *dist* units of *p*. See **-Q** option. Alternatively,
     append **/**\ *colat* for a small circle instead [Default is a
