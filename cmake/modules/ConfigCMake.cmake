@@ -17,7 +17,12 @@
 #
 include ("${CMAKE_SOURCE_DIR}/cmake/ConfigDefault.cmake")
 
-# A "ConfigUser.cmake" in the source tree overrides the defaults.
+# A "GMTSettings.cmake" in the source tree overrides the basic defaults.
+if (EXISTS ${GMT_SOURCE_DIR}/cmake/GMTSettings.cmake)
+	include (${GMT_SOURCE_DIR}/cmake/GMTSettings.cmake)
+endif ()
+
+# A "ConfigUser.cmake" in the source tree overrides the advanced defaults.
 if (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
 	include ("${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
 endif (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")

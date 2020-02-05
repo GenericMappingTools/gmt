@@ -35,14 +35,6 @@
 # OFF, or YES and NO for your booleans.
 
 ##
-## Section 0: Get basic parameters from the user's GMTSettings.cmake
-##
-
-if (EXISTS ${GMT_SOURCE_DIR}/cmake/GMTSettings.cmake)
-	include (${GMT_SOURCE_DIR}/cmake/GMTSettings.cmake)
-endif ()
-
-##
 ## Section 1: Installation paths
 ##
 # Set install name suffix used for directories and gmt executables
