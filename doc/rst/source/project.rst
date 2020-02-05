@@ -152,7 +152,7 @@ Optional Arguments
     points every *dist* units of *p*. See **-Q** option. Alternatively,
     append **/**\ *colat* for a small circle instead [Default is a
     colatitude of 90, i.e., a great circle]. If setting a pole with **-T**
-    and you want to small circle to go through *cx*/*cy*, append **+c** to
+    and you want the small circle to go through *cx*/*cy*, append **+c** to
     compute the required colatitude. Use **-C** and **-E** to
     generate a circle that goes through the center and end point. Note,
     in this case the center and end point cannot be farther apart than
