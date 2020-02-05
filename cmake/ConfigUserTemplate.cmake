@@ -17,10 +17,10 @@
 
 # 3a. Set full path to the GSHHG Shoreline Database directory [auto]:
 #set (GSHHG_ROOT "gshhg_path")
-# 3b. Copy GSHHG files to ${GMT_DATADIR}/coast [FALSE]:
-#set (COPY_GSHHG TRUE)
+# 3b. Copy GSHHG files to ${GMT_DATADIR}/coast [TRUE]?:
+#set (COPY_GSHHG FALSE)
 
 # 4a. Set full path to the DCW Digital Chart of the World for GMT directory [auto]:
 #set (DCW_ROOT "dcw-gmt_path")
-# 4b. Copy DCW files to ${GMT_DATADIR}/dcw [FALSE]:
-#set (COPY_DCW TRUE)
+# 4b. Copy DCW files to ${GMT_DATADIR}/dcw [TRUE]?:
+#set (COPY_DCW FALSE)
