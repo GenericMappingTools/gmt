@@ -327,8 +327,6 @@ For Windows users, a good example is:
 set (CMAKE_INSTALL_PREFIX "C:/programs/gmt6")
 set (GSHHG_ROOT <path to gshhg>)
 set (DCW_ROOT <path to dcw>)
-set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
-set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 ```
 
 See the additional comments in `cmake/ConfigUserTemplate.cmake` for more details.
