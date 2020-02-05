@@ -213,6 +213,12 @@ if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel)" AND NOT CMAKE_C_FLAGS MATCHES "-st
 	set (CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
 endif ()
 
+# Suppress MSVC deprecation and security warnings
+if (MSVC)
+    set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
+    set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
+endif (MSVC)
+
 # Handle the special developer option GMT_DOCS_DEPEND_ON_GMT
 # Normally this is ON.
 if (NOT DEFINED GMT_DOCS_DEPEND_ON_GMT)

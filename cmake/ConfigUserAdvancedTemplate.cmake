@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------------
 
 # INSTRUCTIONS TO USERS:
-# 
+#
 # 1. Copy 'GMTSettingsTemplate.cmake' to 'GMTSettings.cmake' and make any edits
 #    related to install directory, the whereabouts of GSHHS, DCW.
 # 2. Copy 'ConfigUserTemplate.cmake' to 'ConfigUser.cmake'.
@@ -254,10 +254,6 @@
 #
 # System specific tweaks
 #
-#if (WIN32)
-#set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
-#set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
-#endif(WIN32)
 
 # This is for GCC on Solaris to avoid "relocations remain against allocatable
 # but non-writable sections" problems:
