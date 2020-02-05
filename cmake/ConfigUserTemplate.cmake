@@ -27,23 +27,16 @@
 # OFF, or YES and NO for your booleans.
 
 ##
-## Section 1: Installation paths
+## Section 0: Get basic parameters from GMTSettings.cmake
 ##
 
-if (EXISTS ${GMT_SOURCE_DIR}/cmake/ConfigGMT.cmake)
-	include (${GMT_SOURCE_DIR}/cmake/ConfigGMT.cmake)
+if (EXISTS ${GMT_SOURCE_DIR}/cmake/GMTSettings.cmake)
+	include (${GMT_SOURCE_DIR}/cmake/GMTSettings.cmake)
 endif ()
 
-# ============================================================================
-# Basic setup begins here.  All settings are optional.  In most cases, setting
-# CMAKE_INSTALL_PREFIX should be all you need to do in order to build GMT with
-# reasonable defaults enabled.  Note: If you need to specify directory names
-# with spaces (e.g., on Windows) then you must put them in quotes.
-# ============================================================================
-
-# Installation path (usually defaults to /usr/local) [auto]:
-#set (CMAKE_INSTALL_PREFIX "prefix_path")
-
+##
+## Section 1: Installation paths
+##
 # Set install name suffix used for directories and gmt executables
 # [undefined]:
 #set (GMT_INSTALL_NAME_SUFFIX "suffix")
@@ -51,10 +44,6 @@ endif ()
 # Install into traditional directory structure. Disable to install a
 # distribution type directory structure (doc and share separated) [on]:
 #set (GMT_INSTALL_TRADITIONAL_FOLDERNAMES OFF)
-
-# Install convenience links for GMT modules. Disable to install only the main
-# gmt program and access modules as "gmt modulename options" [FALSE]:
-#set (GMT_INSTALL_MODULE_LINKS TRUE)
 
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
@@ -111,14 +100,8 @@ endif ()
 # Set URL to GMT Data server [auto]:
 #set (GMT_DATA_SERVER "data_server_url")
 
-# Set path to GSHHG Shoreline Database [auto]:
-#set (GSHHG_ROOT "gshhg_path")
-
 # Copy GSHHG files to ${GMT_DATADIR}/coast [FALSE]:
 #set (COPY_GSHHG TRUE)
-
-# Set path to DCW Digital Chart of the World for GMT [auto]:
-#set (DCW_ROOT "dcw-gmt_path")
 
 # Copy DCW files to ${GMT_DATADIR}/dcw [FALSE]:
 #set (COPY_DCW TRUE)
