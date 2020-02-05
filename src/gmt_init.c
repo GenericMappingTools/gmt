@@ -2970,22 +2970,22 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	/* Note: gmtinit_set_env cannot use GMT_Report because the verbose level is not yet set */
 
 	if ((this_c = getenv ("GMT6_SHAREDIR")) != NULL)	/* GMT6_SHAREDIR was set */
-		GMT->session.SHAREDIR = strdup (this_c);
+		GMT->session.SHAREDIR = gmt_strdup_noquote (this_c);
 	else if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL)	/* GMT5_SHAREDIR was set */
-		GMT->session.SHAREDIR = strdup (this_c);
+		GMT->session.SHAREDIR = gmt_strdup_noquote (this_c);
 	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL) /* GMT_SHAREDIR was set */
-		GMT->session.SHAREDIR = strdup (this_c);
+		GMT->session.SHAREDIR = gmt_strdup_noquote (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	else if (running_in_bindir_src)
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
-		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR_DEBUG);
+		GMT->session.SHAREDIR = gmt_strdup_noquote (GMT_SHARE_DIR_DEBUG);
 #endif
 	else if (!access (GMT_SHARE_DIR, F_OK|R_OK))		/* Found in hardcoded GMT_SHARE_DIR pointing to an existent directory */
-		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR);
+		GMT->session.SHAREDIR = gmt_strdup_noquote (GMT_SHARE_DIR);
 	else {
 		/* SHAREDIR still not found, make a smart guess based on runpath: */
 		if (gmt_guess_sharedir (path, GMT->init.runtime_bindir))
-			GMT->session.SHAREDIR = strdup (path);
+			GMT->session.SHAREDIR = gmt_strdup_noquote (path);
 		else {
 			/* Still not found */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not locate share directory for GMT.\n");
@@ -3000,12 +3000,12 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	/* Determine HOMEDIR (user home directory) */
 
 	if ((this_c = getenv ("HOME")) != NULL)				/* HOME was set */
-		GMT->session.HOMEDIR = strdup (this_c);
+		GMT->session.HOMEDIR = gmt_strdup_noquote (this_c);
 #ifdef WIN32
 	else if ((this_c = getenv ("USERPROFILE")) != NULL)	/* USERPROFILE was set */
-		GMT->session.HOMEDIR = strdup (this_c);
+		GMT->session.HOMEDIR = gmt_strdup_noquote (this_c);
 	else if ((this_c = getenv ("HOMEPATH")) != NULL)	/* HOMEPATH was set */
-		GMT->session.HOMEDIR = strdup (this_c);
+		GMT->session.HOMEDIR = gmt_strdup_noquote (this_c);
 #endif
 	else {
 		/* If HOME not set: use root directory instead (http://gmt.soest.hawaii.edu/issues/710) */
@@ -3023,10 +3023,10 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
 	if ((this_c = getenv ("GMT_USERDIR")) != NULL)		/* GMT_USERDIR was set */
-		GMT->session.USERDIR = strdup (this_c);
+		GMT->session.USERDIR = gmt_strdup_noquote (this_c);
 	else if (GMT->session.HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
 		snprintf (path, PATH_MAX, "%s/%s", GMT->session.HOMEDIR, ".gmt");
-		GMT->session.USERDIR = strdup (path);
+		GMT->session.USERDIR = gmt_strdup_noquote (path);
 		u = 1;
 	}
 	if (GMT->session.USERDIR) {
@@ -3043,10 +3043,10 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		}
 	}
 	if ((this_c = getenv ("GMT_CACHEDIR")) != NULL)		/* GMT_CACHEDIR was set */
-		GMT->session.CACHEDIR = strdup (this_c);
+		GMT->session.CACHEDIR = gmt_strdup_noquote (this_c);
 	else if (GMT->session.USERDIR != NULL) {	/* Use default path for GMT_CACHEDIR as GMT_USERDIR/cache */
 		snprintf (path, PATH_MAX, "%s/%s", GMT->session.USERDIR, "cache");
-		GMT->session.CACHEDIR = strdup (path);
+		GMT->session.CACHEDIR = gmt_strdup_noquote (path);
 		c = 1;
 	}
 	if (GMT->session.CACHEDIR) {
@@ -3064,13 +3064,13 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 
 	if ((this_c = getenv ("GMT_SESSIONDIR")) != NULL)		/* GMT_SESSIONDIR was set */
-		API->session_dir = strdup (this_c);
+		API->session_dir = gmt_strdup_noquote (this_c);
 	else if (GMT->session.USERDIR != NULL) {	/* Use GMT_USERDIR/sessions as default path for GMT_SESSIONDIR */
 		snprintf (path, PATH_MAX, "%s/%s", GMT->session.USERDIR, "sessions");
-		API->session_dir = strdup (path);
+		API->session_dir = gmt_strdup_noquote (path);
 	}
 	else {	/* Use the temp dir as the session dir */
-		API->session_dir = strdup (API->tmp_dir);
+		API->session_dir = gmt_strdup_noquote (API->tmp_dir);
 		GMT_Report (API, GMT_MSG_ERROR, "No GMT User directory set, GMT session dir selected: %s\n", API->session_dir);
 	}
 	if (API->session_dir) {
@@ -3139,7 +3139,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			GMT->session.TMPDIR = NULL;
 		}
 		else {
-			GMT->session.TMPDIR = strdup (this_c);
+			GMT->session.TMPDIR = gmt_strdup_noquote (this_c);
 			gmt_dos_path_fix (GMT->session.TMPDIR);
 			trim_off_any_slash_at_end (GMT->session.TMPDIR);
 		}

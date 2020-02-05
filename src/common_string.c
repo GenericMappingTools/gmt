@@ -26,6 +26,7 @@
  *  gmt_chop                Chops off any CR or LF at end of string
  *  gmt_chop_ext            Chops off the trailing .xxx (file extension)
  *  gmt_get_ext             Returns a pointer to the tailing .xxx (file extension)
+ *  gmt_strdup_noquote		Duplicates a string but removes any surrounding single or double quotes
  *  gmt_strstrip            Strip leading and trailing whitespace from string
  *  gmt_strlshift           Left shift a string by n characters
  *  gmt_strrepc             Replaces all occurrences of a char in the string
@@ -58,6 +59,17 @@
 #include "common_string.h"
 
 #define BUF_SIZE 4096
+
+char *gmt_strdup_noquote (const char *file) {
+	size_t last;
+	if (file == NULL) return NULL;	/* No string given */
+	if (file[0] == '\0') return strdup (file);	/* Return empty string */
+	last = strlen (file) - 1;	/* We know here that the string is at least 1 character long, so len is >= 0 */
+	if ((file[0] == '\'' || file[0] == '\"') && (file[last] == '\'' || file[last] == '\"'))	/* Quoted file name */
+		return (strndup (&file[1], last-1));
+	else
+		return (strdup (file));
+}
 
 char *gmt_chop_ext (char *string) {
 	/* Chops off the filename extension (e.g., .ps) in the string by replacing the last

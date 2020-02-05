@@ -60,6 +60,7 @@ EXTERN_MSC void gmt_strlshift (char *string, size_t n);
 EXTERN_MSC void gmt_strrepc (char *string, int c, int r);
 EXTERN_MSC char *gmt_strrep(const char *s1, const char *s2, const char *s3);
 EXTERN_MSC size_t gmt_strlcmp (char *str1, char *str2);
+EXTERN_MSC char *gmt_strdup_noquote(const char *string);
 
 #ifdef WIN32
 EXTERN_MSC void gmt_dos_path_fix (char *dir);
