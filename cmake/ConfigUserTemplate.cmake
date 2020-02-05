@@ -15,9 +15,17 @@
 # Contact info: www.generic-mapping-tools.org
 # ----------------------------------------------------------------------------
 
-# Use this file to override variables in 'ConfigDefault.cmake' on a per-user
-# basis.  First copy 'ConfigUserTemplate.cmake' to 'ConfigUser.cmake', then
-# edit 'ConfigUser.cmake'.  'ConfigUser.cmake' is not version controlled
+# INSTRUCTIONS TO USERS:
+# 
+# 1. Copy 'GMTSettingsTemplate.cmake' to 'GMTSettings.cmake' and make any edits
+#    related to install directory, the whereabouts of GSHHS, DCW.
+# 2. Copy 'ConfigUserTemplate.cmake' to 'ConfigUser.cmake'.
+# 3. If you are an advanced user who wishes to tinker with the more advanced
+#    settings, then explore and make changes to your ConfigUser.cmake file
+#    to override variables in 'ConfigDefault.cmake' on a per-user basis.
+# 4. Follow the rest of the installation instructions in BUILDING.md.
+#
+# 'ConfigUser.cmake' and 'GMTSettings.cmake' are not version controlled
 # (currently listed in .gitignore).
 #
 # Note: CMake considers an empty string, "FALSE", "OFF", "NO", or any string
@@ -27,7 +35,7 @@
 # OFF, or YES and NO for your booleans.
 
 ##
-## Section 0: Get basic parameters from GMTSettings.cmake
+## Section 0: Get basic parameters from the user's GMTSettings.cmake
 ##
 
 if (EXISTS ${GMT_SOURCE_DIR}/cmake/GMTSettings.cmake)

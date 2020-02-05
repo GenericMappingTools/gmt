@@ -302,19 +302,20 @@ controlled by two configuration files in the `cmake` directory:
     variables and set defaults for everyone. **You should NOT edit this file.**
 -   *ConfigUser.cmake* is not version controlled and used to override defaults
     on a per-user basis.
-    There is a template file, *ConfigUserTemplate.cmake*, that you should copy
-    to *ConfigUser.cmake* and make your changes therein.
+    There is a template file, *GMTSettingsTemplate.cmake*, that you may copy
+    to *GMTSettings.cmake* and edit to set basic installation parameters.
+    There is another template file, *ConfigUserTemplate.cmake*, that you must copy
+    to *ConfigUser.cmake* and optionally perform more advanced tweaking.
 
-In the source tree, copy the template configuration file
-`cmake/ConfigUserTemplate.cmake` to `cmake/ConfigUser.cmake`,
+In the source tree, copy the template settings file
+`cmake/GMTSettingsTemplate.cmake` to `cmake/GMTSettings.cmake`,
 and edit the file according to your demands. This is an example:
 
 ```
 set (CMAKE_INSTALL_PREFIX /opt/gmt)
 set (GSHHG_ROOT /path/to/gshhg)
 set (DCW_ROOT /path/to/dcw)
-set (COPY_GSHHG true)
-set (COPY_DCW true)
+
 ```
 
 For Windows users, a good example is:
@@ -323,8 +324,6 @@ For Windows users, a good example is:
 set (CMAKE_INSTALL_PREFIX "C:/programs/gmt6")
 set (GSHHG_ROOT <path to gshhg>)
 set (DCW_ROOT <path to dcw>)
-set (COPY_GSHHG true)
-set (COPY_DCW true)
 set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
 ```
