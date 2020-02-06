@@ -642,7 +642,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 		/* Do the long to short option substitution */
 
 		e_code = '=';	/* When we remove the '=' we will replace it, but in multi-sections the code may change after the first section */
-		n_sections = ((kw[k].separator) ? gmtlib_count_char (API->GMT, orig, kw[k].separator) : 0) + 1;
+		n_sections = ((kw[k].separator) ? gmt_count_char (API->GMT, orig, kw[k].separator) : 0) + 1;
 		opt->option = kw[k].short_option;	/* Update the option character first */
 		sep[0] = kw[k].separator;			/* Need a string with separator to strcat below */
 		new_arg[0] = '\0';					/* Initialize short option arguments */
@@ -2016,7 +2016,7 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 		int n = 0, n_slashes;
 		char txt_j[GMT_LEN256] = {""}, txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""};
 
-		n_slashes = gmtlib_count_char (GMT, item, '/');	/* Count slashes to detect [<just>]/<dx>/<dy>/ presence */
+		n_slashes = gmt_count_char (GMT, item, '/');	/* Count slashes to detect [<just>]/<dx>/<dy>/ presence */
 
 		if (n_slashes >= 2) {	/* Probably gave -U[<just>]/<dx>/<dy>[/<string>] */
 			if (item[0] == '/') { /* No justification given */
@@ -4424,7 +4424,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		}
 	}
 
-	n_slashes = gmtlib_count_char (GMT, args, '/');	/* Count slashes to distinguis args */
+	n_slashes = gmt_count_char (GMT, args, '/');	/* Count slashes to distinguis args */
 
 	/* Differentiate between general perspective and orthographic projection based on number of slashes */
 	if (project == GMT_GENPER || project == GMT_ORTHO) {
@@ -7848,7 +7848,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows> or -R[g|d]w/e/s/n[/z0/z1][r] */
 	length = strlen (item) - 1;
-	n_slash = gmtlib_count_char (GMT, item, '/');
+	n_slash = gmt_count_char (GMT, item, '/');
 	got_r = (strstr (item, "+r") != NULL);
 	got_country = (got_r || (strstr (item, "+R") != NULL));	/* May have given DCW (true of +R, maybe if +r since the latter also means oblique) */
 
@@ -12903,7 +12903,7 @@ GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	if (!strncmp (module, "grdspotter", 10U)) return true;
 	if (!strncmp (module, "polespotter", 11U)) return true;
 	if ((opt = GMT_Find_Option (GMT->parent, 'R', options)) == NULL) return false;	/* Should not happen but lets just say Cartesian for now */
-	n_slashes = gmtlib_count_char (GMT, opt->arg, '/');	/* Distinguies -Rw/e/s/n from other things */
+	n_slashes = gmt_count_char (GMT, opt->arg, '/');	/* Distinguies -Rw/e/s/n from other things */
 	/* Check if -R[=]<code>[,<code>,...][+r|R] which means use country name etc to set region; clearly geographical */
 	if (n_slashes == 0 && ((isupper ((int)opt->arg[0]) && isupper ((int)opt->arg[1])) || opt->arg[0] == '=' || strchr (opt->arg, ',') || strstr (opt->arg, "+r") || strstr (opt->arg, "+R"))) return true;
 	if (!gmt_access (GMT, opt->arg, F_OK)) {	/* Gave a grid file */
@@ -13484,7 +13484,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (GMT->init.history[id]) {	/* There is history for -R */
 				if ((opt = GMT_Make_Option (API, 'R', "")) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-				n_slashes = gmtlib_count_char (GMT, GMT->init.history[id], '/');	/* May need to know if it is 3 (2-D) or 5 (3-D) later regarding -p -JZ */
+				n_slashes = gmt_count_char (GMT, GMT->init.history[id], '/');	/* May need to know if it is 3 (2-D) or 5 (3-D) later regarding -p -JZ */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available.\n");
 			}
 			else if (strchr (required, 'g') || strchr (required, 'd')) {	/* No history but can examine input data sets */
@@ -13519,7 +13519,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 		/* Check if -p was given and if we need to add -Jz|Z from history */
-		if (options && (opt = GMT_Find_Option (API, 'p', *options)) && (opt_R = GMT_Find_Option (API, 'R', *options)) && (n_slashes == 5 || gmtlib_count_char (GMT, opt_R->arg, '/') == 5)) {	/* 3-D perspective plotting module with -Rx0/x1/y0/y1/z0/z1 */
+		if (options && (opt = GMT_Find_Option (API, 'p', *options)) && (opt_R = GMT_Find_Option (API, 'R', *options)) && (n_slashes == 5 || gmt_count_char (GMT, opt_R->arg, '/') == 5)) {	/* 3-D perspective plotting module with -Rx0/x1/y0/y1/z0/z1 */
 			bool got_JZ = false;
 			char str[3] = {"J"};
 			/* First check if -Jz|Z was not given */
@@ -17112,7 +17112,7 @@ bool gmt_option_set (struct GMT_CTRL *GMT, bool *active, unsigned int *errors) {
 	}
 }
 
-unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it) {
+unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it) {
 	unsigned int i, n;
 	gmt_M_unused (GMT);
 	for (i = n = 0; txt[i]; i++) if (txt[i] == it) n++;

@@ -218,10 +218,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force projected values to be in actual distances [Default uses the given plot scale].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot),\n\t   i (inch), c (cm), or p (points) [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Calculate distances to <lon0>/<lat0> OR cumulative distances along track (if point not given).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is spherical great-circle calculations].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[+u<unit>]+a to get accumulated distances along track [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[+u<unit>]+i to get distance increments rather than accumulated distances.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Spherical calculations method determined by -j [Default is great-circle calculations].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[+u<unit>]+a for accumulated distances along track [Default if <lon0>/<lat0> not given].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[+u<unit>]+i for distance increments [Default if <lon0>/<lat0> given].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[+u<unit>]+v to obtain variable <lon0> <lat0> points from input columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot,\n\t   arc (s)econd, or (c)artesian [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
@@ -321,6 +320,19 @@ GMT_LOCAL unsigned int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct M
 		Ctrl->L.file[slash] = '\0';
 	}
 	return 0;
+}
+
+GMT_LOCAL bool is_old_G (struct GMT_CTRL *GMT, char *arg) {
+	/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
+	size_t len = strlen (arg);
+	unsigned int n_slashes;
+	if (len == 0) return false;
+	if (arg[0] == '/') return true;
+	if (strchr ("-+", arg[len-1])) return true;
+	if (strstr (arg, "+a") || strstr (arg, "+i") || strstr (arg, "+u") || strstr (arg, "+v")) return false;
+	n_slashes = gmt_count_char (GMT, arg, '/');	/* Count slashes */
+	if (n_slashes == 3) return true;
+	return false;
 }
 
 GMT_LOCAL unsigned int old_G_parse (struct GMT_CTRL *GMT, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
@@ -481,14 +493,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'G':	/* Syntax. Old: -G[<lon0/lat0>][/[+|-]unit][+|-]  New: -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */
 				Ctrl->G.active = true;
-				for (n_slash = k = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
-				if (opt->arg[0] && (n_slash == 2 || !(strstr (opt->arg, "+a") || strstr (opt->arg, "+i") || strstr (opt->arg, "+u") || strstr (opt->arg, "+v"))))
+				if (is_old_G (GMT, opt->arg))
 					n_errors += old_G_parse (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
 				else {	/* -G[<lon0/lat0>][+i][+a][+u[+|-]<unit>][+v] */
 					/* Note [+|-] is now deprecated in GMT 6; use -je instead */
 					/* Watch out for +u+<unit> where the + in front of unit indicates ellipsoidal calculations.  This unfortunate syntax
 					 * is easily seen as another modifier, e.g., +e, which will fail.  We temporarily replace that + sign by the * sign
 					 * to avoid parsing problems. */
+					n_slash = gmt_count_char (GMT, opt->arg, '/');
 					if ((q = strstr (opt->arg, "+u")) && q[2] == '+') q[2] = '*';
 					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv")) n_errors++;
 					if ((p = gmt_first_modifier (GMT, opt->arg, "aiuv")) == NULL) {	/* If just -G given then we get here; default to cumulate distances in meters */
