@@ -3,7 +3,7 @@ build
 ?build-mp
 .*~
 cmake/ConfigUser.cmake
-cmake/GMTSettings.cmake
+cmake/ConfigUserAdvanced.cmake
 share/coast
 share/dcw
 **/gmt.history
