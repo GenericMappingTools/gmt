@@ -27,7 +27,6 @@
  */
 
 #include "gmt_dev.h"
-EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
 
 #define THIS_MODULE_CLASSIC_NAME	"grdfft"
 #define THIS_MODULE_MODERN_NAME	"grdfft"
@@ -725,7 +724,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 			case 'F':	/* Filter */
 				Ctrl->F.active = true;
 				if (!(f_info->set_already)) {
-					filter_type = gmtlib_count_char (GMT, opt->arg, '/');
+					filter_type = gmt_count_char (GMT, opt->arg, '/');
 					f_info->kind = GRDFFT_FILTER_EXP + (filter_type - 1);
 					f_info->set_already = true;
 					add_operation (GMT, Ctrl, f_info->kind, 0, NULL);
