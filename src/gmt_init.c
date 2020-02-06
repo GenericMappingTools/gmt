@@ -612,7 +612,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 	bool modified = false, got_directive = false, got_modifier = false;
 
 	if (options == NULL) return;	/* Nothing to process */
-	
+
 	#if !defined(USE_MODULE_LONG_OPTIONS)
 	this_module_kw = NULL;	/* Debugging: Not testing the module long-options */
 	#endif
@@ -13149,6 +13149,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	#if defined(USE_COMMON_LONG_OPTIONS)
 	gmtinit_kw_replace (API, this_module_kw, options);	/* Replace --long-option syntax with equivalent -onechar options */
+	#else
+	gmt_M_unused(this_module_kw);
 	#endif
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
