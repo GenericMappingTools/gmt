@@ -534,7 +534,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					if (q) q[2] = '+';
 					p[0] = '\0';	/* Chop off all modifiers */
 					/* Here, opt->arg is -G[<lon0/lat0>] */
-					if (opt->arg[0]) /* Just gave -G, should mean -G+ue+a */
+					if (opt->arg[0] == '\0') /* Just gave -G, should mean -G+ue+a */
 						Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
 					else if (n_slash == 1) {	/* Got -G<lon0/lat0> so we were given a fixed point */
 						Ctrl->G.mode |= GMT_MP_FIXED_POINT;
