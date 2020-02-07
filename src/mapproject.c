@@ -222,7 +222,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[+u<unit>]+a for accumulated distances along track [Default if <lon0>/<lat0> not given].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[+u<unit>]+i for distance increments [Default if <lon0>/<lat0> given].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[+u<unit>]+v to obtain distance increments via variable <lon0> <lat0> points from input columns 3-4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a to force accumulated distsances, +i to force incremental distances, or both to get both distances.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a to force accumulated distances, +i to force incremental distances, or both to get both distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot,\n\t   arc (s)econd, or (c)artesian [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after projecting the input coordinates to plot coordinates (requires -R, -J).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inverse mode, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
@@ -1167,7 +1167,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	along_track = (Ctrl->G.mode && ((Ctrl->G.mode & GMT_MP_CUMUL_DIST) || (Ctrl->G.mode & GMT_MP_INCR_DIST)));
-	//if ((Ctrl->G.mode & GMT_MP_PAIR_DIST) && (Ctrl->G.mode & GMT_MP_INCR_DIST)) along_track = false;	/* Not along track (i.e., per record) when doing it per record */
 	n = n_read_in_seg = 0;
 	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
 	Out->data = out;
