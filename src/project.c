@@ -58,6 +58,7 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 	struct G {	/* -G<inc>[/<colat>][+h] */
 		bool active;
 		bool header;
+		bool through_C;
 		unsigned int mode;
 		double inc;
 		double colat;
@@ -318,7 +319,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+h]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+c|h]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>/<minor>/<azimuth>[+e]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -355,7 +356,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -G is set, -F is not available and output defaults to rsp.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /<colat> for a small circle path through C and E (requires -C -E) [90].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /<colat> for a small circle path through C and E (requires -C -E),\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or, if given -T and -C, append +c to compute and use <colat> of C [90].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Finally, append +h if you want information about the pole in a segment header [no header].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Check the Length along the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
@@ -385,9 +387,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, j, k;
+	unsigned int n_errors = 0, j, k, pos;
 	size_t len;
-	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, *ce = NULL, *ch = NULL;
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *ce = NULL, *ch = NULL, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -457,15 +459,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':
 				Ctrl->G.active = true;
-				if ((ch = strstr (opt->arg, "+h"))) {
-					Ctrl->G.header = true;
-					ch[0] = '\0';	/* Chop off +h */
-				}
 				len = strlen (opt->arg) - 1;
 				if (len > 0 && opt->arg[len] == '+') {	/* Obsolete way to say +h */
 					Ctrl->G.header = true;	/* Wish to place a segment header on output */
 					opt->arg[len] = 0;	/* Temporarily remove the trailing + sign */
 					ch = &opt->arg[len];
+				}
+				if ((c = gmt_first_modifier (GMT, opt->arg, "ch"))) {	/* Process any modifiers */
+					pos = 0;	/* Reset to start of new word */
+					while (gmt_getmodopt (GMT, 'G', c, "ch", &pos, p, &n_errors) && n_errors == 0) {
+						switch (p[0]) {
+							case 'c': Ctrl->G.through_C = true; break;	/* Compute required colatitude for small ircle to go through C */
+							case 'h': Ctrl->G.header = true; break;	/* Output segment header */
+							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+						}
+					}
+					c[0] = '\0';	/* Hide modifiers */
 				}
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {	/* Got dist/colat */
 					Ctrl->G.mode = 1;
@@ -474,7 +483,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				}
 				else
 					Ctrl->G.inc = atof (opt->arg);
-				if (ch) ch[0] = '+';	/* Restore the plus-sign */
+				if (ch) ch[0] = '+';	/* Restore the obsolete plus-sign */
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'L':
 				Ctrl->L.active = true;
@@ -550,6 +560,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	                                 "Option -N: Cannot be used with -fg\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode,
 	                                 "Option -N: Cannot be used with -G<dist>/<colat>\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.through_C && !Ctrl->C.active,
+	                                 "Option -G: Modifier +c requires both -C and -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.through_C && !Ctrl->T.active,
+	                                 "Option -G: Modifier +c requires both -C and -T\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -748,6 +762,12 @@ int GMT_project (void *V_API, int mode, void *args) {
 		if (Ctrl->T.active) {	/* Gave the pole */
 			sin_lat_to_pole = oblique_setup (GMT, Ctrl->T.y, Ctrl->T.x, P.pole, &Ctrl->C.y, &Ctrl->C.x, center, Ctrl->C.active, Ctrl->G.active);
 			gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
+			if (Ctrl->G.through_C) {	/* Must compute the colatitude from P to C and use that */
+				gmt_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, x, true);	/* Cartesian vector to C */
+				gmt_geo_to_cart (GMT, Ctrl->T.y, Ctrl->T.x, xt, true);	/* Cartesian vector to T */
+				Ctrl->G.colat = d_acosd (gmt_dot3v (GMT, x, xt));	/* Compute the angle between C & T which equals the small circle's colatitude */
+				GMT_Report (API, GMT_MSG_INFORMATION, "Colatitude of point C w.r.t. pole P is %g.\n", Ctrl->G.colat);
+			}
 		}
 		else {	/* Using -C, -E or -A */
 			double s_hi, s_lo, s_mid, radius, m[3], ap[3], bp[3];

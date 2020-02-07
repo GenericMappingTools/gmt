@@ -300,8 +300,8 @@ struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	}
 	fclose (fp);
 	if (k != *n) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "File %s said it has %d records but only found %d - download error???\n", file, *n, k);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "File %s will be deleted.  Please try again\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s said it has %d records but only found %d - download error???\n", file, *n, k);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s will be deleted.  Please try again\n", file);
 		*n = 0;	/* Flag that excrement hit the fan */
 	}
 	return (L);
@@ -415,7 +415,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 					else {	/* Do size check */
 						struct stat buf;
 						if (stat (url, &buf)) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of file %s.\n", url);
+							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not determine size of file %s.\n", url);
 							continue;
 						}
 						if (N[n].size != (size_t)buf.st_size) {	/* Downloaded file size differ - need to re-download */
@@ -547,7 +547,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
 	snprintf (serverdir, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
 	if ((is_data || is_srtm) && access (serverdir, R_OK) && gmt_mkdir (serverdir))
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", serverdir);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to create GMT data directory : %s\n", serverdir);
 	if (gmt_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
 		from = (res == 1) ? 2 : 3;
 		to = GMT_CACHE_DIR;
@@ -555,7 +555,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		snprintf (srtmdir, PATH_MAX, "%s/srtm%d", serverdir, res);
 		/* Check if srtm1|3 subdir exist - if not create it */
 		if (access (srtmdir, R_OK) && gmt_mkdir (srtmdir))
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", srtmdir);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to create GMT data directory : %s\n", srtmdir);
 	}
 	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {
 		if (mode != GMT_LOCAL_DIR)
@@ -577,7 +577,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	if ((fsize = skip_large_files (GMT, url, GMT->current.setting.url_size_limit))) {
 		char *S = strdup (gmt_memory_use (fsize, 3));
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_SERVER_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_SERVER_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
 		gmt_M_free (GMT, file);
 		gmt_M_str_free (S);
 		return 0;
@@ -663,13 +663,13 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
 			if (urlfile.fp != NULL) {
 				fclose (urlfile.fp);
 				urlfile.fp = NULL;
 			}
 			if (!access (local_path, F_OK) && gmt_remove_file (GMT, local_path))	/* Failed to clean up as well */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not even remove file %s\n", local_path);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not even remove file %s\n", local_path);
 		}
 		else if (curl_err == CURLE_COULDNT_CONNECT)
 			GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
@@ -697,7 +697,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		}
 		gmt_M_free (GMT, cmd);
 		if (gmt_remove_file (GMT, local_path))
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not even remove file %s\n", local_path);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not even remove file %s\n", local_path);
 		strcpy (local_path, srtm_local);
 		gmt_M_str_free (srtm_local);
 	}
@@ -705,7 +705,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Say a few things about the file we got */
 		struct stat buf;
 		if (stat (local_path, &buf))
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of downloaded file %s\n", &file_name[pos]);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not determine size of downloaded file %s\n", &file_name[pos]);
 		else
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
 	}
@@ -913,7 +913,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	}
 	fclose (fp);
 	if (GMT_Destroy_Data (API, &SRTM) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_srtmlist: Unable to destroy list of available SRTM tiles.\n");
+		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_srtmlist: Unable to destroy list of available SRTM tiles.\n");
 	}
 	if (n_tiles == 0)	/* No tiles inside region */
 		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_srtmlist: No SRTM tiles available for your region.\n");

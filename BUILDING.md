@@ -296,37 +296,36 @@ Extract the files and put them in a separate directory (need not be where you ev
 
 GMT can be built on any platform supported by CMake. CMake is a cross-platform,
 open-source system for managing the build process. The building process is
-controlled by two configuration files in the `cmake` directory:
+controlled by three configuration files in the `cmake` directory:
 
 -   *ConfigDefault.cmake* is version controlled and used to add new default
     variables and set defaults for everyone. **You should NOT edit this file.**
--   *ConfigUser.cmake* is not version controlled and used to override defaults
-    on a per-user basis.
-    There is a template file, *ConfigUserTemplate.cmake*, that you should copy
-    to *ConfigUser.cmake* and make your changes therein.
+-   *ConfigUser.cmake* is not version controlled and is used to override basic
+    default settings on a per-user basis.
+-   *ConfigUserAdvanced.cmake* is not version controlled and is used to override
+    more advanced default settings on a per-user basis.
 
-In the source tree, copy the template configuration file
-`cmake/ConfigUserTemplate.cmake` to `cmake/ConfigUser.cmake`,
+GMT provides two template files, *ConfigUserTemplate.cmake* and *ConfigUserAdvancedTemplate.cmake*.
+You may copy *ConfigUserTemplate.cmake* to *ConfigUser.cmake* and edit to change
+basic installation parameters. For more advanced parameters, you may copy
+*ConfigUserAdvancedTemplate.cmake* to *ConfigUserAdvanced.cmake* and edit.
+
+In the source tree, copy the template settings file
+`cmake/ConfigUserTemplate.cmake` to`cmake/ConfigUser.cmake`,
 and edit the file according to your demands. This is an example:
 
 ```
-set (CMAKE_INSTALL_PREFIX /opt/gmt)
-set (GSHHG_ROOT /path/to/gshhg)
-set (DCW_ROOT /path/to/dcw)
-set (COPY_GSHHG true)
-set (COPY_DCW true)
+set (CMAKE_INSTALL_PREFIX "/opt/gmt")
+set (GSHHG_ROOT "/path/to/gshhg")
+set (DCW_ROOT "/path/to/dcw")
 ```
 
 For Windows users, a good example is:
 
 ```
 set (CMAKE_INSTALL_PREFIX "C:/programs/gmt6")
-set (GSHHG_ROOT <path to gshhg>)
-set (DCW_ROOT <path to dcw>)
-set (COPY_GSHHG true)
-set (COPY_DCW true)
-set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
-set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
+set (GSHHG_ROOT "C:/path/to/gshhg")
+set (DCW_ROOT "C:/path/to/dcw")
 ```
 
 See the additional comments in `cmake/ConfigUserTemplate.cmake` for more details.

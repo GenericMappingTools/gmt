@@ -6111,11 +6111,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		/* Rely on GDAL to tell us the proj4 string of this EPSG code */
 		hSRS = OSRNewSpatialReference(NULL);
 		if ((eErr = OSRImportFromEPSG(hSRS, EPSGID)) != OGRERR_NONE) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Did not get the SRS from input EPSG  %d\n", EPSGID);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Did not get the SRS from input EPSG  %d\n", EPSGID);
 			return (pStrOut);
 		}
 		if ((eErr = OSRExportToProj4(hSRS, &pszResult)) != OGRERR_NONE) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to convert the SRS to proj4 syntax\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Failed to convert the SRS to proj4 syntax\n");
 			return (pStrOut);
 		}
 		snprintf(szProj4, GMT_LEN256-1, "%s", pszResult);
@@ -6221,7 +6221,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			opt_J[1] = 'A';
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "In projection %s proj parameters\n", prjcode);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "In projection %s proj parameters\n", prjcode);
 			return (pStrOut);
 		}
 	}
@@ -6246,11 +6246,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			}
 		}
 		if (zone == 100) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "UTM proj selected but no info about utm zone.\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "UTM proj selected but no info about utm zone.\n");
 			return (pStrOut);
 		}
 		else if (zone > 64) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "UTM proj The lon_0 argument was not correctly parsed.\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "UTM proj The lon_0 argument was not correctly parsed.\n");
 		}
 		else {
 			char t[4];
@@ -6288,7 +6288,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		if (!lat_0[0]) strcat(lat_0, "0");
 		if (strcmp(prjcode, "poly")) {			/* i.e. if NOT Poly */
 			if (!lat_1[0] || !lat_2[0]) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Projection %s needs the lat_1 & lat_2 proj parameters\n", prjcode);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Projection %s needs the lat_1 & lat_2 proj parameters\n", prjcode);
 				return (pStrOut);
 			}
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");	strcat(opt_J, lat_0);	strcat (opt_J, "/");
@@ -7548,9 +7548,9 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 
 	if (!K_active) {
 		if (GMT->current.ps.clip_level > 0)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "%d external clip operations were not terminated!\n", GMT->current.ps.clip_level);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d external clip operations were not terminated!\n", GMT->current.ps.clip_level);
 		if (GMT->current.ps.clip_level < 0)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "%d extra terminations of external clip operations!\n", -GMT->current.ps.clip_level);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d extra terminations of external clip operations!\n", -GMT->current.ps.clip_level);
 		GMT->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in gmt.history */
 	}
 	for (i = 0; i < 3; i++) gmt_M_str_free (GMT->current.map.frame.axis[i].file_custom);
@@ -7561,7 +7561,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
 		if (stat (GMT->current.ps.filename, &buf))
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of file %s\n", GMT->current.ps.filename);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not determine size of file %s\n", GMT->current.ps.filename);
 		else
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Current size of half-baked PS file %s = %" PRIuS ".\n", GMT->current.ps.filename, buf.st_size);
 		GMT->current.ps.fp = NULL;
@@ -7588,7 +7588,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		P->mode = PSL->internal.pmode;  /* Mode of plot (GMT_PS_{HEADER,TRAILER,COMPLETE}) */
 		PH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_TEXT, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 		}
 		/* coverity[leaked_storage] */	/* We can't free P because it was written into a 'memory file' */
 	}
