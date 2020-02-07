@@ -217,7 +217,7 @@ GMT_LOCAL int vector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_
 				break;
 			}
 			if (its == 30) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in gmt_svdcmp: No convergence in 30 iterations\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Error in gmt_svdcmp: No convergence in 30 iterations\n");
 #ifndef _OPENMP
 				return (GMT_RUNTIME_ERROR);
 #endif
@@ -829,7 +829,7 @@ int gmt_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_jacobi failed to converge in %d sweeps\n", nsweeps);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_jacobi failed to converge in %d sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);
@@ -1495,12 +1495,12 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		/* Follow great circle */
 		else if ((theta = d_acosd (gmt_dot3v (GMT, a, b))) == 180.0) {	/* trouble, no unique great circle */
 			if (gmt_M_is_spherical (GMT) || ((lat[i] + lat[i-1]) == 0.0)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Two points in input list are antipodal - great circle resampling is not unique!\n");
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Fix input data or use project -A to generate the desired great circle by providing an azimuth.\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Two points in input list are antipodal - great circle resampling is not unique!\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Fix input data or use project -A to generate the desired great circle by providing an azimuth.\n");
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Two points in input list are antipodal - great circle resampling is not unique!\n");
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "There are two possible geodesics but GMT does not currently calculate geodesics.\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Two points in input list are antipodal - great circle resampling is not unique!\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "There are two possible geodesics but GMT does not currently calculate geodesics.\n");
 			}
 			return 0;
 		}
