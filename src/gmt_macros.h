@@ -168,7 +168,8 @@
 
 /*! Macros for conversion of RGB in 0-1 range to 0-255 range */
 #define gmt_M_s255(s) ((s) * 255.0)
-#define gmt_M_t255(t) gmt_M_q(gmt_M_s255(t[0])),gmt_M_q(gmt_M_s255(t[1])),gmt_M_q(gmt_M_s255(t[2]))
+#define gmt_M_t255(t,k) gmt_M_q(gmt_M_s255(t[k]))
+
 #define gmt_M_u255(s) ((unsigned char)rint(gmt_M_s255(s)))
 
 /*! Macros for conversion of RGB in 0-255 range to 0-1 range */
