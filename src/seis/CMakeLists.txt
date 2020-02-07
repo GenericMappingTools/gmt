@@ -15,7 +15,7 @@
 # Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
-# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+# To modify the cmake process, edit your cmake/ConfigUser.cmake and cmake/ConfigUserAdvanced.cmake files
 #
 
 set (SUPPL_NAME seis)

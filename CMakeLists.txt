@@ -14,9 +14,14 @@
 #	Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
-# To configure the cmake process, first copy the configuration template
-# 'cmake/ConfigUserTemplate.cmake' to 'cmake/ConfigUser.cmake',
-# then edit 'cmake/ConfigUser.cmake'.
+# To configure the cmake process:
+#
+# 1. copy the configuration template 'cmake/ConfigUserTemplate.cmake'
+#    to 'cmake/ConfigUser.cmake', then edit 'cmake/ConfigUser.cmake' to
+#    override basic default settings on a per-user basis;
+# 2. copy the configuration template 'cmake/ConfigUserAdvancedTemplate.cmake'
+#    to 'cmake/ConfigUserAdvanced.cmake', then edit 'cmake/ConfigUserAdvanced.cmake' to
+#    override advanced default settings on a per-user basis.
 #
 # To build out-of-source do (example):
 #
