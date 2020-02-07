@@ -24,6 +24,7 @@
 
 GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *filename);
 
+/* ------------------------------------------------------------------------------------------------------------ */
 GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc" "dd" */
 	/* Based on GMT_Create_Options() */
@@ -31,9 +32,15 @@ GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	int  n_args = 0;
 	bool quoted;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	char p[GMT_BUFSIZ] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
+	char p[GMT_LEN512] = {""}, *txt_in;	/* Passed a single text string */
 	char **args = NULL;
+	
+	if (!in)		/* If empty, return empty */
+		return NULL;
+
+	txt_in = strdup (in);
 	args = gmt_M_memory (GMT, NULL, n_alloc, char *);
+
 	/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 	 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
 	 * space, and then replace all ASCII 31 with space at the end (we do the same for tab using ASCII 29 GS (group separator) */
@@ -68,12 +75,52 @@ GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	return args;
 }
 
+/* ------------------------------------------------------------------------------------------------------------ */
+GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, struct GMT_GRID *Grid, char *fname) {
+	/* Save a grid using the GMT machinery */
+	unsigned char *tmp = NULL;
+	int   nXSize, nYSize, nPixelSize, gdal_code;
+	GDALRasterBandH	hBand;
+
+	hBand = GDALGetRasterBand(hDstDS, 1);
+	nPixelSize = GDALGetDataTypeSize(GDALGetRasterDataType(hBand)) / 8;	/* /8 because return value is in BITS */
+	nXSize = GDALGetRasterXSize(hDstDS);
+	nYSize = GDALGetRasterYSize(hDstDS);
+
+	if ((tmp = calloc((size_t)nYSize * (size_t)nXSize, nPixelSize)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtgdal: failure to allocate enough memory\n");
+		return -1;
+	}
+
+	if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, tmp,
+	                              nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
+	}
+	gmt_grd_flip_vertical (tmp, (unsigned)nXSize, (unsigned)nYSize, 0, nPixelSize);
+	Grid->data = (float *)tmp;
+	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
+						NULL, fname, Grid) != GMT_NOERROR)
+		return GMT->parent->error;
+	return 0;
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
+char *out_name(struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
+	/* Pick the right output name when saving grids depending on if that writting is done with GMT or GDAL */
+	if (GDLL->M.write_gdal)			/* Write grid with the GDAL machinery */
+		return GDLL->fname_out;
+	else
+#ifdef WIN32
+		return "NUL";
+#else
+		return "/dev/null";
+#endif
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_info (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
-	char	*info = NULL, **args;
 	GDALDatasetH	hDataset;
 	GDALInfoOptions *psOptions;
-
-	/* Open gdal - */
 
 	GDALAllRegister();
 
@@ -81,38 +128,34 @@ int gmt_gdal_info (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
 
 	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
-		return (-1);
+		return -1;
 	}
 
-	args = breakMe(GMT, opts);
-	psOptions = GDALInfoOptionsNew(args, NULL);
-	info = GDALInfo(hDataset, psOptions);
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GDAL Info\n\n%s\n", info);
+	psOptions = GDALInfoOptionsNew(breakMe(GMT, opts), NULL);
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "GDAL Info\n\n%s\n", GDALInfo(hDataset, psOptions));
 
 	GDALInfoOptionsFree(psOptions);
-	GDALClose(hDataset);
 	GDALDestroyDriverManager();
+	GDALClose(hDataset);
 	return 0;
 }
 
 
+/* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
-	char **args, ext_opts[GMT_LEN512] = {""};
-	unsigned char *tmp = NULL;
-	int   nXSize, nYSize, nPixelSize;
-	int   bUsageError, gdal_code;
+	char ext_opts[GMT_LEN512] = {""};
+	int   bUsageError, error = 0;
 	double dx = 0, dy = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALGridOptions *psOptions;
-	GDALRasterBandH	hBand;
-
-	/* Open gdal - */
 
 	GDALAllRegister();
 
-	//hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
-	hSrcDS = gdal_vector (GMT, GDLL->fname_in);
+	if (GDLL->M.read_gdal) 		/* Read input data with the GDAL machinery */
+		hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
+	else
+		hSrcDS = gdal_vector (GMT, GDLL->fname_in);
 
 	if (hSrcDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
@@ -123,67 +166,79 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 								 GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
 		return GMT->parent->error;
 
-	if (GDLL->G.active && Grid->header->registration == 0) {
+	if (GDLL->M.write_gdal && Grid->header->registration == 0) {
 		/* Since GDAL writes only pixel-reg grids, expand limits so that inc is respected */
 		dx = Grid->header->inc[0] / 2;		dy = Grid->header->inc[1] / 2;
 	}
 	sprintf(ext_opts, "-ot Float32 -txe %lf %lf -tye %lf %lf -outsize %d %d ",
 			Grid->header->wesn[XLO]-dx, Grid->header->wesn[XHI]+dx, Grid->header->wesn[YLO]-dy,
 			Grid->header->wesn[YHI]+dy, Grid->header->n_columns, Grid->header->n_rows);
-	strcat(ext_opts, GDLL->opts); 
-	if (!GDLL->G.active)	strcat(ext_opts, " -of MEM");	/* For GMT we need the data in the MEM driver */
+	if (GDLL->opts) strcat(ext_opts, GDLL->opts); 
+	if (!GDLL->M.write_gdal)	strcat(ext_opts, " -of MEM");	/* For GMT we need the data in the MEM driver */
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gdal options used: %s\n", ext_opts);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gdal options used: %s\n", ext_opts);
 
-	args = breakMe(GMT, ext_opts);
-	psOptions = GDALGridOptionsNew(args, NULL);
-
-	if (GDLL->G.active)			/* Write grid with the GDAL machinery */
-		hDstDS = GDALGrid(GDLL->fname_out, hSrcDS, psOptions, &bUsageError);
-	else
-#ifdef WIN32
-		hDstDS = GDALGrid("NUL", hSrcDS, psOptions, &bUsageError);
-#else
-		hDstDS = GDALGrid("/dev/null", hSrcDS, psOptions, &bUsageError);
-#endif
+	psOptions = GDALGridOptionsNew(breakMe(GMT, ext_opts), NULL);
+	hDstDS = GDALGrid(out_name(GDLL), hSrcDS, psOptions, &bUsageError);
 
 	if (bUsageError == TRUE) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdal_grid: failure\n");
-		GDALDestroyDriverManager();
-		GDALGridOptionsFree(psOptions);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdal_grid: failure\n");
+		error++;
+	}
+
+	if (!error && !GDLL->M.write_gdal) 		/* Write grid with the GMT machinery */
+		error = save_grid_with_GMT(GMT, hDstDS, Grid, GDLL->fname_out);
+
+	GDALGridOptionsFree(psOptions);
+	GDALDestroyDriverManager();
+	GDALClose(hSrcDS);
+	return error;
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
+int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
+	char ext_opts[GMT_LEN512] = {""};
+	int   bUsageError, error = 0;
+	struct GMT_GRID *Grid = NULL;
+	GDALDatasetH	hSrcDS, hDstDS;
+	GDALDEMProcessingOptions *psOptions;
+
+	GDALAllRegister();
+
+	hSrcDS = GDALOpen(GDLL->fname_in, GA_ReadOnly);
+
+	if (hSrcDS == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
 		return -1;
 	}
 
-	if (!GDLL->G.active) {		/* Write grid with the GMT machinery */
-		hBand = GDALGetRasterBand(hDstDS, 1);
-		nPixelSize = GDALGetDataTypeSize(GDALGetRasterDataType(hBand)) / 8;	/* /8 because return value is in BITS */
-		nXSize = GDALGetRasterXSize(hDstDS);
-		nYSize = GDALGetRasterYSize(hDstDS);
+	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
+								 GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
+		return GMT->parent->error;
 
-		if ((tmp = calloc((size_t)nYSize * (size_t)nXSize, nPixelSize)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
-			GDALDestroyDriverManager();
-			GDALGridOptionsFree(psOptions);
-			return -1;
-		}
+	if (GDLL->opts) strcat(ext_opts, GDLL->opts); 
+	if (!GDLL->M.write_gdal)	strcat(ext_opts, " -of MEM");	/* For GMT we need the data in the MEM driver */
 
-		if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, tmp,
-									nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
-		}
-		gmt_grd_flip_vertical (tmp, (unsigned)nXSize, (unsigned)nYSize, 0, 4);
-		Grid->data = (float *)tmp;
-		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
-							NULL, GDLL->fname_out, Grid) != GMT_NOERROR)
-			return GMT->parent->error;
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gdal options used: %s\n", ext_opts);
+
+	psOptions = GDALDEMProcessingOptionsNew(breakMe(GMT, ext_opts), NULL);
+	hDstDS = GDALDEMProcessing(out_name(GDLL), hSrcDS, "hillshade", NULL, psOptions, &bUsageError);
+
+	if (bUsageError == TRUE) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdal_dem: failure\n");
+		error++;
 	}
 
-	GDALGridOptionsFree(psOptions);
-	GDALClose(hSrcDS);
+	if (!error && !GDLL->M.write_gdal) 		/* Write grid with the GMT machinery */
+		error = save_grid_with_GMT(GMT, hDstDS, Grid, GDLL->fname_out);
+
+	GDALDEMProcessingOptionsFree(psOptions);
 	GDALDestroyDriverManager();
-	return 0;
+	GDALClose(hSrcDS);
+	return error;
 }
 
+/* ------------------------------------------------------------------------------------------------------------ */
 GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 	/* Write data into a GDAL Vector memory dataset */
 	unsigned int nt, ns, nr;

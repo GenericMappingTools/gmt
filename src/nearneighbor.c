@@ -225,6 +225,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 					Ctrl->N.mode = 1;
 					GMT_Report (API, GMT_MSG_WARNING, "Option -Nn is experimental and unstable.\n");
 				}
+				else if (opt->arg[0] == 's') {
+					Ctrl->N.mode = 2;
+				}
 				else if (opt->arg[0]) {	/* Override default -N4+m4 */
 					if ((c = strstr (opt->arg, "+m"))) {	/* Set sectors and min sectors using current syntax */
 						Ctrl->N.min_sectors = atoi (&c[2]);
@@ -322,7 +325,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
-	if (Ctrl->N.mode) {	/* Pass over to triangulate -Qn */
+	if (Ctrl->N.mode == 1) {	/* Pass over to triangulate -Qn */
 		/* All the arguments are the same except -Nn needs to become -Qn and -Gfile needs to be a
 		 * virtual file so that we can write it from hear and set correct command history for the grid.
 		 */
@@ -356,6 +359,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
+	else if (Ctrl->N.mode == 2) {	/* Pass over to GDAL */
+	}
 
 #if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
 	if (Ctrl->A.active) {
@@ -366,7 +371,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			st->fname_in  = opt->arg;
 			st->fname_out = Ctrl->G.file;
 			st->opts = Ctrl->A.opts;
-			if (Ctrl->A.gdal_write) st->G.active = true;
+			//if (Ctrl->S.mode) strcat (A->opts, sprintf(buf,"-a nearest:radius1=%f:radius2=%f:nodata=NaN", Ctrl->S.mode, Ctrl->S.mode));
+			if (Ctrl->A.gdal_write) st->M.write_gdal = true;
 			gmt_gdal_grid(GMT, st);
 			break;
 		}
