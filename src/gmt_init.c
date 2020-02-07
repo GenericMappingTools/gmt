@@ -361,7 +361,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
  * the new long-format GMT options (e.g., --timestamp="My plot"+offset=5c/6c) to regular GMT short format
  * options (e.g., -U"My plot"+o5c/6c) that the common and module parsers expect.
  *
- * For testing this there are two define statements that need to be set in ConfigUser.cmake:
+ * For testing this there are two define statements that need to be set in ConfigUserAdvanced.cmake:
  *
  * -DUSE_COMMON_LONG_OPTIONS will allow us to test the gmt_common_kw array below.
  * -DUSE_MODULE_LONG_OPTIONS will allow us to test any module_kw settings in the modules
