@@ -1350,9 +1350,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				if (Ctrl->G.mode) {	/* Distances of some sort */
 					if (Ctrl->G.mode & GMT_MP_PAIR_DIST)	/* Segment distances from each data record using two extra coordinates */
 						extra[MP_COL_DS] = gmt_distance (GMT, in[GMT_X], in[GMT_Y], in[2], in[3]);
-					else if (Ctrl->G.mode & GMT_MP_FIXED_POINT)	/* Distance from fixed point via -G OR the previous track point */
+					else if (Ctrl->G.mode & GMT_MP_FIXED_POINT || !line_start)	/* Distance from fixed point via -G OR the previous track point */
 						extra[MP_COL_DS] = gmt_distance (GMT, Ctrl->G.lon, Ctrl->G.lat, in[GMT_X], in[GMT_Y]);
-					else if (line_start)	/* Incremental distance at start of line is zero */
+					else	/* Incremental distance at start of line is zero */
 						extra[MP_COL_DS] = 0.0;
 
 					if (along_track) {	/* Along-track calculation */
