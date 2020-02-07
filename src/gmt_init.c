@@ -676,7 +676,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 					if ((code = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, '=', argument)))	/* Get the modifier, or return 0 if unrecognized */
 						sprintf (add, "+%c%s", code, argument);	/* Append modifier with argument next to it (may be empty) */
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Long-modifier form %s for option -%c not recognized!\n", &directive[1], opt->option);
+						GMT_Report (API, GMT_MSG_WARNING, "Long-modifier form %s for option -%c not recognized!\n", &directive[1], opt->option);
 						add[0] = '\0';
 					}
 					strcat (new_arg, add);	/* Add to the short-format option argument */
@@ -753,7 +753,7 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 		c[0] = '\0';	/* Truncate modifiers for now */
 	if (isdigit (item[k])) {	/* Specified how many records for input */
 		if (col == GMT_OUT) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Can only set the number of input header records; %s ignored\n", &item[k]);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Can only set the number of input header records; %s ignored\n", &item[k]);
 		}
 		else {
 			i = atoi (&item[k]);
@@ -3011,7 +3011,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		/* If HOME not set: use root directory instead (http://gmt.soest.hawaii.edu/issues/710) */
 		GMT->session.HOMEDIR = strdup ("/"); /* Note: Windows will use the current drive if drive letter unspecified. */
 #ifdef DEBUG
-		GMT_Report (API, GMT_MSG_ERROR, "HOME environment not set. Using root directory instead.\n");
+		GMT_Report (API, GMT_MSG_WARNING, "HOME environment not set. Using root directory instead.\n");
 #endif
 	}
 	if (GMT->session.HOMEDIR) {	/* Mostly to keep Coverity happy */
@@ -3036,8 +3036,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	if (GMT->session.USERDIR != NULL) {
 		err = stat (GMT->session.USERDIR, &S);	/* Stat the userdir path (which may not exist) */
 		if (err == ENOENT && gmt_mkdir (GMT->session.USERDIR)) { /* Path does not exist so we create that dir */
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
-			GMT_Report (API, GMT_MSG_ERROR, "Auto-downloading of @earth_relief_##m|s.grd files has been disabled.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
+			GMT_Report (API, GMT_MSG_WARNING, "Auto-downloading of @earth_relief_##m|s.grd files has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			gmt_M_str_free (GMT->session.USERDIR);
 		}
@@ -3056,8 +3056,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	if (GMT->session.CACHEDIR != NULL) {
 		err = stat (GMT->session.CACHEDIR, &S);	/* Stat the cachedir path (which may not exist) */
 		if (err == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
-			GMT_Report (API, GMT_MSG_ERROR, "Auto-downloading of cache data has been disabled.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
+			GMT_Report (API, GMT_MSG_WARNING, "Auto-downloading of cache data has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			gmt_M_str_free (GMT->session.CACHEDIR);
 		}
@@ -3071,7 +3071,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	else {	/* Use the temp dir as the session dir */
 		API->session_dir = gmt_strdup_noquote (API->tmp_dir);
-		GMT_Report (API, GMT_MSG_ERROR, "No GMT User directory set, GMT session dir selected: %s\n", API->session_dir);
+		GMT_Report (API, GMT_MSG_WARNING, "No GMT User directory set, GMT session dir selected: %s\n", API->session_dir);
 	}
 	if (API->session_dir) {
 		gmt_dos_path_fix (API->session_dir);
@@ -5172,7 +5172,7 @@ GMT_LOCAL int gmtinit_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_S
 			if ((c = strchr (text, '%'))) {	/* Gave font name or number, too */
 				*c = 0;	/* Chop off the %font info */
 				c++;		/* Go to next character */
-				if (gmt_getfont (GMT, c, &S->font)) GMT_Report (GMT->parent, GMT_MSG_ERROR, "-Sl contains bad font (set to %s)\n", gmt_putfont (GMT, &S->font));
+				if (gmt_getfont (GMT, c, &S->font)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "-Sl contains bad font (set to %s)\n", gmt_putfont (GMT, &S->font));
 			}
 			/* Look for a slash that separates size and string: */
 			for (j = 1, slash = 0; text[j] && !slash; j++) if (text[j] == '/') slash = j;
@@ -5203,7 +5203,7 @@ GMT_LOCAL int gmtinit_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_S
 			switch (p[0]) {
 				case 'f':	/* Change font */
 					if (gmt_getfont (GMT, &p[1], &S->font))
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Sl contains bad +<font> modifier (set to %s)\n", gmt_putfont (GMT, &S->font));
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -Sl contains bad +<font> modifier (set to %s)\n", gmt_putfont (GMT, &S->font));
 					break;
 				case 'j':	S->justify = gmt_just_decode (GMT, &p[1], PSL_NO_DEF);	break;	/* text justification */
 				case 't':	strncpy (S->string, &p[1], GMT_LEN256-1);	break;	/* Get the symbol text */
@@ -8016,7 +8016,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if (n_rect_read == 4 && (fabs (rect[XLO]) > 360.0 || fabs (rect[XHI]) > 360.0 || fabs (rect[YLO]) > 90.0 || fabs (rect[YHI]) > 90.0)) {	/* Oh, yeah... */
 			inv_project = true;
 			r_unit = 'e';	/* Must specify the "missing" leading e for meter */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "For a UTM or TM projection, your region %s is too large to be in degrees and thus assumed to be in meters\n", string);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "For a UTM or TM projection, your region %s is too large to be in degrees and thus assumed to be in meters\n", string);
 		}
 	}
 	else {	/* Plain old -Rw/e/s/n */
@@ -10252,7 +10252,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else if (!strncmp (lower_value, "off", 3))
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_AUTO_DOWNLOAD: Expects either on or off - set to off\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT_AUTO_DOWNLOAD: Expects either on or off - set to off\n");
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			break;
@@ -10344,7 +10344,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			if (error) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_EXTRAPOLATE_VAL: resetting to 'extrapolated is NaN' to avoid later crash.\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT_EXTRAPOLATE_VAL: resetting to 'extrapolated is NaN' to avoid later crash.\n");
 				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
 			}
 			break;
@@ -11222,7 +11222,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 		case GMTCASE_TRANSPARENCY:
 			if (gmt_M_compat_check (GMT, 4))
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Transparency is now part of pen and fill specifications.  TRANSPARENCY is ignored\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Transparency is now part of pen and fill specifications.  TRANSPARENCY is ignored\n");
 			else
 				error = gmtinit_badvalreport (GMT, keyword);
 			break;
@@ -14056,7 +14056,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		else if (n == 1)
 			p->size_y = p->given_size_y = p->size_x;
 		else
-			decode_error = true;
+			decode_error++;
 		symbol_type = '*';
 		if (cmd) p->read_symbol_cmd = 1;
 	}
@@ -14078,7 +14078,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		else {
 			n = sscanf (&text_cp[1], "%[^+]+%*s", txt_a);
 			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
-			decode_error = (n != 1);
+			decode_error += (n != 1);
 		}
 	}
 	else if (text[0] == 'k' || text[0] == 'K') {	/* Custom symbol spec -Sk|K<path_to_custom_symbol>[/<size>]*/
@@ -14142,7 +14142,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (text[k] && strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			if ((j = gmtinit_get_unit (GMT, text[k])) < 0) decode_error = true; else { p->u = j; p->u_set = true;}
+			if ((j = gmtinit_get_unit (GMT, text[k])) < 0) decode_error++; else { p->u = j; p->u_set = true;}
 			col_off++;
 			if (cmd) p->read_size_cmd = true;
 		}
@@ -14165,7 +14165,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
 		if (text[1]) {	/* Gave unit information */
 			if ((j = gmtinit_get_unit (GMT, text[1])) < 0)
-				decode_error = true;
+				decode_error++;
 			else {
 				p->u = j; p->u_set = true;
 			}
@@ -14205,7 +14205,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		}
 		if (slash) {	/* Separate x/y sizes */
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
-			decode_error = (n != 3);
+			decode_error += (n != 3);
 			if (((len = (int)strlen (txt_a)) > 0) && txt_a[len-1] == 'u') {
 				p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
 				txt_a[len-1] = '\0';	/* Chop off the 'u' */
@@ -14326,7 +14326,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			else if (n == 2)
 				p->size_y = p->given_size_y = p->size_x;
 			else
-				decode_error = true;
+				decode_error++;
 		}
 	}
 	switch (symbol_type) {
@@ -14587,7 +14587,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				}
 			}
 			if (mode == 0) {
-				decode_error = true;
+				decode_error++;
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Symbol type %c is 3-D only\n", symbol_type);
 			}
 			break;
@@ -14650,7 +14650,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'U':	/* Same but disable shading */
 			p->symbol = GMT_SYMBOL_CUBE;
 			if (mode == 0) {
-				decode_error = true;
+				decode_error++;
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Symbol type %c is 3-D only\n", symbol_type);
 			}
 			break;
@@ -14826,7 +14826,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->fq_parse = false;	/* No need to parse more later */
 			break;
 		default:
-			decode_error = true;
+			decode_error++;
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Unrecognized symbol type %c\n", symbol_type);
 			break;
 	}
@@ -15568,7 +15568,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case '^':
-			if (GMT->common.synopsis.active) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option - given more than once\n");
+			if (GMT->common.synopsis.active) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option - given more than once\n");
 			GMT->common.synopsis.active = true;
 			break;
 
@@ -16093,7 +16093,7 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	if ((n_files = (unsigned int)gmtlib_glob_list (GMT, "*", &filelist))) {
 		for (k = 0; k < n_files; k++) {
 			if (gmt_remove_file (GMT, filelist[k]))
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove %s [permissions?]\n", filelist[k]);
+				GMT_Report (API, GMT_MSG_WARNING, "Unable to remove %s [permissions?]\n", filelist[k]);
 		}
 		gmtlib_free_list (GMT, filelist, n_files);	/* Free the file list */
 	}
@@ -16942,7 +16942,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			fig = gmt_get_current_figure (API);	/* Get current figure number */
 			snprintf (file, PATH_MAX, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 			if (!access (file, R_OK))	/* subplot end was never called */
-				GMT_Report (API, GMT_MSG_ERROR, "subplot was never completed - plot items in last panel may be missing\n");
+				GMT_Report (API, GMT_MSG_WARNING, "subplot was never completed - plot items in last panel may be missing\n");
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session ID = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[3]);
 			if ((error = process_figures (API, text)))
 				GMT_Report (API, GMT_MSG_ERROR, "process_figures returned error %d\n", error);

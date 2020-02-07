@@ -283,7 +283,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				if (n_items)
 					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
 				else
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Continent code %s unrecognized\n", code);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Continent code %s unrecognized\n", code);
 			}
 			else {	/* Just append this single one */
 				if (n_items) strcat (list, ",");
@@ -375,13 +375,13 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		ks = dcw_find_country (code, GMT_DCW_country, GMT_DCW_COUNTRIES);
 		if (ks == -1) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No country code matching %s (skipped)\n", code);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No country code matching %s (skipped)\n", code);
 			continue;
 		}
 		k = ks;
 		if (want_state) {
 			if ((item = dcw_find_state (state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Country %s does not have states (skipped)\n", code);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Country %s does not have states (skipped)\n", code);
 				continue;
 			}
 			snprintf (TAG, GMT_LEN16, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[item].code);

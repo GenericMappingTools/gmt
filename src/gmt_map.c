@@ -8666,7 +8666,7 @@ void gmtlib_init_geodesic (struct GMT_CTRL *GMT) {
 			GMT->current.map.geodesic_az_backaz = map_az_backaz_rudoe;
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The PROJ_GEODESIC is not set! - use Vincenty\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "The PROJ_GEODESIC is not set! - use Vincenty\n");
 			GMT->current.setting.proj_geodesic = GMT_GEODESIC_VINCENTY;
 			GMT->current.map.geodesic_meter = map_vincenty_dist_meter;
 			GMT->current.map.geodesic_az_backaz = map_az_backaz_vincenty;

@@ -175,7 +175,7 @@ GMT_LOCAL void grdio_grd_parse_xy_units (struct GMT_CTRL *GMT, struct GMT_GRID_H
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmtlib_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
 		return;
 	}
 	/* Got a valid unit */
@@ -932,7 +932,7 @@ void gmt_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (! (desired_mode == GMT_GRID_IS_INTERLEAVED || desired_mode == GMT_GRID_IS_SERIAL)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_mux_demux called with inappropriate mode - skipped.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_grd_mux_demux called with inappropriate mode - skipped.\n");
 		return;
 	}
 	if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) return;	/* Nuthin' to do */

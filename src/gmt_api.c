@@ -678,7 +678,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 		API->GMT->current.setting.use_modern_name = true;
 
 	if (GMT_Destroy_Options (API, &head))	/* Done with these here */
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
 }
 
 /* Function to get PPID under Windows is a bit different */
@@ -1304,7 +1304,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 	k = 0;
 	while ((next = strsep (&tmp, ",")) != NULL) {	/* Get each comma-separated key */
 		if (strlen (next) < 3) {
-			GMT_Report (API, GMT_MSG_ERROR,
+			GMT_Report (API, GMT_MSG_WARNING,
 			            "api_process_keys: Key %s contains less than 3 characters\n", next);
 			continue;
 		}
@@ -1321,7 +1321,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 		s[k] = strdup (next);
 		if (next[K_DIR] == API_PRIMARY_OUTPUT) {	/* Identified primary output key */
 			if (o_id >= 0)	/* Already had a primary output key */
-				GMT_Report (API, GMT_MSG_ERROR,
+				GMT_Report (API, GMT_MSG_WARNING,
 				            "api_process_keys: Keys %s contain more than one primary output key\n", tmp);
 			else
 				o_id = (int)k;
@@ -1348,7 +1348,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 				}
 			}
 			else
-				GMT_Report (API, GMT_MSG_ERROR,
+				GMT_Report (API, GMT_MSG_WARNING,
 				            "api_process_keys: Required runtime type-getting option (-%c) was not given\n", s[k][K_FAMILY]);
 			gmt_M_str_free (s[k]);		/* Free the inactive key that has now served its purpose */
 		}
@@ -1378,7 +1378,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 				char modifier[3] = {'+', '?', 0};	/* We will replace ? with an actual modifier */
 				size_t this_k;
 				if (o_id == GMT_NOTSET)
-					GMT_Report (API, GMT_MSG_ERROR, "api_process_keys: No primary output identified but magic Z key present\n");
+					GMT_Report (API, GMT_MSG_WARNING, "api_process_keys: No primary output identified but magic Z key present\n");
 				/* Check if modifier(s) were given also and that one of them were selected */
 				if (strlen (s[k]) > 3) {	/* Not enough to just find option, must examine the modifiers */
 					/* Full syntax: XYZ+abc...-def...: We do the substitution of output type to Y only if
@@ -1458,7 +1458,7 @@ GMT_LOCAL int api_get_key (void *API, char option, char *keys[], int n_keys) {
 	/* Returns the position in the keys array that matches this option, or GMT_NOTSET if not found */
 	int k;
 	if (n_keys && keys == NULL)
-		GMT_Report (API, GMT_MSG_ERROR, "api_get_key: Keys array is NULL but n_keys = %d\n", n_keys);
+		GMT_Report (API, GMT_MSG_WARNING, "api_get_key: Keys array is NULL but n_keys = %d\n", n_keys);
 	for (k = 0; keys && k < n_keys; k++) if (keys[k][K_OPT] == option) return (k);
 	return (GMT_NOTSET);
 }
@@ -2130,7 +2130,7 @@ GMT_LOCAL void api_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, 
 	if (api_add_comment (API, mode, txt)) return;	/* Updated one -h item, or nothing */
 
 	if (D->table == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "api_dataset_comment: Trying to access an empty D->table object\n");
+		GMT_Report (API, GMT_MSG_WARNING, "api_dataset_comment: Trying to access an empty D->table object\n");
 		return;
 	}
 
@@ -2244,7 +2244,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 				operation[direction+first], GMT_family[S_obj->family], dir[direction], &(S_obj->filename[first]));
 			if (gmt_M_binary_header (GMT, direction)) {
 				gmtlib_io_binary_header (GMT, S_obj->fp, direction);
-				GMT_Report (API, GMT_MSG_ERROR, "%s %d bytes of header %s binary file %s\n",
+				GMT_Report (API, GMT_MSG_INFORMATION, "%s %d bytes of header %s binary file %s\n",
 					operation[direction], GMT->current.setting.io_n_header_items, dir[direction], &(S_obj->filename[first]));
 			}
 			break;
@@ -2260,7 +2260,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (gmt_M_binary_header (GMT, direction)) {
 				gmtlib_io_binary_header (GMT, S_obj->fp, direction);
-				GMT_Report (API, GMT_MSG_ERROR, "%s %d bytes of header %s binary %s stream\n",
+				GMT_Report (API, GMT_MSG_INFORMATION, "%s %d bytes of header %s binary %s stream\n",
 					operation[direction], GMT->current.setting.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
@@ -2278,7 +2278,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (gmt_M_binary_header (GMT, direction)) {
 				gmtlib_io_binary_header (GMT, S_obj->fp, direction);
-				GMT_Report (API, GMT_MSG_ERROR, "%s %d bytes of header %s binary %s stream via supplied file descriptor\n",
+				GMT_Report (API, GMT_MSG_INFORMATION, "%s %d bytes of header %s binary %s stream via supplied file descriptor\n",
 					operation[direction], GMT->current.setting.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
@@ -2457,7 +2457,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	if (object->resource == NULL)
-		GMT_Report (API, GMT_MSG_ERROR, "ERROR?: api_pass_object given a NULL resource!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "api_pass_object given a NULL resource!\n");
 
 	switch (family) {	/* Do family-specific prepping before passing back the input object */
 		case GMT_IS_PALETTE:	/* Make sure the hidden support arrays etc. have been initialized as external interfaces may not care */
@@ -2502,7 +2502,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 				if (gmt_grd_is_global (API->GMT, I->header)) {	/* May have to rotate geographic grid since we are not reading from file here */
 					double shift_amount = wesn[XLO] - I->header->wesn[XLO];
 					if (fabs (shift_amount) >= I->header->inc[GMT_X]) {	/* Must do it */
-						GMT_Report (API, GMT_MSG_ERROR, "Longitudinal roll for images not implemented yet\n");
+						GMT_Report (API, GMT_MSG_WARNING, "Longitudinal roll for images not implemented yet\n");
 #if 0
 						GMT_Report (API, GMT_MSG_DEBUG, "Shifting longitudes in grid by %g degrees to fit -R\n", shift_amount);
 						gmt_grd_shift (API->GMT, I, shift_amount);
@@ -4171,8 +4171,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 				GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qo is not implemented for GMT_IS_REFERENCE|GMT_VIA_VECTOR external memory objects\n");
 			GMT_Report (API, GMT_MSG_DEBUG, "Referencing data table to users column-vector location\n");
 			if (D_obj->n_tables > 1 || D_obj->n_segments > 1) {
-				GMT_Report (API, GMT_MSG_ERROR, "Reference by vector requires a single segment!\n");
-				GMT_Report (API, GMT_MSG_ERROR, "Output may be truncated or an error may occur!\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Reference by vector requires a single segment!\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Output may be truncated or an error may occur!\n");
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table to user column arrays location\n");
 			n_columns = (GMT->common.o.select) ? GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
@@ -5748,7 +5748,7 @@ void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S_obj = API->object[i];	/* Shorthand for the the current object */
 		if (!S_obj) {		/* Skip empty object [NOTE: Should not happen?] */
-			GMT_Report (API, GMT_MSG_ERROR, "gmtapi_garbage_collection found empty object number %d [Bug?]\n", i++);
+			GMT_Report (API, GMT_MSG_WARNING, "gmtapi_garbage_collection found empty object number %d [Bug?]\n", i++);
 			continue;
 		}
 		if (!(level == GMT_NOTSET || S_obj->alloc_level == u_level)) {	/* Not the right module level (or not end of session yet) */
@@ -5779,7 +5779,7 @@ void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 		}
 
 		if (error < 0) {	/* Failed to destroy this memory; that cannot be a good thing... */
-			GMT_Report (API, GMT_MSG_ERROR, "gmtapi_garbage_collection failed to destroy memory for object % d [Bug?]\n", i++);
+			GMT_Report (API, GMT_MSG_WARNING, "gmtapi_garbage_collection failed to destroy memory for object % d [Bug?]\n", i++);
 			/* Skip it for now; but this is possibly a fatal error [Bug]? */
 		}
 		else  {	/* Successfully freed.  See if this address occurs more than once (e.g., both for in and output); if so just set repeated data pointer to NULL */
@@ -8203,7 +8203,7 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 				return GMT_NOERROR;
 			}
 			if (S_obj->n_rows && S_obj->rec >= S_obj->n_rows)
-				GMT_Report (API, GMT_MSG_ERROR, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
+				GMT_Report (API, GMT_MSG_WARNING, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
 			if (S_obj->resource == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				size_t size;
 				col = (GMT->common.o.select) ? GMT->common.o.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
@@ -8245,7 +8245,7 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 				return GMT_NOERROR;
 			}
 			if (S_obj->n_rows && S_obj->rec >= S_obj->n_rows)
-				GMT_Report (API, GMT_MSG_ERROR, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
+				GMT_Report (API, GMT_MSG_WARNING, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
 			if ((V_obj = S_obj->resource) == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				col = (GMT->common.o.select) ? GMT->common.o.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if (col == 0 && mode == GMT_WRITE_SEGMENT_HEADER && GMT->current.io.multi_segments[GMT_OUT]) {
@@ -10641,7 +10641,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		if (k >= 0) {	/* Got a key, so split out family and geometry flags */
 			sdir = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
 			if (sdir < 0) {	/* Could not determine direction */
-				GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Key not understood so direction is undefined? Notify developers\n");
+				GMT_Report (API, GMT_MSG_WARNING, "GMT_Encode_Options: Key not understood so direction is undefined? Notify developers\n");
 				sdir = GMT_IN;
 			}
 			direction = (unsigned int) sdir;
@@ -10667,7 +10667,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 				direction = GMT_IN;
 			}
 			else if (k == GMT_NOTSET) {	/* Found questionmark but no corresponding key found? */
-				GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Got a -<option>? argument but not listed in keys\n");
+				GMT_Report (API, GMT_MSG_WARNING, "GMT_Encode_Options: Got a -<option>? argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
 			info[n_items].mode = (k >= 0 && api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
@@ -10758,7 +10758,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		if (api_is_required_IO (key[ku][K_DIR])) {	/* Required input|output that was not specified explicitly above */
 			char str[2] = {'?',0};
 			if ((sdir = api_key_to_family (API, key[ku], &family, &geometry)) == GMT_NOTSET) {	/* Extract family and geometry */
-				GMT_Report (API, GMT_MSG_ERROR, "Failure to extract family, geometry, and direction!!!!\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Failure to extract family, geometry, and direction!!!!\n");
 				continue;
 			}
 			direction = (unsigned int) sdir;
@@ -12137,7 +12137,7 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 				tmp[out_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)];
 	}
 	else {		/* Other cases to be added later ...*/
-		GMT_Report (API, GMT_MSG_ERROR, "api_change_gridlayout: reordering function for case %s -> %s not yet written. Doing nothing\n",
+		GMT_Report (API, GMT_MSG_WARNING, "api_change_gridlayout: reordering function for case %s -> %s not yet written. Doing nothing\n",
 		            G->header->mem_layout, code);
 		for (out_node = 0; out_node < G->header->size; out_node++)
 			tmp[out_node] = G->data[out_node];
@@ -12202,7 +12202,7 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	}
 	//else if (old_layout == 2 && new_layout == 0) {}	/* Change from TCB to TRB */
 	else {		/* Other cases to be added later ...*/
-		GMT_Report (API, GMT_MSG_ERROR, "api_change_imagelayout: reordering function for case %s -> %s not yet written. Doing nothing.\n",
+		GMT_Report (API, GMT_MSG_WARNING, "api_change_imagelayout: reordering function for case %s -> %s not yet written. Doing nothing.\n",
 		            I->header->mem_layout, code);
 		for (out_node = 0; out_node < I->header->size; out_node++)
 			tmp[out_node] = I->data[out_node];
