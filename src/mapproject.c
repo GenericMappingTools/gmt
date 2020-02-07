@@ -1348,21 +1348,24 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 			if (geodetic_calc) {	/* Get either distances, azimuths, or travel times */
 				if (Ctrl->G.mode) {	/* Distances of some sort */
-					if (Ctrl->G.mode & GMT_MP_PAIR_DIST)	/* Segment distances from each data record using 2 extra coordinates */
+					if (Ctrl->G.mode & GMT_MP_PAIR_DIST)	/* Segment distances from each data record using two extra coordinates */
 						extra[MP_COL_DS] = gmt_distance (GMT, in[GMT_X], in[GMT_Y], in[2], in[3]);
-					else	/* Distance from fixed point via -G OR the last track point */
+					else if (Ctrl->G.mode & GMT_MP_FIXED_POINT)	/* Distance from fixed point via -G OR the previous track point */
 						extra[MP_COL_DS] = gmt_distance (GMT, Ctrl->G.lon, Ctrl->G.lat, in[GMT_X], in[GMT_Y]);
+					else if (line_start)	/* Incremental distance at start of line is zero */
+						extra[MP_COL_DS] = 0.0;
+
 					if (along_track) {	/* Along-track calculation */
-						if (line_start && (Ctrl->G.mode & GMT_MP_VAR_POINT))
+						if (line_start && (Ctrl->G.mode & GMT_MP_VAR_POINT))	/* Initialize for new line */
 							extra[MP_COL_CS] = extra[MP_COL_DS] = 0.0;
 						else
 							extra[MP_COL_CS] += extra[MP_COL_DS];
-						line_start = false;
 						if ((Ctrl->G.mode & GMT_MP_FIXED_POINT) == 0) {	/* Save previous point in G */
 							Ctrl->G.lon = in[GMT_X];
 							Ctrl->G.lat = in[GMT_Y];
 						}
 					}
+					line_start = false;	/* After processing first line we are no longer at the start of the line */
 				}
 				if (Ctrl->L.active) {	/* Compute closest distance to line */
 					y_in = (do_geo_conv) ? gmt_lat_swap (GMT, (*data)[GMT_Y], GMT_LATSWAP_G2O) : (*data)[GMT_Y];	/* Convert to geocentric */
