@@ -530,7 +530,7 @@ GMT_LOCAL int customio_native_read_grd_header (FILE *fp, struct GMT_GRID_HEADER 
 	int err = GMT_NOERROR;
 	/* Because GMT_GRID_HEADER is not 64-bit aligned we must read it in parts */
 	if (gmt_M_fread (&header->n_columns, SIZEOF_NATIVE_GRD_HDR1, 1U, fp) != 1 ||
-			gmt_M_fread (header->wesn, SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
+			gmt_M_fread (&header->wesn[0], SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
 	err = GMT_GRDIO_READ_FAILED;
 	return (err);
 }
@@ -651,7 +651,7 @@ GMT_LOCAL int customio_native_write_grd_header (FILE *fp, struct GMT_GRID_HEADER
 	/* Because GMT_GRID_HEADER is not 64-bit aligned we must write it in parts */
 
 	if (gmt_M_fwrite (&header->n_columns, SIZEOF_NATIVE_GRD_HDR1, 1U, fp) != 1 ||
-			gmt_M_fwrite (header->wesn, SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
+			gmt_M_fwrite (&header->wesn[0], SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
 		err = GMT_GRDIO_WRITE_FAILED;
 	return (err);
 }

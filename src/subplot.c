@@ -738,6 +738,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 		if (!access (file, F_OK))	{	/* Subplot information file already exists, two begin subplot commands? */
 			GMT_Report (API, GMT_MSG_ERROR, "Subplot information file already exists: %s\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "Please run 'gmt clear sessions' (or equivalent if from Julia, Matlab, Python, etc...) to solve this issue.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		/* COmpute dimensions such as ticks and distance from tick to top of annotation etc */
@@ -1203,13 +1204,13 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		double gap[4], legend_width = 0.0, legend_scale = 1.0;
 
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
-			char cmd[GMT_LEN64] = {""};
+			char cmd[GMT_LEN128] = {""};
 			if ((P = gmt_subplot_info (API, fig)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No subplot information file!\n");
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
+			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to place legend on current subplot figure\n");
 				Return (error);
@@ -1238,9 +1239,9 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
-			char cmd[GMT_LEN64] = {""};
+			char cmd[GMT_LEN128] = {""};
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
+			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to place legend on current subplot figure\n");
 				Return (error);
