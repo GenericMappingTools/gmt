@@ -75,8 +75,13 @@ if (NOT UNITS)
 endif (NOT UNITS)
 
 # Copy coastline support data to the installation
-set (COPY_GSHHG TRUE)
-set (COPY_DCW TRUE)
+if (NOT DEFINED COPY_GSHHG)
+    set (COPY_GSHHG TRUE)
+endif (NOT DEFINED COPY_GSHHG)
+# Copy DCW support data to the installation
+if (NOT DEFINED COPY_DCW)
+    set (COPY_DCW TRUE)
+endif (NOT DEFINED COPY_DCW)
 
 # The max RMS error in graphicmagick comparisons of PS files
 if (NOT DEFINED GRAPHICSMAGICK_RMS)
