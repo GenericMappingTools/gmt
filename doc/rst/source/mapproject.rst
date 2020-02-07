@@ -169,7 +169,7 @@ Optional Arguments
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *line.xy*. The distance
     and the coordinates of the nearest point will be appended to the
-    output as three new columns. Append the distance unit (see `Units`_
+    output as three new columns. Append the distance unit via **+u** (see `Units`_
     for available units and how distances are computed [great circle using authalic radius]),
     including **c** (Cartesian distance using input coordinates) or
     **C** (Cartesian distance using projected coordinates). The **C**
