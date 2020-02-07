@@ -13749,11 +13749,12 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 /*! Update vector head length and width parameters based on size_z and v_angle, and deal with pen/fill settings */
 int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set, bool outline, struct GMT_PEN *pen, bool do_fill, struct GMT_FILL *fill) {
 	bool no_outline = false, no_fill = false;
+	if (S == NULL) return 0;	/* Nothing to do */
 	if (set) {	/* Determine proper settings for head fill or outline */
-		if (outline && (S->v.status & PSL_VEC_OUTLINE2) == 0) S->v.pen = *pen;	/* If no +p<pen> but -W<pen> was used, use same pen for vector heads */
-		else if (!outline && S->v.status & PSL_VEC_OUTLINE2) *pen = S->v.pen;	/* If no -W<pen> was set but +p<pen> given, use same pen for vector tails */
+		if (outline && (S->v.status & PSL_VEC_OUTLINE2) == 0 && pen) S->v.pen = *pen;	/* If no +p<pen> but -W<pen> was used, use same pen for vector heads */
+		else if (!outline && S->v.status & PSL_VEC_OUTLINE2 && pen) *pen = S->v.pen;	/* If no -W<pen> was set but +p<pen> given, use same pen for vector tails */
 		else if (!outline && (S->v.status & PSL_VEC_OUTLINE2) == 0) no_outline = true;
-		if (do_fill && (S->v.status & PSL_VEC_FILL2) == 0) S->v.fill = *fill;	/* If no +g<fill> but -G<fill> was used, use same fill for vector heads */
+		if (do_fill && (S->v.status & PSL_VEC_FILL2) == 0 && fill) S->v.fill = *fill;	/* If no +g<fill> but -G<fill> was used, use same fill for vector heads */
 		else if (!do_fill && S->v.status & PSL_VEC_FILL2) no_fill = false;		/* If no -G<fill> was set but +g<fill> given, we do nothing here */
 		else if (!do_fill && (S->v.status & PSL_VEC_FILL2) == 0) no_fill = true;	/* Neither -G<fill> nor +g<fill> were set */
 		if (no_outline && no_fill && (S->v.status & PSL_VEC_HEADS)) {
