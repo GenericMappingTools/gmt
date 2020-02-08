@@ -20,7 +20,7 @@
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
- * Date:        23-November-2019
+ * Date:        07-February-2020
  * Version:     6 API
  */
 
@@ -29,7 +29,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 223
+#define GMT_N_API_ENUMS 230
 
 GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -65,12 +65,15 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_COMMENT_IS_TITLE", 8},
 	{"GMT_CONTAINER_AND_DATA", 0},
 	{"GMT_CONTAINER_ONLY", 1},
+	{"GMT_CPT_COLORLIST", 32},
 	{"GMT_CPT_EXTEND_BNF", 2},
+	{"GMT_CPT_HARD_HINGE", 4},
 	{"GMT_CPT_HINGED", 4},
 	{"GMT_CPT_NO_BNF", 1},
 	{"GMT_CPT_OPTIONAL", 1},
 	{"GMT_CPT_REQUIRED", 0},
-	{"GMT_CPT_TIME", 8},
+	{"GMT_CPT_SOFT_HINGE", 8},
+	{"GMT_CPT_TIME", 16},
 	{"GMT_DATA_ONLY", 2},
 	{"GMT_DATETIME", 11},
 	{"GMT_DOUBLE", 9},
@@ -159,12 +162,16 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_MODULE_PURPOSE", -2},
 	{"GMT_MODULE_SYNOPSIS", -6},
 	{"GMT_MODULE_USAGE", -7},
-	{"GMT_MSG_COMPAT", 3},
+	{"GMT_MSG_COMPAT", 5},
 	{"GMT_MSG_DEBUG", 6},
-	{"GMT_MSG_INFORMATION", 5},
 	{"GMT_MSG_ERROR", 1},
-	{"GMT_MSG_TICTOC", 2},
-	{"GMT_MSG_WARNING", 4},
+	{"GMT_MSG_INFORMATION", 4},
+	{"GMT_MSG_LONG_VERBOSE", 5},
+	{"GMT_MSG_NORMAL", 1},
+	{"GMT_MSG_QUIET", 0},
+	{"GMT_MSG_TICTOC", 3},
+	{"GMT_MSG_VERBOSE", 4},
+	{"GMT_MSG_WARNING", 2},
 	{"GMT_NAN", 2},
 	{"GMT_NOERROR", 0},
 	{"GMT_NOTSET", -1},

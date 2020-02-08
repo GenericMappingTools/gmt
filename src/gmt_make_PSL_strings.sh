@@ -38,7 +38,7 @@ while read file; do
 	n=$(cat $file | wc -l)
 	let n1=n-1
 	varname=$(basename $file .ps)
-	sed -n 1,${n1}p $file | awk 'BEGIN {printf "static char *%s_str = \n", "'$varname'"}; {printf "\"%s\\n\"\n", $0}' >> PSL_strings.h
+	sed -n 1,${n1}p $file | awk 'BEGIN {printf "static char *%s_str =\n", "'$varname'"}; {printf "\"%s\\n\"\n", $0}' >> PSL_strings.h
 	sed -n ${n}p $file | awk '{printf "\"%s\\n\";\n", $0}'>> PSL_strings.h
 done < /tmp/t.lis
 rm -f /tmp/t.lis
