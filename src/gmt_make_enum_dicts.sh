@@ -15,7 +15,6 @@ while read key value; do
 done < /tmp/junk3.txt
 n=$(wc -l < /tmp/junk2.txt | awk '{printf "%d\n", $1}')
 COPY_YEAR=$(date +%Y)
-NOW=$(date +%d-%B-%Y)
 cat << EOF > gmt_enum_dict.h
 /*--------------------------------------------------------------------
  *
@@ -39,7 +38,6 @@ cat << EOF > gmt_enum_dict.h
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
- * Date:        $NOW
  * Version:     6 API
  */
 
