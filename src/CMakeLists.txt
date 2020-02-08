@@ -501,13 +501,13 @@ if (BUILD_SUPPLEMENTS)
 		gmtlib
 		pslib)
 
-	# Include any extra files that are listed in EXTRA_INCLUDE_GMTSUPPL defined in ConfigUserAdvanced.cmake
+	# Include any extra files that are listed in EXTRA_MODULES_SUPPL defined in ConfigUserAdvanced.cmake
 	# This include(s) will add new modules to the official GMT supplements
-	if (EXTRA_INCLUDE_GMTSUPPL)
-		foreach (_f ${EXTRA_INCLUDE_GMTSUPPL})
+	if (EXTRA_MODULES_SUPPL)
+		foreach (_f ${EXTRA_MODULES_SUPPL})
 			include (${_f})
 		endforeach(_f)
-	endif (EXTRA_INCLUDE_GMTSUPPL)
+	endif (EXTRA_MODULES_SUPPL)
 
 	set_target_properties (supplib
 		PROPERTIES
