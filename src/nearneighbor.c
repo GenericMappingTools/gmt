@@ -66,10 +66,6 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 	struct W {	/* -W */
 		bool active;
 	} W;
-	struct A {
-		bool active, gdal_write;
-		char *opts;
-	} A;
 };
 
 struct NEARNEIGHBOR_NODE {	/* Structure with point id and distance pairs for all sectors */
@@ -249,15 +245,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 			case 'W':	/* Use weights */
 				Ctrl->W.active = true;
 				break;
-			case 'A':	/* TESTING */
-				Ctrl->A.active = true;
-				Ctrl->A.opts = strdup(opt->arg);
-				if (Ctrl->A.opts && Ctrl->A.opts[strlen(Ctrl->A.opts)-1] == '+') {
-					Ctrl->A.gdal_write = true;
-					Ctrl->A.opts[strlen(Ctrl->A.opts)-1] = '\0';	/* Strip the '+' */
-				}
-				break;
-
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -359,27 +346,25 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
-	else if (Ctrl->N.mode == 2) {	/* Pass over to GDAL */
-	}
-
 #if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
-	if (Ctrl->A.active) {
+	else if (Ctrl->N.mode == 2) {	/* Pass over to GDAL */
+		char buf[GMT_LEN128];
 		struct GMT_OPTION *opt = NULL;
 		struct GMT_GDALLIBRARIFIED_CTRL *st = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALLIBRARIFIED_CTRL);;
 		for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 			if (opt->option != '<') continue;	/* We are only processing filenames here */
 			st->fname_in  = opt->arg;
 			st->fname_out = Ctrl->G.file;
-			st->opts = Ctrl->A.opts;
-			//if (Ctrl->S.mode) strcat (A->opts, sprintf(buf,"-a nearest:radius1=%f:radius2=%f:nodata=NaN", Ctrl->S.mode, Ctrl->S.mode));
-			if (Ctrl->A.gdal_write) st->M.write_gdal = true;
-			gmt_gdal_grid(GMT, st);
+			sprintf(buf,"-a nearest:radius1=%f:radius2=%f:nodata=NaN", Ctrl->S.radius, Ctrl->S.radius);
+			st->opts = buf;
+			error = gmt_gdal_grid(GMT, st);
 			break;
 		}
 		gmt_M_free (GMT, st);
-		return 0;
+		Return (error);
 	}
 #endif
+
 	/* Regular nearest neighbor moving average operation */
 
 	gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);

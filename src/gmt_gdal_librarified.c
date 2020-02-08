@@ -118,6 +118,33 @@ char *out_name(struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 }
 
 /* ------------------------------------------------------------------------------------------------------------ */
+GMT_LOCAL void add_defaults(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL, char *ext_opts) {
+	/* Add defaults to a netCDF output when file is to be written by GDAL, or just set a MEM driver if for GMT */
+	if (GDLL->opts) strcat(ext_opts, GDLL->opts); 
+	if (GDLL->M.write_gdal) {
+		char *ext;
+		if ((ext = gmt_get_ext (GDLL->fname_out)) != NULL) {
+			if (!strcasecmp(ext, "nc") || !strcasecmp(ext, "grd")) {
+				if (!GDLL->opts) {
+					strcat(ext_opts, " -of netCDF -co FORMAT=NC4 -co ZLEVEL=5 -co COMPRESS=DEFLATE -co CHUNKING=YES");
+				}
+				else {
+					if (!strstr(GDLL->opts, "netCDF=")) strcat(ext_opts, " -of netCDF");
+					if (!strstr(GDLL->opts, "FORMAT=")) strcat(ext_opts, " -co FORMAT=NC4");
+					if (!strstr(GDLL->opts, "ZLEVEL=")) strcat(ext_opts, " -co ZLEVEL=5");
+					if (!strstr(GDLL->opts, "COMPRESS=")) strcat(ext_opts, " -co COMPRESS=DEFLATE");
+					if (!strstr(GDLL->opts, "CHUNKING=")) strcat(ext_opts, " -co CHUNKING=YES");
+				}
+			}
+		}
+	}
+	else
+		strcat(ext_opts, " -of MEM");	/* For GMT we need the data in the MEM driver */
+
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gdal options used: %s\n", ext_opts);
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_info (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
 	GDALDatasetH	hDataset;
 	GDALInfoOptions *psOptions;
@@ -134,9 +161,9 @@ int gmt_gdal_info (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
 	psOptions = GDALInfoOptionsNew(breakMe(GMT, opts), NULL);
 	GMT_Message (GMT->parent, GMT_TIME_NONE, "GDAL Info\n\n%s\n", GDALInfo(hDataset, psOptions));
 
+	GDALClose(hDataset);
 	GDALInfoOptionsFree(psOptions);
 	GDALDestroyDriverManager();
-	GDALClose(hDataset);
 	return 0;
 }
 
@@ -173,10 +200,8 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	sprintf(ext_opts, "-ot Float32 -txe %lf %lf -tye %lf %lf -outsize %d %d ",
 			Grid->header->wesn[XLO]-dx, Grid->header->wesn[XHI]+dx, Grid->header->wesn[YLO]-dy,
 			Grid->header->wesn[YHI]+dy, Grid->header->n_columns, Grid->header->n_rows);
-	if (GDLL->opts) strcat(ext_opts, GDLL->opts); 
-	if (!GDLL->M.write_gdal)	strcat(ext_opts, " -of MEM");	/* For GMT we need the data in the MEM driver */
 
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gdal options used: %s\n", ext_opts);
+	add_defaults(GMT, GDLL, &ext_opts[0]);
 
 	psOptions = GDALGridOptionsNew(breakMe(GMT, ext_opts), NULL);
 	hDstDS = GDALGrid(out_name(GDLL), hSrcDS, psOptions, &bUsageError);
@@ -189,9 +214,9 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	if (!error && !GDLL->M.write_gdal) 		/* Write grid with the GMT machinery */
 		error = save_grid_with_GMT(GMT, hDstDS, Grid, GDLL->fname_out);
 
+	GDALClose(hSrcDS);
 	GDALGridOptionsFree(psOptions);
 	GDALDestroyDriverManager();
-	GDALClose(hSrcDS);
 	return error;
 }
 
@@ -216,10 +241,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 								 GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
 		return GMT->parent->error;
 
-	if (GDLL->opts) strcat(ext_opts, GDLL->opts); 
-	if (!GDLL->M.write_gdal)	strcat(ext_opts, " -of MEM");	/* For GMT we need the data in the MEM driver */
-
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gdal options used: %s\n", ext_opts);
+	add_defaults(GMT, GDLL, &ext_opts[0]);
 
 	psOptions = GDALDEMProcessingOptionsNew(breakMe(GMT, ext_opts), NULL);
 	hDstDS = GDALDEMProcessing(out_name(GDLL), hSrcDS, "hillshade", NULL, psOptions, &bUsageError);
@@ -232,9 +254,9 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	if (!error && !GDLL->M.write_gdal) 		/* Write grid with the GMT machinery */
 		error = save_grid_with_GMT(GMT, hDstDS, Grid, GDLL->fname_out);
 
+	GDALClose(hSrcDS);
 	GDALDEMProcessingOptionsFree(psOptions);
 	GDALDestroyDriverManager();
-	GDALClose(hSrcDS);
 	return error;
 }
 
