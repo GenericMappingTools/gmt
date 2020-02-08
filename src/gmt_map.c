@@ -245,7 +245,7 @@ enum GMT_side {
  * it returns.  We assume the GMT pointer is available in the function!
  */
 #define VAR_TO_STR(arg)      #arg
-#define Return(err) { GMT_Report(GMT->parent,GMT_MSG_ERROR,"Internal Error = %s\n",VAR_TO_STR(err)); return (err);}
+#define Return(err) { GMT_Report(GMT->parent,GMT_MSG_ERROR,"Internal Failure = %s\n",VAR_TO_STR(err)); return (err);}
 
 /* Note by P. Wessel, 18-Oct-2012, updated 08-JAN-2014:
  * In the olden days, GMT only did great circle distances.  In GMT 4 we implemented geodesic
@@ -1098,7 +1098,7 @@ GMT_LOCAL unsigned int map_genper_crossing (struct GMT_CTRL *GMT, double lon1, d
 	if (h_out[1] == true && r_out[1] == false)	/* Point 2 is beyond horizon but inside box.  That means point 1 is inside and we use map_radial_crossing */
 		return (map_radial_crossing (GMT, lon1, lat1, lon2, lat2, clon, clat, xx, yy, sides));
 	/* Don't think we should get here... */
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in map_genper_crossing: None of the cases matched crossing scenario");
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in map_genper_crossing: None of the cases matched crossing scenario");
 	return (map_radial_crossing (GMT, lon1, lat1, lon2, lat2, clon, clat, xx, yy, sides));
 
 }
@@ -1850,7 +1850,7 @@ uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 			uint64_t add, last_index = 0, p, p_next;
 
 			if (n_cross%2 == 1) {	/* Should not happen with a polygon */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in map_wesn_clip: odd number of crossings?");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in map_wesn_clip: odd number of crossings?");
 			}
 
 			/* First copy the current polygon */

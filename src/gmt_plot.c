@@ -2135,7 +2135,7 @@ GMT_LOCAL bool plot_is_fancy_boundary (struct GMT_CTRL *GMT) {
 			return (false);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in plot_is_fancy_boundary - notify developers\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in plot_is_fancy_boundary - notify developers\n");
 			return (false);
 	}
 }
@@ -8694,7 +8694,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	/* Start writing PostScript to fp */
 
 	if (fwrite (P->data, 1U, P->n_bytes, fp) != P->n_bytes) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error %s PostScript to %s\n", msg1[append], &ps_file[append]);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while %s PostScript to %s\n", msg1[append], &ps_file[append]);
 		if (close_file) fclose (fp);
 		return (GMT_DATA_WRITE_ERROR);
 	}

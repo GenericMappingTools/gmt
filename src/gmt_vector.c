@@ -68,7 +68,7 @@ GMT_LOCAL int vector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_
 	double *rv1 = NULL;
 
 	if (m < n) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in gmt_svdcmp: m < n augment A with additional rows\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in gmt_svdcmp: m < n augment A with additional rows\n");
 		return (GMT_DIM_TOO_SMALL);
 	}
 
@@ -217,7 +217,7 @@ GMT_LOCAL int vector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_
 				break;
 			}
 			if (its == 30) {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Error in gmt_svdcmp: No convergence in 30 iterations\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Failure in gmt_svdcmp: No convergence in 30 iterations\n");
 #ifndef _OPENMP
 				return (GMT_RUNTIME_ERROR);
 #endif
@@ -1015,7 +1015,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
 	/* Check for convergence */
 	if (info > 0 ) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_svdcmp: Error - dsyev failed to compute eigenvalues.\n" );
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_svdcmp: dsyev failed to compute eigenvalues.\n" );
 		return (GMT_RUNTIME_ERROR);
 	}
 	/* Free workspace */

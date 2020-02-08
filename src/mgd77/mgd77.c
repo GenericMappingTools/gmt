@@ -998,7 +998,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 		}
 		/* Test if we need to use +2 because of \r\n. We could use the above solution but this one looks more (time) efficient. */
 		if (!fgets (line, GMT_BUFSIZ, F->fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading M77 record\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading M77 record\n");
 			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 		}
 		rewind (F->fp);					/* Go back to beginning of file */
@@ -1021,7 +1021,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 	}
 	if (F->format == MGD77_FORMAT_TBL) {		/* Skip the column header for tables */
 		if (!fgets (line, GMT_BUFSIZ, F->fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading TXT record\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading TXT record\n");
 			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 		}
 	}
@@ -1054,13 +1054,13 @@ static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, stru
 	H->n_records -= MGD77T_N_HEADER_RECORDS;	/* Adjust for the 2 records in the header block */
 
 	if (!fgets (line, GMT_BUFSIZ, F->fp)) {		/* Skip the column header  */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading MGD77T record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading MGD77T record\n");
 		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 	}
 
 	MGD77_header = gmt_M_memory (GMT, NULL, MGD77T_HEADER_LENGTH, char);
 	if (!fgets (MGD77_header, GMT_BUFSIZ, F->fp)) {			/* Read the entire header record  */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading MGD77T record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading MGD77T record\n");
 		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 	}
 	gmt_chop (MGD77_header);	/* Get rid of CR or LF */
@@ -4515,16 +4515,16 @@ int MGD77_Fatal_Error (struct GMT_CTRL *GMT, int error) {
 			gmt_message (GMT, "Header record not found");
 			break;
 		case MGD77_ERROR_READ_HEADER_ASC:
-			gmt_message (GMT, "Error reading ASCII header record");
+			gmt_message (GMT, "Failure while reading ASCII header record");
 			break;
 		case MGD77_ERROR_READ_HEADER_BIN:
-			gmt_message (GMT, "Error reading binary header record");
+			gmt_message (GMT, "Failure while reading binary header record");
 			break;
 		case MGD77_ERROR_WRITE_HEADER_ASC:
-			gmt_message (GMT, "Error writing ASCII header record");
+			gmt_message (GMT, "Failure while writing ASCII header record");
 			break;
 		case MGD77_ERROR_WRITE_HEADER_BIN:
-			gmt_message (GMT, "Error writing binary header record");
+			gmt_message (GMT, "Failure while writing binary header record");
 			break;
 		case MGD77_WRONG_HEADER_REC:
 			gmt_message (GMT, "Wrong header record was read");
@@ -4533,22 +4533,22 @@ int MGD77_Fatal_Error (struct GMT_CTRL *GMT, int error) {
 			gmt_message (GMT, "Data record not found");
 			break;
 		case MGD77_ERROR_READ_ASC_DATA:
-			gmt_message (GMT, "Error reading ASCII data record");
+			gmt_message (GMT, "Failure while reading ASCII data record");
 			break;
 		case MGD77_ERROR_READ_BIN_DATA:
-			gmt_message (GMT, "Error reading binary data record");
+			gmt_message (GMT, "Failure while reading binary data record");
 			break;
 		case MGD77_ERROR_WRITE_ASC_DATA:
-			gmt_message (GMT, "Error writing ASCII data record");
+			gmt_message (GMT, "Failure while writing ASCII data record");
 			break;
 		case MGD77_ERROR_WRITE_BIN_DATA:
-			gmt_message (GMT, "Error writing binary data record");
+			gmt_message (GMT, "Failure while writing binary data record");
 			break;
 		case MGD77_WRONG_DATA_REC_LEN:
 			gmt_message (GMT, "Data record has incorrect length");
 			break;
 		case MGD77_ERROR_CONV_DATA_REC:
-			gmt_message (GMT, "Error converting a field in current data record");
+			gmt_message (GMT, "Failure while converting a field in current data record");
 			break;
 		case MGD77_ERROR_NOT_MGD77PLUS:
 			gmt_message (GMT, "File is not in MGD77+ format");
@@ -4636,7 +4636,7 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 
 	for (i = 0; i < 5; i++) {	/* Skip 4 headers, read 1 line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading Carter records\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading Carter records\n");
         	fclose (fp);
 			return (-1);
 		}
@@ -4661,7 +4661,7 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 
 	for (i = 0; i < 2; i++) {	/* Skip 1 headers, get next line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading Carter offset records\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading Carter offset records\n");
        		fclose (fp);
 			return (-1);
 		}
@@ -4686,7 +4686,7 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 
 	for (i = 0; i < 2; i++) {	/* Skip 1 headers, get next line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading Carter zone records\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading Carter zone records\n");
        		fclose (fp);
 			return (-1);
 		}
@@ -4721,7 +4721,7 @@ int MGD77_carter_get_bin (struct GMT_CTRL *GMT, double lon, double lat, int *bin
 	int latdeg, londeg;
 
 	if (lat < -90.0 || lat > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in MGD77_carter_get_bin: Latitude domain error (%g)\n", lat);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in MGD77_carter_get_bin: Latitude domain error (%g)\n", lat);
 		return (-1);
 	}
 	while (lon >= 360.0) lon -= 360.0;
@@ -4741,7 +4741,7 @@ int MGD77_carter_get_zone (struct GMT_CTRL *GMT, int bin, struct MGD77_CARTER *C
 		range.  */
 
 	if (!C->initialized && MGD77_carter_init(GMT, C) ) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in MGD77_carter_get_zone: Initialization failure.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in MGD77_carter_get_zone: Initialization failure.\n");
 		return (-1);
 	}
 
