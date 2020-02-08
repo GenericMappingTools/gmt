@@ -17,15 +17,15 @@
 
 # INSTRUCTIONS TO USERS:
 #
-# 1. Copy 'GMTSettingsTemplate.cmake' to 'GMTSettings.cmake' and make any edits
+# 1. Copy 'ConfigUserTemplate.cmake' to 'ConfigUser.cmake' and make any edits
 #    related to install directory, the whereabouts of GSHHS, DCW.
-# 2. Copy 'ConfigUserTemplate.cmake' to 'ConfigUser.cmake'.
-# 3. If you are an advanced user who wishes to tinker with the more advanced
-#    settings, then explore and make changes to your ConfigUser.cmake file
+# 2. If you are an advanced user who wishes to tinker with the more advanced
+#    settings, then copy 'ConfigUserAdvancedTemplate.cmake' to 'ConfigUserAdvanced.cmake',
+#    explore and make changes to your ConfigUserAdvanced.cmake file
 #    to override variables in 'ConfigDefault.cmake' on a per-user basis.
 # 4. Follow the rest of the installation instructions in BUILDING.md.
 #
-# 'ConfigUser.cmake' and 'GMTSettings.cmake' are not version controlled
+# 'ConfigUser.cmake' and 'ConfigUserAdvanced.cmake' are not version controlled
 # (currently listed in .gitignore).
 #
 # Note: CMake considers an empty string, "FALSE", "OFF", "NO", or any string
@@ -37,8 +37,7 @@
 ##
 ## Section 1: Installation paths
 ##
-# Set install name suffix used for directories and gmt executables
-# [undefined]:
+# Set install name suffix used for directories and gmt executables [undefined]:
 #set (GMT_INSTALL_NAME_SUFFIX "suffix")
 
 # Install into traditional directory structure. Disable to install a
@@ -76,12 +75,10 @@
 # Set share installation path [share or share/gmt${GMT_INSTALL_NAME_SUFFIX}]:
 #set (GMT_DATADIR "share/gmt")
 
-# Set doc installation path [share/doc or
-# share/doc/gmt${GMT_INSTALL_NAME_SUFFIX}]:
+# Set doc installation path [share/doc or share/doc/gmt${GMT_INSTALL_NAME_SUFFIX}]:
 #set (GMT_DOCDIR "share/doc/gmt")
 
-# Set manpage installation path [share/man or
-# share/doc/gmt${GMT_INSTALL_NAME_SUFFIX}/man]:
+# Set manpage installation path [share/man or share/doc/gmt${GMT_INSTALL_NAME_SUFFIX}/man]:
 #set (GMT_MANDIR "share/doc/gmt/man")
 
 # Install documentation files from this external location instead of creating
@@ -160,7 +157,7 @@
 #set (LICENSE_RESTRICTED GPL)
 
 # Allow building of OpenMP if compiler supports it
-# set (GMT_ENABLE_OPENMP TRUE)
+#set (GMT_ENABLE_OPENMP TRUE)
 
 # Configure default units (possible values are SI and US) [SI]:
 #set (UNITS "US")
@@ -205,12 +202,19 @@
 # for testing [OFF]:
 #set (SUPPORT_EXEC_IN_BINARY_DIR ON)
 
+# Uncomment the following line to enable running low-level C tests of the API
+#set (DO_API_TESTS ON)
+
 # List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes
 # that link against the full gmt libs (not just the API; for building codes
 # that only need the GMT API, see the gmt-custom project).
 #set (EXTRA_BUILD_DIRS apidemo)
-# Uncomment the following line to enable running low-level C tests of the API
-#set (DO_API_TESTS ON)
+
+# List extra new modules for testing without adding them to the module list
+#set (EXTRA_MODULES newmodule1.c newmodule2.c)
+
+# List extra new supplemental modules for testing without adding them to the module list
+#set (EXTRA_MODULE_SUPPL newsuppl1.c newsuppl2.c)
 
 # Directory in which to install the release sources per default
 # [${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION}]:
@@ -225,8 +229,7 @@
 # Debugging
 #
 
-# Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
-# [Release]:
+# Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
 #set (CMAKE_BUILD_TYPE Debug)
 
 # Extra debugging for developers:
