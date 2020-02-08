@@ -214,7 +214,7 @@
 #set (EXTRA_MODULES newmodule1.c newmodule2.c)
 
 # List extra new supplemental modules for testing without adding them to the module list
-#set (EXTRA_MODULE_SUPPL newsuppl1.c newsuppl2.c)
+#set (EXTRA_MODULES_SUPPL newsuppl1.c newsuppl2.c)
 
 # Directory in which to install the release sources per default
 # [${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION}]:
