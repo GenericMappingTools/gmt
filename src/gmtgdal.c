@@ -169,7 +169,7 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	struct GMT_GDALLIBRARIFIED_CTRL *st = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALLIBRARIFIED_CTRL);;
+	struct GMT_GDALLIBRARIFIED_CTRL *st;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -188,6 +188,7 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtwrite main code ----------------------------*/
 
+	st = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALLIBRARIFIED_CTRL);
 	st->fname_in  = Ctrl->fname_in;
 	st->fname_out = Ctrl->G.file;
 	st->opts = Ctrl->F.opts;
