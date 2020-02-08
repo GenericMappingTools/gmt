@@ -25,6 +25,9 @@ EOF
 fi
 set -e
 
+# Set LC_ALL to get the same sort order on Linux and macOS
+export LC_ALL=C
+
 LIB=$1
 # Make sure we get both upper- and lower-case versions of the tag
 U_TAG=$(echo $LIB | tr '[a-z]' '[A-Z]')
