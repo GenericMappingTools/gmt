@@ -317,7 +317,7 @@ endif (NOT LICENSE_RESTRICTED)
 # Note: Developers can set EXTRA_MODULES in ConfigUserAdvanced.cmake to test new modules
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c filter1d.c grd2kml.c
 	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
-	gmtspatial.c gmtconnect.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
+	gmtspatial.c gmtconnect.c gmtgdal.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfill.c grdfilter.c
 	grdgradient.c grdhisteq.c grdinfo.c grdinterpolate.c grdlandmask.c grdmask.c grdmath.c
 	grdpaste.c grdproject.c grdsample.c grdconvert.c grdtrack.c movie.c
