@@ -18,7 +18,7 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
-#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
+#if defined(HAVE_GDAL) && ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3)
 
 #include <gdal_utils.h>
 

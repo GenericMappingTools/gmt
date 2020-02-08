@@ -346,7 +346,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
-#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
+#if defined(HAVE_GDAL) && ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3)
 	else if (Ctrl->N.mode == 2) {	/* Pass over to GDAL */
 		char buf[GMT_LEN128];
 		struct GMT_OPTION *opt = NULL;
