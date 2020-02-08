@@ -20,7 +20,7 @@ part of Xcode you must have installed the full Xcode (you most likely did, but t
 ways to *only* install the command-line tools, so make sure you have an Xcode icon under
 Applications).  Xcode may change as versions change; the images below is for Xcode 10-11.
 
-#. You will need to make some changes to your *cmake/ConfigUser.cmake* file. Scroll down to the
+#. You will need to make some changes to your *cmake/ConfigUserAdvanced.cmake* file. Scroll down to the
    section that says "# Extra debugging for developers:" and uncomment the ~6 lines that has
    the if-test on "Xcode".  This will pass a few flags that are used when debugging via Xcode.
    Also uncomment the two "add_definitions" lines that contain the word "DEBUG" in it somewhere.

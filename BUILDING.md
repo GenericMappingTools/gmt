@@ -423,15 +423,15 @@ cmake --build . --target docs_html  # HTML manual, tutorial, cookbook, and API r
 To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/)
 documentation builder. You can choose to install the documentation files
 from an external location instead of generating the Manpages, and HTML files from the sources.
-This is convenient if Sphinx is not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
-`cmake/ConfigUser.cmake`.
+This is convenient if Sphinx is not available. Set **GMT_INSTALL_EXTERNAL_DOC** in
+`cmake/ConfigUserAdvanced.cmake`.
 
 
 ## Running tests
 
 A complete set of the example scripts used to create all the example plots,
 including all necessary data files, are provided by the installation.
-To enable testing, you need following lines in your `ConfigUser.cmake`:
+To enable testing, you need following lines in your `ConfigUserAdvanced.cmake`:
 
 ```
 enable_testing()
