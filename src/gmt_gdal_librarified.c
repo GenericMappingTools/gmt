@@ -31,7 +31,7 @@ GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	unsigned int pos = 0, k;
 	int  n_args = 0;
 	bool quoted;
-	size_t n_alloc = GMT_SMALL_CHUNK;
+	size_t n_alloc = 4 * GMT_SMALL_CHUNK;
 	char p[GMT_LEN512] = {""}, *txt_in;	/* Passed a single text string */
 	char **args = NULL;
 	
@@ -73,6 +73,16 @@ GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 
 	free (txt_in);
 	return args;
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
+GMT_LOCAL void free_args(struct GMT_CTRL *GMT, char **args) {
+	int k = 0;
+	while (k < 4 * GMT_SMALL_CHUNK && args[k]) {	/*  256 should be way larger then actual number of allocated items */
+		free (args[k]);
+		k++;
+	}
+	gmt_M_free (GMT, args);
 }
 
 /* ------------------------------------------------------------------------------------------------------------ */
@@ -146,6 +156,7 @@ GMT_LOCAL void add_defaults(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTR
 
 /* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_info (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
+	char **args;
 	GDALDatasetH	hDataset;
 	GDALInfoOptions *psOptions;
 
@@ -158,19 +169,20 @@ int gmt_gdal_info (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
 		return -1;
 	}
 
+	args = breakMe(GMT, opts);
 	psOptions = GDALInfoOptionsNew(breakMe(GMT, opts), NULL);
 	GMT_Message (GMT->parent, GMT_TIME_NONE, "GDAL Info\n\n%s\n", GDALInfo(hDataset, psOptions));
 
+	free_args(GMT, args);
 	GDALClose(hDataset);
 	GDALInfoOptionsFree(psOptions);
 	GDALDestroyDriverManager();
 	return 0;
 }
 
-
 /* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
-	char ext_opts[GMT_LEN512] = {""};
+	char ext_opts[GMT_LEN512] = {""}, **args;
 	int   bUsageError, error = 0;
 	double dx = 0, dy = 0;
 	struct GMT_GRID *Grid = NULL;
@@ -203,7 +215,8 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 
 	add_defaults(GMT, GDLL, &ext_opts[0]);
 
-	psOptions = GDALGridOptionsNew(breakMe(GMT, ext_opts), NULL);
+	args = breakMe(GMT, ext_opts);
+	psOptions = GDALGridOptionsNew(args, NULL);
 	hDstDS = GDALGrid(out_name(GDLL), hSrcDS, psOptions, &bUsageError);
 
 	if (bUsageError == TRUE) {
@@ -214,6 +227,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	if (!error && !GDLL->M.write_gdal) 		/* Write grid with the GMT machinery */
 		error = save_grid_with_GMT(GMT, hDstDS, Grid, GDLL->fname_out);
 
+	free_args(GMT, args);
 	GDALClose(hSrcDS);
 	GDALGridOptionsFree(psOptions);
 	GDALDestroyDriverManager();
@@ -222,7 +236,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 
 /* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
-	char ext_opts[GMT_LEN512] = {""};
+	char ext_opts[GMT_LEN512] = {""}, **args;
 	int   bUsageError, error = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
@@ -243,7 +257,8 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 
 	add_defaults(GMT, GDLL, &ext_opts[0]);
 
-	psOptions = GDALDEMProcessingOptionsNew(breakMe(GMT, ext_opts), NULL);
+	args = breakMe(GMT, ext_opts);
+	psOptions = GDALDEMProcessingOptionsNew(args, NULL);
 	hDstDS = GDALDEMProcessing(out_name(GDLL), hSrcDS, "hillshade", NULL, psOptions, &bUsageError);
 
 	if (bUsageError == TRUE) {
@@ -254,6 +269,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	if (!error && !GDLL->M.write_gdal) 		/* Write grid with the GMT machinery */
 		error = save_grid_with_GMT(GMT, hDstDS, Grid, GDLL->fname_out);
 
+	free_args(GMT, args);
 	GDALClose(hSrcDS);
 	GDALDEMProcessingOptionsFree(psOptions);
 	GDALDestroyDriverManager();
