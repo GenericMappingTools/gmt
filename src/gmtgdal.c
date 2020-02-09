@@ -149,7 +149,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT
 			case 'M':	/* -M[+r+w] which read-write machinery. GMT or GDAL */
 				Ctrl->M.active = true;
 				if (strstr(opt->arg, "+r")) Ctrl->M.read_gdal  = true;
-				if (strstr(opt->arg, "+w")) Ctrl->M.write_gdal = true;
+				else if (strstr(opt->arg, "+w")) Ctrl->M.write_gdal = true;
+				else if (opt->arg[0] == '\0') Ctrl->M.read_gdal = Ctrl->M.write_gdal = true;
 				break;
 
 			case 'W':	/* -W<fname> sets output VECTOR data fname when writen by GDAL */
@@ -164,6 +165,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	n_errors += gmt_M_check_condition (GMT, n_files == 0, "No input files given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && strcmp(Ctrl->A.prog_name, "grid") && strcmp(Ctrl->A.prog_name, "info") && strcmp(Ctrl->A.prog_name, "dem"), "Option -A: Must select dem, grid, or info\n");
+	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -176,7 +180,7 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	struct GMT_GDALLIBRARIFIED_CTRL *st;
+	struct GMT_GDALLIBRARIFIED_CTRL *st = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -193,9 +197,12 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
-	/*---------------------------- This is the gmtwrite main code ----------------------------*/
+	/*---------------------------- This is the gmtgdal main code ----------------------------*/
 
-	st = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALLIBRARIFIED_CTRL);
+	if ((st = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALLIBRARIFIED_CTRL)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Memory allocation failure\n");
+		Return (GMT_MEMORY_ERROR);
+	}
 	st->fname_in  = Ctrl->fname_in;
 	st->fname_out = Ctrl->G.file;
 	st->opts = Ctrl->F.opts;
