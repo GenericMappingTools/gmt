@@ -2462,7 +2462,7 @@ static int psl_search_userimages (struct PSL_CTRL *PSL, char *imagefile) {
 }
 
 static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned char *image, unsigned int width, unsigned int height, unsigned int depth) {
-	int k;
+	int k, i;
 	unsigned char *picture = NULL;
 	/* image_no is 1-90 (PSL_N_PATTERNS) if a standard PSL pattern, else we examine imagefile.
 	 * User images are numbered PSL_N_PATTERNS+1,2,3 etc. */
@@ -2472,7 +2472,11 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 		picture = PSL_pattern[k];
 	}
 	else {	/* User image, check to see if already used */
-		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
+		if (imagefile == NULL) {
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: Gave NULL as imagefile name\n");
+			PSL_exit (EXIT_FAILURE);
+		}
+		i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
 		if (i >= 0) return (PSL_N_PATTERNS + i + 1);	/* Already registered, just return number */
 		if (PSL->internal.n_userimages > (PSL_N_PATTERNS-1)) {
 			PSL_message (PSL, PSL_MSG_ERROR, "Error: Already maintaining %d user images and cannot accept any more\n", PSL->internal.n_userimages+1);
