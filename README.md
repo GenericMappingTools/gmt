@@ -92,7 +92,7 @@ version 3 or any later version. See [LICENSE.TXT](LICENSE.TXT) for full details.
 ## Acknowledgment
 
 GMT relies on several other Open Source software libraries and programs for its
-operation.  We gratefullly acknowledge the importance to GMT of these products.
+operation.  We gratefully acknowledge the importance to GMT of these products.
 GMT may be linked with these libraries (some are optional):
 [Geospatial Data Abstraction Library (GDAL)](https://gdal.org),
 [Network Common Data Form (netCDF)](https://www.unidata.ucar.edu/software/netcdf/),
