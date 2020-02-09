@@ -367,7 +367,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 				SH->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
-					GMT_Report (API, GMT_MSG_ERROR, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
+					GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
 					gmt_fclose (GMT, fp);
 					Return (GMT_DATA_READ_ERROR);
 				}

@@ -1061,7 +1061,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	fwrite (PS->data, sizeof(char), PS->n_bytes, fp);
 	fflush (fp);
 	if (pclose (fp) == -1)
-		GMT_Report(API, GMT_MSG_ERROR, "Error closing pipe used for Ghostscript command.\n");
+		GMT_Report(API, GMT_MSG_ERROR, "Failure while closing pipe used for Ghostscript command.\n");
 	fh = fd[0];	/* File handle for reading */
 #else
  	write (H->fd[1], PS->data, PS->n_bytes);
@@ -1241,20 +1241,20 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 #ifdef _WIN32
 	if ((n_bytes = fwrite (PS->data, sizeof(char), PS->n_bytes, fp)) != PS->n_bytes)
 		GMT_Report (API, GMT_MSG_ERROR,
-		            "Error writing PostScript buffer to Ghostscript process. Bytes written = %ld, should have been %ld\n", n_bytes, PS->n_bytes);
+		            "Failure while writing PostScript buffer to Ghostscript process. Bytes written = %ld, should have been %ld\n", n_bytes, PS->n_bytes);
 	if (fflush (fp) == EOF)
-		GMT_Report (API, GMT_MSG_ERROR, "Error flushing Ghostscript process.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while flushing Ghostscript process.\n");
 	if (pclose (fp) == -1)
-		GMT_Report (API, GMT_MSG_ERROR, "Error closing Ghostscript process.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while closing Ghostscript process.\n");
 	fh = fd[0];	/* File handle for reading */
 #else
 	if (fp) {	/* Did popen after all since we have an output filename */
 		if (fwrite (PS->data, sizeof(char), PS->n_bytes, fp) != PS->n_bytes)
-			GMT_Report (API, GMT_MSG_ERROR, "Error writing PostScript buffer to Ghostscript process.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing PostScript buffer to Ghostscript process.\n");
 		if (fflush (fp) == EOF)
-			GMT_Report (API, GMT_MSG_ERROR, "Error flushing Ghostscript process.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while flushing Ghostscript process.\n");
 		if (pclose (fp) == -1)
-			GMT_Report (API, GMT_MSG_ERROR, "Error closing Ghostscript process.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while closing Ghostscript process.\n");
 	}
 	else {	/* On non-Windows and want a raster back */
  		write (H->fd[1], PS->data, PS->n_bytes);
@@ -2750,7 +2750,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 #endif
 
 	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error opening HKLM key\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while opening HKLM key\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 
@@ -2785,7 +2785,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
 #endif
 	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error opening HKLM key\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while opening HKLM key\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 
@@ -2795,7 +2795,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	RegCloseKey(hkey);
 
 	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error reading the GS_DLL value contents\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the GS_DLL value contents\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 

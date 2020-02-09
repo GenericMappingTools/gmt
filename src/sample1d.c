@@ -465,7 +465,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				}
 
 				if (result != GMT_NOERROR) {
-					GMT_Report (API, GMT_MSG_ERROR, "Error from gmt_intpol near row %d!\n", result+1);
+					GMT_Report (API, GMT_MSG_ERROR, "Failure in gmt_intpol near row %d!\n", result+1);
 					return (result);
 				}
 			}

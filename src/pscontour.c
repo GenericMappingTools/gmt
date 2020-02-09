@@ -1091,11 +1091,11 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		uint64_t na = 0, nc = 0;
 		double *za = NULL, *zc = NULL;
 		if (Ctrl->A.file && strchr (Ctrl->A.file, ',') && (za = gmt_list_to_array (GMT, Ctrl->A.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &na)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error parsing annotated contours from list %s\n", Ctrl->A.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing annotated contours from list %s\n", Ctrl->A.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->C.file && strchr (Ctrl->C.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.file, gmt_M_type (GMT, GMT_IN, GMT_Z), &nc)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error parsing regular contours from list %s\n", Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing regular contours from list %s\n", Ctrl->C.file);
 			if (za) gmt_M_free (GMT, za);
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -1124,7 +1124,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 		/* Must register Ctrl->C.file first since we are going to read rec-by-rec from all available source */
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_IN, NULL, Ctrl->C.file)) == GMT_NOTSET) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error registering contour info file %s\n", Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while registering contour info file %s\n", Ctrl->C.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables text input and sets access mode */

@@ -821,7 +821,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 #ifdef BUILD_SHARED_LIBS
 	GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error loading core GMT shared library: %s\n", dlerror());
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());
 		api_exit (API, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	dlerror (); /* Clear any existing error */
@@ -949,7 +949,7 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 	unsigned int k;
 	for (k = 0; k < API->n_shared_libs; k++) {
 		if (k > 0 && API->lib[k].handle && dlclose (API->lib[k].handle))
-			GMT_Report (API, GMT_MSG_ERROR, "Error closing GMT %s shared library: %s\n", API->lib[k].name, dlerror());
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while closing GMT %s shared library: %s\n", API->lib[k].name, dlerror());
 		gmt_M_str_free (API->lib[k].name);
 		gmt_M_str_free (API->lib[k].path);
 	}
@@ -6389,7 +6389,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			snprintf (message, GMT_LEN256, "Object ID %%d : Registered double array %" PRIxS " as an %s resource [n_objects = %%d]\n", (size_t)resource, GMT_direction[direction]);
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_ERROR, "Error in GMT_Register_IO (%s): Unrecognized method %d\n", GMT_direction[direction], method);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure in GMT_Register_IO (%s): Unrecognized method %d\n", GMT_direction[direction], method);
 			return_value (API, GMT_NOT_A_VALID_METHOD, GMT_NOTSET);
 			break;
 	}
@@ -9967,7 +9967,7 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 		}
 	}
 	if (GMT_Destroy_Data (GMT->parent, &Out) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error freeing temporary grid\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while freeing temporary grid\n");
 	}
 
 	gmt_M_memcpy (GMT->current.io.pad, pad, 4U, unsigned int);	/* Restore GMT pad */
@@ -11355,7 +11355,7 @@ int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 
 	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
 	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error opening file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while opening file %s\n", file);
 		gmt_M_str_free (file);
 		GMT_Destroy_Session (API);
 		return GMT_GRID_READ_ERROR;
@@ -11399,7 +11399,7 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	/* Read the grid header */
 	gmt_grd_init (API->GMT, header, NULL, false);
 	if (gmtlib_read_grd_info (API->GMT, file, header)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error opening file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while opening file %s\n", file);
 		gmt_M_str_free (file);
 		gmt_free_header (API->GMT, &header);
 		GMT_Destroy_Session (API);
@@ -11409,7 +11409,7 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	/* Read the grid, possibly after first allocating array space */
 	if (dim[GMT_Z] == 1) array = gmt_M_memory (API->GMT, NULL, header->size, gmt_grdfloat);
 	if (gmtlib_read_grd (API->GMT, file, header, array, no_wesn, GMT_no_pad, 0)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error reading file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s\n", file);
 		gmt_M_str_free (file);
 		gmt_free_header (API->GMT, &header);
 		GMT_Destroy_Session (API);
@@ -11484,7 +11484,7 @@ int gmt_f77_writegrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], 
 	/* Write the file */
 
 	if (gmtlib_write_grd (API->GMT, file, &header, array, no_wesn, GMT_no_pad, 0)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error writing file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing file %s\n", file);
 		gmt_M_str_free (file);
 		GMT_Destroy_Session (API);
 		return GMT_GRID_WRITE_ERROR;

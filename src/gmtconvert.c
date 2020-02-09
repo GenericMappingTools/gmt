@@ -749,7 +749,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		unsigned int flag[3] = {0, 0, GMT_WRITE_SEGMENT};
 		struct GMT_DATASET *D2 = NULL;
 		if ((D2 = GMT_Convert_Data (API, D[GMT_OUT], GMT_IS_DATASET, NULL, GMT_IS_DATASET, flag)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error collating each table's segments into a single segment per table.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while collating each table's segments into a single segment per table.\n");
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &D[GMT_OUT]) != GMT_NOERROR) {	/* Remove the previously registered output dataset */

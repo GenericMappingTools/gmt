@@ -264,12 +264,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		opt = opt->next;	/* The row,col part */
 		if (opt) {	/* There is an argument */
 			if (isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col)) < 1) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error set: Unable to parse row,col: %s\n", opt->arg);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse row,col: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
 			}
 			if (n == 1) Ctrl->In.col = INT_MAX;	/* Flag we gave the 1-D index only */
 			if (Ctrl->In.row == GMT_NOTSET || Ctrl->In.col == GMT_NOTSET) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error set: Unable to parse row,col|index: %s\n", opt->arg);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse row,col|index: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
 			}
 		}
@@ -288,7 +288,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	}
 	else if (gmt_is_integer (opt->arg)) {	/* Implicitly called set via an index without using the word "set" */
 		if ((Ctrl->In.row = atoi (opt->arg)) < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error set: Unable to parse index: %s\n", opt->arg);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse index: %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}
 		Ctrl->In.col = INT_MAX;	/* Flag we gave the 1-D index only */
@@ -402,7 +402,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					default:	Ctrl->F.mode = SUBPLOT_FIGURE;  n = 0;	break; /* Figure dimension is default */
 				}
 				if (Ctrl->F.mode == SUBPLOT_PANEL && strstr (opt->arg, "+f")) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error Option -F: +f modifier can only be used with -F[f].\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: +f modifier can only be used with -F[f].\n");
 					n_errors++;
 				}
 				Ctrl->F.w = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_X], double);	/* Normalized fractional widths */

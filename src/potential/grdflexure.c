@@ -211,7 +211,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		struct GMT_DATASET *Tin = NULL;
 		uint64_t seg, row;
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, arg, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading time file %s\n", arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading time file %s\n", arg);
 			return 0;
 		}
 		/* Read the file successfully */
@@ -227,7 +227,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 			}
 		}
 		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error destroying data set after processing\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while destroying data set after processing\n");
 			return 0;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Sort %u model times from old to young\n", n_eval_times);
@@ -702,13 +702,13 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 	/* Must initialize a new load grid */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Read load file %s\n", file);
 	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error reading the header of file %s - file skipped\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the header of file %s - file skipped\n", file);
 		return NULL;
 	}
 	gmt_grd_init (GMT, Orig->header, options, true);	/* Update the header */
 	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
  		GMT_GRID_IS_COMPLEX_REAL, NULL, file, Orig)) == NULL) {	/* Get data only */
-		GMT_Report (API, GMT_MSG_ERROR, "Error reading the data of file %s - file skipped\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the data of file %s - file skipped\n", file);
 		return NULL;
 	}
 	/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
@@ -730,7 +730,7 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 	/* Do the forward FFT */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Forward FFT\n");
 	if (GMT_FFT (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, G->K)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error taking the FFT of %s - file skipped\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while taking the FFT of %s - file skipped\n", file);
 		return NULL;
 	}
 	G->Grid = Grid;	/* Pass grid back via the grid array */
@@ -844,7 +844,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		double s_time, s_scale;
 		char t_arg[GMT_LEN256] = {""}, s_unit;
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->In.file, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading load file list %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading load file list %s\n", Ctrl->In.file);
 			Return (API->error);
 		}
 		/* Read the file successfully */
@@ -862,7 +862,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			}
 		}
 		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error destroying load file list after processing\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while destroying load file list after processing\n");
 			Return (API->error);
 		}
 	}
@@ -898,7 +898,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_eval_times, 0};
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error creating text set for file %s\n", Ctrl->L.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while creating text set for file %s\n", Ctrl->L.file);
 			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -1007,7 +1007,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	error = GMT_NOERROR;
 	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error writing list of grid files to %s\n", Ctrl->L.file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid files to %s\n", Ctrl->L.file);
 		error = API->error;
 	}
 
