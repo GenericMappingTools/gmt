@@ -236,6 +236,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 /* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	char ext_opts[GMT_LEN512] = {""}, **args;
+	char *method = NULL, *cpt_name = NULL;
 	int   bUsageError, error = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
@@ -258,7 +259,9 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 
 	args = breakMe(GMT, ext_opts);
 	psOptions = GDALDEMProcessingOptionsNew(args, NULL);
-	hDstDS = GDALDEMProcessing(out_name(GDLL), hSrcDS, "hillshade", NULL, psOptions, &bUsageError);
+	method = GDLL->dem_method ? GDLL->dem_method : "hillshade";
+	cpt_name = GDLL->dem_cpt ? GDLL->dem_cpt : NULL;
+	hDstDS = GDALDEMProcessing(out_name(GDLL), hSrcDS, method, cpt_name, psOptions, &bUsageError);
 
 	if (bUsageError == TRUE) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdal_dem: failure\n");
