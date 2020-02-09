@@ -103,5 +103,5 @@ GMT may be linked with these libraries (some are optional):
 [ZLIB](https://www.zlib.net). GMT may call these executables:
 GDAL (ogr2ogr, gdal_info), [Ghostscript](https://www.ghostscript.com),
 [FFmpeg](https://www.ffmpeg.org),
-[dxg-open](https://www.freedesktop.org/wiki/Software/xdg-utils/), and
+[xdg-open](https://www.freedesktop.org/wiki/Software/xdg-utils/), and
 [GraphicsMagick](http://www.graphicsmagick.org).
