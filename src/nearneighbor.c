@@ -221,6 +221,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 				if (opt->arg[0] == 'n')
 					Ctrl->N.mode = 1;
 				else if (opt->arg[0]) {	/* Override default -N4+m4 */
+					if (isalpha(opt->arg[0])) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-N%c is not a valid option\n", opt->arg[0]);
+						n_errors++;
+						break;
+					}
 					if ((c = strstr (opt->arg, "+m"))) {	/* Set sectors and min sectors using current syntax */
 						Ctrl->N.min_sectors = atoi (&c[2]);
 						c[0] = '\0';
