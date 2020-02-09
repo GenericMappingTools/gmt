@@ -79,12 +79,13 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <infile> -A<prog> [-F<gd opts>] [-G<outgrid>] [-M[+r+w]] [-W<outds>] [%s] [%s]\n", name, GMT_Rx_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <infile> -A<prog>[+m<method>+c<cpt>] [-F<gd opts>] [-G<outgrid>] [-M[+r+w]] [-W<outds>] [%s] [%s]\n", name, GMT_Rx_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify input file name\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify the GDAL program name.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify the GDAL program name (Currently 'info', 'grid' or 'dem').\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   When program is 'dem' append +m<method> (pick one of 'hillshade', 'color-relief', 'slope', 'TRI', 'TPI' or 'roughness') and, for 'color-relief', +c<cpt_name>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F list of GDAL options for the selected program in -A wrapped in double quotes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Name of output grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Means to both read and write with GDAL. Use +r to only read or +w to write.\n");
@@ -122,8 +123,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT
 			case 'A':	/* GDAL prog name */
 				Ctrl->A.active = true;
 				Ctrl->A.prog_name = opt->arg;
-				if (gmt_get_modifier (opt->arg, 'm', txt_a))
+				if (gmt_get_modifier (opt->arg, 'm', txt_a)) {
+					if (strcmp(txt_a, "hillshade") && strcmp(txt_a, "color-relief") && strcmp(txt_a, "slope") &&
+					    strcmp(txt_a, "TRI") && strcmp(txt_a, "TPI") && strcmp(txt_a, "roughness")) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-A option. \"%s\" is not a valid method\n", txt_a);
+						n_errors++;
+						break;
+					}
 					Ctrl->A.dem_method = strdup(txt_a);
+				}
 				if (gmt_get_modifier (opt->arg, 'c', txt_b))
 					Ctrl->A.dem_cpt = strdup(txt_b);
 				if (p = strchr (Ctrl->A.prog_name, '+'))
@@ -213,9 +221,14 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 	else if (!strcmp(Ctrl->A.prog_name, "info"))
 		gmt_gdal_info (GMT, Ctrl->fname_in, Ctrl->F.opts);
 	else if (!strcmp(Ctrl->A.prog_name, "dem")) {
+		char *ext;
 		if (Ctrl->A.dem_method) st->dem_method = Ctrl->A.dem_method;
 		if (Ctrl->A.dem_cpt) st->dem_cpt = Ctrl->A.dem_cpt;
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "PROG = dem\nMETHOD = %s\nCPT = %s\n", st->dem_method, st->dem_cpt);
+		if ((ext = gmt_get_ext (st->fname_out)) != NULL) {
+			/* For all others then .nc or .grd force writting with GDAL. This makes life much easier. */
+			if (strcasecmp(ext, "nc") && strcasecmp(ext, "grd"))
+				st->M.write_gdal = true;
+		}
 		gmt_gdal_dem(GMT, st);
 	}
 	else
