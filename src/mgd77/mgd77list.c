@@ -1073,7 +1073,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			if (error == MGD77_ERROR_NOSUCHCOLUMN)
 				GMT_Report (API, GMT_MSG_WARNING, "One or more requested columns not present in cruise %s - skipping\n", list[argno]);
 			else
-				GMT_Report (API, GMT_MSG_ERROR, "Error reading header sequence for cruise %s - skipping\n", list[argno]);
+				GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header sequence for cruise %s - skipping\n", list[argno]);
 			MGD77_Free_Dataset (GMT, &D);
 			continue;
 		}
@@ -1100,7 +1100,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		}
 
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data set for cruise %s\n", list[argno]);
 			MGD77_Free_Dataset (GMT, &D);
 			Return (GMT_DATA_READ_ERROR);
 		}

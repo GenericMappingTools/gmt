@@ -444,29 +444,29 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Grid->header->registration = GMT_GRID_NODE_REG;
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->n_columns) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding ncols record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode ncols record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->n_rows) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding ncols record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode ncols record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[XLO]) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding xll record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode xll record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!strncmp (line, "xllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[YLO]) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding yll record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode yll record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!strncmp (line, "yllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->inc[GMT_X]) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding cellsize record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode cellsize record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		Grid->header->inc[GMT_Y] = Grid->header->inc[GMT_X];

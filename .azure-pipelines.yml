@@ -18,10 +18,30 @@ variables:
 
 jobs:
 
+- job:
+  displayName: 'Code Checker'
+
+  steps:
+  - bash: |
+      set -x
+      cd src
+      bash gmt_make_PSL_strings.sh
+      bash gmt_make_pattern_include.sh
+      bash gmt_make_module_src.sh core
+      bash gmt_make_module_src.sh supplements
+      bash gmt_make_enum_dicts.sh
+      # check if any files are changed
+      if [ $(git ls-files -m) ]; then
+        git diff HEAD
+        exit 1
+      fi
+    displayName: Check if any C codes and headers need to be manually updated
+
 # Lint Checker
 - job:
   displayName: 'Lint Checker'
-  timeoutInMinutes: 180
+  timeoutInMinutes: 360
+  condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
     vmImage: 'ubuntu-18.04'

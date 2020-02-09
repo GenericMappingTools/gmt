@@ -343,11 +343,11 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		D = MGD77_Create_Dataset (GMT);
 
 		if (read_file && MGD77_Read_File (GMT, list[argno], &M, D)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading header & data for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header & data for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!read_file && MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header sequence for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 

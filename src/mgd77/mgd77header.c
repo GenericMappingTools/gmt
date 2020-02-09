@@ -243,7 +243,7 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 		D = MGD77_Create_Dataset (GMT);
 
 		if (MGD77_Read_File_nohdr (GMT, list[argno], &M, D)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading data for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 

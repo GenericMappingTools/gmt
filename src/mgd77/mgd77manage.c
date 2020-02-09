@@ -770,7 +770,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		In.n_out_columns = 0;
 
 		if (MGD77_Read_File (GMT, list[argno], &In, D)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data set for cruise %s\n", list[argno]);
 			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 		}
 
@@ -858,14 +858,14 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			strcat (D->H.history, history);		/* MGD77_Write_FILE_cdf will use this to create the history attribute, thus preserving earlier history */
 
 			if (MGD77_Write_File (GMT, In.path, &In, D)) {	/* Create the new, slimmer file */
-				GMT_Report (API, GMT_MSG_ERROR, "Error writing slimmer version of %s\n", list[argno]);
+				GMT_Report (API, GMT_MSG_ERROR, "Failure while writing slimmer version of %s\n", list[argno]);
 				GMT_exit (GMT, GMT_DATA_WRITE_ERROR); return GMT_DATA_WRITE_ERROR;
 			}
 
 			/* Now we can safely remove the old file */
 
 			if (gmt_remove_file (GMT, oldfile))	{
-				GMT_Report (API, GMT_MSG_ERROR, "Error removing the old version of %s\n", list[argno]);
+				GMT_Report (API, GMT_MSG_ERROR, "Failure while removing the old version of %s\n", list[argno]);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 
@@ -877,7 +877,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			In.n_out_columns = 0;
 			D = MGD77_Create_Dataset (GMT);
 			if (MGD77_Read_File (GMT, list[argno], &In, D)) {
-				GMT_Report (API, GMT_MSG_ERROR, "Error reading data set for cruise %s\n", list[argno]);
+				GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data set for cruise %s\n", list[argno]);
 				GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 			}
 			if (reset_column)
@@ -1045,7 +1045,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				y = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 				result = gmt_intpol (GMT, coldnt, colvalue, n, D->H.n_records, x, y, GMT->current.setting.interpolant);
 				if (result != 0) {
-					GMT_Report (API, GMT_MSG_ERROR, "Error from gmt_intpol near row %d!\n", result+1);
+					GMT_Report (API, GMT_MSG_ERROR, "Failure in gmt_intpol near row %d!\n", result+1);
 					GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				}
 				gmt_M_memcpy (colvalue, y, D->H.n_records, double);

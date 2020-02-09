@@ -1000,15 +1000,15 @@ GMT_LOCAL void grd_BCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && stack[prev2]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument p to BPDF must be in 0 <= p <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument p to BPDF must be in 0 <= p <= 1!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && stack[prev1]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument n to BPDF must be a positive integer (n >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument n to BPDF must be a positive integer (n >= 0)!\n");
 		error++;
 	}
 	if (stack[last]->constant  && stack[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument x to BPDF must be a positive integer (x >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument x to BPDF must be a positive integer (x >= 0)!\n");
 		error++;
 	}
 	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* BPDF is undefined or constant arguments */
@@ -1037,15 +1037,15 @@ GMT_LOCAL void grd_BPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && stack[prev2]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument p to BPDF must be in 0 <= p <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument p to BPDF must be in 0 <= p <= 1!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && stack[prev1]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument n to BPDF must be a positive integer (n >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument n to BPDF must be a positive integer (n >= 0)!\n");
 		error++;
 	}
 	if (stack[last]->constant  && stack[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument x to BPDF must be a positive integer (x >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument x to BPDF must be a positive integer (x >= 0)!\n");
 		error++;
 	}
 	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* BPDF is undefined or constant arguments */
@@ -1448,11 +1448,11 @@ GMT_LOCAL void grd_COMB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	double a, b;
 
 	if (stack[prev]->constant && stack[prev]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument n to COMB must be a positive integer (n >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument n to COMB must be a positive integer (n >= 0)!\n");
 		error++;
 	}
 	if (stack[last]->constant && stack[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument r to COMB must be a positive integer (r >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to COMB must be a positive integer (r >= 0)!\n");
 		error++;
 	}
 	if (error || (stack[prev]->constant && stack[last]->constant)) {	/* COMBO is undefined or we have a constant */
@@ -2356,15 +2356,15 @@ GMT_LOCAL void grd_HSV2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 360.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument h to HSV2LAB must be a 0 <= h <= 360!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument h to HSV2LAB must be a 0 <= h <= 360!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to HSV2LAB must be a 0 <= s <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to HSV2LAB must be a 0 <= s <= 1!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to HSV2LAB must be a 0 <= v <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to HSV2LAB must be a 0 <= v <= 1!\n");
 		error++;
 	}
 	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
@@ -2403,15 +2403,15 @@ GMT_LOCAL void grd_HSV2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 360.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument h to HSV2RGB must be a 0 <= h <= 360!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument h to HSV2RGB must be a 0 <= h <= 360!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to HSV2RGB must be a 0 <= s <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to HSV2RGB must be a 0 <= s <= 1!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to HSV2RGB must be a 0 <= v <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to HSV2RGB must be a 0 <= v <= 1!\n");
 		error++;
 	}
 	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
@@ -2448,15 +2448,15 @@ GMT_LOCAL void grd_HSV2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 360.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument h to HSV2XYZ must be a 0 <= h <= 360!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument h to HSV2XYZ must be a 0 <= h <= 360!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to HSV2XYZ must be a 0 <= s <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to HSV2XYZ must be a 0 <= s <= 1!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to HSV2XYZ must be a 0 <= v <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to HSV2XYZ must be a 0 <= v <= 1!\n");
 		error++;
 	}
 	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
@@ -2623,13 +2623,13 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	struct GMT_DATASEGMENT *S = NULL;
 
 	if (GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in operator INSIDE setting number of input columns\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator INSIDE setting number of input columns\n");
 		info->error = GMT->parent->error;
 		return;
 	}
 	gmt_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in operator INSIDE reading file %s!\n", info->ASCII_file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator INSIDE reading file %s!\n", info->ASCII_file);
 		info->error = GMT->parent->error;
 		return;
 	}
@@ -2655,7 +2655,7 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	/* Free memory used for pol */
 
 	if (GMT_Destroy_Data (GMT->parent, &D) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in operator INSIDE destroying allocated data from %s!\n", info->ASCII_file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator INSIDE destroying allocated data from %s!\n", info->ASCII_file);
 		info->error = GMT->parent->error;
 		return;
 	}
@@ -2879,12 +2879,12 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 		gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
 	if (GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in operator %s setting number of input columns\n", op);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator %s setting number of input columns\n", op);
 		info->error = GMT->parent->error;
 		return NULL;
 	}
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in operator %s reading file %s!\n", op, info->ASCII_file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator %s reading file %s!\n", op, info->ASCII_file);
 		info->error = GMT->parent->error;
 		return NULL;
 	}
@@ -2894,7 +2894,7 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 GMT_LOCAL int ASCII_free (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_DATASET **D, char *op)
 {
 	if (GMT_Destroy_Data (GMT->parent, D) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in operator %s destroying allocated data from %s!\n", op, info->ASCII_file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator %s destroying allocated data from %s!\n", op, info->ASCII_file);
 		info->error = GMT->parent->error;
 		return 1;
 	}
@@ -2911,16 +2911,16 @@ GMT_LOCAL void grd_LAB2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument l to LAB2HSV must be a 0 <= l <= 100!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument l to LAB2HSV must be a 0 <= l <= 100!\n");
 		error++;
 	}
 #if 0
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to LAB2HSV must be a 0 <= s <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to LAB2HSV must be a 0 <= s <= 1!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to LAB2HSV must be a 0 <= v <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to LAB2HSV must be a 0 <= v <= 1!\n");
 		error++;
 	}
 #endif
@@ -2960,16 +2960,16 @@ GMT_LOCAL void grd_LAB2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument l to LAB2RGB must be a 0 <= l <= 100!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument l to LAB2RGB must be a 0 <= l <= 100!\n");
 		error++;
 	}
 #if 0
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to LAB2RGB must be a 0 <= s <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to LAB2RGB must be a 0 <= s <= 1!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to LAB2RGB must be a 0 <= v <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to LAB2RGB must be a 0 <= v <= 1!\n");
 		error++;
 	}
 #endif
@@ -3006,16 +3006,16 @@ GMT_LOCAL void grd_LAB2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument l to LAB2XYZ must be a 0 <= l <= 100!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument l to LAB2XYZ must be a 0 <= l <= 100!\n");
 		error++;
 	}
 #if 0
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to LAB2XYZ must be a 0 <= s <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to LAB2XYZ must be a 0 <= s <= 1!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to LAB2XYZ must be a 0 <= v <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to LAB2XYZ must be a 0 <= v <= 1!\n");
 		error++;
 	}
 #endif
@@ -3759,11 +3759,11 @@ GMT_LOCAL void grd_PERM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	double a, b;
 
 	if (stack[prev]->constant && stack[prev]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument n to PERM must be a positive integer (n >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument n to PERM must be a positive integer (n >= 0)!\n");
 		error++;
 	}
 	if (stack[last]->constant && stack[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument r to PERM must be a positive integer (r >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to PERM must be a positive integer (r >= 0)!\n");
 		error++;
 	}
 	if (error || (stack[prev]->constant && stack[last]->constant)) {	/* PERM is undefined */
@@ -4156,15 +4156,15 @@ GMT_LOCAL void grd_RGB2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to RGB2HSV must be a 0 <= r <= 255!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to RGB2HSV must be a 0 <= r <= 255!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
 		error++;
 	}
 	rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
@@ -4201,15 +4201,15 @@ GMT_LOCAL void grd_RGB2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to RGB2LAB must be a 0 <= r <= 255!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to RGB2LAB must be a 0 <= r <= 255!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument g to RGB2LAB must be a 0 <= g <= 255!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument g to RGB2LAB must be a 0 <= g <= 255!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to RGB2LAB must be a 0 <= b <= 255!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to RGB2LAB must be a 0 <= b <= 255!\n");
 		error++;
 	}
 	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
@@ -4245,15 +4245,15 @@ GMT_LOCAL void grd_RGB2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to RGB2XYZ must be a 0 <= r <= 255!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to RGB2XYZ must be a 0 <= r <= 255!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument g to RGB2XYZ must be a 0 <= g <= 255!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument g to RGB2XYZ must be a 0 <= g <= 255!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor > 255.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to RGB2XYZ must be a 0 <= b <= 255!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to RGB2XYZ must be a 0 <= b <= 255!\n");
 		error++;
 	}
 	if (error || (stack[prev2]->constant && stack[prev1]->constant && stack[last]->constant)) {	/* Constant arguments */
@@ -5262,15 +5262,15 @@ GMT_LOCAL void grd_XYZ2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev2 = last - 2;
 #if 0
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument l to XYZ2HSV must be a 0 <= l <= 100!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument l to XYZ2HSV must be a 0 <= l <= 100!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to XYZ2HSV must be a 0 <= s <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to XYZ2HSV must be a 0 <= s <= 1!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to XYZ2HSV must be a 0 <= v <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to XYZ2HSV must be a 0 <= v <= 1!\n");
 		error++;
 	}
 #endif
@@ -5312,15 +5312,15 @@ GMT_LOCAL void grd_XYZ2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev2 = last - 2;
 #if 0
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument l to XYZ2LAB must be a 0 <= l <= 100!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument l to XYZ2LAB must be a 0 <= l <= 100!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to XYZ2LAB must be a 0 <= s <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to XYZ2LAB must be a 0 <= s <= 1!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to XYZ2LAB must be a 0 <= v <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to XYZ2LAB must be a 0 <= v <= 1!\n");
 		error++;
 	}
 #endif
@@ -5359,15 +5359,15 @@ GMT_LOCAL void grd_XYZ2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	prev2 = last - 2;
 #if 0
 	if (stack[prev2]->constant && (stack[prev2]->factor < 0.0 || stack[prev2]->factor > 100.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument l to XYZ2RGB must be a 0 <= l <= 100!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument l to XYZ2RGB must be a 0 <= l <= 100!\n");
 		error++;
 	}
 	if (stack[prev1]->constant && (stack[prev1]->factor < 0.0 || stack[prev1]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to XYZ2RGB must be a 0 <= s <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to XYZ2RGB must be a 0 <= s <= 1!\n");
 		error++;
 	}
 	if (stack[last]->constant  && (stack[last]->factor < 0.0 || stack[last]->factor < 0.0 > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to XYZ2RGB must be a 0 <= v <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to XYZ2RGB must be a 0 <= v <= 1!\n");
 		error++;
 	}
 #endif

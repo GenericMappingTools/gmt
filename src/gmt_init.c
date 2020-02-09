@@ -1460,7 +1460,7 @@ GMT_LOCAL int gmtinit_trend_modifiers (struct GMT_CTRL *GMT, char option, char *
 	int k, sdim = dim;
 
 	if (dim >= 2) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "INTERNAL Error gmtinit_trend_modifiers: was passed dim >= 2 (%u)\n", dim);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "INTERNAL Failure in gmtinit_trend_modifiers: was passed dim >= 2 (%u)\n", dim);
 		return -1;
 	}
 
@@ -2626,7 +2626,7 @@ GMT_LOCAL int gmtinit_setshorthand (struct GMT_CTRL *GMT) {
 		if (line[0] == '#' || line[0] == '\n')
 			continue;
 		if (sscanf (line, "%s %s %s %s %s", a, b, c, d, e) != 5) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error decoding file %s.  Bad format? [%s]\n", file, line);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while decoding file %s.  Bad format? [%s]\n", file, line);
 			fclose (fp);
 			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
 		}
@@ -3265,7 +3265,7 @@ GMT_LOCAL int gmtinit_split_info_strings (struct GMT_CTRL *GMT, const char *in, 
 	}
 
 	if (n_slash == 3) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error splitting -B string %s\n", in);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while splitting -B string %s\n", in);
 		return (1);
 	}
 
@@ -5115,7 +5115,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 	n = sscanf (&text[1], "%[^/]/%s", txt_a, txt_b);
 	if (mods) text[k] = '+';	/* Restore the modifiers */
 	if (txt_a[0] == '-' && n == 1) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error option -Sf: Must specify <ticklen> when specifying the number of ticks\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Sf: Must specify <ticklen> when specifying the number of ticks\n");
 		error++;
 	}
 	S->f.f_gap = (txt_a[0] == '-') ? atof (txt_a) : gmt_M_to_inch (GMT, txt_a);
@@ -5152,7 +5152,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 						S->f.f_pen = -1;
 					break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error option -Sf: Bad modifier +%c\n", p[0]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Sf: Bad modifier +%c\n", p[0]);
 				error++;	break;
 		}
 	}
@@ -5208,7 +5208,7 @@ GMT_LOCAL int gmtinit_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_S
 				case 'j':	S->justify = gmt_just_decode (GMT, &p[1], PSL_NO_DEF);	break;	/* text justification */
 				case 't':	strncpy (S->string, &p[1], GMT_LEN256-1);	break;	/* Get the symbol text */
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error option -Sl: Bad modifier +%c\n", p[0]);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Sl: Bad modifier +%c\n", p[0]);
 					error++;
 					break;
 			}
@@ -5996,7 +5996,7 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 		if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blank lines */
 
 		if (sscanf (line, "%s %lg %lg", media, &w, &h) != 3) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error decoding file %s.  Bad format? [%s]\n", file, line);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while decoding file %s.  Bad format? [%s]\n", file, line);
 			fclose (fp);
 			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 		}
@@ -7835,7 +7835,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 		if ((d = strstr (item, "+I")) != NULL) {	/* Got grid increments */
 			if (gmt_getinc (GMT, &d[2], GMT->common.R.inc)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in GMT modern: Error parsing the grid spacing.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in GMT modern while parsing the grid spacing.\n");
 				return (GMT_PARSE_ERROR);
 			}
 			GMT->common.R.active[ISET] = true;
@@ -7883,11 +7883,11 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			}
 		}
 		if (error) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in -R%s<lon0>/<lat0>/<n_columns>/<n_rows>: Could not parse coordinate pair\n", code);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in -R%s<lon0>/<lat0>/<n_columns>/<n_rows>: Could not parse coordinate pair\n", code);
 			return (GMT_PARSE_ERROR);
 		}
 		if (n_columns <= 0 || n_rows <= 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in -R%s<lon0>/<lat0>/<n_columns>/<n_rows>: Must have positive dimensions\n", code);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in -R%s<lon0>/<lat0>/<n_columns>/<n_rows>: Must have positive dimensions\n", code);
 			return (GMT_PARSE_ERROR);
 		}
 		/* Finally set up -R */
@@ -10105,7 +10105,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else {	/* Read the minimum columns a binary record must have to be examined for segment headers */
 				ival = atoi (value);
 				if (ival < 0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error decoding IO_SEGMENT_BINARY: Cannot be negative.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while decoding IO_SEGMENT_BINARY: Cannot be negative.\n");
 					error = true;
 				}
 				else
@@ -10337,7 +10337,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_CONSTANT;
 				GMT->current.setting.extrapolate_val[1] = atof (&lower_value[10]);
 				if (lower_value[9] != ',') {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error decoding GMT_EXTRAPOLATE_VAL for 'val' value. Comma out of place.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while decoding GMT_EXTRAPOLATE_VAL for 'val' value. Comma out of place.\n");
 					error = true;
 				}
 			}
@@ -11776,6 +11776,10 @@ char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 	static char text[PATH_MAX+GMT_LEN256] = {""};
 	int i;
 
+	if (F == NULL) {	/* Mostly for the benefit of cppcheck */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtlib_putfill called with NULL fill pointer!\n");
+		return (text);
+	}
 	if (F->use_pattern) {
 		if (F->pattern_no)
 			snprintf (text, PATH_MAX+GMT_LEN256, "p%d/%d", F->dpi, F->pattern_no);
@@ -12002,7 +12006,7 @@ int gmt_get_ellipsoid (struct GMT_CTRL *GMT, char *name) {
 				&GMT->current.setting.ref_ellipsoid[i].date, &GMT->current.setting.ref_ellipsoid[i].eq_radius,
 				&pol_radius, &GMT->current.setting.ref_ellipsoid[i].flattening);
 			if (n != 5) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error decoding user ellipsoid parameters (%s)\n", line);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while decoding user ellipsoid parameters (%s)\n", line);
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 			}
 
@@ -12440,7 +12444,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			continue;
 		}
  		if ((n = sscanf (line, "%*d %d %d %d %d", &P->row, &P->col, &P->nrows, &P->ncolumns)) != 4) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding row/col from subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while decoding row/col from subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 			fclose (fp);
 			return NULL;
 		}
@@ -12453,7 +12457,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 		if (P->row == row && P->col == col) {	/* Found it */
 			if ((n = sscanf (line, "%*d %*d %*d %*d %*d %lg %lg %lg %lg %s %lg %lg %lg %lg %s %s %s %s",
 				&P->x, &P->y, &P->w, &P->h, P->tag, &P->off[GMT_X], &P->off[GMT_Y], &P->clearance[GMT_X], &P->clearance[GMT_Y], P->refpoint, P->justify, P->fill, P->pen)) != 13) {
-				GMT_Report (API, GMT_MSG_ERROR, "Error decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
+				GMT_Report (API, GMT_MSG_ERROR, "Failure while decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 				fclose (fp);
 				return NULL;
 			}
@@ -12463,7 +12467,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			gmt_M_memcpy (P->gap, gap, 4, double);
 			if (strcmp (tmp, "@")) strncpy (P->tag, tmp, GMT_LEN128-1);	/* Replace auto-tag with manually added tag */
 			if ((c = strchr (line, GMT_ASCII_GS)) == NULL) {	/* Get the position before frame setting */
-				GMT_Report (API, GMT_MSG_ERROR, "Error decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
+				GMT_Report (API, GMT_MSG_ERROR, "Failure while decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 				fclose (fp);
 				return NULL;
 			}
@@ -13489,7 +13493,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 			else if (strchr (required, 'g') || strchr (required, 'd')) {	/* No history but can examine input data sets */
 				if (gmtinit_determine_R_option_from_data (API, required, true, options)) {
-					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Error determining the region from input data.\n");
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Failure while determining the region from input data.\n");
 				}
 			}
 		}
@@ -14474,22 +14478,22 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				gmtinit_parse_front (GMT, text_cp, p);	/* Parse new -Sf syntax */
 			if (p->f.f_sense == GMT_FRONT_CENTERED && p->f.f_symbol == GMT_FRONT_SLIP) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR,
-				            "Error in Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n");
+				            "Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n");
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 			}
 			if (gmt_M_is_zero (p->f.f_gap) || gmt_M_is_zero (p->f.f_len)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in Option -Sf: Neither <gap> nor <ticklength> can be zero!\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Sf: Neither <gap> nor <ticklength> can be zero!\n");
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 			}
 			if (p->f.f_gap < 0.0) {	/* Gave -# of ticks desired */
 				k = irint (fabs (p->f.f_gap));
 				if (k == 0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error in Option -Sf: Number of front ticks cannot be zero!\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Sf: Number of front ticks cannot be zero!\n");
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				}
 				if (!gmt_M_is_zero (p->f.f_off)) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR,
-					            "Error in Option -Sf: +<offset> cannot be used when number of ticks is specified!\n");
+					            "Option -Sf: +<offset> cannot be used when number of ticks is specified!\n");
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				}
 			}
@@ -14831,7 +14835,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 	}
 	if (p->n_nondim > GMT_MAX_SYMBOL_COLS) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal Error.  Must change GMT_MAX_SYMBOL_COLS\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal limitation:  Must change GMT_MAX_SYMBOL_COLS\n");
 	}
 	if (p->given_size_x == 0.0 && check) {
 		p->read_size = true;
@@ -15982,7 +15986,7 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 		snprintf (message, GMT_LEN16, "option -%c", option);
 
 	if (!file || file[0] == '\0') {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error %s: No filename provided\n", message);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No filename provided %s\n", message);
 		return false;	/* No file given */
 	}
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
@@ -15996,11 +16000,11 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 		not_url = !gmtlib_check_url_name (&file[pos]);
 	if (not_url) {
 		if (gmt_access (GMT, &file[pos], F_OK)) {	/* Cannot find the file anywhere GMT looks */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error %s: No such file (%s)\n", message, &file[pos]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No such file (%s) provided %s\n", &file[pos], message);
 			return false;	/* Could not find this file */
 		}
 		if (gmt_access (GMT, &file[pos], R_OK)) {	/* Cannot read this file (permissions?) */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error %s: Cannot read file (%s) - check permissions\n", message, &file[pos]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot read file (%s) - check permissions %s\n", &file[pos], message);
 			return false;	/* Could not find this file */
 		}
 	}

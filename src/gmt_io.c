@@ -8605,7 +8605,7 @@ char **gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 
 	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
 	if ((D = opendir (path)) == NULL) {	/* Unable to open directory listing */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error opening directory %s\n", path);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while opening directory %s\n", path);
 		return NULL;
 	}
 	if (ext) e_len = strlen (ext);
@@ -8641,7 +8641,7 @@ char **gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	else
 		strncat (text, ".*", left);	/* Look for all files in this dir */
 	if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error opening directory %s\n", path);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while opening directory %s\n", path);
 		return NULL;
 	}
 	list = gmt_M_memory (GMT, NULL, n_alloc, char *);

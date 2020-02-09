@@ -657,7 +657,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Now processing cruise %s\n", list[argno]);
 
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header sequence for cruise %s\n", list[argno]);
 			continue;
 		}
 		last_julian = -1;
@@ -672,7 +672,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		/* Start reading data from file */
 
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data set for cruise %s\n", list[argno]);
 			continue;
 		}
 		MGD77_Close_File (GMT, &M);

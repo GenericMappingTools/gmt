@@ -7,6 +7,10 @@
 # This script just makes the include snippet gmt_enum_dict.h
 # needed for GMT_API_Enum () to work.
 #
+
+# Set LC_ALL to get the same sort order on Linux and macOS
+export LC_ALL=C
+
 egrep -v 'struct|union|enum|_GMT|define|char' gmt_resources.h | tr ',' ' ' | awk '{if (substr($1,1,4) == "GMT_") print $1, $3}' > /tmp/junk1.txt
 grep -v GMT_OPT_ /tmp/junk1.txt > /tmp/junk2.txt
 grep GMT_OPT_ /tmp/junk1.txt | awk '{print $1, substr($2,1,2)} '> /tmp/junk3.txt

@@ -325,11 +325,11 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp) && line[0] != '>') {
 				i = sscanf (line, "%*s %*s %d %d", &index, &flag);
 				if (i != 2) {	/* Could not decode the index and the flag entries */
-					GMT_Report (API, GMT_MSG_ERROR, "Error processing record for track %s [%s]\n", track, line);
+					GMT_Report (API, GMT_MSG_ERROR, "Processing record for track %s [%s]\n", track, line);
 					Return (GMT_DATA_READ_ERROR);
 				}
 				else if (flag > max_flag) {
-					GMT_Report (API, GMT_MSG_ERROR, "data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
+					GMT_Report (API, GMT_MSG_ERROR, "Data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
 					Return (GMT_DATA_READ_ERROR);
 				}
 				if (B.base[index].n_tracks == 0) {	/* First track to cross this bin */

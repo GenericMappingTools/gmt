@@ -401,11 +401,11 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 		snprintf (dim, GMT_LEN16, "%s_length", TAG);
 		if ((retval = nc_inq_dimid (ncid, dim, &id))) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error getting ID for variable %s in %s!\n", dim, path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while getting ID for variable %s in %s!\n", dim, path);
 			continue;
 		}
 		if ((retval = nc_inq_dimlen (ncid, id, &np))) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error getting dimension length for variable %s in %s!\n", dim, path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while getting dimension length for variable %s in %s!\n", dim, path);
 			continue;
 		}
 		if (mode > GMT_DCW_REGION && np > max_np) {
@@ -413,7 +413,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			gmt_M_malloc2 (GMT, lon, lat, np, &tmp_size, double);
 			gmt_M_malloc2 (GMT, dx, dy, np, &max_np, unsigned short int);
 			if (lon == NULL || lat == NULL || dx == NULL|| dy == NULL) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error allocation memory!\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while allocating memory!\n");
 				continue;
 			}
 		}
