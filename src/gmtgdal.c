@@ -39,6 +39,8 @@ struct GMTGDAL_CTRL {
 	struct GMTGDAL_A {	/* GDAL prog name */
 		bool active;
 		char *prog_name;
+		char *dem_method;		/* The method name for gdaldem */
+		char *dem_cpt;			/* A CPT name to use in gdaldem color-relief method */
 	} A;
 	struct GMTGDAL_F {	/* -F<gdal options> */
 		bool active;
@@ -69,8 +71,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) gmt_M_str_free (C->G.file);
-	if (C->W.file) gmt_M_str_free (C->W.file);
+	if (C->A.dem_method) gmt_M_str_free (C->A.dem_method);
+	if (C->A.dem_cpt) gmt_M_str_free (C->A.dem_cpt);
 	gmt_M_free (GMT, C);
 }
 
@@ -94,13 +96,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT_OPTION *options) {
-
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
 	 */
-
+	char txt_a[GMT_LEN16] = {""}, txt_b[GMT_LEN256] = {""}, *p;
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
@@ -121,6 +122,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT
 			case 'A':	/* GDAL prog name */
 				Ctrl->A.active = true;
 				Ctrl->A.prog_name = opt->arg;
+				if (gmt_get_modifier (opt->arg, 'm', txt_a))
+					Ctrl->A.dem_method = strdup(txt_a);
+				if (gmt_get_modifier (opt->arg, 'c', txt_b))
+					Ctrl->A.dem_cpt = strdup(txt_b);
+				if (p = strchr (Ctrl->A.prog_name, '+'))
+					p[0] = '\0';			/* Strip the modifiers part */
 				break;
 
 			case 'F':	/* -F<gdal options> */
@@ -130,7 +137,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT
 
 			case 'G':	/* Output file */
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
+					Ctrl->G.file = opt->arg;
 				else
 					n_errors++;
 				break;
@@ -147,7 +154,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT
 
 			case 'W':	/* -W<fname> sets output VECTOR data fname when writen by GDAL */
 				Ctrl->W.active = true;
-				Ctrl->W.file = strdup(opt->arg);
+				Ctrl->W.file = opt->arg;
 				Ctrl->M.write_gdal = true;
 				break;
 
@@ -198,8 +205,14 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 		gmt_gdal_grid(GMT, st);
 	else if (!strcmp(Ctrl->A.prog_name, "info"))
 		gmt_gdal_info (GMT, Ctrl->fname_in, Ctrl->F.opts);
-	else if (!strcmp(Ctrl->A.prog_name, "dem"))
+	else if (!strcmp(Ctrl->A.prog_name, "dem")) {
+		if (Ctrl->A.dem_method) st->dem_method = Ctrl->A.dem_method;
+		if (Ctrl->A.dem_cpt) st->dem_cpt = Ctrl->A.dem_cpt;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "PROG = dem\nMETHOD = %s\nCPT = %s\n", st->dem_method, st->dem_cpt);
 		gmt_gdal_dem(GMT, st);
+	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "PROG-> \"%s\" is unknown or not implemented\n", Ctrl->A.prog_name);
 
 	gmt_M_free (GMT, st);
 
