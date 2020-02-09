@@ -11776,6 +11776,10 @@ char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 	static char text[PATH_MAX+GMT_LEN256] = {""};
 	int i;
 
+	if (F == NULL) {	/* Mostly for the benefit of cppcheck */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtlib_putfill called with NULL fill pointer!\n");
+		return (text);
+	}
 	if (F->use_pattern) {
 		if (F->pattern_no)
 			snprintf (text, PATH_MAX+GMT_LEN256, "p%d/%d", F->dpi, F->pattern_no);
