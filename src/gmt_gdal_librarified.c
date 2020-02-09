@@ -28,8 +28,7 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *filename);
 GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc" "dd" */
 	/* Based on GMT_Create_Options() */
-	unsigned int pos = 0, k;
-	int  n_args = 0;
+	unsigned int pos = 0, k, n_args = 0;
 	bool quoted;
 	size_t n_alloc = 4 * GMT_SMALL_CHUNK;
 	char p[GMT_LEN512] = {""}, *txt_in;	/* Passed a single text string */
