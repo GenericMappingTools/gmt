@@ -83,7 +83,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify input file name\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify input file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify the GDAL program name (Currently 'info', 'grid' or 'dem').\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   When program is 'dem' append +m<method> (pick one of 'hillshade', 'color-relief', 'slope', 'TRI', 'TPI' or 'roughness') and, for 'color-relief', +c<cpt_name>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F list of GDAL options for the selected program in -A wrapped in double quotes.\n");
@@ -211,28 +211,30 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Memory allocation failure\n");
 		Return (GMT_MEMORY_ERROR);
 	}
+	/* Populate GDAL control structure form user's seletinos */
 	st->fname_in  = Ctrl->fname_in;
 	st->fname_out = Ctrl->G.file;
 	st->opts = Ctrl->F.opts;
 	st->M.read_gdal  = Ctrl->M.read_gdal;
 	st->M.write_gdal = Ctrl->M.write_gdal;
-	if (!Ctrl->A.active || !strcmp(Ctrl->A.prog_name, "grid"))
-		gmt_gdal_grid(GMT, st);
-	else if (!strcmp(Ctrl->A.prog_name, "info"))
+	/* Call the selected GDAL program [grid] */
+	if (!Ctrl->A.active || !strcmp (Ctrl->A.prog_name, "grid"))
+		gmt_gdal_grid (GMT, st);
+	else if (!strcmp (Ctrl->A.prog_name, "info"))
 		gmt_gdal_info (GMT, Ctrl->fname_in, Ctrl->F.opts);
 	else if (!strcmp(Ctrl->A.prog_name, "dem")) {
-		char *ext;
+		char *ext = NULL;
 		if (Ctrl->A.dem_method) st->dem_method = Ctrl->A.dem_method;
 		if (Ctrl->A.dem_cpt) st->dem_cpt = Ctrl->A.dem_cpt;
 		if ((ext = gmt_get_ext (st->fname_out)) != NULL) {
-			/* For all others then .nc or .grd force writting with GDAL. This makes life much easier. */
-			if (strcasecmp(ext, "nc") && strcasecmp(ext, "grd"))
+			/* For all others than .nc or .grd force writting with GDAL. This makes life much easier. */
+			if (strcasecmp (ext, "nc") && strcasecmp (ext, "grd"))
 				st->M.write_gdal = true;
 		}
-		gmt_gdal_dem(GMT, st);
+		gmt_gdal_dem (GMT, st);
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "PROG-> \"%s\" is unknown or not implemented\n", Ctrl->A.prog_name);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDAL PROG-> \"%s\" is unknown or not implemented\n", Ctrl->A.prog_name);
 
 	gmt_M_free (GMT, st);
 
