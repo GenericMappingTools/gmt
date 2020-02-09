@@ -218,11 +218,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 			case 'N':	/* -N<sectors>[+m<minsectors>]] or -Nn */
 				Ctrl->N.active = true;
 				if (opt->arg[0] == 'n') {
-					Ctrl->N.mode = 1;
+					Ctrl->N.mode = 2;
 					GMT_Report (API, GMT_MSG_WARNING, "Option -Nn is experimental and unstable.\n");
 				}
 				else if (opt->arg[0] == 's') {
-					Ctrl->N.mode = 2;
+					Ctrl->N.mode = 1;
 				}
 				else if (opt->arg[0]) {	/* Override default -N4+m4 */
 					if ((c = strstr (opt->arg, "+m"))) {	/* Set sectors and min sectors using current syntax */
