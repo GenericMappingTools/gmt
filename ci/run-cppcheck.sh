@@ -19,6 +19,7 @@ if [ "$BUILD_REASON" == "Schedule" ]; then
         ! -name 'gmt_datasets.h' \
         ! -name 'gmt_media_name.h' \
         ! -name 'gmt_unique.h' \
+        ! -name 'src/mergesort.c' \
         -exec ${CPPCHECK} {} +
 else
     # Check changed files only for PRs
