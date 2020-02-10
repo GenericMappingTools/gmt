@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Execute GDAL programs from GMT"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->RVbhi"
+#define THIS_MODULE_OPTIONS "->RVbdeghiqrs"
 
 /* Control structure for gmtwrite */
 
@@ -91,7 +91,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Means to both read and write with GDAL. Use +r to only read or +w to write.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Name of output dataset when writen by GDAL.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "R,V,.");
+	GMT_Option (API, "R,V,bi,e,g,h,i,qi,r,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
