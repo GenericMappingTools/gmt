@@ -66,7 +66,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtconnect", "gmtconnect", "core", "Connect individual lines whose end points match within tolerance", "<D{,>D},CD),LD),QD)"},
 	{"gmtconvert", "gmtconvert", "core", "Convert, paste, or extract columns from data tables", "<D{,>D}"},
 	{"gmtdefaults", "gmtdefaults", "core", "List current GMT default settings", ""},
-	{"gmtgdal", "gmtgdal", "core", "Execute GDAL programs from GMT", "<D{,GG}"},
+	{"gmtgdal", "gmtgdal", "core", "Execute GDAL programs from GMT", "<D{,<G(,GG}"},
 	{"gmtget", "gmtget", "core", "Get individual GMT default settings", ">D}"},
 	{"gmtinfo", "gmtinfo", "core", "Get information about data tables", "<D{,>D}"},
 	{"gmtlogo", "gmtlogo", "core", "Plot the GMT logo", ">X}"},

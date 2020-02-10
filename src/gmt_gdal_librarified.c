@@ -22,7 +22,84 @@
 
 #include <gdal_utils.h>
 
-GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *filename);
+//GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *filename);
+
+/* ------------------------------------------------------------------------------------------------------------ */
+GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
+	/* Write data into a GDAL Vector memory dataset */
+	unsigned int nt, ns, nr;
+	double x, y, z;
+	GDALDriverH hDriver;
+	GDALDatasetH hDS;
+	OGRLayerH hLayer;
+	OGRFieldDefnH hFieldDefn;
+	OGRFeatureH hFeature;
+	OGRGeometryH hPt;
+	struct GMT_DATASET *D = NULL;
+
+	D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, fname, NULL);
+	if (D->n_columns != 3) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "This dataset doesn't have 3 columns as required.\n");
+		return NULL;
+	}
+
+	GDALAllRegister();
+
+	hDriver = GDALGetDriverByName("Memory");			/* Intrmediary MEM diver to use as arg to GDALCreateCopy method */
+
+	hDS = GDALCreate(hDriver, "mem", 0, 0, 0, GDT_Unknown, NULL);
+	if (hDS == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creation of MEM file failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+		GDALDestroyDriverManager();
+		return NULL;
+	}
+
+	hLayer = GDALDatasetCreateLayer(hDS, "point_out", NULL, wkbPoint, NULL);
+	if (hLayer == NULL ) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Layer creation failed.\n");
+		GDALDestroyDriverManager();
+		return NULL;
+	}
+
+	hFieldDefn = OGR_Fld_Create("Name", OFTString);
+
+	OGR_Fld_SetWidth(hFieldDefn, 32);
+
+	if (OGR_L_CreateField(hLayer, hFieldDefn, TRUE) != OGRERR_NONE) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creating Name field failed.\n");
+		GDALDestroyDriverManager();
+		return NULL;
+	}
+
+	OGR_Fld_Destroy(hFieldDefn);
+
+	for (nt = 0; nt < D->n_tables; nt++) {
+		for (ns = 0; ns < D->table[nt]->n_segments; ns++) {
+			for (nr = 0; nr < D->table[nt]->segment[ns]->n_rows; nr++) {
+				x = D->table[nt]->segment[ns]->data[0][nr];
+				y = D->table[nt]->segment[ns]->data[1][nr];
+				z = D->table[nt]->segment[ns]->data[2][nr];
+				hFeature = OGR_F_Create(OGR_L_GetLayerDefn(hLayer));
+				OGR_F_SetFieldString(hFeature, OGR_F_GetFieldIndex(hFeature, "Name"), "0");
+
+				hPt = OGR_G_CreateGeometry(wkbPoint);
+				OGR_G_SetPoint(hPt, 0, x, y, z);
+
+				OGR_F_SetGeometry(hFeature, hPt);
+				OGR_G_DestroyGeometry(hPt);
+
+				if (OGR_L_CreateFeature(hLayer, hFeature) != OGRERR_NONE) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create feature in dataset.\n");
+					GDALDestroyDriverManager();
+					return NULL;
+				}
+				OGR_F_Destroy(hFeature);
+			}
+		}
+	}
+
+	return hDS;
+}
 
 /* ------------------------------------------------------------------------------------------------------------ */
 GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
@@ -33,7 +110,7 @@ GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	size_t n_alloc = 4 * GMT_SMALL_CHUNK;
 	char p[GMT_LEN512] = {""}, *txt_in;	/* Passed a single text string */
 	char **args = NULL;
-	
+
 	if (!in)		/* If empty, return empty */
 		return NULL;
 
@@ -153,30 +230,102 @@ GMT_LOCAL void add_defaults(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTR
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gdal options used: %s\n", ext_opts);
 }
 
+
 /* ------------------------------------------------------------------------------------------------------------ */
-int gmt_gdal_info (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
+GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL, GDALDatasetH *hSrcDS, struct GMT_GRID **Grid, int mode) {
+	/* Initialize GDAL, read data and create a GMT Grid container
+	   These operations are common to several functions, so wrap them in a function */
+
+	GDALAllRegister();
+
+	if (mode == 0) {				/* Read vector data */
+		if (GDLL->M.read_gdal) 		/* Read input data with the GDAL machinery */
+			*hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
+		else
+			*hSrcDS = gdal_vector (GMT, GDLL->fname_in);
+
+		if (*hSrcDS == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
+			return -1;
+		}
+	}
+	else {							/* Read raster data */
+		*hSrcDS = GDALOpen(GDLL->fname_in, GA_ReadOnly);
+	}
+
+	if ((*Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
+		                          GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
+		return GMT->parent->error;
+	return 0;
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
+GMT_LOCAL int sanitize_and_save(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL, int bUsageError,
+                                GDALDatasetH *hSrcDS, GDALDatasetH *hDstDS, struct GMT_GRID *Grid, char **args,
+                                char *prog) {
+	int error = 0;
+	if (bUsageError == TRUE) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdal_%s: failure\n", prog);
+		return -1;
+	}
+
+	if (!GDLL->M.write_gdal) 		/* Write grid with the GMT machinery */
+		error = save_grid_with_GMT(GMT, hDstDS, Grid, GDLL->fname_out);
+
+	free_args(GMT, args);
+	GDALClose(hSrcDS);
+	return error;
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
+int gmt_gdal_info (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	char **args;
-	GDALDatasetH	hDataset;
+	GDALDatasetH	hSrcDS;
 	GDALInfoOptions *psOptions;
 
 	GDALAllRegister();
 
-	hDataset = GDALOpen(gdal_filename, GA_ReadOnly);
+	hSrcDS = GDALOpen(GDLL->fname_in, GA_ReadOnly);
 
-	if (hDataset == NULL) {
+	if (hSrcDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
 		return -1;
 	}
 
-	args = breakMe(GMT, opts);
-	psOptions = GDALInfoOptionsNew(breakMe(GMT, opts), NULL);
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "GDAL Info\n\n%s\n", GDALInfo(hDataset, psOptions));
+	args = breakMe(GMT, GDLL->opts);
+	psOptions = GDALInfoOptionsNew(args, NULL);
+	GMT_Message (GMT->parent, GMT_TIME_NONE, "GDAL Info\n\n%s\n", GDALInfo(hSrcDS, psOptions));
 
 	free_args(GMT, args);
-	GDALClose(hDataset);
+	GDALClose(hSrcDS);
 	GDALInfoOptionsFree(psOptions);
 	GDALDestroyDriverManager();
 	return 0;
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
+int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
+	char ext_opts[GMT_LEN512] = {""}, **args;
+	char *method = NULL, *cpt_name = NULL;
+	int   bUsageError, error = 0;
+	struct GMT_GRID *Grid = NULL;
+	GDALDatasetH	hSrcDS, hDstDS;
+	GDALDEMProcessingOptions *psOptions;
+
+	init_open(GMT, GDLL, &hSrcDS, &Grid, 1);	/* Init GDAL and read input data */
+
+	add_defaults(GMT, GDLL, &ext_opts[0]);
+
+	args = breakMe(GMT, ext_opts);
+	psOptions = GDALDEMProcessingOptionsNew(args, NULL);
+	method = GDLL->dem_method ? GDLL->dem_method : "hillshade";
+	cpt_name = GDLL->dem_cpt ? GDLL->dem_cpt : NULL;
+	hDstDS = GDALDEMProcessing(out_name(GDLL), hSrcDS, method, cpt_name, psOptions, &bUsageError);
+	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "dem");
+
+	GDALDEMProcessingOptionsFree(psOptions);
+	GDALDestroyDriverManager();
+	return error;
 }
 
 /* ------------------------------------------------------------------------------------------------------------ */
@@ -188,21 +337,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALGridOptions *psOptions;
 
-	GDALAllRegister();
-
-	if (GDLL->M.read_gdal) 		/* Read input data with the GDAL machinery */
-		hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
-	else
-		hSrcDS = gdal_vector (GMT, GDLL->fname_in);
-
-	if (hSrcDS == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
-		return -1;
-	}
-
-	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
-								 GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
-		return GMT->parent->error;
+	init_open(GMT, GDLL, &hSrcDS, &Grid, 0);	/* Init GDAL and read input data */
 
 	if (GDLL->M.write_gdal && Grid->header->registration == 0) {
 		/* Since GDAL writes only pixel-reg grids, expand limits so that inc is respected */
@@ -217,142 +352,42 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	args = breakMe(GMT, ext_opts);
 	psOptions = GDALGridOptionsNew(args, NULL);
 	hDstDS = GDALGrid(out_name(GDLL), hSrcDS, psOptions, &bUsageError);
+	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "grid");
 
-	if (bUsageError == TRUE) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdal_grid: failure\n");
-		error++;
-	}
-
-	if (!error && !GDLL->M.write_gdal) 		/* Write grid with the GMT machinery */
-		error = save_grid_with_GMT(GMT, hDstDS, Grid, GDLL->fname_out);
-
-	free_args(GMT, args);
-	GDALClose(hSrcDS);
 	GDALGridOptionsFree(psOptions);
 	GDALDestroyDriverManager();
 	return error;
 }
 
 /* ------------------------------------------------------------------------------------------------------------ */
-int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
+int gmt_gdal_rasterize(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	char ext_opts[GMT_LEN512] = {""}, **args;
-	char *method = NULL, *cpt_name = NULL;
 	int   bUsageError, error = 0;
+	double dx = 0, dy = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
-	GDALDEMProcessingOptions *psOptions;
+	GDALRasterizeOptions *psOptions;
 
-	GDALAllRegister();
+	init_open(GMT, GDLL, &hSrcDS, &Grid, 0);	/* Init GDAL and read input data */
 
-	hSrcDS = GDALOpen(GDLL->fname_in, GA_ReadOnly);
-
-	if (hSrcDS == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
-		return -1;
+	if (GDLL->M.write_gdal && Grid->header->registration == 0) {
+		/* Since GDAL writes only pixel-reg grids, expand limits so that inc is respected */
+		dx = Grid->header->inc[0] / 2;		dy = Grid->header->inc[1] / 2;
 	}
-
-	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
-								 GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
-		return GMT->parent->error;
+	sprintf(ext_opts, "-ot Float32 -te %lf %lf %lf %lf -ts %d %d ",
+			Grid->header->wesn[XLO]-dx, Grid->header->wesn[YLO]-dy, Grid->header->wesn[XHI]+dx,
+			Grid->header->wesn[YHI]+dy, Grid->header->n_columns, Grid->header->n_rows);
 
 	add_defaults(GMT, GDLL, &ext_opts[0]);
 
 	args = breakMe(GMT, ext_opts);
-	psOptions = GDALDEMProcessingOptionsNew(args, NULL);
-	method = GDLL->dem_method ? GDLL->dem_method : "hillshade";
-	cpt_name = GDLL->dem_cpt ? GDLL->dem_cpt : NULL;
-	hDstDS = GDALDEMProcessing(out_name(GDLL), hSrcDS, method, cpt_name, psOptions, &bUsageError);
+	psOptions = GDALRasterizeOptionsNew(args, NULL);
+	hDstDS = GDALRasterize(out_name(GDLL), NULL, hSrcDS, psOptions, &bUsageError);
+	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "rasterize");
 
-	if (bUsageError == TRUE) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdal_dem: failure\n");
-		error++;
-	}
-
-	if (!error && !GDLL->M.write_gdal) 		/* Write grid with the GMT machinery */
-		error = save_grid_with_GMT(GMT, hDstDS, Grid, GDLL->fname_out);
-
-	free_args(GMT, args);
-	GDALClose(hSrcDS);
-	GDALDEMProcessingOptionsFree(psOptions);
+	GDALRasterizeOptionsFree(psOptions);
 	GDALDestroyDriverManager();
 	return error;
-}
-
-/* ------------------------------------------------------------------------------------------------------------ */
-GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
-	/* Write data into a GDAL Vector memory dataset */
-	unsigned int nt, ns, nr;
-	double x, y, z;
-	GDALDriverH hDriver;
-	GDALDatasetH hDS;
-	OGRLayerH hLayer;
-	OGRFieldDefnH hFieldDefn;
-	OGRFeatureH hFeature;
-	OGRGeometryH hPt;
-	struct GMT_DATASET *D = NULL;
-
-	D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, fname, NULL);
-	if (D->n_columns != 3) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "This dataset doesn't have 3 columns as required.\n");
-		return NULL;
-	}
-
-	GDALAllRegister();
-
-	hDriver = GDALGetDriverByName("Memory");			/* Intrmediary MEM diver to use as arg to GDALCreateCopy method */
-
-	hDS = GDALCreate(hDriver, "mem", 0, 0, 0, GDT_Unknown, NULL);
-	if (hDS == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creation of MEM file failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-		GDALDestroyDriverManager();
-		return NULL;
-	}
-
-	hLayer = GDALDatasetCreateLayer(hDS, "point_out", NULL, wkbPoint, NULL);
-	if (hLayer == NULL ) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Layer creation failed.\n");
-		GDALDestroyDriverManager();
-		return NULL;
-	}
-
-	hFieldDefn = OGR_Fld_Create("Name", OFTString);
-
-	OGR_Fld_SetWidth(hFieldDefn, 32);
-
-	if (OGR_L_CreateField(hLayer, hFieldDefn, TRUE) != OGRERR_NONE) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creating Name field failed.\n");
-		GDALDestroyDriverManager();
-		return NULL;
-	}
-
-	OGR_Fld_Destroy(hFieldDefn);
-
-	for (nt = 0; nt < D->n_tables; nt++) {
-		for (ns = 0; ns < D->table[nt]->n_segments; ns++) {
-			for (nr = 0; nr < D->table[nt]->segment[ns]->n_rows; nr++) {
-				x = D->table[nt]->segment[ns]->data[0][nr];
-				y = D->table[nt]->segment[ns]->data[1][nr];
-				z = D->table[nt]->segment[ns]->data[2][nr];
-				hFeature = OGR_F_Create(OGR_L_GetLayerDefn(hLayer));
-				OGR_F_SetFieldString(hFeature, OGR_F_GetFieldIndex(hFeature, "Name"), "0");
-
-				hPt = OGR_G_CreateGeometry(wkbPoint);
-				OGR_G_SetPoint(hPt, 0, x, y, z);
-
-				OGR_F_SetGeometry(hFeature, hPt);
-				OGR_G_DestroyGeometry(hPt);
-
-				if (OGR_L_CreateFeature(hLayer, hFeature) != OGRERR_NONE) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create feature in dataset.\n");
-					GDALDestroyDriverManager();
-					return NULL;
-				}
-				OGR_F_Destroy(hFeature);
-			}
-		}
-	}
-
-	return hDS;
 }
 
 #endif		//defined(HAVE_GDAL) && ...
