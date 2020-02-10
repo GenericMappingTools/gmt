@@ -38,7 +38,7 @@
 #define THIS_MODULE_PURPOSE	"Grid table data using a \"Nearest neighbor\" algorithm"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVbdefhinqrs" GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:RVbdefghinqrs" GMT_OPT("FH")
 
 #define NN_DEF_SECTORS	4
 
