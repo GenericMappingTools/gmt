@@ -39,6 +39,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     gmtconnect
     gmtconvert
     gmtdefaults
+    gmtgdal
     gmtget
     gmtinfo
     gmtlogo_classic
