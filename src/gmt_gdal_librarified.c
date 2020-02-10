@@ -390,4 +390,46 @@ int gmt_gdal_rasterize(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GD
 	return error;
 }
 
+/* ------------------------------------------------------------------------------------------------------------ */
+int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
+	char ext_opts[GMT_LEN512] = {""}, **args;
+	int   bUsageError, error = 0;
+	struct GMT_GRID *Grid = NULL;
+	GDALDatasetH	hSrcDS, hDstDS;
+	GDALTranslateOptions *psOptions;
+
+	init_open(GMT, GDLL, &hSrcDS, &Grid, 1);	/* Init GDAL and read input data */
+	add_defaults(GMT, GDLL, &ext_opts[0]);
+
+	args = breakMe(GMT, ext_opts);
+	psOptions = GDALTranslateOptionsNew(args, NULL);
+	hDstDS = GDALTranslate(out_name(GDLL), hSrcDS, psOptions, &bUsageError);
+	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "translate");
+
+	GDALTranslateOptionsFree(psOptions);
+	GDALDestroyDriverManager();
+	return error;
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
+int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
+	char ext_opts[GMT_LEN512] = {""}, **args;
+	int   bUsageError, error = 0;
+	struct GMT_GRID *Grid = NULL;
+	GDALDatasetH	hSrcDS, hDstDS;
+	GDALWarpAppOptions *psOptions;
+
+	init_open(GMT, GDLL, &hSrcDS, &Grid, 1);	/* Init GDAL and read input data */
+	add_defaults(GMT, GDLL, &ext_opts[0]);
+
+	args = breakMe(GMT, ext_opts);
+	psOptions = GDALWarpAppOptionsNew(args, NULL);
+	//hDstDS = GDALWarp(out_name(GDLL), hDstDS, nSrcCount, pahSrcDS, psOptions, &bUsageError);
+	hDstDS = GDALWarp(out_name(GDLL), NULL, 1, &hSrcDS, psOptions, &bUsageError);
+	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "warp");
+
+	GDALWarpAppOptionsFree(psOptions);
+	GDALDestroyDriverManager();
+	return error;
+}
 #endif		//defined(HAVE_GDAL) && ...

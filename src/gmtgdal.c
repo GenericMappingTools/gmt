@@ -175,7 +175,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, n_files == 0, "No input files given\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && strcmp(Ctrl->A.prog_name, "grid") && strcmp(Ctrl->A.prog_name, "info") && strcmp(Ctrl->A.prog_name, "dem") && strcmp(Ctrl->A.prog_name, "rasterize"), "Option -A: Must select dem, grid, rasterize or info\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "No output file name given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && strcmp(Ctrl->A.prog_name, "grid") && strcmp(Ctrl->A.prog_name, "info") && strcmp(Ctrl->A.prog_name, "dem") && strcmp(Ctrl->A.prog_name, "rasterize") && strcmp(Ctrl->A.prog_name, "translate") && strcmp(Ctrl->A.prog_name, "warp"), "Option -A: Must select dem, grid, rasterize, translate, warp or info\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -230,7 +231,6 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 		error += gmt_gdal_grid (GMT, st);
 	else if (!strcmp (Ctrl->A.prog_name, "info"))
 		error += gmt_gdal_info (GMT, st);
-		//error += gmt_gdal_info (GMT, Ctrl->fname_in, Ctrl->F.opts);
 	else if (!strcmp(Ctrl->A.prog_name, "dem")) {
 		if (!GMT->common.R.active[RSET]) 	/* Here, -R should be only needed if grid it to be written by GMT, but easier to do it for all cases */
 			gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
@@ -241,6 +241,14 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 	}
 	else if (!strcmp(Ctrl->A.prog_name, "rasterize"))
 		error += gmt_gdal_rasterize (GMT, st);
+	else if (!strcmp(Ctrl->A.prog_name, "translate")) {
+		if (!GMT->common.R.active[RSET]) gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
+		error += gmt_gdal_translate (GMT, st);
+	}
+	else if (!strcmp(Ctrl->A.prog_name, "warp")) {
+		if (!GMT->common.R.active[RSET]) gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
+		error += gmt_gdal_warp (GMT, st);
+	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDAL PROG-> \"%s\" is unknown or not implemented\n", Ctrl->A.prog_name);
 		error++;

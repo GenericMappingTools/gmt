@@ -51,7 +51,7 @@ Required Arguments
 .. _-A:
 
 **-A**\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*]
-    Select which GDAL program to run (currently only one of *info*, *grid* or *dem*) 
+    Select which GDAL program to run (currently one of *info*, *dem*, *grid*, *rasterize*, *translate or *warp*) 
     When program is *dem* append **+m**\ *method* (pick one of *hillshade*, *color-relief*, *slope*, *TRI*, *TPI*
     or *roughness*) and, for *color-relief*, need also to specify a colormap with **+c**\ *cpt_name*.
 
