@@ -40,6 +40,8 @@
 
 .. |gmtdefaults_purpose| replace:: List current GMT default settings
 
+.. |gmtgdal_purpose| replace:: Execute GDAL programs from GMT
+
 .. |gmtget_purpose| replace:: Get individual GMT default settings
 
 .. |gmtinfo_purpose| replace:: Get information about data tables

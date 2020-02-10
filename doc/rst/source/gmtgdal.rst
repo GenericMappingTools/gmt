@@ -5,7 +5,7 @@
 gmtgdal
 *******
 
-Execute GDAL programs from GMT
+|gmtgdal_purpose|
 
 Synopsis
 --------

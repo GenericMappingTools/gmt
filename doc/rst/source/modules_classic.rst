@@ -192,6 +192,7 @@ Core Modules
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
     - :doc:`gmtdefaults`
+    - :doc:`gmtgdal`
     - :doc:`gmtget`
     - :doc:`gmtinfo`
     - :doc:`gmtlogo_classic`
@@ -560,6 +561,10 @@ Miscellaneous
 | :doc:`docs`           | |docs_purpose|        |
 +-----------------------+-----------------------+
 | :doc:`gmt2kml`        | |gmt2kml_purpose|     |
++-----------------------+-----------------------+
+| :doc:`gmtgdal`        | |gmtgdal_purpose|     |
++-----------------------+-----------------------+
+| :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+
 | :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+
