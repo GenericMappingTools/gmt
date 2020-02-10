@@ -211,7 +211,7 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Memory allocation failure\n");
 		Return (GMT_MEMORY_ERROR);
 	}
-	/* Populate GDAL control structure form user's seletinos */
+	/* Populate GDAL control structure form user's selections */
 	st->fname_in  = Ctrl->fname_in;
 	st->fname_out = Ctrl->G.file;
 	st->opts = Ctrl->F.opts;
@@ -224,6 +224,9 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 		gmt_gdal_info (GMT, Ctrl->fname_in, Ctrl->F.opts);
 	else if (!strcmp(Ctrl->A.prog_name, "dem")) {
 		char *ext = NULL;
+		if (!GMT->common.R.active[RSET]) 	/* Here, -R should be only needed if grid it to be written by GMT, but easier to do it for all cases */
+			gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
+	
 		if (Ctrl->A.dem_method) st->dem_method = Ctrl->A.dem_method;
 		if (Ctrl->A.dem_cpt) st->dem_cpt = Ctrl->A.dem_cpt;
 		if ((ext = gmt_get_ext (st->fname_out)) != NULL) {
