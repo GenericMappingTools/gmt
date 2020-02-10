@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt gmtgdal** *infile* **-A**\ *prog*[**+m**\ *method*\ **+c**\ *cpt*] **-G**\ *outfile* [**-F**\ "*gd opts*"] [**-M**\ [**+r+w**]]
+**gmt gmtgdal** *infile* **-A**\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*] **-G**\ *outfile* [**-F**\ "*gd opts*"] [**-M**\ [**+r+w**]]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -50,7 +50,7 @@ Required Arguments
 
 .. _-A:
 
-**-A**\ *prog*[**+m**\ *method*\ **+c**\ *cpt*]
+**-A**\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*]
     Select which GDAL program to run (currently only one of *info*, *grid* or *dem*) 
     When program is *dem* append **+m**\ *method* (pick one of *hillshade*, *color-relief*, *slope*, *TRI*, *TPI*
     or *roughness*) and, for *color-relief*, need also to specify a colormap with **+c**\ *cpt_name*.
