@@ -125,13 +125,14 @@ steps:
 
 - bash: |
     set -x -e
-    cd build
-    # Download remote files before testing, see #939.
-    curl -k https://oceania.generic-mapping-tools.org/gmt_hash_server.txt | awk 'NF==3 && $1!~/earth/ {print "@"$1}' | xargs gmt which -Gc
+    # Download cache files from remote server before testing, see see #939.
+    $(gmt --show-sharedir)/tools/gmt_getremote.sh cache
+    # Download earth relief files used in testing
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
     # disable MinGW's path conversion, see #1035.
     export MSYS_NO_PATHCONV=1
-    # run all jobs and rerun if failed
+    # run all jobs, and rerun failed jobs
+    cd build
     ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests
   env:
