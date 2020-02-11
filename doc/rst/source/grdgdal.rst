@@ -1,18 +1,18 @@
-.. index:: ! gmtgdal
+.. index:: ! grdgdal
 .. include:: module_core_purpose.rst_
 
 *******
-gmtgdal
+grdgdal
 *******
 
-|gmtgdal_purpose|
+|grdgdal_purpose|
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt gmtgdal** *infile* **-A**\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*] **-G**\ *outfile* [**-F**\ "*gd opts*"] [**-M**\ [**+r+w**]]
+**gmt grdgdal** *infile* **-A**\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*] **-G**\ *outfile* [**-F**\ "*gd opts*"] [**-M**\ [**+r+w**]]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -30,10 +30,10 @@ Synopsis
 Description
 -----------
 
-**gmtgdal** is a wrapper module to run some of the GDAL programs (currently *gdalinfo*, *gdal_grid* and *gdaldem*)
-from within GMT. Given that GMT and GDAL syntaxes are very different, this module offers a minimal set of GMT style
-options but the bulk of them, which use the original GDAL syntax, are passed via a **-F**\ "*gdal options*". So,
-users are requested to consult the GDAL programs documentation to learn how to use it.
+Wrapper module to run some of the GDAL programs (currently *gdalinfo*, *gdaldem*, *gdal_grid*, *gdal_translate*,
+*gdal_rasterize*, and *gdalwarp*) from within GMT. Given that GMT and GDAL syntaxes are very different, this module
+offers a minimal set of GMT style options but the bulk of them, which use the original GDAL syntax, are passed via
+a **-F**\ "*gdal options*". So, users are requested to consult the GDAL programs documentation to learn how to use it.
 
 When writing grids, an option is offered to write them either using the GMT or the GDAL machinery. Each one has
 its pros and cons. For example, saving with GMT allows the access by external libraries (*e.g.* Matlab, Julia, Python)
@@ -120,11 +120,11 @@ Examples
 To interpolate the x,y,z data at 0.05 increment in a VRT file using the nearest neighbor algorithm
 and saving the result as a netCDF
 
-    gmt gmtgdal lixo.vrt -Agrid -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+r
+    gmt grdgdal lixo.vrt -Agrid -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+r
 
 Now the same as above but saving the grid with GDAL and using the x,y,z point file directly
 
-    gmt gmtgdal lixo.csv -Agrid -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+W
+    gmt grdgdal lixo.csv -Agrid -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+W
 
 See Also
 --------

@@ -25,36 +25,36 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_CLASSIC_NAME	"gmtgdal"
-#define THIS_MODULE_MODERN_NAME	"gmtgdal"
+#define THIS_MODULE_CLASSIC_NAME	"grdgdal"
+#define THIS_MODULE_MODERN_NAME	"grdgdal"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Execute GDAL programs from GMT"
+#define THIS_MODULE_PURPOSE	"Execute raster GDAL programs from GMT"
 #define THIS_MODULE_KEYS	"<D{,<G(,GG}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVbdeghiqr"
 
 /* Control structure for gmtwrite */
 
-struct GMTGDAL_CTRL {
-	struct GMTGDAL_A {	/* GDAL prog name */
+struct GRDGDAL_CTRL {
+	struct GRDGDAL_A {	/* GDAL prog name */
 		bool active;
 		char *prog_name;
 		char *dem_method;		/* The method name for gdaldem */
 		char *dem_cpt;			/* A CPT name to use in gdaldem color-relief method */
 	} A;
-	struct GMTGDAL_F {	/* -F<gdal options> */
+	struct GRDGDAL_F {	/* -F<gdal options> */
 		bool active;
 		char *opts;
 	} F;
-	struct GMTGDAL_G {	/* -G<grdfile> */
+	struct GRDGDAL_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct GMTGDAL_M {	/* -M[+r+w] which read-write machinery. GMT or GDAL  */
+	struct GRDGDAL_M {	/* -M[+r+w] which read-write machinery. GMT or GDAL  */
 		bool active;
 		bool read_gdal, write_gdal;
 	} M;
-	struct GMTGDAL_W {	/* -W sets output data fname when writen by GDAL */
+	struct GRDGDAL_W {	/* -W sets output data fname when writen by GDAL */
 		bool active;
 		char *file;
 	} W;
@@ -62,14 +62,14 @@ struct GMTGDAL_CTRL {
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct GMTGDAL_CTRL *C;
+	struct GRDGDAL_CTRL *C;
 
-	C = gmt_M_memory (GMT, NULL, 1, struct GMTGDAL_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDGDAL_CTRL);
 	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->A.dem_method) gmt_M_str_free (C->A.dem_method);
 	if (C->A.dem_cpt) gmt_M_str_free (C->A.dem_cpt);
@@ -84,7 +84,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify input file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify the GDAL program name (Currently 'info', 'grid' or 'dem').\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify the GDAL program name (Currently 'info', 'dem', 'grid', 'translate', 'rasterize' or 'warp').\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   When program is 'dem' append +m<method> (pick one of 'hillshade', 'color-relief', 'slope', 'TRI', 'TPI' or 'roughness') and, for 'color-relief', +c<cpt_name>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F list of GDAL options for the selected program in -A wrapped in double quotes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Name of output grid.\n");
@@ -97,7 +97,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -184,10 +184,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGDAL_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtgdal (void *V_API, int mode, void *args) {
+int GMT_grdgdal (void *V_API, int mode, void *args) {
 	int error = 0;
 	char *ext = NULL;
-	struct GMTGDAL_CTRL *Ctrl = NULL;
+	struct GRDGDAL_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -208,7 +208,7 @@ int GMT_gmtgdal (void *V_API, int mode, void *args) {
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
-	/*---------------------------- This is the gmtgdal main code ----------------------------*/
+	/*---------------------------- This is the grdgdal main code ----------------------------*/
 
 	if ((st = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALLIBRARIFIED_CTRL)) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Memory allocation failure\n");
