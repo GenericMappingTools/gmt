@@ -23,6 +23,7 @@ for compiling GMT source package (either stable release or development version).
   * [Fedora](#fedora)
   * [RHEL/CentOS](#rhelcentos)
   * [Ubuntu/Debian](#ubuntudebian)
+  * [ArchLinux](#archlinux)
 - [Cross Platform Install Instructions](#cross-platform-install-instructions)
   * [Install via conda](#install-via-conda)
 
@@ -224,20 +225,28 @@ Install other GMT dependencies (some are optional) via:
 include the supplements. If you need them you will need to
 [build from source](BUILDING.md) or upgrade to 18.04 LTS.
 
-## Archlinux
+## ArchLinux
 
-Install GMT6 via
+### Install via building AUR package
+
+It's easier to manage installed content and dependencies than directly
+building and manually `make install` in ArchLinux.
 
     # Full update system packages first
     sudo pacman -Syu
 
-    # Install tools for building packages
+    # Install tools for building AUR packages
     sudo pacman -S base-devel
 
-    # Install lost build depedencies in PKGBUILD of aur repo
-    sudo pacman -S python-sphinx ghostscript
+    # Use git command to clone Non-official AUR repo of gmt
+    # here's two options, **you just have to clone one of them**
+    # If you encounter some problems in those repo
+    # you can report to the authors first, or choose another one to clone
 
     git clone https://aur.archlinux.org/gmt.git
+
+    # alternative repo, for testing stable/rc release in version 6.x branch
+    git clone https://aur.archlinux.org/gmt6.git gmt
 
     # Optional recommended packages
     git clone https://aur.archlinux.org/gmt-coast.git
@@ -249,7 +258,7 @@ Install GMT6 via
     makepkg -sc
     sudo pacman -U *.pkg.tar.xz
 
-**Note**: Since some build depedencies in PKGBUILD of AUR repo are lost, binary packages of gmt are still not available in [ArchlinuxCN repo](https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror) yet.
+**Note**: Binary packages of gmt are still not available in [ArchlinuxCN repo](https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror) yet.
 
 ## Cross Platform Install Instructions
 
