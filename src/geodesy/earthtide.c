@@ -1166,8 +1166,8 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 			detide(xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 			/* determine local geodetic horizon components (topocentric) */
 			rge(lat, lons[col], &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
-			grd_n[ij_n] = (float)ut;
-			grd_e[ij_e] = (float)vt;
+			grd_n[ij_n] = (float)vt;
+			grd_e[ij_e] = (float)ut;
 			grd_u[ij_u] = (float)wt;
 			ij_n += n_inc;
 			ij_e += e_inc;
