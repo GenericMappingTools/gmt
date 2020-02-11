@@ -39,7 +39,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     gmtconnect
     gmtconvert
     gmtdefaults
-    gmtgdal
+    grdgdal
     gmtget
     gmtinfo
     gmtlogo_classic
@@ -192,7 +192,7 @@ Core Modules
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
     - :doc:`gmtdefaults`
-    - :doc:`gmtgdal`
+    - :doc:`grdgdal`
     - :doc:`gmtget`
     - :doc:`gmtinfo`
     - :doc:`gmtlogo_classic`
@@ -562,7 +562,7 @@ Miscellaneous
 +-----------------------+-----------------------+
 | :doc:`gmt2kml`        | |gmt2kml_purpose|     |
 +-----------------------+-----------------------+
-| :doc:`gmtgdal`        | |gmtgdal_purpose|     |
+| :doc:`grdgdal`        | |grdgdal_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+

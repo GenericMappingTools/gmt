@@ -174,7 +174,7 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 	nYSize = GDALGetRasterYSize(hDstDS);
 
 	if ((tmp = calloc((size_t)nYSize * (size_t)nXSize, nPixelSize)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtgdal: failure to allocate enough memory\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdgdal: failure to allocate enough memory\n");
 		return -1;
 	}
 
