@@ -124,7 +124,7 @@ and saving the result as a netCDF
 
 Now the same as above but saving the grid with GDAL and using the x,y,z point file directly
 
-    gmt grdgdal lixo.csv -Agrid -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+W
+    gmt grdgdal lixo.csv -Agrid -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+w
 
 See Also
 --------
