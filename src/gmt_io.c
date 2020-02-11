@@ -5084,6 +5084,8 @@ char *gmt_strncpy (char *dest, const char *source, size_t num) {
 int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	char file[PATH_MAX] = {""}, *c = NULL;
 	unsigned int first = 0;
+	int err;
+	struct stat S;
 
 	if (!filename || !filename[0]) return (-1);		/* No file given */
 	if (gmt_M_file_is_memory (filename)) return (0);	/* Memory location always exists */
@@ -5098,6 +5100,9 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	else if ((c = strchr (file, '+')) && strchr ("hons", c[1])) c[0] = '\0';	/* Chop off any +h hinge setting or any z-scaling specification */
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
+	err = stat (file, &S);	/* Stat the argument */
+	if (!err && S_ISDIR (S.st_mode))	/* Path exists, but it is a directory */
+		return (-1);
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */
 		char path[PATH_MAX] = {""};
 		if (gmt_M_file_is_remotedata (filename) && !strstr (filename, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */

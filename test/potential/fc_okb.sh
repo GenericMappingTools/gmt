@@ -7,7 +7,7 @@ ps=fc_okb.ps
 lim=-41:50/-41:20/47:30/47:50
 
 # Get rough gmt surface description
-gmt grd2xyz @etopo10m_48.nc -R$lim -fg > fc.dat
+gmt grd2xyz @earth_relief_10m -R$lim -fg > fc.dat
 
 # Calculate the triangles
 gmt triangulate fc.dat > fc_tri.dat
