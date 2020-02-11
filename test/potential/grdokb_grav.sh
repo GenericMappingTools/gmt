@@ -8,7 +8,7 @@ lim=-12.5/-10/35.5/37.5
 
 # Compute the grav anomaly using a contrast density of 1700 kg/m^3.
 # To get the Bouger anomaly this would be added to the FAA
-gmt grdgravmag3d @etopo10m_48.nc -R$lim -fg -C1700 -Ggrdokb_grav.nc -I0.05 -Q0.5
+gmt grdgravmag3d @earth_relief_10m -R$lim -fg -C1700 -Ggrdokb_grav.nc -I0.05 -Q0.5
 
 # Generate a line to compute a profile
 gmt project -C-11.7/37.2 -E-11/35.8 -G1 -Q > tt.xyp

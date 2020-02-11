@@ -16,10 +16,10 @@ INC=1			# 1x1 degree output
 D=1000			# 1000 km filter width
 
 # Run gmt grdfilter as specified
-gmt grdfilter -D4 -F${FILT}$D -I$INC @etopo10m_48.nc -Gt.nc -fg
+gmt grdfilter -D4 -F${FILT}$D -I$INC @earth_relief_10m -Gt.nc -fg
 gmt makecpt -Cglobe > t.cpt
 gmt grdimage t.nc -JQ0/7i -Ba -BWSne+t"$D km Gaussian filter" -Ct.cpt -P -K -Xc -Y1.5i > $ps
 gmt psscale -Ct.cpt -D3.5i/-0.5i+w6i/0.1i+h+jTC -O -K -Bxa -By+l"m" >> $ps
-gmt grdimage @etopo10m_48.nc -JQ0/7i -Ba -BWSne+t"Original data" -Ct.cpt -O -K -Y4.75i >> $ps
+gmt grdimage @earth_relief_10m -JQ0/7i -Ba -BWSne+t"Original data" -Ct.cpt -O -K -Y4.75i >> $ps
 gmt psxy -Rt.nc -J -O -T >> $ps
 
