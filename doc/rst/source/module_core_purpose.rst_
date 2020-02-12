@@ -40,8 +40,6 @@
 
 .. |gmtdefaults_purpose| replace:: List current GMT default settings
 
-.. |grdgdal_purpose| replace:: Execute GDAL raster programs from GMT
-
 .. |gmtget_purpose| replace:: Get individual GMT default settings
 
 .. |gmtinfo_purpose| replace:: Get information about data tables
@@ -91,6 +89,8 @@
 .. |grdfill_purpose| replace:: Interpolate across holes in a grid
 
 .. |grdfilter_purpose| replace:: Filter a grid in the space (or time) domain
+
+.. |grdgdal_purpose| replace:: Execute GDAL raster programs from GMT
 
 .. |grdgradient_purpose| replace:: Compute directional gradients from a grid
 
