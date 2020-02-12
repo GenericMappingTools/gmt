@@ -60,8 +60,9 @@ struct GRDINFO_CTRL {
 	} D;
 	struct GRDINFO_E {	/* -E[x|y][+u|l ]*/
 		bool active;
-		unsigned int mode;
-		int val;
+		unsigned int mode;	/* GMT_X for cols, GMT_Y for rows */
+		int val;	/* -1 for finding the minimum (+l); +1 for the maximum (+u) [Default] */
+		int type;	/* -1: Only negative values tested, 0: all values [Default], +1: Only positive values tested */
 	} E;
 	struct GRDINFO_F {	/* -F */
 		bool active;
@@ -92,6 +93,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDINFO_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->E.val = +1;	/* Default is to look for maxima */
 	C->T.alpha = 2.0;	/* 2 % alpha trim is default if selected */
 	return (C);
 }
@@ -104,7 +106,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|h]] [-F] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] [-M]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|L|u|U]] [-F] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] [-M]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<dz>][+a[<alpha>]][+s]] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -120,8 +122,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to only report tiles if the subregion has data (limited to one input grid).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no grid is given then -R must be given and we tile based on the given region.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ct to append the region string as trailing text to the numerical columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Report extreme values per column (append x [Default]) or row (append y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l for minima and +h for maxima [Default]. Only one input grid accepted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Report extreme values per column (append x) or row (append y) [x].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l|L for minima and +u|U for maxima [Default]. Only one input grid is accepted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to consider only positive values and +U to consider only negative values [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Report domain in world mapping format [Default is generic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then rounding off will occur but no -R string is issued.\n");
@@ -159,6 +162,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	bool no_file_OK, num_report;
 	unsigned int n_errors = 0, n_files = 0;
 	char text[GMT_LEN32] = {""}, *c = NULL;
+	static char *M[2] = {"minimum", "maximum"}, *V[3] = {"negative", "all", "positive"}, *T[2] = {"column", "row"};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -209,7 +213,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 						n_errors++;
 						break;
 				}
-				Ctrl->E.val = (strstr (opt->arg, "+l")) ? -1 : +1;
+				if ((c = strchr (opt->arg, '+'))) {	/* Gave a modifier */
+					switch (c[1]) {
+						case 'l': Ctrl->E.val = -1; break;
+						case 'L': Ctrl->E.val = -1; Ctrl->E.type = +1; break;
+						case 'u': Ctrl->E.val = +1; break;
+						case 'U': Ctrl->E.val = +1; Ctrl->E.type = -1; break;
+						default:
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Expected modifiers +l|L|u|U, not +%c\n", c[1]);
+							n_errors++;
+							break;
+					}
+				}
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Will look for the %s value among %s values along each %s\n", M[(Ctrl->E.val+1)/2], V[Ctrl->E.type+1], T[Ctrl->E.mode]);
 				break;
 			case 'F':	/* World mapping format */
 				Ctrl->F.active = true;
@@ -590,7 +606,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		if (Ctrl->E.active) {
 			unsigned int row, col, r, c;
-			float z;
+			float z, z0 = -FLT_MAX * Ctrl->E.val;
 			double *x = NULL, *y = NULL;
 			x = gmt_grd_coord (GMT, G->header, GMT_X);
 			y = gmt_grd_coord (GMT, G->header, GMT_Y);
@@ -598,34 +614,36 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->E.mode == GMT_Y) {
 				gmt_M_row_loop (GMT, G, row) {	/* Along each row; y is the monotonically increaseing coordinate */
 					out[GMT_Y] = y[row];
-					z = -FLT_MAX;
+					z = -FLT_MAX * Ctrl->E.val;
 					gmt_M_col_loop (GMT, G, row, col, ij) {	/* Loop across this row */
 						if (gmt_M_is_fnan (G->data[ij])) continue;
-						if (G->data[ij] > z) {
+						if ((Ctrl->E.type == -1 && G->data[ij] > 0.0) || (Ctrl->E.type == +1 && G->data[ij] < 0.0)) continue;
+						if ((Ctrl->E.val == -1 && G->data[ij] < z) || (Ctrl->E.val == +1 && G->data[ij] > z)) {
 							z = G->data[ij];
 							c = col;
 						}
 					}
 					out[GMT_X] = x[c];
 					out[GMT_Z] = z;
-					if (z != -FLT_MAX) GMT_Put_Record (API, GMT_WRITE_DATA, Out);		/* Write this to output */
+					if (z != z0) GMT_Put_Record (API, GMT_WRITE_DATA, Out);		/* Write this to output */
 				}
 			}
-			else {	/* ALong each column; x is the monotonicallly increasing coordinate */
+			else {	/* Along each column; x is the monotonicallly increasing coordinate */
 				gmt_M_col_loop2 (GMT, G, col) {	/* For all possible columns */
 					out[GMT_X] = x[col];
-					z = -FLT_MAX;
+					z = -FLT_MAX * Ctrl->E.val;
 					gmt_M_row_loop (GMT, G, row) {	/* Loop over all rows */
 						ij = gmt_M_ijp (G->header, row, col);
 						if (gmt_M_is_fnan (G->data[ij])) continue;
-						if (G->data[ij] > z) {
+						if ((Ctrl->E.type == -1 && G->data[ij] > 0.0) || (Ctrl->E.type == +1 && G->data[ij] < 0.0)) continue;
+						if ((Ctrl->E.val == -1 && G->data[ij] < z) || (Ctrl->E.val == +1 && G->data[ij] > z)) {
 							z = G->data[ij];
 							r = row;
 						}
 					}
 					out[GMT_Y] = y[r];
 					out[GMT_Z] = z;
-					if (z != -FLT_MAX) GMT_Put_Record (API, GMT_WRITE_DATA, Out);		/* Write this to output */
+					if (z != z0) GMT_Put_Record (API, GMT_WRITE_DATA, Out);		/* Write this to output */
 				}
 			}
 			gmt_M_free (GMT, x);

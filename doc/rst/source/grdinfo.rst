@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdinfo** *grdfiles* [ |-C|\ [**n**\|\ **t**\] ]
 [ |-D|\ [*xoff*\ [/*yoff*]][**+i**] ]
-[ |-E|\ [**x**\|\ **y**][**+l**\|\ **h**] ]
+[ |-E|\ [**x**\|\ **y**][**+h**\|\ **H**\|\ **l**\|\ **L**] ]
 [ |-F| ]
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
 [ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ] [ |-M| ]
@@ -77,11 +77,13 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**x**\|\ **y**][**+l**\|\ **h**]
+**-E**\ [**x**\|\ **y**][**+h**\|\ **H**\|\ **l**\|\ **L**]
     Report the extreme values found on a per column (**-Ex**) or per
-    row (**-Ey**) basis.  By default, we look for the global maxima (**+h**)
-    for each column.  Append **+l** to instead look for minima.  We only
-    allow one input grid when **-E** is selected.
+    row (**-Ey**) basis.  By default, we look for the global maxima (**+h**\|\ **H**)
+    for each column.  Append **+l**\|\ **L** to look for minima instead.
+    Upper case **+L** means we find the minimum of the positive values only, while
+    upper case **+U** means we find the maximum of the negative values only [use all values].
+    We only allow one input grid when **-E** is selected.
 
 .. _-F:
 
