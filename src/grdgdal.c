@@ -19,7 +19,7 @@
  * Date:	6-Feb-2020
  * Version:	6 API
  *
- * Brief synopsis: 
+ * Brief synopsis: Run some GDAL programs making use of its C API
  *
  */
 
@@ -28,7 +28,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdgdal"
 #define THIS_MODULE_MODERN_NAME	"grdgdal"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Execute raster GDAL programs from GMT"
+#define THIS_MODULE_PURPOSE	"Execute GDAL raster programs from GMT"
 #define THIS_MODULE_KEYS	"<D{,<G(,GG}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVbdeghiqr"
