@@ -132,7 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 			/* Common parameters */
 
 			case '<':	/* Does not take input! */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error: No input files expected\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No input files expected\n");
 				n_errors++;
 				break;
 			case '>':	/* Got named output file */
@@ -276,7 +276,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		include = gmt_M_memory (GMT, NULL, n_tracks, bool);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Error: -L unable to open file %s\n", Ctrl->L.file);
+				GMT_Report (API, GMT_MSG_ERROR, "Option -L: Unable to open file %s\n", Ctrl->L.file);
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {

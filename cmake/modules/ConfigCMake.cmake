@@ -2,14 +2,19 @@
 #
 # Useful CMake variables.
 #
-# There are three configuration files:
+# There are five configuration files:
 #   1) "ConfigDefault.cmake" - is version controlled and used to add new default
 #      variables and set defaults for everyone.
 #   2) "ConfigUser.cmake" in the source tree - is not version controlled
-#      (currently listed in .gitignore) and used to override defaults on
+#      (currently listed in .gitignore) and used to override basic default settings on
 #      a per-user basis.
 #   3) "ConfigUser.cmake" in the build tree - is used to override
 #      "ConfigUser.cmake" in the source tree.
+#   4) "ConfigUserAdvanced.cmake" in the source tree - is not version controlled
+#      (currently listed in .gitignore) and used to override advanced default settings on
+#      a per-user basis.
+#   5) "ConfigUserAdvanced.cmake" in the build tree - is used to override
+#      "ConfigUserAdvanced.cmake" in the source tree.
 #
 # NOTE: If you want to change CMake behaviour just for yourself then copy
 #      "ConfigUserTemplate.cmake" to "ConfigUser.cmake" and then edit
@@ -17,7 +22,7 @@
 #
 include ("${CMAKE_SOURCE_DIR}/cmake/ConfigDefault.cmake")
 
-# A "ConfigUser.cmake" in the source tree overrides the defaults.
+# A "ConfigUser.cmake" in the source tree overrides the advanced defaults.
 if (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
 	include ("${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
 endif (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
@@ -27,6 +32,17 @@ endif (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
 if (EXISTS "${CMAKE_BINARY_DIR}/cmake/ConfigUser.cmake")
 	include ("${CMAKE_BINARY_DIR}/cmake/ConfigUser.cmake")
 endif (EXISTS "${CMAKE_BINARY_DIR}/cmake/ConfigUser.cmake")
+
+# A "ConfigUserAdvanced.cmake" in the source tree overrides the advanced defaults.
+if (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUserAdvanced.cmake")
+	include ("${CMAKE_SOURCE_DIR}/cmake/ConfigUserAdvanced.cmake")
+endif (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUserAdvanced.cmake")
+
+# If you've got a 'ConfigUserAdvanced.cmake' in the build tree then that overrides the
+# one in the source tree.
+if (EXISTS "${CMAKE_BINARY_DIR}/cmake/ConfigUserAdvanced.cmake")
+	include ("${CMAKE_BINARY_DIR}/cmake/ConfigUserAdvanced.cmake")
+endif (EXISTS "${CMAKE_BINARY_DIR}/cmake/ConfigUserAdvanced.cmake")
 
 ###########################################################
 # Do any needed processing of the configuration variables #
@@ -207,6 +223,12 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT SUPPORT_EXEC_IN_BINARY_DIR)
 if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel)" AND NOT CMAKE_C_FLAGS MATCHES "-std=")
 	set (CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
 endif ()
+
+# Suppress MSVC deprecation and security warnings
+if (MSVC)
+    set (CMAKE_C_FLAGS "/D_CRT_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
+    set (CMAKE_C_FLAGS "/D_CRT_NONSTDC_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE ${CMAKE_C_FLAGS}")
+endif (MSVC)
 
 # Handle the special developer option GMT_DOCS_DEPEND_ON_GMT
 # Normally this is ON.

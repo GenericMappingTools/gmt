@@ -1162,8 +1162,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
-
 GMT_LOCAL void close_files (struct MOVIE_CTRL *Ctrl) {
 	/* Close all files when an error forces us to quit */
 	fclose (Ctrl->In.fp);
@@ -1513,7 +1511,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
 			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
 		}
-		else if (gmtlib_count_char (GMT, Ctrl->T.file, '/') == 2) {	/* Give a vector specification -Tmin/max/inc, call gmtmath */
+		else if (gmt_count_char (GMT, Ctrl->T.file, '/') == 2) {	/* Give a vector specification -Tmin/max/inc, call gmtmath */
 			char output[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""};
 			unsigned int V = GMT->current.setting.verbose;
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, NULL, output) == GMT_NOTSET) {

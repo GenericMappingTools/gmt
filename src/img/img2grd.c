@@ -524,7 +524,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->T.value == 3) strcpy (z_units, "T/F, one or more constraints fell in this pixel.");
 
 	if (img_setup_coord (GMT, &imgrange, &imgcoord) ) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error in img coordinate specification [-I -W or -D].\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failure in img coordinate specification [-I -W or -D].\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	else if (Ctrl->N.active && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {

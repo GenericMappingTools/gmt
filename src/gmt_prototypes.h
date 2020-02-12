@@ -45,6 +45,7 @@ EXTERN_MSC int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *
 
 /* gmt_init.c: */
 
+EXTERN_MSC unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it);
 EXTERN_MSC int gmt_set_length_unit (struct GMT_CTRL *GMT, char unit);
 EXTERN_MSC unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]);
 EXTERN_MSC void gmt_reset_history (struct GMT_CTRL *GMT);
@@ -150,6 +151,12 @@ void gmt_proj4_fwd (struct GMT_CTRL *GMT, double xi, double yi, double *xo, doub
 void gmt_proj4_inv (struct GMT_CTRL *GMT, double *xi, double *yi, double xo, double yo);
 #	if GDAL_VERSION_MAJOR >= 2
 		EXTERN_MSC struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename);
+		EXTERN_MSC int gmt_gdal_info (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL);
+		EXTERN_MSC int gmt_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL);
+		EXTERN_MSC int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL);
+		EXTERN_MSC int gmt_gdal_rasterize (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL);
+		EXTERN_MSC int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL);
+		EXTERN_MSC int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL);
 #	endif
 #endif
 

@@ -10,7 +10,7 @@ fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
 D=1000			# 1000 km filter width
-DATA=@etopo10m_48.nc	# Test on ETOP10 data
+DATA=@earth_relief_10m	# Test on ETOP10 data
 
 # Run gmt grdfilter as specified
 gmt grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg ${_thread_opt}

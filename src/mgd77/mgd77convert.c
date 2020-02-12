@@ -331,7 +331,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 		D = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header sequence for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		sprintf (file, "%s.%s", M.NGDC_id, MGD77_suffix[Ctrl->T.format]);
@@ -359,7 +359,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		/* OK, now we can read the data set */
 
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data set for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		MGD77_Close_File (GMT, &M);
@@ -382,7 +382,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		strcpy (D->H.author, M.user);									/* Pass current user login id as author */
 		gmt_M_free (GMT, D->H.history);	/* Make sure history is blank so it is reset by MGD77_Write_File */
 		if (MGD77_Write_File (GMT, file, &M, D)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error writing new file for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing new file for cruise %s\n", list[argno]);
 			Return (GMT_DATA_WRITE_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Converted cruise %s to %s format\n", list[argno], format_name[Ctrl->T.format]);

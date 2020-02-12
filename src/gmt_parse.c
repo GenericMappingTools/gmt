@@ -24,7 +24,7 @@
  * The API presently consists of 52 documented functions.  For a full
  * description of the API, see the GMT_API documentation.
  * These functions have Fortran bindings as well, provided you add
- * -DFORTRAN_API to the C preprocessor flags [in ConfigUser.cmake].
+ * -DFORTRAN_API to the C preprocessor flags [in ConfigUserAdvanced.cmake].
  *
  * Here lie the 13 public functions used for GMT API command parsing:
  *
@@ -276,7 +276,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	}
 	for (k = 0, B_id = GMT_NOTSET; k < GMT_N_UNIQUE && B_id == GMT_NOTSET; k++)
 		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
-	assert (B_id != GMT_NOTSET);
+	assert (B_id != GMT_NOTSET);	/* Safety valve just in case */
 	check_B = (strncmp (GMT->init.module_name, "psscale", 7U) && strncmp (GMT->init.module_name, "docs", 4U));
 	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && check_B) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
 		char file[PATH_MAX] = {""};

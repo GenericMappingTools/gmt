@@ -88,3 +88,20 @@ Copyright (c) 1991-2020 by [the GMT Team](AUTHORS.md).
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
 version 3 or any later version. See [LICENSE.TXT](LICENSE.TXT) for full details.
+
+## Acknowledgment
+
+GMT relies on several other Open Source software libraries and programs for its
+operation.  We gratefully acknowledge the importance to GMT of these products.
+GMT may be linked with these libraries (* means optional):
+[Network Common Data Form (netCDF)](https://www.unidata.ucar.edu/software/netcdf/),
+[Geospatial Data Abstraction Library (GDAL*)](https://gdal.org),
+[Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org), 
+[Fastest Fourier Transform in the West (FFTW*)](http://www.fftw.org),
+[Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),
+[Basic Linear Algebra Subprograms (BLAS*)](http://www.netlib.org/blas/), and
+[ZLIB*](https://www.zlib.net). GMT may call these executables:
+GDAL (ogr2ogr, gdal_info), [Ghostscript](https://www.ghostscript.com),
+[FFmpeg](https://www.ffmpeg.org),
+[xdg-open](https://www.freedesktop.org/wiki/Software/xdg-utils/), and
+[GraphicsMagick](http://www.graphicsmagick.org).

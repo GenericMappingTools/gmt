@@ -11,7 +11,7 @@ instance Shewchuk's Delaunay Triangulator (triangle.c) is distributed
 under a proprietary non-permissive license. Refer to the license in
 every source file. Users who wish to enforce strict GPL or LGPL
 conformance are advised to exclude copylefted sources in
-cmake/ConfigUser.cmake.
+cmake/ConfigUserAdvanced.cmake.
 
 Permission to use, copy, modify, and distribute (with no more than a
 reasonable redistribution fee) this software and its documentation for

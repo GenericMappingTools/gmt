@@ -144,7 +144,7 @@ GMT_LOCAL int gmtnc_n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GR
 		size_t chunks_per_row = (size_t) ceil ((double)width / chunksize[yx_dim[1]]);
 		*n_contiguous_chunk_rows = NC_CACHE_SIZE / (width_t * z_size) / chunksize[yx_dim[0]];
 #ifdef NC4_DEBUG
-		level = GMT_MSG_ERROR;
+		level = GMT_MSG_WARNING;
 #else
 		level = GMT_MSG_DEBUG;
 #endif
@@ -180,7 +180,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 	assert (io_mode == k_put_netcdf || io_mode == k_get_netcdf);
 
 #ifdef NC4_DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s n_columns:%u n_rows:%u x0:%u y0:%u y-order:%s\n",
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "%s n_columns:%u n_rows:%u x0:%u y0:%u y-order:%s\n",
 			io_mode == k_put_netcdf ? "writing," : "reading,",
 			dim[1], dim[0], origin[1], origin[0],
 			HH->row_order == k_nc_start_south ? "S->N" : "N->S");
@@ -204,7 +204,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		size_t remainder;
 #ifdef NC4_DEBUG
 		unsigned row_num = 0;
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "stride: %u width: %u\n",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "stride: %u width: %u\n",
 					stride, width);
 #endif
 
@@ -216,7 +216,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		count[yx_dim[1]] = width_t;
 		while ( (start[yx_dim[0]] + count[yx_dim[0]]) <= height_t && status == NC_NOERR) {
 #ifdef NC4_DEBUG
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "chunked row #%u start-y:%" PRIuS " height:%" PRIuS "\n",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "chunked row #%u start-y:%" PRIuS " height:%" PRIuS "\n",
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
 #endif
 			/* get/put chunked rows */
@@ -238,7 +238,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 			/* get/put last chunked row */
 			count[yx_dim[0]] = height_t - start[yx_dim[0]] + origin[0];
 #ifdef NC4_DEBUG
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "chunked row #%u start-y:%" PRIuS " height:%" PRIuS "\n",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "chunked row #%u start-y:%" PRIuS " height:%" PRIuS "\n",
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
 #endif
 			if (stride)
@@ -505,7 +505,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			gmt_M_err_trap (nc_inq_dim (ncid, dims[i], dimname, &lens[i]));
 			//if (nc_inq_varid (ncid, dimname, &ids[i])) return (GMT_GRDIO_NC_NOT_COARDS);
 			if ((status = nc_inq_varid (ncid, dimname, &ids[i])) != NC_NOERR)
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "\"%s\", %s\n\tIf something bad happens later, try importing via GDAL.\n",
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "\"%s\", %s\n\tIf something bad happens later, try importing via GDAL.\n",
 				                                         dimname, nc_strerror(status));
 		}
 		HH->xy_dim[0] = ndims-1;
@@ -676,10 +676,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (gmt_M_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
 
 #ifdef NC4_DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x registration: %u\n", header->registration);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x dummy: %g %g\n", dummy[0], dummy[1]);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x[0] x[nx-1]: %g %g\n", xy[0], xy[header->n_columns-1]);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "xinc: %g %g\n", header->inc[GMT_X]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "x registration: %u\n", header->registration);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "x dummy: %g %g\n", dummy[0], dummy[1]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "x[0] x[nx-1]: %g %g\n", xy[0], xy[header->n_columns-1]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "xinc: %g %g\n", header->inc[GMT_X]);
 #endif
 
 		/* Extend x boundaries by half if we found pixel registration */
@@ -776,10 +776,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (gmt_M_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
 
 #ifdef NC4_DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "y registration: %u\n", header->registration);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "y dummy: %g %g\n", dummy[0], dummy[1]);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "y[0] y[ny-1]: %g %g\n", xy[0], xy[header->n_rows-1]);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "xinc: %g %g\n", header->inc[GMT_Y]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "y registration: %u\n", header->registration);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "y dummy: %g %g\n", dummy[0], dummy[1]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "y[0] y[ny-1]: %g %g\n", xy[0], xy[header->n_rows-1]);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "xinc: %g %g\n", header->inc[GMT_Y]);
 #endif
 
 		/* Extend y boundaries by half if we found pixel registration */
@@ -849,22 +849,22 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 
 #ifdef NC4_DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->wesn: %g %g %g %g\n",
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->wesn: %g %g %g %g\n",
 	            header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->registration:%u\n", header->registration);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->row_order: %s\n",
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->registration:%u\n", header->registration);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->row_order: %s\n",
 	            HH->row_order == k_nc_start_south ? "S->N" : "N->S");
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->n_columns: %3d   head->n_rows:%3d\n", header->n_columns, header->n_rows);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->inc: %g %g\n", header->inc[GMT_X], header->inc[GMT_Y]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->t-index %d,%d,%d\n",
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->n_columns: %3d   head->n_rows:%3d\n", header->n_columns, header->n_rows);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->inc: %g %g\n", header->inc[GMT_X], header->inc[GMT_Y]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->t-index %d,%d,%d\n",
 	            HH->t_index[0], HH->t_index[1], HH->t_index[2]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n",
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n",
 	            header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n",
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n",
 	            HH->BC[XLO], HH->BC[XHI], HH->BC[YLO], HH->BC[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->grdtype:%u %u\n", HH->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->grdtype:%u %u\n", HH->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
 #endif
 	}
 	else {
@@ -1304,8 +1304,8 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	is_gridline_reg = header->registration != GMT_GRID_PIXEL_REG;
 
 #ifdef NC4_DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "  x-region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "  y-region: %g %g, grid: %g %g\n", wesn[YLO], wesn[YHI], header->wesn[YLO], header->wesn[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "  x-region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "  y-region: %g %g, grid: %g %g\n", wesn[YLO], wesn[YHI], header->wesn[YLO], header->wesn[YHI]);
 #endif
 
 	if (wesn[XLO] == 0 && wesn[XHI] == 0 && wesn[YLO] == 0 && wesn[YHI] == 0) {
@@ -1372,7 +1372,7 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 			last_col2 = is_global_repeat + last_col - header->n_columns;
 			last_col = header->n_columns - 1;
 #ifdef NC4_DEBUG
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "col2: %u %u\n", first_col2, last_col2);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "col2: %u %u\n", first_col2, last_col2);
 #endif
 
 			origin2[0] = first_row;
@@ -1395,11 +1395,11 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	dim[1] = 1 + last_col - first_col;
 
 #ifdef NC4_DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "-> x-region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "-> y-region: %g %g, grid: %g %g\n", wesn[YLO], wesn[YHI], header->wesn[YLO], header->wesn[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "row: %u %u  col: %u %u  r_shift: %d\n", first_row, last_row, first_col, last_col, *n_shift);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "origin : %u,%u  dim : %u,%u\n", origin[0], origin[1], dim[0], dim[1]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "origin2: %u,%u  dim2: %u,%u\n", origin2[0], origin2[1], dim2[0], dim2[1]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "-> x-region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "-> y-region: %g %g, grid: %g %g\n", wesn[YLO], wesn[YHI], header->wesn[YLO], header->wesn[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "row: %u %u  col: %u %u  r_shift: %d\n", first_row, last_row, first_col, last_col, *n_shift);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "origin : %u,%u  dim : %u,%u\n", origin[0], origin[1], dim[0], dim[1]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "origin2: %u,%u  dim2: %u,%u\n", origin2[0], origin2[1], dim2[0], dim2[1]);
 #endif
 
 	return GMT_NOERROR;
@@ -1522,20 +1522,20 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	pgrid = grid + imag_offset;	/* Start of this complex component (or start of non-complex grid) */
 
 #ifdef NC4_DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "      wesn: %g %g %g %g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->wesn: %g %g %g %g\n", header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->registration:%u\n", header->registration);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->row_order: %s\n", HH->row_order == k_nc_start_south ? "S->N" : "N->S");
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "width:    %3d     height:%3d\n", width, height);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->n_columns: %3d   head->n_rows:%3d\n", header->n_columns, header->n_rows);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->t-index %d,%d,%d\n", HH->t_index[0], HH->t_index[1], HH->t_index[2]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "      pad xlo:%u xhi:%u ylo:%u yhi:%u\n", pad[XLO], pad[XHI], pad[YLO], pad[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n", HH->BC[XLO], HH->BC[XHI], HH->BC[YLO], HH->BC[YHI]);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "head->grdtype:%u %u\n", HH->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "imag_offset: %" PRIu64 "\n", imag_offset);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "      wesn: %g %g %g %g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->wesn: %g %g %g %g\n", header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->registration:%u\n", header->registration);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->row_order: %s\n", HH->row_order == k_nc_start_south ? "S->N" : "N->S");
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "width:    %3d     height:%3d\n", width, height);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->n_columns: %3d   head->n_rows:%3d\n", header->n_columns, header->n_rows);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->t-index %d,%d,%d\n", HH->t_index[0], HH->t_index[1], HH->t_index[2]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "      pad xlo:%u xhi:%u ylo:%u yhi:%u\n", pad[XLO], pad[XHI], pad[YLO], pad[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n", HH->BC[XLO], HH->BC[XHI], HH->BC[YLO], HH->BC[YHI]);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "head->grdtype:%u %u\n", HH->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "imag_offset: %" PRIu64 "\n", imag_offset);
 #endif
 
 	/* Open the NetCDF file */
@@ -1557,7 +1557,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	/* If we need to shift grid */
 	if (n_shift) {
 #ifdef NC4_DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtnc_right_shift_grid: %d\n", n_shift);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtnc_right_shift_grid: %d\n", n_shift);
 #endif
 		gmtnc_right_shift_grid (pgrid, dim[1], dim[0], n_shift, sizeof(grid[0]));
 	}
@@ -1606,7 +1606,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 		/* Report z-range of grid (with scale and offset applied): */
 		unsigned int level;
 #ifdef NC4_DEBUG
-		level = GMT_MSG_ERROR;
+		level = GMT_MSG_WARNING;
 #else
 		level = GMT_MSG_DEBUG;
 #endif
@@ -1761,7 +1761,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 
 		/* Report z-range of grid (with scale and offset applied): */
 #ifdef NC4_DEBUG
-		level = GMT_MSG_ERROR;
+		level = GMT_MSG_WARNING;
 #else
 		level = GMT_MSG_DEBUG;
 #endif
@@ -1831,7 +1831,7 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 		}
 		z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
 		nc_inq_varname (ncid, z_id, varname);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No 3-D array in file %s.  Selecting first 3-D slice in the %d-D array %s\n", file, dim, varname);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "No 3-D array in file %s.  Selecting first 3-D slice in the %d-D array %s\n", file, dim, varname);
 	}
 	gmt_M_err_trap (nc_inq_vardimid (ncid, z_id, dims));
 
@@ -1839,7 +1839,7 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 	for (i = 0; i < ndims; i++) {
 		gmt_M_err_trap (nc_inq_dim (ncid, dims[i], dimname, &lens[i]));
 		if ((status = nc_inq_varid (ncid, dimname, &ids[i])) != NC_NOERR)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "\"%s\", %s\n\tIf something bad happens later, try importing via GDAL.\n",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "\"%s\", %s\n\tIf something bad happens later, try importing via GDAL.\n",
 				dimname, nc_strerror(status));
 	}
 	z_dim = ndims-3;
@@ -1988,7 +1988,7 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 
 			/* Report level-range of grid layer (with scale and offset applied): */
 #ifdef NC4_DEBUG
-			level = GMT_MSG_ERROR;
+			level = GMT_MSG_WARNING;
 #else
 			level = GMT_MSG_DEBUG;
 #endif

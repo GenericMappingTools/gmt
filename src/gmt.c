@@ -286,7 +286,24 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		}
 		else {
+			char libraries[GMT_LEN128] = {"netCDF"};	/* Always linked with netCDF */
+#ifdef HAVE_GDAL
+			strcat (libraries, ", GDAL");
+#endif
+#ifdef HAVE_PCRE
+			strcat (libraries, ", PCRE");
+#endif
+#ifdef HAVE_FFTW3F
+			strcat (libraries, ", FFTW");
+#endif
+#ifdef HAVE_LAPACK
+			strcat (libraries, ", LAPACK");
+#endif
+#ifdef HAVE_ZLIB
+			strcat (libraries, ", ZLIB");
+#endif
 			fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
+			fprintf (stderr, "\t[Linked with %s]\n", libraries);
 			fprintf (stderr, "\t(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
 			fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
 			fprintf (stderr, "and volunteers from around the world.\n\n");

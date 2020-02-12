@@ -34,7 +34,7 @@ To compile I patched src/CMakeList.txt by adding these two lines
     include_directories (${GLIB_INCLUDE_DIR})
     list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARY})
 
-and added this to ConfigUserCmake
+and added this to ConfigUserAdvanced.cmake
 
     # Set location of GLIB ...:
     set (GLIB_INCLUDE_DIR "C:/programs/compa_libs/glib-2.38.2/compileds/${VC}_${BITAGE}/include/glib-2.0")

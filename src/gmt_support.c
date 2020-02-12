@@ -306,9 +306,9 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 		fill->pattern[i-1] = '\0';
 	}
 	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
-	len = (int)strlen (fill->pattern) - 1;
+	len = (int)MIN(strlen (fill->pattern),PATH_MAX) - 1;
 	for (i = 0, pos = -1; i < len && fill->pattern[i] && pos == -1; i++)
-		if (fill->pattern[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
+		if (i < len && fill->pattern[i] == ':' && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;	/* THe extra i < len is needed to defeat cppcheck confusion */
 	if (pos > -1) fill->pattern[pos] = '\0';
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) fill->pattern_no = -1;
@@ -1212,7 +1212,7 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *fil
 	if ((c = strstr (file, "+h"))) {	/* Gave hinge modifier, examine and set parameters */
 		if (c[2]) {	/* Gave hinge value for soft hinge */
 			if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf (GMT, &c[2], gmt_M_type (GMT, GMT_IN, GMT_Z), z_hinge), &c[2])) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "support_cpt_parse: CPT hinge modifier %s was not successfully parsed and is ignored.\n", c);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "support_cpt_parse: CPT hinge modifier %s was not successfully parsed and is ignored.\n", c);
 			}
 			else {	/* Parsed successfully, this turns a soft CPT hinge to a hard user hinge */
 				c[0] = '\0';	/* Chop off the hinge specification from the file name */
@@ -1231,7 +1231,7 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *fil
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmtlib_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CPT z unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "CPT z unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
 		return NULL;
 	}
 	/* Got a valid unit */
@@ -3858,15 +3858,15 @@ GMT_LOCAL uint64_t support_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, 
 		qsort (P, n, sizeof (struct GMT_PAIR), support_sort_pair);
 		for (i = 1; i < n; i++) {
 			if (doubleAlmostEqualZero (P[i].x, P[i-1].x) && doubleAlmostEqualZero (P[i].y, P[i-1].y)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Records %" PRIu64 " and %" PRIu64 " are duplicates!\n", P[i-1].rec, P[i].rec);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Records %" PRIu64 " and %" PRIu64 " are duplicates!\n", P[i-1].rec, P[i].rec);
 				n_duplicates++;
 			}
 		}
 		if (n_duplicates) {	/* Clearly not monotonically increasing or decreasing in x */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bug Report Advice for Watson ACORD External Code:\n");
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The Watson algorithm can fail if there are duplicate (x,y) records.\n");
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "We found %" PRIu64 " duplicate records in your data set.\n", n_duplicates);
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Please remove duplicates and redo your analysis if the results are corrupted.\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Bug Report Advice for Watson ACORD External Code:\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "The Watson algorithm can fail if there are duplicate (x,y) records.\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "We found %" PRIu64 " duplicate records in your data set.\n", n_duplicates);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Please remove duplicates and redo your analysis if the results are corrupted.\n");
 		}
 		gmt_M_free (GMT, P);
 	}
@@ -4050,12 +4050,12 @@ GMT_LOCAL int support_ensure_new_mapinset_syntax (struct GMT_CTRL *GMT, char opt
 					}
 					break;
 				case 'g':	/* Fill specification [Obsolete, now done via panel attributes ] */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Insert fill attributes now given with panel setting (-F)\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -%c:  Insert fill attributes now given with panel setting (-F)\n", option);
 					strcat (panel_txt, "+g");
 					strcat (panel_txt, &p[1]);
 					break;
 				case 'p':	/* Pen specification [Obsolete, now done via panel attributes ] */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Insert pen attributes now given with panel setting (-F)\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -%c:  Insert pen attributes now given with panel setting (-F)\n", option);
 					strcat (panel_txt, "+p");
 					strcat (panel_txt, &p[1]);
 					break;
@@ -4834,7 +4834,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				 	if (OP[k+1] == '=') s->operator = 'G';	/* Let >= be called operator G */
 					break;
 				case '=':	/* Equal [Default] */
-					if (OP[k+1] != '=') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Please use == to indicate equality operator\n");
+					if (OP[k+1] != '=') GMT_Report (GMT->parent, GMT_MSG_WARNING, "Please use == to indicate equality operator\n");
 					if (gmt_M_is_dnan (s->const_val[0])) s->operator = 'E';	/* Let var == NaN be called operator E (equals NaN) */
 					break;
 			}
@@ -4955,7 +4955,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 						switch (p[0]) {
 							case 'f':	/* Change font [Note: font size is ignored as the size argument take precedent] */
 								if (gmt_getfont (GMT, &p[1], &s->font))
-									GMT_Report (GMT->parent, GMT_MSG_ERROR, "Macro code l contains bad +<font> modifier (set to %s)\n", gmt_putfont (GMT, &s->font));
+									GMT_Report (GMT->parent, GMT_MSG_WARNING, "Macro code l contains bad +<font> modifier (set to %s)\n", gmt_putfont (GMT, &s->font));
 								break;
 							case 'j':	s->justify = gmt_just_decode (GMT, &p[1], PSL_NO_DEF);	break;	/* text justification */
 							default:
@@ -4970,7 +4970,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in macro l: <string>[%%<font>] is deprecated syntax, use +f<font> instead\n");
 					*c = 0;		/* Replace % with the end of string NUL indicator */
 					c++;		/* Go to next character */
-					if (gmt_getfont (GMT, c, &s->font)) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
+					if (gmt_getfont (GMT, c, &s->font)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
 				}
 
 				break;
@@ -6251,7 +6251,7 @@ bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 	if ((t = strstr (buffer, "@")) && strlen (t) > 1) {	/* User requested transparency via @<transparency> */
 		double transparency = atof (&t[1]);
 		if (transparency < 0.0 || transparency > 100.0)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Representation of transparency (%s) not recognized. Using default [0 or opaque].\n", line);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of transparency (%s) not recognized. Using default [0 or opaque].\n", line);
 		else
 			rgb[3] = hsv[3] = cmyk[4] = transparency / 100.0;	/* Transparency is in 0-1 range */
 		t[0] = '\0';	/* Chop off transparency for the rest of this function */
@@ -6339,9 +6339,9 @@ void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Failed to convert %s to r/g/b\n", &text[i]);
 				text[n] = ';';	/* Undo damage */
 				if (rgb[3] > 0.0)	/* Asked for transparency as well */
-					snprintf (color, GMT_LEN256, "%f/%f/%f=%ld", gmt_M_t255(rgb), lrint (100.0 * rgb[3]));	/* Format triplet w/ transparency */
+					snprintf (color, GMT_LEN256, "%f/%f/%f=%ld", gmt_M_t255(rgb,0), gmt_M_t255(rgb,1), gmt_M_t255(rgb,2), lrint (100.0 * rgb[3]));	/* Format triplet w/ transparency */
 				else
-					snprintf (color, GMT_LEN256, "%f/%f/%f", gmt_M_t255(rgb));	/* Format triplet only */
+					snprintf (color, GMT_LEN256, "%f/%f/%f", gmt_M_t255(rgb,0), gmt_M_t255(rgb,1), gmt_M_t255(rgb,2));	/* Format triplet only */
 				for (j = 0; color[j]; j++, k++) buffer[k] = color[j];	/* Copy over triplet and update buffer pointer k */
 			}
 			else	/* Already in r/g/b format, just copy */
@@ -6355,7 +6355,7 @@ void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int
 	while (text[i]) buffer[k++] = text[i++];
 	buffer[k++] = '\0';	/* Properly terminate buffer */
 
-	if (k > size) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Replacement string too long - truncated\n");
+	if (k > size) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Replacement string too long - truncated\n");
 	strncpy (text, buffer, k);	/* Copy back the revised string */
 }
 
@@ -6382,7 +6382,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 		s[0] = 0, i = 1;	/* Chop of this modifier */
 		if (s[1] == '~') F->form |= 8, i = 2;	/* Want to have an outline that does not obscure the text */
 		if (gmt_getpen (GMT, &s[i], &F->pen))
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Representation of font outline pen not recognized - ignored.\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of font outline pen not recognized - ignored.\n");
 		else
 			F->form |= 2;	/* Turn on outline font flag */
 		F->set = 2;	/* Means we specified font pen */
@@ -6599,10 +6599,10 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 				case 'a': case 'b': case 'e': case 'g': case 'h': case 'j': case 'l': case 'm': case 'n': case 'p': case 'q':
 					 case 'r': case 't': case 'z':	/* These are possible modifiers within +v vector specifications */
 					if (processed_vector) break;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pen modifier (%s) not recognized.\n", p);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Pen modifier (%s) not recognized.\n", p);
 					break;
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pen modifier (%s) not recognized.\n", p);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Pen modifier (%s) not recognized.\n", p);
 					break;
 			}
 		}
@@ -9780,7 +9780,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			struct GMT_DATASEGMENT *prev_S = T->segment[T->n_segments-1];
 			uint64_t start = prev_S->n_rows, add = S->n_rows - 1, rec;
 			if (gmt_alloc_segment (GMT, prev_S, prev_S->n_rows + S->n_rows - 1, prev_S->n_columns, GMT_NO_STRINGS, false)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_make_profiles: Cannot reallocate the existing segment");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_make_profiles: Cannot reallocate the existing segment");
 				T->segment[T->n_segments++] = S;	/* Hook into table */
 			}
 			else {	/* Copy over but avoid repeating the joint */
@@ -9910,7 +9910,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to free DATASET allocated to parse %s\n",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -%c:  Failed to free DATASET allocated to parse %s\n",
 				G->flag, G->file);
 	}
 
@@ -10034,7 +10034,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			if (G->f_label) gmt_M_free (GMT, G->f_label);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to free DATASET allocated to parse %s\n",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -%c:  Failed to free DATASET allocated to parse %s\n",
 			            G->flag, G->file);
 	}
 
@@ -10513,9 +10513,9 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	else if (ndec > 0)
 		sprintf (format, "%%.%df", ndec);
 	else if (!general) {	/* Pull ndec from given format if .<precision> is given */
-		for (i = 0, j = -1; j == -1 && i < ((int)strlen(GMT->current.setting.format_float_map) - 1)
-		                            && GMT->current.setting.format_float_map[i]; i++)
-			if (GMT->current.setting.format_float_map[i] == '.') j = i;
+		int len = (int)MIN(strlen(GMT->current.setting.format_float_map), GMT_LEN64) - 1;
+		for (i = 0, j = -1; j == -1 && i < len && GMT->current.setting.format_float_map[i]; i++)
+			if (i < len && GMT->current.setting.format_float_map[i] == '.') j = i;	/* The extra i > len needed to defeat cppcheck confusion */
 		if (j > -1) ndec = atoi (&GMT->current.setting.format_float_map[j+1]);
 		strcpy (format, GMT->current.setting.format_float_map);
 	}
@@ -12678,7 +12678,7 @@ void gmt_str_setcase (struct GMT_CTRL *GMT, char *value, int mode) {
 	else if (mode == +1)
 		gmt_str_toupper (value);
 	else
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad mode (%d)\n", mode);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Bad mode (%d) passed to gmt_str_setcase\n", mode);
 }
 
 char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
@@ -14114,7 +14114,7 @@ int gmt_flip_justify (struct GMT_CTRL *GMT, unsigned int justify) {
 		case 11: j = 1;		break;
 		default:
 			j = justify;
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_flip_justify called with incorrect argument (%d)\n", j);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_flip_justify called with incorrect argument (%d)\n", j);
 			break;
 	}
 

@@ -1,6 +1,6 @@
 #
 # This is README for the test directory
-@
+#
 # Each program or theme should have a separate directory
 # which may contain any number of Bash (*.sh)
 # scripts that tests one or more aspects of the program.
@@ -25,7 +25,7 @@
 # On any OS you can activate the full GMT memory tracking by
 # setting
 # 	export GMT_TRACK_MEMORY=2
-# This assumes you configured GMT via with cmake/ConfigUser.cmake
+# This assumes you configured GMT via with cmake/ConfigUserAdvanced.cmake
 #	add_definitions(-DDEBUG)
 #	add_definitions(-DMEMDEBUG)
 #
