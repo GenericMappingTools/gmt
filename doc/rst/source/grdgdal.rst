@@ -58,7 +58,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outfile*
-    *outfile* is the name of the output grid (or image) file. When saving images, the GDAL machinery is picked by default.
+    Output file name. *outfile* is the name of the output grid (or image) file. When saving images, the GDAL machinery is picked by default.
 
 Optional Arguments
 ------------------
@@ -71,7 +71,7 @@ Optional Arguments
 .. _-M:
 
 **-M**\ [**+r+w**]
-    Select the machinery with which to read and/or write the output file. **-M** alone selects reading and writing with GDAL.
+    Read and write files via GDAL. **-M** alone selects both reading and writing with GDAL.
     Whilst **-M+r** alone instructs the program to read with GDAL (and save with GMT). This option is needed when reading
     OGR vector data. **-M+w** indicates that the output will be saved with GDAL.
 
