@@ -79,10 +79,6 @@ struct GRDINFO_CTRL {
 		double inc;
 		double alpha;
 	} T;
-	struct GRDINFO_G {	/*  */
-		bool active;
-		char *opts;
-	} G;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -195,10 +191,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':	/* World mapping format */
 				Ctrl->F.active = true;
-				break;
-			case 'G':	/* List of GDAL options */
-				Ctrl->G.active = true;
-				Ctrl->G.opts = strdup(opt->arg);
 				break;
 			case 'I':	/* Increment rounding */
 				Ctrl->I.active = true;
@@ -437,11 +429,6 @@ GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned in
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
-#include <gdal_utils.h>
-#include "gmt_gdal_librarified.c"
-#endif
-
 int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int n_grds = 0, n_cols = 0, col, i_status, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
@@ -537,11 +524,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
-
-#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
-		if (Ctrl->G.active)
-			grid_gdal_librarified (GMT, opt->arg, Ctrl->G.opts);
-#endif
 
 		gmt_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
 

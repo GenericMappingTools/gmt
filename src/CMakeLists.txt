@@ -317,7 +317,7 @@ endif (NOT LICENSE_RESTRICTED)
 # Note: Developers can set EXTRA_MODULES in ConfigUserAdvanced.cmake to test new modules
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c filter1d.c grd2kml.c
 	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
-	gmtspatial.c gmtconnect.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
+	gmtspatial.c gmtconnect.c grdgdal.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfill.c grdfilter.c
 	grdgradient.c grdhisteq.c grdinfo.c grdinterpolate.c grdlandmask.c grdmask.c grdmath.c
 	grdpaste.c grdproject.c grdsample.c grdconvert.c grdtrack.c movie.c
@@ -365,6 +365,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c common_math.c
 	common_runpath.c common_sighandler.c common_string.c compat/qsort.c
 	gmt_sharedlibs.c gmt_core_module.c gmt_init.c gmt_map.c gmt_plot.c
+	gmt_gdal_librarified.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
 	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS})

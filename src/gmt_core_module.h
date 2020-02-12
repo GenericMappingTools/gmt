@@ -68,6 +68,7 @@ EXTERN_MSC int GMT_grdedit (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdfft (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdfill (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdfilter (void *API, int mode, void *args);
+EXTERN_MSC int GMT_grdgdal (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdgradient (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdhisteq (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdimage (void *API, int mode, void *args);
