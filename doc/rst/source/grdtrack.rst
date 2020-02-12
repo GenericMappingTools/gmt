@@ -14,12 +14,16 @@ Synopsis
 
 **gmt grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
 [ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
-[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**] ] [|-D|\ *dfile* ]
+[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**] ]
+[ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
+[ |-F|\ [**+n**][**+z**\ *z0*] ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*][**+e**\|\ **p**]]
-[ |-V|\ [*level*] ] [ |-Z| ]
+[ |-S|\ *method*/*modifiers* ]
+[ |-T|\ [*radius*][**+e**\|\ **p**]]
+[ |-V|\ [*level*] ]
+[ |-Z| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -107,7 +111,8 @@ Optional Arguments
     *length* sets the full length of each cross-profile, while *ds* is
     the sampling spacing along each cross-profile. Optionally, append
     **/**\ *spacing* for an equidistant spacing between cross-profiles
-    [Default erects cross-profiles at the input coordinates]. By
+    [Default erects cross-profiles at the input coordinates]; see **-A**
+    for how resampling the input track is controlled. By
     default, all cross-profiles have the same direction (left to right
     as we look in the direction of the input line segment). Append **+a**
     to alternate the direction of cross-profiles, or **v** to enforce
@@ -158,6 +163,22 @@ Optional Arguments
     data you can use **-j** to control distance calculation mode [Great Circle].
     Note: If **-C** is set and *spacing* is given the that sampling scheme
     overrules any modifier set in **-E**.
+
+.. _-F:
+
+**-F**\ [**+n**][**+z**\ *z0*]
+    Find critical points along each cross-profile.
+    Requires **-C** and a single input grid. We examine each cross-profile generated
+    and report (*lonc*, *latc*, *distc*, *azimuthc*, *zc*) at the center peak of
+    maximum *z* value, (*lonl*, *latl*, *distl*) and (*lonr*, *latr*, *distr*)
+    at the first and last non-NaN point whose *z*-value exceeds *z0*, respectively,
+    and the *width* based on the two extreme points found. When searching for
+    the center peak and the extreme first and last values that exceed the threshold
+    we assume the profile is positive up.  If we instead are looking
+    for a trough then you must use **+n** to temporarily flip the profile to positive.
+    The threshold *z0* value is always given as >= 0; use **+z** to change it [0].
+    We write 12 output columns per track with an identified center peak, with values
+    *lonc, latc, distc, azimuthc, zc, lonl, latl, distl, lonr, latr, distr, width*.
 
 .. _-N:
 
@@ -293,18 +314,14 @@ and only write out (dist, topo) records, try::
 
 To sample the file hawaii_topo.nc along the SEASAT track track_4.xyg
 (An ASCII table containing longitude, latitude, and SEASAT-derived
-gravity, preceded by one header record):
-
-   ::
+gravity, preceded by one header record)::
 
     grdtrack track_4.xyg -Ghawaii_topo.nc -h > track_4.xygt
 
 To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute
 predicted bathymetry on a Mercator grid) and the Muller et al age grid
 age.3.2.nc along the lon,lat coordinates given in the file
-cruise_track.xy, try
-
-   ::
+cruise_track.xy, try::
 
     grdtrack cruise_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
 
@@ -317,11 +334,14 @@ erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 
     grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
 
+The same thing, but now determining the central anomaly location along track,
+with a threshold of 25 mGal, try::
+
+    grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -F+z25 > locations.txt
+
 To sample the grid data.nc along a line from the lower left to the upper
 right corner, using a grid spacing of 1 km on the geodesic, and output distances as well,
-try
-
-   ::
+try::
 
     gmt grdtrack -ELB/RT+i1k+d -Gdata.nc -je > profiles.txt
 
