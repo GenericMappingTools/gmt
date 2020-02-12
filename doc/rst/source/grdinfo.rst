@@ -14,6 +14,7 @@ Synopsis
 
 **gmt grdinfo** *grdfiles* [ |-C|\ [**n**\|\ **t**\] ]
 [ |-D|\ [*xoff*\ [/*yoff*]][**+i**] ]
+[ |-E|\ [**x**\|\ **y**][**+l**\|\ **h**] ]
 [ |-F| ]
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
 [ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ] [ |-M| ]
@@ -73,6 +74,14 @@ Optional Arguments
     region strings.  Use **-C** to instead report four columns with
     *xmin xmax ymin ymax* per tile, or use **-Ct** to also have the
     region string appended as trailing text.
+
+.. _-E:
+
+**-E**\ [**x**\|\ **y**][**+l**\|\ **h**]
+    Report the extreme values found on a per column (**-Ex**) or per
+    row (**-Ey**) basis.  By default, we look for the global maxima (**+h**)
+    for each column.  Append **+l** to instead look for minima.  We only
+    allow one input grid when **-E** is selected.
 
 .. _-F:
 
