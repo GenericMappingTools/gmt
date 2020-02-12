@@ -28,7 +28,7 @@ cat << EOF > PSL_strings.h
  * are now represented as three very long string literals instead.
  */
 EOF
-cat << EOF > /tmp/t.lis
+cat << EOF > $TMPDIR/t.lis
 PSL_label.ps
 PSL_text.ps
 PSL_prologue.ps
@@ -40,5 +40,5 @@ while read file; do
 	varname=$(basename $file .ps)
 	sed -n 1,${n1}p $file | awk 'BEGIN {printf "static char *%s_str =\n", "'$varname'"}; {printf "\"%s\\n\"\n", $0}' >> PSL_strings.h
 	sed -n ${n}p $file | awk '{printf "\"%s\\n\";\n", $0}'>> PSL_strings.h
-done < /tmp/t.lis
-rm -f /tmp/t.lis
+done < $TMPDIR/t.lis
+rm -f $TMPDIR/t.lis

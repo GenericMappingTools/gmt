@@ -34,28 +34,28 @@ U_TAG=$(echo $LIB | tr '[a-z]' '[A-Z]')
 L_TAG=$(echo $LIB | tr '[A-Z]' '[a-z]')
 
 if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current directory and set LIB_STRING
-	grep "#define THIS_MODULE_LIB		" */*.c | gawk -F: '{print $1}' | sort -u > /tmp/tmp.lis
+	grep "#define THIS_MODULE_LIB		" */*.c | gawk -F: '{print $1}' | sort -u > $TMPDIR/tmp.lis
 	LIB_STRING="GMT suppl: The official supplements to the Generic Mapping Tools"
 elif [ "$U_TAG" = "CORE" ]; then	# Just look in current dir and set LIB_STRING
-	grep "#define THIS_MODULE_LIB		" *.c | egrep -v '_mt|_old|_experimental' | gawk -F: '{print $1}' | sort -u > /tmp/tmp.lis
+	grep "#define THIS_MODULE_LIB		" *.c | egrep -v '_mt|_old|_experimental' | gawk -F: '{print $1}' | sort -u > $TMPDIR/tmp.lis
 	LIB_STRING="GMT core: The main modules of the Generic Mapping Tools"
 else
 	echo "Error: Tag must be either core or supplements"
 	exit
 fi
-rm -f /tmp/MNAME.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis /tmp/all.lis
+rm -f $TMPDIR/MNAME.lis $TMPDIR/CNAME.lis $TMPDIR/LIB.lis $TMPDIR/PURPOSE.lis $TMPDIR/KEYS.lis $TMPDIR/all.lis
 while read program; do
-	grep "#define THIS_MODULE_MODERN_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> /tmp/MNAME.lis
-	grep "#define THIS_MODULE_CLASSIC_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> /tmp/CNAME.lis
-	grep "#define THIS_MODULE_LIB" $program     | gawk '{print $3}' | sed -e 's/"//g' >> /tmp/LIB.lis
-	grep "#define THIS_MODULE_PURPOSE" $program | sed -e 's/#define THIS_MODULE_PURPOSE//g' | gawk '{print $0}' >> /tmp/PURPOSE.lis
-	grep "#define THIS_MODULE_KEYS" $program    | sed -e 's/#define THIS_MODULE_KEYS//g' | gawk '{print $0}' >> /tmp/KEYS.lis
-done < /tmp/tmp.lis
+	grep "#define THIS_MODULE_MODERN_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> $TMPDIR/MNAME.lis
+	grep "#define THIS_MODULE_CLASSIC_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> $TMPDIR/CNAME.lis
+	grep "#define THIS_MODULE_LIB" $program     | gawk '{print $3}' | sed -e 's/"//g' >> $TMPDIR/LIB.lis
+	grep "#define THIS_MODULE_PURPOSE" $program | sed -e 's/#define THIS_MODULE_PURPOSE//g' | gawk '{print $0}' >> $TMPDIR/PURPOSE.lis
+	grep "#define THIS_MODULE_KEYS" $program    | sed -e 's/#define THIS_MODULE_KEYS//g' | gawk '{print $0}' >> $TMPDIR/KEYS.lis
+done < $TMPDIR/tmp.lis
 # Prepend group+name so we can get a list sorted on group name then individual programs
-paste /tmp/LIB.lis /tmp/MNAME.lis /tmp/CNAME.lis | gawk '{printf "%s%s |%s\t%s\n", $1, $2, $2, $3}' > /tmp/SORT.txt
-paste /tmp/SORT.txt /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis | sort -k1 -u > /tmp/SORTED.txt
-gawk -F"|" '{print $2}' /tmp/SORTED.txt > /tmp/$LIB.txt
-rm -f /tmp/tmp.lis /tmp/MNAME.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
+paste $TMPDIR/LIB.lis $TMPDIR/MNAME.lis $TMPDIR/CNAME.lis | gawk '{printf "%s%s |%s\t%s\n", $1, $2, $2, $3}' > $TMPDIR/SORT.txt
+paste $TMPDIR/SORT.txt $TMPDIR/LIB.lis $TMPDIR/PURPOSE.lis $TMPDIR/KEYS.lis | sort -k1 -u > $TMPDIR/SORTED.txt
+gawk -F"|" '{print $2}' $TMPDIR/SORTED.txt > $TMPDIR/$LIB.txt
+rm -f $TMPDIR/tmp.lis $TMPDIR/MNAME.lis $TMPDIR/CNAME.lis $TMPDIR/LIB.lis $TMPDIR/PURPOSE.lis $TMPDIR/SORTED.txt $TMPDIR/SORT.txt $TMPDIR/KEYS.lis
 
 # The output files produced
 FILE_GMT_MODULE_C=gmt_${L_TAG}_module.c
@@ -79,7 +79,7 @@ gawk '
 		FS = "\t";
 	}
 	{ printf ".. |%s_purpose| replace:: %s\n.. |%s_purpose| replace:: %s\n", $1, substr($5,2,length($5)-2), $2, substr($5,2,length($5)-2);
-}' /tmp/$LIB.txt | sort -u | gawk '{printf "%s\n\n", $0}' > ${RSTDIR}/${FILE_GMT_MODULE_R}
+}' $TMPDIR/$LIB.txt | sort -u | gawk '{printf "%s\n\n", $0}' > ${RSTDIR}/${FILE_GMT_MODULE_R}
 
 #
 # Generate FILE_GMT_MODULE_H
@@ -111,7 +111,7 @@ extern "C" {
 
 /* Prototypes of all modules in the GMT ${L_TAG} library */
 EOF
-gawk '{printf "EXTERN_MSC int GMT_%s (void *API, int mode, void *args);\n", $2;}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_H}
+gawk '{printf "EXTERN_MSC int GMT_%s (void *API, int mode, void *args);\n", $2;}' $TMPDIR/$LIB.txt >> ${FILE_GMT_MODULE_H}
 cat << EOF >> ${FILE_GMT_MODULE_H}
 
 /* Pretty print all modules in the GMT ${L_TAG} library and their purposes */
@@ -217,7 +217,7 @@ gawk '
 		FS = "\t";
 	}
 	{ printf "\t{\"%s\", \"%s\", \"%s\", %s, %s},\n", $1, $2, $3, $5, $7;
-}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
+}' $TMPDIR/$LIB.txt >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
@@ -230,7 +230,7 @@ gawk '
 	}
 	!/^[ \t]*#/ {
 		printf "\t{\"%s\", \"%s\", \"%s\", %s, %s, &GMT_%s},\n", $1, $2, $3, $5, $7, $1;
-	}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
+	}' $TMPDIR/$LIB.txt >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
 	{NULL, NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
@@ -249,7 +249,7 @@ gawk '
 		FS = "\t";
 	}
 	{ printf "\t{\"%s\", \"%s\", \"%s\", %s, %s},\n", $1, $2, $3, $5, $7;
-}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
+}' $TMPDIR/$LIB.txt >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
@@ -438,5 +438,5 @@ void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
 #endif
 EOF
 fi
-rm -f /tmp/$LIB.txt
+rm -f $TMPDIR/$LIB.txt
 exit 0
