@@ -97,6 +97,10 @@ struct GRDTRACK_CTRL {
 		double step;
 		char unit;
 	} E;
+	struct GRDTRACK_F {	/* -Fu|l */
+		bool active;
+		int mode;
+	} F;
 	struct GRDTRACK_G {	/* -G<grdfile> */
 		bool active;
 		unsigned int n_grids;
@@ -345,6 +349,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				Ctrl->E.active = true;
 				Ctrl->E.lines = strdup (opt->arg);
 				break;
+			case 'F':
+				Ctrl->F.active = true;
+				Ctrl->F.mode = (opt->arg[0] == 'l') ? -1 : +1;
+				break;
 			case 'G':	/* Input grid file */
 				if (ng == MAX_GRIDS) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids (max = %d)\n", MAX_GRIDS);
@@ -465,6 +473,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 	}
 	Ctrl->G.n_grids = ng;
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode & GMT_LEFT_ONLY && Ctrl->C.mode & GMT_RIGHT_ONLY, "Option -C: Cannot chose both +l and +r modifiers.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->C.active, "Option -F: Requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Option -S: Requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] ||
 	                                   Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]),
@@ -1056,6 +1065,50 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
+			Return (API->error);
+		}
+	}
+	else if (Ctrl->F.active) {	/* Find min/max along the crosslines */
+		unsigned int k, col, tbl, seg, row;
+		double out[5], z;
+		struct GMT_DATASEGMENT *S = NULL;
+
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 5, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			Return (error);
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+			Return (API->error);
+		}
+		Out = gmt_new_record (GMT, out, NULL);
+		col = 4;	/* First and only grid resample */
+		for (tbl = 0; tbl < Dout->n_tables; tbl++) {
+			T = Dout->table[tbl];
+			for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to examine */
+				S = T->segment[seg];
+				z = (Ctrl->F.mode == -1) ? DBL_MAX : -DBL_MAX;
+				for (row = 0; row < S->n_rows; row++) {	/* For each row to stack across all segments, per data grid */
+					if (gmt_M_is_dnan (T->segment[seg]->data[col][row])) continue;	/* Must skip any NaN entries in any profile */
+					if (Ctrl->F.mode == -1 && T->segment[seg]->data[col][row] < z) {
+						z = T->segment[seg]->data[col][row];
+						k = row;
+					}
+					else if (Ctrl->F.mode == +1 && T->segment[seg]->data[col][row] > z) {
+						z = T->segment[seg]->data[col][row];
+						k = row;
+					}
+				}
+				for (col = 0; col < 5; col++)
+					out[col] = T->segment[seg]->data[col][k];
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			}
+		}
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
 	}
