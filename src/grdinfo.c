@@ -199,7 +199,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 			case 'E':	/* Report Extrema per row/col */
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
-					case 'x':
+					case 'x': case '\0': case '+':	/* Handles -E, -Ex, -E+l */
 						Ctrl->E.mode = GMT_X; break;
 					case 'y':
 						Ctrl->E.mode = GMT_Y;
@@ -591,7 +591,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (Ctrl->E.active) {
 			unsigned int row, col, r, c;
 			float z;
-			double out[3], *x = NULL, *y = NULL;
+			double *x = NULL, *y = NULL;
 			x = gmt_grd_coord (GMT, G->header, GMT_X);
 			y = gmt_grd_coord (GMT, G->header, GMT_Y);
 		
