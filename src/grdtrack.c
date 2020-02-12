@@ -211,8 +211,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  is optional unit.  Only ONE unit type from %s can be used throughout.\n", GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Mixing of units is not allowed [Default unit is km if geographic].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Report left, center, and right point per cross-track; requires -C and a single input grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We assume a positive center peak; append +n if dealing with negative trough.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Report center, left, and right point per cross-track; requires -C and a single input grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   We assume a positive center peak; append +n if dealing with a negative trough.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z<z0> to change the detection level for left or right [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_Option (API, "R,V");
@@ -1063,12 +1063,13 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			}
 		}
 		if (Ctrl->F.active) {	/* Find left, center, right point along the crosslines, with width */
+			bool do_headers = (Dout->n_tables > 1);
 			unsigned int col, tbl, seg, row;
 			int kl, kc, kr;
-			double out[8], z, this_zc, this_zr, z_scl = (Ctrl->F.negative) ? -1 : +1;;
+			double out[12], z, this_zc, this_zr, z_scl = (Ctrl->F.negative) ? -1 : +1;
 			struct GMT_DATASEGMENT *S = NULL;
 
-			if ((error = GMT_Set_Columns (API, GMT_OUT, 8, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 12, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
@@ -1080,27 +1081,46 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 				Return (API->error);
 			}
+			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Ensure proper formatting of geographic coordinates */
+				gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LON);
+				gmt_set_column (GMT, GMT_OUT, 6, GMT_IS_LAT);
+				gmt_set_column (GMT, GMT_OUT, 8, GMT_IS_LON);
+				gmt_set_column (GMT, GMT_OUT, 9, GMT_IS_LAT);
+			}
 			Out = gmt_new_record (GMT, out, NULL);
 			for (tbl = 0; tbl < Dout->n_tables; tbl++) {
 				T = Dout->table[tbl];
+				if (do_headers) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to examine */
-					S = T->segment[seg];
-					z = -DBL_MAX;
-					kr = kl = kc = GMT_NOTSET;
-					for (row = 0; row < S->n_rows; row++) {	/* For each row to stack across all segments, per data grid */
+					S = T->segment[seg];	/* Shorthand pointer */
+					z = -DBL_MAX;	/* I.e., not set */
+					kr = kl = kc = GMT_NOTSET;	/* Not yet found */
+					for (row = 0; row < S->n_rows; row++) {	/* For each row across this segment */
 						if (gmt_M_is_dnan (T->segment[seg]->data[4][row])) continue;	/* Must skip any NaN entries in any profile */
-						this_zc = T->segment[seg]->data[4][row] * z_scl;	/* Current z: Force positive if a trough */
-						this_zr = T->segment[seg]->data[4][S->n_rows-row-1] * z_scl;	/* Current symmatric point on the right: Force positive if a trough */
-						if (kl == GMT_NOTSET && this_zc >= Ctrl->F.z0) kl = row;			/* Found the first point on the left */
+						this_zc = T->segment[seg]->data[4][row] * z_scl;				/* Current z: Force positive if a trough */
+						this_zr = T->segment[seg]->data[4][S->n_rows-row-1] * z_scl;	/* Current symmetric point on the right: Force positive if a trough */
+						if (kl == GMT_NOTSET && this_zc >= Ctrl->F.z0) kl = row;		/* Found the first point on the left */
 						if (kr == GMT_NOTSET && this_zr >= Ctrl->F.z0) kr = S->n_rows-row-1;	/* Found the last point on the right */
 						if (this_zc > z) z = this_zc, kc = row;	/* Found a new maximum point */
 					}
 					if (kc == GMT_NOTSET) continue;	/* Nothing to print */
 					for (col = 0; col < 5; col++)	/* Copy over lon, lat, dist, azimuth, z */
 						out[col] = T->segment[seg]->data[col][kc];
-					out[5] = (kl == GMT_NOTSET) ? GMT->session.d_NaN : T->segment[seg]->data[GMT_Z][kl];	/* Left distance */
-					out[6] = (kr == GMT_NOTSET) ? GMT->session.d_NaN : T->segment[seg]->data[GMT_Z][kr];	/* Right distance */
-					out[7] = out[6] - out[5];	/* Width */
+					if (kl == GMT_NOTSET)	/* Left start not detected, report NaN */
+						out[5] = out[6] = out[7] = GMT->session.d_NaN;
+					else {
+						out[5] = T->segment[seg]->data[GMT_X][kl];	/* Left longitude */
+						out[6] = T->segment[seg]->data[GMT_Y][kl];	/* Left latitude */
+						out[7] = T->segment[seg]->data[GMT_Z][kl];	/* Left distance */
+					}
+					if (kr == GMT_NOTSET)	/* RIght stop not detected, report NaN */
+						out[8] = out[9] = out[10] = GMT->session.d_NaN;
+					else {
+						out[8]  = T->segment[seg]->data[GMT_X][kr];	/* Right longitude */
+						out[9]  = T->segment[seg]->data[GMT_Y][kr];	/* Right latitude */
+						out[10] = T->segment[seg]->data[GMT_Z][kr];	/* Right distance */
+					}
+					out[11] = out[10] - out[7];	/* Width = distance between left and right point */
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}

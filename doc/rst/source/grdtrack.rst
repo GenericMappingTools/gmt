@@ -111,7 +111,8 @@ Optional Arguments
     *length* sets the full length of each cross-profile, while *ds* is
     the sampling spacing along each cross-profile. Optionally, append
     **/**\ *spacing* for an equidistant spacing between cross-profiles
-    [Default erects cross-profiles at the input coordinates]. By
+    [Default erects cross-profiles at the input coordinates]; see **-A**
+    for how resampling the input track is controlled. By
     default, all cross-profiles have the same direction (left to right
     as we look in the direction of the input line segment). Append **+a**
     to alternate the direction of cross-profiles, or **v** to enforce
@@ -166,17 +167,18 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [**+n**][**+z**\ *z0*]
-    Find critical points along each profile.
-    Run in conjunction with **-C** and a single input grid. We examine each cross-profile
-    and determine (a) the cross-distance to the first non-NaN point whose *z*-value exceeds *z0* [0], (b)
-    the center peak location and cross-distance of maximum *z* value, and the cross-distance to the
-    last non-NaN point whose *z*-value
-    exceeds *z0* [0]. Use **+z** to adjust the threshold value [0].  In searching
-    for values that exceed thresholds and finding the peak we assume the profile is
-    positive up.  If we are looking for a trough then use **+n** to
-    temporarily flip the profile to positive.  The *z0* value is always given as >= 0.
-    We write eight output columns per track with an identified center peak, with values
-    *lon, lat, dist, azimuth, z, left, right, width*.
+    Find critical points along each cross-profile.
+    Requires **-C** and a single input grid. We examine each cross-profile generated
+    and report (*lonc*, *latc*, *distc*, *azimuthc*, *zc*) at the center peak of
+    maximum *z* value, (*lonl*, *latl*, *distl*) and (*lonr*, *latr*, *distr*)
+    at the first and last non-NaN point whose *z*-value exceeds *z0*, respectively,
+    and the *width* based on the two extreme points found. When searching for
+    the center peak and the extreme first and last values that exceed the threshold
+    we assume the profile is positive up.  If we instead are looking
+    for a trough then you must use **+n** to temporarily flip the profile to positive.
+    The threshold *z0* value is always given as >= 0; use **+z** to change it [0].
+    We write 12 output columns per track with an identified center peak, with values
+    *lonc, latc, distc, azimuthc, zc, lonl, latl, distl, lonr, latr, distr, width*.
 
 .. _-N:
 
@@ -332,7 +334,7 @@ erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 
     grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
 
-The same thing, but now determining the central anomaly location alont track,
+The same thing, but now determining the central anomaly location along track,
 with a threshold of 25 mGal, try::
 
     grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -F+z25 > locations.txt
