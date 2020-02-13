@@ -137,7 +137,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set number of sectors and the minimum number of sectors with data required for averaging.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If modifier +m<min_sectors> is omitted it defaults to ~50%% of <sectors>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is -N%d+m%d, i.e., a quadrant search, requiring all sectors to be filled.\n", NN_DEF_SECTORS, NN_DEF_SECTORS);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply -Nn for plain NN algorihtm via GDAL\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply -Nn for plain NN algorithm via GDAL\n");
 	GMT_Option (API, "R");
 	gmt_dist_syntax (API->GMT, 'S', "Only consider points inside this search radius.");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");

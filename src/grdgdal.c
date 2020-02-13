@@ -54,7 +54,7 @@ struct GRDGDAL_CTRL {
 		bool active;
 		bool read_gdal, write_gdal;
 	} M;
-	struct GRDGDAL_W {	/* -W sets output data fname when writen by GDAL */
+	struct GRDGDAL_W {	/* -W sets output data fname when written by GDAL */
 		bool active;
 		char *file;
 	} W;
@@ -163,7 +163,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT
 				else if (opt->arg[0] == '\0') Ctrl->M.read_gdal = Ctrl->M.write_gdal = true;
 				break;
 
-			case 'W':	/* -W<fname> sets output VECTOR data fname when writen by GDAL -- NOT USED YET */
+			case 'W':	/* -W<fname> sets output VECTOR data fname when written by GDAL -- NOT USED YET */
 				Ctrl->W.active = true;
 				Ctrl->W.file = opt->arg;
 				Ctrl->M.write_gdal = true;
@@ -178,7 +178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, n_files == 0, "No input files given\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "No output file name given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && strcmp(Ctrl->A.prog_name, "grid") && strcmp(Ctrl->A.prog_name, "info") && strcmp(Ctrl->A.prog_name, "dem") && strcmp(Ctrl->A.prog_name, "rasterize") && strcmp(Ctrl->A.prog_name, "translate") && strcmp(Ctrl->A.prog_name, "warp"), "Option -A: Must select dem, grid, rasterize, translate, warp or info\n");
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -223,7 +223,7 @@ int GMT_grdgdal (void *V_API, int mode, void *args) {
 	st->M.read_gdal  = Ctrl->M.read_gdal;
 	st->M.write_gdal = Ctrl->M.write_gdal;
 	if ((ext = gmt_get_ext (st->fname_out)) != NULL) {
-		/* For all others than .nc or .grd force writting with GDAL. This makes life much easier. */
+		/* For all others than .nc or .grd force writing with GDAL. This makes life much easier. */
 		if (strcasecmp (ext, "nc") && strcasecmp (ext, "grd"))
 			st->M.write_gdal = true;
 	}
@@ -236,7 +236,7 @@ int GMT_grdgdal (void *V_API, int mode, void *args) {
 	else if (!strcmp(Ctrl->A.prog_name, "dem")) {
 		if (!GMT->common.R.active[RSET]) 	/* Here, -R should be only needed if grid it to be written by GMT, but easier to do it for all cases */
 			gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
-	
+
 		if (Ctrl->A.dem_method) st->dem_method = Ctrl->A.dem_method;
 		if (Ctrl->A.dem_cpt) st->dem_cpt = Ctrl->A.dem_cpt;
 		error += gmt_gdal_dem (GMT, st);

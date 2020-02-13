@@ -192,7 +192,7 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 
 /* ------------------------------------------------------------------------------------------------------------ */
 char *out_name(struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
-	/* Pick the right output name when saving grids depending on if that writting is done with GMT or GDAL */
+	/* Pick the right output name when saving grids depending on if that writing is done with GMT or GDAL */
 	if (GDLL->M.write_gdal)			/* Write grid with the GDAL machinery */
 		return GDLL->fname_out;
 	else
@@ -206,7 +206,7 @@ char *out_name(struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 /* ------------------------------------------------------------------------------------------------------------ */
 GMT_LOCAL void add_defaults(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL, char *ext_opts) {
 	/* Add defaults to a netCDF output when file is to be written by GDAL, or just set a MEM driver if for GMT */
-	if (GDLL->opts) strcat(ext_opts, GDLL->opts); 
+	if (GDLL->opts) strcat(ext_opts, GDLL->opts);
 	if (GDLL->M.write_gdal) {
 		char *ext;
 		if ((ext = gmt_get_ext (GDLL->fname_out)) != NULL) {
