@@ -8,15 +8,6 @@ This document describes how to build GMT from source codes
 For general users:
 
 - [Build and runtime dependencies](#build-and-runtime-dependencies)
-- [Installing dependencies](#installing-dependencies)
-  * [Ubuntu/Debian](#ubuntudebian)
-  * [RHEL/CentOS](#rhelcentos)
-  * [Fedora](#fedora)
-  * [Archlinux](#archlinux)
-  * [FreeBSD](#freebsd)
-  * [macOS with Homebrew](#macos-with-homebrew)
-  * [macOS with MacPorts](#macos-with-macports)
-  * [Windows](#windows)
 - [Getting GMT source codes](#getting-gmt-source-codes)
 - [Configuring](#configuring)
 - [Building GMT source codes](#building-gmt-source-codes)
@@ -37,7 +28,11 @@ For package maintainers:
 
 ## Build and runtime dependencies
 
-To build GMT, you must install:
+GMT is dependent on some software and libraries to run.
+Please refer to the [GMT wiki page](https://github.com/GenericMappingTools/gmt/wiki)
+for instructions to install these dependencies on various operation systems.
+
+To build GMT, you have to install:
 
 - [CMake](https://cmake.org/) (>=2.8.7)
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
@@ -71,212 +66,6 @@ You also need to download support data:
 
 - [GSHHG](https://www.soest.hawaii.edu/pwessel/gshhg/): A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
 - [DCW-GMT](https://www.soest.hawaii.edu/pwessel/dcw/): The Digital Chart of the World (optional, >=1.0.5)
-
-## Installing dependencies
-
-### Ubuntu/Debian
-
-For Ubuntu and Debian, there are prepackaged development binaries available.
-Install the GMT dependencies with:
-
-    # Install required dependencies
-    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev
-
-    # Install optional dependencies
-    sudo apt-get install gdal-bin libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev libglib2.0-dev ghostscript
-
-    # to enable movie-making
-    sudo apt-get install graphicsmagick ffmpeg
-
-    # to enable document viewing via gmt docs
-    sudo apt-get install xdg-utils
-
-    # to enable testing
-    sudo apt-get install graphicsmagick
-
-    # to build the documentation
-    sudo apt-get install python-sphinx
-
-### RHEL/CentOS
-
-For RHEL and CentOS, GMT's dependencies are available from Extra Packages for Enterprise Linux.
-You can add this repository by telling yum:
-
-    sudo yum install epel-release
-
-You then can install the GMT dependencies with:
-
-    # Install necessary dependencies
-    sudo yum install cmake libcurl-devel netcdf-devel
-
-    # Install optional dependencies
-    sudo yum install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
-
-    # to enable movie-making
-    # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
-    sudo yum install GraphicsMagick ffmpeg
-
-    # to enable document viewing via gmt docs
-    sudo yum install xdg-utils
-
-    # to enable testing
-    sudo yum install GraphicsMagick
-
-    # to build the documentation
-    sudo yum install python-sphinx
-
-### Fedora
-
-For Fedora, there are prepackaged development binaries available.
-Install the GMT dependencies with:
-
-    # Install necessary dependencies
-    sudo dnf install cmake libcurl-devel netcdf-devel
-
-    # Install optional dependencies
-    sudo dnf install gdal gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel glib2-devel ghostscript
-
-    # to enable movie-making
-    # ffmpeg is provided by [rmpfusion](https://rpmfusion.org/)
-    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
-    sudo dnf install GraphicsMagick ffmpeg
-
-    # to enable document viewing via gmt docs
-    sudo dnf install xdg-utils
-
-    # to enable testing
-    sudo dnf install GraphicsMagick
-
-    # to build the documentation
-    sudo dnf install python-sphinx
-
-### Archlinux
-
-For Archlinux, there are prepackaged development binaries available.
-Install the gmt dependencies with:
-
-    # install necessary dependencies
-    sudo pacman -S base-devel cmake libcurl-gnutls netcdf
-
-    # install optional dependencies
-    sudo pacman -S gdal pcre fftw lapack openblas glib2 ghostscript
-
-    # to enable movie-making
-    sudo pacman -S graphicsmagick ffmpeg
-
-    # to enable document viewing via gmt docs
-    sudo pacman -S xdg-utils
-
-    # to enable testing
-    sudo pacman -S graphicsmagick
-
-    # to build the documentation
-    sudo pacman -S python-sphinx
-
-### FreeBSD
-
-For FreeBSD, there are prepackaged development binaries available.
-Install the gmt dependencies with:
-
-    # install necessary dependencies
-    sudo pkg install shells/bash devel/cmake ftp/curl science/netcdf
-
-    # install optional dependencies
-    sudo pkg install graphics/gdal devel/pcre math/fftw3-float math/lapack math/openblas print/ghostscript9
-
-    # to enable movie-making
-    sudo pkg install graphics/GraphicsMagick multimedia/ffmpeg
-
-    # to enable document viewing via gmt docs
-    sudo pkg install xdg-utils
-
-    # to enable testing
-    sudo pkg install graphics/GraphicsMagick
-
-    # to build the documentation
-    sudo pkg install py36-sphinx
-
-### macOS with Homebrew
-
-For macOS with [Homebrew](https://brew.sh/) installed, you can install the dependencies with:
-
-    # Install necessary dependencies
-    brew install cmake curl netcdf
-
-    # Install optional dependencies
-    brew install gdal pcre2 fftw glib ghostscript
-
-    # to enable movie-making
-    brew install graphicsmagick ffmpeg
-
-    # to enable testing
-    brew install graphicsmagick
-
-    # to build the documentation
-    brew install sphinx-doc
-
-### macOS with MacPorts
-
-For macOS with [MacPorts](https://www.macports.org/) installed, you can install the dependencies with::
-
-    # Install necessary dependencies
-    sudo port install cmake curl netcdf
-
-    # Install optional dependencies
-    sudo port install gdal +hdf5 +netcdf +openjpeg
-    sudo port install pcre2 fftw-3-single glib2 ghostscript
-
-    # to enable movie-making
-    sudo port install GraphicsMagick ffmpeg
-
-    # to enable testing
-    sudo port install GraphicsMagick
-
-    # to build the documentation
-    sudo port install py38-sphinx
-
-### Windows
-
-For some software, e.g. CMake, Ghostscript, GraphicsMagick and FFmpeg,
-you can download binary installers to install them.
-If there is an option to add it to the system PATH, remember to tick it.
-
-For other dependency libraries, it's recommended to install them
-via [vcpkg](https://github.com/microsoft/vcpkg).
-To use vcpkg, make sure you have met the prerequisites:
-
-- Windows 10, 8.1, 7
-- [Visual Studio 2015 Update 3 or newer](https://visualstudio.microsoft.com/)
-  with "Desktop development with C++" installed
-- [Git](https://git-scm.com/)
-- [CMake](https://cmake.org) >=3.12.4
-
-Open a command prompt, and install vcpkg with:
-
-    cd C:\
-    git clone https://github.com/microsoft/vcpkg
-    cd C:\vcpkg
-    .\bootstrap-vcpkg.bat
-
-After installing vcpkg, you can install the GMT dependency libraries with (it may take more than 30 minutes):
-
-    # Build and install libraries
-    # If you want to build x64 libraries (recommended)
-    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x64-windows
-
-    # If you want to build x86 libraries
-    vcpkg install netcdf-c gdal pcre fftw3[core,threads] clapack openblas --triplet x86-windows
-
-    # hook up user-wide integration (note: requires admin on first use)
-    vcpkg integrate install
-
-After installing these dependency libraries, you also need to add
-vcpkg's bin path (i.e. `C:\vcpkg\installed\x64-windows\bin`) and
-GDAL's bin path (i.e. `C:\vcpkg\installed\x64-windows\tools\gdal`),
-to the system environmental variable `PATH`,
-so that GMT executables can find the DLL shared libraries and
-the GDAL tools (`gdal_translate` and `ogr2ogr`).
 
 ## Getting GMT source codes
 
@@ -342,6 +131,9 @@ cmake ..
 ```
 
 For Windows users, you need to open a command prompt and run:
+
+**NOTE:** Commands below are valid only if you have GMT's dependency libaries installed
+via vcpkg following [this instructions](https://github.com/GenericMappingTools/gmt/wiki/Install-dependencies-on-Windows-via-vcpkg).
 
 ```
 mkdir build
