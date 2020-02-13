@@ -227,7 +227,6 @@ include the supplements. If you need them you will need to
 
 ### ArchLinux
 
-### Install via building AUR package
 
 It's easier to manage installed content and dependencies than directly
 building and manually `make install` in ArchLinux.
