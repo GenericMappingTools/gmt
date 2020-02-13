@@ -21,6 +21,9 @@ jobs:
 - job:
   displayName: 'Code Checker'
 
+  pool:
+    vmImage: 'windows-2019'
+
   steps:
   - bash: |
       set -x
