@@ -23,6 +23,7 @@ for compiling GMT source package (either stable release or development version).
   * [Fedora](#fedora)
   * [RHEL/CentOS](#rhelcentos)
   * [Ubuntu/Debian](#ubuntudebian)
+  * [ArchLinux](#archlinux)
 - [Cross Platform Install Instructions](#cross-platform-install-instructions)
   * [Install via conda](#install-via-conda)
 
@@ -223,6 +224,38 @@ Install other GMT dependencies (some are optional) via:
 **Note:** The Ubuntu package under 16.04 LTS for mysterious reasons does not
 include the supplements. If you need them you will need to
 [build from source](BUILDING.md) or upgrade to 18.04 LTS.
+
+### ArchLinux
+
+It's easier to manage installed content and dependencies than directly
+building and manually `make install` in ArchLinux.
+
+    # Full update system packages first
+    sudo pacman -Syu
+
+    # Install tools for building AUR packages
+    sudo pacman -S base-devel
+
+    # Use git command to clone non-official AUR repo of gmt
+    # Here are two options. **You just have to clone one of them:**
+    # If you encounter some problems in those repo,
+    # you can report to the authors first, or choose another one to clone
+    git clone https://aur.archlinux.org/gmt.git
+
+    # alternative repo, for testing stable/rc release in version 6.x branch
+    git clone https://aur.archlinux.org/gmt6.git gmt
+
+    # Optional recommended packages
+    git clone https://aur.archlinux.org/gmt-coast.git
+    git clone https://aur.archlinux.org/gmt-cpt-city.git
+    git clone https://aur.archlinux.org/gmt-dcw.git
+
+    # use makepkg to build packages and use pacman to install
+    cd gmt
+    makepkg -sc
+    sudo pacman -U *.pkg.tar.xz
+
+**Note**: Binary packages of gmt are still not available in [ArchlinuxCN repo](https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror) yet.
 
 ## Cross Platform Install Instructions
 
