@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
 [ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
-[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**] ]
+[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\**+v**][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
 [ |-F|\ [**+n**][**+z**\ *z0*] ]
@@ -103,7 +103,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**][**l**\|\ **r**][**+v**]
+**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\**+v**][**l**\|\ **r**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
