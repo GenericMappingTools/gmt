@@ -241,7 +241,6 @@ building and manually `make install` in ArchLinux.
     # here's two options, **you just have to clone one of them**
     # If you encounter some problems in those repo
     # you can report to the authors first, or choose another one to clone
-
     git clone https://aur.archlinux.org/gmt.git
 
     # alternative repo, for testing stable/rc release in version 6.x branch
