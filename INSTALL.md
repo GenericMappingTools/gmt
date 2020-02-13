@@ -237,7 +237,7 @@ building and manually `make install` in ArchLinux.
     sudo pacman -S base-devel
 
     # Use git command to clone non-official AUR repo of gmt
-    # here's two options, **you just have to clone one of them**
+    # Here are two options. **You just have to clone one of them:**
     # If you encounter some problems in those repo
     # you can report to the authors first, or choose another one to clone
     git clone https://aur.archlinux.org/gmt.git
