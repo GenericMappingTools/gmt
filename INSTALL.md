@@ -225,7 +225,7 @@ Install other GMT dependencies (some are optional) via:
 include the supplements. If you need them you will need to
 [build from source](BUILDING.md) or upgrade to 18.04 LTS.
 
-## ArchLinux
+### ArchLinux
 
 ### Install via building AUR package
 
