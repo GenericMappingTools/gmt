@@ -262,7 +262,7 @@ int GMT_grdgdal (void *V_API, int mode, void *args) {
 }
 
 #else
-	GMT_Report (API, GMT_MSG_ERROR, "This module can only be used when GMT was linked against GDAL >= 2.1\n",);
+	GMT_Report (API, GMT_MSG_ERROR, "This module can only be used when GMT was linked against GDAL >= 2.1\n");
 	Return (0);
 }
 #endif

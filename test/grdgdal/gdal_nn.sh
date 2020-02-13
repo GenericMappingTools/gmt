@@ -4,7 +4,7 @@
 
 ps=gdal_nn.ps
 
-cat << EOF > tridata.txt
+cat << EOF > tridata.csv
 2.53857	5.16657	0
 2.48365	6.26811	1
 8.68883	4.55983	2
@@ -29,6 +29,6 @@ EOF
 
 
 gmt makecpt -Ccategorical -T0/10/1 > t.cpt
-gmt grdgdal tridata.txt -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest"
+gmt grdgdal tridata.csv -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest"
 gmt grdgdal tridata.vrt -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+r
 gmt grdimage junk.nc -JX6i -P -Baf -BWSnE+t"Natural Nearest Neighbor Gridding" -Ct.cpt -Xc > $ps
