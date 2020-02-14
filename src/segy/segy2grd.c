@@ -551,15 +551,15 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 			if (gmt_M_is_dnan (Ctrl->N.d_value))
 				strcpy (line, "NaN\n");
 			else
 				sprintf (line, GMT->current.setting.format_float_out, Ctrl->N.d_value);
-			GMT_Report (API, GMT_MSG_WARNING, " n_read: %d  n_used: %d  n_filled: %d  n_empty: %d set to %s\n", n_read, n_used, n_filled, n_empty, line);
-			if (n_stuffed) GMT_Report (API, GMT_MSG_WARNING, "%d nodes had multiple entries that were averaged\n", n_stuffed);
-			if (n_confused) GMT_Report (API, GMT_MSG_WARNING, "%d values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
+			GMT_Report (API, GMT_MSG_INFORMATION, " n_read: %d  n_used: %d  n_filled: %d  n_empty: %d set to %s\n", n_read, n_used, n_filled, n_empty, line);
 		}
+		if (n_stuffed) GMT_Report (API, GMT_MSG_WARNING, "%d nodes had multiple entries that were averaged\n", n_stuffed);
+		if (n_confused) GMT_Report (API, GMT_MSG_WARNING, "%d values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
 	}
 	if (fpi != stdin) fclose (fpi);
 	gmt_M_free (GMT, flag);

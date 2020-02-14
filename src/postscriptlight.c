@@ -965,7 +965,7 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 	PSL_command (PSL, "] def\n");
 	PSL_comment (PSL, "Set array with number of points per line segments:\n");
 	psl_set_int_array (PSL, "path_n", new_n, npath);
-	if (k > 100000) PSL_message (PSL, PSL_MSG_WARNING, "Warning: PSL array placed has %d items - may exceed gs_init.ps MaxOpStack setting\n", k);
+	if (k > PSL_MaxOpStack_Size) PSL_message (PSL, PSL_MSG_WARNING, "Warning: PSL array placed has %d items - may exceed gs_init.ps MaxOpStack setting [%d].\n", k, PSL_MaxOpStack_Size);
 
 	/* Free up temp arrays */
 	PSL_free (use);

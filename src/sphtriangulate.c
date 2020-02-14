@@ -149,7 +149,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			Dout[0]->table[0]->n_records += S[0]->n_rows;
 		}
 		Dout[0]->n_records = Dout[0]->table[0]->n_records;
-		if (get_area) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Total surface area = %g\n", area_sphere * R2);
+		if (get_area) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Total surface area = %g\n", area_sphere * R2);
 	}
 	else {	/* Want just the arcs (to draw then, probably).  This avoids repeating shared arcs between triangles */
 		uint64_t j, ij1, ij2, ij3, n_arcs, kk;
@@ -646,7 +646,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	gmt_M_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 
-	if (Ctrl->D.active && n_dup) GMT_Report (API, GMT_MSG_WARNING, "Skipped %d duplicate points in segments\n", n_dup);
+	if (Ctrl->D.active && n_dup) GMT_Report (API, GMT_MSG_INFORMATION, "Skipped %d duplicate points in segments\n", n_dup);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Do Voronoi construction using %d points\n", n);
 
 	gmt_M_memset (&T, 1, struct STRIPACK);

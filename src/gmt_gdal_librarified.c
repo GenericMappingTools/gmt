@@ -187,6 +187,7 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
 						NULL, fname, Grid) != GMT_NOERROR)
 		return GMT->parent->error;
+	Grid->data = NULL;	/* SInce we cannot delete later */
 	return 0;
 }
 

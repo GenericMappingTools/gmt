@@ -45,6 +45,8 @@ extern "C" {
 
 #include <stdio.h>
 
+#define PSL_MaxOpStack_Size	300000	/* As of GhostSCript 9.50; see declaration in gs_init.ps */
+
 /* Number of PostScript points in one inch */
 
 #define PSL_POINTS_PER_INCH	72.0
