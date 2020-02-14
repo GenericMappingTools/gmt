@@ -187,5 +187,5 @@ Then, you should now be able to run GMT programs.
 
 ## Advanced instructions
 
-For advanced users interested in building documentation, running tests, or
+For advanced users who are interested in building documentation, running tests, or
 contributing more to GMT, please refer the [Maintenance Guide](MAINTENANCE.md).
