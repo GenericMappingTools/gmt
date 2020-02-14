@@ -1016,7 +1016,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		map_fwd = &gmt_geo_to_xy;
 		map_inv = &gmt_xy_to_geo;
 	}
-	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING) && !(geodetic_calc || Ctrl->T.active)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) && !(geodetic_calc || Ctrl->T.active)) {
+		char message[GMT_LEN256] = {""};
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 		                                GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
@@ -1049,20 +1050,26 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			ymax += Ctrl->C.northing;
 		}
 
-		GMT_Report (API, GMT_MSG_INFORMATION, "Transform ");
+		strcpy (message,"Transform " );
 		if (Ctrl->N.active) {
 			char *auxlat[4] = {"authalic", "conformal", "meridional", "geocentric"};
-			GMT_Message (API, GMT_TIME_NONE, "geodetic");
-			(Ctrl->I.active) ? GMT_Message (API, GMT_TIME_NONE, " <- ") : GMT_Message (API, GMT_TIME_NONE,  " -> ");
-			GMT_Message (API, GMT_TIME_NONE, "%s coordinates [degrees]\n", auxlat[Ctrl->N.mode/2]);
+			strcpy (message,"Transform geodetic");
+			(Ctrl->I.active) ? strcat (message, " <- ") : strcat (message, " -> ");
+			strcat (message, auxlat[Ctrl->N.mode/2]);
+			strcat (message, " coordinates [degrees]\n");
 		}
 		else {
-			GMT_Message (API, GMT_TIME_NONE, format, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
-			             GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
-			(Ctrl->I.active) ? GMT_Message (API, GMT_TIME_NONE, " <- ") : GMT_Message (API, GMT_TIME_NONE,  " -> ");
-			GMT_Message (API, GMT_TIME_NONE, format, xmin, xmax, ymin, ymax);
-			GMT_Message (API, GMT_TIME_NONE, " [%s]\n", unit_name);
+			char text[GMT_LEN128] = {""};
+			sprintf (text, format, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+			sprintf (message, "Transform %s", text);
+			(Ctrl->I.active) ? strcat (message, " <- ") : strcat (message, " -> ");
+			sprintf (text, format, xmin, xmax, ymin, ymax);
+			strcat (message, text);
+			strcat (message, " [");
+			strcat (message, unit_name);
+			strcat (message, "]\n");
 		}
+		GMT_Report (API, GMT_MSG_INFORMATION, message);
 	}
 
 	if (Ctrl->L.active) {
