@@ -317,7 +317,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 					Return (GMT_ERROR_ON_FOPEN);
 				}
 			}
-			GMT_Report (API, GMT_MSG_WARNING, "Found deprecated file extension .%s, please rename to .%s\n", X2SYS_FMT_EXT_OLD, X2SYS_FMT_EXT);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Found deprecated file extension .%s, please rename to .%s\n", X2SYS_FMT_EXT_OLD, X2SYS_FMT_EXT);
 		}
 	}
 	if ((fp_def = fopen (def_file, "r")) == NULL) {

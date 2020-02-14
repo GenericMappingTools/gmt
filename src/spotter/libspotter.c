@@ -596,7 +596,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 	/* Extend oldest stage pole back to t_max Ma */
 
 	if ((*t_max) > 0.0 && e[0].t_start < (*t_max)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "libspotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "libspotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
 
 		e[0].t_start = (*t_max);
 		e[0].duration = e[0].t_start - e[0].t_stop;
