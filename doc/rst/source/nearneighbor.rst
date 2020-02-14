@@ -24,6 +24,7 @@ Synopsis
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-n| ]
@@ -61,7 +62,7 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ *sectors*\ [**+m**\ *min_sectors*]
+**-N**\ *sectors*\ [**+m**\ *min_sectors*]\|\**n**
     The circular area centered on each node is divided into *sectors*
     sectors. Average values will only be computed if there is at least
     one value inside each of at least *min_sectors* of the sectors for a given
@@ -70,7 +71,8 @@ Required Arguments
     of *sectors* (i.e., rounded up to next integer) [Default is a quadrant
     search with 100% coverage, i.e., *sectors* = *min_sectors* = 4]. Note
     that only the nearest value per sector enters into the averaging; the
-    more distant points are ignored.
+    more distant points are ignored.  Alternatively, use **-Nn** to call
+    GDALʻs nearest neighbor algorithm instead.
 
 .. _-R:
 
@@ -119,6 +121,9 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. |Add_-g| replace:: 0x20 .. just an invisible code
+.. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_

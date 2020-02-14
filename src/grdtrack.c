@@ -97,6 +97,11 @@ struct GRDTRACK_CTRL {
 		double step;
 		char unit;
 	} E;
+	struct GRDTRACK_F {	/* -F[+n][+z<z0>] */
+		bool active;
+		bool negative;
+		double z0;
+	} F;
 	struct GRDTRACK_G {	/* -G<grdfile> */
 		bool active;
 		unsigned int n_grids;
@@ -158,8 +163,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a][+l|r][+v]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+n][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -206,6 +211,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  is optional unit.  Only ONE unit type from %s can be used throughout.\n", GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Mixing of units is not allowed [Default unit is km if geographic].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Report center, left, and right point per cross-track; requires -C and a single input grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   We assume a positive center peak; append +n if dealing with a negative trough.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z<z0> to change the detection level for left or right [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
@@ -345,6 +353,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				Ctrl->E.active = true;
 				Ctrl->E.lines = strdup (opt->arg);
 				break;
+			case 'F':
+				Ctrl->F.active = true;
+				if ((c = strstr (opt->arg, "+z")))	/* Gave +z<z0> */
+					Ctrl->F.z0 = atof (&c[2]);
+				if ((c = strstr (opt->arg, "+n")))	/* Gave +n*/
+					Ctrl->F.negative = true;
+				break;
 			case 'G':	/* Input grid file */
 				if (ng == MAX_GRIDS) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids (max = %d)\n", MAX_GRIDS);
@@ -465,6 +480,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 	}
 	Ctrl->G.n_grids = ng;
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode & GMT_LEFT_ONLY && Ctrl->C.mode & GMT_RIGHT_ONLY, "Option -C: Cannot chose both +l and +r modifiers.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->C.active, "Option -F: Requires -C.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && ng > 1, "Option -F: Can only accept a single grid.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Option -S: Requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] ||
 	                                   Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]),
@@ -1045,18 +1062,86 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
+		if (Ctrl->F.active) {	/* Find left, center, right point along the crosslines, with width */
+			bool do_headers = (Dout->n_tables > 1);
+			unsigned int col, tbl, seg, row;
+			int kl, kc, kr;
+			double out[12], z, this_zc, this_zr, z_scl = (Ctrl->F.negative) ? -1 : +1;
+			struct GMT_DATASEGMENT *S = NULL;
 
-		DH = gmt_get_DD_hidden (Dout);
-		T = Dout->table[0];
-		T->n_headers = 2;
-		T->header = gmt_M_memory (GMT, NULL, T->n_headers, char *);
-		T->header[0] = strdup ("Equidistant cross-profiles normal to each input segment");
-		T->header[1] = strdup (run_cmd);
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, DH->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
-			Return (API->error);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 12, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+				Return (error);
+			}
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+				Return (API->error);
+			}
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+				Return (API->error);
+			}
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+				Return (API->error);
+			}
+			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Ensure proper formatting of geographic coordinates */
+				gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LON);
+				gmt_set_column (GMT, GMT_OUT, 6, GMT_IS_LAT);
+				gmt_set_column (GMT, GMT_OUT, 8, GMT_IS_LON);
+				gmt_set_column (GMT, GMT_OUT, 9, GMT_IS_LAT);
+			}
+			Out = gmt_new_record (GMT, out, NULL);
+			for (tbl = 0; tbl < Dout->n_tables; tbl++) {
+				T = Dout->table[tbl];
+				if (do_headers) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
+				for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to examine */
+					S = T->segment[seg];	/* Shorthand pointer */
+					z = -DBL_MAX;	/* I.e., not set */
+					kr = kl = kc = GMT_NOTSET;	/* Not yet found */
+					for (row = 0; row < S->n_rows; row++) {	/* For each row across this segment */
+						if (gmt_M_is_dnan (T->segment[seg]->data[4][row])) continue;	/* Must skip any NaN entries in any profile */
+						this_zc = T->segment[seg]->data[4][row] * z_scl;				/* Current z: Force positive if a trough */
+						this_zr = T->segment[seg]->data[4][S->n_rows-row-1] * z_scl;	/* Current symmetric point on the right: Force positive if a trough */
+						if (kl == GMT_NOTSET && this_zc >= Ctrl->F.z0) kl = row;		/* Found the first point on the left */
+						if (kr == GMT_NOTSET && this_zr >= Ctrl->F.z0) kr = S->n_rows-row-1;	/* Found the last point on the right */
+						if (this_zc > z) z = this_zc, kc = row;	/* Found a new maximum point */
+					}
+					if (kc == GMT_NOTSET) continue;	/* Nothing to print */
+					for (col = 0; col < 5; col++)	/* Copy over lon, lat, dist, azimuth, z */
+						out[col] = T->segment[seg]->data[col][kc];
+					if (kl == GMT_NOTSET)	/* Left start not detected, report NaN */
+						out[5] = out[6] = out[7] = GMT->session.d_NaN;
+					else {
+						out[5] = T->segment[seg]->data[GMT_X][kl];	/* Left longitude */
+						out[6] = T->segment[seg]->data[GMT_Y][kl];	/* Left latitude */
+						out[7] = T->segment[seg]->data[GMT_Z][kl];	/* Left distance */
+					}
+					if (kr == GMT_NOTSET)	/* RIght stop not detected, report NaN */
+						out[8] = out[9] = out[10] = GMT->session.d_NaN;
+					else {
+						out[8]  = T->segment[seg]->data[GMT_X][kr];	/* Right longitude */
+						out[9]  = T->segment[seg]->data[GMT_Y][kr];	/* Right latitude */
+						out[10] = T->segment[seg]->data[GMT_Z][kr];	/* Right distance */
+					}
+					out[11] = out[10] - out[7];	/* Width = distance between left and right point */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+				}
+			}
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+				Return (API->error);
+			}
+			gmt_M_free (GMT, Out);
 		}
-		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
-			Return (API->error);
+		else {
+			DH = gmt_get_DD_hidden (Dout);
+			T = Dout->table[0];
+			T->n_headers = 2;
+			T->header = gmt_M_memory (GMT, NULL, T->n_headers, char *);
+			T->header[0] = strdup ("Equidistant cross-profiles normal to each input segment");
+			T->header[1] = strdup (run_cmd);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, DH->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
+				Return (API->error);
+			}
+			if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
+				Return (API->error);
+			}
 		}
 	}
 	else if (Ctrl->E.active) {	/* Quick sampling along given lines */

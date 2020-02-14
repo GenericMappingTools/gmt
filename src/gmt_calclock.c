@@ -1000,7 +1000,7 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 				gmt_format_calendar (GMT, NULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Wrong unit passed to gmtlib_get_time_label\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Wrong unit passed to gmtlib_get_time_label - return NaN\n");
 				sprintf (string, "NaN");
 			}
 			break;
@@ -1013,7 +1013,7 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 				(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Wrong unit passed to gmtlib_get_time_label\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Wrong unit passed to gmtlib_get_time_label - return NaN\n");
 				sprintf (string, "NaN");
 			}
 			break;
@@ -1021,7 +1021,7 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Wrong unit passed to gmtlib_get_time_label\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Wrong unit passed to gmtlib_get_time_label - return NaN\n");
 			sprintf (string, "NaN");
 			break;
 	}

@@ -15,7 +15,7 @@
 # Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
-# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+# To modify the cmake process, edit your cmake/ConfigUser.cmake and cmake/ConfigUserAdvanced.cmake files
 #
 # src/CMakeLists.txt
 #
@@ -187,7 +187,7 @@ if (LAPACK_FOUND)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${LAPACK_LIBRARIES})
 else (LAPACK_FOUND)
 	if (LAPACK_LIBRARY)
-		# Set in ConfigUser.cmake
+		# Set in ConfigUserAdvanced.cmake
 		set (HAVE_LAPACK TRUE CACHE INTERNAL "System has LAPACK")
 		set (GMT_CONFIG_LAPACK_MESSAGE "yes" CACHE INTERNAL "LAPACK config message")
 		list (APPEND GMT_OPTIONAL_LIBRARIES ${LAPACK_LIBRARY})
@@ -206,7 +206,7 @@ if (BLAS_FOUND)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${BLAS_LIBRARIES})
 else (BLAS_FOUND)
 	if (BLAS_LIBRARY)
-		# Set in ConfigUser.cmake
+		# Set in ConfigUserAdvanced.cmake
 		set (HAVE_BLAS TRUE CACHE INTERNAL "System has BLAS")
 		set (GMT_CONFIG_BLAS_MESSAGE "yes" CACHE INTERNAL "BLAS config message")
 		list (APPEND GMT_OPTIONAL_LIBRARIES ${BLAS_LIBRARY})
@@ -314,10 +314,10 @@ else (NOT LICENSE_RESTRICTED) # on
 	set (GMT_TRIANGULATE "Watson" PARENT_SCOPE)
 endif (NOT LICENSE_RESTRICTED)
 
-# Note: Developers can set EXTRA_MODULES in ConfigUser.cmake to test new modules
+# Note: Developers can set EXTRA_MODULES in ConfigUserAdvanced.cmake to test new modules
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c filter1d.c grd2kml.c
 	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
-	gmtspatial.c gmtconnect.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
+	gmtspatial.c gmtconnect.c grdgdal.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfill.c grdfilter.c
 	grdgradient.c grdhisteq.c grdinfo.c grdinterpolate.c grdlandmask.c grdmask.c grdmath.c
 	grdpaste.c grdproject.c grdsample.c grdconvert.c grdtrack.c movie.c
@@ -365,6 +365,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c common_math.c
 	common_runpath.c common_sighandler.c common_string.c compat/qsort.c
 	gmt_sharedlibs.c gmt_core_module.c gmt_init.c gmt_map.c gmt_plot.c
+	gmt_gdal_librarified.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
 	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS})
@@ -446,15 +447,15 @@ set_target_properties (pslib
 	SOVERSION ${GMT_LIB_SOVERSION}
 	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
-# If a renaming of the psl dll has been set in ConfigUser.cmake
+# If a renaming of the psl dll has been set in ConfigUserAdvanced.cmake
 if (WIN32 AND PSL_DLL_RENAME)
 	set_target_properties (pslib PROPERTIES RUNTIME_OUTPUT_NAME ${PSL_DLL_RENAME})
 endif (WIN32 AND PSL_DLL_RENAME)
 
 if (BUILD_SUPPLEMENTS)
 	# supplement directories (only those, which are to be included in gmtlib)
-	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in
-	# subversion. See cmake/ConfigUserTemplate.cmake for setting this parameter.
+	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in git.
+	# See cmake/ConfigUserAdvancedTemplate.cmake for setting this parameter.
 	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis
 		spotter x2sys ${EXTRA_BUILD_DIRS})
 endif (BUILD_SUPPLEMENTS)
@@ -501,13 +502,13 @@ if (BUILD_SUPPLEMENTS)
 		gmtlib
 		pslib)
 
-	# Include any extra files that are listed in EXTRA_INCLUDE_GMTSUPPL defined in ConfigUser.cmake
+	# Include any extra files that are listed in EXTRA_MODULES_SUPPL defined in ConfigUserAdvanced.cmake
 	# This include(s) will add new modules to the official GMT supplements
-	if (EXTRA_INCLUDE_GMTSUPPL)
-		foreach (_f ${EXTRA_INCLUDE_GMTSUPPL})
+	if (EXTRA_MODULES_SUPPL)
+		foreach (_f ${EXTRA_MODULES_SUPPL})
 			include (${_f})
 		endforeach(_f)
-	endif (EXTRA_INCLUDE_GMTSUPPL)
+	endif (EXTRA_MODULES_SUPPL)
 
 	set_target_properties (supplib
 		PROPERTIES
@@ -541,7 +542,7 @@ if (BUILD_SUPPLEMENTS)
 		COMPONENT Runtime)
 endif (BUILD_SUPPLEMENTS)
 
-# Include any extra files that are listed in EXTRA_INCLUDE_NEWSUPPL defined in ConfigUser.cmake
+# Include any extra files that are listed in EXTRA_INCLUDE_NEWSUPPL defined in ConfigUserAdvanced.cmake
 # This include(s) will create new pluggins
 if (EXTRA_INCLUDE_NEWSUPPL)
 	foreach (_f ${EXTRA_INCLUDE_NEWSUPPL})
@@ -585,7 +586,7 @@ set_target_properties (gmtlib
 	LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
 	DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
-# If a renaming of the gmt dll has been set in ConfigUser.cmake
+# If a renaming of the gmt dll has been set in ConfigUserAdvanced.cmake
 if (WIN32 AND GMT_DLL_RENAME)
 	set_target_properties (gmtlib PROPERTIES RUNTIME_OUTPUT_NAME ${GMT_DLL_RENAME})
 endif (WIN32 AND GMT_DLL_RENAME)

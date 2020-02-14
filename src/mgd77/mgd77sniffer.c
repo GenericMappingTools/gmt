@@ -957,7 +957,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Error in custom limits file [%s]\n", custom_limit_line);
+					GMT_Report (API, GMT_MSG_ERROR, "Failure in custom limits file [%s]\n", custom_limit_line);
 					gmt_fclose (GMT, custom_fp);
 					MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 					Return (API->error);

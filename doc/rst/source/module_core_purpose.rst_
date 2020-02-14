@@ -90,6 +90,8 @@
 
 .. |grdfilter_purpose| replace:: Filter a grid in the space (or time) domain
 
+.. |grdgdal_purpose| replace:: Execute GDAL raster programs from GMT
+
 .. |grdgradient_purpose| replace:: Compute directional gradients from a grid
 
 .. |grdhisteq_purpose| replace:: Perform histogram equalization for a grid

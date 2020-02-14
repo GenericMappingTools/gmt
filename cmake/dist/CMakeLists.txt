@@ -137,7 +137,7 @@ if (WIN32 AND NOT CYGWIN)
 		COMPONENT Runtime)
 
 	if (WIN32 AND GMTMEX_PATH)
-		# Install the gmtmex on Windows. Its location is controlled by GMTMEX_PATH set in ConfigUser.cmake
+		# Install the gmtmex on Windows. Its location is controlled by GMTMEX_PATH set in ConfigUserAdvanced.cmake
 		if (BITAGE EQUAL 64)
 			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 		else ()
