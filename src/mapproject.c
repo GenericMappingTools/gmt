@@ -1053,7 +1053,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		strcpy (message,"Transform " );
 		if (Ctrl->N.active) {
 			char *auxlat[4] = {"authalic", "conformal", "meridional", "geocentric"};
-			strcpy (message,"Transform geodetic");
+			strcpy (message, "Transform geodetic");
 			(Ctrl->I.active) ? strcat (message, " <- ") : strcat (message, " -> ");
 			strcat (message, auxlat[Ctrl->N.mode/2]);
 			strcat (message, " coordinates [degrees]\n");
