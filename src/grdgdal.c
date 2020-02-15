@@ -158,9 +158,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT
 
 			case 'M':	/* -M[+r+w] which read-write machinery. GMT or GDAL */
 				Ctrl->M.active = true;
-				if (strstr(opt->arg, "+r")) Ctrl->M.read_gdal  = true;
-				else if (strstr(opt->arg, "+w")) Ctrl->M.write_gdal = true;
-				else if (opt->arg[0] == '\0') Ctrl->M.read_gdal = Ctrl->M.write_gdal = true;
+				if (opt->arg[0] == '\0')
+					Ctrl->M.read_gdal = Ctrl->M.write_gdal = true;
+				else {
+					if (strstr(opt->arg, "+r")) Ctrl->M.read_gdal  = true;
+					if (strstr(opt->arg, "+w")) Ctrl->M.write_gdal = true;
+				}
+				if (!Ctrl->M.read_gdal && !Ctrl->M.write_gdal) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-M option. Modifiers must be either +r or +w\n");
+					n_errors++;
+				}
 				break;
 
 			case 'W':	/* -W<fname> sets output VECTOR data fname when written by GDAL -- NOT USED YET */

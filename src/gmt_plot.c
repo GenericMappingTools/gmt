@@ -7024,21 +7024,22 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
 		/* Determine paper size */
 		wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output format */
-		if (wants_PS) {	/* Requesting a PostScript file in modern mode */
+		if (wants_PS && !O_active) {	/* Requesting a new PostScript file in modern mode */
 			if (auto_media) {	/* Cannot use "auto" if requesting a PostScript file */
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Must specify a paper size when requesting a PostScript file\n");
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "You should specify a paper size when requesting a PostScript file.\n");
 				if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Use US settings */
-					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; use PS_MEDIA.\n");
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; better to use PS_MEDIA explicitly.\n");
 					media_size[GMT_X] = 612.0; media_size[GMT_Y] = 792.0;
 				}
 				else {	/* Use SI settings */
-					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Changing paper size to A4, but we cannot know if this is adequate for your plot.\n");
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Changing paper size to A4, but we cannot know if this is adequate for your plot; better to use PS_MEDIA explicitly.\n");
 					media_size[GMT_X] = 595.0; media_size[GMT_Y] = 842.0;
 				}
 			}
 			if ((GMT->current.map.width > GMT->current.map.height) && (((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > media_size[GMT_X]) && GMT->current.setting.ps_orientation == PSL_PORTRAIT) {
 				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Changing to PostScript landscape orientation based on plot and paper dimensions but cannot not sure.  Use PS_PAGE_ORIENTATION to correct any error\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Changing to PostScript landscape orientation based on your plot and paper dimensions, but we cannot be 100%% sure.\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Use PS_MEDIA and/or PS_PAGE_ORIENTATION to specify correct paper dimensions and/or orientation if our guesses are inadequate.\n");
 			}
 		}
 		else if (!O_active) {	/* Not desiring PS output so we can add safety margin of GMT_PAPER_MARGIN inches for initial layer unless PS_MEDIA was set */

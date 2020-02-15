@@ -604,7 +604,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	if (Ctrl->S2.dist != 0.0) sampling_int_in_km = Ctrl->S2.dist;
 	GMT_Report (API, GMT_MSG_INFORMATION, "Flowline sampling interval = %.3f km\n", sampling_int_in_km);
 
-	if (Ctrl->T.active[TRUNC]) GMT_Report (API, GMT_MSG_WARNING, "Ages truncated to %g\n", Ctrl->N.t_upper);
+	if (Ctrl->T.active[TRUNC]) GMT_Report (API, GMT_MSG_INFORMATION, "Ages truncated to %g\n", Ctrl->N.t_upper);
 
 	/* Start to read input data */
 
@@ -708,7 +708,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		flowline = gmt_M_memory (GMT, NULL, n_alloc, struct FLOWLINE);
 		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
 			GMT_Report (API, GMT_MSG_WARNING, "Will attempt to keep all flowlines in memory.  However, should this not be possible\n");
-			GMT_Report (API, GMT_MSG_WARNING, "the program might crash.  If so consider using the -M option\n");
+			GMT_Report (API, GMT_MSG_WARNING, "then the program might crash.  If so consider using the -M option.\n");
 		}
 	}
 
@@ -977,10 +977,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
-			GMT_Report (API, GMT_MSG_WARNING, "Preprocessed %5" PRIu64 " flowlines\n", n_nodes);
-			GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " of %" PRIu64 " total flowlines entered CVA region\n", n_nodes, n_flow);
-			GMT_Report (API, GMT_MSG_WARNING, "Flowlines consumed %d Mb of memory\n", lrint (mem * B_TO_MB));
-			GMT_Report (API, GMT_MSG_WARNING, "Estimate %d CVA max locations using bootstrapping\n", Ctrl->W.n_try);
+			GMT_Report (API, GMT_MSG_WARNING, "Preprocessed %5" PRIu64 " flowlines.\n", n_nodes);
+			GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " of %" PRIu64 " total flowlines entered CVA region.\n", n_nodes, n_flow);
+			GMT_Report (API, GMT_MSG_WARNING, "Flowlines consumed %d Mb of memory.\n", lrint (mem * B_TO_MB));
+			GMT_Report (API, GMT_MSG_WARNING, "Estimate %d CVA max locations using bootstrapping.\n", Ctrl->W.n_try);
 		}
 
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {

@@ -491,13 +491,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
 			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_WARNING, "FORMAT_GEO_OUT reset from D to %s to ensure wesn[XHI] > wesn[XLO]\n",
+			GMT_Report (API, GMT_MSG_INFORMATION, "FORMAT_GEO_OUT reset from D to %s to ensure wesn[XHI] > wesn[XLO]\n",
 			            GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_WARNING, "FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure wesn[XHI] > wesn[XLO]\n",
+			GMT_Report (API, GMT_MSG_INFORMATION, "FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure wesn[XHI] > wesn[XLO]\n",
 			            GMT->current.setting.format_geo_out);
 		}
 	}
