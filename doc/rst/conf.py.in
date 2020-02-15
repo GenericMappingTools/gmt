@@ -41,12 +41,16 @@ html_theme_options = {
 html_context = {
     "menu_links": [
         (
-            '<i class="fa fa-book fa-fw"></i> License',
-            "https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT",
+            '<i class="fa fa-home fa-fw"></i> GMT Homepage',
+            "https://www.generic-mapping-tools.org/",
         ),
         (
-            '<i class="fa fa-comment fa-fw"></i> Contact',
+            '<i class="fa fa-comment fa-fw"></i> GMT Community Forum',
             "https://forum.generic-mapping-tools.org/",
+        ),
+        (
+            '<i class="fa fa-book fa-fw"></i> License',
+            "https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT",
         ),
         (
             '<i class="fa fa-github fa-fw"></i> Source Code',
