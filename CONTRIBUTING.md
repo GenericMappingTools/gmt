@@ -81,6 +81,14 @@ improved, please consider letting us know. You can either
 [create an issue](#reporting-a-bug) on GitHub, or click the "Edit on GitHub" button
 at the top right corner of the documentation, and submit a fix (even better :star2:).
 
+The GMT documentation is written in the plaintext markup language
+[reStructuredText](https://docutils.sourceforge.io/rst.html) and built
+by documentation generator [Sphinx](https://www.sphinx-doc.org/en/master/).
+To build the documentation locally, you need to have Sphinx installed,
+then follow the [build instructions](MAINTENANCE.md#building-documentation).
+For more details about the reStructuredText markup language, please refer to our
+[reStructuredText Cheatsheet](https://docs.generic-mapping-tools.org/latest/rst_cheatsheet.html).
+
 
 ## Contributing Code
 
