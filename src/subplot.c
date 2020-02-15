@@ -668,6 +668,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 int GMT_subplot (void *V_API, int mode, void *args) {
 	int error = 0, fig;
 	char file[PATH_MAX] = {""}, command[GMT_LEN256] = {""};
+	size_t len, tlen;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_DATASET *D = NULL, *L = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
@@ -858,14 +859,30 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure height: %g\n", Ctrl->F.dim[GMT_Y]);
 		sprintf (report, "%g", Ctrl->F.w[0]);
 		for (col = 1; col < Ctrl->N.dim[GMT_X]; col++) {
+			len = strlen (report);
 			sprintf (txt, ", %g", Ctrl->F.w[col]);
-			strcat (report, txt);
+			tlen = strlen (txt);
+			if ((len+tlen) < GMT_LEN256) {
+				if (col == 10) {	/* Dont bother any more */
+					sprintf (txt, ", ...");
+					col = Ctrl->N.dim[GMT_X];	/* This will exit the loop */
+				}
+				strcat (report, txt);
+			}
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Column dimensions: %s\n", report);
 		sprintf (report, "%g", Ctrl->F.h[0]);
 		for (row = 1; row < Ctrl->N.dim[GMT_Y]; row++) {
+			len = strlen (report);
 			sprintf (txt, ", %g", Ctrl->F.h[row]);
-			strcat (report, txt);
+			tlen = strlen (txt);
+			if ((len+tlen) < GMT_LEN256) {
+				if (row == 10) {	/* Dont bother any more */
+					sprintf (txt, ", ...");
+					row = Ctrl->N.dim[GMT_Y];	/* This will exit the loop */
+				}
+				strcat (report, txt);
+			}
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Row dimensions: %s\n", report);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Main heading BC point: %g %g\n", 0.5 * width, y_heading);
