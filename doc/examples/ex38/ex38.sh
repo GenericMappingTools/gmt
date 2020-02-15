@@ -30,7 +30,7 @@ gmt begin ex38
 		gmt grdimage out.nc -Cq.cpt
 	gmt subplot end
 
-	gmt colorbar -DJTC+w12c/0.4c+jTC+o0c/6c+h+e+n -Ct.cpt -Ba500 -By+lm
+	gmt colorbar -DJTC+w12c/0.4c+jTC+o0c/6c+h+e+n -Ct.cpt -Bxa500 -By+lm
 	gmt colorbar -DJBC+w12c/0.4c+h+e+n -Cn.cpt -Bx1 -By+l"z@-n@-"
 	gmt colorbar -DJBC+w12c/0.4c+h+e+n+o0c/2.5c -Cq.cpt -Bx1 -By+l"z@-q@-"
 	rm -f out.nc ?.cpt

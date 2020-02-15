@@ -545,7 +545,7 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 	size_t len, lent = strlen(text);
 	char *c = NULL, m = 0, item[GMT_LEN64] = {""};
 	gmt_M_unused (API);
-	if ((c = strchr (text, sep))) c[0] = '0';	/* Chop off the colon or equal and what follows for now */
+	if ((c = strchr (text, sep))) c[0] = '\0';	/* Chop off the colon or equal and what follows for now */
 	while (m == 0 && (gmt_strtok (longlist, ",", &pos, item))) {	/* While there are unprocessed directives to examine */
 		len = MIN (lent, strlen(item));	/* Only compare up to the given # of characters, but less than length of item */
 		if (!strncmp (item, text, len))	/* Found this directive in the text */
@@ -3848,9 +3848,30 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 	return (error);
 }
 
+bool gmtinit_B_is_frame (struct GMT_CTRL *GMT, char *in) {
+	gmt_M_unused (GMT);
+	if (strstr (in, "+b")) return true;	/* Found a +b so likely frame */
+	if (strstr (in, "+g")) return true;	/* Found a +g so likely frame */
+	if (strstr (in, "+n")) return true;	/* Found a +n so likely frame */
+	if (strstr (in, "+o")) return true;	/* Found a +o so likely frame */
+	if (strstr (in, "+t")) return true;	/* Found a +t so likely frame */
+	if (strstr (in, "+a")) return false;	/* Found a +a so likely axis */
+	if (strstr (in, "+f")) return false;	/* Found a +f so likely axis */
+	if (strstr (in, "+l")) return false;	/* Found a +l so likely axis */
+	if (strstr (in, "+L")) return false;	/* Found a +L so likely axis */
+	if (strstr (in, "+p")) return false;	/* Found a +p so likely axis */
+	if (strstr (in, "+s")) return false;	/* Found a +s so likely axis */
+	if (strstr (in, "+S")) return false;	/* Found a +S so likely axis */
+	if (strstr (in, "+u")) return false;	/* Found a +u so likely axis */
+	if (in[0] != 'z' && strchr ("WESNZwenzlrbtu", in[0])) return true;	/* Found one of the side specifiers so likely frame (check on z since -Bzaf could trick it) */
+	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenzlrbtu", in[1]) != NULL)) return true;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
+	if (in[0] == 'z' && (in[1] == 0 || strchr ("WESNwenlrbtu", in[1]) != NULL)) return true;	/* Found -Bz in frame context, e.g. -Bzwn */
+	return false;	/* Cannot be frame */
+}
+
 /*! . */
 GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
-	unsigned int pos = 0, k, error = 0, is_frame = 0;
+	unsigned int pos = 0, k, error = 0;
 	char p[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
 	double pole[2];
 
@@ -3860,15 +3881,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 
 	if (strchr ("pxy", in[0])) return (-1);	/* -B[p[xy] is definitively not the frame settings (-Bz and -Bs are tricker; see below) */
 	if (strchr ("afg", in[0])) return (-1);	/* -Ba|f|g is definitively not the frame settings; looks like axes settings */
-	if (strstr (in, "+b")) is_frame++;	/* Found a +b so likely frame */
-	if (strstr (in, "+g")) is_frame++;	/* Found a +g so likely frame */
-	if (strstr (in, "+n")) is_frame++;	/* Found a +n so likely frame */
-	if (strstr (in, "+o")) is_frame++;	/* Found a +o so likely frame */
-	if (strstr (in, "+t")) is_frame++;	/* Found a +t so likely frame */
-	if (in[0] != 'z' && strchr ("WESNZwenzlrbtu", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (check on z since -Bzaf could trick it) */
-	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenzlrbtu", in[1]) != NULL)) is_frame++;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
-	if (in[0] == 'z' && !is_frame && (in[1] == 0 || strchr ("WESNwenlrbtu", in[1]) != NULL)) is_frame++;	/* Found -Bz in frame context, e.g. -Bzwn */
-	if (is_frame == 0) return (-1);		/* No, nothing matched */
+	if (!gmtinit_B_is_frame (GMT, in)) return (-1);		/* No, nothing matched */
 
 	/* OK, here we are pretty sure this is a frame -B statement */
 
@@ -15205,7 +15218,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
 			if (!error) {
-				if (GMT->current.setting.run_mode == GMT_MODERN) {
+				if (GMT->current.setting.run_mode == GMT_MODERN && !GMT->current.map.frame.set) {
 					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
 					if (item[0] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
 					if (c && strchr ("aflLsSu", c[1]))	/* We got the ones suitable for axes that we can chop off */
