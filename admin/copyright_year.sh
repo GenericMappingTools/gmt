@@ -19,10 +19,10 @@ find -E . \
     ! -path "./share/spotter/*" \
     -exec grep -H Copyright {} + | \
     grep -v ${newyear} | \
-    awk -F: '{print $1}' > /tmp/$$.tmp.lis
+    awk -F: '{print $1}' > ${TMPDIR}/$$.tmp.lis
 
 # 2. Add extra files not found by 'find'
-cat >> /tmp/$$.tmp.lis << EOF
+cat >> ${TMPDIR}/$$.tmp.lis << EOF
 ./src/gmtswitch
 ./src/grd2sph.c.template
 ./src/img/img2google
@@ -33,11 +33,11 @@ EOF
 while read f; do
     sed -E -i.bak "s/Copyright \(c\) ([0-9]+)-${lastyear}/Copyright \(c\) \1-${newyear}/" $f
     rm -f $f.bak
-done < /tmp/$$.tmp.lis
+done < ${TMPDIR}/$$.tmp.lis
 
 # 4. Update GMT_VERSION_YEAR in cmake/ConfigDefault.cmake
 sed -i.bak "s/set (GMT_VERSION_YEAR \"${lastyear}\")/set (GMT_VERSION_YEAR \"${newyear}\")/" cmake/ConfigDefault.cmake
 rm -f cmake/ConfigDefault.cmake.bak
 
 # 5. Clean up
-rm -f /tmp/$$.tmp.lis
+rm -f ${TMPDIR}/$$.tmp.lis
