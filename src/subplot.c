@@ -715,7 +715,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		double x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
 		double *cx = NULL, *cy = NULL, *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
-		char vfile[GMT_STR16] = {""}, xymode = 'r', report[GMT_LEN256] = {""}, txt[GMT_LEN32] = {""};
+		char vfile[GMT_STR16] = {""}, xymode = 'r';
 		bool add_annot, no_frame = false;
 		FILE *fp = NULL;
 
@@ -854,21 +854,41 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		height = Ctrl->F.dim[GMT_Y];
 		y_heading = height + y_header_off + Ctrl->M.margin[YHI];
 		//y_heading = height + y_header_off;
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure width:  %g\n", Ctrl->F.dim[GMT_X]);
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure height: %g\n", Ctrl->F.dim[GMT_Y]);
-		sprintf (report, "%g", Ctrl->F.w[0]);
-		for (col = 1; col < Ctrl->N.dim[GMT_X]; col++) {
-			sprintf (txt, ", %g", Ctrl->F.w[col]);
-			strcat (report, txt);
+		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Lots of debug calculations and reporting here */
+			size_t len, tlen;
+			char report[GMT_LEN256] = {""}, txt[GMT_LEN32] = {""};
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure width:  %g\n", Ctrl->F.dim[GMT_X]);
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure height: %g\n", Ctrl->F.dim[GMT_Y]);
+			sprintf (report, "%g", Ctrl->F.w[0]);
+			for (col = 1; col < Ctrl->N.dim[GMT_X]; col++) {
+				len = strlen (report);
+				sprintf (txt, ", %g", Ctrl->F.w[col]);
+				tlen = strlen (txt);
+				if ((len+tlen) < GMT_LEN256) {	/* OK to add to report */
+					if (col == 10) {	/* Don't bother to give more than the first 10 columns */
+						sprintf (txt, ", ...");
+						col = Ctrl->N.dim[GMT_X];	/* This will exit the loop */
+					}
+					strcat (report, txt);
+				}
+			}
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Column dimensions: %s\n", report);
+			sprintf (report, "%g", Ctrl->F.h[0]);
+			for (row = 1; row < Ctrl->N.dim[GMT_Y]; row++) {
+				len = strlen (report);
+				sprintf (txt, ", %g", Ctrl->F.h[row]);
+				tlen = strlen (txt);
+				if ((len+tlen) < GMT_LEN256) {	/* OK to add to report */
+					if (row == 10) {	/* Don't bother to give more than the first 10 rows */
+						sprintf (txt, ", ...");
+						row = Ctrl->N.dim[GMT_Y];	/* This will exit the loop */
+					}
+					strcat (report, txt);
+				}
+			}
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Row dimensions: %s\n", report);
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Main heading BC point: %g %g\n", 0.5 * width, y_heading);
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Column dimensions: %s\n", report);
-		sprintf (report, "%g", Ctrl->F.h[0]);
-		for (row = 1; row < Ctrl->N.dim[GMT_Y]; row++) {
-			sprintf (txt, ", %g", Ctrl->F.h[row]);
-			strcat (report, txt);
-		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Row dimensions: %s\n", report);
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Main heading BC point: %g %g\n", 0.5 * width, y_heading);
 
 		/* Allocate subplot info array */
 		cx = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_X], double);
