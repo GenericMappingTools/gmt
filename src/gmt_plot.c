@@ -7544,7 +7544,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		GMT->current.ps.clip_level += GMT->current.ps.nclip;
 
 	if (GMT->current.ps.nclip != PSL->current.nclip)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "Module was expected to change clip level by %d, but clip level changed by %d\n", GMT->current.ps.nclip, PSL->current.nclip);
 
 	if (!K_active) {
