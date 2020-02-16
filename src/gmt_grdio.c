@@ -1326,8 +1326,9 @@ GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEA
 	unsigned int k;
 	double norm_v, round_v, d, slop;
 	static char *type[4] = {"xmin", "xmax", "ymin", "ymax"};
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Correct any slop in geographic increments */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && HH->grdtype != GMT_GRID_CARTESIAN) {	/* Correct any slop in geographic increments */
 		doctor_geo_increments (GMT, header);
 		if ((header->wesn[YLO]+90.0) < (-GMT_CONV4_LIMIT*header->inc[GMT_Y]))
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found south latitude outside valid range (%.16g)!\n", header->wesn[YLO]);
