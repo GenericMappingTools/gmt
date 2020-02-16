@@ -373,7 +373,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
 	{   0, 'B', "frame",         "",        "",                                         "b,g,n,o,t",				"box,fill,noframe,oblique-pole,title" },
-	{   0, 'B', "axis",          "",        "",                                         "a,l,L,p,s,S,u",			"angle,label,Label,prefix,second-label,Second-label,unit" },
+	{   0, 'B', "axis",          "",        "",                                         "a,f,l,L,p,s,S,u",			"angle,fancy,label,Label,prefix,second-label,Second-label,unit" },
 	{   0, 'J', "projection",    "",        "",                                         "",         				""},
 	{   0, 'R', "region",        "",        "",                                         "r,u",        				"rectangular,unit"},
 	{   0, 'U', "timestamp",     "",        "",                                         "c,j,o",    				"command,justify,offset"},
