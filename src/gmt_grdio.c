@@ -1303,6 +1303,7 @@ GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 	unsigned int side;
 	static char *type[2] = {"longitude", "latitude"};
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call doctor_geo_increments on a geographic grid\n");
 	for (side = GMT_X; side <= GMT_Y; side++) {	/* Check both increments */
 		scale = (header->inc[side] < GMT_MIN2DEG) ? 3600.0 : 60.0;	/* Check for clean multiples of minutes or seconds */
 		inc = header->inc[side] * scale;
@@ -1326,9 +1327,8 @@ GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEA
 	unsigned int k;
 	double norm_v, round_v, d, slop;
 	static char *type[4] = {"xmin", "xmax", "ymin", "ymax"};
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
-	if (gmt_M_is_geographic (GMT, GMT_IN) && HH->grdtype != GMT_GRID_CARTESIAN) {	/* Correct any slop in geographic increments */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && (header->wesn[XHI] - header->wesn[XLO] - header->inc[GMT_X]) <= 360.0) {	/* Correct any slop in geographic increments */
 		doctor_geo_increments (GMT, header);
 		if ((header->wesn[YLO]+90.0) < (-GMT_CONV4_LIMIT*header->inc[GMT_Y]))
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found south latitude outside valid range (%.16g)!\n", header->wesn[YLO]);
