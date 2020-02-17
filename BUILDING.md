@@ -51,8 +51,8 @@ Optionally install for building GMT documentations and running tests:
 
 You also need to download support data:
 
-- [GSHHG](https://github.com/GenericMappingTools/gmt-gshhg): A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
-- [DCW](https://github.com/GenericMappingTools/gmt-dcw): The Digital Chart of the World (optional, >=1.0.5)
+- [GSHHG](https://github.com/GenericMappingTools/gshhg-gmt): A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
+- [DCW](https://github.com/GenericMappingTools/dcw-gmt): The Digital Chart of the World (optional, >=1.0.5)
 
 ## Getting GMT source codes
 
