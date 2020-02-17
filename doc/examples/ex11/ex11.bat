@@ -20,11 +20,11 @@ gmt begin ex11
 	gmt grdmath 255 Y SUB = y2.nc
 	gmt grdmath 255       = c2.nc
 
-	gmt plot @cut-here_11.txt -Wthinnest,. -R-51/306/0/1071 -JX8.4c/25.2c 
+	gmt plot @cut-here_11.txt -Wthinnest,. -R-51/306/0/1071 -JX8.4c/25.2c -X6c
 
 	gmt set FONT_ANNOT_PRIMARY 12p,Helvetica-Bold
 
-	gmt grdimage x1.nc y1.nc c1.nc -JX6c/-6c -X1.25c -R0/255/0/255
+	gmt grdimage x1.nc y1.nc c1.nc -JX6c/-6c -R0/255/0/255 -X1.25c
 	gmt plot -Wthinner,white,- @rays_11.txt
 	echo 128 128 -45 12p 60@.	 > tmp.txt
 	echo 102  26 -90 12p 0.4	>> tmp.txt
