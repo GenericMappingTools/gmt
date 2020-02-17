@@ -140,7 +140,7 @@ The GMT binary packages provided by the Fedora official repositories are usually
 We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 to allow Fedora users access the latest GMT releases in an easy way.
 
-**NOTE: The RPM repository provides GMT packages for Fedora 29 or newer only!**
+**NOTE: The RPM repository provides GMT packages for Fedora 30 or newer only!**
 
 Fedora users can add the GMT official RPM repository and install gmt by:
 
