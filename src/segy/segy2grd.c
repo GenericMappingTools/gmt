@@ -416,7 +416,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		ix = 0;
 		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->N.f_value;
 		if (Grid->header->n_columns < Ctrl->M.value) {
-			GMT_Report (API, GMT_MSG_WARNING, "Nmber of traces in header > size of grid. Reading may be truncated\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Number of traces in header > size of grid. Reading may be truncated\n");
 			Ctrl->M.value = Grid->header->n_columns;
 		}
 		while ((ix < Ctrl->M.value) && (header = segy_get_header (fpi)) != 0) {
