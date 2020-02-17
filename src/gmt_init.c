@@ -13405,7 +13405,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 					if (opt->option != 'B') continue;	/* Just interested in -B here */
 					/* Deal with the frame option check first */
-					if (strchr ("WESNwesnlrbt", opt->arg[0]))	/* User is overriding the axes settings - that is their choice */
+					if (strchr ("WESNwesnlrbt", opt->arg[0]))	/* User is overriding the frame settings - that is their choice */
 						frame_set = true;
 					else if (strstr (opt->arg, "+t") || strstr (opt->arg, "+g")) {	/* No axis specs means we have to add default */
 						/* Frame but no sides specified.  Insert the required sides */
@@ -13413,11 +13413,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						strncat (arg, opt->arg, GMT_LEN256-1);
 						GMT_Update_Option (API, opt, arg);
 						frame_set = true;
+						GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -B frame option arg to %s\n", arg);
 					}
 					else if (opt->arg[0] == 'x') {	/* Gave specific x-setting */
 						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick given, prepend default determined in subplot  */
 							snprintf (arg, GMT_LEN256, "x%s%s", P->Bxannot, &opt->arg[1]);
 							GMT_Update_Option (API, opt, arg);
+							GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -Bx axis option arg to %s\n", arg);
 						}
 						if (P->Bxlabel[0]) {	/* Provided a label during subplot initialization */
 							strcpy (arg, opt->arg);	/* Start with what we were given */
@@ -13430,6 +13432,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 								strcat (arg, P->Bxlabel);
 							}
 							GMT_Update_Option (API, opt, arg);
+							GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -Bx axis label option arg to %s\n", arg);
 						}
 						x_set = true;
 					}
@@ -13437,6 +13440,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af */
 							snprintf (arg, GMT_LEN256, "y%s%s", P->Byannot, &opt->arg[1]);
 							GMT_Update_Option (API, opt, arg);
+							GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -By axis option arg to %s\n", arg);
 						}
 						if (P->Bylabel[0]) {
 							strcpy (arg, opt->arg);	/* Start with what we were given */
@@ -13449,6 +13453,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 								strcat (arg, P->Bylabel);
 							}
 							GMT_Update_Option (API, opt, arg);
+							GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -By axis label option arg to %s\n", arg);
 						}
 						y_set = true;
 					}
@@ -13461,18 +13466,21 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					}
 					else if ((opt = GMT_Make_Option (API, 'B', "0")) == NULL) return NULL;	/* Add -B0 to just draw frame */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker added -B frame option with arg %s\n", arg);
 				}
 				if (!x_set) {	/* Did not specify x-axis setting either via -Bx or -B so do that now */
 					snprintf (arg, GMT_LEN256, "x%s", P->Bxannot);	/* Start with the x tick,annot,grid choices */
 					if (P->Bxlabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bxlabel);}	/* Add label, if active */
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker added -Bx axis option with arg %s\n", arg);
 				}
 				if (!y_set) {	/* Did not specify y-axis setting so do that now */
 					snprintf (arg, GMT_LEN256, "y%s", P->Byannot);	/* Start with the x tick,annot,grid choices */
 					if (P->Bylabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bylabel);}	/* Add label, if active */
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker added -By axis option with arg %s\n", arg);
 				}
 				panel_B_set (API, fig, row, col);
 			}
@@ -13601,6 +13609,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
+	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG) && options) {
+		char *string = GMT_Create_Cmd (API, *options);
+		GMT_Report (API, GMT_MSG_DEBUG, "Revised options: %s\n", string);
+		GMT_Destroy_Cmd (API, &string);
+	}
 	/* Here we can call the rest of the initialization */
 
 	return (gmt_begin_module_sub (API, lib_name, mod_name, Ccopy));
