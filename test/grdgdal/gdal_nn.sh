@@ -29,6 +29,8 @@ EOF
 
 
 gmt makecpt -Ccategorical -T0/10/1 > t.cpt
-gmt grdgdal tridata.csv -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -Vd
-gmt grdgdal tridata.vrt -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+r -Vd
+#gmt grdgdal tridata.csv -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -Vd
+#gmt grdgdal tridata.vrt -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+r -Vd
+gmt grdgdal tridata.csv -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest CPL_DEBUG=ON" -Vd
+gmt grdgdal tridata.vrt -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest CPL_DEBUG=ON" -M+r -Vd
 gmt grdimage junk.nc -JX6i -P -Baf -BWSnE+t"Natural Nearest Neighbor Gridding" -Ct.cpt -Xc > $ps
