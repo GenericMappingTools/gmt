@@ -37,7 +37,7 @@ gmt begin ex22
 	gmt makecpt -Cred,green,blue -T0,100,300,10000 -N
 
 	REM Start plotting. First lay down map, then plot quakes with size = magnitude * 0.015":
-	gmt coast -Rg -JK180/22c -B45g30 -B+t"World-wide earthquake activity" -Gburlywood -Slightblue -A1000
+	gmt coast -Rg -JK180/22c -B45g30 -B+t"World-wide earthquake activity" -Gburlywood -Slightblue -A1000 -Y7c
 	gmt plot -C -Sci -Wfaint -hi1 -i2,1,3,4+s0.015 %file%
 
 	REM Create legend input file for NEIS quake plot

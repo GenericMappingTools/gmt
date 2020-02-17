@@ -16,7 +16,7 @@ gmt begin ex39
 	gmt sph2grd @VenusTopo180.txt -I1 -Rg -Ng -Gv2.nc -F1/1/85/90
 	gmt sph2grd @VenusTopo180.txt -I1 -Rg -Ng -Gv3.nc -F1/1/170/180
 	gmt grd2cpt v3.nc -Crainbow -E
-	gmt grdimage v1.nc -I+a45+nt0.75 -JG90/30/12c -Bg -X10c
+	gmt grdimage v1.nc -I+a45+nt0.75 -JG90/30/12c -Bg -X7.5c
 	echo 10 11 L = 30 | gmt text -R0/12/0/12 -Jx1c -Dj0.5c -F+f16p+jLM -N
 	gmt colorbar --FORMAT_FLOAT_MAP="%'g" -Dx3c/-0.5c+jTC+w13c/0.25c+h  -Bxaf -By+lm
 	gmt grdimage v2.nc -I+a45+nt0.75 -JG -Bg -X-3c -Y5c
