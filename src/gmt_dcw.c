@@ -351,7 +351,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using country and state data from gmt-dcw\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using country and state data from dcw-gmt\n");
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Title  : %s\n", title);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Source : %s\n", source);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Version: %s\n", version);
