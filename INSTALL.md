@@ -172,12 +172,14 @@ However, EPEL is far hebind packaging a recent version.
 We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 to allow RHEL/CentOS users access the latest GMT releases in an easy way.
 
+**NOTE: Currently, GMT on RHEL/CentOS 8 doesn't provide GDAL support.**:
+
 For RHEL/CentOS, run:
 
     # install epel-release
 	yum install epel-release
 
-    # enable the RPM repository (RHEL/CentOS 7 ONLY)
+    # enable the RPM repository (RHEL/CentOS 7 or 8 ONLY)
     yum install yum-plugin-copr
 	yum copr enable genericmappingtools/gmt
 
