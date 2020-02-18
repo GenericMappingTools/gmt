@@ -75,23 +75,23 @@ struct GMTCONNECT_CTRL {
 #define CLOSED	0
 #define OPEN	1
 
-struct BUDDY {	/* Holds information on nearest segment to one end of a segment */
-	uint64_t id;
-	uint64_t orig_id;
-	unsigned int end_order;
-	double dist, next_dist;
+struct NEAREST {	/* Holds information about the nearest segment to one of the two end of a segment */
+	uint64_t id;		/* Running number ID starting at 0 for open segments only */
+	uint64_t orig_id;	/* The original ID before expelling duplicates and closed segments */
+	unsigned int end_order;	/* Index of line-end-point (0 = beginning and 1 = end) that is closest to another line */
+	double dist, next_dist;	/* The nearest and next nearest distance to another segment */
 };
 
-struct LINK {	/* Information on linking segments together */
-	uint64_t id;
-	uint64_t orig_id;
-	uint64_t pos;
-	uint64_t n;
-	uint64_t group;
-	bool used;
-	double x_end[2];
-	double y_end[2];
-	struct BUDDY buddy[2];
+struct LINK {	/* Information on linking segments together basd on end point properties */
+	uint64_t id;		/* Running number ID starting at 0 for open segments only */
+	uint64_t orig_id;	/* The original ID before expelling duplicates and closed segments */
+	uint64_t seg;		/* Original segment number in table */
+	uint64_t n;		/* Number of points in the segment */
+	uint64_t tbl;		/* Which file (table) this segment came from (0, 1, 2, ...) */
+	bool used;		/* True when we have connected this segment into a longer chain */
+	double x_end[2];	/* The x-coordinates of the two line end-points (0 = beginning and 1 = end) */
+	double y_end[2];	/* The y-coordinates of the two line end-points (0 = beginning and 1 = end) */
+	struct NEAREST nearest[2];	/* The nearest line segment to the two end-points  (0 = beginning and 1 = end) */
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -239,10 +239,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double sdist) {
 	/* Checks if OK to connect this segment to its nearest neighbor and returns true if OK */
 
-	if (S[S[id].buddy[order].id].used) return (false);		/* Segment has been used already */
-	if (S[id].buddy[order].dist > cutoff) return (false);		/* Exceeds minimum gap */
+	if (S[S[id].nearest[order].id].used) return (false);		/* Segment has been used already */
+	if (S[id].nearest[order].dist > cutoff) return (false);		/* Exceeds minimum gap */
 	if (!nn_check) return (true);					/* No other requirement specified, so done */
-	if (S[id].buddy[order].next_dist > sdist) return (true);	/* Next nearest neighbour is far enough away */
+	if (S[id].nearest[order].next_dist > sdist) return (true);	/* Next nearest neighbour is far enough away */
 	return (false);							/* Failed all tests */
 }
 
@@ -461,16 +461,16 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				if (np == 1) GMT_Report (API, GMT_MSG_WARNING, "Segment %" PRIu64 " only consists of a single point.  May require additional connections.\n", id);
 				segment[id].id = id;		/* Running number ID starting at 0 for open segments only */
 				segment[id].orig_id = ns;	/* ns is input segment number */
-				segment[id].group = tbl;	/* Remember which input table this segment came from */
-				segment[id].pos = seg;		/* Remember which input segment in this table it came from */
+				segment[id].tbl = tbl;	/* Remember which input table this segment came from */
+				segment[id].seg = seg;		/* Remember which input segment in this table it came from */
 				segment[id].n = np;		/* Number of points in this segment */
-				/* Record start and end coordinates for this segment and initialize buddy structure to having no nearest neighbor segment yet */
+				/* Record start and end coordinates for this segment and initialize nearest structure to having no nearest neighbor segment yet */
 				segment[id].x_end[END_A] = S->data[GMT_X][0];
 				segment[id].y_end[END_A] = S->data[GMT_Y][0];
 				segment[id].x_end[END_B] = S->data[GMT_X][np-1];
 				segment[id].y_end[END_B] = S->data[GMT_Y][np-1];
-				segment[id].buddy[END_A].dist = segment[id].buddy[END_B].dist = DBL_MAX;
-				segment[id].buddy[END_A].next_dist = segment[id].buddy[END_B].next_dist = DBL_MAX;
+				segment[id].nearest[END_A].dist = segment[id].nearest[END_B].dist = DBL_MAX;
+				segment[id].nearest[END_A].next_dist = segment[id].nearest[END_B].next_dist = DBL_MAX;
 				id++;	/* Increment open segment ID number */
 			}
 			ns++;	/* Increment running segment ID */
@@ -542,8 +542,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			    (doubleAlmostEqualZero (segment[iseg].x_end[END_B], segment[jseg].x_end[END_B]) && doubleAlmostEqualZero (segment[iseg].y_end[END_B], segment[jseg].y_end[END_B]))) {	/* Yes, identical end points */
 			    	if (segment[iseg].n == segment[jseg].n) {	/* and same number of points */
 					for (k = match = 0; k < segment[iseg].n && k == match; k++) {	/* Compute number of duplicate points */
-						match += (doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].group]->segment[segment[iseg].pos]->data[GMT_X][k], D[GMT_IN]->table[segment[jseg].group]->segment[segment[jseg].pos]->data[GMT_X][k]) &&
-						          doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].group]->segment[segment[iseg].pos]->data[GMT_Y][k], D[GMT_IN]->table[segment[jseg].group]->segment[segment[jseg].pos]->data[GMT_Y][k]));
+						match += (doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].tbl]->segment[segment[iseg].seg]->data[GMT_X][k], D[GMT_IN]->table[segment[jseg].tbl]->segment[segment[jseg].seg]->data[GMT_X][k]) &&
+						          doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].tbl]->segment[segment[iseg].seg]->data[GMT_Y][k], D[GMT_IN]->table[segment[jseg].tbl]->segment[segment[jseg].seg]->data[GMT_Y][k]));
 					}
 					if (match == segment[iseg].n) {	/* An exact match */
 						GMT_Report (API, GMT_MSG_INFORMATION, "Line segments %" PRIu64 " and %" PRIu64 "are duplicates - Line segment %" PRIu64 " will be ignored\n", iseg, jseg, jseg);
@@ -574,7 +574,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	/* We determine the distance from each segment's two endpoints to the two endpoints on every other
 	 * segment; this yields four distances per segment.  We then assign the nearest endpoint to each end
-	 * of a segment to the buddy structure which keeps the id of the nearest segment found so far.
+	 * of a segment to the nearest structure which keeps the id of the nearest segment found so far.
 	 */
 
 	for (iseg = 0; iseg < ns; iseg++) {	/* Loop over all open line segments and their two endpoints... */
@@ -582,7 +582,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			/* nearest_end indicates which end is closest to this end */
 			if (iseg == jseg) {	/* Store offset between the endpoints of a single segment (would be 0 if closed but those polygons have already been dealt with) */
 				dd[SEG_I][END_A] = dd[SEG_J][END_B] = DBL_MAX;	/* Flag as single line segment so two ends are not used */
-				dd[SEG_I][END_B] = dd[SEG_J][END_A] = (segment[iseg].n == 1) ? DBL_MAX : gmt_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[iseg].x_end[END_B], segment[iseg].y_end[END_B]);
+				dd[SEG_I][END_B] = dd[SEG_J][END_A] = (segment[iseg].n < 3) ? DBL_MAX : gmt_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[iseg].x_end[END_B], segment[iseg].y_end[END_B]);
     				nearest_end[SEG_I][END_A] = nearest_end[SEG_J][END_A] = END_B;	/* Duplicate the nearest ID info since it is a single line segment compared to itself */
     				nearest_end[SEG_J][END_B] = nearest_end[SEG_I][END_B] = END_A;
 			}
@@ -600,26 +600,26 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
  			/* Update list of closest matches for both ends */
     			for (ii = 0; ii < 2; ii++) {	/* For each end of the segment */
     				end = nearest_end[SEG_I][ii];	/* The end of segment jseg that was closest to segment iseg's end ii */
-    				if (dd[ii][end] < segment[iseg].buddy[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
-					segment[iseg].buddy[ii].next_dist = segment[iseg].buddy[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
-					segment[iseg].buddy[ii].orig_id = segment[jseg].orig_id;
-					segment[iseg].buddy[ii].id = jseg;
-					segment[iseg].buddy[ii].dist = dd[ii][end];
-					segment[iseg].buddy[ii].end_order = end;
+    				if (dd[ii][end] < segment[iseg].nearest[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
+					segment[iseg].nearest[ii].next_dist = segment[iseg].nearest[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
+					segment[iseg].nearest[ii].orig_id = segment[jseg].orig_id;
+					segment[iseg].nearest[ii].id = jseg;
+					segment[iseg].nearest[ii].dist = dd[ii][end];
+					segment[iseg].nearest[ii].end_order = end;
     				}
-				else if (dd[ii][end] < segment[iseg].buddy[ii].next_dist) segment[iseg].buddy[ii].next_dist = dd[ii][end];
+				else if (dd[ii][end] < segment[iseg].nearest[ii].next_dist) segment[iseg].nearest[ii].next_dist = dd[ii][end];
     				end = nearest_end[SEG_J][ii];	/* The end of segment iseg that was closest to segment jseg's end ii */
-    				if (dd[end][ii] < segment[jseg].buddy[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
- 					segment[jseg].buddy[ii].next_dist = segment[jseg].buddy[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
-					segment[jseg].buddy[ii].orig_id = segment[iseg].orig_id;
- 					segment[jseg].buddy[ii].id = iseg;
-					segment[jseg].buddy[ii].dist = dd[end][ii];
-					segment[jseg].buddy[ii].end_order = end;
+    				if (dd[end][ii] < segment[jseg].nearest[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
+ 					segment[jseg].nearest[ii].next_dist = segment[jseg].nearest[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
+					segment[jseg].nearest[ii].orig_id = segment[iseg].orig_id;
+ 					segment[jseg].nearest[ii].id = iseg;
+					segment[jseg].nearest[ii].dist = dd[end][ii];
+					segment[jseg].nearest[ii].end_order = end;
     				}
-				else if (dd[end][ii] < segment[jseg].buddy[ii].next_dist) segment[jseg].buddy[ii].next_dist = dd[end][ii];
+				else if (dd[end][ii] < segment[jseg].nearest[ii].next_dist) segment[jseg].nearest[ii].next_dist = dd[end][ii];
     			}
 		}
-		sprintf (msg, "Seg %d dist[0], next_dist[0], dist[1], next_dist[1] = %g, %g, %g, %g\n", (int)iseg, segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, segment[iseg].buddy[1].dist, segment[iseg].buddy[1].next_dist);
+		sprintf (msg, "Seg %d dist[0], next_dist[0], dist[1], next_dist[1] = %g, %g, %g, %g\n", (int)iseg, segment[iseg].nearest[0].dist, segment[iseg].nearest[0].next_dist, segment[iseg].nearest[1].dist, segment[iseg].nearest[1].next_dist);
 		GMT_Report (API, GMT_MSG_DEBUG, msg);
 	}
 
@@ -646,27 +646,27 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		sprintf (buffer, "#id%ssegid%s@begin%sb_pt%sb_dist%sb_next%s@end%se_pt%se_dist%se_next", s, s, s, s, s, s, s, s, s);
 		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, buffer, LNK)) Return (API->error);
 		for (iseg = 0; iseg < ns; iseg++) {	/* Loop over open segments */
-			G = segment[iseg].group;	L = segment[iseg].pos;	/* Short hand notation */
+			G = segment[iseg].tbl;	L = segment[iseg].seg;	/* Short hand notation */
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L")) != NULL) {
 				strncpy (name, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name[j]; j++) if (name[j] == ' ') name[j] = '\0';		/* Just truncate after 1st word */
 			} else sprintf (name, "%" PRIu64, segment[iseg].orig_id);
-			G = segment[segment[iseg].buddy[0].id].group;	L = segment[segment[iseg].buddy[0].id].pos;
+			G = segment[segment[iseg].nearest[0].id].tbl;	L = segment[segment[iseg].nearest[0].id].seg;
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L")) != NULL) {
 				strncpy (name0, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name0[j]; j++) if (name0[j] == ' ') name0[j] = '\0';	/* Just truncate after 1st word */
-			} else sprintf (name0, "%" PRIu64, segment[iseg].buddy[0].orig_id);
-			G = segment[segment[iseg].buddy[1].id].group;	L = segment[segment[iseg].buddy[1].id].pos;
+			} else sprintf (name0, "%" PRIu64, segment[iseg].nearest[0].orig_id);
+			G = segment[segment[iseg].nearest[1].id].tbl;	L = segment[segment[iseg].nearest[1].id].seg;
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L")) != NULL) {
 				strncpy (name1, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name1[j]; j++) if (name1[j] == ' ') name1[j] = '\0';	/* Just truncate after 1st word */
-			} else sprintf (name1, "%" PRIu64, segment[iseg].buddy[1].orig_id);
+			} else sprintf (name1, "%" PRIu64, segment[iseg].nearest[1].orig_id);
 			/* OK, compose the output record using the format and information provided */
-			sprintf (buffer, fmt, segment[iseg].orig_id, name, name0, BE[segment[iseg].buddy[0].end_order], segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, name1, \
-				BE[segment[iseg].buddy[1].end_order], segment[iseg].buddy[1].dist, segment[iseg].buddy[1].next_dist);
+			sprintf (buffer, fmt, segment[iseg].orig_id, name, name0, BE[segment[iseg].nearest[0].end_order], segment[iseg].nearest[0].dist, segment[iseg].nearest[0].next_dist, name1, \
+				BE[segment[iseg].nearest[1].end_order], segment[iseg].nearest[1].dist, segment[iseg].nearest[1].next_dist);
 			LNK->table[0]->segment[0]->text[iseg] = strdup (buffer);
 		}
 		LNK->table[0]->n_records = LNK->table[0]->segment[0]->n_rows = ns;	/* Number of records for this file */
@@ -696,14 +696,14 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		id = start_id;	/* This is the first line segment in a new chain */
 		sprintf (buffer, "%" PRIu64, segment[id].orig_id);
 		b_len = strlen (buffer);
-		/* Select the endpoint that has the closest buddy */
-		end_order = first_end_order = (segment[id].buddy[0].dist < segment[id].buddy[1].dist) ? 0 : 1;		/* Exceeds minimum gap */
+		/* Select the endpoint that has the nearest segment */
+		end_order = first_end_order = (segment[id].nearest[0].dist < segment[id].nearest[1].dist) ? 0 : 1;		/* Exceeds minimum gap */
 
 		closed = false;
 		n_steps_pass_1 = 0;		/* Nothing appended yet to this single line segment */
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
 		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
-			id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
+			id2 = segment[id].nearest[end_order].id;	/* ID of nearest segment at end 0 */
 			snprintf (text, GMT_LEN64, " -> %" PRIu64, segment[id2].orig_id);
 			b_len += strlen (text);
 			if (b_len >= b_alloc) {	/* Resize buffer for header */
@@ -722,7 +722,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 #if 0
 				GMT_Report (API, GMT_MSG_INFORMATION, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
 #endif
-				end_order = !segment[id].buddy[end_order].end_order;
+				end_order = !segment[id].nearest[end_order].end_order;
 				id = id2;	/* Update what is the current segment */
 				n_alloc_pts += segment[id].n;		/* Update length of combined line segment so far */
 			}
@@ -733,7 +733,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			id = start_id;	/* This is the first line segment in a new chain */
 			end_order = (first_end_order + 1) % 2;	/* Go the other way */
 			while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
-				id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
+				id2 = segment[id].nearest[end_order].id;	/* ID of nearest segment at end 0 */
 				snprintf (text, GMT_LEN64, "%" PRIu64 " <- ", segment[id2].orig_id);
 				len = strlen (text);
 				if ((b_len + len) >= b_alloc) {	/* Resize buffer for header */
@@ -755,7 +755,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 #if 0
 					GMT_Report (API, GMT_MSG_INFORMATION, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
 #endif
-					end_order = !segment[id].buddy[end_order].end_order;
+					end_order = !segment[id].nearest[end_order].end_order;
 					id = id2;	/* Update what is the current segment */
 					n_alloc_pts += segment[id].n;		/* Update length of combined line segment so far */
 				}
@@ -795,8 +795,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		n_steps_pass_2 = out_p = n_seg_length = 0;
 		first = true;
 		do {
-			G = segment[id].group;	/* This is which table this line segment came from */
-			L = segment[id].pos;	/* This is the segment number in that table */
+			G = segment[id].tbl;	/* This is which table this line segment came from */
+			L = segment[id].seg;	/* This is the segment number in that table */
 			np = segment[id].n;	/* Length of this line segment */
 			S = D[GMT_IN]->table[G]->segment[L];	/* Short hand for the current segment */
 			if (end_order == 0) {	/* Already in the right order */
@@ -836,10 +836,10 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			first = false;		/* Done with setting the very first line segment in the composite output chain */
 			end_order = !end_order;		/* Go to the other end of the line segment */
 			segment[id].used = true;	/* Finished appending this line segment to our output line segmnent */
-			if (segment[id].buddy[end_order].dist <= Ctrl->T.dist[0] && !segment[segment[id].buddy[end_order].id].used) {
+			if (segment[id].nearest[end_order].dist <= Ctrl->T.dist[0] && !segment[segment[id].nearest[end_order].id].used) {
 				/* Not done, trace into the next connecting segment */
-				id2 = segment[id].buddy[end_order].id;			/* The ID of the nearest line segment */
-				end_order = segment[id].buddy[end_order].end_order;	/* Which end of this line segment is closest to our end */
+				id2 = segment[id].nearest[end_order].id;			/* The ID of the nearest line segment */
+				end_order = segment[id].nearest[end_order].end_order;	/* Which end of this line segment is closest to our end */
 				done = (id2 == start_id || id2 == id);			/* We are done if they are the same line segment */
 				id = id2;						/* Update what is the current line segment */
 			}
