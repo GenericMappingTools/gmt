@@ -481,7 +481,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
-		/* Need to convert between GMT and GDAL ellipsoid names. But all are availabe in both sides. */
+		/* Need to convert between GMT and GDAL ellipsoid names. But all are available in both sides. */
 		k = GMT->current.setting.proj_ellipsoid;
 		if (!strcmp (GMT->current.setting.ref_ellipsoid[k].name, "Sphere"))
 			sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
