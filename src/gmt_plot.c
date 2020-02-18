@@ -3043,7 +3043,7 @@ GMT_LOCAL void plot_ellipsoid_name_convert2 (char *inname, char outname[]) {
 }
 #endif
 
-GMT_LOCAL void plot_ellipsoid_name_convert (char *inname, char outname[]) {
+void gmtlib_ellipsoid_name_convert (char *inname, char outname[]) {
 	/* Convert the ellipsoid names to the slightly different way that they are called in proj4 */
 	if (!strcmp(inname, "WGS-84"))
 		sprintf(outname, "WGS84");
@@ -6693,7 +6693,7 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 		snprintf (szProj4+len, GMT_LEN512-len, " +a=%.3f +b=%.3f", a, b);
 		len = strlen (szProj4);
 		if (fabs(a - b) > 1) {		/* WGS84 is not spherical */
-			plot_ellipsoid_name_convert(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, proj4_ename);
+			gmtlib_ellipsoid_name_convert (GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, proj4_ename);
 			snprintf(szProj4+len, GMT_LEN512-len, " +ellps=%s", proj4_ename);
 			len = strlen (szProj4);
 			if (!strcmp(proj4_ename, "WGS84"))
