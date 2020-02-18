@@ -119,7 +119,7 @@ cmake ..
 
 For Windows users, you need to open a command prompt and run:
 
-**NOTE:** Commands below are valid only if you have GMT's dependency libaries installed
+**NOTE:** Commands below are valid only if you have GMT's dependency libraries installed
 via vcpkg following [this instructions](https://github.com/GenericMappingTools/gmt/wiki/Install-dependencies-on-Windows-via-vcpkg).
 
 ```
