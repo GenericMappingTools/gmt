@@ -45,6 +45,9 @@ THEMATIC SUB-SECTIONS             *prefix*
 `Calendar/Time Parameters`_       **TIME_**
 ================================= ================
 
+
+.. _COLOR Parameters:
+
 COLOR Parameters
 ~~~~~~~~~~~~~~~~
 
@@ -83,6 +86,8 @@ COLOR Parameters
     **COLOR_NAN**
         Color used for the non-defined areas of images (i.e., where z = NaN) [127.5].
 
+.. _DIR Parameters:
+
 DIR Parameters
 ~~~~~~~~~~~~~~
 
@@ -100,6 +105,8 @@ DIR Parameters
 
     **DIR_GSHHG**
         Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
+
+.. _FONT Parameters:
 
 FONT Parameters
 ~~~~~~~~~~~~~~~
@@ -139,6 +146,8 @@ FONT Parameters
 
     **FONT_TITLE**
         Font to use when plotting titles over graphs [24p,Helvetica,black].
+
+.. _FORMAT Parameters:
 
 FORMAT Parameters
 ~~~~~~~~~~~~~~~~~
@@ -284,6 +293,8 @@ FORMAT Parameters
         virtually any text can be used (even not containing any time
         information) [%Y %b %d %H:%M:%S].
 
+.. _GMT Miscellaneous Parameters:
+
 GMT Miscellaneous Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -424,6 +435,8 @@ GMT Miscellaneous Parameters
         **t**\ imings (for slow algorithms only), **i**\ nformation,
         **c**\ ompatibility warnings, and **d**\ ebugging messages [**w**].
 
+.. _I/O Parameters:
+
 I/O Parameters
 ~~~~~~~~~~~~~~
 
@@ -534,6 +547,8 @@ I/O Parameters
         respectively, and no segment header information is written. To use B
         or N as regular segment markers you must escape them with a leading
         backslash.
+
+.. _MAP Parameters:
 
 MAP Parameters
 ~~~~~~~~~~~~~~
@@ -735,6 +750,8 @@ MAP Parameters
         Intermediate settings give something in between. Negative values (up
         to -2) are allowed as well [0].
 
+.. _Projection Parameters:
+
 Projection Parameters
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -875,6 +892,8 @@ Projection Parameters
         projections in order to minimize areal distortion. Provide a new
         scale-factor or leave as default.
 
+.. _PostScript Parameters:
+
 PostScript Parameters
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -1003,6 +1022,8 @@ PostScript Parameters
         PDF. Choose from Color, ColorBurn, ColorDodge, Darken, Difference,
         Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply, Normal,
         Overlay, Saturation, SoftLight, and Screen [Normal].
+
+.. _Calendar/Time Parameters:
 
 Calendar/Time Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~
