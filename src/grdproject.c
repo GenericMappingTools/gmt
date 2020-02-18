@@ -65,6 +65,8 @@ struct GRDPROJECT_CTRL {
 	} M;
 };
 
+EXTERN_MSC void gmtlib_ellipsoid_name_convert (char *inname, char outname[]);
+
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDPROJECT_CTRL *C;
 
@@ -227,7 +229,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
 	int error = 0;
 
-	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};
+	char format[GMT_LEN128] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};
 
 	double wesn[4];
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, fwd_scale, inv_scale;
@@ -401,6 +403,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	                                  GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	if (Ctrl->I.active) {	/* Transforming from rectangular projection to geographical */
+		char buf[GMT_LEN128] = {""}, gdal_ellipsoid_name[GMT_LEN16] = {""};
 
 		/* if (GMT->common.R.oblique) gmt_M_double_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
 
@@ -478,7 +481,24 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
-		Geo->header->ProjRefPROJ4 = strdup("+proj=longlat +no_defs");	/* HOWEVER, this may be quite incorrect for we are ignoring the DATUM */
+		/* Need to convert between GMT and GDAL ellipsoid names. But all are availabe in both sides. */
+		k = GMT->current.setting.proj_ellipsoid;
+		if (!strcmp (GMT->current.setting.ref_ellipsoid[k].name, "Sphere"))
+			sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+			         GMT->current.setting.ref_ellipsoid[k].eq_radius);
+		else {
+			gmtlib_ellipsoid_name_convert (GMT->current.setting.ref_ellipsoid[k].name, gdal_ellipsoid_name);
+			if (!strcmp (gdal_ellipsoid_name, "unknown"))
+				sprintf (buf, "+proj=longlat +ellps=%s +no_defs", gdal_ellipsoid_name);
+			else if (!strcmp (gdal_ellipsoid_name, "Web-Mercator"))
+				sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				         GMT->current.setting.ref_ellipsoid[k].eq_radius);
+			else {
+				sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				         GMT->current.setting.ref_ellipsoid[k].eq_radius);
+				GMT_Report (API, GMT_MSG_WARNING, "Unknown conversion between GMT and GDAL ellipsoid names. Using a generic spherical body.");
+			}
+		}
 
 		gmt_grd_project (GMT, Rect, Geo, true);
 
