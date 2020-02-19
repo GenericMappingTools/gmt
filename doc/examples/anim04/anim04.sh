@@ -25,7 +25,7 @@ EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh
 gmt begin
-	gmt grdimage -JG\${MOVIE_COL0}/\${MOVIE_COL1}/160/210/55/0/36/34/\${MOVIE_WIDTH}+ \
+	gmt grdimage -JG\${MOVIE_COL0}/\${MOVIE_COL1}/160/210/55/0/36/34/\${MOVIE_WIDTH}+du \
 		-Rg USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0
 	gmt plot -W1p flight_path.txt
 gmt end
