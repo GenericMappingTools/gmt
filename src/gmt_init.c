@@ -15114,6 +15114,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 			GMT->current.proj.pars[14] = 1;
 
 		free (item_t2);			/* Cannot be freed before */
+		item_t2 = NULL;
 	}
 	else {
 		if (do_free) free (item_t1);
@@ -15201,6 +15202,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		pch[0] = '\0';
 
 	if (wktext[0]) strcat(dest, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
+
+	if (item_t2) free (item_t2);
 
 	return error;
 }
