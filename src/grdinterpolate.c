@@ -114,8 +114,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Read or write 2-D grids that make up a virtual 3-D data cube.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To read a series of input 2-D grids, give -Zi<levels>, where <levels>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for each grid is set via min/max/inc, <zfile>, or a comma-separated list.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To write a series of output 2-D grids, give -Zo and use a floating-point\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   C-format statement as part of the filename set via -G for unique file names.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To write a series of output 2-D grids, give -Zo and include a floating-point\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   C-format statement in <outgrid> given via -G for embedding time in the file name.\n");
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
@@ -203,8 +203,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files < 1, "Error: No input data specified.\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active[GMT_IN] && Ctrl->In.n_files != 1, "Must specify one input 3D grid cube file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files < 1, "Error: No input grid(s) specified.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active[GMT_IN] && Ctrl->In.n_files != 1, "Must specify one input 3D grid cube file unless -Zi is set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -R: Must specify output knot(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
@@ -252,7 +252,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Ctrl->In.n_files != Ctrl->Z.T.n) {
-			GMT_Report (API, GMT_MSG_ERROR, "Number of input 2-D grids do not match number of levels given via -Zi\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Number of input 2-D grids does not match number of levels given via -Zi\n");
 			Return (API->error);
 		}
 		n_layers = Ctrl->Z.T.n;
@@ -263,7 +263,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 
 	if (n_layers == 1) {
-		GMT_Report (API, GMT_MSG_ERROR, "Only one layer given - need at least 2 to interpolate\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Only one layer given - need at least two to interpolate\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -274,7 +274,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.T.n > 1 && !Ctrl->Z.active[GMT_OUT]) {
-		GMT_Report (API, GMT_MSG_ERROR, "Sorry, writing 3-D output netCDF cube is not implemented yet\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Sorry, writing 3-D output netCDF cube is not implemented yet.  Use -Zo for now.\n");
 		Return (GMT_MEMORY_ERROR);
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
