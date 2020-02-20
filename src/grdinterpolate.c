@@ -43,10 +43,6 @@ struct GRDINTERPOLATE_CTRL {
 		char **file;
 		unsigned int n_files;
 	} In;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
-		bool active;
-		char *file;
-	} C;
 	struct F {	/* -Fl|a|c[1|2] */
 		bool active;
 		unsigned int mode;
