@@ -111,30 +111,22 @@ Examples
 --------
 
 To extract a single, new 2-D layer from the temperature.nc 3-D cube for level 3400
-using a cubic spline, try
-
-   ::
+using a cubic spline, try::
 
     gmt grdinterpolate temperature.nc -T3400 -Fc -Gtemp_3400.nc
 
 To extract a single, new 2-D layer from the 3-D cube implied by the individual grids
 layers_*.nc, with individual layer values given via z.txt, for level 3400
-using a linear spline, try
-
-   ::
+using a linear spline, try::
 
     gmt grdinterpolate layers_*.nc -Ziz,txt -T3400 -Fl -Gtemp_3400.nc
 
 To resample the the temperature.nc 3-D cube for all levels from
-1500 to 2500 in steps of 50, using an Akima spline, try
-
-   ::
+1500 to 2500 in steps of 50, using an Akima spline, try::
 
     gmt grdinterpolate temperature.nc -T1500/2500/50 -Gtemperature_1500_2500.nc -Fa
 
-The same, but this time write individual 2-D grids per layer:
-
-   ::
+The same, but this time write individual 2-D grids per layer, try::
 
     gmt grdinterpolate temperature.nc -T1500/2500/50 -Gtemperature_%4.0f.nc -Fa -Zo
 
