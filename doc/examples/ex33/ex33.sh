@@ -30,5 +30,5 @@ gmt begin ex33
 	gmt plot -W3p stack.txt
 	echo "0 -2000 MEDIAN STACKED PROFILE" | gmt text -Gwhite -F+jTC+f14p -Dj8p
 	# cleanup
-	rm -f ridge.txt table.txt env.txt stack.txt
+	rm -f ridge.txt table.txt env.txt stack.txt spac_33.nc
 gmt end show
