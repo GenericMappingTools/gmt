@@ -1786,14 +1786,19 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				unsigned int kk;
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a temporary file\n");
 				if (file_processing) {fclose (fp);	fp = NULL;}	/* Close original PS file */
-				if (gmt_truncate_file (API, ps_file, half_baked_size))
+				if (gmt_truncate_file (API, ps_file, half_baked_size)) {
+					if (fpo) {fclose (fpo);		fpo = NULL;}
 					Return (GMT_RUNTIME_ERROR);
-				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+				}
+				if (delete && gmt_remove_file (GMT, ps_file)) {	/* Since we created a temporary file from the memdata */
+					if (fpo) {fclose (fpo);		fpo = NULL;}
 					Return (GMT_RUNTIME_ERROR);
+				}
 				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);
 				gmt_M_free (GMT, PS);
 				gmt_M_free (GMT, line);
+				if (fpo) {fclose (fpo);		fpo = NULL;}
 				Return (GMT_RUNTIME_ERROR);
 			}
 			while (file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
