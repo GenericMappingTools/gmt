@@ -773,7 +773,7 @@ GMT_LOCAL char *api_lib_tag (char *name) {
 	if (!strchr (name, '.')) return NULL;	/* No file with extension given, probably just a directory due to user confusion */
 	tag = strdup (name);
 	extension = strrchr (tag, '.'); /* last period in name */
-	*extension = '\0'; /* remove extension */
+	if (extension) *extension = '\0'; /* remove extension */
 	/* if name has the "_w32|64" suffix or any other suffix that starts with a '_', remove it. */
 	pch = strrchr(tag, '_');
 	if (pch) *pch = '\0';
