@@ -6648,7 +6648,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-R Specify the xyz min/max coordinates of the plot window in user units.\n");
 			gmt_message (GMT, "\t   Use dd:mm[:ss] for regions given in degrees, minutes [and seconds].\n");
-			gmt_message (GMT, "\t   Append r if first 4 arguments to -R specify the longitudes/latitudes\n");
+			gmt_message (GMT, "\t   Append +r if first 4 arguments to -R specify the longitudes/latitudes\n");
 			gmt_message (GMT, "\t   of the lower left and upper right corners of a rectangular area.\n");
 			gmt_message (GMT, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
 			break;
@@ -7580,7 +7580,7 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 
 		case 'R':	/* Region option */
 			gmt_message (GMT, "\t-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>]\n");
-			gmt_message (GMT, "\t  Append r if giving lower left and upper right coordinates\n");
+			gmt_message (GMT, "\t  Append +r if giving lower left and upper right coordinates\n");
 			gmt_message (GMT, "\t-Rg or -Rd for global domain\n");
 			gmt_message (GMT, "\t-R<grdfile> to take the domain from a grid file\n");
 			break;
