@@ -35,7 +35,10 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 	OGRGeometryH hPt;
 	struct GMT_DATASET *D = NULL;
 
-	D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, fname, NULL);
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, fname, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read input data.\n");
+		return NULL;
+	}
 	if (D->n_columns != 3) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "This dataset doesn't have 3 columns as required.\n");
 		return NULL;
