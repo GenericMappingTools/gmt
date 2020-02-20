@@ -6976,7 +6976,8 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to call basemap with args %s ???\n", cmd);
 	}
 	GMT->current.map.frame.init = was;	/* Reset how we found it */
-	gmt_getfill (GMT, F1, &fill);	/* Get and set color for the triangle; no outline */
+	if (gmt_getfill (GMT, F1, &fill))	/* Get and set color for the triangle; no outline */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad fill argument %s\n", F1);
 	PSL_setfill (GMT->PSL, fill.rgb, 0);
 	w = dy * 2;	/* Set triangle size to 2 times the axis width */
 	PSL_plotsymbol (GMT->PSL, xt, 1.2*s*dy2, &w, symbol);
