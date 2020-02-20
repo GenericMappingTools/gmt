@@ -308,7 +308,7 @@ int gmt_gdal_info (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	char ext_opts[GMT_LEN512] = {""}, **args;
 	char *method = NULL, *cpt_name = NULL;
-	int   bUsageError, error = 0;
+	int   bUsageError = 0, error = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALDEMProcessingOptions *psOptions;
@@ -332,7 +332,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 /* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	char ext_opts[GMT_LEN512] = {""}, **args;
-	int   bUsageError, error = 0;
+	int   bUsageError = 0, error = 0;
 	double dx = 0, dy = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
@@ -363,7 +363,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 /* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_rasterize(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	char ext_opts[GMT_LEN512] = {""}, **args;
-	int   bUsageError, error = 0;
+	int   bUsageError = 0, error = 0;
 	double dx = 0, dy = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
@@ -394,7 +394,7 @@ int gmt_gdal_rasterize(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GD
 /* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	char ext_opts[GMT_LEN512] = {""}, **args;
-	int   bUsageError, error = 0;
+	int   bUsageError = 0, error = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALTranslateOptions *psOptions;
@@ -415,7 +415,7 @@ int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 /* ------------------------------------------------------------------------------------------------------------ */
 int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	char ext_opts[GMT_LEN512] = {""}, **args;
-	int   bUsageError, error = 0;
+	int   bUsageError = 0, error = 0;
 	struct GMT_GRID *Grid = NULL;
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALWarpAppOptions *psOptions;
