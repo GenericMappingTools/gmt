@@ -21,6 +21,7 @@ steps:
     set -x -e
     sudo apt-get install -y --no-install-recommends --no-install-suggests \
         python3-pip python3-setuptools python3-wheel graphicsmagick ffmpeg
+    sudo snap install pngquant
     pip3 install --user sphinx==1.8.5
     echo "##vso[task.prependpath]$HOME/.local/bin"
   displayName: Install dependencies for building documentation
@@ -118,6 +119,10 @@ steps:
     CODECOV_TOKEN: $(codecov.token)
   condition: and(eq(variables['TEST'], true), succeededOrFailed())
   displayName: Upload test coverage
+
+- bash: bash admin/image_optimize.sh build/doc/rst/html/_images/*.png
+  condition: eq(variables['DEPLOY_DOCS'], true)
+  displayName: Optimize images in documentations
 
 - bash: bash ci/deploy-gh-pages.sh
   displayName: Deploy documentations

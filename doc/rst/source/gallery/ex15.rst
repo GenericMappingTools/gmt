@@ -20,7 +20,7 @@ illustrates how we can create a clip path (using
 :doc:`mask </mask>`) based on the data coverage to
 eliminate contours outside the constrained area. Finally (top right) we
 simply employ :doc:`coast </coast>` to overlay gray
-land masses to cover up the unwanted contours, and end by plotting a
+land masses to cover up the unwanted contours, and end by plotting a red
 star at the deepest point on the map with
 :doc:`plot </plot>`. This point was extracted from the
 grid files using :doc:`grdinfo </grdinfo>`.  Placement of the four

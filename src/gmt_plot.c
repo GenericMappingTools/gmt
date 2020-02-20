@@ -3043,7 +3043,7 @@ GMT_LOCAL void plot_ellipsoid_name_convert2 (char *inname, char outname[]) {
 }
 #endif
 
-GMT_LOCAL void plot_ellipsoid_name_convert (char *inname, char outname[]) {
+void gmtlib_ellipsoid_name_convert (char *inname, char outname[]) {
 	/* Convert the ellipsoid names to the slightly different way that they are called in proj4 */
 	if (!strcmp(inname, "WGS-84"))
 		sprintf(outname, "WGS84");
@@ -6693,7 +6693,7 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 		snprintf (szProj4+len, GMT_LEN512-len, " +a=%.3f +b=%.3f", a, b);
 		len = strlen (szProj4);
 		if (fabs(a - b) > 1) {		/* WGS84 is not spherical */
-			plot_ellipsoid_name_convert(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, proj4_ename);
+			gmtlib_ellipsoid_name_convert (GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, proj4_ename);
 			snprintf(szProj4+len, GMT_LEN512-len, " +ellps=%s", proj4_ename);
 			len = strlen (szProj4);
 			if (!strcmp(proj4_ename, "WGS84"))
@@ -6976,7 +6976,8 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to call basemap with args %s ???\n", cmd);
 	}
 	GMT->current.map.frame.init = was;	/* Reset how we found it */
-	gmt_getfill (GMT, F1, &fill);	/* Get and set color for the triangle; no outline */
+	if (gmt_getfill (GMT, F1, &fill))	/* Get and set color for the triangle; no outline */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad fill argument %s\n", F1);
 	PSL_setfill (GMT->PSL, fill.rgb, 0);
 	w = dy * 2;	/* Set triangle size to 2 times the axis width */
 	PSL_plotsymbol (GMT->PSL, xt, 1.2*s*dy2, &w, symbol);
@@ -7544,7 +7545,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		GMT->current.ps.clip_level += GMT->current.ps.nclip;
 
 	if (GMT->current.ps.nclip != PSL->current.nclip)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING,
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "Module was expected to change clip level by %d, but clip level changed by %d\n", GMT->current.ps.nclip, PSL->current.nclip);
 
 	if (!K_active) {

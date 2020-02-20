@@ -509,40 +509,40 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 
 			case 'F':	/* Selected output fields */
 				Ctrl->F.active = true;
-				strncpy (buffer, opt->arg, GMT_BUFSIZ);
+				strncpy (buffer, opt->arg, GMT_BUFSIZ-1);
 				if (!strcmp (buffer, "mgd77")) strncpy (buffer, MGD77_FMT, GMT_BUFSIZ);
 				if (!strcmp (buffer, "mgd77+")) {
-					strncpy (buffer, MGD77_FMT, GMT_BUFSIZ);
+					strncpy (buffer, MGD77_FMT, GMT_BUFSIZ-1);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
 				if (!strcmp (buffer, "mgd77t")) strncpy (buffer, MGD77T_FMT, GMT_BUFSIZ);
 				if (!strcmp (buffer, "mgd77t+")) {
-					strncpy (buffer, MGD77T_FMT, GMT_BUFSIZ);
+					strncpy (buffer, MGD77T_FMT, GMT_BUFSIZ-1);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
 				if (!strcmp (buffer, "all")) strncpy (buffer, MGD77_ALL, GMT_BUFSIZ);
 				if (!strcmp (buffer, "all+")) {
-					strncpy (buffer, MGD77_ALL, GMT_BUFSIZ);
+					strncpy (buffer, MGD77_ALL, GMT_BUFSIZ-1);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
 				if (!strcmp (buffer, "allt")) strncpy (buffer, MGD77T_ALL, GMT_BUFSIZ);
 				if (!strcmp (buffer, "allt+")) {
-					strncpy (buffer, MGD77T_ALL, GMT_BUFSIZ);
+					strncpy (buffer, MGD77T_ALL, GMT_BUFSIZ-1);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
 				if (!strcmp (buffer, "geo")) strncpy (buffer, MGD77_GEO, GMT_BUFSIZ);
 				if (!strcmp (buffer, "geo+")) {
-					strncpy (buffer, MGD77_GEO, GMT_BUFSIZ);
+					strncpy (buffer, MGD77_GEO, GMT_BUFSIZ-1);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
 				if (!strcmp (buffer, "dat")) strncpy (buffer, MGD77_DAT, GMT_BUFSIZ);
 				if (!strcmp (buffer, "dat+")) {
-					strncpy (buffer, MGD77_DAT, GMT_BUFSIZ);
+					strncpy (buffer, MGD77_DAT, GMT_BUFSIZ-1);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}

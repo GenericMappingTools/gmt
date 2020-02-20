@@ -50,7 +50,7 @@ gmt begin ex18
 		set /p volumn=<volumn.txt
 
 		echo ^> -149 52.5 14p 6.6c j > tmp.txt
-		echo Volumes: %volumn% mGal\264km@+2@+ >> tmp.txt
+		echo Volumes: %volumn% mGal\267km@+2@+ >> tmp.txt
 		echo Areas: %area% km@+2@+ >> tmp.txt
 		gmt text tmp.txt -M -Gwhite -Wthin -Dj0.7c -F+f14p,Helvetica-Bold+jLB -C8p
 	gmt subplot end

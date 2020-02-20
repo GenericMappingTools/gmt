@@ -68,7 +68,7 @@ html_context = {
 }
 # favicon of the docs
 html_favicon = "_static/favicon.png"
-html_static_path = ['_static', 'source/_static']
+html_static_path = ['_static']
 html_last_updated_fmt = '%b %d, %Y'
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = True

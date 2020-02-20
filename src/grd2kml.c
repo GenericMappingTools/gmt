@@ -587,6 +587,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			struct GMT_PALETTE *P = NULL;
 			uint64_t dim_c[4] = {1, 1, 0, 0};
 			if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+				gmt_M_free (GMT, Q);
 				Return (API->error);
 			}
 			dim_c[GMT_ROW] = P->n_colors + 1;	/* Number of contours implied by CPT */

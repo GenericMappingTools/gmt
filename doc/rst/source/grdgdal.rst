@@ -51,7 +51,7 @@ Required Arguments
 .. _-A:
 
 **-A**\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*]
-    Select which GDAL program to run (currently one of *info*, *dem*, *grid*, *rasterize*, *translate or *warp*) 
+    Select which GDAL program to run (currently one of *info*, *dem*, *grid*, *rasterize*, *translate or *warp*)
     When program is *dem* append **+m**\ *method* (pick one of *hillshade*, *color-relief*, *slope*, *TRI*, *TPI*
     or *roughness*) and, for *color-relief*, need also to specify a colormap with **+c**\ *cpt_name*.
 
@@ -107,7 +107,8 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
-.. include:: explain_-r.rst_
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: explain_nodereg.rst_
 
 .. include:: explain_colon.rst_
 

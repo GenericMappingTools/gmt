@@ -373,7 +373,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
 	{   0, 'B', "frame",         "",        "",                                         "b,g,n,o,t",				"box,fill,noframe,oblique-pole,title" },
-	{   0, 'B', "axis",          "",        "",                                         "a,l,L,p,s,S,u",			"angle,label,Label,prefix,second-label,Second-label,unit" },
+	{   0, 'B', "axis",          "x,y,z",   "x,y,z",                                    "a,f,l,L,p,s,S,u",			"angle,fancy,label,Label,prefix,second-label,Second-label,unit" },
 	{   0, 'J', "projection",    "",        "",                                         "",         				""},
 	{   0, 'R', "region",        "",        "",                                         "r,u",        				"rectangular,unit"},
 	{   0, 'U', "timestamp",     "",        "",                                         "c,j,o",    				"command,justify,offset"},
@@ -545,7 +545,7 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 	size_t len, lent = strlen(text);
 	char *c = NULL, m = 0, item[GMT_LEN64] = {""};
 	gmt_M_unused (API);
-	if ((c = strchr (text, sep))) c[0] = '0';	/* Chop off the colon or equal and what follows for now */
+	if ((c = strchr (text, sep))) c[0] = '\0';	/* Chop off the colon or equal and what follows for now */
 	while (m == 0 && (gmt_strtok (longlist, ",", &pos, item))) {	/* While there are unprocessed directives to examine */
 		len = MIN (lent, strlen(item));	/* Only compare up to the given # of characters, but less than length of item */
 		if (!strncmp (item, text, len))	/* Found this directive in the text */
@@ -3848,9 +3848,30 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 	return (error);
 }
 
+bool gmtinit_B_is_frame (struct GMT_CTRL *GMT, char *in) {
+	gmt_M_unused (GMT);
+	if (strstr (in, "+b")) return true;	/* Found a +b so likely frame */
+	if (strstr (in, "+g")) return true;	/* Found a +g so likely frame */
+	if (strstr (in, "+n")) return true;	/* Found a +n so likely frame */
+	if (strstr (in, "+o")) return true;	/* Found a +o so likely frame */
+	if (strstr (in, "+t")) return true;	/* Found a +t so likely frame */
+	if (strstr (in, "+a")) return false;	/* Found a +a so likely axis */
+	if (strstr (in, "+f")) return false;	/* Found a +f so likely axis */
+	if (strstr (in, "+l")) return false;	/* Found a +l so likely axis */
+	if (strstr (in, "+L")) return false;	/* Found a +L so likely axis */
+	if (strstr (in, "+p")) return false;	/* Found a +p so likely axis */
+	if (strstr (in, "+s")) return false;	/* Found a +s so likely axis */
+	if (strstr (in, "+S")) return false;	/* Found a +S so likely axis */
+	if (strstr (in, "+u")) return false;	/* Found a +u so likely axis */
+	if (in[0] != 'z' && strchr ("WESNZwenzlrbtu", in[0])) return true;	/* Found one of the side specifiers so likely frame (check on z since -Bzaf could trick it) */
+	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenzlrbtu", in[1]) != NULL)) return true;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
+	if (in[0] == 'z' && (in[1] == 0 || strchr ("WESNwenlrbtu", in[1]) != NULL)) return true;	/* Found -Bz in frame context, e.g. -Bzwn */
+	return false;	/* Cannot be frame */
+}
+
 /*! . */
 GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
-	unsigned int pos = 0, k, error = 0, is_frame = 0;
+	unsigned int pos = 0, k, error = 0;
 	char p[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
 	double pole[2];
 
@@ -3860,15 +3881,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 
 	if (strchr ("pxy", in[0])) return (-1);	/* -B[p[xy] is definitively not the frame settings (-Bz and -Bs are tricker; see below) */
 	if (strchr ("afg", in[0])) return (-1);	/* -Ba|f|g is definitively not the frame settings; looks like axes settings */
-	if (strstr (in, "+b")) is_frame++;	/* Found a +b so likely frame */
-	if (strstr (in, "+g")) is_frame++;	/* Found a +g so likely frame */
-	if (strstr (in, "+n")) is_frame++;	/* Found a +n so likely frame */
-	if (strstr (in, "+o")) is_frame++;	/* Found a +o so likely frame */
-	if (strstr (in, "+t")) is_frame++;	/* Found a +t so likely frame */
-	if (in[0] != 'z' && strchr ("WESNZwenzlrbtu", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (check on z since -Bzaf could trick it) */
-	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenzlrbtu", in[1]) != NULL)) is_frame++;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
-	if (in[0] == 'z' && !is_frame && (in[1] == 0 || strchr ("WESNwenlrbtu", in[1]) != NULL)) is_frame++;	/* Found -Bz in frame context, e.g. -Bzwn */
-	if (is_frame == 0) return (-1);		/* No, nothing matched */
+	if (!gmtinit_B_is_frame (GMT, in)) return (-1);		/* No, nothing matched */
 
 	/* OK, here we are pretty sure this is a frame -B statement */
 
@@ -6635,7 +6648,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-R Specify the xyz min/max coordinates of the plot window in user units.\n");
 			gmt_message (GMT, "\t   Use dd:mm[:ss] for regions given in degrees, minutes [and seconds].\n");
-			gmt_message (GMT, "\t   Append r if first 4 arguments to -R specify the longitudes/latitudes\n");
+			gmt_message (GMT, "\t   Append +r if first 4 arguments to -R specify the longitudes/latitudes\n");
 			gmt_message (GMT, "\t   of the lower left and upper right corners of a rectangular area.\n");
 			gmt_message (GMT, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
 			break;
@@ -7567,7 +7580,7 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 
 		case 'R':	/* Region option */
 			gmt_message (GMT, "\t-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>]\n");
-			gmt_message (GMT, "\t  Append r if giving lower left and upper right coordinates\n");
+			gmt_message (GMT, "\t  Append +r if giving lower left and upper right coordinates\n");
 			gmt_message (GMT, "\t-Rg or -Rd for global domain\n");
 			gmt_message (GMT, "\t-R<grdfile> to take the domain from a grid file\n");
 			break;
@@ -13392,7 +13405,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 					if (opt->option != 'B') continue;	/* Just interested in -B here */
 					/* Deal with the frame option check first */
-					if (strchr ("WESNwesnlrbt", opt->arg[0]))	/* User is overriding the axes settings - that is their choice */
+					if (strchr ("WESNwesnlrbt", opt->arg[0]))	/* User is overriding the frame settings - that is their choice */
 						frame_set = true;
 					else if (strstr (opt->arg, "+t") || strstr (opt->arg, "+g")) {	/* No axis specs means we have to add default */
 						/* Frame but no sides specified.  Insert the required sides */
@@ -13400,11 +13413,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						strncat (arg, opt->arg, GMT_LEN256-1);
 						GMT_Update_Option (API, opt, arg);
 						frame_set = true;
+						GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -B frame option arg to %s\n", arg);
 					}
 					else if (opt->arg[0] == 'x') {	/* Gave specific x-setting */
 						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick given, prepend default determined in subplot  */
 							snprintf (arg, GMT_LEN256, "x%s%s", P->Bxannot, &opt->arg[1]);
 							GMT_Update_Option (API, opt, arg);
+							GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -Bx axis option arg to %s\n", arg);
 						}
 						if (P->Bxlabel[0]) {	/* Provided a label during subplot initialization */
 							strcpy (arg, opt->arg);	/* Start with what we were given */
@@ -13417,6 +13432,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 								strcat (arg, P->Bxlabel);
 							}
 							GMT_Update_Option (API, opt, arg);
+							GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -Bx axis label option arg to %s\n", arg);
 						}
 						x_set = true;
 					}
@@ -13424,6 +13440,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						if (opt->arg[1] == '+')	{	/* No x-axis annot/tick set, prepend default af */
 							snprintf (arg, GMT_LEN256, "y%s%s", P->Byannot, &opt->arg[1]);
 							GMT_Update_Option (API, opt, arg);
+							GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -By axis option arg to %s\n", arg);
 						}
 						if (P->Bylabel[0]) {
 							strcpy (arg, opt->arg);	/* Start with what we were given */
@@ -13436,6 +13453,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 								strcat (arg, P->Bylabel);
 							}
 							GMT_Update_Option (API, opt, arg);
+							GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker revised -By axis label option arg to %s\n", arg);
 						}
 						y_set = true;
 					}
@@ -13448,18 +13466,21 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					}
 					else if ((opt = GMT_Make_Option (API, 'B', "0")) == NULL) return NULL;	/* Add -B0 to just draw frame */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker added -B frame option with arg %s\n", arg);
 				}
 				if (!x_set) {	/* Did not specify x-axis setting either via -Bx or -B so do that now */
 					snprintf (arg, GMT_LEN256, "x%s", P->Bxannot);	/* Start with the x tick,annot,grid choices */
 					if (P->Bxlabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bxlabel);}	/* Add label, if active */
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker added -Bx axis option with arg %s\n", arg);
 				}
 				if (!y_set) {	/* Did not specify y-axis setting so do that now */
 					snprintf (arg, GMT_LEN256, "y%s", P->Byannot);	/* Start with the x tick,annot,grid choices */
 					if (P->Bylabel[0]) {strcat (arg, "+l"); strcat (arg, P->Bylabel);}	/* Add label, if active */
 					if ((opt = GMT_Make_Option (API, 'B', arg)) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+					GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker added -By axis option with arg %s\n", arg);
 				}
 				panel_B_set (API, fig, row, col);
 			}
@@ -13588,6 +13609,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
+	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG) && options) {
+		char *string = GMT_Create_Cmd (API, *options);
+		GMT_Report (API, GMT_MSG_DEBUG, "Revised options: %s\n", string);
+		GMT_Destroy_Cmd (API, &string);
+	}
 	/* Here we can call the rest of the initialization */
 
 	return (gmt_begin_module_sub (API, lib_name, mod_name, Ccopy));
@@ -15088,9 +15114,12 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 			GMT->current.proj.pars[14] = 1;
 
 		free (item_t2);			/* Cannot be freed before */
+		item_t2 = NULL;
 	}
-	else
+	else {
+		if (do_free) free (item_t1);
 		return 1;
+	}
 
 	if (isdigit(item[0]))
 		sprintf (dest, "EPSG:%s", item);
@@ -15174,6 +15203,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 
 	if (wktext[0]) strcat(dest, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
 
+	if (item_t2) free (item_t2);
+
 	return error;
 }
 #endif
@@ -15205,7 +15236,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
 			if (!error) {
-				if (GMT->current.setting.run_mode == GMT_MODERN) {
+				if (GMT->current.setting.run_mode == GMT_MODERN && !GMT->current.map.frame.set) {
 					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
 					if (item[0] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
 					if (c && strchr ("aflLsSu", c[1]))	/* We got the ones suitable for axes that we can chop off */
@@ -16372,8 +16403,8 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if (access (cmd, F_OK)) {	/* No such file, check if the fully baked file is there instead */
 				mark = '+';	/* This is the last char in extension for a fully-baked GMT PostScript file */
 				snprintf (cmd, GMT_BUFSIZ, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
-				if (access (cmd, F_OK)) {	/* No such file ether, give up; warn if a fig set via gmt figure (k > 0) */
-					if (k) GMT_Report (API, GMT_MSG_WARNING, "Figure # %d was registered but no matching PostScript-|+ file found - skipping\n", fig[k].ID, cmd);
+				if (access (cmd, F_OK)) {	/* No such file ether, give up; warn if a fig set via gmt figure (k > 0) and it is not the movie_background case which may not have a plot to go with it */
+					if (k && strcmp (fig[k].prefix, "movie_background")) GMT_Report (API, GMT_MSG_WARNING, "Figure # %d (%s) was registered but no matching PostScript-|+ file found - skipping\n", fig[k].ID, fig[k].prefix);
 					continue;
 				}
 			}

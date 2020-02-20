@@ -75,23 +75,23 @@ struct GMTCONNECT_CTRL {
 #define CLOSED	0
 #define OPEN	1
 
-struct BUDDY {	/* Holds information on nearest segment to one end of a segment */
-	uint64_t id;
-	uint64_t orig_id;
-	unsigned int end_order;
-	double dist, next_dist;
+struct NEAREST {	/* Holds information about the nearest segment to one of the two end of a segment */
+	uint64_t id;		/* Running number ID starting at 0 for open segments only */
+	uint64_t orig_id;	/* The original ID before expelling duplicates and closed segments */
+	unsigned int end_order;	/* Index of line-end-point (0 = beginning and 1 = end) that is closest to another line */
+	double dist, next_dist;	/* The nearest and next nearest distance to another segment */
 };
 
-struct LINK {	/* Information on linking segments together */
-	uint64_t id;
-	uint64_t orig_id;
-	uint64_t pos;
-	uint64_t n;
-	uint64_t group;
-	bool used;
-	double x_end[2];
-	double y_end[2];
-	struct BUDDY buddy[2];
+struct LINK {	/* Information on linking segments together basd on end point properties */
+	uint64_t id;		/* Running number ID starting at 0 for open segments only */
+	uint64_t orig_id;	/* The original ID before expelling duplicates and closed segments */
+	uint64_t seg;		/* Original segment number in table */
+	uint64_t n;		/* Number of points in the segment */
+	uint64_t tbl;		/* Which file (table) this segment came from (0, 1, 2, ...) */
+	bool used;		/* True when we have connected this segment into a longer chain */
+	double x_end[2];	/* The x-coordinates of the two line end-points (0 = beginning and 1 = end) */
+	double y_end[2];	/* The y-coordinates of the two line end-points (0 = beginning and 1 = end) */
+	struct NEAREST nearest[2];	/* The nearest line segment to the two end-points  (0 = beginning and 1 = end) */
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -99,7 +99,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->T.unit = 'X';	/* Cartesian units unless override later */
+	C->T.unit = 'X';	/* Cartesian units unless overridden during parsing */
 
 	return (C);
 }
@@ -135,10 +135,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Write link information (seg id, begin/end nearest seg id, end, and distance) to file [gmtconnect_link.txt].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Link output excludes duplicates and segments already forming a closed polygon.\n");
 	GMT_Option (API, "V");
-	gmt_dist_syntax (API->GMT, 'T', "Set cutoff distance to determine if a segment is closed.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If two lines has endpoints closer than this cutoff they will be joined.\n");
+	gmt_dist_syntax (API->GMT, 'T', "Set minimum <dist> to determine if a segment is closed [0].");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If two lines have endpoints closer than <dist> then they will be joined.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +s<sdist> which adds the requirement that the second closest\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   match must exceed <sdist> (must be in the same units as <cutoff>).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   match must exceed <sdist> to connect (use same units as for <dist>).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no arguments are given the we close all polygons regardless of the gaps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Used with -D to write names of files to a list.  Optionally give listfile name [gmtconnect_list.txt].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).\n");
@@ -236,14 +236,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double sdist) {
+GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, double threshold, bool nn_check, double sdist) {
 	/* Checks if OK to connect this segment to its nearest neighbor and returns true if OK */
 
-	if (S[S[id].buddy[order].id].used) return (false);		/* Segment has been used already */
-	if (S[id].buddy[order].dist > cutoff) return (false);		/* Exceeds minimum gap */
-	if (!nn_check) return (true);					/* No other requirement specified, so done */
-	if (S[id].buddy[order].next_dist > sdist) return (true);	/* Next nearest neighbour is far enough away */
-	return (false);							/* Failed all tests */
+	if (S[S[id].nearest[order].id].used) return (false);		/* Segment has been conncted already */
+	if (S[id].nearest[order].dist > threshold) return (false);	/* Distance exceeds the selected threshold distance, so no cigar */
+	if (!nn_check) return (true);					/* No other requirement specified, so we select this candidate segment */
+	if (S[id].nearest[order].next_dist > sdist) return (true);	/* Next nearest neighbor is far enough away, so we select this candidate segment */
+	return (false);							/* Failed the next nearest neighbor distance test */
 }
 
 GMT_LOCAL uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end) {
@@ -252,9 +252,9 @@ GMT_LOCAL uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DAT
 	bool done = false;
 
 	/* We will copy the records from the in segment from rows in_start up to and including in_end.
-	 * If in_start > in_end then we will end up reversing the order of the records.
+	 * If in_start > in_end then we will end up reversing the order of the records on output.
 	 * The records are copied to the out segment starting at output record out_start (initially 0).
-	 * We return the next row number for output.
+	 * We return the next row number to be used for output.
 	 */
 	inc = (in_start < in_end) ? +1 : -1;	/* Go forwards or backwards through the input */
 	for (row_in = in_start, row_out = out_start; !done; row_in += inc, row_out++) {	/* Either loop from 1st to last or the other way */
@@ -270,7 +270,7 @@ GMT_LOCAL uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DAT
 int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	int error = 0;
 
-	bool save_type = false, first, wrap_up = false, done, closed, *skip = NULL;
+	bool separate_open_and_closed = false, first, wrap_up = false, done, closed, *skip = NULL;
 
 	unsigned int nearest_end[2][2], j, n_qfiles = 0, end_order, smode = GMT_NO_STRINGS;
 	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end, first_end_order;
@@ -278,7 +278,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	size_t n_seg_alloc[2] = {0, 0}, n_alloc_pts, b_alloc = GMT_BUFSIZ, b_len = 0, len;
 
 	uint64_t tbl, n_columns, n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2;
-	uint64_t n_islands = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L, n_steps_pass_1;
+	uint64_t n_closed_orig = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L, n_steps_pass_1;
 	uint64_t dim_tscr[4] = {1, 1, 0, 0}, start_id, iseg, jseg, n_seg_length, G, n_steps_pass_2;
 
 	double dd[2][2], p_last_x, p_last_y, p_first_x, p_first_y, distance, closed_dist = 0.0;
@@ -320,16 +320,16 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
-	if (Ctrl->D.active) {	/* We want output to go to individual files for each segment [Default writes to stdout] */
+	if (Ctrl->D.active) {	/* We want output to go to individual files for each segment [Default writes everything to stdout] */
 		io_mode = GMT_WRITE_SEGMENT;	/* This means "write segments to separate files" */
-		if (!Ctrl->D.format) Ctrl->D.format = strdup ("gmtconnect_segment_%d.txt");	/* Default naming convention for segments */
-		if (strstr (Ctrl->D.format, "%c")) save_type = true;	/* Also add C (closed) or O (open) to the filenames */
-		if (Ctrl->Q.active) {	/* We also want to build a list file(s) */
-			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtconnect_list.txt");	/* Default -Q list name if none was given */
-			dim_tscr[GMT_TBL] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
-			/* Allocate one or two tables with 1 segment each */
+		if (!Ctrl->D.format) Ctrl->D.format = strdup ("gmtconnect_segment_%d.txt");	/* Default naming convention for segments if none given by -D */
+		if (strstr (Ctrl->D.format, "%c")) separate_open_and_closed = true;	/* Also add letters C (closed) or O (open) to the filenames */
+		if (Ctrl->Q.active) {	/* We also want to build a segment connection file(s) */
+			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtconnect_list.txt");	/* Default -Q list name if none was given via -Q */
+			dim_tscr[GMT_TBL] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one (all segments) or two tables (separate list for closed and open) */
+			/* Allocate one or two tables with one segment each */
 			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_TEXT, GMT_WITH_STRINGS, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a text set for segment lists\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for segment lists\n");
 				gmt_M_free (GMT, buffer);
 				Return (API->error);
 			}
@@ -339,22 +339,22 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				dim_tscr[GMT_TBL] = 1;	/* Reset from 2 to 1 */
 				/* Create the two filenames with C and O identifiers */
 				for (k = CLOSED; k <= OPEN; k++) {
-					TH = gmt_get_DT_hidden (Q->table[k]);
-					sprintf (buffer, Ctrl->Q.file, status[k]);
-					TH->file[GMT_OUT] = strdup (buffer);
+					TH = gmt_get_DT_hidden (Q->table[k]);	/* Hidden information about this table */
+					sprintf (buffer, Ctrl->Q.file, status[k]);	/* Create the file name */
+					TH->file[GMT_OUT] = strdup (buffer);	/* Place the file name in table header */
 					QT[k] = Q->table[k]->segment[0];	/* Shorthand for segments in closed polygon list */
-					SH = gmt_get_DS_hidden (QT[k]);
+					SH = gmt_get_DS_hidden (QT[k]);		/* Get hidden segment information */
 					SH->n_alloc = GMT_CHUNK;		/* Initial allocation sizes */
 					QT[k]->text = gmt_M_memory (GMT, NULL, SH->n_alloc, char *);	/* Allocate n_alloc records for now */
 				}
 			}
 			else {	/* A single list will do */
 				q_mode = GMT_WRITE_SET;	/* This means write tables to a single file */
-				TH = gmt_get_DT_hidden (Q->table[0]);
-				TH->file[GMT_OUT] = strdup (Ctrl->Q.file);
+				TH = gmt_get_DT_hidden (Q->table[0]);		/* Hidden information about this table */
+				TH->file[GMT_OUT] = strdup (Ctrl->Q.file);	/* Place the file name in table header */
 				QT[OPEN] = QT[CLOSED] = Q->table[0]->segment[0];	/* The two QT pointers point to the same table, which is 0 [OPEN] */
-				SH = gmt_get_DS_hidden (QT[OPEN]);
-				SH->n_alloc = GMT_CHUNK;				/* Initial allocation sizes */
+				SH = gmt_get_DS_hidden (QT[OPEN]);		/* Get hidden segment information */
+				SH->n_alloc = GMT_CHUNK;			/* Initial allocation sizes */
 				QT[OPEN]->text = gmt_M_memory (GMT, NULL, SH->n_alloc, char *);		/* Allocate n_alloc records for now */
 			}
 		}
@@ -366,7 +366,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, buffer);
 		Return (API->error);
 	}
-	/* Read in all the input segments into one virtual dataset */
+	/* Read in all the input segments into one dataset D[GMT_IN] */
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		gmt_M_free (GMT, buffer);
 		Return (API->error);
@@ -382,12 +382,12 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, buffer);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	/* Surely don't need any more segment space than the number of input segments */
+	/* Surely we don't need any more segment space than the number of input segments */
 	segment = gmt_M_memory (GMT, NULL, D[GMT_IN]->n_segments, struct LINK);
 	id = ns = out_seg = 0;
-	GMT_Report (API, GMT_MSG_INFORMATION, "Check for already closed polygons\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Check for already-closed polygons\n");
 
-	/* Closed polygons are already finished - just identify, write out, and move on */
+	/* Closed polygons are already finished - just identify, write them out, and move on */
 
 	/* Allocate D[GMT_OUT] and possibly C, both with nrows = ncolumns so just segment structs are allocated */
 
@@ -424,18 +424,18 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {	/* For each input data table */
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each input segment */
-			np = D[GMT_IN]->table[tbl]->segment[seg]->n_rows;	/* Short-hand to avoid the full expression below */
-			S = D[GMT_IN]->table[tbl]->segment[seg];		/* Short hand to current in segment */
+			np = D[GMT_IN]->table[tbl]->segment[seg]->n_rows;	/* Short-hand to avoid this full expression below */
+			S = D[GMT_IN]->table[tbl]->segment[seg];		/* Short hand to current input segment */
 			/* Get distance between first and last point in this segment */
 			distance = gmt_distance (GMT, S->data[GMT_X][0], S->data[GMT_Y][0], S->data[GMT_X][np-1], S->data[GMT_Y][np-1]);
-			if (np > 2 && distance <= closed_dist) {	/* Already a closed segment, just write out and forget in the rest of the program */
-				/* Allocate space for this segment */
+			if (np > 2 && distance <= closed_dist) {	/* Already a closed segment by our -T definition, just write out and forget about it in the rest of the program */
+				/* Allocate space for this output segment */
 				smode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
-				n_rows = (Ctrl->C.active && distance > 0.0) ? np + 1 : np;	/* Add one extra row if closure is not exact */
+				n_rows = (Ctrl->C.active && distance > 0.0) ? np + 1 : np;	/* Add one extra row if closure is not exact so we can add that closing repeat point */
 				T[CLOSED][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_rows, n_columns, S->header, NULL);
 				if (Ctrl->D.active) {	/* Write closed polygons to individual files */
 					SH = gmt_get_DS_hidden (T[CLOSED][out_seg]);
-					(save_type) ? sprintf (buffer, Ctrl->D.format, 'C', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);
+					(separate_open_and_closed) ? sprintf (buffer, Ctrl->D.format, 'C', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);
 					SH->file[GMT_OUT] = strdup (buffer);	/* Assign the name of this segment-file */
 					if (Ctrl->Q.active) {	/* Also maintain list of such files */
 						SH = gmt_get_DS_hidden (QT[CLOSED]);
@@ -443,70 +443,70 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 						if (QT[CLOSED]->n_rows == SH->n_alloc) QT[CLOSED]->text = gmt_M_memory (GMT, QT[CLOSED]->text, (SH->n_alloc <<= 1), char *);
 					}
 				}
-				out_p = Copy_This_Segment (S, T[CLOSED][out_seg], 0, 0, np-1);	/* Duplicate input to output */
+				out_p = Copy_This_Segment (S, T[CLOSED][out_seg], 0, 0, np-1);	/* Duplicate input segment to output */
 				if (Ctrl->C.active && distance > 0.0) (void) Copy_This_Segment (S, T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon explicitly */
-				n_islands++;	/* Number of originally closed polygons found in input */
+				n_closed_orig++;	/* Number of originally closed polygons as found in input */
 				out_seg++;	/* Number of closed segments placed in T[CLOSED] so far */
-				n_closed++;	/* Number of closed polygons (which will grow when we connect below) */
+				n_closed++;	/* Number of closed polygons so far (which will grow when we connect below) */
 			}
-			else if (Ctrl->C.active) {	/* NOT closed: Copy this open segment to the separate output dataset */
+			else if (Ctrl->C.active) {	/* This polygon is not closed and -C is active: Copy this open segment to the separate output dataset */
 				/* Allocate space for this segment */
 				smode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				T[OPEN][n_open] = GMT_Alloc_Segment (GMT->parent, smode, np, n_columns, S->header, NULL);
 				(void) Copy_This_Segment (S, T[OPEN][n_open], 0, 0, np-1);		/* Duplicate input to output */
 				n_open++;	/* Number of open segments placed in T[OPEN] so far */
 			}
-			else { /* No -C was given: Here we have a segment that is not closed.  Store refs to D[GMT_IN]->table and copy end points; more work on linking takes place below */
-				/* Store information about this segment (end points, ID, etc) in the array "segment" of segment structures */
+			else { /* No -C was given: Here we have a segment that is not closed.  Store metadata about segment to LINK structure and copy end points; more work on linking takes place below */
+				/* Store information about this segment (end points, ID, etc.) in the array "segment" with info on all open lines */
 				if (np == 1) GMT_Report (API, GMT_MSG_WARNING, "Segment %" PRIu64 " only consists of a single point.  May require additional connections.\n", id);
-				segment[id].id = id;		/* Running number ID starting at 0 for open segments only */
-				segment[id].orig_id = ns;	/* ns is input segment number */
-				segment[id].group = tbl;	/* Remember which input table this segment came from */
-				segment[id].pos = seg;		/* Remember which input segment in this table it came from */
+				segment[id].id = id;		/* Running segment ID starting at 0 (for open segments only) */
+				segment[id].orig_id = ns;	/* ns is original input segment number */
+				segment[id].tbl = tbl;		/* Remember which input table this segment came from */
+				segment[id].seg = seg;		/* Remember which input segment in this table it came from */
 				segment[id].n = np;		/* Number of points in this segment */
-				/* Record start and end coordinates for this segment and initialize buddy structure to having no nearest neighbor segment yet */
-				segment[id].x_end[END_A] = S->data[GMT_X][0];
+				/* Record start and end coordinates for this segment, and initialize the nearest structures to having no nearest neighbor segment yet */
+				segment[id].x_end[END_A] = S->data[GMT_X][0];		/* First point in segment */
 				segment[id].y_end[END_A] = S->data[GMT_Y][0];
-				segment[id].x_end[END_B] = S->data[GMT_X][np-1];
+				segment[id].x_end[END_B] = S->data[GMT_X][np-1];	/* Last point in segment */
 				segment[id].y_end[END_B] = S->data[GMT_Y][np-1];
-				segment[id].buddy[END_A].dist = segment[id].buddy[END_B].dist = DBL_MAX;
-				segment[id].buddy[END_A].next_dist = segment[id].buddy[END_B].next_dist = DBL_MAX;
+				segment[id].nearest[END_A].dist = segment[id].nearest[END_B].dist = DBL_MAX;
+				segment[id].nearest[END_A].next_dist = segment[id].nearest[END_B].next_dist = DBL_MAX;
 				id++;	/* Increment open segment ID number */
 			}
-			ns++;	/* Increment running segment ID */
+			ns++;	/* Increment running segment ID (open or closed) */
 		}
 	}
 
-	/* Here we have gone through all input segment and separated open from closed */
+	/* Here we have gone through all input segments and separated open from closed */
 
 	if (Ctrl->C.active) {	/* Finalize allocation for closed segments now that we know how many there were */
 		C->table[0]->segment = gmt_M_memory (GMT, T[CLOSED], n_closed, struct GMT_DATASEGMENT *);
 		C->n_segments = C->table[0]->n_segments = n_closed;
 		/* With -C we only separate closed from open and then we are done */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Separated %" PRIu64 " closed and %" PRIu64 " open segments\n", n_closed, n_open);
-		wrap_up = true;	/* Means to quit once we have written those results to file - no nesting takes place */
+		wrap_up = true;	/* Means to quit once we have written those results to file - no nesting will take place */
 	}
 	else if (id == 0) {	/* All segments were already closed polygons */
 		GMT_Report (API, GMT_MSG_INFORMATION, "All segments already form closed polygons - no new segment file created\n");
 		wrap_up = true;	/* Means to quit once we have written those results to file - no nesting possible */
 	}
 
-	gmt_set_segmentheader (GMT, GMT_OUT, n_open > 1 || n_closed > 1);	/* Turn on segment headers on output if we have more than one segment */
+	gmt_set_segmentheader (GMT, GMT_OUT, n_open > 1 || n_closed > 1);	/* Turn on segment headers on output if we have more than one output segment */
 	if (wrap_up) {	/* Write out results and exit */
-		D[GMT_OUT]->table[0]->segment = gmt_M_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);	/* Finalize allocation */
+		D[GMT_OUT]->table[0]->segment = gmt_M_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);	/* Finalize output egment allocation */
 		D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_open;
-		if (Ctrl->C.active) { /* Write n_open segments to D[OUT] and n_closed to C; here we do C */
+		if (Ctrl->C.active) { /* Write n_open segments from D[OUT] and n_closed from C; here we do C first */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_NOERROR) {
 				gmt_M_free (GMT, buffer);
 				Return (API->error);
 			}
 		}
-		/* Write open segments to the outfile (probably stdout) */
+		/* Write open segments to the outfile (probably stdout) if not set */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
-		if (Ctrl->Q.active) {	/* Also finalize link file and write it out to 1 or 2 files depending on q_mode */
+		if (Ctrl->Q.active) {	/* Also finalize link file and write it out to 1 (or 2) files depending on q_mode */
 			Q->table[CLOSED]->segment[0]->text = gmt_M_memory (GMT, QT[CLOSED]->text, QT[CLOSED]->n_rows, char *);
 			if (n_qfiles == 2) Q->table[OPEN]->segment[0]->text = gmt_M_memory (GMT, QT[OPEN]->text, QT[OPEN]->n_rows, char *);
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
@@ -520,41 +520,40 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	/* Below here, -C was NOT given since those cases have already been dealt with.
 	 * Also T[OPEN] = T[CLOSED] and we already have found out_seg segments.
-	 * Here we need to do the connect work.  We already have n_closed polygons in D[GMT_OUT] at this point */
+	 * Here we need to do the connecting work.  We already have n_closed polygons stored n D[GMT_OUT] at this point */
 
 	ns = id;	/* Number of open segments remaining, adjust necessary memory */
-	if (ns < D[GMT_IN]->n_segments) segment = gmt_M_memory (GMT, segment, ns, struct LINK);
-	skip = gmt_M_memory (GMT, NULL, ns, bool);	/* Used when looking for duplicate segments */
+	if (ns < D[GMT_IN]->n_segments) segment = gmt_M_memory (GMT, segment, ns, struct LINK);	/* Trim the fat */
+	skip = gmt_M_memory (GMT, NULL, ns, bool);	/* Used when looking for duplicate segments only */
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " closed polygons\n", n_islands);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " closed individual polygons\n", n_closed_orig);
 
-	/* The connect algorithm will be confused if there are identical duplicates of segments - thus we check first */
+	/* The connect algorithm will be confused if there are identical duplicates of segments - thus we check for this case first */
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Check for duplicate lines\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Check for duplicate line segments\n");
 	for (iseg = 0; iseg < ns; iseg++) {	/* Loop over remaining open lines */
 		if (skip[iseg]) continue;	/* Skip lines that has been determined to be a duplicate line */
 		for (jseg = iseg + 1; jseg < ns; jseg++) {	/* Loop over all other open lines */
-			if (skip[jseg]) continue;	/* Skip line that has been determined to be a duplicate line */
-			/* See if any pair of endpoints matches (duplicate line may be reversed so check both ways) */
-			if ((doubleAlmostEqualZero (segment[iseg].x_end[END_A], segment[jseg].x_end[END_A]) && doubleAlmostEqualZero (segment[iseg].y_end[END_A], segment[jseg].y_end[END_A])) ||
-			    (doubleAlmostEqualZero (segment[iseg].x_end[END_A], segment[jseg].x_end[END_B]) && doubleAlmostEqualZero (segment[iseg].y_end[END_A], segment[jseg].y_end[END_B])) ||
-			    (doubleAlmostEqualZero (segment[iseg].x_end[END_B], segment[jseg].x_end[END_A]) && doubleAlmostEqualZero (segment[iseg].y_end[END_B], segment[jseg].y_end[END_A])) ||
-			    (doubleAlmostEqualZero (segment[iseg].x_end[END_B], segment[jseg].x_end[END_B]) && doubleAlmostEqualZero (segment[iseg].y_end[END_B], segment[jseg].y_end[END_B]))) {	/* Yes, identical end points */
-			    	if (segment[iseg].n == segment[jseg].n) {	/* and same number of points */
-					for (k = match = 0; k < segment[iseg].n && k == match; k++) {	/* Compute number of duplicate points */
-						match += (doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].group]->segment[segment[iseg].pos]->data[GMT_X][k], D[GMT_IN]->table[segment[jseg].group]->segment[segment[jseg].pos]->data[GMT_X][k]) &&
-						          doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].group]->segment[segment[iseg].pos]->data[GMT_Y][k], D[GMT_IN]->table[segment[jseg].group]->segment[segment[jseg].pos]->data[GMT_Y][k]));
-					}
-					if (match == segment[iseg].n) {	/* An exact match */
-						GMT_Report (API, GMT_MSG_INFORMATION, "Line segments %" PRIu64 " and %" PRIu64 "are duplicates - Line segment %" PRIu64 " will be ignored\n", iseg, jseg, jseg);
-						skip[jseg] = true;	/* Flag this line for skipping */
-					}
+			if (skip[jseg]) continue;	/* But skip line that has been determined to be a duplicate line */
+			if (segment[iseg].n != segment[jseg].n) continue;	/* Different number of points mean not a duplicate*/
+			/* See if any pair of endpoints matches (duplicate line may be reversed so must check both ways) */
+			if (((doubleAlmostEqualZero (segment[iseg].x_end[END_A], segment[jseg].x_end[END_A]) && doubleAlmostEqualZero (segment[iseg].y_end[END_A], segment[jseg].y_end[END_A])) &&
+			    (doubleAlmostEqualZero (segment[iseg].x_end[END_B], segment[jseg].x_end[END_B]) && doubleAlmostEqualZero (segment[iseg].y_end[END_B], segment[jseg].y_end[END_B]))) ||
+			    ((doubleAlmostEqualZero (segment[iseg].x_end[END_A], segment[jseg].x_end[END_B]) && doubleAlmostEqualZero (segment[iseg].y_end[END_A], segment[jseg].y_end[END_B])) &&
+			    (doubleAlmostEqualZero (segment[iseg].x_end[END_B], segment[jseg].x_end[END_A]) && doubleAlmostEqualZero (segment[iseg].y_end[END_B], segment[jseg].y_end[END_A])))) {	/* Yes, identical end points */
+				for (k = match = 0; k < segment[iseg].n && k == match; k++) {	/* Compute number of duplicate points */
+					match += (doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].tbl]->segment[segment[iseg].seg]->data[GMT_X][k], D[GMT_IN]->table[segment[jseg].tbl]->segment[segment[jseg].seg]->data[GMT_X][k]) &&
+						doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].tbl]->segment[segment[iseg].seg]->data[GMT_Y][k], D[GMT_IN]->table[segment[jseg].tbl]->segment[segment[jseg].seg]->data[GMT_Y][k]));
+				}
+				if (match == segment[iseg].n) {	/* An exact match */
+					GMT_Report (API, GMT_MSG_INFORMATION, "Line segments %" PRIu64 " and %" PRIu64 "are duplicates - Line segment %" PRIu64 " will be ignored\n", iseg, jseg, jseg);
+					skip[jseg] = true;	/* Flag this line for skipping */
 				}
 			}
 		}
 	}
 
-	/* Eliminate the duplicate segments from further consideration by shuffling the others up front */
+	/* Eliminate the duplicate segments from further consideration by shuffling the others up in the array */
 
 	for (iseg = jseg = 0; iseg < ns; iseg++) {
 		if (skip[iseg]) continue;
@@ -565,6 +564,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	if (jseg < ns) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " duplicate segment removed\n", ns - jseg);
 	ns = jseg;	/* The new number of open segments after duplicates have been removed */
 	gmt_M_free (GMT, skip);	/* Done with this array */
+
+	/* Duplicates eliminated, now we can try to make connections */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Try to connect %" PRIu64 " open segments\n", ns);
 
 	if (Ctrl->T.unit == 'X')
@@ -574,15 +575,17 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	/* We determine the distance from each segment's two endpoints to the two endpoints on every other
 	 * segment; this yields four distances per segment.  We then assign the nearest endpoint to each end
-	 * of a segment to the buddy structure which keeps the id of the nearest segment found so far.
+	 * of a segment to the nearest structure which keeps the id of the nearest segment found so far.
+	 * Below dd[segment][end] is a 2x2 array with the four distances for one pair of segments SEG_I and SEG_J.
 	 */
 
 	for (iseg = 0; iseg < ns; iseg++) {	/* Loop over all open line segments and their two endpoints... */
 		for (jseg = iseg; jseg < ns; jseg++) {	/* ...and compare distances to all other open line segments' two endpoints  */
 			/* nearest_end indicates which end is closest to this end */
 			if (iseg == jseg) {	/* Store offset between the endpoints of a single segment (would be 0 if closed but those polygons have already been dealt with) */
-				dd[SEG_I][END_A] = dd[SEG_J][END_B] = DBL_MAX;	/* Flag as single line segment so two ends are not used */
-				dd[SEG_I][END_B] = dd[SEG_J][END_A] = (segment[iseg].n == 1) ? DBL_MAX : gmt_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[iseg].x_end[END_B], segment[iseg].y_end[END_B]);
+				dd[SEG_I][END_A] = dd[SEG_J][END_B] = DBL_MAX;	/* Flag as single line segment so two ends are not used to connect them */
+				/* Only compute a distance for this single segment if it has more than 2 points.  2 point cannot connect back on itself as it would make a polygon with zero area */
+				dd[SEG_I][END_B] = dd[SEG_J][END_A] = (segment[iseg].n < 3) ? DBL_MAX : gmt_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[iseg].x_end[END_B], segment[iseg].y_end[END_B]);
     				nearest_end[SEG_I][END_A] = nearest_end[SEG_J][END_A] = END_B;	/* Duplicate the nearest ID info since it is a single line segment compared to itself */
     				nearest_end[SEG_J][END_B] = nearest_end[SEG_I][END_B] = END_A;
 			}
@@ -598,28 +601,31 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			sprintf (msg, "Pair %d - %d, dd[i][j] = %g, %g, %g, %g\n", (int)iseg, (int)jseg, dd[0][0], dd[0][1], dd[1][0], dd[1][1]);
 			GMT_Report (API, GMT_MSG_DEBUG, msg);
  			/* Update list of closest matches for both ends */
-    			for (ii = 0; ii < 2; ii++) {	/* For each end of the segment */
-    				end = nearest_end[SEG_I][ii];	/* The end of segment jseg that was closest to segment iseg's end ii */
-    				if (dd[ii][end] < segment[iseg].buddy[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
-					segment[iseg].buddy[ii].next_dist = segment[iseg].buddy[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
-					segment[iseg].buddy[ii].orig_id = segment[jseg].orig_id;
-					segment[iseg].buddy[ii].id = jseg;
-					segment[iseg].buddy[ii].dist = dd[ii][end];
-					segment[iseg].buddy[ii].end_order = end;
+    			for (ii = 0; ii < 2; ii++) {	/* For each end of the segments */
+    				end = nearest_end[SEG_I][ii];	/* The end of segment jseg that so far is closest to segment iseg's end ii */
+    				if (dd[ii][end] < segment[iseg].nearest[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
+					segment[iseg].nearest[ii].next_dist = segment[iseg].nearest[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
+					segment[iseg].nearest[ii].orig_id = segment[jseg].orig_id;
+					segment[iseg].nearest[ii].id = jseg;
+					segment[iseg].nearest[ii].dist = dd[ii][end];
+					segment[iseg].nearest[ii].end_order = end;
     				}
-				else if (dd[ii][end] < segment[iseg].buddy[ii].next_dist) segment[iseg].buddy[ii].next_dist = dd[ii][end];
+				else if (dd[ii][end] < segment[iseg].nearest[ii].next_dist)	/* Update the next nearest distance only */
+					segment[iseg].nearest[ii].next_dist = dd[ii][end];
     				end = nearest_end[SEG_J][ii];	/* The end of segment iseg that was closest to segment jseg's end ii */
-    				if (dd[end][ii] < segment[jseg].buddy[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
- 					segment[jseg].buddy[ii].next_dist = segment[jseg].buddy[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
-					segment[jseg].buddy[ii].orig_id = segment[iseg].orig_id;
- 					segment[jseg].buddy[ii].id = iseg;
-					segment[jseg].buddy[ii].dist = dd[end][ii];
-					segment[jseg].buddy[ii].end_order = end;
+    				if (dd[end][ii] < segment[jseg].nearest[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
+ 					segment[jseg].nearest[ii].next_dist = segment[jseg].nearest[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
+					segment[jseg].nearest[ii].orig_id = segment[iseg].orig_id;
+ 					segment[jseg].nearest[ii].id = iseg;
+					segment[jseg].nearest[ii].dist = dd[end][ii];
+					segment[jseg].nearest[ii].end_order = end;
     				}
-				else if (dd[end][ii] < segment[jseg].buddy[ii].next_dist) segment[jseg].buddy[ii].next_dist = dd[end][ii];
+				else if (dd[end][ii] < segment[jseg].nearest[ii].next_dist)	/* Update the next nearest distance only */
+					segment[jseg].nearest[ii].next_dist = dd[end][ii];
     			}
 		}
-		sprintf (msg, "Seg %d dist[0], next_dist[0], dist[1], next_dist[1] = %g, %g, %g, %g\n", (int)iseg, segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, segment[iseg].buddy[1].dist, segment[iseg].buddy[1].next_dist);
+		/* Final information for segment iseg */
+		sprintf (msg, "Seg %d dist[0], next_dist[0], dist[1], next_dist[1] = %g, %g, %g, %g\n", (int)iseg, segment[iseg].nearest[0].dist, segment[iseg].nearest[0].next_dist, segment[iseg].nearest[1].dist, segment[iseg].nearest[1].next_dist);
 		GMT_Report (API, GMT_MSG_DEBUG, msg);
 	}
 
@@ -633,7 +639,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtconnect_link.txt");	/* Use default output filename since none was provided */
 		dim_tscr[GMT_TBL] = 1;	dim_tscr[GMT_SEG] = 1;	dim_tscr[GMT_ROW] = ns;	dim_tscr[GMT_COL] = 0;	/* Dimensions of single output table with single segment of ns rows */
 		if ((LNK = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_WITH_STRINGS, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to create a text set for link lists\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for link lists\n");
 			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
@@ -646,27 +652,27 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		sprintf (buffer, "#id%ssegid%s@begin%sb_pt%sb_dist%sb_next%s@end%se_pt%se_dist%se_next", s, s, s, s, s, s, s, s, s);
 		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, buffer, LNK)) Return (API->error);
 		for (iseg = 0; iseg < ns; iseg++) {	/* Loop over open segments */
-			G = segment[iseg].group;	L = segment[iseg].pos;	/* Short hand notation */
+			G = segment[iseg].tbl;	L = segment[iseg].seg;	/* Short hand notation */
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L")) != NULL) {
 				strncpy (name, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name[j]; j++) if (name[j] == ' ') name[j] = '\0';		/* Just truncate after 1st word */
 			} else sprintf (name, "%" PRIu64, segment[iseg].orig_id);
-			G = segment[segment[iseg].buddy[0].id].group;	L = segment[segment[iseg].buddy[0].id].pos;
+			G = segment[segment[iseg].nearest[0].id].tbl;	L = segment[segment[iseg].nearest[0].id].seg;
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L")) != NULL) {
 				strncpy (name0, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name0[j]; j++) if (name0[j] == ' ') name0[j] = '\0';	/* Just truncate after 1st word */
-			} else sprintf (name0, "%" PRIu64, segment[iseg].buddy[0].orig_id);
-			G = segment[segment[iseg].buddy[1].id].group;	L = segment[segment[iseg].buddy[1].id].pos;
+			} else sprintf (name0, "%" PRIu64, segment[iseg].nearest[0].orig_id);
+			G = segment[segment[iseg].nearest[1].id].tbl;	L = segment[segment[iseg].nearest[1].id].seg;
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L")) != NULL) {
 				strncpy (name1, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name1[j]; j++) if (name1[j] == ' ') name1[j] = '\0';	/* Just truncate after 1st word */
-			} else sprintf (name1, "%" PRIu64, segment[iseg].buddy[1].orig_id);
+			} else sprintf (name1, "%" PRIu64, segment[iseg].nearest[1].orig_id);
 			/* OK, compose the output record using the format and information provided */
-			sprintf (buffer, fmt, segment[iseg].orig_id, name, name0, BE[segment[iseg].buddy[0].end_order], segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, name1, \
-				BE[segment[iseg].buddy[1].end_order], segment[iseg].buddy[1].dist, segment[iseg].buddy[1].next_dist);
+			sprintf (buffer, fmt, segment[iseg].orig_id, name, name0, BE[segment[iseg].nearest[0].end_order], segment[iseg].nearest[0].dist, segment[iseg].nearest[0].next_dist, name1, \
+				BE[segment[iseg].nearest[1].end_order], segment[iseg].nearest[1].dist, segment[iseg].nearest[1].next_dist);
 			LNK->table[0]->segment[0]->text[iseg] = strdup (buffer);
 		}
 		LNK->table[0]->n_records = LNK->table[0]->segment[0]->n_rows = ns;	/* Number of records for this file */
@@ -696,14 +702,14 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		id = start_id;	/* This is the first line segment in a new chain */
 		sprintf (buffer, "%" PRIu64, segment[id].orig_id);
 		b_len = strlen (buffer);
-		/* Select the endpoint that has the closest buddy */
-		end_order = first_end_order = (segment[id].buddy[0].dist < segment[id].buddy[1].dist) ? 0 : 1;		/* Exceeds minimum gap */
+		/* Select the endpoint that has the nearest segment */
+		end_order = first_end_order = (segment[id].nearest[0].dist < segment[id].nearest[1].dist) ? 0 : 1;
 
-		closed = false;
+		closed = false;			/* Growing line segment is not closed yet */
 		n_steps_pass_1 = 0;		/* Nothing appended yet to this single line segment */
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
-		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
-			id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
+		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if its nearest segment at this end is close enough */
+			id2 = segment[id].nearest[end_order].id;	/* ID of nearest segment at end end_order */
 			snprintf (text, GMT_LEN64, " -> %" PRIu64, segment[id2].orig_id);
 			b_len += strlen (text);
 			if (b_len >= b_alloc) {	/* Resize buffer for header */
@@ -717,23 +723,23 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				done = true;
 				n_trouble++;
 			}
-			else {	/* Good. Trace the connection to the next segment */
+			else {	/* Good. Trace the connection onwards to the next segment */
 				/* Having hooked line segment to current end_order, we must flip to the other end for the next connection */
 #if 0
 				GMT_Report (API, GMT_MSG_INFORMATION, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
 #endif
-				end_order = !segment[id].buddy[end_order].end_order;
+				end_order = !segment[id].nearest[end_order].end_order;	/* Move to other end of segment */
 				id = id2;	/* Update what is the current segment */
 				n_alloc_pts += segment[id].n;		/* Update length of combined line segment so far */
 			}
-			n_steps_pass_1++;	/* Number of segments in this growing chain */
+			n_steps_pass_1++;	/* Number of segments added in this growing chain */
 		}
 
-		if (!closed) {	/* Now search backwards from the stating line to see what should be hooked on in that direction */
-			id = start_id;	/* This is the first line segment in a new chain */
-			end_order = (first_end_order + 1) % 2;	/* Go the other way */
-			while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
-				id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
+		if (!closed) {	/* Now search backwards from the starting line to see what may be hooked on by going in that direction */
+			id = start_id;	/* Back to the first line segment in the chain */
+			end_order = (first_end_order + 1) % 2;	/* Go the opposite way than what we did the first time above */
+			while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if its nearest segment at this end is close enough */
+				id2 = segment[id].nearest[end_order].id;	/* ID of nearest segment at end end_order */
 				snprintf (text, GMT_LEN64, "%" PRIu64 " <- ", segment[id2].orig_id);
 				len = strlen (text);
 				if ((b_len + len) >= b_alloc) {	/* Resize buffer for header */
@@ -750,19 +756,19 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 					done = true;
 					n_trouble++;
 				}
-				else {	/* Good. Trace the connection to the next segment */
+				else {	/* Good. Trace the connection onwards to the next segment */
 					/* Having hooked line segment to current end_order, we must flip to the other end for the next connection */
 #if 0
 					GMT_Report (API, GMT_MSG_INFORMATION, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
 #endif
-					end_order = !segment[id].buddy[end_order].end_order;
+					end_order = !segment[id].nearest[end_order].end_order;	/* Move to other end of segment */
 					id = id2;	/* Update what is the current segment */
 					n_alloc_pts += segment[id].n;		/* Update length of combined line segment so far */
 				}
-				n_steps_pass_1++;	/* Number of segments in this growing chain */
+				n_steps_pass_1++;	/* Number of segments added in this growing chain */
 			}
 		}
-		/* Here we either have closed a polygon or still have a (possibly much longer) open line segment. */
+		/* Here we either have closed a polygon or just have a (possibly much longer) open line segment. */
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 
 		/* Get a new segment structure with enough rows */
@@ -785,21 +791,21 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) {	/* Prepare and set segment output file name */
 			SH = gmt_get_DS_hidden (T[OPEN][out_seg]);
 			d_mode = OPEN;
-			(save_type) ? sprintf (buffer, Ctrl->D.format, 'O', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);
+			(separate_open_and_closed) ? sprintf (buffer, Ctrl->D.format, 'O', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);
 			SH->file[GMT_OUT] = strdup (buffer);
 		}
 
-		/* Initialize values of previous end point coordinates */
+		/* Initialize values of first and previous end point coordinates */
 		p_first_x = p_last_x = DBL_MAX;
 		p_first_y = p_last_y = DBL_MAX;
 		n_steps_pass_2 = out_p = n_seg_length = 0;
 		first = true;
 		do {
-			G = segment[id].group;	/* This is which table this line segment came from */
-			L = segment[id].pos;	/* This is the segment number in that table */
+			G = segment[id].tbl;	/* This is which table this line segment came from */
+			L = segment[id].seg;	/* This is the segment number in that table */
 			np = segment[id].n;	/* Length of this line segment */
-			S = D[GMT_IN]->table[G]->segment[L];	/* Short hand for the current segment */
-			if (end_order == 0) {	/* Already in the right order */
+			S = D[GMT_IN]->table[G]->segment[L];	/* Short hand for that current segment */
+			if (end_order == END_A) {	/* Already in the right order */
 				if (doubleAlmostEqualZero (S->data[GMT_X][0], p_last_x) && doubleAlmostEqualZero (S->data[GMT_Y][0], p_last_y)) {	/* Skip duplicate anchor point */
 					j = 1;		/* Start at 1 instead of 0 to skip this point */
 					n = np - 1;	/* Hence there is one less point to copy */
@@ -811,35 +817,34 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_DEBUG, "Forward Segment no %" PRIu64 " [Table %d Segment %" PRIu64 "]\n", segment[id].orig_id, G, L);
 				out_p = Copy_This_Segment (S, T[OPEN][out_seg], out_p, j, np-1);	/* Copy points, return array index where next point goes */
 				/* Remember the last point we copied as that is the end of the growing output line segment */
-				p_last_x = S->data[GMT_X][np-1];
+				p_last_x = S->data[GMT_X][np-1];	/* End of the line since we went forward */
 				p_last_y = S->data[GMT_Y][np-1];
 				if (first) p_first_x = S->data[GMT_X][0], p_first_y = S->data[GMT_Y][0];	/* Also remember start point of this chain */
 			}
-			else {	/* Must reverse the segment's order of points */
+			else {	/* Must reverse the segment's order of points on output */
 				if (doubleAlmostEqualZero (S->data[GMT_X][np-1], p_last_x) && doubleAlmostEqualZero (S->data[GMT_Y][np-1], p_last_y)) {	/* Skip duplicate anchor point */
-					j = 1;		/* Start at the penultimate rather than last point to skip this duplicate point */
+					j = np - 2;	/* Start at the penultimate rather than last point to skip this duplicate point */
 					n = np - 1;	/* Hence there is one less point to copy */
 				}
 				else {	/* We need all the points */
-					j = 0;
+					j = np - 1;
 					n = np;
 				}
 				GMT_Report (API, GMT_MSG_DEBUG, "Reverse Segment no %" PRIu64 " [Table %d Segment %" PRIu64 "]\n", segment[id].orig_id, G, L);
-				out_p = Copy_This_Segment (S, T[OPEN][out_seg], out_p, np-1-j, 0);	/* Copy points in reverse order, return array index where next point goes */
+				out_p = Copy_This_Segment (S, T[OPEN][out_seg], out_p, j, 0);	/* Copy points in reverse order, return array index where next point goes */
 				/* Remember the last point we copied as that is the end of the growing output line segment */
-				p_last_x = S->data[GMT_X][0];
+				p_last_x = S->data[GMT_X][0];	/* Start of the line since we went backward */
 				p_last_y = S->data[GMT_Y][0];
-				/* Note for next line: Could use [np-1-j] but if j == 1 then the entry in [np-1] is a duplicate of [np-2] so no need */
-				if (first) p_first_x = S->data[GMT_X][np-1], p_first_y = S->data[GMT_Y][np-1];	/* Also remember start point of line segment */
+				if (first) p_first_x = S->data[GMT_X][j], p_first_y = S->data[GMT_Y][j];	/* Also remember start point of line segment */
 			}
 			n_seg_length += n;	/* Length of combined line segment after adding this one */
 			first = false;		/* Done with setting the very first line segment in the composite output chain */
 			end_order = !end_order;		/* Go to the other end of the line segment */
 			segment[id].used = true;	/* Finished appending this line segment to our output line segmnent */
-			if (segment[id].buddy[end_order].dist <= Ctrl->T.dist[0] && !segment[segment[id].buddy[end_order].id].used) {
+			if (segment[id].nearest[end_order].dist <= Ctrl->T.dist[0] && !segment[segment[id].nearest[end_order].id].used) {
 				/* Not done, trace into the next connecting segment */
-				id2 = segment[id].buddy[end_order].id;			/* The ID of the nearest line segment */
-				end_order = segment[id].buddy[end_order].end_order;	/* Which end of this line segment is closest to our end */
+				id2 = segment[id].nearest[end_order].id;		/* The ID of the nearest line segment */
+				end_order = segment[id].nearest[end_order].end_order;	/* Which end of this line segment is closest to our end */
 				done = (id2 == start_id || id2 == id);			/* We are done if they are the same line segment */
 				id = id2;						/* Update what is the current line segment */
 			}
@@ -850,11 +855,12 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		if (n_steps_pass_2 != n_steps_pass_1) {
 			GMT_Report (API, GMT_MSG_WARNING, "Trouble: Pass 1 found %" PRIu64 " while pass 2 found %" PRIu64 " connections!\n", n_steps_pass_1, n_steps_pass_2);
 		}
-		if (n_seg_length < n_alloc_pts) T[OPEN][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_seg_length, n_columns, NULL, T[OPEN][out_seg]);	/* Trim memory allocation */
+		if (n_seg_length < n_alloc_pts)	/* Trim memory allocation */
+			T[OPEN][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_seg_length, n_columns, NULL, T[OPEN][out_seg]);
 
 		if (doubleAlmostEqualZero (p_first_x, p_last_x) && doubleAlmostEqualZero (p_first_y, p_last_y)) {	/* Definitively closed polygon resulting from connections */
 			GMT_Report (API, GMT_MSG_INFORMATION, "New closed segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);
-			if (Ctrl->D.active && save_type) {	/* Ended up closed, rename output filename with the C type instead of O set above */
+			if (Ctrl->D.active && separate_open_and_closed) {	/* Ended up closed, rename output filename with the C type instead of O set above */
 				SH = gmt_get_DS_hidden (T[OPEN][out_seg]);
 				sprintf (buffer, Ctrl->D.format, 'C', out_seg);
 				gmt_M_str_free (SH->file[GMT_OUT]);
@@ -863,8 +869,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			}
 			n_closed++;	/* Another closed polygon completed */
 		}
-		else {
-			n_open++;	/* This one remained open */
+		else {	/* This one remained open */
+			n_open++;
 			GMT_Report (API, GMT_MSG_INFORMATION, "New open segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);
 		}
 		if (Ctrl->Q.active) {	/* Add this polygon info to the info list */
@@ -877,7 +883,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		out_seg++;	/* Number of output segment so far */
 
 		/* Wind to the next unused segments to start the connection search again */
-		start_id = 0;	/* Reset and wind */
+		start_id = 0;	/* Reset and wind forward */
 		while (start_id < ns && segment[start_id].used) start_id++;
 		done = (start_id == ns);	/* No more unused segments */
 	}
@@ -904,10 +910,10 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	/* Tell us some statistics of what we found, if -V */
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments read\n", ns + n_islands);
+	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments read\n", ns + n_closed_orig);
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " new open segments\n", n_open);
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " new closed segments\n", n_closed);
-	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments were already closed\n", n_islands);
+	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments were already closed\n", n_closed_orig);
 	if (n_trouble) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " trouble spots\n", n_trouble);
 
 	gmt_M_free (GMT, buffer);

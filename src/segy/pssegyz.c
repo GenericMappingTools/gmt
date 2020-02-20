@@ -320,7 +320,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T requires a file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && access (Ctrl->T.file, R_OK), "SCannot file file %s\n", Ctrl->T.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.value < 0.0, "Option -E: Slop cannot be negative\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "SMust specify -F with -I\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Must specify -F with -I\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Must specify -F or -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value[GMT_X] < 0.0 || Ctrl->D.value[GMT_Y] < 0.0, "Option -D: Must specify a positive deviation\n");
 
@@ -695,7 +695,9 @@ use a few of these*/
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_Report (API, GMT_MSG_ERROR, "Number of samples per trace unknown\n");
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
+		GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		if (fpi != stdin) fclose (fpi);
+		Return(GMT_RUNTIME_ERROR);
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of samples is %d\n", n_samp);

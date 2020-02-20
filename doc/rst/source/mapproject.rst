@@ -152,7 +152,7 @@ Optional Arguments
     we calculate *accumulated* distances whereas if a fixed point is given
     we calculate *incremental* distances.  You can override these defaults
     by adding **+a** for accumulated or **+i** for incremental distances.
-    If both *+a** and **+i** are given we will report both types of distances.
+    If both **+a** and **+i** are given we will report both types of distances.
     Append **+v** to obtain a *variable* 2nd point (*lon0*/*lat0*) via columns
     3-4 in the input file; this updates the fixed point per record and thus the
     selection defaults to incremental distances.

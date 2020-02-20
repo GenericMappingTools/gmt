@@ -194,7 +194,7 @@ export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 # Disable gmt end show from displaying plots
 export GMT_END_SHOW=off
 # Start with proper GMT defaults
-gmt set -Du FORMAT_TIME_STAMP "Version 6" GMT_GRAPHICS_FORMAT ps
+gmt set -Ds FORMAT_TIME_STAMP "Version 6" GMT_GRAPHICS_FORMAT ps
 # Modern mode needs a stable PPID but ctest messes that up when pipes are used
 if [ ${modern} -gt 0 ]; then
 	export GMT_SESSION_NAME=\$\$
