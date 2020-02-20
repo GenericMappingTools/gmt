@@ -8105,7 +8105,10 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 
 	dim_nz[0] = nz - 1;
-	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_NONE, 0, dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
+	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_NONE, 0, dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) {
+		gmt_M_free (GMT, z_out);
+		return NULL;
+	}
 
 	lut = gmt_M_memory (GMT, NULL, Pin->n_colors, struct GMT_LUT);
 
