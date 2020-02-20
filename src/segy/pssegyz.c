@@ -695,7 +695,9 @@ use a few of these*/
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_Report (API, GMT_MSG_ERROR, "Number of samples per trace unknown\n");
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
+		GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		if (fpi != stdin) fclose (fpi);
+		Return(GMT_RUNTIME_ERROR);
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of samples is %d\n", n_samp);
