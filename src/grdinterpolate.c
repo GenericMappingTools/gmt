@@ -43,10 +43,6 @@ struct GRDINTERPOLATE_CTRL {
 		char **file;
 		unsigned int n_files;
 	} In;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
-		bool active;
-		char *file;
-	} C;
 	struct F {	/* -Fl|a|c[1|2] */
 		bool active;
 		unsigned int mode;
@@ -114,12 +110,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   n No interpolation (nearest point).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +1 for 1st derivative or +2 for 2nd derivative.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -F%c].\n", type[API->GMT->current.setting.interpolant]);
-	GMT_Option (API, "RV,.");
+	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Read or write 2-D grids that make up a virtual 3-D data cube.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To read a series of input 2-D grids, give -Zi<levels>, where <levels>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for each grid is set via min/max/inc, <zfile>, or a comma-separated list.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To write a series of output 2-D grids, give -Zo and use a floating-point\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   C-format statement as part of the filename set via -G for unique file names.\n");
+	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
 }
