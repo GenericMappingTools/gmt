@@ -1672,6 +1672,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			half_baked_size = buf.st_size;	/* Remember the original size */
 			if ((fp = PSL_fopen (GMT->PSL, ps_names[0], "a")) == NULL) {	/* Must open inside PSL DLL */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot append to file %s\n", ps_names[0]);
+				gmt_M_str_free (ps_names[0]);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			GMT->PSL->internal.call_level++;	/* Must increment here since PSL_beginplot not called, and PSL_endplot will decrement */
