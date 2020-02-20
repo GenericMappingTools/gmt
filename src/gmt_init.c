@@ -15115,8 +15115,10 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 
 		free (item_t2);			/* Cannot be freed before */
 	}
-	else
+	else {
+		if (do_free) free (item_t1);
 		return 1;
+	}
 
 	if (isdigit(item[0]))
 		sprintf (dest, "EPSG:%s", item);
