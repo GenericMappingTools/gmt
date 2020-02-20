@@ -282,12 +282,12 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 
 	/* Close the two virtual files */
 	if (GMT_Close_VirtualFile (API, output)) {
-		return (API->error);
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to close virtual output file %s\n", output);
+		return (API->error);
 	}
 	if (GMT_Close_VirtualFile (API, input)) {
-		return (API->error);
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to close virtual input file %s\n", input);
+		return (API->error);
 	}
 
 	/* Free our custom vectors */
