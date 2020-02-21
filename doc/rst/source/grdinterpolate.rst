@@ -96,7 +96,7 @@ Optional Arguments
     Rather that compute gridded output, create tile/spatial series through the stacked
     grids at the given point (*x/y*) or the list of points in *pointfile*.  If you need
     a series of points defined by an origin and an end point or similar, you can make
-    such a file first with :doc:`project`.  By default we simply sample the cube at the
+    such a file first with :doc:`project`.  By default we simply sample the cube at
     each level.  Use **-T** to interpolate the series.  The grid level (e.g., depth or time)
     will be appended as the last numerical value in the series records.  Use the optional
     **+h** modifier to append *header* to the trailing text of these input points.
@@ -161,6 +161,15 @@ Optional Arguments
 
 .. include:: explain_array.rst_
 
+File Order
+----------
+
+If you provide a series of 2-D files and thus separately assigning the
+level via **-Zi**, then you must make sure that the order the grids are given
+on the command line matches the levels you provide via **-Zi**.  Unless your
+files are named in lexical order you must be careful with using wildcards
+to list all the grids (e.g., *.nc).
+
 Time Coordinates
 ----------------
 
@@ -177,12 +186,12 @@ for x, y, or z coordinate, respectively.
 Series creation
 ---------------
 
-The (optional) table-reading and table-producing **-S** option may require none
-or mansomey of the standard common options associated with table i/o, such as
-**-b**, **-i**, **oo**, etc., thus they are available in this module as well.
-Because the coordinates given via **-S** are *not* required to match the coordinates
+The (optional) table-reading and table-producing **-S** option may require some
+of the standard common options associated with table i/o, such as **-b**, **-i**,
+**o**, etc., thus these options are available to **grdinterpolate** as well.
+Because the coordinates given via **-S** are *not* required to equal the coordinates
 of the grid nodes, we are resampling each 2-D layer at the given points via
-:doc:`grdtrack`, hence the avalability of the **-n** option.
+:doc:`grdtrack`, hence the availability of the **-n** option.
 
 Examples
 --------
@@ -207,7 +216,7 @@ The same, but this time write individual 2-D grids per layer, try::
 
     gmt grdinterpolate temperature.nc -T1500/2500/50 -Gtemperature_%4.0f.nc -Fa -Zo
 
-To extract a time-series through the grids deformation_*.nc at the location 115W, 33N.
+To extract a time-series through the grids deformation_*.nc at the location (115W, 33N),
 with the times of each grid provided by the file dates.txt, and append the string
 "Some like it hot" to the segment header for the series, try::
 
