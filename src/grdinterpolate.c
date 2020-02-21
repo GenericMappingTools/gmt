@@ -454,6 +454,8 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 					So->data[col][k] = level[k];	/* Add time as the last data column */
 				}
 			}
+			for (col = GMT_Z; col < Si->n_columns; col++)
+				gmt_set_column (GMT, GMT_OUT, col, GMT_IS_FLOAT);	/* These are data columns */
 			if (GMT_Close_VirtualFile (API, i_file) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to close input virtual dataset for time-series\n");
 				Return (GMT_RUNTIME_ERROR);
