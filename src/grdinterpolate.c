@@ -47,6 +47,7 @@ struct GRDINTERPOLATE_CTRL {
 		bool active;
 		unsigned int mode;
 		unsigned int type;
+		char spline[GMT_LEN8];
 	} F;
 	struct G {	/* -G<output_grdfile>  */
 		bool active;
@@ -63,6 +64,7 @@ struct GRDINTERPOLATE_CTRL {
 	struct T {	/* -T<start>/<stop>/<inc> or -T<value> */
 		bool active;
 		struct GMT_ARRAY T;
+		char *string;
 	} T;
 	struct Z {	/* -Z<min>/<max>/<inc>, -Z<file>, or -Z<list> */
 		bool active[2];
@@ -71,11 +73,13 @@ struct GRDINTERPOLATE_CTRL {
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+	static char type[3] = {'l', 'a', 'c'};
 	struct GRDINTERPOLATE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDINTERPOLATE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	sprintf (C->F.spline, "%c", type[GMT->current.setting.interpolant]);	/* Set default interpolant */
 	return (C);
 }
 
@@ -92,13 +96,14 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *C) {
 	gmt_M_str_free (C->S.file);
 	gmt_M_str_free (C->S.header);
 	gmt_M_str_free (C->S.template);
+	gmt_M_str_free (C->T.string);
 	gmt_free_array (GMT, &(C->T.T));
 	gmt_free_array (GMT, &(C->Z.T));
 	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	char type[3] = {'l', 'a', 'c'};
+	static char type[3] = {'l', 'a', 'c'};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <3Dgrid> | <grd1> <grd2> ... -G<outfile> -T[<min>/<max>/]<inc>[+n]\n", name);
@@ -189,6 +194,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 						break;
 				}
 				if (opt->arg[1] == '+') Ctrl->F.type = (opt->arg[2] - '0');	/* Want first or second derivatives */
+				strcpy (Ctrl->F.spline, opt->arg);	/* Keep track of what was given */
 				break;
 			case 'G':	/* Output file */
 				if (n_files++ > 0) break;
@@ -199,6 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 				break;
 			case 'T':
 				Ctrl->T.active = true;
+				Ctrl->T.string = strdup (opt->arg);
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE, GMT_Z);
 				break;
 
@@ -359,45 +366,39 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	int_mode = Ctrl->F.mode + 10*Ctrl->F.type;
 
 	if (Ctrl->S.active) {	/* Create time/depth-series and not grid output */
-		uint64_t n_out = 0, rec, seg, row;
-		uint64_t dim[4] = {1, 1, 1, 2};	/* One point */
-		char i_file[GMT_STR16] = {""}, o_file[GMT_STR16] = {""}, grid[GMT_LEN128] = {""}, cmd[GMT_LEN128] = {""};
-		double *t = NULL;
+		unsigned int io_mode = GMT_WRITE_NORMAL;
+		uint64_t rec, seg, row, col;
+		uint64_t dim[4] = {1, 1, 1, 2};	/* Dataset dimension for one point */
+		char i_file[GMT_STR16] = {""}, o_file[GMT_STR16] = {""}, grid[GMT_LEN128] = {""}, header[GMT_LEN256] = {""}, cmd[GMT_LEN128] = {""};
 		struct GMT_DATASET *In = NULL, *Out = NULL, *D = NULL;
-		struct GMT_DATASEGMENT *S = NULL, *So = NULL;
-		if (Ctrl->T.active) {	/* Interpolation between grids is requested */
-			n_out = Ctrl->T.T.n;
-			t = Ctrl->T.T.array;
-		}
-		else {	/* Sample the grid, no interpolation bewteen layers */
-			n_out = n_layers;
-			t = level;
-		}
-		if (Ctrl->S.file) {	/* Read a list of points */
+		struct GMT_DATASEGMENT *S = NULL, *Si = NULL, *So = NULL;
+
+		if (Ctrl->S.file) {	/* Read a list of points, the list may have trailing text which may be activated by -S...+h */
 			if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->S.file, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
 		else {	/* Single point, simplify code by making a 1-point dataset */
-			if ((In = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			if ((In = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, (Ctrl->S.header) ? GMT_WITH_STRINGS : 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			S = In->table[0]->segment[0];	/* Short hand to the first and only segment */
-			S->data[GMT_X][0] = Ctrl->S.x;
-			S->data[GMT_Y][0] = Ctrl->S.y;
-			S->n_rows = 1;
+			Si = In->table[0]->segment[0];	/* Short hand to the first and only segment */
+			Si->data[GMT_X][0] = Ctrl->S.x;
+			Si->data[GMT_Y][0] = Ctrl->S.y;
+			if (Ctrl->S.header) Si->header = strdup (Ctrl->S.header);
+			Si->n_rows = 1;
 			gmt_set_dataset_minmax (GMT, In);
 		}
-		dim[GMT_SEG] = In->n_records;	/* One output time-series per input data location */
-		dim[GMT_ROW] = n_out;			/* Length of each sampled time-series per input data location */
-		dim[GMT_COL] = 4;				/* x, y, time|z, value */
-		if ((Out = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, (Ctrl->S.mode) ? GMT_WITH_STRINGS : 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		dim[GMT_SEG] = In->n_records;		/* One output time-series per input data location */
+		dim[GMT_ROW] = n_layers;			/* Length of each sampled time-series per input data location */
+		dim[GMT_COL] = In->n_columns + 2;	/* x, y [,col3, col4...], time|z, value */
+		if ((Out = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create output dataset for time-series\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, In, i_file) != GMT_NOERROR) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, In, i_file) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -422,26 +423,61 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 			for (seg = rec = 0; seg < D->table[0]->n_segments; seg++) {	/* For each point we sampled at */
 				S = D->table[0]->segment[seg];	/* Short hand to this segment */
+				sprintf (header, "Sampled at %g/%g %s", S->data[GMT_X][0], S->data[GMT_Y][0], S->header);
+				gmt_M_str_free (S->header);
+				S->header = strdup (header);
+
 				for (row = 0; row < S->n_rows; row++, rec++) {	/* For each selected point which matches each output segment */
 					So = Out->table[0]->segment[rec];	/* Short hand to this output segment */
-					So->data[0][k] = S->data[GMT_X][row];
-					So->data[1][k] = S->data[GMT_Y][row];
-					So->data[2][k] = t[k];
-					So->data[3][k] = S->data[GMT_Z][row];
+					for (col = 0; col < S->n_columns; col++)
+						So->data[col][k] = S->data[col][row];
+					So->data[col][k] = level[k];	/* Add time as the last data column */
 				}
 			}
+			if (GMT_Close_VirtualFile (API, i_file) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to close input virtual dataset for time-series\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
 			if (GMT_Close_VirtualFile (API, o_file) != GMT_NOERROR) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to close virtual dataset for time-series\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to close output irtual dataset for time-series\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (GMT_Destroy_Data (API, &D) != GMT_OK) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to delete virtual dataset for time-series\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to delete dataset returned by grdtrack\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		/* If -T then we instead call upon sample1d to resample before writing - for now just dump sampled points */
-		/* Time to write out the results */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, 0, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
+		if (Ctrl->T.active) {	/* Want to interpolate through the sampled points using the specified spline */
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, Out, i_file) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, NULL, o_file) == GMT_NOTSET) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			sprintf (cmd, "%s -F%s -N%d -T%s ->%s", i_file, Ctrl->F.spline, (int)(Out->n_columns - 1), Ctrl->T.string, o_file);
+			if (GMT_Call_Module (API, "sample1d", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Interpolate each profile per -T */
+				Return (API->error);
+			}
+			if (GMT_Destroy_Data (API, &Out) != GMT_OK) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to delete virtual dataset for time-series\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			Out = GMT_Read_VirtualFile (API, o_file);	/* Get the updated results from sample1d */
+		}
+
+		if (Ctrl->G.file && strchr (Ctrl->G.file, '%')) {	/* Want separate files per series, so change mode and build file names per segment */
+			struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
+			mode = GMT_WRITE_SEGMENT;
+			for (seg = 0; seg < Out->table[0]->n_segments; seg++) {
+				SH = gmt_get_DS_hidden (Out->table[0]->segment[seg]);
+				sprintf (file, Ctrl->G.file, seg);
+				SH->file[GMT_OUT] = strdup (file);
+			}
+		}
+		/* Time to write out the results to stdout, a file, or individual segment files */
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to write dataset for time-series\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
