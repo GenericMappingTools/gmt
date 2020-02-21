@@ -423,12 +423,17 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 			for (seg = rec = 0; seg < D->table[0]->n_segments; seg++) {	/* For each point we sampled at */
 				S = D->table[0]->segment[seg];	/* Short hand to this segment */
-				sprintf (header, "Sampled at %g/%g %s", S->data[GMT_X][0], S->data[GMT_Y][0], S->header);
-				gmt_M_str_free (S->header);
-				S->header = strdup (header);
+
 
 				for (row = 0; row < S->n_rows; row++, rec++) {	/* For each selected point which matches each output segment */
 					So = Out->table[0]->segment[rec];	/* Short hand to this output segment */
+					if (k == start_k) {	/* Set the segment header just once */
+						if (S->text && S->text[row])
+							sprintf (header, "Location %g,%g %s", S->data[GMT_X][row], S->data[GMT_Y][row], S->text[row]);
+						else
+							sprintf (header, "Location %g,%g", S->data[GMT_X][row], S->data[GMT_Y][row]);
+						So->header = strdup (header);
+					}
 					for (col = 0; col < S->n_columns; col++)
 						So->data[col][k] = S->data[col][row];
 					So->data[col][k] = level[k];	/* Add time as the last data column */
@@ -469,7 +474,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 		if (Ctrl->G.file && strchr (Ctrl->G.file, '%')) {	/* Want separate files per series, so change mode and build file names per segment */
 			struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
-			mode = GMT_WRITE_SEGMENT;
+			io_mode = GMT_WRITE_SEGMENT;
 			for (seg = 0; seg < Out->table[0]->n_segments; seg++) {
 				SH = gmt_get_DS_hidden (Out->table[0]->segment[seg]);
 				sprintf (file, Ctrl->G.file, seg);
