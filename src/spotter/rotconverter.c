@@ -203,12 +203,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 					case 'f':
 						if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 							GMT_Report (API, GMT_MSG_COMPAT, "-Ff is deprecated; use -Ft instead.\n");
-							/* Fall through on purpose to 't' */
+							/* Intentionally fall through - to 't' */
 						else {
 							GMT_Report (API, GMT_MSG_ERROR, "Must specify t|s\n");
 							n_errors++;
 							break;
 						}
+						/* Intentionally fall through */
 					case 't':
 						Ctrl->F.mode = true;
 						break;

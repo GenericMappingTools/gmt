@@ -1637,7 +1637,7 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 					break;
 				case '~':	/* Symbol font toggle */
 					psl_encodefont (PSL, PSL_SYMBOL_FONT);
-					/* Fall through and place the text? */
+					/* Intentionally fall through - to place the text? */
 				default:
 					string[j++] = '@';
 					string[j++] = text[i++];

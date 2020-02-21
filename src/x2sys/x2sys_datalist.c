@@ -317,7 +317,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
-				/* Fall through on purpose to 'M' */
+				/* Intentionally fall through - to 'M' */
 			else {
 				GMT_Report (API, GMT_MSG_ERROR, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
@@ -325,6 +325,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				break;
 			}
+			/* Intentionally fall through */
 		case 'M':
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get miles. dt is in sec so 3600 gives miles/hr */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(mi/hr)");
@@ -354,7 +355,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
-				/* Fall through on purpose to 'M' */
+				/* Intentionally fall through - to 'M' */
 			else {
 				GMT_Report (API, GMT_MSG_ERROR, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
@@ -362,6 +363,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				break;
 			}
+			/* Intentionally fall through */
 		case 'M':
 			strcpy (auxlist[MGD77_AUX_DS].header, "d(miles)");
 			break;

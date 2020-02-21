@@ -266,6 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
+				/* Intentionally fall through */
 			case 'I':
 				Ctrl->I.active = true;
 				L = strlen (opt->arg);

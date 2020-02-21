@@ -233,7 +233,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 						case 'f': Ctrl->E.dt[id][PSEVENTS_FADE]    = atof (&txt[1]);	break;	/* Fade duration */
 						case 'p': Ctrl->E.dt[id][PSEVENTS_PLATEAU] = atof (&txt[1]);	break;	/* Plateau duration */
 						case 'r': Ctrl->E.dt[id][PSEVENTS_RISE]    = atof (&txt[1]);	break;	/* Rise duration */
-						case 'O': Ctrl->E.trim[id] = true;	/* Offset start but not end.  Fall through to case 'o' */
+						case 'O': Ctrl->E.trim[id] = true;	/* Intentionally fall through - offset start but not end. Fall through to case 'o' */
 						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt[1]);	break;	/* Event time offset */
 						case 'l':	/* Event length override for text */
 							if (id == PSEVENTS_SYMBOL) {

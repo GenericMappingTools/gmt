@@ -626,7 +626,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						break;
 					case 't':	/* Image without color interpolation */
 						Ctrl->Q.special = true;
-						/* Deliberate fall-through to 'i' */
+						/* Intentionally fall through - to 'i' */
 					case 'i':	/* Image with clipmask */
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
 						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
