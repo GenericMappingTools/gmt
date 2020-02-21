@@ -219,4 +219,5 @@ See Also
 :doc:`gmt.conf`,
 :doc:`gmt`,
 :doc:`grdedit`,
-:doc:`grdcut`
+:doc:`grdcut`,
+:doc:`project`
