@@ -209,8 +209,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  is optional unit.  Only ONE unit type from %s can be used throughout.\n", GMT_LEN_UNITS2_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     Mixing of units is not allowed [Default unit is km if geographic].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option,\n", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     so mixing of units is not allowed [Default unit is km, if geographic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Report center, left, and right point per cross-track; requires -C and a single input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We assume a positive center peak; append +n if dealing with a negative trough.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z<z0> to change the detection level for left or right [0].\n");

@@ -841,7 +841,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 									Ctrl->E.fade[GMT_IN] = frames;
 								else 	/* Set output ga */
 									Ctrl->E.fade[GMT_OUT] = frames;
-									break;
+								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
