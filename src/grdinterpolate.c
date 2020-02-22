@@ -260,8 +260,8 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 	else {	/* See if we got a 3D netCDF data cube; if so return number of layers and their levels */
 		nc_layer = strchr (Ctrl->In.file[0], '?');	/* Maybe given a specific variable? */
-		if (nc_layer) {
-			strcpy (cube_layer, &nc_layer[1]);	/* Gave a specific layer. Keep variable name and remove from filename */
+		if (nc_layer) {	/* Gave a specific layer. Keep variable name and remove from filename */
+			strcpy (cube_layer, &nc_layer[1]);
 			nc_layer[0] = '\0';	/* Chop off layer name for now */
 		}
 		if ((error = gmt_examine_nc_cube (GMT, Ctrl->In.file[0], &n_layers, &level))) Return (error);
@@ -315,7 +315,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	for (k = start_k; k <= stop_k; k++) {	/* Read the required layers into individual grid structures */
 		if (Ctrl->Z.active[GMT_IN])	/* Get the k'th file */
 			sprintf (file, "%s", Ctrl->In.file[k]);
-		else	/* Get the k'th layer from 3D cube possibly via a seleted variable */
+		else	/* Get the k'th layer from 3D cube possibly via a selected variable */
 			sprintf (file, "%s?%s[%" PRIu64 "]", Ctrl->In.file[0], cube_layer, k);
 		if ((G[GMT_IN][k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to read layer %" PRIu64 " from file %s.\n", k, file);
