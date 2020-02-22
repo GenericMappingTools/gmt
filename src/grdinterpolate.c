@@ -100,8 +100,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file name (or template; see -Zo).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Interpolate the 3-D grid at given levels across the 3rd dimension\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of knot-values to produce over the range instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output knots in the first column, or a comma-separated list.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of levels to produce over the range instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output levels in the first column, or a comma-separated list.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the grid interpolation mode.  Choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation.\n");
@@ -206,7 +206,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files < 1, "Error: No input grid(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active[GMT_IN] && Ctrl->In.n_files != 1, "Must specify one input 3D grid cube file unless -Zi is set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -T: Must specify output knot(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -T: Must specify desired output time/level(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify only one output grid file\n");
 
