@@ -8687,7 +8687,7 @@ void gmtlib_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
 int gmt_remove_file (struct GMT_CTRL *GMT, const char *file) {
 	/* Try to remove a file - give error message if it fails.  Depends on extern int errno */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Delete %s\n", file);
-	if (remove (file)) {
+	if (!access (file, F_OK) && remove (file)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to remove %s! [remove error: %s]\n", file, strerror (errno));
 		return errno;
 	}
