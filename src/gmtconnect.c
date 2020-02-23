@@ -586,8 +586,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				dd[SEG_I][END_A] = dd[SEG_J][END_B] = DBL_MAX;	/* Flag as single line segment so two ends are not used to connect them */
 				/* Only compute a distance for this single segment if it has more than 2 points.  2 point cannot connect back on itself as it would make a polygon with zero area */
 				dd[SEG_I][END_B] = dd[SEG_J][END_A] = (segment[iseg].n < 3) ? DBL_MAX : gmt_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[iseg].x_end[END_B], segment[iseg].y_end[END_B]);
-    			nearest_end[SEG_I][END_A] = nearest_end[SEG_J][END_A] = END_B;	/* Duplicate the nearest ID info since it is a single line segment compared to itself */
-    			nearest_end[SEG_J][END_B] = nearest_end[SEG_I][END_B] = END_A;
+				nearest_end[SEG_I][END_A] = nearest_end[SEG_J][END_A] = END_B;	/* Duplicate the nearest ID info since it is a single line segment compared to itself */
+				nearest_end[SEG_J][END_B] = nearest_end[SEG_I][END_B] = END_A;
 			}
 			else {	/* Store the distances between the 4 possible end-to-end configurations */
 				dd[SEG_I][END_A] = gmt_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[jseg].x_end[END_A], segment[jseg].y_end[END_A]);
@@ -595,12 +595,12 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				dd[SEG_J][END_A] = gmt_distance (GMT, segment[iseg].x_end[END_B], segment[iseg].y_end[END_B], segment[jseg].x_end[END_A], segment[jseg].y_end[END_A]);
 				dd[SEG_J][END_B] = gmt_distance (GMT, segment[iseg].x_end[END_B], segment[iseg].y_end[END_B], segment[jseg].x_end[END_B], segment[jseg].y_end[END_B]);
 				/* Determine which end is nearest */
-    			for (end = 0; end < 2; end++) nearest_end[SEG_I][end] = (dd[end][END_A] <= dd[end][END_B]) ? END_A : END_B;
-    			for (end = 0; end < 2; end++) nearest_end[SEG_J][end] = (dd[END_A][end] <= dd[END_B][end]) ? END_A : END_B;
-    		}
+				for (end = 0; end < 2; end++) nearest_end[SEG_I][end] = (dd[end][END_A] <= dd[end][END_B]) ? END_A : END_B;
+				for (end = 0; end < 2; end++) nearest_end[SEG_J][end] = (dd[END_A][end] <= dd[END_B][end]) ? END_A : END_B;
+			}
 			sprintf (msg, "Pair %d - %d, dd[i][j] = %g, %g, %g, %g\n", (int)iseg, (int)jseg, dd[0][0], dd[0][1], dd[1][0], dd[1][1]);
 			GMT_Report (API, GMT_MSG_DEBUG, msg);
- 			/* Update list of closest matches for both ends */
+			/* Update list of closest matches for both ends */
 			for (ii = 0; ii < 2; ii++) {	/* For each end of the segments */
 				end = nearest_end[SEG_I][ii];	/* The end of segment jseg that so far is closest to segment iseg's end ii */
 				if (dd[ii][end] < segment[iseg].nearest[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update it */
