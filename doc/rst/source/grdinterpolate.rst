@@ -87,7 +87,9 @@ Optional Arguments
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
     **+l** if geographic distances should be measured along rhumb lines
-    (loxodromes) instead of great circles.
+    (loxodromes) instead of great circles. Note: If increment in **-E**
+    is in arc units then using **-Ap** or **-Am** will select the longitudes
+    or latitudes along the crossection as distances, respectively.
 
 .. _-E:
 
@@ -261,9 +263,10 @@ with the times of each grid provided by the file dates.txt, and append the strin
     gmt grdinterpolate deformation_*.nc -Zidates.txt -S115W/33N+h"Some like it hot" > record.txt
 
 To extract a vertical slice of the 3-D grid S362ANI_kmps.nc with seismic velocities that goes
-through the Hawaii hotspot, and let the distances be longitude, try::
+through the Hawaii hotspot, selecting cube vs (Isotropic Shear Velocity) and letting the
+distances be longitude degrees, try::
 
-    gmt S362ANI_kmps.nc -E180/20/220/20+i1d -T25/500/25 -Gslice.nc -Ap
+    gmt S362ANI_kmps.nc?vs -E180/20/220/20+i1d -T25/500/25 -Gslice.nc -Ap
 
 See Also
 --------
