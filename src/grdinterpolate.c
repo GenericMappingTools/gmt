@@ -44,6 +44,17 @@ struct GRDINTERPOLATE_CTRL {
 		char **file;
 		unsigned int n_files;
 	} In;
+	struct GRDTRACK_A {	/* -A[f|m|p|r|R][+l] */
+		bool active, loxo;
+		enum GMT_enum_track mode;
+	} A;
+	struct E {	/* -E<line1>[,<line2>,...][+a<az>][+c][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>] */
+		bool active;
+		unsigned int mode;
+		char *lines;
+		double step;
+		char unit;
+	} E;
 	struct F {	/* -Fl|a|c[1|2] */
 		bool active;
 		unsigned int mode;
@@ -105,7 +116,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <3Dgrid> | <grd1> <grd2> ... -G<outfile> -T[<min>/<max>/]<inc>[+n]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2] [-S<x>/<y>|<table>[+h<header>]] [%s]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[f|m|p|r|R][+l]] [-E<line1>[,<line2>,...][+a<az>][+d][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]] [-Fl|a|c|n][+1|2] [-S<x>/<y>|<table>[+h<header>]] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Zi<levels>|o] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -119,6 +130,25 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of levels to produce over the range instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output levels in the first column, or a comma-separated list.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how a crossection defined via -E is resampled:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m: Same, but first follow meridian (along y) then parallel (along x).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p: Same, but first follow parallel (along x) then meridian (along y).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r: Resample at equidistant locations; input points not necessarily included.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set up a crossection based on the given <line1>[,<line2>,...]. Give start and stop coordinates for\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i<inc> to set the sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +d to insert an extra output column with distances following the coordinates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option,\n", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     so mixing of units is not allowed [Default unit is km, if geographic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the grid interpolation mode.  Choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
@@ -172,6 +202,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* Change track resampling mode */
+				Ctrl->A.active = true;
+				switch (opt->arg[0]) {
+					case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
+					case 'm': Ctrl->A.mode = GMT_TRACK_FILL_M; break;
+					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
+					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
+					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
+					default: GMT_Report (API, GMT_MSG_ERROR, "Option -G: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+				}
+				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
+				break;
+			case 'E':	/* Create an equidistant profile for slicing */
+				Ctrl->E.active = true;
+				Ctrl->E.lines = strdup (opt->arg);
+				break;
 			case 'F':
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
@@ -264,13 +310,33 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files < 1, "Error: No input grid(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active[GMT_IN] && Ctrl->In.n_files != 1, "Must specify one input 3D grid cube file unless -Zi is set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
-	if (!Ctrl->S.active) {	/* Under -S, the -T and -G are optional */
+	if (!(Ctrl->S.active || Ctrl->E.active)) {	/* Under -S, the -T and -G are optional */
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -T: Must specify output levels(s)\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
+		n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify only one output file name\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify only one output file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->S.active, "Options -E and -S cannot be used together\n");
+	if (Ctrl->E.active) {
+		n_errors += gmt_M_check_condition (GMT, strstr (Ctrl->E.lines, "+d"), "Option -E: Unrecognized modifier +d\n");
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
+}
+
+GMT_LOCAL bool equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int nz) {
+	/* Return true if spacing between layers is constant */
+	unsigned int k;
+	double dz;
+
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report levels */
+		for (k = 0; k < nz; k++)
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: %g\n", k, z[k]);
+	}
+	if (nz < 3) return true;	/* Special case of a single layer */
+	dz = z[1] - z[0];	/* First increment */
+	for (k = 2; k < nz; k++)
+		if (!doubleAlmostEqual (dz, z[k]-z[k-1])) return false;
+	return true;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -278,11 +344,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 
 int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	char file[PATH_MAX] = {""}, cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL;
+	bool equi_levels;
 	int error = 0;
-	unsigned int int_mode, row, col, level_type;
-	uint64_t n_layers = 0, k, node, start_k, stop_k, n_use;
+	unsigned int int_mode, row, col, level_type, dtype;
+	uint64_t n_layers = 0, k, node, start_k, stop_k, n_layers_used;
 	double wesn[4], *level = NULL, *i_value = NULL, *o_value = NULL;
-	struct GMT_GRID **G[2] = {NULL, NULL};
+	struct GMT_GRID **G[2] = {NULL, NULL},*Grid = NULL;
+	struct GMT_DATASET *In = NULL, *Out = NULL;
 	struct GRDINTERPOLATE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -336,7 +404,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to set up output level array\n");
 		Return (API->error);
 	}
-
+	equi_levels = equidistant_levels (GMT, level, n_layers);	/* Are levels equidistant? */
 	level_type = gmt_M_type (GMT, GMT_IN, GMT_Z);	/* Either time or floating point values like depth */
 
 	/* Determine the range of input layers needed for interpolation */
@@ -354,26 +422,65 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		if (stop_k < (n_layers-1) && (Ctrl->F.mode == GMT_SPLINE_AKIMA || Ctrl->F.mode == GMT_SPLINE_CUBIC))
 			stop_k++;	/* One more to define the spline coefficients */
 	}
-	n_use = stop_k - start_k + 1;	/* Total number of input layers needed */
-	if (n_use == 1) {	/* Might have landed exactly on one of the grid levels, but GMT_intpol needs at least 2 inputs */
+	n_layers_used = stop_k - start_k + 1;	/* Total number of input layers needed */
+	if (n_layers_used == 1) {	/* Might have landed exactly on one of the grid levels, but GMT_intpol needs at least 2 inputs */
 		if (start_k) start_k--;
 		else stop_k++;	/* We know there are at least 2 input grids */
-		n_use = 2;
+		n_layers_used = 2;
 	}
 
-	if (Ctrl->S.active) {	/* Create time/depth-series and not grid output */
+	if (Ctrl->E.active) {	/* Create profiles rather than read them */
+		char prof_args[GMT_LEN128] = {""};
+		if (!(equi_levels || Ctrl->T.active)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -E requires either equidistant levels or resampling via -T\n");
+			Return (GMT_RUNTIME_ERROR);			
+		}
+		if (gmt_get_dist_units (GMT, Ctrl->E.lines, &Ctrl->E.unit, &Ctrl->E.mode)) {	/* Bad mixing of units in -E specification */
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot mix units in -E (%s)\n", Ctrl->E.lines);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
+
+		/* Need to get dx,dy from one grid */
+		if (Ctrl->Z.active[GMT_IN])	/* Get the first file */
+			sprintf (file, "%s", Ctrl->In.file[0]);
+		else	/* Get the first layer from 3D cube possibly via a selected variable */
+			sprintf (file, "%s?%s[0]", Ctrl->In.file[0], cube_layer);
+		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to read header from file %s.\n", file);
+			Return (API->error);
+		}
+		/* Set default spacing to half the min grid spacing: */
+		Ctrl->E.step = 0.5 * MIN (Grid->header->inc[GMT_X], Grid->header->inc[GMT_Y]);
+		if (GMT_Destroy_Data (API, &Grid)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to destroy temporary grid?\n");
+			Return (API->error);
+		}
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
+			if (!GMT->current.map.dist[GMT_MAP_DIST].arc) Ctrl->E.step *= GMT->current.proj.DIST_M_PR_DEG;	/* Convert from degrees to meters or from min/secs to degrees */
+			Ctrl->E.step *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scale to chosen unit */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Default sampling interval in -E is %g %c (may be overridden by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
+		}
+		if (strstr (Ctrl->E.lines, "+c"))
+			strncpy (prof_args, Ctrl->E.lines, GMT_LEN128-1);
+		else /* Make sure we request continuous if possible */
+			sprintf (prof_args, "%s+c", Ctrl->E.lines);
+		In = gmt_make_profiles (GMT, 'E', prof_args, true, false, true, Ctrl->E.step, Ctrl->A.mode, NULL, &dtype);
+		if (In->table[0] == NULL)
+			Return (GMT_RUNTIME_ERROR);
+		In->n_columns = In->table[0]->n_columns;	/* Since could have changed via +d */
+	}
+	else if (Ctrl->S.active) {	/* Create time/depth-series and not grid output */
 		/* Since we let grdtrack read the grids we do a separate branch here and the return from the module */
-		unsigned int io_mode = GMT_WRITE_NORMAL;
-		uint64_t rec, seg, row, col;
+		uint64_t seg, row;
 		uint64_t dim[4] = {1, 1, 1, 2};	/* Dataset dimension for one point */
-		char i_file[GMT_STR16] = {""}, o_file[GMT_STR16] = {""}, grid[GMT_LEN128] = {""}, header[GMT_LEN256] = {""}, cmd[GMT_LEN128] = {""};
-		struct GMT_DATASET *In = NULL, *Out = NULL, *D = NULL;
-		struct GMT_DATASEGMENT *Si = NULL, *So = NULL;
+		char header[GMT_LEN256] = {""};
+		struct GMT_DATASEGMENT *Si = NULL;
 
 		if (Ctrl->S.file) {	/* Read a list of points, the list may have trailing text which may be activated by -S...+h */
 			if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->S.file, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 			if (Ctrl->S.header) {	/* Want to use this fixed text to add to the trialing text of all the points */
 				for (seg = 0; seg < In->n_segments; seg++) {
@@ -395,7 +502,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		else {	/* Single point, simplify logic below by making a 1-point dataset */
 			if ((In = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, (Ctrl->S.header) ? GMT_WITH_STRINGS : 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 			Si = In->table[0]->segment[0];	/* Short hand to the first and only segment */
 			Si->data[GMT_X][0] = Ctrl->S.x;
@@ -404,16 +511,25 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Si->n_rows = 1;
 			gmt_set_dataset_minmax (GMT, In);
 		}
+	}
+	if (Ctrl->E.active || Ctrl->S.active) {
+		unsigned int io_mode = GMT_WRITE_NORMAL;
+		uint64_t seg, row, rec, col;
+		uint64_t dim[4] = {1, 1, 1, 2};	/* Dataset dimension for one point */
+		char i_file[GMT_STR16] = {""}, o_file[GMT_STR16] = {""}, grid[GMT_LEN128] = {""}, header[GMT_LEN256] = {""}, cmd[GMT_LEN128] = {""};
+		struct GMT_DATASET *D = NULL;
+		struct GMT_DATASEGMENT *Si = NULL, *So = NULL;
+
 		dim[GMT_SEG] = In->n_records;		/* One output time-series per input data location */
-		dim[GMT_ROW] = n_layers;			/* Length of each sampled time-series per input data location */
+		dim[GMT_ROW] = n_layers_used;		/* Length of each sampled time-series per input data location */
 		dim[GMT_COL] = In->n_columns + 2;	/* x, y [,col3, col4...], time|z, value */
 		if ((Out = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create output dataset for time-series\n");
-			Return (GMT_RUNTIME_ERROR);
+			Return (API->error);
 		}
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, In, i_file) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");
-			Return (GMT_RUNTIME_ERROR);
+			Return (API->error);
 		}
 
 		for (k = start_k; k <= stop_k; k++) {	/* For all available input levels k */
@@ -421,10 +537,10 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			if (Ctrl->Z.active[GMT_IN])	/* Get the k'th file */
 				sprintf (grid, "%s", Ctrl->In.file[k]);
 			else	/* Get the k'th layer from 3D cube */
-				sprintf (grid, "%s?[%" PRIu64 "]", Ctrl->In.file[0], k);
+				sprintf (grid, "%s?%s[%" PRIu64 "]", Ctrl->In.file[0], cube_layer, k);
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, o_file) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 
 			sprintf (cmd, "%s -G%s ->%s", i_file, grid, o_file);
@@ -438,7 +554,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 			if ((D = GMT_Read_VirtualFile (API, o_file)) == NULL) {	/* Get the results from grdtrack */
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to read virtual dataset for time-series created by grdtrack\n");
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 
 			for (seg = rec = 0; seg < D->table[0]->n_segments; seg++) {	/* For each point we sampled at */
@@ -463,15 +579,15 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				gmt_set_column (GMT, GMT_OUT, col, GMT_IS_FLOAT);	/* These are data columns */
 			if (GMT_Close_VirtualFile (API, i_file) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to close input virtual dataset for time-series\n");
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 			if (GMT_Close_VirtualFile (API, o_file) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to close output irtual dataset for time-series\n");
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 			if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to delete dataset returned by grdtrack\n");
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 		}
 		gmt_set_column (GMT, GMT_OUT, col, level_type);	/* This is the grid-level data type which on output is in this column */
@@ -479,11 +595,11 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		if (Ctrl->T.active) {	/* Want to interpolate through the sampled points using the specified spline */
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, Out, i_file) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, NULL, o_file) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 			sprintf (cmd, "%s -F%s -N%d -T%s ->%s", i_file, Ctrl->F.spline, (int)(Out->n_columns - 1), Ctrl->T.string, o_file);
 			if (GMT_Call_Module (API, "sample1d", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Interpolate each profile per -T */
@@ -491,30 +607,80 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to delete virtual dataset for time-series\n");
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
 			if ((Out = GMT_Read_VirtualFile (API, o_file)) == NULL) {	/* Get the updated results from sample1d */
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to read virtual dataset for time-series created by sample1d\n");
-				Return (GMT_RUNTIME_ERROR);
+				Return (API->error);
 			}
+			dim[GMT_ROW] = Out->table[0]->segment[0]->n_rows;	/* Update new row dim */
 		}
 
-		if (Ctrl->G.file && strchr (Ctrl->G.file, '%')) {	/* Want separate files per series, so change mode and build file names per segment */
-			struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
-			io_mode = GMT_WRITE_SEGMENT;	/* Flag that we want individual segment files */
-			for (seg = 0; seg < Out->table[0]->n_segments; seg++) {	/* Set the output file names */
-				SH = gmt_get_DS_hidden (Out->table[0]->segment[seg]);
-				sprintf (file, Ctrl->G.file, seg);
-				SH->file[GMT_OUT] = strdup (file);
+		if (Ctrl->S.active) {	/* Write the table(s) */
+			if (Ctrl->G.file && strchr (Ctrl->G.file, '%')) {	/* Want separate files per series, so change mode and build file names per segment */
+				struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
+				io_mode = GMT_WRITE_SEGMENT;	/* Flag that we want individual segment files */
+				for (seg = 0; seg < Out->table[0]->n_segments; seg++) {	/* Set the output file names */
+					SH = gmt_get_DS_hidden (Out->table[0]->segment[seg]);
+					sprintf (file, Ctrl->G.file, seg);
+					SH->file[GMT_OUT] = strdup (file);
+				}
+			}
+			/* Time to write out the results to stdout, a file, or individual segment files */
+			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Here we always want to write the headers we built */
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to write dataset for time-series\n");
+				Return (API->error);
 			}
 		}
-		/* Time to write out the results to stdout, a file, or individual segment files */
-		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Here we always want to write the headers we built */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to write dataset for time-series\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
+		else {	/* Here we return the slice as a grid */
+			uint64_t ij;
+			char unit[GMT_LEN64] = {""};
+			double wesn[4], inc[2];
 
+			wesn[XLO] = Out->table[0]->segment[0]->data[2][0];	wesn[XHI] = Out->table[0]->segment[dim[GMT_SEG]-1]->data[2][0];
+			if (dtype == GMT_IS_LON && wesn[XHI] < wesn[XLO]) wesn[XHI] += 360.0;
+			wesn[YLO] = Out->table[0]->segment[0]->data[4][0];	wesn[YHI] = Out->table[0]->segment[0]->data[4][dim[GMT_ROW]-1];
+			inc[GMT_X] = gmt_M_get_inc (GMT, wesn[XLO], wesn[XHI], Out->n_segments, GMT_GRID_NODE_REG);
+			inc[GMT_Y] = gmt_M_get_inc (GMT, wesn[YLO], wesn[YHI], Out->table[0]->segment[0]->n_rows, GMT_GRID_NODE_REG);
+			gmt_set_column (GMT, GMT_OUT, GMT_X, dtype);	/* This is data type of the distances */
+			gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);	/* This is data type of depth or time */
+			gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* This is data type of the cube values */
+			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a grid for slice\n");
+				Return (API->error);
+			}
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Grid slide through 3-D data cube", Grid)) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
+			if (dtype == GMT_IS_LON)
+				strcpy (Grid->header->x_units, "longitude [degrees_east]");
+			else if (dtype == GMT_IS_LAT)
+				strcpy (Grid->header->x_units, "latitude [degrees_north]");
+			else {
+				sprintf (unit, "Distance (%c)", Ctrl->E.unit);
+				strcpy (Grid->header->x_units, unit);
+			}
+			//strcpy (Grid->header->y_units, level_unit);
+
+			for (seg = 0; seg < Out->n_segments; seg++) {	/* Each segment represents one x-coordinate */
+				So = Out->table[0]->segment[seg];	/* Short hand to this output segment */
+				for (row = 0; row < So->n_rows; row++) {
+					ij = gmt_M_ijp (Grid->header, row, seg);
+					Grid->data[ij] = (float)So->data[3][row];
+				}
+			}
+			if (GMT_Destroy_Data (API, &Out) != GMT_OK) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to delete final dataset for time-series\n");
+				Return (API->error);
+			}
+			GMT_Report (API, GMT_MSG_INFORMATION, "Write sliced grid to output file %s\n", Ctrl->G.file);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
+		if (!Ctrl->Z.active[GMT_IN])
+			gmt_M_free (GMT, level);
+		/* OK done with this segment of the model */
 		Return (GMT_NOERROR);
 	}
 
@@ -536,7 +702,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 	if (nc_layer) nc_layer[0] = '?';	/* Restore layer name */
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_use, start_k, stop_k, level[start_k], level[stop_k]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Will read %" PRIu64 " layers (%" PRIu64 " - %" PRIu64 ") for levels %g to %g.\n", n_layers_used, start_k, stop_k, level[start_k], level[stop_k]);
 
 	if (Ctrl->T.T.n > 1 && !Ctrl->Z.active[GMT_OUT]) {
 		GMT_Report (API, GMT_MSG_ERROR, "Sorry, writing 3-D output netCDF cube is not implemented yet.  Use -Zo for now.\n");
@@ -561,7 +727,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	gmt_M_grd_loop (GMT, G[GMT_IN][start_k], row, col, node) {	/* Loop over all coregistered nodes (picking G[GMT_IN][start_k] to represent all grid layouts) */
 		for (k = start_k; k <= stop_k; k++)	/* For all available input levels */
 			i_value[k] = G[GMT_IN][k]->data[node];	/* Get the values at this (x,y) across all input levels */
-		gmt_intpol (GMT, &level[start_k], &i_value[start_k], n_use, Ctrl->T.T.n, Ctrl->T.T.array, o_value, int_mode);	/* Resample at requested output levels */
+		gmt_intpol (GMT, &level[start_k], &i_value[start_k], n_layers_used, Ctrl->T.T.n, Ctrl->T.T.array, o_value, int_mode);	/* Resample at requested output levels */
 		for (k = 0; k < Ctrl->T.T.n; k++)	/* For all output levels */
 			G[GMT_OUT][k]->data[node] = (float)o_value[k];	/* Put interpolated output values at this (x,y) across all levels */
 	}

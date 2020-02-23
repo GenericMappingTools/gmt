@@ -499,98 +499,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsigned int *mode) {
-	/* Examine the -E<args> option and determine the distance unit and mode. */
-	unsigned int id, pos = 0, pos2 = 0, error = 0, l_mode[3], this_mode = 0;
-	size_t len, k, kk, s;
-	char *c = NULL, p[GMT_BUFSIZ] = {""}, modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, this_unit = 0, l_unit[3];
-
-	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
-
-	*mode = (gmt_M_is_geographic (GMT, GMT_IN)) ? GMT_GREATCIRCLE : 0;	/* Great circle or Cartesian */
-	*unit = 0;	/* Initially not set */
-	while (!error && (gmt_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
-		k = s = 0;	len = strlen (p);
-		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char> that may take a unit, if any */
-			if ((p[k] == '+') && (p[k+1] && strchr ("ilr", p[k+1]))) s = k;
-			k++;
-		}
-		if (s == 0) continue;	/* No modifier with unit specification; go to next line */
-		/* Here we are processing +i, +l, or +r, all of which take a distance with optional unit */
-		gmt_M_memset (l_unit, 3, char);		/* Clean register */
-		gmt_M_memset (l_mode, 3, unsigned int);	/* Clean register */
-		strcpy (modifiers, &p[s]);
-		pos2 = 0;
-		if (modifiers[2] == '+') {	/* Gave leading + for geodesic calculation (deprecated) */
-			if (gmt_M_compat_check (GMT, 6))
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Leading + with increment to set ellipsoidal mode is deprecated; use -je instead\n");
-			modifiers[2] = '@';	/* Flag for + in increment which means geodesic mode [to avoid being screwed by gmt_strtok on +] */
-		}
-		while ((gmt_strtok (modifiers, "+", &pos2, p2))) {
-			switch (p2[0]) {
-				case 'i':	id = 0;	break;	/* Increment along line */
-				case 'l':	id = 1;	break;	/* Length of line */
-				case 'r':	id = 2;	break;	/* Radius of circular ring */
-				default:	id = 9; break;	/* Probably +d or some other non-distance setting to skip */
-			}
-			if (id == 9) continue;	/* Just go to next */
-			/* id points to the correct array index for i, l, r (0-2) */
-			if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[id] = p2[strlen(p2)-1];
-			if (p2[1] == '-') {
-				if (gmt_M_compat_check (GMT, 6)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Leading - to increment to set Flat Earth mode is deprecated; use -jf instead\n");
-					l_mode[id] = GMT_FLATEARTH;
-				}
-				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Negative increment is not allowed\n");
-					error++;
-				}
-			}
-			else if (p2[1] == '@') {	/* Leading + in strict GMT6 mode is just a positive sign */
-				if (gmt_M_compat_check (GMT, 6))
-					l_mode[id] = GMT_GEODESIC;
-			}
-		}
-		/* Some sanity checking to make sure only one unit and mode are given for all lines */
-		for (k = 0; k < 3; k++) {
-			if (l_unit[k] == 0) continue;	/* Not set, skip to next */
-			for (kk = k + 1; kk < 3; kk++) {
-				if (l_unit[kk] == 0) continue;	/* Not set, skip to next */
-				if (l_unit[k] != l_unit[kk]) error++;
-			}
-			this_unit = l_unit[k];
-		}
-		if (this_unit) {	/* Got a unit */
-			if (*unit && this_unit != *unit)	/* Got a different unit that before */
-				error++;
-			else
-				*unit = this_unit;	/* Set default unit if not specified as part of the modifiers */
-		}
-		/* Now check modes */
-		for (k = 0; k < 3; k++) {
-			if (l_mode[k] == 0) continue;	/* Not set, skip to next */
-			for (kk = k + 1; kk < 3; kk++) {
-				if (l_mode[kk] == 0) continue;	/* Not set, skip to next */
-				if (l_mode[k] != l_mode[kk]) error++;
-			}
-			this_mode = l_mode[k];
-		}
-		if (this_mode)	/* Got a mode other than Cartesian */
-			*mode = this_mode;
-	}
-	if (*unit == 0) *unit = (gmt_M_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';	/* Default is km or Cartesian if nothing is specified */
-	if (strchr (GMT_LEN_UNITS, *unit) && gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Want geographic distance unit but -fg or -J not set */
-		gmt_parse_common_options (GMT, "f", 'f', "g");
-		if (*mode == 0) *mode = GMT_GREATCIRCLE;	/* Default to great circle distances if no other mode was implied */
-	}
-	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E:  All lines must have the same distance units\n");
-	/* Process args so any i|l|r+<dist> becomes i|l|r <dist> as the + will cause trouble otherwise.  This + for geodesics have already been processed */
-	while ((c = strstr (args, "+i+"))) c[2] = ' ';
-	while ((c = strstr (args, "+l+"))) c[2] = ' ';
-	while ((c = strstr (args, "+r+"))) c[2] = ' ';
-	return (error);
-}
-
 GMT_LOCAL int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, unsigned int mode, double x_in, double y_in, double value[]) {
 	/* Mode = 0: Cartesian, 1 = geographic, 2 = img mercmator */
 	unsigned int g, n_in, n_set;
@@ -759,7 +667,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	int status, error, ks;
 	uint64_t n_points = 0, n_read = 0;
-	unsigned int g, k, xy_mode;
+	unsigned int g, k, xy_mode, dtype;
 	bool img_conv_needed = false, some_outside = false;
 
 	char line[GMT_BUFSIZ] = {""}, run_cmd[BUFSIZ] = {""}, *cmd = NULL;
@@ -843,7 +751,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		double xyz[2][3];
 		bool resample = !(Ctrl->C.active && Ctrl->C.spacing > 0.0);
 
-		if (get_dist_units (GMT, Ctrl->E.lines, &Ctrl->E.unit, &Ctrl->E.mode)) {	/* Bad mixing of units in -E specification */
+		if (gmt_get_dist_units (GMT, Ctrl->E.lines, &Ctrl->E.unit, &Ctrl->E.mode)) {	/* Bad mixing of units in -E specification */
 			for (g = 0; g < Ctrl->G.n_grids; g++) {	/* Free up the grids */
 				if (Ctrl->G.type[g] == 0 && GMT_Destroy_Data (API, &GC[g].G) != GMT_NOERROR) {
 					Return (API->error);
@@ -865,10 +773,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
 			gmt_grd_minmax (GMT, GC[0].G, xyz);
-			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, resample, false, false, Ctrl->E.step, Ctrl->A.mode, xyz);
+			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, resample, false, false, Ctrl->E.step, Ctrl->A.mode, xyz, &dtype);
 		}
 		else
-			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, resample, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
+			Din = gmt_make_profiles (GMT, 'E', Ctrl->E.lines, resample, false, false, Ctrl->E.step, Ctrl->A.mode, NULL, &dtype);
 		if (Din->table[0] == NULL)
 			Return (GMT_RUNTIME_ERROR);
 		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */

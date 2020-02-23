@@ -13,8 +13,10 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdinterpolate** *3Dgrid* | *grd1 grd2 ...*
+[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
 |-G|\ *outfile*
 |-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
+[ |-E|\ *line* ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *x/y*\|\ *pointfile*\ [**+h**\ *header*] ]
@@ -73,6 +75,42 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
+**-Af**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
+    For making a crossectional grid sampling we can select how this is to
+    be performed in (x,y). Append **f** to keep original points, but add
+    intermediate points if needed [Default], **m** as **f**, but first
+    follow meridian (along y) then parallel (along x), **p** as **f**,
+    but first follow parallel (along y) then meridian (along x), **r**
+    to resample at equidistant locations; input points are not
+    necessarily included in the output, and **R** as **r**, but adjust
+    given spacing to fit the track length exactly. Finally, append
+    **+l** if geographic distances should be measured along rhumb lines
+    (loxodromes) instead of great circles.
+
+.. _-E:
+
+**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*
+    Specify crossectinoal profile via coordinates and modifiers. The format of each *line* is
+    *start*/*stop*, where *start* or *stop* are *lon*/*lat* (*x*/*y* for
+    Cartesian data). You may append
+    **+i**\ *inc* to set the sampling interval; if not given then
+    we default to half the minimum grid interval.  Instead of two coordinates
+    you can specify an origin and one of **+a**, **+o**, or **+r**.
+    The **+a** sets the azimuth of a profile of given
+    length starting at the given origin, while **+o** centers the profile
+    on the origin; both require **+l**. For circular sampling specify
+    **+r** to define a circle of given radius centered on the origin;
+    this option requires either **+n** or **+i**.  The **+n**\ *np* modifier sets
+    the desired number of points, while **+l**\ *length* gives the
+    total length of the profile.
+    Also note that only one distance unit can be chosen.  Giving different units
+    will result in an error.  If no units are specified we default to
+    great circle distances in km (if geographic).  If working with geographic
+    data you can use **-j** to control distance calculation mode [Great Circle].
+    Use **-G** to set the output grid file name.
+ 
 .. _-F:
 
 **-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**]
@@ -221,6 +259,11 @@ with the times of each grid provided by the file dates.txt, and append the strin
 "Some like it hot" to the segment header for the series, try::
 
     gmt grdinterpolate deformation_*.nc -Zidates.txt -S115W/33N+h"Some like it hot" > record.txt
+
+To extract a vertical slice of the 3-D grid S362ANI_kmps.nc with seismic velocities that goes
+through the Hawaii hotspot, and let the distances be longitude, try::
+
+    gmt S362ANI_kmps.nc -E180/20/220/20+i1d -T25/500/25 -Gslice.nc -Ap
 
 See Also
 --------
