@@ -345,6 +345,8 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			G[GMT_OUT][k]->data[node] = (float)o_value[k];	/* Put interpolated output values at this (x,y) across all levels */
 	}
 
+	error = GMT_NOERROR;	/* Default return code */
+
 	if (Ctrl->T.T.n == 1 || Ctrl->Z.active[GMT_OUT]) {	/* Special case of only sampling the cube at one layer or asking for 2-D slices via -Zo */
 		for (k = 0; k < Ctrl->T.T.n; k++) {	/* For all output levels */
 			if (Ctrl->Z.active[GMT_OUT])	/* Create the k'th layer file */
@@ -352,7 +354,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			else	/* Just this one layer grid */
 				sprintf (file, "%s", Ctrl->G.file);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, G[GMT_OUT][k]) != GMT_NOERROR) {
-				Return (API->error);
+				error = API->error;
 			}
 		}
 	}
@@ -372,5 +374,5 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		GMT_Destroy_Data (API, &(G[GMT_OUT][k]));
 	gmt_M_free (GMT, G[GMT_OUT]);
 
-	Return (GMT_NOERROR);
+	Return (error);
 }
