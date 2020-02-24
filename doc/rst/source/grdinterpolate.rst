@@ -46,8 +46,9 @@ be organized with one or more layers representing the *x* and *y* dimensions
 while the 3rd dimension may represent distance or time; we refer to this
 dimension as the *level*.  The output layers may be written as a single 3-D cube
 or as a set of 2-D layers.  Alternatively, we interpolate the cube along the level-axis
-at one or more arbitrary (*x/y*) coordinates, resulting in a data table with one or
-more level-series.
+at one or more arbitrary (*x/y*) coordinates (**-S**), resulting in a data table with one or
+more level-series, or we slice the 3-D cube along an arbitrary vertical slice and write that
+2-D slice to a grid file (**-E**).
 
 Required Arguments
 ------------------
@@ -73,22 +74,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. _-A:
-
-**-Af**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
-    For making a crossectional grid sampling we can select how this is to
-    be performed in (x,y). Append **f** to keep original points, but add
-    intermediate points if needed [Default], **m** as **f**, but first
-    follow meridian (along y) then parallel (along x), **p** as **f**,
-    but first follow parallel (along y) then meridian (along x), **r**
-    to resample at equidistant locations; input points are not
-    necessarily included in the output, and **R** as **r**, but adjust
-    given spacing to fit the track length exactly. Finally, append
-    **+l** if geographic distances should be measured along rhumb lines
-    (loxodromes) instead of great circles. Note: If increment in **-E**
-    is in arc units then using **-Ap** or **-Am** will select the longitudes
-    or latitudes along the crossection as distances, respectively.
 
 .. _-E:
 
@@ -266,9 +251,9 @@ with the times of each grid provided by the file dates.txt, and append the strin
 
 To extract a vertical slice of the 3-D grid S362ANI_kmps.nc with seismic velocities that goes
 through the Hawaii hotspot, selecting cube vs (Isotropic Shear Velocity) and letting the
-distances be longitude degrees, try::
+distances be longitude degrees along the parallel, try::
 
-    gmt S362ANI_kmps.nc?vs -E180/20/220/20+i1d -T25/500/25 -Gslice.nc -Ap
+    gmt grdinterpolate S362ANI_kmps.nc?vs -E180/20/220/20+i1d+g+p -T25/500/25 -Gslice.nc
 
 See Also
 --------
