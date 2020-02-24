@@ -4627,44 +4627,48 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		case GMT_POLAR:		/* Polar (theta,r) */
 			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);
 			gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);
-			if (args[0] == 'a' || args[0] == 'A') {
-				GMT->current.proj.got_azimuths = true;	/* using azimuths instead of directions */
+			GMT->current.proj.got_azimuths = GMT->current.proj.got_elevations = GMT->current.proj.z_down = false;
+			if ((d = gmt_first_modifier (GMT, args, "aorz"))) {	/* Process all modifiers */
+				unsigned int pos = 0, uerr;
+				char word[GMT_LEN32] = {""};
+				while (gmt_getmodopt (GMT, 'J', d, "aorz", &pos, word, &uerr) && uerr == 0) {
+					switch (word[0]) {
+						case 'a': GMT->current.proj.got_azimuths = true; break;	/* Using azimuths instead of directions */
+						case 'o': GMT->current.proj.pars[1] = atof (&word[1]); break;	/* Gave optional zero-base angle [0] */
+						case 'r': GMT->current.proj.got_elevations = true; break;	/* Gave optional +r for reverse (angular elevations, presumably) */
+						case 'z': GMT->current.proj.z_down = true; break;	/* Gave optional +z for annotating depths rather than radius */
+						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+					}
+				}
+				d[0] = '\0';	/* Chop off all modifiers so other arguments can be parsed */
+				if (uerr) return (GMT_PARSE_ERROR);
+			}
+			/* Must also be on lookout for deprecated syntax such as -Jp|p[a|A], slash-separated scale|width and angular offset, and trailing r or z codes */
+			if (args[0] == 'a' || args[0] == 'A') {	/* Using azimuths instead of directions */
+				GMT->current.proj.got_azimuths = true;
 				i = 1;
 			}
-			else {
-				GMT->current.proj.got_azimuths = false;
-				i = 0;
-			}
-			j = (int)strlen (args) - 1;	/* Last character */
-			if ((d = strstr (args, "+r")) || args[j] == 'r') {	/* Gave optional +r for reverse (elevations, presumably) (r is deprecated) */
-				GMT->current.proj.got_elevations = true;
-				if (d) d[0] = '\0'; else args[j] = '\0';	/* Temporarily chop off the [+]r */
-			}
-			else if ((d = strstr (args, "+z")) || args[j] == 'z') {	/* Gave optional +z for annotating depths rather than radius (z is deprecated) */
-				GMT->current.proj.z_down = true;
-				if (d) d[0] = '\0'; else args[j] = '\0';	/* Temporarily chop off the [+]z */
-			}
 			else
-				GMT->current.proj.got_elevations = GMT->current.proj.z_down = false;
-			if (n_slashes == 1) {	/* Gave optional zero-base angle [0] */
-				n = sscanf (args, "%[^/]/%lf", txt_a, &GMT->current.proj.pars[1]);
-				if (n == 2) GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, &txt_a[i]);
+				i = 0;
+			j = (int)strlen (args) - 1;	/* Last character check for deprecated r or z */
+			if (j >= 0 && args[j] == 'r')	/* Gave trailing r for reverse (elevations, presumably) */
+				GMT->current.proj.got_elevations = true;
+			else if (j >= 0 && args[j] == 'z')	/* Gave trailing z for annotating depths rather than radius */
+				GMT->current.proj.z_down = true;
+			if (n_slashes == 1) {	/* Gave optional zero-base angle [0] Deprecated syntax, use +o<angle> instead */
+				n = sscanf (&args[i], "%[^/]/%lf", txt_a, &GMT->current.proj.pars[1]);
+				if (n == 2) GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, txt_a);
 				error += (GMT->current.proj.pars[0] <= 0.0 || n != 2) ? 1 : 0;
 			}
-			else if (n_slashes == 0) {
+			else if (n_slashes == 0) {	/* Modern syntax, only give scale|width */
 				GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, &args[i]);
 				n = (args) ? 1 : 0;
 				error += (GMT->current.proj.pars[0] <= 0.0 || n != 1) ? 1 : 0;
 			}
 			else
 				error++;
-			if (GMT->current.proj.got_elevations) {
-				if (d) d[0] = '+'; else args[j] = 'r';	/* Put the r back in the argument */
-			}
-			if (GMT->current.proj.z_down) {
-				if (d) d[0] = '+'; else args[j] = 'z';	/* Put the z back in the argument */
-			}
 			if (GMT->current.proj.got_azimuths) GMT->current.proj.pars[1] = -GMT->current.proj.pars[1];	/* Because azimuths go clockwise */
+			if (d) d[0] = '+';	/* Restore modifiers */
 			break;
 
 		/* Map projections */
@@ -6474,10 +6478,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<>r\n");
 			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
 
-			gmt_message (GMT, "\t   -Jp|P[a]<scale>|<width>[/<base>][+r|+z] (Polar (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+o<origin>][+r|z] (Polar (theta,radius))\n");
 			gmt_message (GMT, "\t     Linear scaling for polar coordinates.\n");
-			gmt_message (GMT, "\t     Optionally append 'a' to -Jp or -JP to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
-			gmt_message (GMT, "\t     Give scale in %s/units, and append theta value for angular offset (base) [0]\n",
+			gmt_message (GMT, "\t     Optionally append +a to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
+			gmt_message (GMT, "\t     Give scale in %s/units, and use +o to use <origin> as angular offset (base) [0]\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			gmt_message (GMT, "\t     Append +r to reverse radial direction (s/n must be in 0-90 range) or +z to annotate depths rather than radius [Default]\n");
 
@@ -6592,7 +6596,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scl>|<width> (Cylindrical Equal-area)\n");
 
-			gmt_message (GMT, "\t   -Jp|P[a]<scl>|<width>[/<origin>][+r|+z] (Polar [azimuth] (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P<scl>|<width>[+a][+o<origin>][+r|z] (Polar [azimuth] (theta,radius))\n");
 
 			gmt_message (GMT, "\t   -Jx|X<x-scl>|<width>[d|l|p<power>|t|T][/<y-scl>|<height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
 			gmt_message (GMT, "\t   (See basemap for more details on projection syntax)\n");
