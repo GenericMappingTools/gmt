@@ -9318,7 +9318,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	bool search, double_auto[6];
 	double scale, i_scale;
 
-	if ((i = gmt_proj_setup (GMT, wesn)) != GMT_NOERROR) Return (i);
+	if ((i = gmt_proj_setup (GMT, wesn)) != GMT_NOERROR) return (i);
 
 	search = GMT->current.proj.search;
 
