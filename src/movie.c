@@ -1223,7 +1223,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
 	char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
-	char var_token[4] = "$$%", spacer;;
+	char var_token[4] = "$$%", spacer;
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
@@ -1667,19 +1667,19 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
 			case 'F':	/* Full name, upper case */
 				upper_case[k] = true;
-				/* fall through on purpose to 'f' */
+				/* Intentionally fall through - to 'f' */
 			case 'f':	/* Full name, lower case */
 				flavor[k] = 0;
 				break;
 			case 'A':	/* Abbreviated name, upper case */
 				upper_case[k] = true;
-				/* fall through on purpose to 'a' */
+				/* Intentionally fall through - to 'a' */
 			case 'a':	/* Abbreviated name, lower case */
 				flavor[k] = 1;
 				break;
 			case 'C':	/* 1-char name, upper case */
 				upper_case[k] = true;
-				/* fall through on purpose to 'c' */
+				/* Intentionally fall through - to 'c' */
 			case 'c':	/* 1-char name, lower case */
 				flavor[k] = 2;
 				break;

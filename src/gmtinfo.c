@@ -230,13 +230,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				switch (opt->arg[0]) {
 					case 'L':
 						Ctrl->E.abs = true;
-						/* fall through on purpose to 'l' */
+						/* Intentionally fall through - to 'l' */
 					case 'l':
 						Ctrl->E.mode = -1;
 						break;
 					case 'H':
 						Ctrl->E.abs = true;
-						/* fall through on purpose to 'h' */
+						/* Intentionally fall through - to 'h' */
 					case 'h':
 						Ctrl->E.mode = +1;
 						break;
@@ -328,7 +328,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 			case 'b':	/* -b[i]c will land here */
 				if (gmt_M_compat_check (GMT, 4)) break;
 				/* Otherwise we fall through on purpose to get an error */
-
+				/* Intentionally fall through */
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;

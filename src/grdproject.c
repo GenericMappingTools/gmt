@@ -163,7 +163,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
-				/* Fall through on purpose to get -F */
+				/* Intentionally fall through - to get -F */
 			case 'F':	/* Force specific unit */
 				Ctrl->F.active = true;
 				Ctrl->F.unit = opt->arg[0];
