@@ -7805,7 +7805,7 @@ unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char 
 	if (arg == NULL || arg[0] == '\0') return GMT_NOERROR;	/* Nothing to do */
 	k = (arg[0] == '+') ? 1 : 0;	/* We may get +r or e, for instance, depending on upstream strtok */
 	if (strchr ("erR", arg[k])) {	/* Want to extend the final region before reporting */
-		int j = GMT_Get_Values (GMT->parent, &arg[k+1], inc, 4);;
+		int j = GMT_Get_Values (GMT->parent, &arg[k+1], inc, 4);
 		*mode = (arg[k] == 'e') ? GMT_REGION_ROUND_EXTEND : ((arg[k] == 'r') ? GMT_REGION_ROUND : GMT_REGION_ADD);
 		if (j == 1)	/* Same increments in all directions */
 			inc[XHI] = inc[YLO] = inc[YHI] = inc[XLO];

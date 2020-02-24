@@ -1223,7 +1223,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
 	char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
-	char var_token[4] = "$$%", spacer;;
+	char var_token[4] = "$$%", spacer;
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
