@@ -323,6 +323,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			st->fname_out = Ctrl->G.file;
 			sprintf(buf,"-a nearest:radius1=%f:radius2=%f:nodata=NaN", Ctrl->S.radius, Ctrl->S.radius);
 			st->opts = buf;
+			st->options  = options;
 			if ((error = gmt_gdal_grid (GMT, st))) {
 				GMT_Report (API, GMT_MSG_ERROR, "GDAL nearest neighbor returned error %d\n", error);
 			}

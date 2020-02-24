@@ -23,8 +23,9 @@
 #include <gdal_utils.h>
 
 /* ------------------------------------------------------------------------------------------------------------ */
-GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
+GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	/* Write data into a GDAL Vector memory dataset */
+	//bool module_input;
 	unsigned int nt, ns, nr;
 	double x, y, z;
 	GDALDriverH hDriver;
@@ -35,10 +36,31 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 	OGRGeometryH hPt;
 	struct GMT_DATASET *D = NULL;
 
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, fname, NULL)) == NULL) {
+#if 0
+	if (!strcmp (GMT->parent->session_tag, "Matlab") && !strncmp (GDLL->fname_in, "@GMTAPI", 7)) {
+		module_input = GMT->parent->object[0]->module_input;
+		GMT->parent->object[0]->module_input = false;
+	}
+
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, GDLL->fname_in, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read input data.\n");
 		return NULL;
 	}
+
+	if (!strcmp (GMT->parent->session_tag, "Matlab") && !strncmp (GDLL->fname_in, "@GMTAPI", 7))
+		GMT->parent->object[0]->module_input = module_input;
+#endif
+
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, GMT_ADD_DEFAULT, 0, GDLL->options) != GMT_NOERROR) {
+		return NULL;	/* Establishes data files or stdin */
+	}
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read input data.\n");
+		return NULL;
+	}
+	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_NOERROR) 	/* Disables further data input */
+		return NULL;
+
 	if (D->n_columns != 3) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "This dataset doesn't have 3 columns as required.\n");
 		return NULL;
@@ -244,7 +266,7 @@ GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 		if (GDLL->M.read_gdal) 		/* Read input data with the GDAL machinery */
 			*hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
 		else
-			*hSrcDS = gdal_vector (GMT, GDLL->fname_in);
+			*hSrcDS = gdal_vector (GMT, GDLL);
 
 		if (*hSrcDS == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());

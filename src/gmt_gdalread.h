@@ -223,6 +223,7 @@ struct GMT_GDALLIBRARIFIED_CTRL {
 	char *opts;				/* A string with GDAL options in GDAL syntax */
 	char *dem_method;		/* The method name for gdaldem */
 	char *dem_cpt;			/* A CPT name to use in gdaldem color-relief method */
+	struct GMT_OPTION *options;
 	struct GD_GL_M {		/* If true, write grid with GMT */
 		bool write_gdal, read_gdal;
 	} M;
