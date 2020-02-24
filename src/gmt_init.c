@@ -4630,7 +4630,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);
 			GMT->current.proj.got_azimuths = GMT->current.proj.got_elevations = GMT->current.proj.z_down = false;
 			if ((d = gmt_first_modifier (GMT, args, "aorz"))) {	/* Process all modifiers */
-				unsigned int pos = 0, uerr;
+				unsigned int pos = 0, uerr = 0;
 				char word[GMT_LEN32] = {""};
 				while (gmt_getmodopt (GMT, 'J', d, "aorz", &pos, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
