@@ -16089,7 +16089,7 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	else if (option == GMT_OPT_OUTFILE)
 		sprintf (message, "for output file");
 	else
-		snprintf (message, GMT_LEN16, "option -%c", option);
+		snprintf (message, GMT_LEN16, "by option -%c", option);
 
 	if (!file || file[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No filename provided %s\n", message);

@@ -9590,8 +9590,106 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 	return (error);
 }
 
+unsigned int gmt_get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsigned int *mode) {
+	/* Examine the -E<args> option and determine the distance unit and mode. */
+	unsigned int id, pos = 0, pos2 = 0, error = 0, l_mode[3], this_mode = 0;
+	size_t len, k, kk, s;
+	char *c = NULL, p[GMT_BUFSIZ] = {""}, modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, this_unit = 0, l_unit[3];
+
+	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
+
+	*mode = (gmt_M_is_geographic (GMT, GMT_IN)) ? GMT_GREATCIRCLE : 0;	/* Great circle or Cartesian */
+	*unit = 0;	/* Initially not set */
+	while (!error && (gmt_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
+		k = s = 0;	len = strlen (p);
+		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char> that may take a unit, if any */
+			if ((p[k] == '+') && (p[k+1] && strchr ("ilr", p[k+1]))) s = k;
+			k++;
+		}
+		if (s == 0) continue;	/* No modifier with unit specification; go to next line */
+		/* Here we are processing +i, +l, or +r, all of which take a distance with optional unit */
+		gmt_M_memset (l_unit, 3, char);		/* Clean register */
+		gmt_M_memset (l_mode, 3, unsigned int);	/* Clean register */
+		strcpy (modifiers, &p[s]);
+		pos2 = 0;
+		if (modifiers[2] == '+') {	/* Gave leading + for geodesic calculation (deprecated) */
+			if (gmt_M_compat_check (GMT, 6))
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Leading + with increment to set ellipsoidal mode is deprecated; use -je instead\n");
+			modifiers[2] = '@';	/* Flag for + in increment which means geodesic mode [to avoid being screwed by gmt_strtok on +] */
+		}
+		while ((gmt_strtok (modifiers, "+", &pos2, p2))) {
+			switch (p2[0]) {
+				case 'i':	id = 0;	break;	/* Increment along line */
+				case 'l':	id = 1;	break;	/* Length of line */
+				case 'r':	id = 2;	break;	/* Radius of circular ring */
+				default:	id = 9; break;	/* Probably +d or some other non-distance setting to skip */
+			}
+			if (id == 9) continue;	/* Just go to next */
+			/* id points to the correct array index for i, l, r (0-2) */
+			if (strchr (GMT_LEN_UNITS, p2[strlen(p2)-1])) l_unit[id] = p2[strlen(p2)-1];
+			if (p2[1] == '-') {
+				if (gmt_M_compat_check (GMT, 6)) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Leading - to increment to set Flat Earth mode is deprecated; use -jf instead\n");
+					l_mode[id] = GMT_FLATEARTH;
+				}
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Negative increment is not allowed\n");
+					error++;
+				}
+			}
+			else if (p2[1] == '@') {	/* Leading + in strict GMT6 mode is just a positive sign */
+				if (gmt_M_compat_check (GMT, 6))
+					l_mode[id] = GMT_GEODESIC;
+			}
+		}
+		/* Some sanity checking to make sure only one unit and mode are given for all lines */
+		for (k = 0; k < 3; k++) {
+			if (l_unit[k] == 0) continue;	/* Not set, skip to next */
+			for (kk = k + 1; kk < 3; kk++) {
+				if (l_unit[kk] == 0) continue;	/* Not set, skip to next */
+				if (l_unit[k] != l_unit[kk]) error++;
+			}
+			this_unit = l_unit[k];
+		}
+		if (this_unit) {	/* Got a unit */
+			if (*unit && this_unit != *unit)	/* Got a different unit that before */
+				error++;
+			else
+				*unit = this_unit;	/* Set default unit if not specified as part of the modifiers */
+		}
+		/* Now check modes */
+		for (k = 0; k < 3; k++) {
+			if (l_mode[k] == 0) continue;	/* Not set, skip to next */
+			for (kk = k + 1; kk < 3; kk++) {
+				if (l_mode[kk] == 0) continue;	/* Not set, skip to next */
+				if (l_mode[k] != l_mode[kk]) error++;
+			}
+			this_mode = l_mode[k];
+		}
+		if (this_mode)	/* Got a mode other than Cartesian */
+			*mode = this_mode;
+	}
+	if (*unit == 0) {
+		if (gmt_M_is_geographic (GMT, GMT_IN))	/* km for geographic unless +g given */
+			*unit = (strstr (args, "+g")) ? 'd' : 'k';
+		else
+			*unit = 'X';	/* Default is Cartesian if nothing is specified */
+	}
+	if (strchr (GMT_LEN_UNITS, *unit) && gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Want geographic distance unit but -fg or -J not set */
+		gmt_parse_common_options (GMT, "f", 'f', "g");
+		if (*mode == 0) *mode = GMT_GREATCIRCLE;	/* Default to great circle distances if no other mode was implied */
+	}
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E:  All lines must have the same distance units\n");
+	/* Process args so any i|l|r+<dist> becomes i|l|r <dist> as the + will cause trouble otherwise.  This + for geodesics have already been processed */
+	while ((c = strstr (args, "+i+"))) c[2] = ' ';
+	while ((c = strstr (args, "+l+"))) c[2] = ' ';
+	while ((c = strstr (args, "+r+"))) c[2] = ' ';
+	return (error);
+}
+
+
 /*! . */
-struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]) {
+struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3], unsigned int *dtype) {
 	/* Given a list of comma-separated start/stop coordinates, build a data table
  	 * of the profiles. xyz holds the grid min/max coordinates (or NULL if used without a grid;
 	 * in that case the special Z+, Z- coordinate shorthands are unavailable).
@@ -9599,12 +9697,12 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	 * If project is true then we convert to plot units.
 	 * If get_distances is true then add a column with distances. We also do this if +d is added to args.
 	 */
-	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = gmt_M_type (GMT, GMT_IN, GMT_X), ytype = gmt_M_type (GMT, GMT_IN, GMT_Y);
+	unsigned int n_cols, dcol, np = 0, k, s, pos = 0, pos2 = 0, xtype = gmt_M_type (GMT, GMT_IN, GMT_X), ytype = gmt_M_type (GMT, GMT_IN, GMT_Y);
 	enum GMT_profmode p_mode;
-	bool continuous = false;
+	bool continuous = false, single, may_adjust = false, gridline_units = false, parallel = false;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};
 	int n, error = 0;
-	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step, last_x = 0, last_y = 0;
+	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step, last_x = 0, last_y = 0, d_adjust_scl = 1.0;
 	size_t len;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};
@@ -9618,11 +9716,21 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 
 	if (strstr (args, "+c")) continuous = true;	/* Want to add distances to the output */
 	if (strstr (args, "+d")) get_distances = true;	/* Want to join abutting profiles */
+	if (strstr (args, "+g")) gridline_units = true;	/* Want degree longitudes or latitudes along a gridline */
+	if (strstr (args, "+p")) parallel = true;	/* Want to sample along a parallel */
+	if (strstr (args, "+x")) GMT->current.map.loxodrome = true;	/* Want to sample along a rhumbline */
+	single = (strchr (args, ',') == NULL);	/* Only a single line */
 	if (get_distances) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_make_profiles: Return distances along track\n");
 
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {
+		if (single &&gridline_units)
+			may_adjust = true;
+		if (parallel) mode = GMT_TRACK_FILL_P;
+	}
 	n_cols = (get_distances) ? 3 :2;
 	dim[GMT_COL] = n_cols;
 	dim[GMT_SEG] = GMT_SMALL_CHUNK;
+	*dtype = GMT_IS_FLOAT;	/* Normally, distances are floatint point values */
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 		return (NULL);
 
@@ -9635,7 +9743,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 		SH = gmt_get_DS_hidden (S);
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
-			if ((p[k] == '+') && (p[k+1] && strchr ("acdilnor", p[k+1]))) s = k;
+			if ((p[k] == '+') && (p[k+1] && strchr ("acdgilnoprx", p[k+1]))) s = k;
 			k++;
 		}
 		if (s) {
@@ -9644,8 +9752,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			while ((gmt_strtok (modifiers, "+", &pos2, p2))) {
 				switch (p2[0]) {	/* fabs is used for lengths since -<length> might have been given to indicate Flat Earth Distances */
 					case 'a':	az = atof (&p2[1]);	p_mode |= GMT_GOT_AZIM;		break;
-					case 'c':	/* Already processed up front */			break;
-					case 'd':	/* Already processed up front to set n_cols */		break;
+					case 'c':	case 'd':	case 'g':	case 'p':	case 'x':	break;	/* Already processed up front */
 					case 'n':	np = atoi (&p2[1]);	p_mode |= GMT_GOT_NP;		break;
 					case 'o':	az = atof (&p2[1]);	p_mode |= GMT_GOT_ORIENT;	break;
 					case 'i':	step = fabs (atof (&p2[1]));
@@ -9682,6 +9789,14 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_b, ytype, false, &S->data[GMT_Y][0]), txt_b);
 			error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_c, xtype, false, &S->data[GMT_X][1]), txt_c);
 			error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_d, ytype, false, &S->data[GMT_Y][1]), txt_d);
+			if (may_adjust && gridline_units) {	/* Want to use arc-units along gridlines and not great circle units */
+				if (doubleAlmostEqualZero (S->data[GMT_X][0], S->data[GMT_X][1]))
+					d_adjust_scl = 1.0, dcol = GMT_Y, mode = GMT_TRACK_FILL_M;	/* Scaling spherical degrees to latitude degrees on a sphere */
+				else if (doubleAlmostEqualZero (S->data[GMT_Y][0], S->data[GMT_Y][1]))
+					d_adjust_scl = cosd (S->data[GMT_Y][0]), dcol = GMT_X, mode = GMT_TRACK_FILL_P;	/* Scaling spherical degrees to longitude degrees on a sphere at that latitude */
+				else
+					may_adjust = false;	/* Not our case */
+			}
 		}
 		else if (n == 2) {	/* More complicated: either <code>/<code> or <clon>/<clat> with +a|o|r */
 			if ((p_mode & GMT_GOT_AZIM) || (p_mode & GMT_GOT_ORIENT) || (p_mode & GMT_GOT_RADIUS)) {	/* Got a center point via coordinates */
@@ -9761,13 +9876,17 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			S->n_rows = support_determine_circle (GMT, x0, y0, r, S->data[GMT_X], S->data[GMT_Y], np);
 			resample = false;	/* Since we already got our profile */
 		}
-		if (resample) S->n_rows = SH->n_alloc = gmt_resample_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, step, mode);
+		if (resample) S->n_rows = SH->n_alloc = gmt_resample_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, d_adjust_scl * step, mode);
 		if (get_distances) {	/* Compute cumulative distances along line */
 			gmt_M_free (GMT, S->data[GMT_Z]);	/* Free so we can alloc a new array */
 			S->data[GMT_Z] = gmt_dist_array (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, true);
 			if (p_mode & GMT_GOT_ORIENT) {	/* Adjust distances to have 0 at specified origin */
 				L = 0.5 * S->data[GMT_Z][S->n_rows-1];	/* Half-way distance to remove */
 				for (k = 0; k < S->n_rows; k++) S->data[GMT_Z][k] -= L;
+			}
+			if (may_adjust) {	/* Adjust distances to equal longitudes or latitudes */
+				gmt_M_memcpy (S->data[GMT_Z], S->data[dcol], S->n_rows, double);
+				*dtype = (dcol == GMT_X) ? GMT_IS_LON : GMT_IS_LAT;
 			}
 		}
 		if (project) {	/* Project coordinates */
@@ -9812,7 +9931,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			gmt_M_memset (&(T->segment[old_n_alloc]), TH->n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 		}
 	}
-	gmtlib_finalize_dataset (GMT, D);	/* Reallicate to fit */
+	gmtlib_finalize_dataset (GMT, D);	/* Reallocate to fit */
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
@@ -9825,7 +9944,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 
 	/* Prepares decorated line symbols machinery as needed */
 
-	unsigned int error = 0;
+	unsigned int error = 0, dummy;
 	uint64_t k, i, seg, row, rec;
 	double x, y;
 
@@ -9839,7 +9958,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 	}
 
 	if (G->crossing == GMT_DECORATE_XLINE) {
-		G->X = gmt_make_profiles (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
+		G->X = gmt_make_profiles (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz, &dummy);
 	}
 	else if (G->crossing == GMT_DECORATE_XCURVE) {
 		unsigned int first = 0;
@@ -9929,7 +10048,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 
 	/* Prepares contour labeling machinery as needed */
 
-	unsigned int error = 0;
+	unsigned int error = 0, dummy;
 	uint64_t k, i, seg, row, rec;
 	double x, y;
 
@@ -9961,7 +10080,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		G->no_gap = ((G->just + 2)%4 != 0);	/* Don't clip contour if label is not in the way */
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
-		G->X = gmt_make_profiles (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
+		G->X = gmt_make_profiles (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz, &dummy);
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
 		unsigned int first = 0;
