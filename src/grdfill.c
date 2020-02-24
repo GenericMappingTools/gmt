@@ -214,7 +214,9 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 
 	/* Allocate a vector container for input to greenspline */
 	dim[0] = 3;	/* Want three input columns but let length be 0 - this signals that no vector allocations should take place */
-	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) GMT_exit (API->GMT, EXIT_FAILURE);
+	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		return (API->error);
+	}
 	/* Create a virtual file to hold the resampled grid */
 	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output) == GMT_NOTSET) {
 		return (API->error);

@@ -273,12 +273,12 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jp_full:
 
-    **-Jp**\ [**a**]\ *scale*\ [*/origin*][**+r**\|\ **z**] or **-JP**\ [**a**]\ *width*\ [*/origin*][**+r**\|\ **z**]
+    **-Jp**\ *scale*\ [**+a**]\ [**+o**\ *origin*][**+r**\|\ **z**] or **-JP**\ *width*\ [**+a**]\ [**+o**\ *origin*][**+r**\|\ **z**]
     (Polar coordinates (*theta*, *r*))
 
-    Optionally insert **a** after **-Jp** [or **-JP**] if *theta* is azimuths CW
+    Optionally add **+a** if *theta* is azimuths CW
     from North instead of directions CCW from East [Default]. Optionally
-    append /*origin* in degrees to indicate an angular offset [0].
+    append **+o**\ *origin* in degrees to indicate a CW (or CCW if **+a** iset set) angular offset [0].
     Finally, append **+r** if *r* represents elevations in degrees (requires *south* >= 0
     and *north* <= 90), or append **+z** if you want to annotate depth rather than
     radius [Default]. Give *scale* in UNIT/r-unit.

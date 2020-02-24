@@ -1562,7 +1562,7 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 
 	/* Add cache dir, if set */
 
-	if (GMT->session.CACHEDIR) {
+	if (GMT->session.CACHEDIR && n_x2sys_paths < MAX_DATA_PATHS) {
 		x2sys_datadir[n_x2sys_paths] = gmt_M_memory (GMT, NULL, strlen (GMT->session.CACHEDIR)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], GMT->session.CACHEDIR);
 		n_x2sys_paths++;
