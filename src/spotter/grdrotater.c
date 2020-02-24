@@ -207,7 +207,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				break;
 			case 'e':
 				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and was removed in 5.3. Use -E instead.\n");
-				/* Fall-through on purpose */
+				/* Intentionally fall through */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));

@@ -499,21 +499,21 @@ GMT_LOCAL void column3D (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, d
 		switch (GMT->current.proj.z_project.face[i]) {
 			case 0:	/* yz plane positive side */
 				sign = 1.0;
-				/* Purposefully fall through after flipping the sign */
+				/* Intentionally fall through - after flipping the sign */
 			case 1:	/* negative side */
 				gmt_plane_perspective (GMT, GMT_X, x + sign * x_size);
 				PSL_plotbox (PSL, y - y_size, z - z_size, y + y_size, z + z_size);
 				break;
 			case 2:	/* xz plane positive side */
 				sign = 1.0;
-				/* Purposefully fall through after flipping the sign */
+				/* Intentionally fall through - after flipping the sign */
 			case 3:	/* negative side */
 				gmt_plane_perspective (GMT, GMT_Y, y + sign * y_size);
 				PSL_plotbox (PSL, x - x_size, z - z_size, x + x_size, z + z_size);
 				break;
 			case 4:	/* xy plane positive side */
 				sign = 1.0;
-				/* Purposefully fall through after flipping the sign */
+				/* Intentionally fall through - after flipping the sign */
 			case 5:	/* negative side */
 				gmt_plane_perspective (GMT, GMT_Z, z + sign * z_size);
 				PSL_plotbox (PSL, x - x_size, y - y_size, x + x_size, y + y_size);
@@ -1114,7 +1114,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						continue;
 					}
 					data[n].dim[2] = in[ex3];	/* radius */
-					/* Now fall through to do the rest under regular rectangle */
+					/* Intentionally fall through - to do the rest under regular rectangle */
 				case PSL_RECT:
 					if (gmt_M_is_dnan (in[ex1])) {
 						GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle width = NaN near line %d. Skipped\n", n_total_read);
@@ -1726,7 +1726,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->data[GMT_Z], end, double);
 							/* Now add 2 anchor points and explicitly close by repeating 1st point */
 							switch (Ctrl->L.mode) {
-								case XHI:	off = 1;	/* To select the x max entry, then call through */
+								case XHI:	off = 1;	/* Intentionally fall through - to select the x max entry */
 								case XLO:
 								case ZLO:
 									value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
@@ -1735,7 +1735,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 									GMT->hidden.mem_coord[GMT_Y][end] = L->data[GMT_Y][end-1];
 									GMT->hidden.mem_coord[GMT_Y][end+1] = L->data[GMT_Y][0];
 									break;
-								case YHI:	off = 1;	/* To select the y max entry, then fall through */
+								case YHI:	off = 1;	/* Intentionally fall through - to select the y max entry */
 								case YLO:
 								case ZHI:
 									value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];

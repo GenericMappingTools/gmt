@@ -295,7 +295,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 				switch (opt->arg[0]) {
 					case 'L':
 						Ctrl->L.degree = true;
-						/* Fall through on purpose to 'l' */
+						/* Intentionally fall through - to 'l' */
 					case 'l':
 						Ctrl->L.mode = 3;
 						break;
@@ -305,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 						break;
 					case 'T':
 						Ctrl->L.degree = true;
-						/* Fall through on purpose to 't' */
+						/* Intentionally fall through - to 't' */
 					case 't':
 						Ctrl->L.mode = 1;
 						break;

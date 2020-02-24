@@ -33,8 +33,8 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 	unsigned int i, l, k, cnt_v = 0, n_vert;
 	bool top = true;
 	struct LOC_OR loc_or[32];
-	gmt_M_unused(loc_or_);
 	GMT_declare_gmutex		/* A no-op when no HAVE_GLIB_GTHREAD */
+	gmt_M_unused(loc_or_);
 
 /* x_o, y_o, z_o are the coordinates of the observation point
  * rho is the body density times G constant

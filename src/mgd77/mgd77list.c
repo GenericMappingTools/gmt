@@ -479,7 +479,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 				switch (opt->arg[0]) {
 				 	case 'A':		/* Start date, skip records with time = NaN */
 						Ctrl->D.mode = true;
-						/* Fall through on purpose to 'a' */
+						/* Intentionally fall through - to 'a' */
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
@@ -489,7 +489,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						break;
 					case 'B':		/* Stop date, skip records with time = NaN */
 						Ctrl->D.mode = true;
-						/* Fall through on purpose to 'b' */
+						/* Intentionally fall through - to 'b' */
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
@@ -625,7 +625,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						break;
 					case 'C':	/* Course change min/max using absolute value of cc */
 						Ctrl->Q.c_abs = true;
-						/* Fall through on purpose to 'c' */
+						/* Intentionally fall through - to 'c' */
 					case 'c':	/* Course change min/max */
 						if (sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_C], &Ctrl->Q.max[Q_C]) != 2) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Qc: append min/max course change limits [-360/+360]\n");

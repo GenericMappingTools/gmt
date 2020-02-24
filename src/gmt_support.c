@@ -1168,7 +1168,7 @@ GMT_LOCAL struct CPT_Z_SCALE *support_cpt_parse (struct GMT_CTRL *GMT, char *fil
 	Z = gmt_M_memory (GMT, NULL, 1, struct CPT_Z_SCALE);
 	while (gmt_getmodopt (GMT, 0, c, "uUw", &pos, p, &uerr) && uerr == 0) {
 		switch (p[0]) {
-			case 'U': Z->z_mode = 1;	/* Fall through on purpose */
+			case 'U': Z->z_mode = 1;	/* Intentionally fall through */
 			case 'u':
 				unit = gmtlib_get_unit_number (GMT, p[1]);		/* Convert char unit to enumeration constant for this unit */
 				if (unit == GMT_IS_NOUNIT) {
@@ -1947,7 +1947,7 @@ GMT_LOCAL void support_get_radii_of_curvature (double x[], double y[], uint64_t 
 	for (im = 0, i = 1, ip = 2; ip < n; i++, im++, ip++) {
 		a = (x[im] - x[i]);	b = (y[im] - y[i]);	e = 0.5 * (x[im] * x[im] + y[im] * y[im] - x[i] * x[i] - y[i] * y[i]);
 		c = (x[i] - x[ip]);	d = (y[i] - y[ip]);	f = 0.5 * (x[i] * x[i] + y[i] * y[i] - x[ip] * x[ip] - y[ip] * y[ip]);
-		denom = b * c - a * d;;
+		denom = b * c - a * d;
 		if (denom == 0.0)
 			r[i] = DBL_MAX;
 		else {
@@ -4911,7 +4911,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 					head->type = gmt_M_memory (GMT, head->type, head->n_required+1, unsigned int);
 					head->type[head->n_required] = GMT_IS_DIMENSION;	/* It is actually a symbol code but this gets us passed the test */
 				}
-				/* Fall through on purpose */
+				/* Intentionally fall through */
 			case 'a':		/* Draw star symbol */
 			case 'c':		/* Draw complete circle */
 			case 'd':		/* Draw diamond symbol */
@@ -6782,13 +6782,14 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 				scale = GMT_MIN2DEG;
 				break;
 			case 'c':
-				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through on purpose to 's' */
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Second interval unit c is deprecated; use s instead\n");
 				}
 				else {
 					scale = 1.0;
 					break;
 				}
+				/* Intentionally fall through - to case 's' */
 			case 's':	/* Gave arc seconds */
 				p[last] = 0;
 				scale = GMT_SEC2DEG;
@@ -9183,7 +9184,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 'n':	/* Nudge specification; dx/dy are increments along local line axes */
 				G->nudge_flag = 1;
-				/* Fall through on purpose to 'N' */
+				/* Intentionally fall through - to 'N' */
 			case 'N':	/* Nudge specification; dx/dy are increments along plot axes */
 				G->nudge_flag++;
 				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
@@ -9302,7 +9303,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 	switch (arg) {
 		case 'L':	/* Quick straight lines for intersections */
 			L->do_interpolate = true;
-			/* Fall through on purpose to 'l' */
+			/* Intentionally fall through - to 'l' */
 		case 'l':
 			L->crossing = GMT_CONTOUR_XLINE;
 			break;
@@ -9310,7 +9311,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			L->number_placement = 1;	/* Distribution of labels */
 			if (txt[1] == '-') L->number_placement = -1, j = 1;	/* Left label if n = 1 */
 			if (txt[1] == '+') L->number_placement = +1, j = 1;	/* Right label if n = 1 */
-			/* Fall through on purpose to 'n' */
+			/* Intentionally fall through - to 'n' */
 		case 'n':	/* Specify number of labels per segment */
 			L->number = true;
 			k = sscanf (&txt[1+j], "%d/%s", &L->n_cont, txt_a);
@@ -9335,7 +9336,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			break;
 		case 'X':	/* Crossing complicated curve */
 			L->do_interpolate = true;
-			/* Fall through on purpose to 'x' */
+			/* Intentionally fall through - to 'x' */
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_CONTOUR_XCURVE;
 			strncpy (L->file, &txt[1], PATH_MAX-1);
@@ -9346,7 +9347,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			break;
 		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
 			L->dist_kind = 1;
-			/* Fall through on purpose to 'd' */
+			/* Intentionally fall through - to 'd' */
 		case 'd':	/* Specify distances in plot units [cip] */
 			L->spacing = true;
 			k = sscanf (&txt[j], "%[^/]/%lf", txt_a, &L->label_dist_frac);
@@ -9442,7 +9443,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 
 			case 'n':	/* Nudge specification; dx/dy are increments along local line axes */
 				G->nudge_flag = 1;
-				/* Fall through on purpose to 'N' */
+				/* Intentionally fall through - to 'N' */
 			case 'N':	/* Nudge specification; dx/dy are increments along plot axes */
 				G->nudge_flag++;
 				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
@@ -9514,7 +9515,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 	switch (arg) {
 		case 'L':	/* Quick straight lines for intersections */
 			L->do_interpolate = true;
-			/* Fall through on purpose to 'l' */
+			/* Intentionally fall through - to 'l' */
 		case 'l':
 			L->crossing = GMT_DECORATE_XLINE;
 			break;
@@ -9522,7 +9523,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			L->number_placement = 1;	/* Distribution of labels */
 			if (txt[1] == '-') L->number_placement = -1, j = 1;	/* Left symbol if n = 1 */
 			if (txt[1] == '+') L->number_placement = +1, j = 1;	/* Right symbol if n = 1 */
-			/* Fall through on purpose to 'n' */
+			/* Intentionally fall through - to 'n' */
 		case 'n':	/* Specify number of labels per segment */
 			L->number = true;
 			k = sscanf (&txt[1+j], "%d/%s", &L->n_cont, txt_a);
@@ -9547,7 +9548,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			break;
 		case 'X':	/* Crossing complicated curve */
 			L->do_interpolate = true;
-			/* Fall through on purpose to 'x' */
+			/* Intentionally fall through - to 'x'*/
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_DECORATE_XCURVE;
 			strncpy (L->file, &txt[1], PATH_MAX-1);
@@ -9558,7 +9559,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			break;
 		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
 			L->dist_kind = 1;
-			/* Fall through on purpose to 'd' */
+			/* Intentionally fall through - to 'd' */
 		case 'd':	/* Specify distances in plot units [cip] */
 			L->spacing = true;
 			k = sscanf (&txt[j], "%[^/]/%lf", txt_a, &L->symbol_dist_frac);
@@ -12949,11 +12950,12 @@ double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM 
 			return (T->interval * GMT_MIN2DEG);
 			break;
 		case 'c':	/* arc Seconds [deprecated] */
-			if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through on purpose to 's' */
+			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Second interval unit c is deprecated; use s instead\n");
 			}
 			else
 				return (T->interval);
+			/* Intentionally fall through - to 's' */
 		case 's':	/* arc Seconds */
 			return (T->interval * GMT_SEC2DEG);
 			break;

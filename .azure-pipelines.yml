@@ -53,7 +53,7 @@ jobs:
       cppcheck --version
     displayName: Install cppcheck
 
-  - bash: bash ci/run-cppcheck.sh
+  - bash: bash admin/run_cppcheck.sh src
     displayName: Run cppcheck
 
 # Linux - Compile only

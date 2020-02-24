@@ -446,8 +446,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				while (gmt_getmodopt (GMT, 'F', opt->arg, "Aafjclhrtz", &pos, p, &n_errors) && n_errors == 0 && Ctrl->F.nread < 4) {	/* Looking for +f, +a|A, +j, +c, +l|h */
 					switch (p[0]) {
 							/* A|a, f, j may be read from input */
-						case 'A':	/* orientation. Deliberate fall-through to next case */
+						case 'A':	/* orientation */
 							Ctrl->F.orientation = true;
+							/* Intentionally fall through - to next case */
 						case 'a':	/* Angle */
 							if (p[1] == '+' || p[1] == '\0') {	/* Must read angle from input */
 								Ctrl->F.read[Ctrl->F.nread] = p[0];
@@ -559,6 +560,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 					GMT_Report (API, GMT_MSG_COMPAT, "-m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
+				/* Intentionally fall through */
 			case 'M':	/* Paragraph mode */
 				Ctrl->M.active = true;
 				break;
