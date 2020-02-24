@@ -261,7 +261,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -J is no longer needed or used in x2sys_cross, ignored\n");
 					break;
 				}
-				/* If not compat mode we fall down here on purpose and fail I think */
+				/* Intentionally fall through - if not compat mode we fall down here on purpose and fail I think */
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;

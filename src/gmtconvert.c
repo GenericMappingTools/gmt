@@ -265,7 +265,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 					case 'l':		/* Get last point only */
 						Ctrl->E.mode = -2; break;
 					case 'M':		/* Set modulo step */
-						Ctrl->E.end = true;	/* Include last point; fall through on purpose to set the step */
+						Ctrl->E.end = true;	/* Include last point */
+						/* Intentionally fall through - to set the step */
 					case 'm':		/* Set modulo step */
 						Ctrl->E.mode = atoi (&opt->arg[1]); break;
 					default:		/* Get first and last point only */

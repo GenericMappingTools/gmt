@@ -700,6 +700,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							Return (GMT_RUNTIME_ERROR);
 							break;
 						}
+						/* Intentionally fall through */
 					case 'P':	/* Paragraph text header */
 						flush_paragraph = true;
 						column_number = 0;
@@ -1317,6 +1318,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							Return (GMT_RUNTIME_ERROR);
 							break;
 						}
+						/* Intentionally fall through */
 					case 'P':	/* Paragraph text header: P paragraph-mode-header-for-text */
 						if (!did_old) {
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
