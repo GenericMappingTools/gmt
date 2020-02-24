@@ -202,7 +202,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	}
 
 	if (lsmf > 4355 || lpos > 12415 || lcmf > 8840) {	/* Mainly to shut up CID 39232 (TAINTED variables), but it maybe right */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Suspicious values in first line of umdl.CM4 file\n");;
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Suspicious values in first line of umdl.CM4 file\n");
 		gmt_M_str_free (bkpo);	gmt_M_str_free (gamf);	gmt_M_str_free (f107x);
 		fclose (fp);
 		return 1;

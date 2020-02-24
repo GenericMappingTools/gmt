@@ -1947,7 +1947,7 @@ GMT_LOCAL void support_get_radii_of_curvature (double x[], double y[], uint64_t 
 	for (im = 0, i = 1, ip = 2; ip < n; i++, im++, ip++) {
 		a = (x[im] - x[i]);	b = (y[im] - y[i]);	e = 0.5 * (x[im] * x[im] + y[im] * y[im] - x[i] * x[i] - y[i] * y[i]);
 		c = (x[i] - x[ip]);	d = (y[i] - y[ip]);	f = 0.5 * (x[i] * x[i] + y[i] * y[i] - x[ip] * x[ip] - y[ip] * y[ip]);
-		denom = b * c - a * d;;
+		denom = b * c - a * d;
 		if (denom == 0.0)
 			r[i] = DBL_MAX;
 		else {
