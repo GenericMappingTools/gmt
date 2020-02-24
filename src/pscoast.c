@@ -425,6 +425,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
+				/* Intentionally fall through */
 			case 'M':
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 's') 	/* Write a single segment. Afects only external interfaces. */

@@ -12067,7 +12067,7 @@ int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, u
 	switch (mode) {
 		case GMT_COL_FIX_NO_TEXT:	/* Specific a fixed number of columns, and ignore trailing text */
 			API->GMT->current.io.trailing_text[direction] = false;
-			/* Then purposfully fall through missing break to set columns */
+			/* Intentionally fall through - to set columns */
 		case GMT_COL_FIX:	/* Specific a fixed number of columns */
 			error = gmt_set_cols (API->GMT, direction, n_cols);
 			break;

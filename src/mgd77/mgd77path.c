@@ -104,6 +104,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct G
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
+				/* Intentionally fall through */
 			case 'A':	/* Show list of paths to MGD77 files */
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'c' || opt->arg[0] == '-') Ctrl->A.mode = true;

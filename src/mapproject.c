@@ -446,18 +446,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					switch (c) {
 						case 'B':
 							Ctrl->A.geodesic = true;
-							/* fall through on purpose to 'b' */
+							/* Intentionally fall through - to 'b' */
 						case 'b':
 							Ctrl->A.reverse = true;
 							break;
 						case 'F':
 							Ctrl->A.geodesic = true;
-							/* fall through on purpose to 'f' */
+							/* Intentionally fall through - to 'f' */
 						case 'f':
 							break;
 						case 'O':
 							Ctrl->A.geodesic = true;
-							/* fall through on purpose to 'o' */
+							/* Intentionally fall through - to 'o' */
 						case 'o':
 							Ctrl->A.orient = true;
 							break;

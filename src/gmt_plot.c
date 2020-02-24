@@ -5828,6 +5828,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 					break;
 				}
+				/* Intentionally fall through - to assign the rest of the statements */
 			case PSL_CROSS:
 			case PSL_CIRCLE:
 			case PSL_SQUARE:
@@ -8231,7 +8232,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							break;
 						case GMT_FRONT_RIGHT:
 							angle += M_PI;
-							/* Purposefully pass through after changing the angle */
+							/* Intentionally fall through - after changing the angle */
 						case GMT_FRONT_LEFT:
 							sincos (angle, &sina, &cosa);
 							xx[0] = x0 + len2 * cosa;
@@ -8252,7 +8253,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							break;
 						case GMT_FRONT_RIGHT:
 							angle += M_PI;
-							/* Purposefully pass through after changing the angle */
+							/* Intentionally fall through - after changing the angle */
 						case GMT_FRONT_LEFT:
 							dir1 = R2D * angle;
 							dir2 = dir1 + 180.0;
@@ -8278,7 +8279,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							break;
 						case GMT_FRONT_RIGHT:
 							angle += M_PI;
-							/* Purposefully pass through after changing the angle */
+							/* Intentionally fall through - after changing the angle */
 						case GMT_FRONT_LEFT:
 							/* Half square on the chosen side */
 							sincos (angle, &sina, &cosa);

@@ -284,9 +284,11 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
 		if ((fp = fopen (ffile, "r")) == NULL)
 			GMT_Report (API, GMT_MSG_INFORMATION, "No file %s with frame information - no adjustments made\n", ffile);
-		fgets (Bopts, GMT_LEN256, fp);
-		gmt_chop (Bopts);
-		fclose (fp);
+		else {
+			fgets (Bopts, GMT_LEN256, fp);
+			gmt_chop (Bopts);
+			fclose (fp);
+		}
 
 		/* Write out the inset information file */
 

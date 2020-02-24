@@ -1675,12 +1675,15 @@ int GMT_FFT_2D (void *V_API, gmt_grdfloat *data, unsigned int n_columns, unsigne
 
 void gmt_fft_initialization (struct GMT_CTRL *GMT) {
 	/* Called by gmt_begin and sets up pointers to the available FFT calls */
+#if defined HAVE_FFTW3F_THREADS
+	int n_cpu = gmtlib_get_num_processors();
+#endif /* HAVE_FFTW3_THREADS */
+
 #ifdef HAVE_FFTW3F
 	GMT->current.setting.fftw_plan = FFTW_ESTIMATE; /* default planner flag [only accessed if FFTW is compiled in] */
 #endif /* HAVE_FFTW3F */
-#if defined HAVE_FFTW3F_THREADS
-	int n_cpu = gmtlib_get_num_processors();
 
+#if defined HAVE_FFTW3F_THREADS
 	if (n_cpu > 1 && !GMT->current.setting.fftwf_threads) {
 		/* one-time initialization required to use FFTW3 threads */
 		if ( fftwf_init_threads() ) {
@@ -1688,7 +1691,6 @@ void gmt_fft_initialization (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Initialize FFTW with %d threads.\n", n_cpu);
 		}
 	}
-
 #endif /* HAVE_FFTW3_THREADS */
 
 	/* Start with nothing */
