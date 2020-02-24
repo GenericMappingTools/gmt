@@ -9698,7 +9698,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	 */
 	unsigned int n_cols, dcol, np = 0, k, s, pos = 0, pos2 = 0, xtype = gmt_M_type (GMT, GMT_IN, GMT_X), ytype = gmt_M_type (GMT, GMT_IN, GMT_Y);
 	enum GMT_profmode p_mode;
-	bool continuous = false, single, may_adjust = false, gridline_units = false;
+	bool continuous = false, single, may_adjust = false, gridline_units = false, parallel = false;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};
 	int n, error = 0;
 	double L, az = 0.0, length = 0.0, r = 0.0, orig_step = step, last_x = 0, last_y = 0, d_adjust_scl = 1.0;
@@ -9716,12 +9716,16 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	if (strstr (args, "+c")) continuous = true;	/* Want to add distances to the output */
 	if (strstr (args, "+d")) get_distances = true;	/* Want to join abutting profiles */
 	if (strstr (args, "+g")) gridline_units = true;	/* Want degree longitudes or latitudes along a gridline */
+	if (strstr (args, "+p")) parallel = true;	/* Want to sample along a parallel */
+	if (strstr (args, "+x")) GMT->current.map.loxodrome = true;	/* Want to sample along a rhumbline */
 	single = (strchr (args, ',') == NULL);	/* Only a single line */
 	if (get_distances) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_make_profiles: Return distances along track\n");
 
-	if (single && gmt_M_is_geographic (GMT, GMT_IN) && gridline_units)
-		may_adjust = true;
-
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {
+		if (single &&gridline_units)
+			may_adjust = true;
+		if (parallel) mode = GMT_TRACK_FILL_P;
+	}
 	n_cols = (get_distances) ? 3 :2;
 	dim[GMT_COL] = n_cols;
 	dim[GMT_SEG] = GMT_SMALL_CHUNK;
@@ -9738,7 +9742,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 		SH = gmt_get_DS_hidden (S);
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
-			if ((p[k] == '+') && (p[k+1] && strchr ("acdgilnor", p[k+1]))) s = k;
+			if ((p[k] == '+') && (p[k+1] && strchr ("acdgilnoprx", p[k+1]))) s = k;
 			k++;
 		}
 		if (s) {
@@ -9747,9 +9751,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			while ((gmt_strtok (modifiers, "+", &pos2, p2))) {
 				switch (p2[0]) {	/* fabs is used for lengths since -<length> might have been given to indicate Flat Earth Distances */
 					case 'a':	az = atof (&p2[1]);	p_mode |= GMT_GOT_AZIM;		break;
-					case 'c':	/* Already processed up front */			break;
-					case 'd':	/* Already processed up front to set n_cols */		break;
-					case 'g':	/* Already processed up front */			break;
+					case 'c':	case 'd':	case 'g':	case 'p':	case 'x':	break;	/* Already processed up front */
 					case 'n':	np = atoi (&p2[1]);	p_mode |= GMT_GOT_NP;		break;
 					case 'o':	az = atof (&p2[1]);	p_mode |= GMT_GOT_ORIENT;	break;
 					case 'i':	step = fabs (atof (&p2[1]));

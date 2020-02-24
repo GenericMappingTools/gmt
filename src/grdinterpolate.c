@@ -44,11 +44,7 @@ struct GRDINTERPOLATE_CTRL {
 		char **file;
 		unsigned int n_files;
 	} In;
-	struct GRDTRACK_A {	/* -A[f|m|p|r|R][+l] */
-		bool active, loxo;
-		enum GMT_enum_track mode;
-	} A;
-	struct E {	/* -E<line1>[,<line2>,...][+a<az>][+c][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>] */
+	struct E {	/* -E<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
 		bool active;
 		unsigned int mode;
 		char *lines;
@@ -116,7 +112,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <3Dgrid> | <grd1> <grd2> ... -G<outfile> -T[<min>/<max>/]<inc>[+n]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[f|m|p|r|R][+l]] [-E<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]] [-Fl|a|c|n][+1|2] [-S<x>/<y>|<table>[+h<header>]] [%s]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2] [-S<x>/<y>|<table>[+h<header>]] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Zi<levels>|o] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -130,13 +127,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of levels to produce over the range instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output levels in the first column, or a comma-separated list.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how a crossection defined via -E is resampled:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m: Same, but first follow meridian (along y) then parallel (along x).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p: Same, but first follow parallel (along x) then meridian (along y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r: Resample at equidistant locations; input points not necessarily included.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set up a crossection based on the given <line1>[,<line2>,...]. Give start and stop coordinates for\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>.\n");
@@ -144,10 +134,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +d to insert an extra output column with distances following the coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +g will use gridline coordinates (degree longitude or latitude) if <line> is so aligned.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +g uses gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +p means sample along the parallel if <line> has constant latitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +x follows a loxodrome (rhumbline) [great circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option,\n", GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     so mixing of units is not allowed [Default unit is km, if geographic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the grid interpolation mode.  Choose from:\n");
@@ -203,18 +195,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Change track resampling mode */
-				Ctrl->A.active = true;
-				switch (opt->arg[0]) {
-					case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
-					case 'm': Ctrl->A.mode = GMT_TRACK_FILL_M; break;
-					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
-					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
-					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
-					default: GMT_Report (API, GMT_MSG_ERROR, "Option -G: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
-				}
-				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
-				break;
 			case 'E':	/* Create an equidistant profile for slicing */
 				Ctrl->E.active = true;
 				Ctrl->E.lines = strdup (opt->arg);
@@ -466,7 +446,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			strncpy (prof_args, Ctrl->E.lines, GMT_LEN128-1);
 		else /* Make sure we request continuous if possible */
 			sprintf (prof_args, "%s+c", Ctrl->E.lines);
-		In = gmt_make_profiles (GMT, 'E', prof_args, true, false, true, Ctrl->E.step, Ctrl->A.mode, NULL, &dtype);
+		In = gmt_make_profiles (GMT, 'E', prof_args, true, false, true, Ctrl->E.step, 0, NULL, &dtype);
 		if (In->table[0] == NULL)
 			Return (GMT_RUNTIME_ERROR);
 		In->n_columns = In->table[0]->n_columns;	/* Since could have changed via +d */

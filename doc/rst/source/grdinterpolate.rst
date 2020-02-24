@@ -13,7 +13,6 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdinterpolate** *3Dgrid* | *grd1 grd2 ...*
-[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
 |-G|\ *outfile*
 |-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
 [ |-E|\ *line* ]
@@ -93,12 +92,15 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*
-    Specify crossectinoal profile via coordinates and modifiers. The format of each *line* is
+**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+g**][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+p**][**+r**\ *radius*][**+x**]
+    Specify a crossectinonal profile via coordinates and modifiers. The format of each *line* is
     *start*/*stop*, where *start* or *stop* are *lon*/*lat* (*x*/*y* for
-    Cartesian data). You may append
-    **+i**\ *inc* to set the sampling interval; if not given then
-    we default to half the minimum grid interval.  Instead of two coordinates
+    Cartesian data). You may append **+i**\ *inc* to set the sampling interval;
+    if not given then we default to half the minimum grid interval.  If your *line* starts and
+    ends at the same latitude you can force sampling along the parallel with **+p** [great circle].
+    For a *line* along parallels or meridians you can add **+g** to report degrees of longitude or latitude
+    instead of great circle distances starting at zero.  Append **+x** to compute distances
+    along a loxodrome (rhumbline) instead of great circle. Instead of two coordinates
     you can specify an origin and one of **+a**, **+o**, or **+r**.
     The **+a** sets the azimuth of a profile of given
     length starting at the given origin, while **+o** centers the profile
