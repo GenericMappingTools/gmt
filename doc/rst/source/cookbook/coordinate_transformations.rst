@@ -267,7 +267,7 @@ Consequently, the polar transformation is defined by providing
 
 -  Optionally, append **+a** to indicate CW azimuths rather than CCW directions
 
--  Optionally, append **+o**\ *origin* in degrees to indicate an angular offset [0]
+-  Optionally, append **+o**\ *origin* in degrees to indicate a CW (or CCW if **+a** iset set) angular offset [0]
 
 -  Optionally, append **+r** to reverse the radial direction (here,
    *south* and *north* must be elevations in 0–90 range).
