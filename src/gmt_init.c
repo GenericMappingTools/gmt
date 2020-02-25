@@ -4629,12 +4629,13 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);
 			gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);
 			GMT->current.proj.got_azimuths = GMT->current.proj.got_elevations = GMT->current.proj.z_down = false;
-			if ((d = gmt_first_modifier (GMT, args, "aorz"))) {	/* Process all modifiers */
+			if ((d = gmt_first_modifier (GMT, args, "aforz"))) {	/* Process all modifiers */
 				unsigned int pos = 0, uerr = 0;
 				char word[GMT_LEN32] = {""};
-				while (gmt_getmodopt (GMT, 'J', d, "aorz", &pos, word, &uerr) && uerr == 0) {
+				while (gmt_getmodopt (GMT, 'J', d, "aforz", &pos, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
 						case 'a': GMT->current.proj.got_azimuths = true; break;	/* Using azimuths instead of directions */
+						case 'f': GMT->current.proj.flip = true; GMT->current.proj.flip_radius = atof (&word[1]); break;	/* Gave flip with optional flip radius */
 						case 'o': GMT->current.proj.pars[1] = atof (&word[1]); break;	/* Gave optional zero-base angle [0] */
 						case 'r': GMT->current.proj.got_elevations = true; break;	/* Gave optional +r for reverse (angular elevations, presumably) */
 						case 'z': GMT->current.proj.z_down = true; break;	/* Gave optional +z for annotating depths rather than radius */
@@ -4670,6 +4671,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				error++;
 			if (GMT->current.proj.got_azimuths) GMT->current.proj.pars[1] = -GMT->current.proj.pars[1];	/* Because azimuths go clockwise */
 			if (d) d[0] = '+';	/* Restore modifiers */
+			if (GMT->current.proj.z_down && GMT->current.proj.flip) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: Cannot select both +f and +z modifiers\n");
+				error++;				
+			}
 			break;
 
 		/* Map projections */

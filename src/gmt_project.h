@@ -413,8 +413,8 @@ struct GMT_PROJ {
 
 	/* Polar (cylindrical) projection */
 
-	double p_base_angle;
-	bool got_azimuths, got_elevations, z_down;
+	double p_base_angle, flip_radius;
+	bool got_azimuths, got_elevations, z_down, flip;
 
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0, proj4_scl;

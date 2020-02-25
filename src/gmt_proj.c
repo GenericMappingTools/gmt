@@ -594,8 +594,25 @@ void gmt_vpolar (struct GMT_CTRL *GMT, double lon0) {
 	GMT->current.proj.p_base_angle = lon0;
 	GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[XHI] + GMT->common.R.wesn[XLO]);
 
-	/* Plus pretend that it is kind of a geographic polar projection */
+	if (GMT->current.proj.flip) {
+		if (GMT->current.proj.flip_radius == 0.0) {
+			static char *U[2] = {"m", "km"};
+			unsigned int k = 0;
+			/* Set planetary radius in correct units (m or km) depending on y-range */
+			GMT->current.proj.flip_radius = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius;	/* In meters */
+			if ((GMT->current.proj.flip_radius/ (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO])) >= METERS_IN_A_KM) {	/* -R in km */
+				GMT->current.proj.flip_radius /= METERS_IN_A_KM;
+				k = 1;
+			}
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Planetary radius automatically set to %g %s\n", GMT->current.proj.flip_radius, U[k]);
+		}
+	}
+	else if (GMT->current.proj.got_elevations) {
+		GMT->current.proj.flip_radius = 90.0;
+		GMT->current.proj.flip = true;
+	}
 
+	/* Plus pretend that it is kind of a geographic polar projection */
 	GMT->current.proj.north_pole = GMT->current.proj.got_elevations;
 	GMT->current.proj.pole = (GMT->current.proj.got_elevations) ? 90.0 : 0.0;
 }
@@ -603,7 +620,7 @@ void gmt_vpolar (struct GMT_CTRL *GMT, double lon0) {
 void gmt_polar (struct GMT_CTRL *GMT, double x, double y, double *x_i, double *y_i) {
 	/* Transform x and y to polar(cylindrical) coordinates */
 	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* azimuths, not directions */
-	if (GMT->current.proj.got_elevations) y = 90.0 - y;		/* elevations */
+	if (GMT->current.proj.flip) y = GMT->current.proj.flip_radius - y;		/* depth down or elevations*/
 	sincosd (x - GMT->current.proj.p_base_angle, y_i, x_i);	/* Change base line angle */
 	(*x_i) *= y;
 	(*y_i) *= y;
@@ -614,7 +631,7 @@ void gmt_ipolar (struct GMT_CTRL *GMT, double *x, double *y, double x_i, double 
 	*x = d_atan2d (y_i, x_i) + GMT->current.proj.p_base_angle;
 	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* azimuths, not directions */
 	*y = hypot (x_i, y_i);
-	if (GMT->current.proj.got_elevations) *y = 90.0 - (*y);    /* elevations, presumably */
+	if (GMT->current.proj.flip) *y = GMT->current.proj.flip_radius - (*y);    /* depth down or elevations */
 }
 
 /* -JM MERCATOR PROJECTION */

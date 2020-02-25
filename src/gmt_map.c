@@ -2815,11 +2815,11 @@ GMT_LOCAL bool map_init_polar (struct GMT_CTRL *GMT) {
 
 	gmt_vpolar (GMT, GMT->current.proj.pars[1]);
 	if (GMT->current.proj.got_elevations) {	/* Requires s >= 0 and n <= 90 */
-		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > 90.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-JP...r for elevation plots requires s >= 0 and n <= 90!\n");
+		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > GMT->current.proj.flip_radius) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-JP...+r for elevation plots requires s >= 0 and n <= 90!\n");
 			GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
 		}
-		if (doubleAlmostEqual (GMT->common.R.wesn[YHI], 90.0))
+		if (doubleAlmostEqual (GMT->common.R.wesn[YHI], GMT->current.proj.flip_radius))
 			GMT->current.proj.edge[2] = false;
 	}
 	else {
@@ -8309,11 +8309,11 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 				break;
 			case GMT_POLAR:
 				if (GMT->current.proj.got_elevations)
-					*donut = (GMT->common.R.wesn[YHI] < 90.0 && GMT->current.map.is_world);
+					*donut = (GMT->common.R.wesn[YHI] < GMT->current.proj.flip_radius && GMT->current.map.is_world);
 				else
 					*donut = (GMT->common.R.wesn[YLO] > 0.0 && GMT->current.map.is_world);
 				np = GMT->current.map.n_lon_nodes + 1;
-				if ((GMT->current.proj.got_elevations && GMT->common.R.wesn[YHI] < 90.0) || (!GMT->current.proj.got_elevations && GMT->common.R.wesn[YLO] > 0.0))	/* Need inside circle segment */
+				if ((GMT->current.proj.got_elevations && GMT->common.R.wesn[YHI] < GMT->current.proj.flip_radius) || (!GMT->current.proj.got_elevations && GMT->common.R.wesn[YLO] > 0.0))	/* Need inside circle segment */
 					np *= 2;
 				else if (!GMT->current.map.is_world)	/* Need to include origin */
 					np++;
@@ -8419,7 +8419,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 					if (GMT->current.proj.got_elevations) {
 						for (i = j = 0; i <= GMT->current.map.n_lon_nodes; i++, j++)	/* Draw outer clippath */
 							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + i * da, GMT->common.R.wesn[YLO], &work_x[j], &work_y[j]);
-						if (GMT->common.R.wesn[YHI] < 90.0) {	/* Must do the inner path as well */
+						if (GMT->common.R.wesn[YHI] < GMT->current.proj.flip_radius) {	/* Must do the inner path as well */
 							for (i = GMT->current.map.n_lon_nodes + 1; i > 0; i--, j++)	/* Draw inner clippath */
 								gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + (i-1) * da, GMT->common.R.wesn[YHI], &work_x[j], &work_y[j]);
 						}
