@@ -159,10 +159,10 @@ Optional Arguments
     using the mean of the 3-D Cartesian vectors making up the polygon
     vertices, while the area is obtained via an equal-area projection.
     Normally, all input segments
-    will be be reflected on output.  Use **c** to restrict processing to
+    will be be reflected on output.  Use **+c** to restrict processing to
     those whose length (or area for polygons) fall inside the specified
     range set by *min* and *max*.  If *max* is not set it defaults to infinity.
-    To sort the segments based on their lengths or area, use **s** and
+    To sort the segments based on their lengths or area, use **+s** and
     append **a** for ascending and **d** for descending order [ascending].
     By default, we consider open polygons as lines.
     Append **+p** to close open polygons and thus consider all input
