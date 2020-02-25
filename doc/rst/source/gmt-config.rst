@@ -94,7 +94,7 @@ Optional Arguments
 Examples
 --------
 
-To Determine the compiler flags that is required for an external to to find the GMT function prototypes, try::
+To determine the compiler flags that is required for an external to to find the GMT function prototypes, try::
 
     gmt-config --cflags
 

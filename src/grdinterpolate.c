@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 					if (c[2])
 						Ctrl->S.header = strdup (&c[2]);
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Modifer +h not given a header string\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Modifier +h not given a header string\n");
 						n_errors++;
 					}
 					c[0] = '\0';	/* Chop off all modifiers */
@@ -414,7 +414,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		char prof_args[GMT_LEN128] = {""};
 		if (!(equi_levels || Ctrl->T.active)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -E requires either equidistant levels or resampling via -T\n");
-			Return (GMT_RUNTIME_ERROR);			
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (gmt_get_dist_units (GMT, Ctrl->E.lines, &Ctrl->E.unit, &Ctrl->E.mode)) {	/* Bad mixing of units in -E specification */
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot mix units in -E (%s)\n", Ctrl->E.lines);
