@@ -7554,10 +7554,11 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_POLAR:
-					gmt_message (GMT, "\t-Jp[a]<scale>[/<origin>][r] OR -JP[a]<width>[/<origin>][r]\n");
+					gmt_message (GMT, "\t-Jp<scale>[+a][+o<origin>][+r|z] OR -JP<width>[+a][+o<origin>][+r|z]\n");
 					gmt_message (GMT, "\t  <scale> is %s/units, or use <width> in %s\n", u, u);
-					gmt_message (GMT, "\t  Optionally, prepend a for azimuths, append theta as origin [0],\n");
-					gmt_message (GMT, "\t  or append r to reverse radial coordinates.\n");
+					gmt_message (GMT, "\t  Optionally, append +a to use azimuths (CW from North) instead of directions (CCW from East),\n");
+					gmt_message (GMT, "\t  append +o to use <origin> as augular offset [0].\n");
+					gmt_message (GMT, "\t  Append +r to reverse radial direction (s/n must be in 0-90 range) or +z to annotate depths rather than radius [Default]\n");
 					break;
 				case GMT_LINEAR:
 					gmt_message (GMT, "\t-Jx<x-scale>|<width>[d|l|p<power>|t|T][/<y-scale>|<height>[d|l|p<power>|t|T]], scale in %s/units\n", u);
