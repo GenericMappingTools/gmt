@@ -4478,8 +4478,8 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		top = 10;
 		bottom = 2;
 	}
-	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.got_azimuths) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
-	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.got_elevations) {
+	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
+	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) {
 		gmt_M_int_swap (top, bottom);	/* Because with elevations we get confused... */
 		gmt_M_int_swap (left, right);
 		low = 2 - low;
@@ -4532,7 +4532,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 	switch (side) {
 		case 0:		/* S */
 			if (GMT->current.map.frame.horizontal)
-				*justify = (GMT->current.proj.got_elevations) ? 2 : 10;
+				*justify = (GMT->current.proj.flip) ? 2 : 10;
 			else
 				*justify = ((*text_angle) < 0.0) ? 5 : 7;
 			break;
@@ -4546,7 +4546,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 			break;
 		case 2:		/* N */
 			if (GMT->current.map.frame.horizontal)
-				*justify = (GMT->current.proj.got_elevations) ? 10 : 2;
+				*justify = (GMT->current.proj.flip) ? 10 : 2;
 			else
 				*justify = ((*text_angle) < 0.0) ? 7 : 5;
 			break;
