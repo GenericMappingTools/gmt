@@ -491,7 +491,7 @@ is a C language format statement for floating point numbers [13]_, and
 with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the *stride*
 settings. If :term:`FORMAT_FLOAT_OUT` is set to another format it will be
-used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
+used directly (e.g, "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
 
