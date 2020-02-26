@@ -26,5 +26,5 @@
     append **+g**\ *geometry*, where *geometry* is either POINT, LINE,
     or POLY. Optionally, prepend **M** for multi-versions of these
     geometries. To force the clipping of features crossing the Dateline,
-    use upper-case **+G** instead. See :doc:`/cookbook/ogrgmt_format`
+    use upper-case **+G** instead. See :doc:`/cookbook/ogrgmt-format`
     for details of the OGR/GMT file format.

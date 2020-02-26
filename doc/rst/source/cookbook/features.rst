@@ -341,7 +341,7 @@ binary table data the **-h** option may specify how many bytes should be
 skipped before the data section is reached. Binary files may also
 contain segment-headers separating data segments. These segment-headers
 are simply data records whose fields are all set to NaN; see Chapter
-:doc:`file_formats` for complete documentation.
+:doc:`file-formats` for complete documentation.
 
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
@@ -559,7 +559,7 @@ with embedded printer directives. To produce Encapsulated
 PostScript (EPS) that can be imported into graphics programs such as
 **CorelDraw**, **Illustrator** or **InkScape** for further
 embellishment, simply run gmt :doc:`/psconvert`
-**-Te**. See Chapter :doc:`include_figures` for an extensive discussion of converting
+**-Te**. See Chapter :doc:`include-figures` for an extensive discussion of converting
 PostScript to other formats.
 
 .. _-Wpen_attrib:
@@ -792,7 +792,7 @@ use **-G** for this task and some have several options specifying different fill
     *pattern* can either be a number in the range 1–90 or the name of a
     1-, 8-, or 24-bit image raster file. The former will result in one of
     the 90 predefined 64 x 64 bit-patterns provided with GMT and
-    reproduced in Chapter :doc:`predefined_patterns`.
+    reproduced in Chapter :doc:`predefined-patterns`.
     The latter allows the user to create
     customized, repeating images using image raster files.
     The optional **+r**\ *dpi* modifier sets the resolution of this image on the page;
@@ -810,7 +810,7 @@ use **-G** for this task and some have several options specifying different fill
 Due to PostScript implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
 images see :doc:`/image`. The format of Sun raster files [18]_ is
-outlined in Chapter :doc:`file_formats`. However, if you built GMT
+outlined in Chapter :doc:`file-formats`. However, if you built GMT
 with GDAL then other image formats can be used as well. Note that under
 PostScript Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
@@ -865,7 +865,7 @@ append **=~**\ *pen* instead; in that case only half the linewidth is plotted
 on the outside of the font only.  If an outline is requested, you may optionally
 skip the text *fill* by setting it to **-**, in which case the full pen width
 is always used. If any of the font attributes is omitted their default or
-previous setting will be retained. See Chapter :doc:`postscript_fonts`
+previous setting will be retained. See Chapter :doc:`postscript-fonts`
 for a list of all fonts recognized by GMT.
 
 Stroke, Fill and Font Transparency
@@ -1427,7 +1427,7 @@ GMT strings using the Standard+ encoding:
 The option in :doc:`/text` to draw a
 rectangle surrounding the text will not work for strings with escape
 sequences. A chart of characters and their octal codes is given in
-Chapter :doc:`octal_codes`.
+Chapter :doc:`octal-codes`.
 
 .. _GMT_Embellishments:
 

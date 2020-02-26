@@ -11,7 +11,7 @@ These are symbols used to illustrate sightings of whales.
 .. toctree::
    :maxdepth: 1
 
-   users_contrib_symbols/biology/Cetacea.rst
+   users-contrib-symbols/biology/Cetacea.rst
 
 .. cssclass:: gmtgallary
 
@@ -111,8 +111,8 @@ These are symbols used to illustrate sightings of whales.
         ]
     %}
     {% for i in symbols %}
-    -  .. figure:: /users_contrib_symbols/biology/images/{{i}}.*
-          :target: ./users_contrib_symbols/biology/{{i}}.html
+    -  .. figure:: /users-contrib-symbols/biology/images/{{i}}.*
+          :target: ./users-contrib-symbols/biology/{{i}}.html
 
           :ref:`{{i}}`
 
@@ -122,7 +122,7 @@ These are symbols used to illustrate sightings of whales.
    :hidden:
    :glob:
 
-   users_contrib_symbols/biology/*
+   users-contrib-symbols/biology/*
 
 Structural geology symbols
 --------------------------
@@ -130,7 +130,7 @@ Structural geology symbols
 .. toctree::
    :maxdepth: 1
 
-   users_contrib_symbols/geology/Geology.rst
+   users-contrib-symbols/geology/Geology.rst
 
 These are symbols used in structural geology.
 
@@ -167,8 +167,8 @@ These are symbols used in structural geology.
         ]
     %}
     {% for i in symbols %}
-    -  .. figure:: /users_contrib_symbols/geology/images/{{i}}.*
-          :target: ./users_contrib_symbols/geology/{{i}}.html
+    -  .. figure:: /users-contrib-symbols/geology/images/{{i}}.*
+          :target: ./users-contrib-symbols/geology/{{i}}.html
 
           :ref:`{{i}}`
 
@@ -178,7 +178,7 @@ These are symbols used in structural geology.
    :hidden:
    :glob:
 
-   users_contrib_symbols/geology/*
+   users-contrib-symbols/geology/*
 
 Miscellaneous symbols
 ---------------------
@@ -191,8 +191,8 @@ These are general-purpose symbols you may find useful.
 
     {% set symbols=['pirata'] %}
     {% for i in symbols %}
-    -  .. figure:: /users_contrib_symbols/misc/images/{{i}}.*
-          :target: ./users_contrib_symbols/misc/{{i}}.html
+    -  .. figure:: /users-contrib-symbols/misc/images/{{i}}.*
+          :target: ./users-contrib-symbols/misc/{{i}}.html
 
           :ref:`{{i}}`
 
@@ -202,4 +202,4 @@ These are general-purpose symbols you may find useful.
    :hidden:
    :glob:
 
-   users_contrib_symbols/misc/*
+   users-contrib-symbols/misc/*

@@ -247,7 +247,7 @@ option to print a shell template to the standard output.
    for terms on redistribution and modifications.
 
 .. [3]
-   The tools can also be installed on other platforms (see Chapter :doc:`non_unix_platforms`).
+   The tools can also be installed on other platforms (see Chapter :doc:`non-unix-platforms`).
 
 .. [4]
    One public-domain RIP is ghostscript, available from `<https://www.ghostscript.com/>`_.
