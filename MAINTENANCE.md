@@ -12,20 +12,21 @@ Below are instructions for developers and advanced users.
 
 ## Building documentation
 
-The GMT documentations are available in different formats.
-To generate the documentation you need to install the [Sphinx](http://www.sphinx-doc.org/)
-documentation builder. After building GMT, you can build GMT documentation with:
+To build the GMT documentation you need to install the [Sphinx](http://www.sphinx-doc.org/)
+documentation builder. After configuring and building GMT, you can build GMT documentation with:
 
 ```
-cmake --build . --target docs_man   # UNIX manual pages
-cmake --build . --target docs_html  # HTML manual, tutorial, cookbook, and API reference
+cmake --build . --target docs_depends   # Generate images included in the documentation
+cmake --build . --target animation      # Generate animations included in the documentation [optional]
+cmake --build . --target docs_man       # UNIX manual pages
+cmake --build . --target docs_html      # HTML manual, tutorial, cookbook, and API reference
 ```
 
 ## Running tests
 
-A complete set of the example scripts used to create all the example plots,
-including all necessary data files, are provided by the installation.
-To enable testing, you need following lines in your `ConfigUserAdvanced.cmake`:
+GMT ships with more than 800 tests to make sure that any changes won't break
+its functionality. To enable testing, you need add following lines
+in your `ConfigUserAdvanced.cmake` when configuring GMT:
 
 ```
 enable_testing()
@@ -36,19 +37,26 @@ set (DO_API_TESTS ON)
 set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 ```
 
-Then run:
-
-```
-cmake --build . --target check
-```
-
 Optionally set *N_TEST_JOBS* to the number of ctest jobs to run simultaneously.
 
-You can also select individual tests using regexp with ctest, e.g.:
+Now you can run all the tests with:
 
-```
-ctest --output-on-failure -R ex2[3-6]
-```
+    cmake --build . --target check
+
+You can also run `ctest` commands directly in the build directory.
+Below are some common used ctest commands.
+
+1.  Running all tests in 4 parallel jobs:
+
+        ctest -j 4
+
+2.  Re-run all failing tests in previous run:
+
+        ctest -j 4 --rerun-failed
+
+3.  Select individual tests using regexp with ctest:
+
+        ctest --output-on-failure -R ex2[3-6]
 
 ## Creating source packages
 
@@ -77,7 +85,7 @@ and then create the package with either one of these:
 
 ```
 cmake --build . --target package
-cpack -G <TGZ|TBZ2|Bundle|ZIP|NSIS>
+cpack -G TGZ|TBZ2|Bundle|ZIP|NSIS
 ```
 
 ## Updating the development source codes
