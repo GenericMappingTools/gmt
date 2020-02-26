@@ -86,7 +86,7 @@ The projection codes for the GMT-style and the **Proj4**-style are tabulated bel
      - **-Jomercp/**\ |lon0|/|lat0|/|lonp|/|latp|/\ *scale*
      - Oblique Mercator, 3: origin and pole :ref:`... <-Jo_full>`
    * - **-JP**\ [**a**]\ *width*\ [/*origin*][**r**\|\ **z**]
-     - **-Jpolar/**\ [**a**]\ *scale*\ [/*origin*][**r**\|\ **z**]
+     - **-Jpolar/**\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+o**\ *offset*][**+r**\ *rotation*][**+z**]
      - Polar [azimuthal] (:math:`\theta, r`) (or cylindrical)
    * - **-JPoly**\ [|lon0|\ [/|lat0|]/]\ *width*
      - **-Jpoly/**\ [|lon0|\ [/|lat0|/]]\ *scale*

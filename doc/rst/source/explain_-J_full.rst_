@@ -273,15 +273,18 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jp_full:
 
-    **-Jp**\ *scale*\ [**+a**]\ [**+o**\ *origin*][**+r**\|\ **z**] or **-JP**\ *width*\ [**+a**]\ [**+o**\ *origin*][**+r**\|\ **z**]
+    **-Jp**\ *scale*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+o**\ *offset*][**+r**\ *rotation*][**+z**] or **-JP**\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+o**\ *offset*][**+r**\ *rotation*][**+z**]
     (Polar coordinates (*theta*, *r*))
 
-    Optionally add **+a** if *theta* is azimuths CW
-    from North instead of directions CCW from East [Default]. Optionally
-    append **+o**\ *origin* in degrees to indicate a CW (or CCW if **+a** iset set) angular offset [0].
-    Finally, append **+r** if *r* represents elevations in degrees (requires *south* >= 0
-    and *north* <= 90), or append **+z** if you want to annotate depth rather than
-    radius [Default]. Give *scale* in UNIT/r-unit.
+    Give *scale* in UNIT/r-unit.  Optionally add **+a** if *theta* is azimuth CW
+    from North instead of direction CCW from East [Default].
+    Select **+f** to flip the radial direction to point inwards, and append **e** to indicate
+    that *r* represents elevations in degrees (requires *south* >= 0 and *north* <= 90),
+    **p** to select current planetary radius as maximum radius [*north*], or *radius*
+    to specify such a radius directly.
+    Append **+o**\ *origin* to include a radial offset [0].
+    Append **+r**\ *rotation* in degrees to indicate a CCW angular rotation [0].
+    Finally, append **+z** if you want to annotate depth rather than radius [Default]. 
 
 .. _-Jx_full:
 
