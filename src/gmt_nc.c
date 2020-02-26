@@ -1888,7 +1888,8 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 		bool do_round = true; /* if we need to round to integral */
 		unsigned int width, height;
 		unsigned int dim[2], origin[2]; /* dimension and origin {y,x} of subset to write to netcdf */
-		int first_col, last_col, first_row, last_row;
+		int first_col, first_row, last_row;
+		// int last_col;
 		size_t n, nm;
 		size_t width_t, height_t;
 		double level_min, level_max, limit[2];      /* minmax of level variable */
@@ -1922,7 +1923,7 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 		}
 
 		first_col = first_row = 0;
-		last_col  = header->n_columns - 1;
+		// last_col  = header->n_columns - 1;
 		last_row  = header->n_rows - 1;
 		level_min = DBL_MAX;
 		level_max = -DBL_MAX;

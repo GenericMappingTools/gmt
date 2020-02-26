@@ -253,7 +253,7 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 	int	i, ind, iLayer, nEmptyGeoms, nAttribs = 0;
 	//int	region = 0;
 	int	nLayers;		/* number of layers in dataset */
-	double	x_min, y_min, x_max, y_max;
+	//double	x_min, y_min, x_max, y_max;
 
 	int	nFeature, nMaxFeatures, nMaxGeoms;
 	struct OGR_FEATURES *out = NULL;
@@ -269,7 +269,7 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 	OGREnvelope sEnvelop;
 	OGRwkbGeometryType eType;
 
-	x_min = y_min = x_max = y_max = 0.0;
+	// x_min = y_min = x_max = y_max = 0.0;
 
 	GDALAllRegister();
 
