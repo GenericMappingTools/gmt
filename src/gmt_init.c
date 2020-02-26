@@ -4640,14 +4640,14 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 						case 'f':	/* Flip radial direction to be positive inward */
 							GMT->current.proj.flip = true;
 							switch (word[1]) {	/* Check argument */
-								case 'e': GMT->current.proj.got_elevations = true; break;	/* Gave optional +fe for reverse (angular elevations, presumably) */
+								case 'e': GMT->current.proj.flip_radius = 90.0; GMT->current.proj.got_elevations = true; break;	/* Gave optional +fe for reverse (angular elevations, presumably) */
 								case 'p': GMT->current.proj.flip_radius = 0.0;	/* Determine planetary radius from current ellipsoid setting in gmt_mapsetup */
-								case '\0': break;	/* Just flip, already set [Default +f] */
+								case '\0': GMT->current.proj.flip_radius = -1.0; break;	/* Just flip, set fli_radius be set to north in map_setup [Default +f] */
 								default: GMT->current.proj.flip_radius = atof (&word[1]); break;	/* Gave flip with optional flip radius */
 							}
 							break;
 						case 'o':	/* Gave optional +o for a nonzero radial offset [0] */
-							GMT->current.proj.radial_offset = atof (&word[1]);
+							GMT->current.proj.radial_offset = gmt_M_to_inch (GMT, &word[1]);
 							break;
 						case 'r':	/* Gave optional zero-base angle, i.e., a rotation [0] */
 							GMT->current.proj.pars[1] = atof (&word[1]);

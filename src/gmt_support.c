@@ -4490,7 +4490,7 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		else
 			justify = (side == 1) ? right : left;
 	}
-	else {
+	else {	/* S and N borader */
 		if (GMT->current.map.frame.horizontal) {
 			if (side == low)
 				justify = (doubleAlmostEqual (angle, 180.0)) ? bottom : top;

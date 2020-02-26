@@ -1338,12 +1338,12 @@ GMT_LOCAL void plot_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 
 	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 
-	if (GMT->current.proj.got_elevations) {
-		if (doubleAlmostEqual (n, GMT->current.proj.flip_radius))
+	if (GMT->current.proj.flip) {
+		if (doubleAlmostEqual (n, GMT->current.proj.flip_radius) && gmt_M_is_zero (GMT->current.proj.radial_offset))
 			GMT->current.map.frame.side[N_SIDE] = GMT_AXIS_NONE;	/* No donuts, please */
 	}
 	else {
-		if (gmt_M_is_zero (s))
+		if (gmt_M_is_zero (s) && gmt_M_is_zero (GMT->current.proj.radial_offset))
 			GMT->current.map.frame.side[S_SIDE] = GMT_AXIS_NONE;		/* No donuts, please */
 	}
 	if (gmt_M_360_range (w, e) || doubleAlmostEqualZero (e, w)) {
