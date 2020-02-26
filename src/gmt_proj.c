@@ -610,30 +610,28 @@ void gmt_vpolar (struct GMT_CTRL *GMT, double lon0) {
 		}
 		/* else the radius was set specifically */
 	}
-	else if (GMT->current.proj.got_elevations)	/* Hardwire flip_radius to 90 degrees */
-		GMT->current.proj.flip_radius = 90.0;
 
 	/* Plus pretend that it is kind of a geographic polar projection */
 	GMT->current.proj.north_pole = GMT->current.proj.got_elevations;
 	GMT->current.proj.pole = (GMT->current.proj.got_elevations) ? 90.0 : 0.0;
-	GMT->current.proj.radial_offset /= GMT->current.proj.pars[0];	/* Convert any radial offset in user units */
+	GMT->current.proj.radial_offset /= GMT->current.proj.pars[0];	/* Convert any radial offset in inches to user units so we can use it in gmt_polar/ipolar */
 }
 
 void gmt_polar (struct GMT_CTRL *GMT, double x, double y, double *x_i, double *y_i) {
 	/* Transform x and y to polar(cylindrical) coordinates */
-	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* azimuths, not directions */
-	if (GMT->current.proj.flip) y = GMT->current.proj.flip_radius - y;		/* depth down or elevations*/
+	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* Azimuths, not directions given as x */
+	if (GMT->current.proj.flip) y = GMT->current.proj.flip_radius - y;		/* Depth down or elevations given as y */
 	sincosd (x - GMT->current.proj.p_base_angle, y_i, x_i);	/* Change base line angle */
-	(*x_i) *= (y + GMT->current.proj.radial_offset);
+	(*x_i) *= (y + GMT->current.proj.radial_offset);	/* Allow for inner cirle radius before we start plotting */
 	(*y_i) *= (y + GMT->current.proj.radial_offset);
 }
 
 void gmt_ipolar (struct GMT_CTRL *GMT, double *x, double *y, double x_i, double y_i) {
 	/* Inversely transform both x and y from polar(cylindrical) coordinates */
 	*x = d_atan2d (y_i, x_i) + GMT->current.proj.p_base_angle;
-	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* azimuths, not directions */
-	*y = hypot (x_i, y_i) - GMT->current.proj.radial_offset;
-	if (GMT->current.proj.flip) *y = GMT->current.proj.flip_radius - (*y);    /* depth down or elevations */
+	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* Azimuths, not directions for x */
+	*y = hypot (x_i, y_i) - GMT->current.proj.radial_offset;	/* Allow for inner cirle radius */
+	if (GMT->current.proj.flip) *y = GMT->current.proj.flip_radius - (*y);    /* Depth down or elevations for y */
 }
 
 /* -JM MERCATOR PROJECTION */
