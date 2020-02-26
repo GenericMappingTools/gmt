@@ -594,7 +594,7 @@ void gmt_vpolar (struct GMT_CTRL *GMT, double lon0) {
 	GMT->current.proj.p_base_angle = lon0;
 	GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[XHI] + GMT->common.R.wesn[XLO]);
 
-	if (GMT->current.proj.flip) {
+	if (GMT->current.proj.flip) {	/* Want radial direction inwards */
 		if (GMT->current.proj.flip_radius < 0.0)	/* Flag to just flip z = north - r */
 			GMT->current.proj.flip_radius = GMT->common.R.wesn[YHI];
 		else if (GMT->current.proj.flip_radius == 0.0) {	/* Flag to just flip z = planet_radius - r */
@@ -608,6 +608,7 @@ void gmt_vpolar (struct GMT_CTRL *GMT, double lon0) {
 			}
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Planetary radius (+fp) automatically set to %g %s\n", GMT->current.proj.flip_radius, U[k]);
 		}
+		/* else the radius was set specifically */
 	}
 	else if (GMT->current.proj.got_elevations)	/* Hardwire flip_radius to 90 degrees */
 		GMT->current.proj.flip_radius = 90.0;

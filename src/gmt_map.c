@@ -2813,8 +2813,6 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 GMT_LOCAL bool map_init_polar (struct GMT_CTRL *GMT) {
 	double xmin, xmax, ymin, ymax;
 
-	if (GMT->current.proj.got_azimuths)	/* Must adjust rotation so same for all */
-		GMT->current.proj.pars[1] += (90.0 - (GMT->common.R.wesn[XHI]));
 	gmt_vpolar (GMT, GMT->current.proj.pars[1]);
 	if (GMT->current.proj.flip) {	/* Check restrictions */
 		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > GMT->current.proj.flip_radius) {
