@@ -4478,7 +4478,7 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		top = 10;
 		bottom = 2;
 	}
-	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
+	//if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
 	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) {
 		gmt_M_int_swap (top, bottom);	/* Because with elevations we get confused... */
 		gmt_M_int_swap (left, right);
