@@ -2816,7 +2816,7 @@ GMT_LOCAL bool map_init_polar (struct GMT_CTRL *GMT) {
 	if (GMT->current.proj.got_azimuths)	/* Must adjust rotation so same for all */
 		GMT->current.proj.pars[1] += (90.0 - (GMT->common.R.wesn[XHI]));
 	gmt_vpolar (GMT, GMT->current.proj.pars[1]);
-	if (GMT->current.proj.flip) {	/* Requires s >= 0 and n <= 90 */
+	if (GMT->current.proj.flip) {	/* Check restrictions */
 		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > GMT->current.proj.flip_radius) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-JP...+f requires s >= 0 and n <= %g!\n", GMT->current.proj.flip_radius);
 			GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;

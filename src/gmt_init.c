@@ -4641,7 +4641,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 							GMT->current.proj.flip = true;
 							switch (word[1]) {	/* Check argument */
 								case 'e': GMT->current.proj.flip_radius = 90.0; GMT->current.proj.got_elevations = true; break;	/* Gave optional +fe for reverse (angular elevations, presumably) */
-								case 'p': GMT->current.proj.flip_radius = 0.0;	/* Determine planetary radius from current ellipsoid setting in gmt_mapsetup */
+								case 'p': GMT->current.proj.flip_radius = 0.0;	break; /* Determine planetary radius from current ellipsoid setting in gmt_mapsetup */
 								case '\0': GMT->current.proj.flip_radius = -1.0; break;	/* Just flip, set fli_radius be set to north in map_setup [Default +f] */
 								default: GMT->current.proj.flip_radius = atof (&word[1]); break;	/* Gave flip with optional flip radius */
 							}
