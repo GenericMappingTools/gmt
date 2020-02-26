@@ -14,7 +14,7 @@ usually Courier). The following is a list of the GMT fonts:
 
 
 For the special fonts Symbol (12) and ZapfDingbats (34), see the octal
-charts in Chapter :doc:`octal_codes`. When specifying fonts in GMT, you can
+charts in Chapter :doc:`octal-codes`. When specifying fonts in GMT, you can
 either give the entire font name *or* just the font number listed in
 this table. To change the fonts used in plotting basemap frames, see the
 man page for :doc:`/gmt.conf`. For direct

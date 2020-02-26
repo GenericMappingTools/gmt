@@ -70,7 +70,7 @@ Input data
 ~~~~~~~~~~
 
 A GMT module may or may not take input files.  Three different
-types of input are recognized (more details can be found in :doc:`/cookbook/file_formats`):
+types of input are recognized (more details can be found in :doc:`/cookbook/file-formats`):
 
 #. Data tables.
    These are rectangular tables with a fixed number of columns and

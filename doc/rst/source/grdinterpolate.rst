@@ -99,7 +99,7 @@ Optional Arguments
     great circle distances in km (if geographic).  If working with geographic
     data you can use **-j** to control distance calculation mode [Great Circle].
     Use **-G** to set the output grid file name.
- 
+
 .. _-F:
 
 **-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**]
@@ -195,7 +195,7 @@ If you provide a series of 2-D files and thus separately assigning the
 level via **-Zi**, then you must make sure that the order the grids are given
 on the command line matches the levels you provide via **-Zi**.  Unless your
 files are named in lexical order you must be careful with using wildcards
-to list all the grids (e.g., *.nc).
+to list all the grids (e.g., \*.nc).
 
 Time Coordinates
 ----------------

@@ -93,6 +93,6 @@ components. E.g., to have yellow smoke coming out of red volcanoes we
 would make two symbols: one with just the cone and caldera and the other
 with the bubbles. These would be plotted consecutively using the desired
 colors. Alternatively, like in ``bullseye.def``, we may specify colors directly for the
-various segments. Note that the custom symbols (:doc:`/cookbook/custom_symbols`),
+various segments. Note that the custom symbols (:doc:`/cookbook/custom-symbols`),
 unlike the built-in symbols in GMT, can be used with the built-in
-patterns (:doc:`/cookbook/predefined_patterns`). Other approaches are also possible, of course.
+patterns (:doc:`/cookbook/predefined-patterns`). Other approaches are also possible, of course.

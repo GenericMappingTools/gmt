@@ -42,7 +42,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     grdgdal
     gmtget
     gmtinfo
-    gmtlogo_classic
+    gmtlogo-classic
     gmtmath
     gmtregress
     gmtselect
@@ -56,7 +56,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     grd2xyz
     grdblend
     grdclip
-    grdcontour_classic
+    grdcontour-classic
     grdconvert
     grdcut
     grdedit
@@ -65,7 +65,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     grdfilter
     grdgradient
     grdhisteq
-    grdimage_classic
+    grdimage-classic
     grdinfo
     grdinterpolate
     grdlandmask
@@ -76,8 +76,8 @@ All modules are requested via a call to the :doc:`gmt` program.
     grdsample
     grdtrack
     grdtrend
-    grdvector_classic
-    grdview_classic
+    grdvector-classic
+    grdview-classic
     grdvolume
     greenspline
     kml2gmt
@@ -132,7 +132,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     supplements/mgd77/mgd77manage
     supplements/mgd77/mgd77path
     supplements/mgd77/mgd77sniffer
-    supplements/mgd77/mgd77track_classic
+    supplements/mgd77/mgd77track-classic
     supplements/potential/gmtflexure
     supplements/potential/gmtgravmag3d
     supplements/potential/gravfft
@@ -195,7 +195,7 @@ Core Modules
     - :doc:`grdgdal`
     - :doc:`gmtget`
     - :doc:`gmtinfo`
-    - :doc:`gmtlogo_classic`
+    - :doc:`gmtlogo-classic`
     - :doc:`gmtmath`
     - :doc:`gmtregress`
     - :doc:`gmtselect`
@@ -209,7 +209,7 @@ Core Modules
     - :doc:`grd2xyz`
     - :doc:`grdblend`
     - :doc:`grdclip`
-    - :doc:`grdcontour_classic`
+    - :doc:`grdcontour-classic`
     - :doc:`grdconvert`
     - :doc:`grdcut`
     - :doc:`grdedit`
@@ -218,7 +218,7 @@ Core Modules
     - :doc:`grdfilter`
     - :doc:`grdgradient`
     - :doc:`grdhisteq`
-    - :doc:`grdimage_classic`
+    - :doc:`grdimage-classic`
     - :doc:`grdinfo`
     - :doc:`grdinterpolate`
     - :doc:`grdlandmask`
@@ -229,8 +229,8 @@ Core Modules
     - :doc:`grdsample`
     - :doc:`grdtrack`
     - :doc:`grdtrend`
-    - :doc:`grdvector_classic`
-    - :doc:`grdview_classic`
+    - :doc:`grdvector-classic`
+    - :doc:`grdview-classic`
     - :doc:`grdvolume`
     - :doc:`greenspline`
     - :doc:`kml2gmt`
@@ -288,7 +288,7 @@ Supplemental Modules
     - :doc:`/supplements/mgd77/mgd77manage`
     - :doc:`/supplements/mgd77/mgd77path`
     - :doc:`/supplements/mgd77/mgd77sniffer`
-    - :doc:`/supplements/mgd77/mgd77track_classic`
+    - :doc:`/supplements/mgd77/mgd77track-classic`
     - :doc:`/supplements/potential/gmtflexure`
     - :doc:`/supplements/potential/gmtgravmag3d`
     - :doc:`/supplements/potential/gravfft`
@@ -346,15 +346,15 @@ Plotting
 --------
 
 +-------------------------------+-----------------------+
-| :doc:`gmtlogo_classic`        | |gmtlogo_purpose|     |
+| :doc:`gmtlogo-classic`        | |gmtlogo_purpose|     |
 +-------------------------------+-----------------------+
-| :doc:`grdcontour_classic`     | |grdcontour_purpose|  |
+| :doc:`grdcontour-classic`     | |grdcontour_purpose|  |
 +-------------------------------+-----------------------+
-| :doc:`grdimage_classic`       | |grdimage_purpose|    |
+| :doc:`grdimage-classic`       | |grdimage_purpose|    |
 +-------------------------------+-----------------------+
-| :doc:`grdvector_classic`      | |grdvector_purpose|   |
+| :doc:`grdvector-classic`      | |grdvector_purpose|   |
 +-------------------------------+-----------------------+
-| :doc:`grdview_classic`        | |grdview_purpose|     |
+| :doc:`grdview-classic`        | |grdview_purpose|     |
 +-------------------------------+-----------------------+
 | :doc:`psbasemap`              | |psbasemap_purpose|   |
 +-------------------------------+-----------------------+
@@ -618,7 +618,7 @@ MGD77
 +-----------------------------------------------+------------------------+
 | :doc:`/supplements/mgd77/mgd77sniffer`        | |mgd77sniffer_purpose| |
 +-----------------------------------------------+------------------------+
-| :doc:`/supplements/mgd77/mgd77track_classic`  | |mgd77track_purpose|   |
+| :doc:`/supplements/mgd77/mgd77track-classic`  | |mgd77track_purpose|   |
 +-----------------------------------------------+------------------------+
 
 potential
