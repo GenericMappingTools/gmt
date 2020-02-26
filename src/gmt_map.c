@@ -2816,7 +2816,7 @@ GMT_LOCAL bool map_init_polar (struct GMT_CTRL *GMT) {
 	gmt_vpolar (GMT, GMT->current.proj.pars[1]);
 	if (GMT->current.proj.got_elevations) {	/* Requires s >= 0 and n <= 90 */
 		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > GMT->current.proj.flip_radius) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-JP...+r for elevation plots requires s >= 0 and n <= 90!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-JP...+fe for elevation plots requires s >= 0 and n <= 90!\n");
 			GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
 		}
 		if (doubleAlmostEqual (GMT->common.R.wesn[YHI], GMT->current.proj.flip_radius))
