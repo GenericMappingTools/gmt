@@ -6776,14 +6776,13 @@ GMT_LOCAL void gmtplot_prog_indicator_B (struct GMT_CTRL *GMT, double x, double 
 
 GMT_LOCAL void gmtplot_prog_indicator_C (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *P2, char *label, char kind, double fsize) {
 	/* Place growing math arrow */
-	double fx, fy, dr2, dim[PSL_MAX_DIMS];
+	double fx, fy, dim[PSL_MAX_DIMS];
 	struct GMT_PEN pen;
 
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P2, &pen);	/* Want to draw full circle */
-	dr2 = pen.width / PSL_POINTS_PER_INCH;	/* Half pen width */
 	x += fx * 1.15 * w;	y += fy * 1.15 * w;	/* Move to center of circle, add 15% to get more space so arrow head won't clip at canvas edge */
 	PSL_command (GMT->PSL, "FQ %% Force turn off any prior fill\n");
 	if (kind == 'C') {	/* Place center label */
