@@ -37,10 +37,10 @@ the map width is selected by default [**+dw**].  All dimensions are called
 In GMT version 4.3.0 we noticed we ran out of the alphabet for
 1-letter (and sometimes 2-letter) projection codes. To allow more
 flexibility, and to make it easier to remember the codes, we implemented
-the option to use the abbreviations used by the **Proj4** mapping
-package. Since some of the GMT projections are not in **Proj4**, we
+the option to use the abbreviations used by the `PROJ <https://proj.org/>`_ mapping
+package. Since some of the GMT projections are not in **PROJ**, we
 invented some of our own as well. For a full list of both the old 1- and
-2-letter codes, as well as the **Proj4**-equivalents see the quick
+2-letter codes, as well as the **PROJ**-equivalents see the quick
 reference cards in :doc:`/proj-codes`. For example, **-JM**\ 15c and
 **-JMerc**\ /15c have the same meaning.
 

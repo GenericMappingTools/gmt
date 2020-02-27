@@ -242,7 +242,7 @@ general format is
 
 Since GMT version 4.3.0, there is an alternative way to specify the
 projections: use the same abbreviation as in the mapping package
-**Proj4**. The options thus either look like:
+`PROJ <https://proj.org/>`_. The options thus either look like:
 
 -  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a
    *lower-case* abbreviation that selects a particular map projection,

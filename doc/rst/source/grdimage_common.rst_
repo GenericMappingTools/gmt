@@ -59,7 +59,7 @@ Optional Arguments
     documentation for available drivers. Append a +c<options> string where *options* is a list of
     one or more concatenated number of GDAL -co options. For example, to write a GeoPDF with the
     TerraGo format use *=PDF+cGEO_ENCODING=OGC_BP*. Notes: (1) If a tiff file (.tif) is selected
-    then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ4 syntax,
+    then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
     otherwise a plain tiff file is produced. (2) Any vector elements will be lost.
 
 .. include:: explain_-B.rst_
