@@ -4478,11 +4478,13 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		top = 10;
 		bottom = 2;
 	}
-	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
-	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) {
-		gmt_M_int_swap (top, bottom);	/* Because with elevations we get confused... */
-		gmt_M_int_swap (left, right);
-		low = 2 - low;
+	if (GMT->current.proj.projection_GMT == GMT_POLAR) {	/* Special concerns with r/theta systems */
+		if (GMT->current.proj.got_azimuths) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
+		if (GMT->current.proj.flip) {
+			gmt_M_int_swap (top, bottom);
+			gmt_M_int_swap (left, right);
+			low = 2 - low;
+		}
 	}
 	if (side%2) {	/* W and E border */
 		if ((y - y0 + GMT_CONV4_LIMIT) > 0.0)
