@@ -15736,7 +15736,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		default:	/* Here we end up if an unrecognized option is passed (should not happen, though) */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c is not a recognized common option\n", option);
+			if (GMT->current.ps.oneliner)
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c is not a valid common option for one-liner mode\n", option);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c is not a recognized common option\n", option);
 			return (1);
 			break;
 	}
