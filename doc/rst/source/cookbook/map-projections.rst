@@ -77,10 +77,7 @@ Taiwan. We choose the center of the projection to be at 125°E/20°N and
 cm wide. The complete command needed to generate the map below is
 therefore given by:
 
-   ::
-
-    gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt coast -R110/140/20/35 -JB125/20/25/45/12c -Bag -Dl -Ggreen -Wthinnest -A250 -pdf GMT_albers
+.. literalinclude:: /_verbatim/GMT_albers.txt
 
 .. figure:: /_images/GMT_albers.*
    :width: 500 px
@@ -108,10 +105,7 @@ projection, i.e.,
 The equidistant conic projection is often used for atlases with maps of
 small countries. As an example, we generate a map of Cuba:
 
-   ::
-
-    gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    gmt coast -R-88/-70/18/24 -JD-79/21/19/23/12c -Bag -Di -N1/thick,red -Glightgreen -Wthinnest -pdf GMT_equidistant_conic
+.. literalinclude:: /_verbatim/GMT_equidistant_conic.txt
 
 .. figure:: /_images/GMT_equidistant_conic.*
    :width: 500 px
@@ -147,10 +141,7 @@ rectangular border rather than one defined by meridians and parallels.
 Here, we choose the regular WESN region, a "fancy" basemap frame, and
 use degrees west for longitudes. The generating commands used were
 
-   ::
-
-    gmt set MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.15c
-    gmt coast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -pdf GMT_lambert_conic
+.. literalinclude:: /_verbatim/GMT_lambert_conic.txt
 
 .. figure:: /_images/GMT_lambert_conic.*
    :width: 500 px
@@ -237,10 +228,7 @@ for map boundaries. Instead we require that the map boundaries be
 rectangular by defining the corners of a rectangular map boundary. Using
 0°E/40°S (lower left) and 60°E/10°S (upper right) as our corners we try
 
-   ::
-
-    gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt coast -R0/-40/60/-10+r -JA30/-30/12c -Bag -Dl -A500 -Gp10+r300 -Wthinnest -pdf GMT_lambert_az_rect
+.. literalinclude:: /_verbatim/GMT_lambert_az_rect.txt
 
 .. figure:: /_images/GMT_lambert_az_rect.*
    :width: 500 px
@@ -340,10 +328,7 @@ two points as corners in the rectangle and appending an "r" to the
 **-R** option. This command produces a map as presented in
 Figure :ref:`Polar stereographic <GMT_stereographic_rect>`:
 
-   ::
-
-    gmt set MAP_ANNOT_OBLIQUE 30
-    gmt coast -R-25/59/70/72+r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray -pdf GMT_stereographic_rect
+.. literalinclude:: /_verbatim/GMT_stereographic_rect.txt
 
 .. _GMT_stereographic_rect:
 
@@ -362,10 +347,7 @@ equal-area projection. Thus, one can make both rectangular and
 hemispheric maps. Our example shows Australia using a projection pole at
 130°E/30°S. The command used was
 
-   ::
-
-    gmt set MAP_ANNOT_OBLIQUE 0
-    gmt coast -R100/-42/160/-8+r -JS130/-30/12c -Bag -Dl -A500 -Ggreen -Slightblue -Wthinnest -pdf GMT_stereographic_general
+.. literalinclude:: /_verbatim/GMT_stereographic_general.txt
 
 .. figure:: /_images/GMT_stereographic_general.*
    :width: 500 px
@@ -1021,10 +1003,7 @@ stereographic projection (standard parallel is 45°,
 Figure :ref:`Gall's stereographic projection <GMT_gall_stereo>`),
 is obtained as follows:
 
-   ::
-
-    gmt set FORMAT_GEO_MAP dddA
-    gmt coast -R-180/180/-60/80 -JCyl_stere/0/45/12c -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack -Gseashell4 -Santiquewhite1 -pdf GMT_gall_stereo
+.. literalinclude:: /_verbatim/GMT_gall_stereo.txt
 
 .. _GMT_gall_stereo:
 
@@ -1254,13 +1233,7 @@ boundaries just mentioned) that is 14.4 cm wide we use the scale
 14.4/360 = 0.04 and offset the subsequent plots horizontally by their
 widths (140\ :math:`\cdot`\ 0.04 and 80\ :math:`\cdot`\ 0.04):
 
-   ::
-
-     gmt begin GMT_sinus_int
-       gmt coast -R200/340/-90/90 -Ji0.035c -Bxg30 -Byg15 -A10000 -Dc -Gdarkred -Sazure
-       gmt coast -R-20/60/-90/90 -Ji0.035c -Bxg30 -Byg15 -Dc -A10000 -Gdarkgreen -Sazure -X5.6c
-       gmt coast -R60/200/-90/90 -Ji0.035c -Bxg30 -Byg15 -Dc -A10000 -Gdarkblue -Sazure -X3.2c
-     gmt end show
+.. literalinclude:: /_verbatim/GMT_sinus_int.txt
 
 .. figure:: /_images/GMT_sinus_int.*
    :width: 500 px
