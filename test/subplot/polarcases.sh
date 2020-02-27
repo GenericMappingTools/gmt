@@ -7,7 +7,7 @@ gmt begin polarcases ps
 		gmt basemap -R0/120/0/50 -JP?+fe -c -B+t"\053fe"
 		gmt basemap -R0/120/1000/3000 -JP?+fp -c -B+t"\053fp"
 		gmt basemap -R0/120/1000/3000 -JP?+z -c -B+t"\053z"
-		gmt basemap -R30/180/0.4/1 -JP? -c -B+t"Default"
+		gmt basemap -R0/120/0/2891 -JP?+zp -c -B+t"\053z["
 		gmt basemap -R30/180/0.4/1 -JP?+a -c -B+t"\053a"
 		gmt basemap -R30/180/0.4/1 -JP?+r30 -c -B+t"\053r30"
 		gmt basemap -R30/180/0.4/1 -JP?+a+r30 -c -B+t"\053a\053r30"

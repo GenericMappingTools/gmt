@@ -540,7 +540,10 @@ GMT_LOCAL void plot_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	unsigned int i, ny;
 
 	if (GMT->current.proj.z_down) {
-		ny = gmtlib_linear_array (GMT, 0.0, n-s, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
+		if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
+			ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
+		else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
+				ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
 		for (i = 0; i < ny; i++)
 			y[i] = GMT->common.R.wesn[YHI] - y[i];	/* These are the radial values needed for positioning */
 	}
@@ -1761,9 +1764,11 @@ GMT_LOCAL void plot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	if (do_y) {	/* Draw grid lines that go S to N */
 		if (GMT->current.proj.z_down) {
 			if (GMT->current.map.frame.axis[GMT_Y].file_custom)
-				ny = gmtlib_coordinate_array (GMT, 0.0, n-s, &GMT->current.map.frame.axis[GMT_Y].item[item], &val, NULL);
-			else
-				ny = gmtlib_linear_array (GMT, 0.0, n-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
+				ny = gmtlib_coordinate_array (GMT, 0.0, GMT->current.proj.z_radius-s, &GMT->current.map.frame.axis[GMT_Y].item[item], &val, NULL);
+			else if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
+				ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
+			else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
+				ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
 			for (i = 0; i < ny; i++)
 				val[i] = GMT->common.R.wesn[YHI] - val[i];	/* These are the radial values needed for positioning */
 		}
@@ -1974,9 +1979,11 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 			}
 			if (GMT->current.proj.z_down) {	/* Want to annotate depth rather than radius */
 				if (GMT->current.map.frame.axis[GMT_Y].file_custom)
-					ny = gmtlib_coordinate_array (GMT, 0.0, n-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &tval, &label_c);
-				else
-					ny = gmtlib_linear_array (GMT, 0.0, n-s, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &tval);
+					ny = gmtlib_coordinate_array (GMT, 0.0, GMT->current.proj.z_radius-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &tval, &label_c);
+				else if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
+					ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &tval);
+				else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
+					ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &tval);
 				val = gmt_M_memory (GMT, NULL, ny, double);
 				for (i = 0; i < ny; i++)
 					val[i] = GMT->common.R.wesn[YHI] - tval[i];	/* These are the radial values needed for positioning */
