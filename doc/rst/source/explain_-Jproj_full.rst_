@@ -1,0 +1,31 @@
+.. _-Jproj_full:
+
+**-J**\ *proj*\|\ **EPSG:n**
+   Starting at GMT6 it is possible to use the `PROJ <https://proj.org/>`_ library to do coordinate and datum transforms.
+   This is achieved via GDAL so it requires that GMT build is linked to that library. It is, however,
+   beyond the scope of this manual to document the **PROJ** syntax (that is the syntax of the **proj**
+   and **cs2cs** programs) so users are referred to `PROJ Applications <http://proj.org/apps/index.html>`_ for the details.
+
+   The usage of **PROJ** follows very closely the syntax of **proj** and **cs2cs**. The projection parameters
+   are encapsulated under the **-J** option. Because there are normally several parameters defining a
+   referencing system separated by spaces (in **PROJ** or **GDAL**) we can either use double quotes as in
+   **-J**\ "*+proj=merc +ellps=WGS84 +units=m*\ " or just glue all parameters like in
+   **-J**\ *+proj=merc+ellps=WGS84+units=m*.
+
+   Using `EPSG codes <http://spatialreference.org>`_ is also possible (but need the setting of the **GDAL_DATA**
+   environment variable to point to the GDAL's *data* sub-directory). For example **-JEPSG:4326** sets
+   the WGS-84 system.
+
+   For :doc:`mapproject </mapproject>` and :doc:`grdproject </grdproject>` we can go directly from the
+   referencing system A to B without the intermediate step of converting to geographic coordinates.
+   That is obtained (like in **cs2cs**) by using the **+to** keyword. Example:
+   **-J**\ *EPSG:4326+to+proj=aeqd+ellps=WGS84+units=m*. A much awaited bonus is also that we now do not need
+   to set **-R** to do point coordinate conversions.
+
+   While for point and grid conversions done by **mapproject** and **grdproject** we can use `all PROJ projections
+   <https://proj.org/operations/projections/index.html>`_, the situations is, however, rather more limited for mapping purposes.
+   Here, only the subset of the **PROJ** projections that can be mapped into the GMT projections syntax is
+   available to use. Another aspect that is not present in **PROJ**, because it's not a mapping library,
+   is how to set the map scale or map dimension. We introduced the two extensions **+width=**\ *size* and
+   **+scale=**\ *1:xxxx* that work exactly like the *map width* and *scale* in classical GMT. It is also allowed
+   to provide the scale (but NOT the width) by appending the string "/1:xxx" to the end of the projection parameters.
