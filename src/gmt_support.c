@@ -4478,7 +4478,7 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		top = 10;
 		bottom = 2;
 	}
-	//if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
+	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
 	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.flip) {
 		gmt_M_int_swap (top, bottom);	/* Because with elevations we get confused... */
 		gmt_M_int_swap (left, right);
@@ -4490,12 +4490,13 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		else
 			justify = (side == 1) ? right : left;
 	}
-	else {	/* S and N borader */
+	else {	/* S and N border */
 		if (GMT->current.map.frame.horizontal) {
 			if (side == low)
 				justify = (doubleAlmostEqual (angle, 180.0)) ? bottom : top;
 			else
 				justify = (gmt_M_is_zero (angle)) ? top : bottom;
+			//if (GMT->current.proj.got_elevations && (doubleAlmostEqual (angle, 180.0) || gmt_M_is_zero (angle)))
 			if (GMT->current.proj.got_elevations && (doubleAlmostEqual (angle, 180.0) || gmt_M_is_zero (angle)))
 				justify = (justify + 8) % 16;
 		}

@@ -4643,7 +4643,14 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 								case 'e': GMT->current.proj.flip_radius = 90.0; GMT->current.proj.got_elevations = true; break;	/* Gave optional +fe for reverse (angular elevations, presumably) */
 								case 'p': GMT->current.proj.flip_radius = 0.0;	break; /* Determine planetary radius from current ellipsoid setting in gmt_mapsetup */
 								case '\0': GMT->current.proj.flip_radius = -1.0; break;	/* Just flip, set fli_radius be set to north in map_setup [Default +f] */
-								default: GMT->current.proj.flip_radius = atof (&word[1]); break;	/* Gave flip with optional flip radius */
+								default:
+									if (gmt_not_numeric (GMT, &word[1])) {
+										GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: +%s not a valid argument\n", word);
+										error++;
+									}
+									else	/* Gave flip with optional flip radius */
+										GMT->current.proj.flip_radius = atof (&word[1]);
+									break;
 							}
 							break;
 						case 'o':	/* Gave optional +o for a nonzero radial offset [0] */
@@ -7585,7 +7592,7 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 				case GMT_POLAR:
 					gmt_message (GMT, "\t-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+o<offset>][+r<rotation][+z] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+o<offset>][+r<rotation][+z]\n");
 					gmt_message (GMT, "\t  <scale> is %s/units, or use <width> in %s.  Optionally,\n", u, u);
-					gmt_message (GMT, "\t  append +a for azimuths, +o for radial offset [0], +o for rotation [0], +f to reverse\n");
+					gmt_message (GMT, "\t  append +a for azimuths, +o for radial offset [0], +r for rotation [0], +f to reverse\n");
 					gmt_message (GMT, "\t  radial coordinates (e for elevation, p for planetary radius), and +z for annotating depth.\n");
 					break;
 				case GMT_LINEAR:
