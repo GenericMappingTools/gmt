@@ -4497,10 +4497,12 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		if (GMT->current.map.frame.horizontal) {
 			if (side == low)
 				justify = (doubleAlmostEqualZero (angle, f_angle)) ? bottom : top;
+			else if (GMT->current.proj.flip && !GMT->current.proj.got_elevations)
+				justify = (gmt_M_is_zero (angle-180.0)) ? top : bottom;
 			else
 				justify = (gmt_M_is_zero (angle)) ? top : bottom;
 			//if (GMT->current.proj.got_elevations && (doubleAlmostEqual (angle, 180.0) || gmt_M_is_zero (angle)))
-			if (GMT->current.proj.got_elevations && (doubleAlmostEqual (angle, 180.0) || gmt_M_is_zero (angle)))
+			if (GMT->current.proj.got_elevations && (doubleAlmostEqualZero (angle, f_angle) || gmt_M_is_zero (angle)))
 				justify = (justify + 8) % 16;
 		}
 		else {
