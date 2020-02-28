@@ -70,7 +70,9 @@ steps:
     echo "##vso[task.setvariable variable=COASTLINEDIR]$BUILD_SOURCESDIRECTORY/coastline"
   displayName: Set install location and coastline location
 
-- bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
+- bash: |
+    echo "##vso[task.prependpath]$INSTALLDIR/bin"
+    echo "##vso[task.prependpath]C:\\Program Files\\Git\\usr\\bin"
   displayName: Set PATH
 
 - task: Cache@2
