@@ -1,4 +1,4 @@
-.. _vertical_slice:
+.. _vertical-slice:
 
 A Vertical slice
 ----------------
@@ -124,7 +124,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  rm -f base.nc points.txt slice.nc slice_cut.nc gmt.history gmt.conf
 
-.. figure:: images/vertical_slice.png
+.. figure:: images/vertical-slice.png
    :width: 500 px
    :align: center
 

@@ -7,10 +7,10 @@ Users Script Contributions
 
 .. jinja::
 
-    {% set scripts=['vertical_slice'] %}
+    {% set scripts=['vertical-slice'] %}
     {% for i in scripts %}
-    -  .. figure:: /users_contrib_scripts/images/{{i}}.*
-          :target: ./users_contrib_scripts/{{i}}.html
+    -  .. figure:: /users-contrib-scripts/images/{{i}}.*
+          :target: ./users-contrib-scripts/{{i}}.html
 
           :ref:`{{i}}`
 
@@ -20,4 +20,4 @@ Users Script Contributions
    :hidden:
    :glob:
 
-   users_contrib_scripts/*
+   users-contrib-scripts/*

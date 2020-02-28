@@ -12394,7 +12394,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, int *row, int
 		return GMT_RUNTIME_ERROR;
 	}
 	if (gap == NULL) {
-		if ((ios = fscanf (fp, "%d %d %*lg %*lg %*lg %*lg %*d", row, col)) != 2) {
+		if ((ios = fscanf (fp, "%d %d %*g %*g %*g %*g %*d", row, col)) != 2) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to decode record from %s!\n", file);
 			API->error = GMT_RUNTIME_ERROR;
 			fclose (fp);

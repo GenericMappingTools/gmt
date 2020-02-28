@@ -10,5 +10,5 @@ Specifying Fill
     the image [300]. For 1-bit rasters: use upper case **P**  for inverse
     video, or append **+f**\ *color* and/or **+b**\ *color* to specify
     fore- and background colors (no *color* given means transparency).
-    See :doc:`/cookbook/predefined_patterns` for information on
+    See :doc:`/cookbook/predefined-patterns` for information on
     individual built-in patterns.

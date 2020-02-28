@@ -95,7 +95,7 @@ Optional Arguments
 .. _-J:
 
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant metadata in
-    netCDF grids. Remember also that PROJ.4 syntax can be used directly in **-J**. This referencing will be
+    netCDF grids. Remember also that PROJ syntax can be used directly in **-J**. This referencing will be
     recognized by GDAL and increasingly also by GMT.
 .. include:: explain_-J.rst_
 

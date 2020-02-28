@@ -40,19 +40,19 @@ GMT Cookbook
    cookbook/introduction
    cookbook/features
    cookbook/options
-   cookbook/coordinate_transformations
-   cookbook/map_projections
-   cookbook/supplemental_packages
-   cookbook/file_formats
-   cookbook/include_figures
-   cookbook/predefined_patterns
-   cookbook/octal_codes
-   cookbook/postscript_fonts
+   cookbook/coordinate-transformations
+   cookbook/map-projections
+   cookbook/supplemental-packages
+   cookbook/file-formats
+   cookbook/include-figures
+   cookbook/predefined-patterns
+   cookbook/octal-codes
+   cookbook/postscript-fonts
    cookbook/colorspace
-   cookbook/data_filtering
-   cookbook/non_unix_platforms
+   cookbook/data-filtering
+   cookbook/non-unix-platforms
    cookbook/cpts
-   cookbook/custom_symbols
-   cookbook/contour_annotations
-   cookbook/ogrgmt_format.rst
+   cookbook/custom-symbols
+   cookbook/contour-annotations
+   cookbook/ogrgmt-format.rst
    cookbook/one-liner

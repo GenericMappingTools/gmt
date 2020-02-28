@@ -3,7 +3,7 @@
 # This version is a Mercator plot and azimuths are given.
 ps=line_geo.ps
 # Must temporarily change GMT_USERDIR to the gallery documentation dir
-export GMT_USERDIR=`gmt --show-sharedir`/../doc/rst/source/users_contrib_symbols/geology
+export GMT_USERDIR=`gmt --show-sharedir`/../doc/rst/source/users-contrib-symbols/geology
 echo "0 0  60 30" > q1.txt
 echo "0 0 150 30" > q2.txt
 echo "0 0 240 30" > q3.txt

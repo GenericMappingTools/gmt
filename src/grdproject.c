@@ -229,7 +229,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
 	int error = 0;
 
-	char format[GMT_LEN128] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};
+	char format[GMT_LEN256+6] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};
 
 	double wesn[4];
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, fwd_scale, inv_scale;
