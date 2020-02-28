@@ -273,7 +273,7 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jp_full:
 
-    **-Jp**\ *scale*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+o**\ *offset*][**+r**\ *rotation*][**+z**] or **-JP**\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+o**\ *offset*][**+r**\ *rotation*][**+z**]
+    **-Jp**\ *scale*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *rotation*][**+z**] or **-JP**\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *rotation*][**+z**]
     (Polar coordinates (*theta*, *r*))
 
     Give *scale* in UNIT/r-unit.  Optionally add **+a** if *theta* is azimuth CW
@@ -282,8 +282,8 @@ projection names stands for Equal-Area and Conformal, respectively):
     that *r* represents elevations in degrees (requires *south* >= 0 and *north* <= 90),
     **p** to select current planetary radius as maximum radius [*north*], or *radius*
     to specify such a radius directly.
-    Append **+o**\ *origin* to include a radial offset [0].
-    Append **+r**\ *rotation* in degrees to indicate a CCW angular rotation [0].
+    Append **+r**\ *offset* to include a radial offset [0].
+    Append **+t**\ *rotation* in degrees to indicate a CCW angular offset [0].
     Finally, append **+z** if you want to annotate depth rather than radius [Default]. 
 
 .. _-Jx_full:

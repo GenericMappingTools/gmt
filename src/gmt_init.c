@@ -4630,10 +4630,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);
 			GMT->current.proj.got_azimuths = GMT->current.proj.got_elevations = false;
 			GMT->current.proj.z_down = GMT_ZDOWN_R;
-			if ((d = gmt_first_modifier (GMT, args, "aforz"))) {	/* Process all modifiers */
+			if ((d = gmt_first_modifier (GMT, args, "afrtz"))) {	/* Process all modifiers */
 				unsigned int pos = 0, uerr = 0;
 				char word[GMT_LEN32] = {""};
-				while (gmt_getmodopt (GMT, 'J', d, "aforz", &pos, word, &uerr) && uerr == 0) {
+				while (gmt_getmodopt (GMT, 'J', d, "afrtz", &pos, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
 						case 'a':	/* Using azimuths instead of directions */
 							GMT->current.proj.got_azimuths = true;
@@ -4654,10 +4654,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 									break;
 							}
 							break;
-						case 'o':	/* Gave optional +o for a nonzero radial offset [0] */
+						case 'r':	/* Gave optional +r for a nonzero radial offset [0] */
 							GMT->current.proj.radial_offset = gmt_M_to_inch (GMT, &word[1]);
 							break;
-						case 'r':	/* Gave optional zero-base angle, i.e., a rotation [0] */
+						case 't':	/* Gave optional zero-base angle, i.e., a rotation [0] */
 							GMT->current.proj.pars[1] = atof (&word[1]);
 							break;	
 						case 'z':	/* Gave optional +z[p|radius] for annotating depths rather than radius */
@@ -6527,16 +6527,16 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<>r\n");
 			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
 
-			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+o<offset>][+r<rotation][+z] (Polar (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z] (Polar (theta,radius))\n");
 			gmt_message (GMT, "\t     Linear scaling for polar coordinates.  Give scale in %s/units.\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			gmt_message (GMT, "\t     Append +a to use azimuths (CW from North) instead of directions (CCW from East) [Default].\n");
-			gmt_message (GMT, "\t     Append +o to offset the radial values [0].\n");
 			gmt_message (GMT, "\t     Append +f to flip radial direction so that south is on the outside and north is at the center.\n");
 			gmt_message (GMT, "\t       Append e to indicate data are elevations in degrees (s/n must be in 0-90 range).\n");
 			gmt_message (GMT, "\t       Append p to set r = current planetary radius to be the center.\n");
 			gmt_message (GMT, "\t       Append <radius> to indicate the radius at the center.\n");
-			gmt_message (GMT, "\t     Append +r to rotate the coordinate system by <rotation> [0].\n");
+			gmt_message (GMT, "\t     Append +r to offset the radial values [0].\n");
+			gmt_message (GMT, "\t     Append +t to offset the angular values [0].\n");
 			gmt_message (GMT, "\t     Append +z to annotate depths rather than radius [Default].\n");
 
 			gmt_message (GMT, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scale>|<width> ((American) Polyconic)\n");
@@ -7607,9 +7607,9 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_POLAR:
-					gmt_message (GMT, "\t-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+o<offset>][+r<rotation][+z] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+o<offset>][+r<rotation][+z]\n");
+					gmt_message (GMT, "\t-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z]\n");
 					gmt_message (GMT, "\t  <scale> is %s/units, or use <width> in %s.  Optionally,\n", u, u);
-					gmt_message (GMT, "\t  append +a for azimuths, +o for radial offset [0], +r for rotation [0], +f to reverse\n");
+					gmt_message (GMT, "\t  append +a for azimuths, +r for radial offset [0], +t for angular offset [0], +f to reverse\n");
 					gmt_message (GMT, "\t  radial coordinates (e for elevation, p for planetary radius), and +z for annotating depth.\n");
 					break;
 				case GMT_LINEAR:
