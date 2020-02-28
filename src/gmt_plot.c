@@ -6892,6 +6892,8 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 				text_justify = PSL_TC; del_y = -dy; break;
 			case PSL_ML: text_justify = PSL_ML; angle = 90.0; x -= w; del_y = -dy; break;
 			case PSL_MR: text_justify = PSL_MR; angle = 90.0; x += w; del_y = +dy; break;
+			default:
+				text_justify = PSL_BC; del_y = dy; break;
 		}
 	}
 	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin is now mid-point of rounded line and we have possibly rotated 90 degrees */
