@@ -537,7 +537,7 @@ GMT_LOCAL void plot_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 GMT_LOCAL void plot_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
 	double *y = NULL;
 	char *type = (gmt_M_y_is_lat (GMT, GMT_IN)) ? "parallel" : "y";
-	unsigned int i, ny;
+	unsigned int i, ny = 0;
 
 	if (GMT->current.proj.z_down) {
 		if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
@@ -1727,7 +1727,7 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 }
 
 GMT_LOCAL void plot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
-	unsigned int i, nx, ny;
+	unsigned int i, nx = 0, ny = 0;
 	bool do_x, do_y;
 	double dx, dy, *val = NULL, len, shift = 0.0;
 
