@@ -4454,7 +4454,7 @@ GMT_LOCAL bool support_x_overlap (double *xa, double *xb, uint64_t *xa_start, ui
 
 GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle, double x, double y) {
 	int justify, left, right, top, bottom, low;
-	double x0, y0;
+	double x0, y0, f_angle = 180.0;
 
 	/* gmt_geo_to_xy (GMT->current.proj.central_meridian, GMT->current.proj.pole, &x0, &y0); */
 
@@ -4484,6 +4484,7 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 			gmt_M_int_swap (top, bottom);
 			gmt_M_int_swap (left, right);
 			low = 2 - low;
+			f_angle = 0.0;
 		}
 	}
 	if (side%2) {	/* W and E border */
@@ -4495,7 +4496,7 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 	else {	/* S and N border */
 		if (GMT->current.map.frame.horizontal) {
 			if (side == low)
-				justify = (doubleAlmostEqual (angle, 180.0)) ? bottom : top;
+				justify = (doubleAlmostEqualZero (angle, f_angle)) ? bottom : top;
 			else
 				justify = (gmt_M_is_zero (angle)) ? top : bottom;
 			//if (GMT->current.proj.got_elevations && (doubleAlmostEqual (angle, 180.0) || gmt_M_is_zero (angle)))
@@ -4535,7 +4536,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 	switch (side) {
 		case 0:		/* S */
 			if (GMT->current.map.frame.horizontal)
-				*justify = (GMT->current.proj.flip) ? 2 : 10;
+				*justify = (GMT->current.proj.got_elevations) ? 2 : 10;
 			else
 				*justify = ((*text_angle) < 0.0) ? 5 : 7;
 			break;
@@ -4549,7 +4550,7 @@ GMT_LOCAL bool support_get_label_parameters (struct GMT_CTRL *GMT, int side, dou
 			break;
 		case 2:		/* N */
 			if (GMT->current.map.frame.horizontal)
-				*justify = (GMT->current.proj.flip) ? 10 : 2;
+				*justify = (GMT->current.proj.got_elevations) ? 10 : 2;
 			else
 				*justify = ((*text_angle) < 0.0) ? 7 : 5;
 			break;
