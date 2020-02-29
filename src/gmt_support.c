@@ -14040,23 +14040,22 @@ GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, un
 	/* Special function to set justification and text angle for polar projections (r/theta, i.e. GMT_POLAR) */
 	/* Normally y-min (south) is at r = 0 and y-max (north) is on the perimeter, but +f reverses that */
 	/* Normally x-min (west) is the boundary with the region on the leeft, and x-max (east) on the right, but +a reverses that */
-	unsigned int orig_side = side;
 	*line_angle = angle;
 	if (GMT->current.proj.flip && side%2 == 0) /* Flipping means south is on the outside and north is the inside */
-		side = 2 - side;
+		side = 2 - side;	/* Turns 2 to 0 and 0 to 2 */
 
 	switch (side) {
 		case 0:	/* We are annotating angles on the inner (donut) boundary */
 			if (gmt_M_is_zero (angle) || (angle >= 180.0 && angle < 360.0)) *justify = 10, *text_angle = angle - 270.0;
 			else *justify = 2, *text_angle = angle - 90;
 			break;
-		case 2:	/* We are annotating angles on the outer boundary */
-			if (angle >= 0.0 && angle <= 180.0) *justify = 2, *text_angle = angle - 90.0;
-			else *justify = 10, *text_angle = angle + 90.0;
-			break;
 		case 1:
 			if (angle >= 90.0 && angle < 270.0) *justify = 7, *text_angle = angle - 180;
 			else  *justify = 5, *text_angle = angle;
+			break;
+		case 2:	/* We are annotating angles on the outer boundary */
+			if (angle >= 0.0 && angle <= 180.0) *justify = 2, *text_angle = angle - 90.0;
+			else *justify = 10, *text_angle = angle + 90.0;
 			break;
 		case 3:
 			if (angle >= 0.0 && angle < 180.0) *justify = 5, *text_angle = angle;
@@ -14065,7 +14064,6 @@ GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, un
 			else  *justify = 5, *text_angle = angle;
 			break;
 	}
-	//GMT_Report (GMT->parent, GMT_MSG_WARNING, "angle = %g orig-side: %d side = %d justify = %d line_angle = %g text_angle = %g\n", angle, orig_side, side, *justify, *line_angle, *text_angle);
 	return (0);
 }
 
