@@ -6527,7 +6527,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<>r\n");
 			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
 
-			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z] (Polar (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z[p|<radius>]] (Polar (theta,radius))\n");
 			gmt_message (GMT, "\t     Linear scaling for polar coordinates.  Give scale in %s/units.\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			gmt_message (GMT, "\t     Append +a to use azimuths (CW from North) instead of directions (CCW from East) [Default].\n");
@@ -6537,7 +6537,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Append <radius> to indicate the radius at the center.\n");
 			gmt_message (GMT, "\t     Append +r to offset the radial values [0].\n");
 			gmt_message (GMT, "\t     Append +t to offset the angular values [0].\n");
-			gmt_message (GMT, "\t     Append +z to annotate depths rather than radius [Default].\n");
+			gmt_message (GMT, "\t     Append +z to annotate depths rather than radius [Default]. Alternatively, if you provided depths\n");
+			gmt_message (GMT, "\t       append p (planetary radius) or <radius> to annotate r = radius - z instead.\n");
 
 			gmt_message (GMT, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scale>|<width> ((American) Polyconic)\n");
 			gmt_message (GMT, "\t     Give central meridian (opt), reference parallel (opt, default = equator), and scale\n");
@@ -6650,7 +6651,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scl>|<width> (Cylindrical Equal-area)\n");
 
-			gmt_message (GMT, "\t   -Jp|P<scl>|<width>[+a][+f[e|p|<radius>]][+o<offset>][+r<rotation][+z] (Polar [azimuth] (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P<scl>|<width>[+a][+f[e|p|<radius>]][+o<offset>][+r<rotation][+z[p|<radius>]] (Polar [azimuth] (theta,radius))\n");
 
 			gmt_message (GMT, "\t   -Jx|X<x-scl>|<width>[d|l|p<power>|t|T][/<y-scl>|<height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
 			gmt_message (GMT, "\t   (See basemap for more details on projection syntax)\n");
@@ -7607,10 +7608,11 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_POLAR:
-					gmt_message (GMT, "\t-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z]\n");
+					gmt_message (GMT, "\t-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z[p|<radius>]] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z[p|<radius>]]\n");
 					gmt_message (GMT, "\t  <scale> is %s/units, or use <width> in %s.  Optionally,\n", u, u);
 					gmt_message (GMT, "\t  append +a for azimuths, +r for radial offset [0], +t for angular offset [0], +f to reverse\n");
 					gmt_message (GMT, "\t  radial coordinates (e for elevation, p for planetary radius), and +z for annotating depth.\n");
+					gmt_message (GMT, "\t  (append p for planetary radius or another radius to annotate r = radius - z).\n");
 					break;
 				case GMT_LINEAR:
 					gmt_message (GMT, "\t-Jx<x-scale>|<width>[d|l|p<power>|t|T][/<y-scale>|<height>[d|l|p<power>|t|T]], scale in %s/units\n", u);
