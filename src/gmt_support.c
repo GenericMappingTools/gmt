@@ -14905,7 +14905,7 @@ char *gmt_putusername (struct GMT_CTRL *GMT) {
 #ifdef WIN32
 	{
 		char name[GMT_LEN256] = {""}, *U = NULL;
-		DWORD Size = _tcslen (name);
+		DWORD Size = (DWORD)_tcslen (name);
 		if (GetUserName (name, &Size)) /* Got a user name, return it */
 			return (strdup (name));
 		if (U = getenv ("USERNAME"))	/* Got a name from the environment instead */
