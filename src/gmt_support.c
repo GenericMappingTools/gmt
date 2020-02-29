@@ -14065,7 +14065,7 @@ GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, un
 			else  *justify = 5, *text_angle = angle;
 			break;
 	}
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "angle = %g orig-side: %d side = %d justify = %d line_angle = %g text_angle = %g\n", angle, orig_side, side, *justify, *line_angle, *text_angle);
+	//GMT_Report (GMT->parent, GMT_MSG_WARNING, "angle = %g orig-side: %d side = %d justify = %d line_angle = %g text_angle = %g\n", angle, orig_side, side, *justify, *line_angle, *text_angle);
 	return (0);
 }
 
