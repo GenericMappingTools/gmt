@@ -14230,6 +14230,7 @@ double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon
 		}
 		angle = d_atan2d (y2-y1, x2-x1) - 90.0;
 		if (GMT->current.proj.got_azimuths) angle += 180.0;
+		if (GMT->current.proj.flip) angle += 180.0;
 	}
 	else
 		angle = d_atan2d (y2 - y1, x2 - x1);
