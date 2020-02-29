@@ -4484,7 +4484,7 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 			gmt_M_int_swap (top, bottom);
 			gmt_M_int_swap (left, right);
 			low = 2 - low;
-			f_angle = 0.0;
+			//f_angle = 0.0;
 		}
 	}
 	if (side%2) {	/* W and E border */
@@ -4497,11 +4497,9 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		if (GMT->current.map.frame.horizontal) {
 			if (side == low)
 				justify = (doubleAlmostEqualZero (angle, f_angle)) ? bottom : top;
-			else if (GMT->current.proj.flip && !GMT->current.proj.got_elevations)
-				justify = (gmt_M_is_zero (angle-180.0)) ? top : bottom;
 			else
 				justify = (gmt_M_is_zero (angle)) ? top : bottom;
-			//if (GMT->current.proj.got_elevations && (doubleAlmostEqual (angle, 180.0) || gmt_M_is_zero (angle)))
+			if (GMT->current.proj.flip && !GMT->current.proj.got_elevations) justify = (justify + 8) % 16;
 			if (GMT->current.proj.got_elevations && (doubleAlmostEqualZero (angle, f_angle) || gmt_M_is_zero (angle)))
 				justify = (justify + 8) % 16;
 		}
@@ -14038,6 +14036,39 @@ int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_
 	return (GMT_OK);
 }
 
+GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double *line_angle, double *text_angle, unsigned int *justify) {
+	/* Special function to set justification and text angle for polar projections (r/theta, i.e. GMT_POLAR) */
+	/* Normally y-min (south) is at r = 0 and y-max (north) is on the perimeter, but +f reverses that */
+	/* Normally x-min (west) is the boundary with the region on the leeft, and x-max (east) on the right, but +a reverses that */
+	unsigned int orig_side = side;
+	*line_angle = angle;
+	if (GMT->current.proj.flip && side%2 == 0) /* Flipping means south is on the outside and north is the inside */
+		side = 2 - side;
+
+	switch (side) {
+		case 0:	/* We are annotating angles on the inner (donut) boundary */
+			if (gmt_M_is_zero (angle) || (angle >= 180.0 && angle < 360.0)) *justify = 10, *text_angle = angle - 270.0;
+			else *justify = 2, *text_angle = angle - 90;
+			break;
+		case 2:	/* We are annotating angles on the outer boundary */
+			if (angle >= 0.0 && angle <= 180.0) *justify = 2, *text_angle = angle - 90.0;
+			else *justify = 10, *text_angle = angle + 90.0;
+			break;
+		case 1:
+			if (angle >= 90.0 && angle < 270.0) *justify = 7, *text_angle = angle - 180;
+			else  *justify = 5, *text_angle = angle;
+			break;
+		case 3:
+			if (angle >= 0.0 && angle < 180.0) *justify = 5, *text_angle = angle;
+			else  *justify = 7, *text_angle = 180.0 - angle;
+			if (angle >= 90.0 && angle < 270.0) *justify = 7, *text_angle = angle - 180;
+			else  *justify = 5, *text_angle = angle;
+			break;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "angle = %g orig-side: %d side = %d justify = %d line_angle = %g text_angle = %g\n", angle, orig_side, side, *justify, *line_angle, *text_angle);
+	return (0);
+}
+
 /*! . */
 int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double x, double y, unsigned int type, double *line_angle, double *text_angle, unsigned int *justify) {
 	bool set_angle;
@@ -14046,6 +14077,8 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 	if (GMT->current.map.frame.side[side] < GMT_AXIS_ANNOT) return -1;	/* Don't want labels here */
 
 	if (GMT->current.map.frame.check_side == true && type != side%2) return -1;
+
+	if (GMT->current.proj.projection_GMT == GMT_POLAR) return (gmtlib_polar_prepare_label (GMT, angle, side, line_angle, text_angle, justify));
 
 	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS && !(side%2)) angle = -90.0;	/* support_get_label_parameters will make this 0 */
 

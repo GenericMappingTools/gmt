@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Test new implementation of -JP modifiers
 gmt begin polarcircles ps
-	gmt set FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 2p
+	gmt set FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 2p MAP_ANNOT_OFFSET_PRIMARY 2p
 	gmt subplot begin 4x3 -Fs3i -BWSNE -Bxa30fg -Byafg -M18p
 		gmt basemap -R0/300/0.4/1 -JP? -c -B+t"Default"
 		gmt basemap -R0/300/0.4/1 -JP?+f -c -B+t"\053f"
