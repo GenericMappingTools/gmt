@@ -280,7 +280,7 @@ projection names stands for Equal-Area and Conformal, respectively):
     from North instead of direction CCW from East [Default].
     Select **+f** to flip the radial direction to point inwards, and append **e** to indicate
     that *r* represents elevations in degrees (requires *south* >= 0 and *north* <= 90),
-    **p** to select current planetary radius as maximum radius [*north*], or *radius*
+    **p** to select current planetary radius (determined by :term:`PROJ_ELLIPSOID`) as maximum radius [*north*], or *radius*
     to specify such a radius directly.
     Append **+r**\ *offset* to include a radial offset [0].
     Append **+t**\ *rotation* in degrees to indicate a CCW angular offset [0].
