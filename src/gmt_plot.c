@@ -1975,6 +1975,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 		if (dy[k] > 0.0 && (gmt_M_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection_GMT == GMT_POLAR)) {	/* Annotate W and E boundaries */
 			unsigned int lonlat;
 			double *tval = NULL;
+			char format[GMT_LEN64] = {""};
 
 			if (gmt_M_y_is_lat (GMT, GMT_IN)) {
 				do_minutes = (fabs (fmod (dy[k], 1.0)) > GMT_CONV4_LIMIT);
@@ -1985,6 +1986,13 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 				do_minutes = do_seconds = 0;
 				lonlat = 2;
 			}
+			if (GMT->current.plot.r_theta_annot) {	/* Make format for radial term */
+				char tmp[GMT_LEN64] = {""};
+				strcpy (format, GMT->current.setting.format_float_map);
+				gmt_get_format (GMT, dy[k], NULL, NULL, tmp);
+				strncpy (GMT->current.setting.format_float_map, tmp, GMT_LEN64-1);
+			}
+
 			if (GMT->current.proj.z_down) {	/* Want to annotate depth rather than radius */
 				if (GMT->current.map.frame.axis[GMT_Y].file_custom)
 					ny = gmtlib_coordinate_array (GMT, 0.0, GMT->current.proj.z_radius-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &tval, &label_c);
@@ -2036,6 +2044,8 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 				gmt_M_free (GMT, label_c);
 			}
 			if (GMT->current.proj.z_down) gmt_M_free (GMT, tval);
+			if (GMT->current.plot.r_theta_annot)	/* Restore the format */
+				strcpy (GMT->current.setting.format_float_map, format);
 		}
 	}
 
