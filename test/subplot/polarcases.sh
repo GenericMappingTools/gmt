@@ -2,7 +2,7 @@
 # Test new implementation of -JP modifiers
 gmt begin polarcases ps
 	gmt set FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 2p MAP_ANNOT_OFFSET_PRIMARY 2p
-	gmt subplot begin 4x3 -Fs3i -BWSNE -Baf -M3p
+	gmt subplot begin 4x3 -Fs3i -BWSNE -Bafg -M3p
 		gmt basemap -R0/120/0.4/1 -JP? -c -B+t"Default"
 		gmt basemap -R0/120/0.4/1 -JP?+f -c -B+t"\053f"
 		gmt basemap -R0/120/0/50 -JP?+fe -c -B+t"\053fe"

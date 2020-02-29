@@ -616,11 +616,12 @@ void gmt_vpolar (struct GMT_CTRL *GMT, double lon0) {
 		/* else the radius was set specifically */
 	}
 	if (GMT->current.proj.z_down) {	/* Annotate a flavor of z = radius - r */
-		if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) {	/* z = planet_radius - r */
+		if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) {	/* Given z; annotate r = planet_radius - z */
 			if (GMT->current.proj.flip_radius > 0.0) /* Already obtained above */
 				GMT->current.proj.z_radius = GMT->current.proj.flip_radius;
 			else
-				GMT->current.proj.z_radius = gmtproj_planet_radius (GMT, "+zp");
+				GMT->current.proj.z_radius = GMT->current.proj.flip_radius = gmtproj_planet_radius (GMT, "+zp");
+			GMT->current.proj.flip = true;
 		}
 		else if (GMT->current.proj.z_down == GMT_ZDOWN_Z)	/* z = north - r */
 			GMT->current.proj.z_radius = GMT->common.R.wesn[YHI];

@@ -543,9 +543,13 @@ GMT_LOCAL void plot_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 		if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
 			ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
 		else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
-				ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
-		for (i = 0; i < ny; i++)
-			y[i] = GMT->common.R.wesn[YHI] - y[i];	/* These are the radial values needed for positioning */
+			ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
+		for (i = 0; i < ny; i++) {
+			if (GMT->current.proj.z_down == GMT_ZDOWN_ZP)
+				y[i] = GMT->current.proj.z_radius - y[i];	/* These are the z values needed for positioning */
+			else
+				y[i] = GMT->common.R.wesn[YHI] - y[i];	/* These are the radial values needed for positioning */
+		}
 	}
 	else
 		ny = gmtlib_linear_array (GMT, s, n, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
@@ -1767,10 +1771,14 @@ GMT_LOCAL void plot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 				ny = gmtlib_coordinate_array (GMT, 0.0, GMT->current.proj.z_radius-s, &GMT->current.map.frame.axis[GMT_Y].item[item], &val, NULL);
 			else if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
 				ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
-			else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
+			else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* r = rp - z */
 				ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
-			for (i = 0; i < ny; i++)
-				val[i] = GMT->common.R.wesn[YHI] - val[i];	/* These are the radial values needed for positioning */
+			for (i = 0; i < ny; i++) {
+				if (GMT->current.proj.z_down == GMT_ZDOWN_ZP)
+					val[i] = GMT->current.proj.z_radius - val[i];	/* These are the z values needed for positioning */
+				else
+					val[i] = GMT->common.R.wesn[YHI] - val[i];	/* These are the radial values needed for positioning */
+			}
 		}
 		else {
 			if (GMT->current.map.frame.axis[GMT_Y].file_custom)
@@ -1985,8 +1993,12 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 				else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
 					ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &tval);
 				val = gmt_M_memory (GMT, NULL, ny, double);
-				for (i = 0; i < ny; i++)
-					val[i] = GMT->common.R.wesn[YHI] - tval[i];	/* These are the radial values needed for positioning */
+				for (i = 0; i < ny; i++) {
+					if (GMT->current.proj.z_down == GMT_ZDOWN_ZP)
+						val[i] = GMT->current.proj.z_radius - tval[i];	/* These are the z values needed for positioning */
+					else
+						val[i] = GMT->common.R.wesn[YHI] - tval[i];	/* These are the radial values needed for positioning */
+				}
 			}
 			else {				/* Annotate radius */
 				if (GMT->current.map.frame.axis[GMT_Y].file_custom)
