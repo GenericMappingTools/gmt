@@ -57,7 +57,7 @@ foreach (_script ${_scripts_sh2txt})
 	string (REPLACE ".sh" ".txt" _txt ${_script})
 	list (APPEND _scripts_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
-		COMMAND ${GMT_BINARY_DIR}/src/script2verbatim --strip-comments
+		COMMAND ${GMT_BINARY_DIR}/src/script2verbatim --strip-comments --ps2pdf
 		${CMAKE_CURRENT_SOURCE_DIR}/${_script}
 		${RST_BINARY_DIR}/_verbatim/${_txt}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
