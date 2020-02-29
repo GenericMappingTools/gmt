@@ -8,7 +8,7 @@
 # we also remove those parent directories since presumably under build dir.
 #
 # Run this script on the command line with:
-#   $(gmt --show-datadir)/tools/gmt_uninstall.sh
+#   $(gmt --show-sharedir)/tools/gmt_uninstall.sh
 #
 # It expects the GMT executable to be in the search path and that
 # you have permission to perform the changes in the bin directory.
