@@ -7608,7 +7608,7 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_POLAR:
-					gmt_message (GMT, "\t-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin][+z[p|<radius>]] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<rotation][+z[p|<radius>]]\n");
+					gmt_message (GMT, "\t-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]]\n");
 					gmt_message (GMT, "\t  <scale> is %s/units, or use <width> in %s.  Optionally,\n", u, u);
 					gmt_message (GMT, "\t  append +a for azimuths, +r for radial offset [0], +t for angular origin [0], +f to reverse\n");
 					gmt_message (GMT, "\t  radial coordinates (e for elevation, p for planetary radius), and +z for annotating depth.\n");
@@ -17382,4 +17382,3 @@ void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reparse -o%s\n", token);
 	gmt_parse_common_options (GMT, "o", 'o', token);	/* Re-parse updated -o */
 }
-
