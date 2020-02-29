@@ -87,6 +87,7 @@
 #include <glob.h>
 #else
 #include <Windows.h>
+#include <tchar.h>
 #endif
 
 /*! . */
