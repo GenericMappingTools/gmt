@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 #
 # Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
@@ -7,7 +6,7 @@
 # via the main GMT executable (gmt <module>).
 #
 # Include this file in your GMT bash script or on the command line with:
-#   source $(gmt --show-datadir)/tools/gmt_functions.sh
+#   source $(gmt --show-sharedir)/tools/gmt_functions.sh
 # If the GMT executable is not in the search path, set an extra function:
 #   function gmt () { path/to/gmt "$@"; }
 #   export -f gmt
