@@ -59,9 +59,10 @@ You also need to download support data:
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
 are available from the [GMT main site](https://www.generic-mapping-tools.org).
 
-If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
+If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub.
+*Here we use `--depth 50` option for a shallow clone which can reduce the repository size to download.*
 
-    git clone https://github.com/GenericMappingTools/gmt
+    git clone --depth 50 https://github.com/GenericMappingTools/gmt
 
 You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz)
 from the [GMT main site](https://www.generic-mapping-tools.org).
