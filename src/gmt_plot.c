@@ -1787,6 +1787,14 @@ GMT_LOCAL void plot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 				ny = gmtlib_linear_array (GMT, s, n, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
 		}
 		for (i = 0; i < ny; i++) {
+			if (GMT->current.proj.projection_GMT == GMT_POLAR && (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) > 180.0) {	/* Worry about printing over the map at the center */
+				if (GMT->current.proj.flip) {
+					if (i == (ny-1) && doubleAlmostEqual (GMT->common.R.wesn[YHI], val[i])) continue;	/* Because it will overprint the map at the center */
+				}
+				else {
+					if (i == 0 && gmt_M_is_zero (val[i])) continue;	/* Because it will overprint the map at the center */
+				}
+			}
 			shift = plot_shift_gridline (GMT, val[i], GMT_Y);
 			plot_map_lattick (GMT, PSL, val[i] + shift, w, e, len);
 		}
@@ -2019,6 +2027,15 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 			for (i = 0; i < ny; i++) {
 				if ((GMT->current.proj.polar || GMT->current.proj.projection_GMT == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
 					continue;
+				if (GMT->current.proj.projection_GMT == GMT_POLAR && (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) > 180.0) {	/* Worry about printing over the map at the center */
+					if (GMT->current.proj.flip) {
+						if (i == (ny-1) && doubleAlmostEqual (GMT->common.R.wesn[YHI], val[i])) continue;	/* Because it will overprint the map at the center */
+					}
+					else {
+						if (i == 0 && gmt_M_is_zero (val[i])) continue;	/* Because it will overprint the map at the center */
+					}
+				}
+					
 				annot = true, trim = 0;
 				if (check_edges && ((i == 0 && val[i] == s) || (i == last && val[i] == n)))
 					continue;	/* To avoid/limit clipping of annotations */
