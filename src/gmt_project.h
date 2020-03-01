@@ -134,6 +134,12 @@ enum gmt_enum_units {GMT_IS_METER = 0,
 	GMT_N_UNITS,
 	GMT_IS_NOUNIT = -1};
 
+/* For annotating radial polar axes */
+enum GMT_enum_zdown {GMT_ZDOWN_R = 0,	/* Default: Annotating radius */
+	GMT_ZDOWN_Z		= 1,	/* Annotating north - r */
+	GMT_ZDOWN_ZP	= 2,	/* Annotating planetary radius - r */
+	GMT_ZDOWN_ZR	= 3};	/* Annotating given radius - r */
+
 /* gmt_M_is_rect_graticule means parallels and meridians are orthogonal, but does not imply linear spacing */
 #define gmt_M_is_rect_graticule(C) (C->current.proj.projection <= GMT_MILLER)
 
@@ -413,8 +419,9 @@ struct GMT_PROJ {
 
 	/* Polar (cylindrical) projection */
 
-	double p_base_angle;
-	bool got_azimuths, got_elevations, z_down;
+	double p_base_angle, flip_radius, radial_offset, z_radius;
+	bool got_azimuths, got_elevations, flip;
+	enum GMT_enum_zdown z_down;
 
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0, proj4_scl;

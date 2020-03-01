@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
+%%Title: GMT v6.1.0_b745451_2020.02.29 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 27 12:16:23 2019
+%%CreationDate: Sat Feb 29 10:21:52 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -657,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -667,8 +669,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R@test.dat.nc -JP6ir t.txt -Sc0.05c -By30 -Bx30 -BWSnE -C@test.dat.cpt -K -P
-%@PROJ: polar 0.00000000 180.00000000 0.00000000 80.00000000 -90.000 90.000 0.000 90.000 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R@test.dat.nc -JP6i+fe t.txt -Sc0.05c -By30 -Bx30 -BWSnE -C@test.dat.cpt -K -P
+%@PROJ: polar 0.00000000 180.00000000 0.00000000 80.00000000 -90.000 90.000 0.000 90.000 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %GMTBoundingBox: 72 72 432 216
 %%BeginObject PSL_Layer_1
 0 setlinecap
@@ -1018,18 +1020,18 @@ S
 S
 7367 0 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V 90 R (0è) tc Z U
+V -90 R (0è) bc Z U
 6862 1883 M V -60 R (30è) bc Z U
 5483 3262 M V -30 R (60è) bc Z U
 3600 3767 M (90è) bc Z
 1717 3262 M V 30 R (120è) bc Z U
 338 1883 M V 60 R (150è) bc Z U
 -167 0 M V 90 R (180è) bc Z U
-7200 -167 M V -89.8 R (0è) ml Z U
+7200 -167 M V 270 R (0è) ml Z U
 0 -167 M V 89.8 R (0è) mr Z U
-6000 -167 M V -89.8 R (30è) ml Z U
+6000 -167 M V 270 R (30è) ml Z U
 1200 -167 M V 89.8 R (30è) mr Z U
-4800 -167 M V -89.8 R (60è) ml Z U
+4800 -167 M V 270 R (60è) ml Z U
 2400 -167 M V 89.8 R (60è) mr Z U
 clipsave
 7200 0 M
@@ -32575,8 +32577,8 @@ O0
 0 4800 TM
 
 % PostScript produced by:
-%@GMT: gmt grdcontour @test.dat.nc -JP6ir -C@test.dat.cpt -A- -W1p+cl -By30 -Bx30 -BWSnE -O -Y4i
-%@PROJ: polar 0.00000000 180.00000000 0.00000000 80.00000000 -90.000 90.000 0.000 90.000 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdcontour @test.dat.nc -JP6i+fe -C@test.dat.cpt -A- -W1p+cl -By30 -Bx30 -BWSnE -O -Y4i
+%@PROJ: polar 0.00000000 180.00000000 0.00000000 80.00000000 -90.000 90.000 0.000 90.000 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -34575,23 +34577,24 @@ S
 S
 7367 0 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V 90 R (0è) tc Z U
+V -90 R (0è) bc Z U
 6862 1883 M V -60 R (30è) bc Z U
 5483 3262 M V -30 R (60è) bc Z U
 3600 3767 M (90è) bc Z
 1717 3262 M V 30 R (120è) bc Z U
 338 1883 M V 60 R (150è) bc Z U
 -167 0 M V 90 R (180è) bc Z U
-7200 -167 M V -89.8 R (0è) ml Z U
+7200 -167 M V 270 R (0è) ml Z U
 0 -167 M V 89.8 R (0è) mr Z U
-6000 -167 M V -89.8 R (30è) ml Z U
+6000 -167 M V 270 R (30è) ml Z U
 1200 -167 M V 89.8 R (30è) mr Z U
-4800 -167 M V -89.8 R (60è) ml Z U
+4800 -167 M V 270 R (60è) ml Z U
 2400 -167 M V 89.8 R (60è) mr Z U
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

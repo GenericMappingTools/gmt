@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdvector
+%%Title: GMT v6.1.0_2566112-dirty_2020.02.29 [64-bit] Document from grdvector
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:52:29 2018
+%%CreationDate: Sat Feb 29 14:02:19 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -683,73 +680,100 @@ O0
 1 0 0 C
 {1 0 0 C} FS
 O1
+/PSL_vecheadpen {17 W 1 0 0 C [] 0 B} def
 V
 17 W
 V 0 3600 T N 0 0 M 240 0 D S
 U
-V 600 3600 T 0 0 M
+V 600 3600 T PSL_vecheadpen
+17 W
+0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 3600 3600 T 45 R
 N 0 0 M 489 0 D S
 U
 V 4200 4200 T 45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 7200 3600 T N 0 0 M 240 0 D S
 U
-V 7800 3600 T 0 0 M
+V 7800 3600 T PSL_vecheadpen
+17 W
+0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 0 1800 T N 0 0 M 240 0 D S
 U
-V 600 1800 T 0 0 M
+V 600 1800 T PSL_vecheadpen
+17 W
+0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 3600 1800 T 45 R
 N 0 0 M 489 0 D S
 U
 V 4200 2400 T 45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 7200 1800 T N 0 0 M 240 0 D S
 U
-V 7800 1800 T 0 0 M
+V 7800 1800 T PSL_vecheadpen
+17 W
+0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 0 0 T N 0 0 M 240 0 D S
 U
-V 600 0 T 0 0 M
+V 600 0 T PSL_vecheadpen
+17 W
+0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 3600 0 T 45 R
 N 0 0 M 489 0 D S
 U
 V 4200 600 T 45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 7200 0 T N 0 0 M 240 0 D S
 U
-V 7800 0 T 0 0 M
+V 7800 0 T PSL_vecheadpen
+17 W
+0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
@@ -884,8 +908,8 @@ O0
 0 6000 TM
 
 % PostScript produced by:
-%@GMT: gmt grdvector vel_x.nc vel_y.nc -JPa6i/45 -Baf -BWSne -Q0.3i+e -S2i -N -W1p,red -Gred -T -O -K -Y5i
-%@PROJ: polar 0.00000000 90.00000000 0.50000000 1.00000000 -0.707 0.707 0.354 1.000 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdvector vel_x.nc vel_y.nc -JP6i+a+t45 -Baf -BWSne -Q0.3i+e -S2i -N -W1p,red -Gred -T -O -K -Y5i
+%@PROJ: polar 0.00000000 90.00000000 0.50000000 1.00000000 -0.707 0.707 0.354 1.000 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -894,84 +918,111 @@ O0
 1 0 0 C
 {1 0 0 C} FS
 O1
+/PSL_vecheadpen {17 W 1 0 0 C [] 0 B} def
 V
 17 W
 V 0 1800 T 45 R
 N 0 0 M 240 0 D S
 U
 V 424 2224 T 45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 3600 3291 T 45 R
 N 0 0 M 489 0 D S
 U
 V 4200 3891 T 45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 7200 1800 T -45 R
 N 0 0 M 240 0 D S
 U
 V 7624 1376 T -45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 900 900 T 45 R
 N 0 0 M 240 0 D S
 U
 V 1324 1324 T 45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 3600 2018 T 45 R
 N 0 0 M 489 0 D S
 U
 V 4200 2618 T 45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 6300 900 T -45 R
 N 0 0 M 240 0 D S
 U
 V 6724 476 T -45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 1800 0 T 45 R
 N 0 0 M 240 0 D S
 U
 V 2224 424 T 45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 3600 746 T 45 R
 N 0 0 M 489 0 D S
 U
 V 4200 1346 T 45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
 P clip fs P S 
 U
+17 W
 V 5400 0 T -45 R
 N 0 0 M 240 0 D S
 U
 V 5824 -424 T -45 R
+PSL_vecheadpen
+17 W
 0 0 M
 -360 96 D
 0 -192 D
@@ -1189,7 +1240,7 @@ V 45 R (0è) tc Z U
 5282 -118 M V -45 R (90è) tc Z U
 1322 242 M V 44.9 R (0.6) mr Z U
 602 962 M V 44.9 R (0.8) mr Z U
--118 1682 M V 44.9 R (1) mr Z U
+-118 1682 M V 44.9 R (1.0) mr Z U
 %%EndObject
 0 A
 FQ
@@ -1197,8 +1248,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R0/90/0.5/1 -JPa6i/45 -O -N -D-0.2i/0.3i -F+f12p+jLB
-%@PROJ: polar 0.00000000 90.00000000 0.50000000 1.00000000 -0.707 0.707 0.354 1.000 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R0/90/0.5/1 -JP6i+a+t45 -O -N -D-0.2i/0.3i -F+f12p+jLB
+%@PROJ: polar 0.00000000 90.00000000 0.50000000 1.00000000 -0.707 0.707 0.354 1.000 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -1217,7 +1268,8 @@ O0
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
