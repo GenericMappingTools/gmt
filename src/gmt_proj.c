@@ -638,7 +638,7 @@ void gmt_polar (struct GMT_CTRL *GMT, double x, double y, double *x_i, double *y
 	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* Azimuths, not directions given as x */
 	if (GMT->current.proj.flip) y = GMT->current.proj.flip_radius - y;		/* Depth down or elevations given as y */
 	sincosd (x - GMT->current.proj.p_base_angle, y_i, x_i);	/* Change base line angle */
-	(*x_i) *= (y + GMT->current.proj.radial_offset);	/* Allow for inner cirle radius before we start plotting */
+	(*x_i) *= (y + GMT->current.proj.radial_offset);	/* Allow for inner circle radius before we start plotting */
 	(*y_i) *= (y + GMT->current.proj.radial_offset);
 }
 
@@ -646,7 +646,7 @@ void gmt_ipolar (struct GMT_CTRL *GMT, double *x, double *y, double x_i, double 
 	/* Inversely transform both x and y from polar(cylindrical) coordinates */
 	*x = d_atan2d (y_i, x_i) + GMT->current.proj.p_base_angle;
 	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* Azimuths, not directions for x */
-	*y = hypot (x_i, y_i) - GMT->current.proj.radial_offset;	/* Allow for inner cirle radius */
+	*y = hypot (x_i, y_i) - GMT->current.proj.radial_offset;	/* Allow for inner circle radius */
 	if (GMT->current.proj.flip) *y = GMT->current.proj.flip_radius - (*y);    /* Depth down or elevations for y */
 }
 
