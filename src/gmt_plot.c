@@ -1733,19 +1733,25 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 GMT_LOCAL bool skip_polar_apex_annotation (struct GMT_CTRL *GMT, unsigned int i, double *val, unsigned int ny) {
 	/* Determine if the W and E annotations on a polar basemap can be placed when the radius from the center to
 	 * the annotation location is zero.  This depends on w-e range and a few special cases */
-	double range;
+	double annot_height, annot_offset, alpha, beta;
 	if (GMT->current.proj.projection_GMT != GMT_POLAR) return false;	/* No action unless the polar -JP|p projection */
 	if (!(GMT->current.map.frame.side[W_SIDE] == GMT_AXIS_ALL && GMT->current.map.frame.side[E_SIDE] == GMT_AXIS_ALL)) return false;	/* Requires -BWE to have overprinting issues */
 	if (GMT->current.proj.flip) {	/* Here the north value is at the potential apex */
-		if (i < (ny-1) || !doubleAlmostEqualZero (GMT->common.R.wesn[YHI], val[i])) return false;	/* Not apex label */
+		//if (i < (ny-1) || !doubleAlmostEqualZero (GMT->common.R.wesn[YHI], val[i])) return false;	/* Not apex label */
+		if (i < (ny-1) || !doubleAlmostEqualZero (GMT->current.proj.flip_radius, val[i])) return false;	/* Not apex label */
 	}
 	else {	/* Here radius 0 is at the potential apex */
 		if (i > 0 || !gmt_M_is_zero (val[i])) return false;	/*  Not apex label  */
 	}
 	/* OK, here the label for W or E is right at the apex.  Only plot if overprinting is unlikely */
-	range = GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO];	/* Worry about printing over the map at the center */
-	if (doubleAlmostEqualZero (range, 180.0)) return false;	/* No apex when angular range is 180 */
-	if (range > 135.0) return true;	/* Apex angle not large enough to avoid overprinting */
+	if (doubleAlmostEqualZero (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 180.0)) return false;	/* No apex when angular range is exactly 180 */
+	/* Determine maximum apex angle that still avoids overlap - this depends on fontsize and ticklength */
+	annot_height  = GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Approximate height of annotation in inches */
+	annot_offset = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + MAX (0.0, GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Add up distance from axis to annotation */
+	beta = 0.5 * (180 + GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]);	/* half-angle between the two gridline directions at the apex at the W and E sides */
+	alpha = (gmt_M_is_zero (annot_offset)) ? 90.0 : R2D * atan (0.5 * annot_height / annot_offset);	/* Angle between gridline direction and line from apex to nearest textbox corner */
+	if (alpha > beta) return true;	/* Apex angle not large enough to avoid overprinting */
+	//if (range > 135.0) return true;	/* Apex angle not large enough to avoid overprinting */
 	return false;	/* OK to place the label */
 }
 

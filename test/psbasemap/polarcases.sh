@@ -12,7 +12,7 @@ gmt begin polarcases ps
 		gmt basemap -R30/180/0.5/1 -JP?+a -c -B+t"\053a"
 		gmt basemap -R30/180/0.5/1 -JP?+t30 -c -B+t"\053t30"
 		gmt basemap -R30/180/0.5/1 -JP?+a+t30 -c -B+t"\053a\053t30"
-		gmt basemap -R0/120/0/1 -JP? -c -B+t"Default"
+		gmt basemap -R0/110/0/1 -JP? -c -B+t"Default"
 		gmt basemap -R0/120/0/1 -JP?+r4c -c -B+t"\053r4c"
 		gmt basemap -R0/120/0/1 -JP?+f+r4c -c -B+t"\053f\053r4c"
 	gmt subplot end
