@@ -1730,6 +1730,25 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	gmt_map_clip_off (GMT);
 }
 
+GMT_LOCAL bool skip_polar_apex_annotation (struct GMT_CTRL *GMT, unsigned int i, double *val, unsigned int ny) {
+	/* Determine if the W and E annotations on a polar basemap can be placed when the radius from the center to
+	 * the annotation location is zero.  This depends on w-e range and a few special cases */
+	double range;
+	if (GMT->current.proj.projection_GMT != GMT_POLAR) return false;	/* No action unless the polar -JP|p projection */
+	if (!(GMT->current.map.frame.side[W_SIDE] == GMT_AXIS_ALL && GMT->current.map.frame.side[E_SIDE] == GMT_AXIS_ALL)) return false;	/* Requires -BWE to have overprinting issues */
+	if (GMT->current.proj.flip) {	/* Here the north value is at the potential apex */
+		if (i < (ny-1) || !doubleAlmostEqualZero (GMT->common.R.wesn[YHI], val[i])) return false;	/* Not apex label */
+	}
+	else {	/* Here radius 0 is at the potential apex */
+		if (i > 0 || !gmt_M_is_zero (val[i])) return false;	/*  Not apex label  */
+	}
+	/* OK, here the label for W or E is right at the apex.  Only plot if overprinting is unlikely */
+	range = GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO];	/* Worry about printing over the map at the center */
+	if (doubleAlmostEqualZero (range, 180.0)) return false;	/* No apex when angular range is 180 */
+	if (range > 135.0) return true;	/* Apex angle not large enough to avoid overprinting */
+	return false;	/* OK to place the label */
+}
+
 GMT_LOCAL void plot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
 	unsigned int i, nx = 0, ny = 0;
 	bool do_x, do_y;
@@ -1787,14 +1806,7 @@ GMT_LOCAL void plot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 				ny = gmtlib_linear_array (GMT, s, n, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
 		}
 		for (i = 0; i < ny; i++) {
-			if (GMT->current.proj.projection_GMT == GMT_POLAR && (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) > 180.0) {	/* Worry about printing over the map at the center */
-				if (GMT->current.proj.flip) {
-					if (i == (ny-1) && doubleAlmostEqual (GMT->common.R.wesn[YHI], val[i])) continue;	/* Because it will overprint the map at the center */
-				}
-				else {
-					if (i == 0 && gmt_M_is_zero (val[i])) continue;	/* Because it will overprint the map at the center */
-				}
-			}
+			if (skip_polar_apex_annotation (GMT, i, val, ny)) continue;
 			shift = plot_shift_gridline (GMT, val[i], GMT_Y);
 			plot_map_lattick (GMT, PSL, val[i] + shift, w, e, len);
 		}
@@ -2027,15 +2039,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 			for (i = 0; i < ny; i++) {
 				if ((GMT->current.proj.polar || GMT->current.proj.projection_GMT == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
 					continue;
-				if (GMT->current.proj.projection_GMT == GMT_POLAR && (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) > 180.0) {	/* Worry about printing over the map at the center */
-					if (GMT->current.proj.flip) {
-						if (i == (ny-1) && doubleAlmostEqual (GMT->common.R.wesn[YHI], val[i])) continue;	/* Because it will overprint the map at the center */
-					}
-					else {
-						if (i == 0 && gmt_M_is_zero (val[i])) continue;	/* Because it will overprint the map at the center */
-					}
-				}
-					
+				if (skip_polar_apex_annotation (GMT, i, val, ny)) continue;
 				annot = true, trim = 0;
 				if (check_edges && ((i == 0 && val[i] == s) || (i == last && val[i] == n)))
 					continue;	/* To avoid/limit clipping of annotations */
