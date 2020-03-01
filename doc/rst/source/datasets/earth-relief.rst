@@ -94,8 +94,16 @@ Offline Usage
 -------------
 
 If you anticipate to be without an Internet connection (or a very slow one), you can download
-all the remote files prior to losing connection, using the shell script gmt_getremote.sh in
-share/tools.  It also allows you to download all the cache files used for examples.
+all the remote files prior to losing connection, using the shell script *gmt_getremote.sh* in
+**share/tools**. You can run the shell script::
+
+    $(gmt --show-sharedir)/tools/gmt_getremote.sh data
+
+It also allows you to download all the cache files used for examples::
+
+    $(gmt --show-sharedir)/tools/gmt_getremote.sh cache
+
+It may take some time to download the data from GMT server. Be patient!
 
 Data References
 ---------------
