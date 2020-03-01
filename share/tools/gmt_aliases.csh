@@ -10,8 +10,7 @@
 # If the GMT executable is not in the search path, set an extra alias:
 #   alias gmt path/to/gmt
 
-which gmt > /dev/null
-if ($? == 1) then
+if (`command -v gmt` == "") then
   echo 'Error: gmt is not found in your search PATH.'
   exit 1
 endif
