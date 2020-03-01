@@ -98,6 +98,7 @@ struct PSXY_CTRL {
 		bool active;
 		unsigned int mode;	/* 1 for line, 2 for fill, 3 for both */
 		double value;
+		char *file;
 	} Z;
 };
 
@@ -795,13 +796,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 
 			case 'Z':		/* Get value for CPT lookup */
 				Ctrl->Z.active = true;
-				ztype = (strchr (opt->arg, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, GMT_Z);
-				switch (opt->arg[0]) {
-					case 'l': Ctrl->Z.mode = 1; j=1; break;
-					case 'f': Ctrl->Z.mode = 2; j=1; break;
-					default:  Ctrl->Z.mode = 3; j=0; break;
+				if ((c = strstr (opt->arg, "+d")) != NULL) {
+					Ctrl->Z.mode = 4;
+					Ctrl->Z.file = strdup (&c[2]);
+					n_errors += gmt_M_check_condition (GMT, Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK),
+					                                   "Option -Z: Cannot read file %s!\n", Ctrl->Z.file);
 				}
-				n_errors += gmt_verify_expectations (GMT, ztype, gmt_scanf_arg (GMT, &opt->arg[j], ztype, false, &Ctrl->Z.value), &opt->arg[j]);
+				else {
+					ztype = (strchr (opt->arg, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, GMT_Z);
+					switch (opt->arg[0]) {
+						case 'l': Ctrl->Z.mode = 1; j=1; break;
+						case 'f': Ctrl->Z.mode = 2; j=1; break;
+						default:  Ctrl->Z.mode = 3; j=0; break;
+					}
+					n_errors += gmt_verify_expectations (GMT, ztype, gmt_scanf_arg (GMT, &opt->arg[j], ztype, false, &Ctrl->Z.value), &opt->arg[j]);
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -869,7 +878,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
-	struct GMT_DATASET *Decorate = NULL;
+	struct GMT_DATASET *Decorate = NULL, *Cin = NULL, *Zin = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -934,15 +943,22 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		get_rgb = not_line;	/* Need to assign color from either z or text from input data file */
 		PH = gmt_get_C_hidden (P);
 		if (Ctrl->Z.active) {	/* Get color from cpt -Z and store in -G */
-			double rgb[4];
-			(void)gmt_get_rgb_from_z (GMT, P, Ctrl->Z.value, rgb);
-			if (Ctrl->Z.mode & 1) {	/* To be used in polygon or symbol outline */
-				gmt_M_rgb_copy (Ctrl->W.pen.rgb, rgb);
-				Ctrl->W.active = true;	/* -C plus -Zl = -W */
+			if (Ctrl->Z.file) {
+				if ((Zin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->Z.file, NULL)) == NULL) {
+					Return (API->error);
+				}
 			}
-			if (Ctrl->Z.mode & 2) {	/* To be used in polygon or symbol fill */
-				gmt_M_rgb_copy (Ctrl->G.fill.rgb, rgb);
-				Ctrl->G.active = true;	/* -C plus -Zf = -G */
+			else {
+				double rgb[4];
+				(void)gmt_get_rgb_from_z (GMT, P, Ctrl->Z.value, rgb);
+				if (Ctrl->Z.mode & 1) {	/* To be used in polygon or symbol outline */
+					gmt_M_rgb_copy (Ctrl->W.pen.rgb, rgb);
+					Ctrl->W.active = true;	/* -C plus -Zl = -W */
+				}
+				if (Ctrl->Z.mode & 2) {	/* To be used in polygon or symbol fill */
+					gmt_M_rgb_copy (Ctrl->G.fill.rgb, rgb);
+					Ctrl->G.active = true;	/* -C plus -Zf = -G */
+				}
 			}
 			get_rgb = false;	/* Not reading z from data */
 		}
@@ -954,7 +970,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 
-	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
+	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor || Ctrl->Z.file);
 	if (S.symbol == PSL_DOT) penset_OK = false;	/* Dots have no outline */
 
 	Ctrl->E.size *= 0.5;	/* Since we draw half-way in either direction */
@@ -1817,6 +1833,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
+
+		if (Zin && Zin->n_records < D->n_segments) {
+			GMT_Report (API, GMT_MSG_ERROR, "Number of Z values is less then number of polygons\n");
+			Return (API->error);
+		}
+
 		DH = gmt_get_DD_hidden (D);
 		if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Get a dataset with one table, segment, 0 rows, but 4 columns */
 			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 4};	/* Put everything in one table */
@@ -1870,7 +1892,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->data[GMT_X];
 				 * but reallocating x below lead to disasters.  */
 
-				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, SH->ogr);
+				if (Zin != NULL) {
+					gmt_get_fill_from_z (GMT, P, Zin->table[0]->segment[0]->data[0][seg], &current_fill);
+					fill_active = true;
+					change = 4;
+				}
+				else {
+					change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, SH->ogr);
+				}
 				outline_setting = outline_active ? 1 : 0;
 				if (P && PH->skip) continue;	/* Chosen CPT indicates skip for this z */
 
