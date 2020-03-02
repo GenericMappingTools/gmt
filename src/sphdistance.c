@@ -575,6 +575,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing polygon %7ld\n", node);
 
 	if (!Ctrl->Q.active) {
+		gmt_M_free (GMT, P->data[GMT_X]);
+		gmt_M_free (GMT, P->data[GMT_Y]);
 		gmt_free_segment (GMT, &P);
 		gmt_M_free (GMT, T.V.lon);
 		gmt_M_free (GMT, T.V.lat);
