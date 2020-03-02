@@ -874,7 +874,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl;
 	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol = 0;
-	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
+	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR, outline_setting;
 
@@ -1946,7 +1946,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						else if (S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE || S.symbol == GMT_SYMBOL_FRONT)
 							GMT_Report (API, GMT_MSG_ERROR, "Segment header tries to switch from -S%c to another symbol (%s) - ignored\n", S.symbol, s_args);
 						else	/* Probably just junk -S in header */
-							GMT_Report (API, GMT_MSG_INFORMATION, "Segment header contained -S%s - ignored\n", s_args);
+							GMT_Reportb (API, GMT_MSG_INFORMATION, "Segment header contained -S%s - ignored\n", s_args);
 					}
 				}
 				if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
