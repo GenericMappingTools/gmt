@@ -812,8 +812,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				}
 				else	/* No specifications for f or l or +f or +l */
 					Ctrl->Z.mode = 3;
-				if (gmt_not_numeric (GMT, &opt->arg[j]) && gmt_access (GMT, &opt->arg[j], R_OK)) {	/* Got a file */
-					Ctrl->Z.mode = 4;
+				if (gmt_not_numeric (GMT, &opt->arg[j]) && !gmt_access (GMT, &opt->arg[j], R_OK)) {	/* Got a file */
 					Ctrl->Z.file = strdup (&opt->arg[j]);
 					n_errors += gmt_M_check_condition (GMT, Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK),
 					                                   "Option -Z: Cannot read file %s!\n", Ctrl->Z.file);
@@ -985,7 +984,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 
-	//polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor || Ctrl->Z.file);
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	if (S.symbol == PSL_DOT) penset_OK = false;	/* Dots have no outline */
 
@@ -1917,11 +1915,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				if (Zin != NULL) {
 					double rgb[4];
 					(void)gmt_get_rgb_from_z (GMT, P, Zin->table[0]->segment[0]->data[0][seg], rgb);
-					if (Ctrl->Z.mode & 1)	/* To be used in polygon or symbol outline */
-						gmt_M_rgb_copy (Ctrl->W.pen.rgb, rgb);
-					if (Ctrl->Z.mode & 2)	/* To be used in polygon or symbol fill */
-						gmt_M_rgb_copy (Ctrl->G.fill.rgb, rgb);
-					//change = 4;
+					if (Ctrl->Z.mode & 1) {	/* To be used in polygon or symbol outline */
+						gmt_M_rgb_copy (current_pen.rgb, rgb);
+						gmt_setpen (GMT, &current_pen);
+					}
+					if (Ctrl->Z.mode & 2) {	/* To be used in polygon or symbol fill */
+						gmt_M_rgb_copy (current_fill.rgb, rgb);
+						gmt_setfill (GMT, &current_fill, outline_setting);
+					}
 				}
 				else {
 					change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, SH->ogr);
@@ -1983,7 +1984,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						current_fill = Ctrl->G.fill;
 				}
 				else {
-					//if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
 					if (change & 1) polygon = true;
 					if (change & 2 && !Ctrl->L.polygon) {
 						polygon = false;
