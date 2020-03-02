@@ -7,7 +7,7 @@ Global Earth Relief Grids
    :align: center
    :scale: 40 %
 
-In addition to the GSHHS coastlines, rivers, and borders data built into some
+In addition to the GSHHG coastlines, rivers, and borders data built into some
 modules (:doc:`/coast`, :doc:`/gmtselect`, :doc:`/grdlandmask`), we offer several
 remote global data grids that you can access via our *remote file* mechanism.
 The first time you access one of these files we will download the file from
