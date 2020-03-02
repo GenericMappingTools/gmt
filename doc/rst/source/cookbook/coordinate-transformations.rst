@@ -265,10 +265,9 @@ Consequently, the polar transformation is defined by providing
 
 -  scale in inches/unit (**-Jp**) or full width of plot in inches (**-JP**)
 
--  Optionally, insert **a** after **p\| \ P** to indicate CW
-   azimuths rather than CCW directions
+-  Optionally, append **+a** to indicate CW azimuths rather than CCW directions
 
--  Optionally, append /\ *origin* in degrees to indicate an angular offset [0]
+-  Optionally, append **+o**\ *origin* in degrees to indicate a CW (or CCW if **+a** is set) angular offset [0]
 
 -  Optionally, append **+r** to reverse the radial direction (here,
    *south* and *north* must be elevations in 0–90 range).

@@ -1529,7 +1529,7 @@ size_t gmt_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloa
 			break;
 		case 'i':
 			if (isnan (*nan_value)) *nan_value = INT_MIN;
-			/* Fall through on purpose */
+			/* Intentionally fall through */
 		case 'm':
 			return (sizeof (int32_t));
 			break;

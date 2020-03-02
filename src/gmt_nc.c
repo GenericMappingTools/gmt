@@ -644,7 +644,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "The x-coordinates and range attribute are in conflict but range is exactly 360; we rely on this range\n");
 					if (set_reg && (header->n_columns%2) == 0) {	/* Pixel registration */
 						registration = header->registration = GMT_GRID_PIXEL_REG;
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Global longitudes, guessing registration to be %s since nx is odd\n", regtype[header->registration]);
+						GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Global longitudes, guessing registration to be %s since nx is odd\n", regtype[header->registration]);
 					}
 				}
 			}
@@ -662,12 +662,12 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 				if (gmt_M_360_range (dummy[0], dummy[1]))
 					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Grid x-coordinates after pixel registration adjustment have exactly 360 range\n");
 			}
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No range attribute, guessing registration to be %s\n", regtype[header->registration]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No range attribute, guessing registration to be %s\n", regtype[header->registration]);
 		}
 		else {	/* Only has the valid_range settings.  If no registration set, and no dx available, guess based on nx */
 			if (set_reg && (header->n_columns%2) == 0) {	/* Pixel registration */
 				registration = header->registration = GMT_GRID_PIXEL_REG;
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "No x-coordinates, guessing registration to be %s since nx is odd\n", regtype[header->registration]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No x-coordinates, guessing registration to be %s since nx is odd\n", regtype[header->registration]);
 			}
 		}
 
@@ -814,7 +814,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->z_min = dummy[0], header->z_max = dummy[1];
 		}
 		if (gmt_M_is_dnan (header->z_min) && gmt_M_is_dnan (header->z_max)) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "netCDF grid %s information has zmin = zmax = NaN. Reset to 0/0.\n", HH->name);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s information has zmin = zmax = NaN. Reset to 0/0.\n", HH->name);
 			header->z_min = header->z_max = 0.0;
 		}
 		{	/* Get deflation and chunking info */
@@ -1687,7 +1687,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 #ifndef DOUBLE_PRECISION_GRID
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Precision loss! GMT's internal grid representation is 32-bit float.\n");
 #endif
-			/* Intentionally no break here! */
+			/* Intentionally fall through */
 		default: /* don't round float */
 			do_round = false;
 	}
@@ -1888,7 +1888,8 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 		bool do_round = true; /* if we need to round to integral */
 		unsigned int width, height;
 		unsigned int dim[2], origin[2]; /* dimension and origin {y,x} of subset to write to netcdf */
-		int first_col, last_col, first_row, last_row;
+		int first_col, first_row, last_row;
+		// int last_col;
 		size_t n, nm;
 		size_t width_t, height_t;
 		double level_min, level_max, limit[2];      /* minmax of level variable */
@@ -1916,13 +1917,13 @@ int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlaye
 #ifndef DOUBLE_PRECISION_GRID
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Precision loss! GMT's internal grid representation is 32-bit float.\n");
 #endif
-				/* Intentionally no break here! */
+				/* Intentionally fall through */
 			default: /* don't round float */
 				do_round = false;
 		}
 
 		first_col = first_row = 0;
-		last_col  = header->n_columns - 1;
+		// last_col  = header->n_columns - 1;
 		last_row  = header->n_rows - 1;
 		level_min = DBL_MAX;
 		level_max = -DBL_MAX;

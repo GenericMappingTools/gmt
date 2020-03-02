@@ -242,7 +242,7 @@ general format is
 
 Since GMT version 4.3.0, there is an alternative way to specify the
 projections: use the same abbreviation as in the mapping package
-**Proj4**. The options thus either look like:
+`PROJ <https://proj.org/>`_. The options thus either look like:
 
 -  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a
    *lower-case* abbreviation that selects a particular map projection,
@@ -260,7 +260,7 @@ The projections available in GMT are presented in Figure
 :ref:`gmt_projections`. For details on all GMT projections and the required
 parameters, see the :doc:`/basemap` man page. We will also show examples of
 every projection in the next Chapters, and a quick summary of projection
-syntax is listed in :doc:`/proj_codes`.
+syntax is listed in :doc:`/proj-codes`.
 
 .. _gmt_projections:
 
@@ -491,7 +491,7 @@ is a C language format statement for floating point numbers [13]_, and
 with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the *stride*
 settings. If :term:`FORMAT_FLOAT_OUT` is set to another format it will be
-used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
+used directly (e.g., "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
 
@@ -825,7 +825,7 @@ OGR/GMT GIS i/o: The **-a** option
 GMT relies on external tools to translate geospatial files such as
 shapefiles into a format we can read. The tool **ogr2ogr** in the GDAL
 package can do such translations and preserve the aspatial metadata via
-a new OGR/GMT format specification (See Chapter :doc:`ogrgmt_format`).
+a new OGR/GMT format specification (See Chapter :doc:`ogrgmt-format`).
 For this to be useful we need a mechanism to associate certain metadata values with
 required input and output columns expected by GMT programs. The **-a**
 option allows you to supply one or more comma-separated associations
@@ -848,7 +848,7 @@ associate aspatial fields with other settings such as labels, fill
 colors, pens, and values used to look-up colors. Do so by letting the
 *col* value be one of **D**, **G**, **L**, **T**, **W**, or **Z**. This
 works analogously to how standard multi-segment files can pass such
-options via its segment headers (See Chapter :doc:`file_formats`).
+options via its segment headers (See Chapter :doc:`file-formats`).
 
 OGR/GMT output with **-a** option
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -916,7 +916,7 @@ name, where *var1*, *var2*, etc. are the names of the variables to be
 processed. No **-bi** option is needed in this case.
 
 Currently, netCDF tables can only be input, not output. For more
-information, see Chapter :doc:`file_formats`.
+information, see Chapter :doc:`file-formats`.
 
 .. _option_-c:
 
@@ -1001,7 +1001,7 @@ Data gap detection: The **-g** option
 
 GMT has several mechanisms that can determine line
 segmentation. Typically, data segments are separated by multiple segment
-header records (see Chapter :doc:`file_formats`). However, if key data columns contain a
+header records (see Chapter :doc:`file-formats`). However, if key data columns contain a
 NaN we may also use that information to break lines into multiple
 segments. This behavior is modified by the parameter
 :term:`IO_NAN_RECORDS` which by default is set to *skip*, meaning such
@@ -1142,11 +1142,7 @@ added to the *specfile* by hand.  For instance, a simple plot with two
 symbols can obtain a legend by using this option and modifiers and is shown
 in Figure :ref:`Auto Legend <auto_legend>`::
 
-   gmt begin fruit
-     gmt plot -R0/7.2/3/7.2 -Jx2c @Table_5_11.txt -Sc0.35c -Glightgreen -Wfaint -lApples+h"LEGEND"+f16p+d
-     gmt plot @Table_5_11.txt -St0.35c -Gorange -B -BWStr -lOranges
-     gmt legend -DjTR+w3c+o0.25c -F+p1p+ggray95+s
-   gmt end show
+.. literalinclude:: /_verbatim/GMT_autolegend.txt
 
 As the script shows, when no *specfile* is given to :doc:`/legend` then we
 look for the automatically generated on in the session directory.

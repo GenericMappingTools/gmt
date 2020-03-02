@@ -4,7 +4,7 @@ GMT Modules
 .. note::
 
    Looking for the *classic mode* modules like ``psxy`` and ``pscoast``? See the
-   :doc:`equivalent page for classic mode <modules_classic>`.
+   :doc:`equivalent page for classic mode <modules-classic>`.
 
 This is a list of all GMT core and supplemental modules and their uses,
 as well as some utility scripts.

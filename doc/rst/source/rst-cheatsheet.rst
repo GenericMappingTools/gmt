@@ -19,7 +19,7 @@ and the rendered web page on the left.
 
    <div style="float: left; width:49%">
 
-.. include:: rst_cheatsheet.rst_
+.. include:: rst-cheatsheet.rst_
 
 .. raw:: html
 
@@ -27,7 +27,7 @@ and the rendered web page on the left.
    </div>
    <div style="float: right; width:49%">
 
-.. literalinclude:: rst_cheatsheet.rst_
+.. literalinclude:: rst-cheatsheet.rst_
    :language: none
 
 .. raw:: html

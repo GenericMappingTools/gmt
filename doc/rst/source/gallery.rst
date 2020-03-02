@@ -51,5 +51,5 @@ Animations
    :hidden:
    :glob:
 
-   gallery/anim_introduction.rst
+   gallery/anim-introduction.rst
    gallery/anim*

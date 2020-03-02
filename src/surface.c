@@ -1472,7 +1472,9 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 				z = gmt_M_memory (GMT, z, n_alloc, double);
 			}
 
-			dx /= n_int;	dy /= n_int;	dz /= n_int;
+			dx /= n_int;
+			dy /= n_int;
+			if (!fix_z) dz /= n_int;
 			for (n = 0; n < n_int; k++, n++) {
 				x[k] = xline[row] + n * dx;
 				y[k] = yline[row] + n * dy;

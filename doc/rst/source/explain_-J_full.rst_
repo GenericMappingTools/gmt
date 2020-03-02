@@ -2,28 +2,28 @@
 
 **-J**\ *parameters*
 
-Select map projection. The following character determines the
+Select map projection. The first character of *parameters* determines the
 projection. If the character is upper case then the argument(s) supplied
 as scale(s) is interpreted to be the map width (or axis lengths), else
 the scale argument(s) is the map scale (see its definition for each
-projection). UNIT is cm, inch, or point, depending on the
-:term:`PROJ_LENGTH_UNIT` setting in **gmt.conf**, but this can be
+projection). The *measurement unit* (called UNIT below) is cm, inch, or point, depending
+on the :term:`PROJ_LENGTH_UNIT` setting in **gmt.conf**, but this can be
 overridden on the command line by appending **c**, **i**, or **p** to
 the *scale* or *width* values. Append **+dh**, **+du**, or **+dl** to the
-given *width* if you instead want to set map height, the maximum (upper)
+given *width* if you instead want to set the map height, the maximum (upper)
 dimension, or the minimum (lower) dimension, respectively [Default is **+dw** for width].
 In case the central meridian is an optional parameter and it is being
 omitted, then the center of the longitude range given by the **-R**
 option is used. The default standard parallel is the equator.
-The ellipsoid used in the map projections is user-definable by editing
-the **gmt.conf** file in your home directory. 73 commonly used
+The ellipsoid used in map projections is user-definable. 73 commonly used
 ellipsoids and spheroids are currently supported, and users may also
 specify their own custom ellipsoid parameters [Default is WGS-84].
 Several GMT parameters can affect the projection: :term:`PROJ_ELLIPSOID`,
 :term:`GMT_INTERPOLANT`, :term:`PROJ_SCALE_FACTOR`, and
 :term:`PROJ_LENGTH_UNIT`; see the :doc:`gmt.conf` man page for details.
-Choose one of the following projections (The **E** or **C** after
-projection names stands for Equal-Area and Conformal, respectively):
+Choose one of the following projections and append the required parameters
+(The **E** or **C** after projection names stands for Equal-Area and Conformal,
+respectively):
 
     **CYLINDRICAL PROJECTIONS:**
 
@@ -273,15 +273,21 @@ projection names stands for Equal-Area and Conformal, respectively):
 
 .. _-Jp_full:
 
-    **-Jp**\ [**a**]\ *scale*\ [*/origin*][**+r**\|\ **z**] or **-JP**\ [**a**]\ *width*\ [*/origin*][**+r**\|\ **z**]
+    **-Jp**\ *scale*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]] or **-JP**\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
     (Polar coordinates (*theta*, *r*))
 
-    Optionally insert **a** after **-Jp** [or **-JP**] if *theta* is azimuths CW
-    from North instead of directions CCW from East [Default]. Optionally
-    append /*origin* in degrees to indicate an angular offset [0].
-    Finally, append **+r** if *r* represents elevations in degrees (requires *south* >= 0
-    and *north* <= 90), or append **+z** if you want to annotate depth rather than
-    radius [Default]. Give *scale* in UNIT/r-unit.
+    Give *scale* in UNIT/r-unit.  Optionally add **+a** if *theta* is azimuth CW
+    from North instead of direction CCW from East [Default].
+    Append **+f** to flip the radial direction to point inwards, and append **e** to indicate
+    that *r* represents *elevations* in degrees (requires *south* >= 0 and *north* <= 90),
+    **p** to select current planetary radius (determined by :term:`PROJ_ELLIPSOID`) as maximum radius [*north*], or *radius*
+    to specify a custom radius.
+    Append **+r**\ *offset* to include a radial offset in measurement units [0].
+    Append **+t**\ *origin* in degrees so that this angular value is aligned with the positive *x*-axis
+    (or the azimuth to be aligned with the positive *y*-axis if **+a**) [0].
+    Finally, append **+z** if you want to annotate depth rather than radius [Default].
+    Alternatively, if your *r* data are actually depths then you can append **p** or *radius* to get
+    radial annotations (*r = radius - z*) instead.
 
 .. _-Jx_full:
 

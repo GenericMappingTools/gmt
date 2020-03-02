@@ -32,14 +32,21 @@ There are several ways to address the lack of using the gmt program:
    or *delete* to make actual changes.
 
 #. If your default shell is bash or similar then you can call another **share/tools**
-   script called **gmt_functions.sh**.  It will instead create bash functions with the
+   script called **gmt_functions.sh** this way::
+
+     source $(gmt --show-sharedir)/tools/gmt_functions.sh
+
+   It will instead create bash functions with the
    names of the modules and thus let you run **blockmean**, etc. without a leading
    gmt invocation.
 
 #. If your default shell is csh or similar then you must instead call **gmt_aliases.csh**
-   which works similarly to the **gmt_functions.sh** but for csh.  Both of these two
-   solutions can be implemented via your login setup so they are always set once you
-   log in to your computer or open a new terminal window.
+   which works similarly to the **gmt_functions.sh** but for csh::
+
+     source `gmt --show-sharedir`/tools/gmt_aliases.csh
+
+   Both of these two solutions can be implemented via your login setup so they are
+   always set once you log in to your computer or open a new terminal window.
 
 #. Finally, if the old script is important and is expected to be used in the future,
    maybe it is worth the effort to migrate the script code to the stricter default

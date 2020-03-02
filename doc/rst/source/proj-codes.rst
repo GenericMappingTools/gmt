@@ -3,8 +3,8 @@ Projection Specifications
 #########################
 
 GMT offers 31 map projections. These are specified using the **-J** common option.
-There are two conventions you may use: (a) GMT-style syntax and (b) **Proj4**\ -style syntax.
-The projection codes for the GMT-style and the **Proj4**-style are tabulated below.
+There are two conventions you may use: (a) GMT-style syntax and (b) `PROJ <https://proj.org/>`_\ -style syntax.
+The projection codes for the GMT-style and the PROJ-style are tabulated below.
 
 .. Substitution definitions:
 .. |lon0| replace:: lon\ :sub:`0`
@@ -20,7 +20,7 @@ The projection codes for the GMT-style and the **Proj4**-style are tabulated bel
    :header-rows: 2
 
    * - GMT PROJECTION CODES
-     - Proj4 PROJECTION CODES
+     - PROJ PROJECTION CODES
      -
    * - **-J** (upper case for *width*, lower case for *scale*)
      - **-J** (lower case for *scale* only)
@@ -85,8 +85,8 @@ The projection codes for the GMT-style and the **Proj4**-style are tabulated bel
    * - **-JOc**\ |lon0|/|lat0|/|lonp|/|latp|/\ *width*
      - **-Jomercp/**\ |lon0|/|lat0|/|lonp|/|latp|/\ *scale*
      - Oblique Mercator, 3: origin and pole :ref:`... <-Jo_full>`
-   * - **-JP**\ [**a**]\ *width*\ [/*origin*][**r**\|\ **z**]
-     - **-Jpolar/**\ [**a**]\ *scale*\ [/*origin*][**r**\|\ **z**]
+   * - **-JP**\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
+     - **-Jpolar/**\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
      - Polar [azimuthal] (:math:`\theta, r`) (or cylindrical)
    * - **-JPoly**\ [|lon0|\ [/|lat0|]/]\ *width*
      - **-Jpoly/**\ [|lon0|\ [/|lat0|/]]\ *scale*
