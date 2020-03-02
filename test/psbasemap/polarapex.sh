@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 gmt begin polarapex ps
   gmt subplot begin 4x3 -Fs2i -Bafg -M3p -X1.25c
     gmt basemap -R0/190/0/1 -JP? -c
