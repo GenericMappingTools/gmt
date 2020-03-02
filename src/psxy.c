@@ -391,9 +391,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F<arg>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
-		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [-Z[l|f]<val>] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [-Z<arg>[+f|l]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>]] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [-Z[l|f]<val>] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>]] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [-Z<arg>[+f|l]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, \
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -528,8 +528,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use <value> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append l for just pen color or f for fill color [Default sets both].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use <arg> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, let <arg> be a file with z-values instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l for just pen color or +f for fill color [Default sets both].\n");
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
 	GMT_Option (API, "c,di,e,f,g,h,i,l,p,qi,t");
@@ -795,20 +796,30 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			case 'Z':		/* Get value for CPT lookup */
-				Ctrl->Z.active = true;
-				if ((c = strstr (opt->arg, "+d")) != NULL) {
+				Ctrl->Z.active = true;	j = 0;
+				if ((c = strstr (opt->arg, "+f")) || (c = strstr (opt->arg, "+l"))) {	/* New syntax */
+					if (c[1] == 'l') Ctrl->Z.mode = 1;
+					else if (c[1] == 'f') Ctrl->Z.mode = 2;
+					c[0] = '\0';	/* Chop off modifier */
+				}
+				else if (strchr ("lf", opt->arg[0]) && !gmt_not_numeric (GMT, &opt->arg[1])) {	/* Old-style leading l|f followed by value */
+					j = 1;
+					switch (opt->arg[0]) {
+						case 'l': Ctrl->Z.mode = 1; break;
+						case 'f': Ctrl->Z.mode = 2; break;
+						default:  break;	/* Cannot get here */
+					}
+				}
+				else	/* No specifications for f or l or +f or +l */
+					Ctrl->Z.mode = 3;
+				if (gmt_not_numeric (GMT, &opt->arg[j]) && gmt_access (GMT, &opt->arg[j], R_OK)) {	/* Got a file */
 					Ctrl->Z.mode = 4;
-					Ctrl->Z.file = strdup (&c[2]);
+					Ctrl->Z.file = strdup (&opt->arg[j]);
 					n_errors += gmt_M_check_condition (GMT, Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK),
 					                                   "Option -Z: Cannot read file %s!\n", Ctrl->Z.file);
 				}
-				else {
+				else {	/* Got a value */
 					ztype = (strchr (opt->arg, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, GMT_Z);
-					switch (opt->arg[0]) {
-						case 'l': Ctrl->Z.mode = 1; j=1; break;
-						case 'f': Ctrl->Z.mode = 2; j=1; break;
-						default:  Ctrl->Z.mode = 3; j=0; break;
-					}
 					n_errors += gmt_verify_expectations (GMT, ztype, gmt_scanf_arg (GMT, &opt->arg[j], ztype, false, &Ctrl->Z.value), &opt->arg[j]);
 				}
 				break;
@@ -878,7 +889,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
-	struct GMT_DATASET *Decorate = NULL, *Cin = NULL, *Zin = NULL;
+	struct GMT_DATASET *Decorate = NULL, *Zin = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -947,6 +958,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				if ((Zin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->Z.file, NULL)) == NULL) {
 					Return (API->error);
 				}
+				if (Ctrl->Z.mode & 1)	/* To be used in polygon or symbol outline */
+					Ctrl->W.active = true;	/* -C plus -Zl = -W */
+				if (Ctrl->Z.mode & 2)	/* To be used in polygon or symbol fill */
+					Ctrl->G.active = true;	/* -C plus -Zf = -G */
 			}
 			else {
 				double rgb[4];
@@ -970,7 +985,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 
-	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor || Ctrl->Z.file);
+	//polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor || Ctrl->Z.file);
+	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	if (S.symbol == PSL_DOT) penset_OK = false;	/* Dots have no outline */
 
 	Ctrl->E.size *= 0.5;	/* Since we draw half-way in either direction */
@@ -1834,9 +1850,15 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 
-		if (Zin && Zin->n_records < D->n_segments) {
-			GMT_Report (API, GMT_MSG_ERROR, "Number of Z values is less then number of polygons\n");
-			Return (API->error);
+		if (Zin) {	/* Check that the Z file matches our polygon file */
+			if (Zin->n_records < D->n_segments) {
+				GMT_Report (API, GMT_MSG_ERROR, "Number of Z values is less then number of polygons\n");
+				Return (API->error);
+			}
+			if (Zin->n_segments > 1) {
+				GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a single segment with one z-value for each polygon in the input file\n");
+				Return (API->error);
+			}
 		}
 
 		DH = gmt_get_DD_hidden (D);
@@ -1893,9 +1915,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				 * but reallocating x below lead to disasters.  */
 
 				if (Zin != NULL) {
-					gmt_get_fill_from_z (GMT, P, Zin->table[0]->segment[0]->data[0][seg], &current_fill);
-					fill_active = true;
-					change = 4;
+					double rgb[4];
+					(void)gmt_get_rgb_from_z (GMT, P, Zin->table[0]->segment[0]->data[0][seg], rgb);
+					if (Ctrl->Z.mode & 1)	/* To be used in polygon or symbol outline */
+						gmt_M_rgb_copy (Ctrl->W.pen.rgb, rgb);
+					if (Ctrl->Z.mode & 2)	/* To be used in polygon or symbol fill */
+						gmt_M_rgb_copy (Ctrl->G.fill.rgb, rgb);
+					//change = 4;
 				}
 				else {
 					change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, SH->ogr);
@@ -1957,7 +1983,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						current_fill = Ctrl->G.fill;
 				}
 				else {
-					if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
+					//if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
 					if (change & 1) polygon = true;
 					if (change & 2 && !Ctrl->L.polygon) {
 						polygon = false;
