@@ -4628,48 +4628,96 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		case GMT_POLAR:		/* Polar (theta,r) */
 			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);
 			gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);
-			GMT->current.proj.got_azimuths = GMT->current.proj.got_elevations = GMT->current.proj.z_down = false;
-			if ((d = gmt_first_modifier (GMT, args, "aorz"))) {	/* Process all modifiers */
+			GMT->current.proj.got_azimuths = GMT->current.proj.got_elevations = false;
+			GMT->current.proj.z_down = GMT_ZDOWN_R;
+			if ((d = gmt_first_modifier (GMT, args, "afrtz"))) {	/* Process all modifiers */
 				unsigned int pos = 0, uerr = 0;
 				char word[GMT_LEN32] = {""};
-				while (gmt_getmodopt (GMT, 'J', d, "aorz", &pos, word, &uerr) && uerr == 0) {
+				while (gmt_getmodopt (GMT, 'J', d, "afrtz", &pos, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
-						case 'a': GMT->current.proj.got_azimuths = true; break;	/* Using azimuths instead of directions */
-						case 'o': GMT->current.proj.pars[1] = atof (&word[1]); break;	/* Gave optional zero-base angle [0] */
-						case 'r': GMT->current.proj.got_elevations = true; break;	/* Gave optional +r for reverse (angular elevations, presumably) */
-						case 'z': GMT->current.proj.z_down = true; break;	/* Gave optional +z for annotating depths rather than radius */
-						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+						case 'a':	/* Using azimuths instead of directions */
+							GMT->current.proj.got_azimuths = true;
+							break;
+						case 'f':	/* Flip radial direction to be positive inward */
+							GMT->current.proj.flip = true;
+							switch (word[1]) {	/* Check argument */
+								case 'e': GMT->current.proj.flip_radius = 90.0; GMT->current.proj.got_elevations = true; break;	/* Gave optional +fe for reverse (angular elevations, presumably) */
+								case 'p': GMT->current.proj.flip_radius = 0.0;	break; /* Determine planetary radius from current ellipsoid setting in gmt_mapsetup */
+								case '\0': GMT->current.proj.flip_radius = -1.0; break;	/* Just flip, set fli_radius be set to north in map_setup [Default +f] */
+								default:
+									if (gmt_not_numeric (GMT, &word[1])) {
+										GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: +%s not a valid argument\n", word);
+										error++;
+									}
+									else	/* Gave flip with optional flip radius */
+										GMT->current.proj.flip_radius = atof (&word[1]);
+									break;
+							}
+							break;
+						case 'r':	/* Gave optional +r for a nonzero radial offset [0] */
+							GMT->current.proj.radial_offset = gmt_M_to_inch (GMT, &word[1]);
+							break;
+						case 't':	/* Gave optional zero-base angle, i.e., a rotation [0] */
+							GMT->current.proj.pars[1] = atof (&word[1]);
+							break;	
+						case 'z':	/* Gave optional +z[p|radius] for annotating depths rather than radius */
+							switch (word[1]) {	/* Check argument */
+								case 'p':  /* Annotate planetary radius minus r */
+									GMT->current.proj.z_down = GMT_ZDOWN_ZP;
+									break;
+								case '\0':	/* Annotate north - r */
+									GMT->current.proj.z_down = GMT_ZDOWN_Z;
+									break;
+								default:	/* Gave specific radius for annotation radius - r */
+									GMT->current.proj.z_down = GMT_ZDOWN_ZR;
+									if (gmt_not_numeric (GMT, &word[1])) {
+										GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: +%s not a valid argument\n", word);
+										error++;
+									}
+									else	/* Specific annotation radius */
+										GMT->current.proj.z_radius = atof (&word[1]);
+									break;
+							}
+							break;
+						default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
+							break;
 					}
 				}
 				d[0] = '\0';	/* Chop off all modifiers so other arguments can be parsed */
 				if (uerr) return (GMT_PARSE_ERROR);
+				GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, args);
+				if (d) d[0] = '+';	/* Restore modifiers */
+//				if (GMT->current.proj.z_down && GMT->current.proj.flip) {
+//					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: Cannot select both +f and +z modifiers\n");
+//					error++;				
+//				}
 			}
-			/* Must also be on lookout for deprecated syntax such as -Jp|p[a|A], slash-separated scale|width and angular offset, and trailing r or z codes */
-			if (args[0] == 'a' || args[0] == 'A') {	/* Using azimuths instead of directions */
-				GMT->current.proj.got_azimuths = true;
-				i = 1;
+			else {	/* No modifiers, so look for deprecated syntax such as -Jp|p[a|A], slash-separated scale|width and angular offset, and trailing r or z codes */
+				if (args[0] == 'a' || args[0] == 'A') {	/* Using azimuths instead of directions */
+					GMT->current.proj.got_azimuths = true;
+					i = 1;
+				}
+				else
+					i = 0;
+				j = (int)strlen (args) - 1;	/* Last character check for deprecated r or z */
+				if (j >= 0 && args[j] == 'r')	/* Gave trailing r for reverse (elevations, presumably) */
+					GMT->current.proj.got_elevations = true;
+				else if (j >= 0 && args[j] == 'z')	/* Gave trailing z for annotating depths rather than radius */
+					GMT->current.proj.z_down = GMT_ZDOWN_Z;
+				if (n_slashes == 1) {	/* Gave optional zero-base angle [0] Deprecated syntax, use +r<rotation> instead */
+					n = sscanf (&args[i], "%[^/]/%lf", txt_a, &GMT->current.proj.pars[1]);
+					if (n == 2) GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, txt_a);
+					error += (GMT->current.proj.pars[0] <= 0.0 || n != 2) ? 1 : 0;
+				}
+				else if (n_slashes == 0) {	/* Modern syntax, only give scale|width */
+					GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, &args[i]);
+					n = (args) ? 1 : 0;
+					error += (GMT->current.proj.pars[0] <= 0.0 || n != 1) ? 1 : 0;
+				}
+				else
+					error++;
 			}
-			else
-				i = 0;
-			j = (int)strlen (args) - 1;	/* Last character check for deprecated r or z */
-			if (j >= 0 && args[j] == 'r')	/* Gave trailing r for reverse (elevations, presumably) */
-				GMT->current.proj.got_elevations = true;
-			else if (j >= 0 && args[j] == 'z')	/* Gave trailing z for annotating depths rather than radius */
-				GMT->current.proj.z_down = true;
-			if (n_slashes == 1) {	/* Gave optional zero-base angle [0] Deprecated syntax, use +o<angle> instead */
-				n = sscanf (&args[i], "%[^/]/%lf", txt_a, &GMT->current.proj.pars[1]);
-				if (n == 2) GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, txt_a);
-				error += (GMT->current.proj.pars[0] <= 0.0 || n != 2) ? 1 : 0;
-			}
-			else if (n_slashes == 0) {	/* Modern syntax, only give scale|width */
-				GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, &args[i]);
-				n = (args) ? 1 : 0;
-				error += (GMT->current.proj.pars[0] <= 0.0 || n != 1) ? 1 : 0;
-			}
-			else
-				error++;
 			if (GMT->current.proj.got_azimuths) GMT->current.proj.pars[1] = -GMT->current.proj.pars[1];	/* Because azimuths go clockwise */
-			if (d) d[0] = '+';	/* Restore modifiers */
 			break;
 
 		/* Map projections */
@@ -6479,12 +6527,18 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<>r\n");
 			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
 
-			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+o<origin>][+r|z] (Polar (theta,radius))\n");
-			gmt_message (GMT, "\t     Linear scaling for polar coordinates.\n");
-			gmt_message (GMT, "\t     Optionally append +a to use azimuths (CW from North) instead of directions (CCW from East) [default].\n");
-			gmt_message (GMT, "\t     Give scale in %s/units, and use +o to use <origin> as angular offset (base) [0]\n",
+			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] (Polar (theta,radius))\n");
+			gmt_message (GMT, "\t     Linear scaling for polar coordinates.  Give scale in %s/units.\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t     Append +r to reverse radial direction (s/n must be in 0-90 range) or +z to annotate depths rather than radius [Default]\n");
+			gmt_message (GMT, "\t     Append +a to use azimuths (CW from North) instead of directions (CCW from East) [Default].\n");
+			gmt_message (GMT, "\t     Append +f to flip radial direction so that south is on the outside and north is at the center.\n");
+			gmt_message (GMT, "\t       Append e to indicate data are elevations in degrees (s/n must be in 0-90 range).\n");
+			gmt_message (GMT, "\t       Append p to set r = current planetary radius to be the center.\n");
+			gmt_message (GMT, "\t       Append <radius> to indicate the radius at the center.\n");
+			gmt_message (GMT, "\t     Append +r to offset the radial values [0].\n");
+			gmt_message (GMT, "\t     Append +t to set <origin> value for angles or azimuths [0].\n");
+			gmt_message (GMT, "\t     Append +z to annotate depths rather than radius [Default]. Alternatively, if you provided depths\n");
+			gmt_message (GMT, "\t       append p (planetary radius) or <radius> to annotate r = radius - z instead.\n");
 
 			gmt_message (GMT, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scale>|<width> ((American) Polyconic)\n");
 			gmt_message (GMT, "\t     Give central meridian (opt), reference parallel (opt, default = equator), and scale\n");
@@ -6597,7 +6651,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scl>|<width> (Cylindrical Equal-area)\n");
 
-			gmt_message (GMT, "\t   -Jp|P<scl>|<width>[+a][+o<origin>][+r|z] (Polar [azimuth] (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P<scl>|<width>[+a][+f[e|p|<radius>]][+o<offset>][+r<origin][+z[p|<radius>]] (Polar [azimuth] (theta,radius))\n");
 
 			gmt_message (GMT, "\t   -Jx|X<x-scl>|<width>[d|l|p<power>|t|T][/<y-scl>|<height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
 			gmt_message (GMT, "\t   (See basemap for more details on projection syntax)\n");
@@ -7554,11 +7608,11 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
 					break;
 				case GMT_POLAR:
-					gmt_message (GMT, "\t-Jp<scale>[+a][+o<origin>][+r|z] OR -JP<width>[+a][+o<origin>][+r|z]\n");
-					gmt_message (GMT, "\t  <scale> is %s/units, or use <width> in %s\n", u, u);
-					gmt_message (GMT, "\t  Optionally, append +a to use azimuths (CW from North) instead of directions (CCW from East),\n");
-					gmt_message (GMT, "\t  append +o to use <origin> as augular offset [0].\n");
-					gmt_message (GMT, "\t  Append +r to reverse radial direction (s/n must be in 0-90 range) or +z to annotate depths rather than radius [Default]\n");
+					gmt_message (GMT, "\t-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]]\n");
+					gmt_message (GMT, "\t  <scale> is %s/units, or use <width> in %s.  Optionally,\n", u, u);
+					gmt_message (GMT, "\t  append +a for azimuths, +r for radial offset [0], +t for angular origin [0], +f to reverse\n");
+					gmt_message (GMT, "\t  radial coordinates (e for elevation, p for planetary radius), and +z for annotating depth.\n");
+					gmt_message (GMT, "\t  (append p for planetary radius or another radius to annotate r = radius - z).\n");
 					break;
 				case GMT_LINEAR:
 					gmt_message (GMT, "\t-Jx<x-scale>|<width>[d|l|p<power>|t|T][/<y-scale>|<height>[d|l|p<power>|t|T]], scale in %s/units\n", u);
@@ -15701,7 +15755,10 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		default:	/* Here we end up if an unrecognized option is passed (should not happen, though) */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c is not a recognized common option\n", option);
+			if (GMT->current.ps.oneliner)
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c is not a valid common option for one-liner mode\n", option);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c is not a recognized common option\n", option);
 			return (1);
 			break;
 	}
@@ -17325,4 +17382,3 @@ void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reparse -o%s\n", token);
 	gmt_parse_common_options (GMT, "o", 'o', token);	/* Re-parse updated -o */
 }
-

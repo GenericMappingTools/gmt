@@ -87,6 +87,7 @@
 #include <glob.h>
 #else
 #include <Windows.h>
+#include <tchar.h>
 #endif
 
 /*! . */
@@ -4454,7 +4455,7 @@ GMT_LOCAL bool support_x_overlap (double *xa, double *xb, uint64_t *xa_start, ui
 
 GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle, double x, double y) {
 	int justify, left, right, top, bottom, low;
-	double x0, y0;
+	double x0, y0, f_angle = 180.0;
 
 	/* gmt_geo_to_xy (GMT->current.proj.central_meridian, GMT->current.proj.pole, &x0, &y0); */
 
@@ -4478,11 +4479,14 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		top = 10;
 		bottom = 2;
 	}
-	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.got_azimuths) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
-	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.proj.got_elevations) {
-		gmt_M_int_swap (top, bottom);	/* Because with elevations we get confused... */
-		gmt_M_int_swap (left, right);
-		low = 2 - low;
+	if (GMT->current.proj.projection_GMT == GMT_POLAR) {	/* Special concerns with r/theta systems */
+		if (GMT->current.proj.got_azimuths) gmt_M_int_swap (left, right);	/* Because with azimuths we get confused... */
+		if (GMT->current.proj.flip) {
+			gmt_M_int_swap (top, bottom);
+			gmt_M_int_swap (left, right);
+			low = 2 - low;
+			//f_angle = 0.0;
+		}
 	}
 	if (side%2) {	/* W and E border */
 		if ((y - y0 + GMT_CONV4_LIMIT) > 0.0)
@@ -4490,13 +4494,14 @@ GMT_LOCAL int support_polar_adjust (struct GMT_CTRL *GMT, int side, double angle
 		else
 			justify = (side == 1) ? right : left;
 	}
-	else {
+	else {	/* S and N border */
 		if (GMT->current.map.frame.horizontal) {
 			if (side == low)
-				justify = (doubleAlmostEqual (angle, 180.0)) ? bottom : top;
+				justify = (doubleAlmostEqualZero (angle, f_angle)) ? bottom : top;
 			else
 				justify = (gmt_M_is_zero (angle)) ? top : bottom;
-			if (GMT->current.proj.got_elevations && (doubleAlmostEqual (angle, 180.0) || gmt_M_is_zero (angle)))
+			if (GMT->current.proj.flip && !GMT->current.proj.got_elevations) justify = (justify + 8) % 16;
+			if (GMT->current.proj.got_elevations && (doubleAlmostEqualZero (angle, f_angle) || gmt_M_is_zero (angle)))
 				justify = (justify + 8) % 16;
 		}
 		else {
@@ -14032,6 +14037,37 @@ int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_
 	return (GMT_OK);
 }
 
+GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double *line_angle, double *text_angle, unsigned int *justify) {
+	/* Special function to set justification and text angle for polar projections (r/theta, i.e. GMT_POLAR) */
+	/* Normally y-min (south) is at r = 0 and y-max (north) is on the perimeter, but +f reverses that */
+	/* Normally x-min (west) is the boundary with the region on the leeft, and x-max (east) on the right, but +a reverses that */
+	*line_angle = angle;
+	if (GMT->current.proj.flip && side%2 == 0) /* Flipping means south is on the outside and north is the inside */
+		side = 2 - side;	/* Turns 2 to 0 and 0 to 2 */
+
+	switch (side) {
+		case 0:	/* We are annotating angles on the inner (donut) boundary */
+			if (gmt_M_is_zero (angle) || (angle >= 180.0 && angle < 360.0)) *justify = 10, *text_angle = angle - 270.0;
+			else *justify = 2, *text_angle = angle - 90;
+			break;
+		case 1:
+			if (angle >= 90.0 && angle < 270.0) *justify = 7, *text_angle = angle - 180;
+			else  *justify = 5, *text_angle = angle;
+			break;
+		case 2:	/* We are annotating angles on the outer boundary */
+			if (angle >= 0.0 && angle <= 180.0) *justify = 2, *text_angle = angle - 90.0;
+			else *justify = 10, *text_angle = angle + 90.0;
+			break;
+		case 3:
+			if (angle >= 0.0 && angle < 180.0) *justify = 5, *text_angle = angle;
+			else  *justify = 7, *text_angle = 180.0 - angle;
+			if (angle >= 90.0 && angle < 270.0) *justify = 7, *text_angle = angle - 180;
+			else  *justify = 5, *text_angle = angle;
+			break;
+	}
+	return (0);
+}
+
 /*! . */
 int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double x, double y, unsigned int type, double *line_angle, double *text_angle, unsigned int *justify) {
 	bool set_angle;
@@ -14040,6 +14076,8 @@ int gmtlib_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side,
 	if (GMT->current.map.frame.side[side] < GMT_AXIS_ANNOT) return -1;	/* Don't want labels here */
 
 	if (GMT->current.map.frame.check_side == true && type != side%2) return -1;
+
+	if (GMT->current.proj.projection_GMT == GMT_POLAR) return (gmtlib_polar_prepare_label (GMT, angle, side, line_angle, text_angle, justify));
 
 	if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_NORMAL_TICKS && !(side%2)) angle = -90.0;	/* support_get_label_parameters will make this 0 */
 
@@ -14191,6 +14229,7 @@ double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon
 		}
 		angle = d_atan2d (y2-y1, x2-x1) - 90.0;
 		if (GMT->current.proj.got_azimuths) angle += 180.0;
+		if (GMT->current.proj.flip) angle += 180.0;
 	}
 	else
 		angle = d_atan2d (y2 - y1, x2 - x1);
@@ -14904,7 +14943,7 @@ char *gmt_putusername (struct GMT_CTRL *GMT) {
 #ifdef WIN32
 	{
 		char name[GMT_LEN256] = {""}, *U = NULL;
-		DWORD Size = _tcslen (name);
+		DWORD Size = (DWORD)_tcslen (name);
 		if (GetUserName (name, &Size)) /* Got a user name, return it */
 			return (strdup (name));
 		if (U = getenv ("USERNAME"))	/* Got a name from the environment instead */
