@@ -51,17 +51,18 @@ Optionally install for building GMT documentations and running tests:
 
 You also need to download support data:
 
-- [GSHHG](https://www.soest.hawaii.edu/pwessel/gshhg/): A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
-- [DCW-GMT](https://www.soest.hawaii.edu/pwessel/dcw/): The Digital Chart of the World (optional, >=1.0.5)
+- [GSHHG](https://github.com/GenericMappingTools/gshhg-gmt): A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
+- [DCW](https://github.com/GenericMappingTools/dcw-gmt): The Digital Chart of the World (optional, >=1.0.5)
 
 ## Getting GMT source codes
 
 The latest stable release of the GMT source codes (filename: gmt-x.x.x-src.tar.gz)
 are available from the [GMT main site](https://www.generic-mapping-tools.org).
 
-If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub by:
+If you want to build/use the latest developing/unstable GMT, you can get the source codes from GitHub.
+*Here we use `--depth 50` option for a shallow clone which can reduce the repository size to download.*
 
-    git clone https://github.com/GenericMappingTools/gmt
+    git clone --depth 50 https://github.com/GenericMappingTools/gmt
 
 You can also get supporting data GSHHG and DCW (filename: gshhg-gmt-x.x.x.tar.gz and dcw-gmt-x.x.x.tar.gz)
 from the [GMT main site](https://www.generic-mapping-tools.org).
@@ -119,7 +120,7 @@ cmake ..
 
 For Windows users, you need to open a command prompt and run:
 
-**NOTE:** Commands below are valid only if you have GMT's dependency libaries installed
+**NOTE:** Commands below are valid only if you have GMT's dependency libraries installed
 via vcpkg following [this instructions](https://github.com/GenericMappingTools/gmt/wiki/Install-dependencies-on-Windows-via-vcpkg).
 
 ```

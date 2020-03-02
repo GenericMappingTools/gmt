@@ -425,6 +425,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
+				/* Intentionally fall through */
 			case 'M':
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 's') 	/* Write a single segment. Afects only external interfaces. */
@@ -568,7 +569,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->M.active) {	/* Need -R only */
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !GMT->common.R.active[RSET], "SMust specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !GMT->common.R.active[RSET], "Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->W.active, "Cannot combine -E -M with -W\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->G.active, "Cannot combine -E -M with -G\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->I.active, "Cannot combine -E -M with -I\n");
@@ -576,7 +577,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		if (Ctrl->E.active) Ctrl->E.info.mode |= GMT_DCW_DUMP;	/* -M -E combo means dump DCW data */
 	}
 	else if (!Ctrl->Q.active) {	/* Need -R -J */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "SMust specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	}
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {
@@ -936,11 +937,12 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		anti_lat = -GMT->current.proj.pole;
 		anti_bin = irint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + irint (floor (anti_lon / c.bsize));
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
-		if (Ctrl->G.active)
-			GMT_Report (API, GMT_MSG_WARNING, "Fill/clip continent option (-G) may not work for this projection.\n"
-			                                  "If the antipole (%g/%g) is in the ocean then chances are good\n"
-			                                  "Else: avoid projection center coordinates that are exact multiples of %g degrees\n",
-			                                  anti_lon, anti_lat, c.bsize);
+		if (Ctrl->G.active) {
+			GMT_Report (API, GMT_MSG_WARNING, "Fill/clip continent option (-G) may not work for this projection.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "If the antipole (%g/%g) is in the ocean then chances are good it will work.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Otherwise, avoid projection center coordinates that are exact multiples of %g degrees.\n",
+				anti_lon, anti_lat, c.bsize);
+		}
 	}
 
 	if (possibly_donut_hell && paint_polygons && !clobber_background) {	/* Force clobber when donuts may be called for now */

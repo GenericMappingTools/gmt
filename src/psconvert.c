@@ -1672,12 +1672,14 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			half_baked_size = buf.st_size;	/* Remember the original size */
 			if ((fp = PSL_fopen (GMT->PSL, ps_names[0], "a")) == NULL) {	/* Must open inside PSL DLL */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot append to file %s\n", ps_names[0]);
+				gmt_M_str_free (ps_names[0]);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			GMT->PSL->internal.call_level++;	/* Must increment here since PSL_beginplot not called, and PSL_endplot will decrement */
 			PSL_endplot (GMT->PSL, 1);	/* Finalize the PS plot */
 			if (PSL_fclose (GMT->PSL)) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to close hidden PS file %s!\n", ps_names[0]);
+				gmt_M_str_free (ps_names[0]);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Fattened up PS file %s\n", ps_names[0]);
@@ -1785,14 +1787,19 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				unsigned int kk;
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a temporary file\n");
 				if (file_processing) {fclose (fp);	fp = NULL;}	/* Close original PS file */
-				if (gmt_truncate_file (API, ps_file, half_baked_size))
+				if (gmt_truncate_file (API, ps_file, half_baked_size)) {
+					if (fpo) {fclose (fpo);		fpo = NULL;}
 					Return (GMT_RUNTIME_ERROR);
-				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+				}
+				if (delete && gmt_remove_file (GMT, ps_file)) {	/* Since we created a temporary file from the memdata */
+					if (fpo) {fclose (fpo);		fpo = NULL;}
 					Return (GMT_RUNTIME_ERROR);
+				}
 				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
 				gmt_M_free (GMT, ps_names);
 				gmt_M_free (GMT, PS);
 				gmt_M_free (GMT, line);
+				if (fpo) {fclose (fpo);		fpo = NULL;}
 				Return (GMT_RUNTIME_ERROR);
 			}
 			while (file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {

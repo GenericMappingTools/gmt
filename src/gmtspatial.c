@@ -884,7 +884,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 							break;
 						case 'C':	/* Gave a new +C<cmax> value */
 							Ctrl->D.I.mode = 1;	/* Median instead of mean */
-							/* Fall through on purpose */
+							/* Intentionally fall through */
 						case 'c':	/* Gave a new +c<cmax> value */
 							if (p[1]) Ctrl->D.I.c_threshold = atof (&p[1]);	/* This allows +C by itself just to change to median */
 							break;

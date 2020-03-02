@@ -454,6 +454,37 @@ GMT_LOCAL struct GMT_OPTION *fix_gdal_files (struct GMT_OPTION *opt) {
 	return opt;
 }
 
+/*! */
+GMT_LOCAL void ensure_b_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	bool do_sort = false;
+	char *c = NULL;
+	unsigned int k, n_B = 0, this_priority, priority[12]; /* Worst case is -Bpx, -Bsx, ... */
+	struct GMT_OPTION *opt;
+
+	gmt_M_memset (priority, 12, unsigned int);
+
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option != 'B') continue;	/* Only look at -B options here */
+		if (gmtinit_B_is_frame (GMT, opt->arg)) continue;	/* Don't care about the frame setting here */
+		if ((c = gmt_first_modifier (GMT, opt->arg, "aflLpsSu"))) {	/* Option has axis modifier(s) */
+			c[0] = '\0';	/* Temporary chop them off */
+			k = 0;	/* Start of option string, then advance past any leading [p|s][x|y|z] */
+			if (strchr ("ps",  opt->arg[k])) k++;
+			if (strchr ("xyz", opt->arg[k])) k++;
+			this_priority = (opt->arg[k]) ? 1 : 2;	/* If nothing then probably just a label setting, else we have a leading interval setting */
+			c[0] = '+';	/* Restore modifiers */
+		}
+		else /* Must be interval setting */
+			this_priority = 1;
+		priority[n_B] = this_priority;
+		n_B++;
+	}
+	if (n_B < 2) return;	/* Nothing to sort */
+	for (k = 1; k < n_B; k++) if (priority[k] < priority[k-1]) do_sort = true;
+	if (!do_sort) return;	/* No need to sort */
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT_Parse_Options: List interval-setting -B options before other axis -B options to ensure proper parsing.\n");
+}
+
 /*! . */
 struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *in) {
 	/* This function will loop over the n_args_in supplied command line arguments (in) and
@@ -1007,6 +1038,8 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	if (parse_complete_options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
 
 	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = parse_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
+
+	ensure_b_options_order (API->GMT, options);	/* Avoid parsing axes labels etc before axis increments since we may auto-set increments in the former */
 
 	n_errors = parse_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
 

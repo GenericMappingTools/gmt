@@ -6,12 +6,11 @@
 # name with "gmt". For example: alias psxy "gmt psxy"
 #
 # Include this file in your GMT (t)csh script or on the command line with:
-#   source path/to/gmt/share/tools/gmt_aliases.csh
+#   source `gmt --show-sharedir`/tools/gmt_aliases.csh
 # If the GMT executable is not in the search path, set an extra alias:
 #   alias gmt path/to/gmt
 
-which gmt > /dev/null
-if ($? == 1) then
+if (`command -v gmt` == "") then
   echo 'Error: gmt is not found in your search PATH.'
   exit 1
 endif

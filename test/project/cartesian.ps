@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pstext
+%%Title: GMT v6.1.0_63e3a49_2020.02.16 [64-bit] Document from pstext
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:49:59 2018
+%%CreationDate: Sun Feb 16 20:08:25 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -828,6 +825,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -850,12 +848,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-1800 380 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+1804 378 M
+-4 2 D
 -1800 1040 D
-S
-380 0 M
+-4 2 D S
+378 -4 M
+2 4 D
 1040 1800 D
-S
+2 4 D S
+PSL_cliprestore
 %%EndObject
 -900 -1500 TM
 0 A
@@ -877,6 +885,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -886,6 +895,8 @@ V 900 900 T 60 R
 N 0 0 M 720 0 D S
 U
 V 1350 1679 T 60 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -914,6 +925,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -923,6 +935,8 @@ V 900 900 T -30 R
 N 0 0 M 720 0 D S
 U
 V 1679 450 T -30 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -1001,6 +1015,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -1010,6 +1025,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -1038,6 +1055,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -1045,7 +1063,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -1120,9 +1140,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 1665 1350 M
 -386 -669 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -900 -1500 TM
@@ -1215,15 +1243,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 30\232) Z
+133 F0 ( = 30\260) Z
 %%EndObject
 -900 -1500 TM
 0 A
@@ -1348,6 +1376,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -1370,12 +1399,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-1800 380 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+1804 378 M
+-4 2 D
 -1800 1040 D
-S
-380 0 M
+-4 2 D S
+378 -4 M
+2 4 D
 1040 1800 D
-S
+2 4 D S
+PSL_cliprestore
 %%EndObject
 -3180 -1500 TM
 0 A
@@ -1397,6 +1436,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -1406,6 +1446,8 @@ V 900 900 T 60 R
 N 0 0 M 720 0 D S
 U
 V 1350 1679 T 60 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -1434,6 +1476,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -1443,6 +1486,8 @@ V 900 900 T -30 R
 N 0 0 M 720 0 D S
 U
 V 1679 450 T -30 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -1521,6 +1566,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -1530,6 +1576,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -1558,6 +1606,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -1565,7 +1614,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -1640,9 +1691,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 450 1575 M
 -180 -311 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -3180 -1500 TM
@@ -1735,15 +1794,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 30\232) Z
+133 F0 ( = 30\260) Z
 %%EndObject
 -3180 -1500 TM
 0 A
@@ -1868,6 +1927,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -1890,12 +1950,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-1800 380 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+1804 378 M
+-4 2 D
 -1800 1040 D
-S
-380 0 M
+-4 2 D S
+378 -4 M
+2 4 D
 1040 1800 D
-S
+2 4 D S
+PSL_cliprestore
 %%EndObject
 -5460 -1500 TM
 0 A
@@ -1917,6 +1987,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -1926,6 +1997,8 @@ V 900 900 T 60 R
 N 0 0 M 720 0 D S
 U
 V 1350 1679 T 60 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -1954,6 +2027,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -1963,6 +2037,8 @@ V 900 900 T -30 R
 N 0 0 M 720 0 D S
 U
 V 1679 450 T -30 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -2041,6 +2117,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -2050,6 +2127,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -2078,6 +2157,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -2085,7 +2165,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -2160,9 +2242,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 225 315 M
 422 731 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -5460 -1500 TM
@@ -2255,15 +2345,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 30\232) Z
+133 F0 ( = 30\260) Z
 %%EndObject
 -5460 -1500 TM
 0 A
@@ -2388,6 +2478,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -2410,12 +2501,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-1800 380 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+1804 378 M
+-4 2 D
 -1800 1040 D
-S
-380 0 M
+-4 2 D S
+378 -4 M
+2 4 D
 1040 1800 D
-S
+2 4 D S
+PSL_cliprestore
 %%EndObject
 -7740 -1500 TM
 0 A
@@ -2437,6 +2538,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -2446,6 +2548,8 @@ V 900 900 T 60 R
 N 0 0 M 720 0 D S
 U
 V 1350 1679 T 60 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -2474,6 +2578,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -2483,6 +2588,8 @@ V 900 900 T -30 R
 N 0 0 M 720 0 D S
 U
 V 1679 450 T -30 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -2561,6 +2668,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -2570,6 +2678,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -2598,6 +2708,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -2605,7 +2716,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -2680,9 +2793,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 1575 675 M
 -71 -124 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -7740 -1500 TM
@@ -2775,15 +2896,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 30\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 30\232) Z
+133 F0 ( = 30\260) Z
 %%EndObject
 -7740 -1500 TM
 0 A
@@ -2909,6 +3030,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -2931,12 +3053,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
+clipsave
 0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+-6 -6 M
+6 6 D
 1800 1800 D
-S
-1800 0 M
+6 6 D S
+1806 -6 M
+-6 6 D
 -1800 1800 D
-S
+-6 6 D S
+PSL_cliprestore
 %%EndObject
 -900 -4200 TM
 0 A
@@ -2958,6 +3090,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -2967,6 +3100,8 @@ V 900 900 T -45 R
 N 0 0 M 720 0 D S
 U
 V 1536 264 T -45 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -2995,6 +3130,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -3004,6 +3140,8 @@ V 900 900 T -135 R
 N 0 0 M 720 0 D S
 U
 V 264 264 T -135 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -3082,6 +3220,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -3091,6 +3230,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -3119,6 +3260,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -3126,7 +3268,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -3201,9 +3345,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 1665 1350 M
 -157 158 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -900 -4200 TM
@@ -3296,15 +3448,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 135\232) Z
+133 F0 ( = 135\260) Z
 %%EndObject
 -900 -4200 TM
 0 A
@@ -3414,6 +3566,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -3436,12 +3589,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
+clipsave
 0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+-6 -6 M
+6 6 D
 1800 1800 D
-S
-1800 0 M
+6 6 D S
+1806 -6 M
+-6 6 D
 -1800 1800 D
-S
+-6 6 D S
+PSL_cliprestore
 %%EndObject
 -3180 -4200 TM
 0 A
@@ -3463,6 +3626,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -3472,6 +3636,8 @@ V 900 900 T -45 R
 N 0 0 M 720 0 D S
 U
 V 1536 264 T -45 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -3500,6 +3666,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -3509,6 +3676,8 @@ V 900 900 T -135 R
 N 0 0 M 720 0 D S
 U
 V 264 264 T -135 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -3587,6 +3756,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -3596,6 +3766,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -3624,6 +3796,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -3631,7 +3804,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -3706,9 +3881,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 450 1575 M
 562 -563 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -3180 -4200 TM
@@ -3801,15 +3984,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 135\232) Z
+133 F0 ( = 135\260) Z
 %%EndObject
 -3180 -4200 TM
 0 A
@@ -3919,6 +4102,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -3941,12 +4125,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
+clipsave
 0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+-6 -6 M
+6 6 D
 1800 1800 D
-S
-1800 0 M
+6 6 D S
+1806 -6 M
+-6 6 D
 -1800 1800 D
-S
+-6 6 D S
+PSL_cliprestore
 %%EndObject
 -5460 -4200 TM
 0 A
@@ -3968,6 +4162,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -3977,6 +4172,8 @@ V 900 900 T -45 R
 N 0 0 M 720 0 D S
 U
 V 1536 264 T -45 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -4005,6 +4202,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -4014,6 +4212,8 @@ V 900 900 T -135 R
 N 0 0 M 720 0 D S
 U
 V 264 264 T -135 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -4092,6 +4292,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -4101,6 +4302,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -4129,6 +4332,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -4136,7 +4340,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -4211,9 +4417,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 225 315 M
 45 -45 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -5460 -4200 TM
@@ -4306,15 +4520,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 135\232) Z
+133 F0 ( = 135\260) Z
 %%EndObject
 -5460 -4200 TM
 0 A
@@ -4424,6 +4638,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -4446,12 +4661,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
+clipsave
 0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+-6 -6 M
+6 6 D
 1800 1800 D
-S
-1800 0 M
+6 6 D S
+1806 -6 M
+-6 6 D
 -1800 1800 D
-S
+-6 6 D S
+PSL_cliprestore
 %%EndObject
 -7740 -4200 TM
 0 A
@@ -4473,6 +4698,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -4482,6 +4708,8 @@ V 900 900 T -45 R
 N 0 0 M 720 0 D S
 U
 V 1536 264 T -45 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -4510,6 +4738,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -4519,6 +4748,8 @@ V 900 900 T -135 R
 N 0 0 M 720 0 D S
 U
 V 264 264 T -135 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -4597,6 +4828,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -4606,6 +4838,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -4634,6 +4868,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -4641,7 +4876,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -4716,9 +4953,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 1575 675 M
 -450 450 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -7740 -4200 TM
@@ -4811,15 +5056,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 135\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 135\232) Z
+133 F0 ( = 135\260) Z
 %%EndObject
 -7740 -4200 TM
 0 A
@@ -4945,6 +5190,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -4967,12 +5213,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-1800 572 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+1803 571 M
+-3 1 D
 -1800 656 D
-S
-572 0 M
+-3 1 D S
+571 -3 M
+1 3 D
 656 1800 D
-S
+1 3 D S
+PSL_cliprestore
 %%EndObject
 -900 -6900 TM
 0 A
@@ -4994,6 +5250,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -5003,6 +5260,8 @@ V 900 900 T -110 R
 N 0 0 M 720 0 D S
 U
 V 592 54 T -110 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -5031,6 +5290,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -5040,6 +5300,8 @@ V 900 900 T 160 R
 N 0 0 M 720 0 D S
 U
 V 54 1208 T 160 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -5118,6 +5380,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -5127,6 +5390,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -5155,6 +5420,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -5162,7 +5428,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -5237,9 +5505,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 1665 1350 M
 -234 -643 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -900 -6900 TM
@@ -5332,15 +5608,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 200\232) Z
+133 F0 ( = 200\260) Z
 %%EndObject
 -900 -6900 TM
 0 A
@@ -5450,6 +5726,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -5472,12 +5749,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-1800 572 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+1803 571 M
+-3 1 D
 -1800 656 D
-S
-572 0 M
+-3 1 D S
+571 -3 M
+1 3 D
 656 1800 D
-S
+1 3 D S
+PSL_cliprestore
 %%EndObject
 -3180 -6900 TM
 0 A
@@ -5499,6 +5786,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -5508,6 +5796,8 @@ V 900 900 T -110 R
 N 0 0 M 720 0 D S
 U
 V 592 54 T -110 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -5536,6 +5826,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -5545,6 +5836,8 @@ V 900 900 T 160 R
 N 0 0 M 720 0 D S
 U
 V 54 1208 T 160 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -5623,6 +5916,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -5632,6 +5926,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -5660,6 +5956,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -5667,7 +5964,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -5742,9 +6041,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 450 1575 M
 -164 -451 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -3180 -6900 TM
@@ -5837,15 +6144,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 200\232) Z
+133 F0 ( = 200\260) Z
 %%EndObject
 -3180 -6900 TM
 0 A
@@ -5955,6 +6262,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -5977,12 +6285,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-1800 572 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+1803 571 M
+-3 1 D
 -1800 656 D
-S
-572 0 M
+-3 1 D S
+571 -3 M
+1 3 D
 656 1800 D
-S
+1 3 D S
+PSL_cliprestore
 %%EndObject
 -5460 -6900 TM
 0 A
@@ -6004,6 +6322,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -6013,6 +6332,8 @@ V 900 900 T -110 R
 N 0 0 M 720 0 D S
 U
 V 592 54 T -110 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -6041,6 +6362,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -6050,6 +6372,8 @@ V 900 900 T 160 R
 N 0 0 M 720 0 D S
 U
 V 54 1208 T 160 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -6128,6 +6452,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -6137,6 +6462,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -6165,6 +6492,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -6172,7 +6500,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -6247,9 +6577,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 225 315 M
 267 734 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -5460 -6900 TM
@@ -6342,15 +6680,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 200\232) Z
+133 F0 ( = 200\260) Z
 %%EndObject
 -5460 -6900 TM
 0 A
@@ -6460,6 +6798,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -6482,12 +6821,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-1800 572 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+1803 571 M
+-3 1 D
 -1800 656 D
-S
-572 0 M
+-3 1 D S
+571 -3 M
+1 3 D
 656 1800 D
-S
+1 3 D S
+PSL_cliprestore
 %%EndObject
 -7740 -6900 TM
 0 A
@@ -6509,6 +6858,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -6518,6 +6868,8 @@ V 900 900 T -110 R
 N 0 0 M 720 0 D S
 U
 V 592 54 T -110 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -6546,6 +6898,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -6555,6 +6908,8 @@ V 900 900 T 160 R
 N 0 0 M 720 0 D S
 U
 V 54 1208 T 160 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -6633,6 +6988,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -6642,6 +6998,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -6670,6 +7028,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -6677,7 +7036,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -6752,9 +7113,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 1575 675 M
 -7 -18 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -7740 -6900 TM
@@ -6847,15 +7216,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 200\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 200\232) Z
+133 F0 ( = 200\260) Z
 %%EndObject
 -7740 -6900 TM
 0 A
@@ -6981,6 +7350,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -7003,12 +7373,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-572 0 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+571 -3 M
+1 3 D
 656 1800 D
-S
-1800 572 M
+1 3 D S
+1803 571 M
+-3 1 D
 -1800 656 D
-S
+-3 1 D S
+PSL_cliprestore
 %%EndObject
 -900 -9600 TM
 0 A
@@ -7030,6 +7410,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -7039,6 +7420,8 @@ V 900 900 T 160 R
 N 0 0 M 720 0 D S
 U
 V 54 1208 T 160 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -7067,6 +7450,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -7076,6 +7460,8 @@ V 900 900 T 70 R
 N 0 0 M 720 0 D S
 U
 V 1208 1746 T 70 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -7154,6 +7540,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -7163,6 +7550,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -7191,6 +7580,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -7198,7 +7588,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -7273,9 +7665,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 1665 1350 M
 -531 193 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -900 -9600 TM
@@ -7368,15 +7768,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 290\232) Z
+133 F0 ( = 290\260) Z
 %%EndObject
 -900 -9600 TM
 0 A
@@ -7486,6 +7886,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -7508,12 +7909,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-572 0 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+571 -3 M
+1 3 D
 656 1800 D
-S
-1800 572 M
+1 3 D S
+1803 571 M
+-3 1 D
 -1800 656 D
-S
+-3 1 D S
+PSL_cliprestore
 %%EndObject
 -3180 -9600 TM
 0 A
@@ -7535,6 +7946,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -7544,6 +7956,8 @@ V 900 900 T 160 R
 N 0 0 M 720 0 D S
 U
 V 54 1208 T 160 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -7572,6 +7986,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -7581,6 +7996,8 @@ V 900 900 T 70 R
 N 0 0 M 720 0 D S
 U
 V 1208 1746 T 70 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -7659,6 +8076,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -7668,6 +8086,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -7696,6 +8116,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -7703,7 +8124,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -7778,9 +8201,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 450 1575 M
 614 -224 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -3180 -9600 TM
@@ -7873,15 +8304,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 290\232) Z
+133 F0 ( = 290\260) Z
 %%EndObject
 -3180 -9600 TM
 0 A
@@ -7991,6 +8422,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -8013,12 +8445,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-572 0 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+571 -3 M
+1 3 D
 656 1800 D
-S
-1800 572 M
+1 3 D S
+1803 571 M
+-3 1 D
 -1800 656 D
-S
+-3 1 D S
+PSL_cliprestore
 %%EndObject
 -5460 -9600 TM
 0 A
@@ -8040,6 +8482,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -8049,6 +8492,8 @@ V 900 900 T 160 R
 N 0 0 M 720 0 D S
 U
 V 54 1208 T 160 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -8077,6 +8522,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -8086,6 +8532,8 @@ V 900 900 T 70 R
 N 0 0 M 720 0 D S
 U
 V 1208 1746 T 70 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -8164,6 +8612,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -8173,6 +8622,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -8201,6 +8652,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -8208,7 +8660,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -8283,9 +8737,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 225 315 M
 408 -149 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -5460 -9600 TM
@@ -8378,15 +8840,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 290\232) Z
+133 F0 ( = 290\260) Z
 %%EndObject
 -5460 -9600 TM
 0 A
@@ -8496,6 +8958,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_spiderpen {4 W 0 A [] 0 B} def
 4 W
 V
 O1
@@ -8518,12 +8981,22 @@ O0
 3.32551 setmiterlimit
 17 W
 1 0 0 C
-572 0 M
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
+571 -3 M
+1 3 D
 656 1800 D
-S
-1800 572 M
+1 3 D S
+1803 571 M
+-3 1 D
 -1800 656 D
-S
+-3 1 D S
+PSL_cliprestore
 %%EndObject
 -7740 -9600 TM
 0 A
@@ -8545,6 +9018,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -8554,6 +9028,8 @@ V 900 900 T 160 R
 N 0 0 M 720 0 D S
 U
 V 54 1208 T 160 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -8582,6 +9058,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {1 0 0 C} FS
@@ -8591,6 +9068,8 @@ V 900 900 T 70 R
 N 0 0 M 720 0 D S
 U
 V 1208 1746 T 70 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -8669,6 +9148,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -8678,6 +9158,8 @@ V 900 900 T 90 R
 N 0 0 M 720 0 D S
 U
 V 900 1800 T 90 R
+PSL_vecheadpen
+8 W
 0 0 M
 -180 104 D
 0 -208 D
@@ -8706,6 +9188,7 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A [] 0 B} def
 8 W
 V
 {0 A} FS
@@ -8713,7 +9196,9 @@ O1
 8 W
 V 900 900 T N 0 0 M 720 0 D S
 U
-V 1800 900 T 0 0 M
+V 1800 900 T PSL_vecheadpen
+8 W
+0 0 M
 -180 104 D
 0 -208 D
 P clip fs P S 
@@ -8788,9 +9273,17 @@ O0
 3.32551 setmiterlimit
 8 W
 [67 33] 0 B
+clipsave
+0 0 M
+1800 0 D
+0 1800 D
+-1800 0 D
+P
+PSL_clip N
 1575 675 M
 -668 243 D
 S
+PSL_cliprestore
 [] 0 B
 %%EndObject
 -7740 -9600 TM
@@ -8883,15 +9376,15 @@ O1
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
 V
-V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\232) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\260) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 20 def
 /PSL_dy 20 def
 1740 60 T PSL_dim_w neg 0 T
 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
-1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\232) FP pathbbox N pop exch pop add U neg 0 G
+1740 60 M V MU 0 0 M 133 F12 (a) FP 133 F0 ( = 290\260) FP pathbbox N pop exch pop add U neg 0 G
 133 F12 (a) Z
-133 F0 ( = 290\232) Z
+133 F0 ( = 290\260) Z
 %%EndObject
 -7740 -9600 TM
 0 A
@@ -8909,7 +9402,8 @@ O0
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

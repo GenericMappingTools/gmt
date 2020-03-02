@@ -588,33 +588,66 @@ void gmt_itranspowz (struct GMT_CTRL *GMT, double *z, double z_in) /* pow z inve
 
 /* -JP POLAR (r-theta) PROJECTION */
 
+GMT_LOCAL double gmtproj_planet_radius (struct GMT_CTRL *GMT, char *modifier) {
+	static char *U[2] = {"m", "km"};
+	unsigned int k = 0;
+	double r;
+	/* Set planetary radius in correct units (m or km) depending on y-range */
+	r = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius;	/* In meters */
+	if ((r/ (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO])) >= METERS_IN_A_KM) {	/* -R seems given in km */
+		r /= METERS_IN_A_KM;
+		k = 1;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Planetary radius (%s) automatically set to %g %s\n", modifier, r, U[k]);
+	return (r);
+}
+
 void gmt_vpolar (struct GMT_CTRL *GMT, double lon0) {
 	/* Set up a Polar (theta,r) transformation */
 
 	GMT->current.proj.p_base_angle = lon0;
 	GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[XHI] + GMT->common.R.wesn[XLO]);
 
-	/* Plus pretend that it is kind of a geographic polar projection */
+	if (GMT->current.proj.flip) {	/* Want radial direction inwards */
+		if (GMT->current.proj.flip_radius < 0.0)	/* Flag to just flip z = north - r */
+			GMT->current.proj.flip_radius = GMT->common.R.wesn[YHI];
+		else if (GMT->current.proj.flip_radius == 0.0)	/* Flag to just flip z = planet_radius - r */
+			GMT->current.proj.flip_radius = gmtproj_planet_radius (GMT, "+fp");
+		/* else the radius was set specifically */
+	}
+	if (GMT->current.proj.z_down) {	/* Annotate a flavor of z = radius - r */
+		if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) {	/* Given z; annotate r = planet_radius - z */
+			if (GMT->current.proj.flip_radius > 0.0) /* Already obtained above */
+				GMT->current.proj.z_radius = GMT->current.proj.flip_radius;
+			else
+				GMT->current.proj.z_radius = GMT->current.proj.flip_radius = gmtproj_planet_radius (GMT, "+zp");
+			GMT->current.proj.flip = true;
+		}
+		else if (GMT->current.proj.z_down == GMT_ZDOWN_Z)	/* z = north - r */
+			GMT->current.proj.z_radius = GMT->common.R.wesn[YHI];
+	}
 
+	/* Plus pretend that it is kind of a geographic polar projection */
 	GMT->current.proj.north_pole = GMT->current.proj.got_elevations;
 	GMT->current.proj.pole = (GMT->current.proj.got_elevations) ? 90.0 : 0.0;
+	GMT->current.proj.radial_offset /= GMT->current.proj.pars[0];	/* Convert any radial offset in inches to user units so we can use it in gmt_polar/ipolar */
 }
 
 void gmt_polar (struct GMT_CTRL *GMT, double x, double y, double *x_i, double *y_i) {
 	/* Transform x and y to polar(cylindrical) coordinates */
-	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* azimuths, not directions */
-	if (GMT->current.proj.got_elevations) y = 90.0 - y;		/* elevations */
+	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* Azimuths, not directions given as x */
+	if (GMT->current.proj.flip) y = GMT->current.proj.flip_radius - y;		/* Depth down or elevations given as y */
 	sincosd (x - GMT->current.proj.p_base_angle, y_i, x_i);	/* Change base line angle */
-	(*x_i) *= y;
-	(*y_i) *= y;
+	(*x_i) *= (y + GMT->current.proj.radial_offset);	/* Allow for inner circle radius before we start plotting */
+	(*y_i) *= (y + GMT->current.proj.radial_offset);
 }
 
 void gmt_ipolar (struct GMT_CTRL *GMT, double *x, double *y, double x_i, double y_i) {
 	/* Inversely transform both x and y from polar(cylindrical) coordinates */
 	*x = d_atan2d (y_i, x_i) + GMT->current.proj.p_base_angle;
-	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* azimuths, not directions */
-	*y = hypot (x_i, y_i);
-	if (GMT->current.proj.got_elevations) *y = 90.0 - (*y);    /* elevations, presumably */
+	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* Azimuths, not directions for x */
+	*y = hypot (x_i, y_i) - GMT->current.proj.radial_offset;	/* Allow for inner circle radius */
+	if (GMT->current.proj.flip) *y = GMT->current.proj.flip_radius - (*y);    /* Depth down or elevations for y */
 }
 
 /* -JM MERCATOR PROJECTION */

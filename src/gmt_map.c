@@ -2814,16 +2814,16 @@ GMT_LOCAL bool map_init_polar (struct GMT_CTRL *GMT) {
 	double xmin, xmax, ymin, ymax;
 
 	gmt_vpolar (GMT, GMT->current.proj.pars[1]);
-	if (GMT->current.proj.got_elevations) {	/* Requires s >= 0 and n <= 90 */
-		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > 90.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-JP...r for elevation plots requires s >= 0 and n <= 90!\n");
+	if (GMT->current.proj.flip) {	/* Check restrictions */
+		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > GMT->current.proj.flip_radius) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-JP...+f requires s >= 0 and n <= %g!\n", GMT->current.proj.flip_radius);
 			GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
 		}
-		if (doubleAlmostEqual (GMT->common.R.wesn[YHI], 90.0))
+		if (doubleAlmostEqual (GMT->common.R.wesn[YHI], GMT->current.proj.flip_radius) && gmt_M_is_zero (GMT->current.proj.radial_offset))
 			GMT->current.proj.edge[2] = false;
 	}
 	else {
-		if (gmt_M_is_zero (GMT->common.R.wesn[YLO]))
+		if (gmt_M_is_zero (GMT->common.R.wesn[YLO]) && gmt_M_is_zero (GMT->current.proj.radial_offset))
 			GMT->current.proj.edge[0] = false;
 	}
 	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) GMT->current.proj.edge[1] = GMT->current.proj.edge[3] = false;
@@ -2836,7 +2836,6 @@ GMT_LOCAL bool map_init_polar (struct GMT_CTRL *GMT) {
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[0];
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[0]);
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
-
 	/* GMT->current.proj.r = 0.5 * GMT->current.proj.rect[XHI]; */
 	GMT->current.proj.r = GMT->current.proj.scale[GMT_Y] * GMT->common.R.wesn[YHI];
 	GMT->current.map.outside = &map_polar_outside;
@@ -8308,12 +8307,12 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 				np = 4;
 				break;
 			case GMT_POLAR:
-				if (GMT->current.proj.got_elevations)
-					*donut = (GMT->common.R.wesn[YHI] < 90.0 && GMT->current.map.is_world);
+				if (GMT->current.proj.flip)
+					*donut = (GMT->common.R.wesn[YHI] < GMT->current.proj.flip_radius && GMT->current.map.is_world);
 				else
 					*donut = (GMT->common.R.wesn[YLO] > 0.0 && GMT->current.map.is_world);
 				np = GMT->current.map.n_lon_nodes + 1;
-				if ((GMT->current.proj.got_elevations && GMT->common.R.wesn[YHI] < 90.0) || (!GMT->current.proj.got_elevations && GMT->common.R.wesn[YLO] > 0.0))	/* Need inside circle segment */
+				if ((GMT->current.proj.flip && GMT->common.R.wesn[YHI] < GMT->current.proj.flip_radius) || (!GMT->current.proj.flip && GMT->common.R.wesn[YLO] > 0.0))	/* Need inside circle segment */
 					np *= 2;
 				else if (!GMT->current.map.is_world)	/* Need to include origin */
 					np++;
@@ -8416,10 +8415,10 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 				}
 				else {
 					da = fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
-					if (GMT->current.proj.got_elevations) {
+					if (GMT->current.proj.flip) {
 						for (i = j = 0; i <= GMT->current.map.n_lon_nodes; i++, j++)	/* Draw outer clippath */
 							gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + i * da, GMT->common.R.wesn[YLO], &work_x[j], &work_y[j]);
-						if (GMT->common.R.wesn[YHI] < 90.0) {	/* Must do the inner path as well */
+						if (GMT->common.R.wesn[YHI] < GMT->current.proj.flip_radius) {	/* Must do the inner path as well */
 							for (i = GMT->current.map.n_lon_nodes + 1; i > 0; i--, j++)	/* Draw inner clippath */
 								gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + (i-1) * da, GMT->common.R.wesn[YHI], &work_x[j], &work_y[j]);
 						}
@@ -8443,7 +8442,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 				break;
 			case GMT_VANGRINTEN:
 				do_circle = GMT->current.map.is_world;
-				/* Fall through on purpose */
+				/* Intentionally fall through */
 			case GMT_LAMB_AZ_EQ:
 			case GMT_AZ_EQDIST:
 			case GMT_ORTHO:
@@ -9318,7 +9317,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	bool search, double_auto[6];
 	double scale, i_scale;
 
-	if ((i = gmt_proj_setup (GMT, wesn)) != GMT_NOERROR) Return (i);
+	if ((i = gmt_proj_setup (GMT, wesn)) != GMT_NOERROR) return (i);
 
 	search = GMT->current.proj.search;
 

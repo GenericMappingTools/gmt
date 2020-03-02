@@ -1611,6 +1611,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 
+	if (n_skip && n < n_alloc && X[n])	/* If we end with a skip then we have allocated one too many */
+		gmt_M_free (GMT, X[n]);
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
 		gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);

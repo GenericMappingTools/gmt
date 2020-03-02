@@ -172,6 +172,7 @@
         It is assumed that each individual line has a constant *z* level
         (i.e., each line must lie in the *x-y* plane).  Append
         [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **x**\|\ **X**]\ *info*\ [:*labelinfo*].
+        Note the colon that separates the algorithm settings from the label information.
         The required argument controls the placement of labels along the quoted
         lines. Choose among five controlling algorithms:
 
@@ -405,6 +406,7 @@
     **-S~**
         decorated line, i.e., lines with symbols along them. Append
         [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**]\ *info*\ [:*symbolinfo*].
+        Note the colon that separates the algorithm settings from the symbol information.
         The required argument controls the placement of symbols along the decorated
         lines. Choose among six controlling algorithms:
 

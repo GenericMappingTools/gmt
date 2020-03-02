@@ -3,11 +3,9 @@ Deprecated GMT Defaults Names
 
 Since GMT 5, we have organized the GMT default parameters logically by group and
 renamed several to be easier to remember and to group. Old and new names can be found in
-Table :ref:`obsolete <tbl-obsoletedefs>`. In addition, a few defaults are no longer
-recognized, such as N_COPIES, PS_COPIES, DOTS_PR_INCH, GMT_CPTDIR, PS_DPI, and PS_EPS,
-TRANSPARENCY.
-
-.. _tbl-obsoletedefs:
+the table below. In addition, a few defaults are no longer recognized, such as
+**N_COPIES**, **PS_COPIES**, **DOTS_PR_INCH**, **GMT_CPTDIR**, **PS_DPI**,
+and **PS_EPS**, **TRANSPARENCY**.
 
 ================================== ==========================================
 **Old Name in GMT 4**              **New Name since GMT 5**

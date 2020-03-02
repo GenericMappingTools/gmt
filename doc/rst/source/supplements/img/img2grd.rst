@@ -77,7 +77,7 @@ Optional Arguments
     small interpolation errors and should only be used if the output
     grid must match the requested region and have x_inc = y_inc. In
     this case the region set by **-R** must be given in multiples of the
-    increment (.e.g, **-R**\ 0/45/45/72).
+    increment (e.g., **-R**\ 0/45/45/72).
 
 .. _-F:
 

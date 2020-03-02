@@ -822,7 +822,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (S->symbol == PSL_VECTOR || S->symbol == GMT_SYMBOL_GEOVECTOR || S->symbol == PSL_MARC \
 		|| S->symbol == PSL_ELLIPSE || S->symbol == GMT_SYMBOL_FRONT || S->symbol == GMT_SYMBOL_QUOTED_LINE || S->symbol == GMT_SYMBOL_DECORATED_LINE || S->symbol == PSL_ROTRECT),
 		"Option -E: Incompatible with -Se, -Sf, -Sj, -Sm|M, -Sq, -Sv|V, -S=\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "SMust specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Binary input data cannot have symbol information\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode && !Ctrl->C.active, "Option -E: +|-<pen> requires the -C option\n");
@@ -1464,7 +1464,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_WARNING, "Rounded rectangle corner radius = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
-						/* Fall through on purpose to pick up the other parameters */
+						/* Intentionally fall through - to pick up the other parameters */
 					case PSL_RECT:
 						if (S.diagonal) {	/* Special rectangle give by opposing corners on a diagonal */
 							if (gmt_M_is_dnan (in[pos2x])) {
@@ -2077,7 +2077,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], L->data[GMT_Y], end, double);
 							/* Now add 2 anchor points and explicitly close by repeating 1st point */
 							switch (Ctrl->L.mode) {
-								case XHI:	off = 1;	/* To select the x max entry then fall through */
+								case XHI:	off = 1;	/* Intentionally fall through - to select the x max entry */
 								case XLO:
 								case ZLO:
 									value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
@@ -2085,7 +2085,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 									GMT->hidden.mem_coord[GMT_Y][end] = L->data[GMT_Y][end-1];
 									GMT->hidden.mem_coord[GMT_Y][end+1] = L->data[GMT_Y][0];
 									break;
-								case YHI:	off = 1;	/* To select the y max entry then fall through */
+								case YHI:	off = 1;	/* Intentionally fall through - to select the y max entry */
 								case YLO:
 								case ZHI:
 									value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];

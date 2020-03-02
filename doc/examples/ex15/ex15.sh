@@ -26,7 +26,7 @@ gmt begin ex15
 		gmt grdclip ship.nc -Sa-1/NaN -Gship_clipped.nc
 		gmt grdcontour ship_clipped.nc -C250 -A1000 -L-8000/0 -Gd5c -c0,1
 		gmt coast -Ggray -Wthinnest
-		gmt grdinfo -Cn -M ship.nc | gmt plot -Sa0.4c -Wthick -i10,11
+		gmt grdinfo -Cn -M ship.nc | gmt plot -Sa0.5c -Wthick -i10,11 -Gred
 	gmt subplot end
 gmt end show
 rm -f ship.b ship_10m.b ship.nc ship_clipped.nc

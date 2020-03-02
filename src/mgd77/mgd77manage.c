@@ -358,14 +358,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 						break;
 					case 'D':	/* dist,val data file - interpolate to get values at all records */
 						Ctrl->A.interpolate = true;
-						/* Fall through on purpose to 'd' */
+						/* Intentionally fall through - to 'd' */
 					case 'd':	/* dist,val data file - only update records with matching distances */
 						Ctrl->A.mode = MODE_d;
 						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'E':	/* Plain E77 error flag file from mgd77sniffer */
 						Ctrl->A.ignore_verify = true;	/* Process raw e77 files that have not been verified */
-						/* Fall through on purpose to 'e' */
+						/* Intentionally fall through - to 'e' */
 					case 'e':	/* Plain E77 error flag file from mgd77sniffer */
 						Ctrl->A.mode = MODE_e;
 						while (opt->arg[++k]) {
@@ -406,7 +406,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 						break;
 					case 'T':	/* abstime,val data file - interpolate to get values at all records */
 						Ctrl->A.interpolate = true;
-						/* Fall through on purpose to 't' */
+						/* Intentionally fall through - to 't' */
 					case 't':	/* abstime,val data file - only update records with matching times */
 						Ctrl->A.mode = MODE_t;
 						Ctrl->A.kind = GMT_IS_ABSTIME;
@@ -1287,7 +1287,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 									GMT_Report (API, GMT_MSG_WARNING, "Correction implied for %s which is not in this cruise?\n", field);
 									break;
 								}
-								/* No break! - we want to fall through and also set depth adjustment */
+								/* Intentionally fall through - we want to fall through and also set depth adjustment */
 							case E77_HDR_CARTER:	/* Recalculate Carter depth from twt */
 								cdf_adjust = MGD77_COL_ADJ_DEPTH;
 								MGD77_nc_status (GMT, nc_put_att_int (In.nc_id, D->H.info[set].col[id].var_id, "adjust", NC_INT, 1U, &cdf_adjust));

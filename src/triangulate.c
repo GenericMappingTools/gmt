@@ -255,6 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
+				/* Intentionally fall through */
 			case 'M':
 				Ctrl->M.active = true;
 				break;

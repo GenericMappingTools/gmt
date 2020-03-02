@@ -6,9 +6,9 @@
 echo "Loop over all animations and run each job"
 
 # choose awk
-if type gawk >/dev/null 2>&1 ; then
+if command -v gawk >/dev/null 2>&1 ; then
     export AWK=gawk
-elif type nawk >/dev/null 2>&1 ; then
+elif command -v nawk >/dev/null 2>&1 ; then
     export AWK=nawk
 else
     export AWK=awk

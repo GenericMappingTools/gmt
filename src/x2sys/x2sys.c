@@ -579,7 +579,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 				pos = 0;
 				while ((gmt_strtok (line, s->separators, &pos, p)) && k < s->n_fields) {
 					if (gmt_scanf (GMT, p, G->col_type[GMT_IN][k], &data[k]) == GMT_IS_NAN) data[k] = GMT->session.d_NaN;
-					k++;;
+					k++;
 				}
 				return ((k != s->n_fields) ? -1 : 0);
 				break;
@@ -1562,7 +1562,7 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 
 	/* Add cache dir, if set */
 
-	if (GMT->session.CACHEDIR) {
+	if (GMT->session.CACHEDIR && n_x2sys_paths < MAX_DATA_PATHS) {
 		x2sys_datadir[n_x2sys_paths] = gmt_M_memory (GMT, NULL, strlen (GMT->session.CACHEDIR)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], GMT->session.CACHEDIR);
 		n_x2sys_paths++;

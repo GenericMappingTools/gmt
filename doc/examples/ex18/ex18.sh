@@ -47,7 +47,7 @@ gmt begin ex18
 		volume=$(gmt grdvolume tmp.nc -C50 -Sk -o2)
 		gmt text -M -Gwhite -Wthin -Dj0.7c -F+f14p,Helvetica-Bold+jLB -C8p <<- END
 		> -149 52.5 14p 6.6c j
-		Volumes: $volume mGal\264km@+2@+
+		Volumes: $volume mGal\267km@+2@+
 
 		Areas: $area km@+2@+
 		END

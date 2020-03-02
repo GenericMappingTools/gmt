@@ -14,7 +14,7 @@ Synopsis
 
 **gmt nearneighbor** [ *table* ] |-G|\ *out_grdfile*
 |SYN_OPT-I|
-|-N|\ *sectors*\ [**+m**\ *min_sectors*]
+|-N|\ *sectors*\ [**+m**\ *min_sectors*] | \ **n**
 |SYN_OPT-R|
 |-S|\ *search_radius*
 [ |-E|\ *empty* ]
@@ -62,7 +62,7 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ *sectors*\ [**+m**\ *min_sectors*]\|\**n**
+**-N**\ *sectors*\ [**+m**\ *min_sectors*]\|\ **n**
     The circular area centered on each node is divided into *sectors*
     sectors. Average values will only be computed if there is at least
     one value inside each of at least *min_sectors* of the sectors for a given

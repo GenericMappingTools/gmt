@@ -135,7 +135,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+c**][**+d**][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*
+**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+c**][**+d**][**+g**][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*]
     Instead of reading input track coordinates, specify profiles via
     coordinates and modifiers. The format of each *line* is
     *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
@@ -147,7 +147,9 @@ Optional Arguments
     minimum and maximum locations in the grid (only available if a
     single grid is given via **-G**). You may append
     **+i**\ *inc* to set the sampling interval; if not given then
-    we default to half the minimum grid interval.  Instead of two coordinates
+    we default to half the minimum grid interval.  For a *line* along parallels
+    or meridians you can add **+g** to report degrees of longitude or latitude
+    instead of great circle distances starting at zero.  Instead of two coordinates
     you can specify an origin and one of **+a**, **+o**, or **+r**.
     The **+a** sets the azimuth of a profile of given
     length starting at the given origin, while **+o** centers the profile

@@ -265,10 +265,10 @@ Optional Arguments
     Further notes on the creation of georeferenced rasters.
     **psconvert** can create a georeferenced raster image with a world
     file OR uses GDAL to convert the GMT PostScript file to geotiff.
-    GDAL uses Proj.4 for its projection library. To provide with the
+    GDAL uses `PROJ <https://proj.org/>`_ for its projection library. To provide with the
     information it needs to do the georeferencing, GMT 4.5 embeds a
     comment near the start of the PostScript file defining the
-    projection using Proj.4 syntax. Users with pre-GMT v4.5 PostScript
+    projection using **PROJ** syntax. Users with pre-GMT v4.5 PostScript
     files, or even non-GMT ps files, can provide the information
     **psconvert** requires by manually editing a line into the
     PostScript file, prefixed with %%PROJ.
@@ -285,7 +285,7 @@ Optional Arguments
 
     where 'merc' is the keyword for the coordinate conversion; the 2 to
     5th elements contain the map limits, 6 to 9th the map limits in
-    projected coordinates and the rest of the line has the regular proj4
+    projected coordinates and the rest of the line has the regular **PROJ**
     string for this projection.
 
 **-Z**

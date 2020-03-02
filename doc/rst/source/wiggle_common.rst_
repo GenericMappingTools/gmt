@@ -31,9 +31,10 @@ Required Arguments
 
 .. _-Z:
 
-**-Z**\ *scale*\ [*units*]
-    Gives anomaly scale in data-units/distance-unit, where distance-unit is the currently chosen unit specified
-    by PROJ_LENGTH_UNIT.  Alternatively, append a distance-unit among the other choices (c\|i\|p).
+**-Z**\ *scale*
+    Gives anomaly scale in data-units/distance-unit.  Append **c**, **i**, or **p** to indicate
+    the distance unit (cm, inch, or point); if no unit is given we use the default unit that
+    is controlled by :term:`PROJ_LENGTH_UNIT`.
 
 Optional Arguments
 ------------------

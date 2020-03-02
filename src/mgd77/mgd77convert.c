@@ -137,6 +137,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 						break;
 					case 'C':		/* Enhanced MGD77+ netCDF file */
 						Ctrl->F.mode = true;	/* Overlook revisions */
+						/* Intentionally fall through - to 'c' */
 					case 'c':	/* Falling through from 'C' to 'c' on purpose */
 						Ctrl->F.format = MGD77_FORMAT_CDF;
 						break;
@@ -386,9 +387,8 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 			Return (GMT_DATA_WRITE_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Converted cruise %s to %s format\n", list[argno], format_name[Ctrl->T.format]);
-		if (D->H.errors[0]) GMT_Report (API, GMT_MSG_WARNING, " [%02d header problems (%d warnings + %d errors)]", D->H.errors[0], D->H.errors[1], D->H.errors[2]);
-		if (D->errors) GMT_Report (API, GMT_MSG_WARNING, " [%d data errors]", D->errors);
-		GMT_Report (API, GMT_MSG_WARNING, "\n");
+		if (D->H.errors[0]) GMT_Report (API, GMT_MSG_WARNING, "%s [%02d header problems (%d warnings + %d errors)]", list[argno], D->H.errors[0], D->H.errors[1], D->H.errors[2]);
+		if (D->errors) GMT_Report (API, GMT_MSG_WARNING, "%s [%d data errors]", list[argno], D->errors);
 
 		MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
 		n_cruises++;

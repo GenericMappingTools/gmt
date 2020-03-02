@@ -196,7 +196,7 @@ the format, as shown in Table :ref:`projectspec <tbl-projectspec>`.
 +------------+-------------------------------------------------------------------------------------------------+
 | @Jg        | A string representing the projection parameters as used by GMT                                  |
 +------------+-------------------------------------------------------------------------------------------------+
-| @Jp        | A string comprising the Proj.4 parameters representing the projection parameters                |
+| @Jp        | A string comprising the PROJ parameters representing the projection parameters                  |
 +------------+-------------------------------------------------------------------------------------------------+
 | @Jw        | A string comprising the OGR WKT (well known text) representation of the projection parameters   |
 +------------+-------------------------------------------------------------------------------------------------+

@@ -1303,6 +1303,7 @@ GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 	unsigned int side;
 	static char *type[2] = {"longitude", "latitude"};
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call doctor_geo_increments on a geographic grid\n");
 	for (side = GMT_X; side <= GMT_Y; side++) {	/* Check both increments */
 		scale = (header->inc[side] < GMT_MIN2DEG) ? 3600.0 : 60.0;	/* Check for clean multiples of minutes or seconds */
 		inc = header->inc[side] * scale;
@@ -1327,7 +1328,7 @@ GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEA
 	double norm_v, round_v, d, slop;
 	static char *type[4] = {"xmin", "xmax", "ymin", "ymax"};
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Correct any slop in geographic increments */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && (header->wesn[XHI] - header->wesn[XLO] - header->inc[GMT_X]) <= 360.0) {	/* Correct any slop in geographic increments */
 		doctor_geo_increments (GMT, header);
 		if ((header->wesn[YLO]+90.0) < (-GMT_CONV4_LIMIT*header->inc[GMT_Y]))
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found south latitude outside valid range (%.16g)!\n", header->wesn[YLO]);
@@ -1528,7 +1529,7 @@ size_t gmt_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloa
 			break;
 		case 'i':
 			if (isnan (*nan_value)) *nan_value = INT_MIN;
-			/* Fall through on purpose */
+			/* Intentionally fall through */
 		case 'm':
 			return (sizeof (int32_t));
 			break;

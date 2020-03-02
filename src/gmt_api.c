@@ -773,7 +773,7 @@ GMT_LOCAL char *api_lib_tag (char *name) {
 	if (!strchr (name, '.')) return NULL;	/* No file with extension given, probably just a directory due to user confusion */
 	tag = strdup (name);
 	extension = strrchr (tag, '.'); /* last period in name */
-	*extension = '\0'; /* remove extension */
+	if (extension) *extension = '\0'; /* remove extension */
 	/* if name has the "_w32|64" suffix or any other suffix that starts with a '_', remove it. */
 	pch = strrchr(tag, '_');
 	if (pch) *pch = '\0';
@@ -10602,6 +10602,10 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			deactivate_output = true;	/* Turn off implicit output since none is in effect */
 		}
 	}
+	/* 1o. Check if grdinterpolate is producing grids or datasets */
+	else if (!strncmp (module, "grdinterpolate", 14U)) {
+		type = ((opt = GMT_Find_Option (API, 'S', *head))) ? 'D' : 'G';	/* Giving -S means we change default putput from grid to dataset */
+	}
 
 	/* 2a. Get the option key array for this module */
 	key = api_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
@@ -12067,7 +12071,7 @@ int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, u
 	switch (mode) {
 		case GMT_COL_FIX_NO_TEXT:	/* Specific a fixed number of columns, and ignore trailing text */
 			API->GMT->current.io.trailing_text[direction] = false;
-			/* Then purposfully fall through missing break to set columns */
+			/* Intentionally fall through - to set columns */
 		case GMT_COL_FIX:	/* Specific a fixed number of columns */
 			error = gmt_set_cols (API->GMT, direction, n_cols);
 			break;

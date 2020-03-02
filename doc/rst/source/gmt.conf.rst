@@ -45,7 +45,11 @@ THEMATIC SUB-SECTIONS             *prefix*
 `Calendar/Time Parameters`_       **TIME_**
 ================================= ================
 
+
 .. _COLOR Parameters:
+
+COLOR Parameters
+~~~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -82,8 +86,10 @@ THEMATIC SUB-SECTIONS             *prefix*
     **COLOR_NAN**
         Color used for the non-defined areas of images (i.e., where z = NaN) [127.5].
 
-
 .. _DIR Parameters:
+
+DIR Parameters
+~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -101,6 +107,9 @@ THEMATIC SUB-SECTIONS             *prefix*
         Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
 
 .. _FONT Parameters:
+
+FONT Parameters
+~~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -139,6 +148,9 @@ THEMATIC SUB-SECTIONS             *prefix*
         Font to use when plotting titles over graphs [24p,Helvetica,black].
 
 .. _FORMAT Parameters:
+
+FORMAT Parameters
+~~~~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -283,6 +295,9 @@ THEMATIC SUB-SECTIONS             *prefix*
 
 .. _GMT Miscellaneous Parameters:
 
+GMT Miscellaneous Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. glossary::
 
     **GMT_AUTO_DOWNLOAD**
@@ -422,6 +437,9 @@ THEMATIC SUB-SECTIONS             *prefix*
 
 .. _I/O Parameters:
 
+I/O Parameters
+~~~~~~~~~~~~~~
+
 .. glossary::
 
     **IO_COL_SEPARATOR**
@@ -531,6 +549,9 @@ THEMATIC SUB-SECTIONS             *prefix*
         backslash.
 
 .. _MAP Parameters:
+
+MAP Parameters
+~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -731,6 +752,9 @@ THEMATIC SUB-SECTIONS             *prefix*
 
 .. _Projection Parameters:
 
+Projection Parameters
+~~~~~~~~~~~~~~~~~~~~~
+
 .. glossary::
 
     **PROJ_AUX_LATITUDE**
@@ -870,6 +894,9 @@ THEMATIC SUB-SECTIONS             *prefix*
 
 .. _PostScript Parameters:
 
+PostScript Parameters
+~~~~~~~~~~~~~~~~~~~~~
+
 .. glossary::
 
     **PS_CHAR_ENCODING**
@@ -997,6 +1024,9 @@ THEMATIC SUB-SECTIONS             *prefix*
         Overlay, Saturation, SoftLight, and Screen [Normal].
 
 .. _Calendar/Time Parameters:
+
+Calendar/Time Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. glossary::
 
