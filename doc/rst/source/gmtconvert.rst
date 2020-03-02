@@ -12,11 +12,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt convert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][**+u**\ *max*][**+i**]]
+**gmt convert** [ *table* ]
+[ |-A| ]
+[ |-C|\ [**+l**\ *min*][**+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
-[ |-E|\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*] ] [ |-L| ]
+[ |-E|\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*] ]
 [ |-F|\ [**c**\|\ **n**\|\ **r**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
+[ |-L| ]
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
 [ |-Q|\ [**~**]\ *selection*]
 [ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
