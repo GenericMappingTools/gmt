@@ -1946,7 +1946,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						else if (S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE || S.symbol == GMT_SYMBOL_FRONT)
 							GMT_Report (API, GMT_MSG_ERROR, "Segment header tries to switch from -S%c to another symbol (%s) - ignored\n", S.symbol, s_args);
 						else	/* Probably just junk -S in header */
-							GMT_Reportb (API, GMT_MSG_INFORMATION, "Segment header contained -S%s - ignored\n", s_args);
+							GMT_Report (API, GMT_MSG_INFORMATION, "Segment header contained -S%s - ignored\n", s_args);
 					}
 				}
 				if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
