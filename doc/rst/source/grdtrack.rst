@@ -180,6 +180,7 @@ Optional Arguments
     for a trough then you must use **+n** to temporarily flip the profile to positive.
     The threshold *z0* value is always given as >= 0; use **+z** to change it [0].
     Alternatively, use **+b** to determine the balance point and standard deviation of the profile.
+    Note that we round the exact results to the nearest distance nodes.
     We write 12 output columns per track with an identified center peak, with values
     *lonc, latc, distc, azimuthc, zc, lonl, latl, distl, lonr, latr, distr, width*.
 
