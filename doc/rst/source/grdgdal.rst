@@ -119,15 +119,16 @@ Examples
 --------
 
 To interpolate the x,y,z data at 0.05 increment in a VRT file using the nearest neighbor algorithm
-and saving the result as a netCDF
+and saving the result as a netCDF::
 
     gmt grdgdal lixo.vrt -Agrid -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+r
 
-Now the same as above but saving the grid with GDAL and using the x,y,z point file directly
+Now the same as above but saving the grid with GDAL and using the x,y,z point file directly::
 
     gmt grdgdal lixo.csv -Agrid -R0/10/0/10 -Gjunk.nc -I0.05 -F"-a nearest" -M+w
 
 See Also
 --------
 
-:doc:`gmt.conf`, :doc:`gmt`,
+:doc:`gmt.conf`,
+:doc:`gmt`
