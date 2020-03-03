@@ -14047,21 +14047,21 @@ GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, un
 
 	switch (side) {
 		case 0:	/* We are annotating angles on the inner (donut) boundary */
-			if (gmt_M_is_zero (angle) || (angle >= 180.0 && angle < 360.0)) *justify = 10, *text_angle = angle - 270.0;
+			if (gmt_M_is_zero (angle) || ((angle+GMT_CONV8_LIMIT) >= 180.0 && (angle-GMT_CONV8_LIMIT) < 360.0)) *justify = 10, *text_angle = angle - 270.0;
 			else *justify = 2, *text_angle = angle - 90;
 			break;
 		case 1:
-			if (angle >= 90.0 && angle < 270.0) *justify = 7, *text_angle = angle - 180;
+			if ((angle+GMT_CONV8_LIMIT) >= 90.0 && (angle-GMT_CONV8_LIMIT) < 270.0) *justify = 7, *text_angle = angle - 180;
 			else  *justify = 5, *text_angle = angle;
 			break;
 		case 2:	/* We are annotating angles on the outer boundary */
-			if (angle >= 0.0 && angle <= 180.0) *justify = 2, *text_angle = angle - 90.0;
+			if ((angle+GMT_CONV8_LIMIT) >= 0.0 && (angle-GMT_CONV8_LIMIT) <= 180.0) *justify = 2, *text_angle = angle - 90.0;
 			else *justify = 10, *text_angle = angle + 90.0;
 			break;
 		case 3:
-			if (angle >= 0.0 && angle < 180.0) *justify = 5, *text_angle = angle;
-			else  *justify = 7, *text_angle = 180.0 - angle;
-			if (angle >= 90.0 && angle < 270.0) *justify = 7, *text_angle = angle - 180;
+			//if (angle >= 0.0 && angle < 180.0) *justify = 5, *text_angle = angle;
+			//else  *justify = 7, *text_angle = 180.0 - angle;
+			if ((angle+GMT_CONV8_LIMIT) >= 90.0 && (angle-GMT_CONV8_LIMIT) < 270.0) *justify = 7, *text_angle = angle - 180;
 			else  *justify = 5, *text_angle = angle;
 			break;
 	}
