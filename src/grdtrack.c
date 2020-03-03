@@ -97,9 +97,10 @@ struct GRDTRACK_CTRL {
 		double step;
 		char unit;
 	} E;
-	struct GRDTRACK_F {	/* -F[+n][+z<z0>] */
+	struct GRDTRACK_F {	/* -F[+b][+n][+z<z0>] */
 		bool active;
 		bool negative;
+		bool balance;
 		double z0;
 	} F;
 	struct GRDTRACK_G {	/* -G<grdfile> */
@@ -164,7 +165,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+n][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+b][+n][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -187,7 +188,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. <length>: The full-length of each cross profile.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append distance unit u (%s); it also applies to <ds>, <spacing>.\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default unit is meter (geographic grids) or user unit (Cartesian grids).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2. <dz>: The sampling interval along the cross-profiles, in units of u.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   2. <ds>: The sampling interval along the cross-profiles, in units of u.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3. Optionally, append /<spacing> to set the spacing between cross-profiles [Default use input locations].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a to alternate direction of cross-profiles [Default orients all the same way].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l or +r to only use the left or right halves of the profiles [entire profile].\n");
@@ -215,6 +216,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Report center, left, and right point per cross-track; requires -C and a single input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We assume a positive center peak; append +n if dealing with a negative trough.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z<z0> to change the detection level for left or right [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use +b to compute the balance point and standard deviation of the profile.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
@@ -356,10 +358,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if ((c = strstr (opt->arg, "+z")))	/* Gave +z<z0> */
-					Ctrl->F.z0 = atof (&c[2]);
-				if ((c = strstr (opt->arg, "+n")))	/* Gave +n*/
-					Ctrl->F.negative = true;
+				if ((c = gmt_first_modifier (GMT, opt->arg, "bnz"))) {	/* Process any modifiers */
+					pos = 0;	/* Reset to start of new word */
+					while (gmt_getmodopt (GMT, 'C', c, "bnz", &pos, p, &n_errors) && n_errors == 0) {
+						switch (p[0]) {
+							case 'b': Ctrl->F.balance = true; break;		/* Select balance point per profile */
+							case 'n': Ctrl->F.negative = true; break;		/* Profiles are negative (troughs)*/
+							case 'z': Ctrl->F.z0 = atof (&p[1]); break;		/* cross-profile starts at line and go to right side only */
+							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+						}
+					}
+				}
 				break;
 			case 'G':	/* Input grid file */
 				if (ng == MAX_GRIDS) {
@@ -973,9 +982,9 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->F.active) {	/* Find left, center, right point along the crosslines, with width */
 			bool do_headers = (Dout->n_tables > 1);
-			unsigned int col, tbl, seg, row;
+			unsigned int col, tbl, seg, row, n;
 			int kl, kc, kr;
-			double out[12], z, this_zc, this_zr, z_scl = (Ctrl->F.negative) ? -1 : +1;
+			double out[12], z, this_zc, this_zr, Sw, Swd, Swd2, z_scl = (Ctrl->F.negative) ? -1 : +1;
 			struct GMT_DATASEGMENT *S = NULL;
 
 			if ((error = GMT_Set_Columns (API, GMT_OUT, 12, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
@@ -1003,16 +1012,39 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to examine */
 					S = T->segment[seg];	/* Shorthand pointer */
 					z = -DBL_MAX;	/* I.e., not set */
+					if (Ctrl->F.balance) {	/* Reset sums */
+						Sw = Swd = Swd2 = 0.0;
+						n = 0;
+					}
 					kr = kl = kc = GMT_NOTSET;	/* Not yet found */
 					for (row = 0; row < S->n_rows; row++) {	/* For each row across this segment */
 						if (gmt_M_is_dnan (T->segment[seg]->data[4][row])) continue;	/* Must skip any NaN entries in any profile */
 						this_zc = T->segment[seg]->data[4][row] * z_scl;				/* Current z: Force positive if a trough */
 						this_zr = T->segment[seg]->data[4][S->n_rows-row-1] * z_scl;	/* Current symmetric point on the right: Force positive if a trough */
-						if (kl == GMT_NOTSET && this_zc >= Ctrl->F.z0) kl = row;		/* Found the first point on the left */
-						if (kr == GMT_NOTSET && this_zr >= Ctrl->F.z0) kr = S->n_rows-row-1;	/* Found the last point on the right */
-						if (this_zc > z) z = this_zc, kc = row;	/* Found a new maximum point */
+						if (Ctrl->F.balance) {	/* Find balance point via weighted mean and std */
+							Sw   += this_zc;
+							Swd  += this_zc * T->segment[seg]->data[GMT_Z][row];
+							Swd2 += this_zc * T->segment[seg]->data[GMT_Z][row] * T->segment[seg]->data[GMT_Z][row];
+							n++;
+						}
+						else {
+							if (kl == GMT_NOTSET && this_zc >= Ctrl->F.z0) kl = row;		/* Found the first point on the left */
+							if (kr == GMT_NOTSET && this_zr >= Ctrl->F.z0) kr = S->n_rows-row-1;	/* Found the last point on the right */
+							if (this_zc > z) z = this_zc, kc = row;	/* Found a new maximum point */
+						}
 					}
-					if (kc == GMT_NOTSET) continue;	/* Nothing to print */
+					if (Ctrl->F.balance) {	/* Compute mean and std and find corresponding points */
+						double d, d0, s;
+						if (n == 0) continue;	/* Nothing to do for this profile */
+						d = Swd / Sw;	/* weighted mean location of balance point */
+						s = sqrt ((Sw * Swd2 - Swd*Swd) / (Sw*Sw*(n-1)/n));	/* One-sigma deviation on the weighted mean */
+						d0 = T->segment[seg]->data[GMT_Z][0];	/* Left distance start value */
+						/* We report the left, center, right points to nearest distance increment */
+						kc = irint ((d - d0) / Ctrl->C.ds);		/* Nearest point to the mean location */
+						kl = ((d - s) < d0) ? GMT_NOTSET : irint ((d - s - d0)/ Ctrl->C.ds);	/* Nearest point to 1-sigma left of center */
+						kr = ((d + s) > T->segment[seg]->data[GMT_Z][S->n_rows-1]) ? GMT_NOTSET : irint ((d + s - d0)/ Ctrl->C.ds);	/* Nearest point to 1-sigma right of center */
+					}
+					else if (kc == GMT_NOTSET) continue;	/* Nothing to print */
 					for (col = 0; col < 5; col++)	/* Copy over lon, lat, dist, azimuth, z */
 						out[col] = T->segment[seg]->data[col][kc];
 					if (kl == GMT_NOTSET)	/* Left start not detected, report NaN */
@@ -1022,7 +1054,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 						out[6] = T->segment[seg]->data[GMT_Y][kl];	/* Left latitude */
 						out[7] = T->segment[seg]->data[GMT_Z][kl];	/* Left distance */
 					}
-					if (kr == GMT_NOTSET)	/* RIght stop not detected, report NaN */
+					if (kr == GMT_NOTSET)	/* Right stop not detected, report NaN */
 						out[8] = out[9] = out[10] = GMT->session.d_NaN;
 					else {
 						out[8]  = T->segment[seg]->data[GMT_X][kr];	/* Right longitude */
