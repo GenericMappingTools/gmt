@@ -29,7 +29,7 @@
 #define THIS_MODULE_MODERN_NAME	"plot3d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 3-D"
-#define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
+#define THIS_MODULE_KEYS	"<D{,CC(,T-<,S?(=2,ZD(,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghipqtxy" GMT_OPT("EHMmc")
 
