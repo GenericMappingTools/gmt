@@ -19,8 +19,12 @@ DCW-GMT is an enhancement to DCW in a few ways:
 #. It contains more state boundaries (the largest 8 countries are now represented).
 #. The data have been reformatted to save space and are distributed as a single deflated netCDF-4 file.
 
+Usage
+-----
+
 DCW-GMT is an optional install.  If you did install it then you can access the DCW data for plotting
-or analysis via the :doc:`/coast` module.  You can also use the ISO 2-character codes for countries
+or analysis via the :doc:`/coast` module.  You can also use the
+`ISO 2-character codes <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_ for countries
 as a way to specify map domains via the **-R** option.  For instance, to make a map showing France
 with a region rounded to the nearest 2 degrees in longitude and latitude, you can run::
 
@@ -36,14 +40,17 @@ show Texas and Mississippi as red states, try::
 
     gmt coast -RUS+r2 -Glightgray -B -EUS.TX,US.MS+gred -pdf us
 
-Notes:
-------
+Notes
+-----
 
 If you are building GMT from source then you should set the parameter
-DCW_ROOT in the cmake/ConfigUser.cmake to point to the directory where
-dcw-gmt.nc has been placed.  If you add this file after GMT installation
+**DCW_ROOT** in the *cmake/ConfigUser.cmake* to point to the directory where
+*dcw-gmt.nc* has been placed.  If you add this file after GMT installation
 was completed then you can always have GMT find it by placing it in your
-user ~/.gmt directory or by setting the DIR_DCW parameter in the
-gmt.conf settings.
+user *~/.gmt* directory or by setting the **DIR_DCW** parameter in the
+*gmt.conf* settings.
+
+License
+-------
 
 DCW-GMT is released under the GNU Lesser General Public License.
