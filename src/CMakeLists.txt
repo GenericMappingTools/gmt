@@ -630,7 +630,7 @@ set_target_properties (gshhg_version
 	PROPERTIES COMPILE_DEFINITIONS "STANDALONE")
 target_link_libraries (gshhg_version ${NETCDF_LIBRARIES})
 
-# script2verbatim for removing svn keywords, comments etc. from example scripts
+# script2verbatim for removing comments, replacing -ps from example scripts
 add_executable (script2verbatim script2verbatim.c)
 
 if (BUILD_SUPPLEMENTS)
