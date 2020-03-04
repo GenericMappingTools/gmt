@@ -31,6 +31,12 @@ if [ ! -d cmake ]; then
 	exit 1
 fi
 
+# pngquant is need to optimize images
+if ! [ -x "$(command -v gmt)" ]; then
+	echo 'Error: pngquant is not found in your search PATH.' >&2
+	exit 1
+fi
+
 # 0. Make sure GMT_GSHHG_SOURCE and GMT_DCW_SOURCE are set in the environment
 if [ "X${GMT_GSHHG_SOURCE}" = "X" ]; then
 	echo "Need to setenv GMT_GSHHG_SOURCE to point to directory with GSHHG files"

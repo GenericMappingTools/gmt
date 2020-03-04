@@ -41,12 +41,21 @@ add_subdirectory (fig)
 add_subdirectory (scripts)
 add_subdirectory (examples)
 
-if (NOT WIN32)
-	# Do not install .bat files
-	set (_exclude_bat "*.bat")
-endif (NOT WIN32)
+# Optimize images for HTML documentation
+find_program (PNGQUANT pngquant)
+if (PNGQUANT)
+	add_custom_target (optimize_images
+		COMMAND ${PNGQUANT} --strip --force --ext .png ${RST_BINARY_DIR}/_images/*.png
+	)
+	add_dependencies (optimize_images docs_depends)
+	add_dependencies (gmt_release optimize_images)
+endif (PNGQUANT)
+
 
 # Install target for examples
+if (NOT WIN32)
+	set (_exclude_bat "*.bat")  # Do not install .bat files
+endif (NOT WIN32)
 install (DIRECTORY examples
 	DESTINATION ${GMT_DOCDIR}
 	COMPONENT Documentation

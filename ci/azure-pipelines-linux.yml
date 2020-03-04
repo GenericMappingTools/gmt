@@ -60,6 +60,7 @@ steps:
     set -x -e
     cd build
     cmake --build . --target docs_depends
+    cmake --build . --target optimize_images
     cmake --build . --target animation
     cmake --build . --target docs_html
     cmake --build . --target docs_man
@@ -119,10 +120,6 @@ steps:
     CODECOV_TOKEN: $(codecov.token)
   condition: and(eq(variables['TEST'], true), succeededOrFailed())
   displayName: Upload test coverage
-
-- bash: bash admin/image_optimize.sh build/doc/rst/html/_images/*.png
-  condition: eq(variables['DEPLOY_DOCS'], true)
-  displayName: Optimize images in documentations
 
 - bash: bash ci/deploy-gh-pages.sh
   displayName: Deploy documentations
