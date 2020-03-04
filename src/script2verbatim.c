@@ -187,7 +187,7 @@ int main (int argc, char *argv[]) {
 	while (fgets (line, MAX_LINE_LEN, fp_in) != NULL) {
 		size_t len = strlen (line);
 		++line_num;
-		if (len > 0 && line[len-1] != '\n') {
+		if (len > MAX_LINE_LEN) {
 			fprintf (stderr, FAILURE_PREFIX "line %d too long: %s\n", line_num, line);
 			fclose (fp_in);
 			fclose (fp_out);
