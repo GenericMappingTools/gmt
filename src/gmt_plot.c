@@ -1868,9 +1868,98 @@ GMT_LOCAL void plot_label_trim (char *label, int stage) {
 }
 
 GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
+	unsigned int i, k, nx = 0, ny = 0, last, first = 0, form, lonlat, justify;
+	bool do_minutes, do_seconds;
+	char label[GMT_LEN256] = {""}, format[GMT_LEN64] = {""}, **label_c = NULL;
+	double *val = NULL, *tval = NULL, dx, dy, shift, x, y, ds, dc, line_angle, text_angle;
+
 	if (GMT->current.map.frame.internal_annot == 0) return;	/* Not requested */
 
+	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+
 	if (GMT->current.map.frame.internal_annot == 1) {	/* Placement of latitude or radial annotations along selected meridian */
+		dy = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER]);
+		if (gmt_M_y_is_lat (GMT, GMT_IN)) {
+			do_minutes = (fabs (fmod (dy, 1.0)) > GMT_CONV4_LIMIT);
+			do_seconds = plot_set_do_seconds (GMT, dy);
+			lonlat = 1;
+		}
+		else {	/* Also, we know that GMT->current.setting.format_geo_out = -1 in this case */
+			do_minutes = do_seconds = 0;
+			lonlat = 2;
+		}
+		if (GMT->current.plot.r_theta_annot) {	/* Make format for radial term */
+			char tmp[GMT_LEN64] = {""};
+			strcpy (format, GMT->current.setting.format_float_map);
+			gmt_get_format (GMT, dy, NULL, NULL, tmp);
+			strncpy (GMT->current.setting.format_float_map, tmp, GMT_LEN64-1);
+		}
+
+
+		if (GMT->current.proj.z_down) {	/* Want to annotate depth rather than radius */
+			if (GMT->current.map.frame.axis[GMT_Y].file_custom)
+				ny = gmtlib_coordinate_array (GMT, 0.0, GMT->current.proj.z_radius-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &tval, &label_c);
+			else if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
+				ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &tval);
+			else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
+				ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &tval);
+			val = gmt_M_memory (GMT, NULL, ny, double);
+			for (i = 0; i < ny; i++) {
+				if (GMT->current.proj.z_down == GMT_ZDOWN_ZP)
+					val[i] = GMT->current.proj.z_radius - tval[i];	/* These are the z values needed for positioning */
+				else
+					val[i] = GMT->common.R.wesn[YHI] - tval[i];	/* These are the radial values needed for positioning */
+			}
+		}
+		else {				/* Annotate radius */
+			if (GMT->current.map.frame.axis[GMT_Y].file_custom)
+				ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &val, &label_c);
+			else
+				ny = gmtlib_linear_array (GMT, s, n, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
+			tval = val;	/* Here they are the same thing */
+		}
+		last = ny - 1;
+		if (GMT->current.proj.projection_GMT == GMT_POLAR)
+			last = ny - 2;
+		else if (GMT->current.proj.north_pole)
+			first = 1;
+		else
+			last = ny - 2;
+
+		if (GMT->current.proj.projection_GMT == GMT_POLAR)	/* Shift by 90 so it works like N polar */
+			gmtlib_polar_prepare_label (GMT, GMT->current.map.frame.internal_arg+90, E_SIDE, &line_angle, &text_angle, &justify);
+		else
+			gmtlib_polar_prepare_label (GMT, GMT->current.map.frame.internal_arg, E_SIDE, &line_angle, &text_angle, &justify);
+
+		if (GMT->current.proj.projection_GMT != GMT_POLAR && !GMT->current.proj.north_pole) {
+			/* Adjust for th fact that for S polar maps, things are a bit backwards */
+			text_angle = -text_angle;
+			justify = (justify == PSL_ML) ? PSL_MR : PSL_ML;
+			line_angle = 190.0 - line_angle;
+		}
+		/* Shift annotation by the amount implied by GMT_ANNOT_OFFSET */
+		sincosd (line_angle, &ds, &dc);
+		ds *= MAX (GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0);
+		dc *= MAX (GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0);
+		//fprintf (stderr, "Just = %d Angle = %g Line = %g dx = %g dy = %g\n", justify, text_angle, line_angle, dc, ds);
+
+		for (i = first; i <= last; i++) {
+			if (label_c && label_c[i] && label_c[i][0])
+				strncpy (label, label_c[i], GMT_LEN256-1);
+			else
+				gmtlib_get_annot_label (GMT, tval[i], label, do_minutes, do_seconds, 1, lonlat, GMT->current.map.is_world);
+			shift = plot_shift_gridline (GMT, val[i], GMT_Y);
+			gmt_geo_to_xy (GMT, GMT->current.map.frame.internal_arg, tval[i], &x, &y);
+			PSL_plottext (PSL, x+dc, y+ds, GMT->current.setting.font_annot[GMT_PRIMARY].size, label, text_angle, justify, form);
+		}
+		if (ny) gmt_M_free (GMT, val);
+		if (label_c) {
+			for (i = 0; i < ny; i++) gmt_M_str_free (label_c[i]);
+			gmt_M_free (GMT, label_c);
+		}
+		if (GMT->current.proj.z_down) gmt_M_free (GMT, tval);
+		if (GMT->current.plot.r_theta_annot)	/* Restore the format */
+			strcpy (GMT->current.setting.format_float_map, format);
 	}
 	else if (GMT->current.map.frame.internal_annot == 2) {	/* Placement of longitude annotations along selected parallel */
 	}
