@@ -1867,6 +1867,15 @@ GMT_LOCAL void plot_label_trim (char *label, int stage) {
 	label[stage] = '\0';
 }
 
+GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
+	if (GMT->current.map.frame.internal_annot == 0) return;	/* Not requested */
+
+	if (GMT->current.map.frame.internal_annot == 1) {	/* Placement of latitude or radial annotations along selected meridian */
+	}
+	else if (GMT->current.map.frame.internal_annot == 2) {	/* Placement of longitude annotations along selected parallel */
+	}
+}
+
 GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	unsigned int i, k, nx = 0, ny = 0, last, form, remove[2] = {0,0}, trim, add;
 	bool do_minutes, do_seconds, done_Greenwich, done_Dateline, check_edges;
@@ -1900,6 +1909,8 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 		PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
 		GMT->current.map.frame.plotted_header = true;
 	}
+
+	plot_consider_internal_annotations (GMT, PSL, w, e, s, n);	/* Handle any special case of internal annotations */
 
 	if (GMT->current.proj.edge[S_SIDE] || GMT->current.proj.edge[N_SIDE]) {
 		dx[0] = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER]);

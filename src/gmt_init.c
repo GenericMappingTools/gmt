@@ -3853,6 +3853,7 @@ bool gmtinit_B_is_frame (struct GMT_CTRL *GMT, char *in) {
 	gmt_M_unused (GMT);
 	if (strstr (in, "+b")) return true;	/* Found a +b so likely frame */
 	if (strstr (in, "+g")) return true;	/* Found a +g so likely frame */
+	if (strstr (in, "+i")) return true;	/* Found a +i so likely frame */
 	if (strstr (in, "+n")) return true;	/* Found a +n so likely frame */
 	if (strstr (in, "+o")) return true;	/* Found a +o so likely frame */
 	if (strstr (in, "+t")) return true;	/* Found a +t so likely frame */
@@ -3887,7 +3888,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	/* OK, here we are pretty sure this is a frame -B statement */
 
 	strncpy (text, in, GMT_BUFSIZ-1);
-	gmt_handle5_plussign (GMT, text, "bgnot", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
+	gmt_handle5_plussign (GMT, text, "bginot", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
 	GMT->current.map.frame.header[0] = '\0';
 
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
@@ -3902,6 +3903,29 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 						error++;
 					}
 					GMT->current.map.frame.paint = true;
+					break;
+				case 'i':	/* Turn on internal annotation for radiual or longitudinal axes when there is no other place to annotate */
+					GMT->current.map.frame.internal_annot = 1;	/* Longitude/angle */
+					if (GMT->current.proj.projection == GMT_POLAR)	/* Argument is an angle */
+						GMT->current.map.frame.internal_arg = (p[1]) ? atof (&p[1]) : GMT->common.R.wesn[XLO];
+					else if (gmt_M_is_azimuthal (GMT)) {	/* Argment is a longitude */
+						if (p[1])
+							error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, &p[1], GMT_IS_LON, &GMT->current.map.frame.internal_arg), &p[1]);
+						else
+							GMT->current.map.frame.internal_arg = GMT->common.R.wesn[XLO];
+					}
+					else if (gmt_M_is_misc (GMT) && gmt_M_pole_is_point (GMT) && gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI])) {	/* Giving a latitude */
+						GMT->current.map.frame.internal_annot = 2;	/* Latitude */
+						if (p[1])
+							error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &p[1], GMT_IS_LAT, &GMT->current.map.frame.internal_arg), &p[1]);
+						else
+							GMT->current.map.frame.internal_arg = 0.0;	/* Equator */
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR,
+							"Option -B: Cannot specify internal annotation for this projection or region selection\n");
+						error++;
+					}
 					break;
 				case 'n':	/* Turn off frame entirely; this is also done in gmtinit_decode5_wesnz */
 					GMT->current.map.frame.no_frame = true;
@@ -4008,8 +4032,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if ((error = gmtinit_parse5_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
 	error = 0;	/* Reset since otherwise it is -1 */
 
-	if (strstr (in, "+b") || strstr (in, "+g") || strstr (in, "+n") || strstr (in, "+o") || strstr (in, "+t")) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Found frame setting modifiers (+b|g|n|o|p) mixed with axes settings!\n");
+	if (strstr (in, "+b") || strstr (in, "+g") || strstr (in, "+i") || strstr (in, "+n") || strstr (in, "+o") || strstr (in, "+o") || strstr (in, "+t")) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Found frame setting modifiers (+b|g|i|n|o|p) mixed with axes settings!\n");
 		return (GMT_PARSE_ERROR);
 	}
 
