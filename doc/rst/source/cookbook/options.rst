@@ -1365,6 +1365,9 @@ command line arguments that may take geographic coordinates (e.g.,
 **-R**) *always* expect longitude before latitude. Also, geographical
 grids are expected to have the longitude as first (minor) dimension.
 
+Footnotes
+---------
+
 .. [11]
    The Gregorian Calendar is a revision of the Julian Calendar which was
    instituted in a papal bull by Pope Gregory XIII in 1582. The reason

@@ -297,6 +297,9 @@ reproduced by the single command:
 We hope you will study these examples to enable you to make efficient
 and wise use of this vast data set.
 
+Footnotes
+~~~~~~~~~
+
 .. [1]
    `National Centers for Environmental Information, Boulder, Colorado <http://www.ncei.noaa.gov/>`_
 
