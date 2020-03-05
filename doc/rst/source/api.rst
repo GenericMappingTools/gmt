@@ -3927,6 +3927,8 @@ default data types [float for matrix and double for vector].
 
     Flags to select the type of arrays used in output GMT_MATRIX or GMT_VECTOR.
 
+Footnotes
+---------
 
 .. [1]
    or via a very confusing and ever-changing myriad of low-level library

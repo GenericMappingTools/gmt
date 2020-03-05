@@ -1227,6 +1227,9 @@ Centered on the Dateline, the example below was created by this command:
 
    World map using the Van der Grinten projection.
 
+Footnotes
+---------
+
 .. [20]
    Snyder, J. P., 1987, Map Projections A Working Manual, U.S.
    Geological Survey Prof. Paper 1395.
