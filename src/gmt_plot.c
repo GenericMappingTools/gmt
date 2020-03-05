@@ -1949,7 +1949,7 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 
 		if (GMT->current.proj.north_pole && GMT->current.proj.projection_GMT != GMT_POLAR && doubleAlmostEqualZero (tval[0], s))
 			first = 1;
-		else if (!GMT->current.proj.north_pole && doubleAlmostEqualZero (tval[ny-1], n))
+		else if (!GMT->current.proj.north_pole && ny && doubleAlmostEqualZero (tval[ny-1], n))
 			ny--;
 
 		plot_radial_annot_setup (GMT, GMT->current.map.frame.internal_arg, &justify, &text_angle, &line_angle, &dc, &ds);
