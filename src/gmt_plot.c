@@ -1900,10 +1900,10 @@ GMT_LOCAL void plot_radial_annot_setup (struct GMT_CTRL *GMT, double angle, unsi
 GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	/* Special annotation routine for annotating latitude (or radius) along a specified meridian.  This allows us to annotate
 	 * maps that do not have the axes we wish to annotate, such as annotating latitudes for a 0/360 azimuthal map. */
-	unsigned int i, k, nx = 0, ny = 0, first = 0, form, lonlat, justify;
+	unsigned int i, nx = 0, ny = 0, first = 0, form, lonlat, justify;
 	bool do_minutes, do_seconds, do_grid = false;
 	char label[GMT_LEN256] = {""}, format[GMT_LEN64] = {""}, **label_c = NULL;
-	double *val = NULL, *tval = NULL, dx, dy, shift, x0, y0, x1, y1, L, ds, dc, line_angle, text_angle, angle, dyg, xa, xb, ya, yb, Sa, Ca;
+	double *val = NULL, *tval = NULL, dx, dy, shift, x0, y0, x1, y1, L, ds, dc, line_angle, text_angle, angle, dyg, dxg, xa, xb, ya, yb, Sa, Ca;
 
 	if (GMT->current.map.frame.internal_annot == 0) return;	/* Not requested */
 
@@ -1965,10 +1965,6 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 			ny--;
 		else if (GMT->current.proj.flip && ny && tval[ny-1] < GMT->current.proj.flip_radius)
 			ny--;
-		//else if (GMT->current.proj.north_pole && GMT->current.proj.projection_GMT != GMT_POLAR && doubleAlmostEqualZero (tval[0], s))
-		//	first = 1;
-		//else if (!GMT->current.proj.north_pole && GMT->current.proj.projection_GMT != GMT_POLAR && ny && doubleAlmostEqualZero (tval[ny-1], n))
-		//	ny--;
 
 		plot_radial_annot_setup (GMT, GMT->current.map.frame.internal_arg, &justify, &text_angle, &line_angle, &dc, &ds);
 		/* Shall we place grid crosses or have user selected gridlines? */
@@ -2024,6 +2020,66 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 	}
 	
 	if (GMT->current.map.frame.internal_annot == 2) {	/* Placement of longitude annotations along selected parallel */
+		dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER]);
+		do_minutes = (fabs (fmod (dx, 1.0)) > GMT_CONV4_LIMIT);
+		do_seconds = plot_set_do_seconds (GMT, dx);
+
+		if (GMT->current.map.frame.axis[GMT_X].file_custom)
+			nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER], &val, &label_c);
+		else
+			nx = gmtlib_linear_array (GMT, w, e, dx, GMT->current.map.frame.axis[GMT_X].phase, &val);
+		//if (nx && doubleAlmostEqualZero (val[0], w)) first = 1;
+		if (nx && doubleAlmostEqualZero (val[nx-1], e)) nx--;
+
+		if ((dyg = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
+			if ((dxg = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER])) > 0.0) {
+				if (fabs (fmod (GMT->current.map.frame.internal_arg, dxg)) > GMT_CONV4_LIMIT)
+					do_grid = true;
+				else if (dxg > dx)
+					do_grid = true;
+			}
+			else
+				do_grid = true;
+		}
+		else
+			do_grid = true;
+			
+		if (do_grid) {
+			/* Either pick current grid-cross size or use half the annotation size as backup */
+			L = 0.5 * ((GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] > 0.0) ? GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] : 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
+			gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+		}
+
+		for (i = first; i < nx; i++) {
+			if (label_c && label_c[i] && label_c[i][0])
+				strncpy (label, label_c[i], GMT_LEN256-1);
+			else
+				gmtlib_get_annot_label (GMT, val[i], label, do_minutes, do_seconds, 1, 0, GMT->current.map.is_world);
+			shift = plot_shift_gridline (GMT, val[i], GMT_X);
+			gmt_geo_to_xy (GMT, val[i], GMT->current.map.frame.internal_arg, &x0, &y0);
+			gmt_geo_to_xy (GMT, val[i] + GMT->current.map.dlon, GMT->current.map.frame.internal_arg, &x1, &y1);
+			angle = d_atan2 (y1-y0, x1-x0);	/* Angle at longitude annotation */
+			sincos (angle+M_PI_4, &dc, &ds);	/* Add 45 to get distance to BL corner of boundingbox for annotation */
+			ds *= MAX (GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0);
+			dc *= MAX (GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0);
+			PSL_plottext (PSL, x0+dc, y0+ds, GMT->current.setting.font_annot[GMT_PRIMARY].size, label, R2D*angle, PSL_BL, form);
+			if (do_grid) {
+				sincos (angle, &Sa, &Ca);
+				xa = x0 - L * Ca;	xb = x0 + L * Ca;
+				ya = y0 - L * Sa;	yb = y0 + L * Sa;
+				PSL_plotsegment (PSL, xa, ya, xb, yb);
+				angle += M_PI_2;
+				sincos (angle, &Sa, &Ca);
+				xa = x0 - L * Ca;	xb = x0 + L * Ca;
+				ya = y0 - L * Sa;	yb = y0 + L * Sa;
+				PSL_plotsegment (PSL, xa, ya, xb, yb);
+			}
+		}
+		if (nx) gmt_M_free (GMT, val);
+		if (label_c) {
+			for (i = 0; i < nx; i++) gmt_M_str_free (label_c[i]);
+			gmt_M_free (GMT, label_c);
+		}
 	}
 }
 
