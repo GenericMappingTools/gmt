@@ -1868,30 +1868,33 @@ GMT_LOCAL void plot_label_trim (char *label, int stage) {
 }
 
 GMT_LOCAL void plot_radial_annot_setup (struct GMT_CTRL *GMT, double angle, unsigned int *justify, double *text_angle, double *line_angle, double *dc, double *ds) {
+	if (angle < 0.0) angle += 360.0;
+	if (GMT->current.proj.got_azimuths)
+		angle = 90.0 - angle;
 	if (GMT->current.proj.projection_GMT == GMT_POLAR)	/* Shift by 90 so it works like N polar */
-		gmtlib_polar_prepare_label (GMT, angle+90, E_SIDE, line_angle, text_angle, justify);
+		gmtlib_polar_prepare_label (GMT, angle-90-GMT->current.proj.p_base_angle, E_SIDE, line_angle, text_angle, justify);
 	else
 		gmtlib_polar_prepare_label (GMT, angle, E_SIDE, line_angle, text_angle, justify);
 
 	if (GMT->current.proj.projection_GMT != GMT_POLAR && !GMT->current.proj.north_pole) {
-			/* Adjust for th fact that for S polar maps, things are a bit backwards */
+		/* Adjust for the fact that for S polar maps, things are a bit backwards */
 		*text_angle = -*text_angle;
 		*justify = (*justify == PSL_ML) ? PSL_MR : PSL_ML;
 		*line_angle = 190.0 - *line_angle;
 	}
-	*justify = (*justify == PSL_ML) ? PSL_TL : PSL_BR;
+	if (GMT->current.proj.projection_GMT != GMT_POLAR) {
+		*line_angle += 180.0;
+		*justify = (*justify == PSL_ML) ? PSL_BR : PSL_TL;
+	}
+	else
+		*justify = (*justify == PSL_ML) ? PSL_TL : PSL_BR;
 	*line_angle -= 45;
 	/* Shift annotation by the amount implied by GMT_ANNOT_OFFSET */
 	sincosd (*line_angle, ds, dc);
 	*ds *= MAX (GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0);
 	*dc *= MAX (GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0);
 
-	//if (GMT->current.proj.projection_GMT != GMT_POLAR && *justify == PSL_TR) {
-	//	if (*text_angle < 90) *dc = -*dc;
-	//	*ds = -*ds;
-	//}
-
-	fprintf (stderr, "Just = %d Angle = %g Line = %g dx = %g dy = %g\n", *justify, *text_angle, *line_angle, *dc, *ds);
+	//fprintf (stderr, "Just = %d Angle = %g Line = %g dx = %g dy = %g\n", *justify, *text_angle, *line_angle, *dc, *ds);
 }
 
 GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
@@ -1947,10 +1950,25 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 			tval = val;	/* Here they are the same thing */
 		}
 
-		if (GMT->current.proj.north_pole && GMT->current.proj.projection_GMT != GMT_POLAR && doubleAlmostEqualZero (tval[0], s))
-			first = 1;
-		else if (!GMT->current.proj.north_pole && ny && doubleAlmostEqualZero (tval[ny-1], n))
+		/* Lot of exceptions to check for that affects if first or last annotatino should be skipped */
+		if (GMT->current.proj.z_down == GMT_ZDOWN_Z && ny && tval[ny-1] < GMT->current.proj.z_radius)
 			ny--;
+		else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP && ny) {
+			if ((tval[0] - GMT->current.proj.flip_radius + n) < 0.5*dy)
+			first = 1;
+		}
+		else if (GMT->current.proj.projection_GMT == GMT_POLAR && ny && GMT->current.proj.flip && GMT->current.proj.radial_offset > 0.0)
+			ny--;
+		else if (GMT->current.proj.projection_GMT == GMT_POLAR && ny && (GMT->current.proj.radial_offset > 0.0 || (!GMT->current.proj.flip && tval[0] > 0.0)))
+			first = 1;
+		else if (GMT->current.proj.got_elevations && n < 90.0)
+			ny--;
+		else if (GMT->current.proj.flip && ny && tval[ny-1] < GMT->current.proj.flip_radius)
+			ny--;
+		//else if (GMT->current.proj.north_pole && GMT->current.proj.projection_GMT != GMT_POLAR && doubleAlmostEqualZero (tval[0], s))
+		//	first = 1;
+		//else if (!GMT->current.proj.north_pole && GMT->current.proj.projection_GMT != GMT_POLAR && ny && doubleAlmostEqualZero (tval[ny-1], n))
+		//	ny--;
 
 		plot_radial_annot_setup (GMT, GMT->current.map.frame.internal_arg, &justify, &text_angle, &line_angle, &dc, &ds);
 		/* Shall we place grid crosses or have user selected gridlines? */
@@ -1979,7 +1997,7 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 			else
 				gmtlib_get_annot_label (GMT, tval[i], label, do_minutes, do_seconds, 1, lonlat, GMT->current.map.is_world);
 			shift = plot_shift_gridline (GMT, val[i], GMT_Y);
-			gmt_geo_to_xy (GMT, GMT->current.map.frame.internal_arg, tval[i], &x0, &y0);
+			gmt_geo_to_xy (GMT, GMT->current.map.frame.internal_arg, val[i], &x0, &y0);
 			PSL_plottext (PSL, x0+dc, y0+ds, GMT->current.setting.font_annot[GMT_PRIMARY].size, label, text_angle, justify, form);
 			if (do_grid) {
 				gmt_geo_to_xy (GMT, GMT->current.map.frame.internal_arg, tval[i] - copysign (GMT->current.map.dlat, tval[i]), &x1, &y1);
