@@ -286,7 +286,7 @@ tick, and gridline intervals, axes labels, and annotation units.
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
+-  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
 
 Here, the optional *axes* dictates which of the axes should be drawn
 and possibly annotated.  By default, all 4 map boundaries (or plot axes)
@@ -303,6 +303,10 @@ corner and the order goes counter-clockwise.  Append **+b** to draw the outline
 of the 3-D box defined by **-R**; this modifier is also needed to display
 gridlines in the x–z, y–z planes.  You may paint the
 map canvas by appending the **+g**\ *fill* modifier [Default is no fill].
+Use **+i** to annotate an internal meridian or parallel when the axis that normally
+would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
+has no latitude axis, and a global Hammer map has no longitude axis);
+optionally append the parallel or meridian [0].
 If gridlines are specified via the Axes parameters (discussed below) then
 by default these are referenced to the North pole.  If, however, you wish
 to produce oblique gridlines about another pole you can append **+o**\ *lon/lat*
