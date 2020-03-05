@@ -3906,24 +3906,24 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					break;
 				case 'i':	/* Turn on internal annotation for radiual or longitudinal axes when there is no other place to annotate */
 					GMT->current.map.frame.internal_annot = 1;	/* Longitude/angle */
-					if (GMT->current.proj.projection == GMT_POLAR)	/* Argument is an angle */
+					if (GMT->current.proj.projection == GMT_POLAR)	/* Optional argument is an angle, not longitude, so atof will do */
 						GMT->current.map.frame.internal_arg = (p[1]) ? atof (&p[1]) : GMT->common.R.wesn[XLO];
-					else if (gmt_M_is_azimuthal (GMT)) {	/* Argment is a longitude */
-						if (p[1])
+					else if (gmt_M_is_azimuthal (GMT)) {	/* Optional argument is a longitude */
+						if (p[1])	/* Giving a specific meridian along which to annotate latitudes or radii */
 							error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, &p[1], GMT_IS_LON, &GMT->current.map.frame.internal_arg), &p[1]);
-						else
+						else	/* Default to west */
 							GMT->current.map.frame.internal_arg = GMT->common.R.wesn[XLO];
 					}
-					else if (gmt_M_is_misc (GMT) && gmt_M_pole_is_point (GMT) && gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI])) {	/* Giving a latitude */
-						GMT->current.map.frame.internal_annot = 2;	/* Latitude */
-						if (p[1])
+					else if (gmt_M_is_misc (GMT) && gmt_M_pole_is_point (GMT) && gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI])) {
+						GMT->current.map.frame.internal_annot = 2;	/* Want longitude annotations along a parallel */
+						if (p[1])	/* Giving a specific latitude */
 							error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &p[1], GMT_IS_LAT, &GMT->current.map.frame.internal_arg), &p[1]);
-						else
-							GMT->current.map.frame.internal_arg = 0.0;	/* Equator */
+						else	/* Default to Equator */
+							GMT->current.map.frame.internal_arg = 0.0;
 					}
 					else {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR,
-							"Option -B: Cannot specify internal annotation for this projection or region selection\n");
+							"Option -B: Cannot specify internal annotation with +i for this projection and region selection\n");
 						error++;
 					}
 					break;
