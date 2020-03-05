@@ -619,7 +619,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			}
 			else if (Bframe) {
 				static char *Bx_items = "SsNnbt", *By_items = "WwEelr";
-				if ((c = gmt_first_modifier (GMT, Bframe->arg, "bgnot"))) {	/* Gave valid frame modifiers */
+				if ((c = gmt_first_modifier (GMT, Bframe->arg, "bginot"))) {	/* Gave valid frame modifiers */
 					Ctrl->S[GMT_X].extra = strdup (c);
 					c[0] = '\0';	/* Chop off for now */
 				}
