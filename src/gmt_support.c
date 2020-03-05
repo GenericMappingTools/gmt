@@ -14037,7 +14037,7 @@ int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_
 	return (GMT_OK);
 }
 
-GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double *line_angle, double *text_angle, unsigned int *justify) {
+int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double *line_angle, double *text_angle, unsigned int *justify) {
 	/* Special function to set justification and text angle for polar projections (r/theta, i.e. GMT_POLAR) */
 	/* Normally y-min (south) is at r = 0 and y-max (north) is on the perimeter, but +f reverses that */
 	/* Normally x-min (west) is the boundary with the region on the leeft, and x-max (east) on the right, but +a reverses that */
@@ -14046,21 +14046,19 @@ GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, un
 		side = 2 - side;	/* Turns 2 to 0 and 0 to 2 */
 
 	switch (side) {
-		case 0:	/* We are annotating angles on the inner (donut) boundary */
+		case S_SIDE:	/* We are annotating angles on the inner (donut) boundary */
 			if (gmt_M_is_zero (angle) || ((angle+GMT_CONV8_LIMIT) >= 180.0 && (angle-GMT_CONV8_LIMIT) < 360.0)) *justify = 10, *text_angle = angle - 270.0;
 			else *justify = 2, *text_angle = angle - 90;
 			break;
-		case 1:
+		case E_SIDE:
 			if ((angle+GMT_CONV8_LIMIT) >= 90.0 && (angle-GMT_CONV8_LIMIT) < 270.0) *justify = 7, *text_angle = angle - 180;
 			else  *justify = 5, *text_angle = angle;
 			break;
-		case 2:	/* We are annotating angles on the outer boundary */
+		case N_SIDE:	/* We are annotating angles on the outer boundary */
 			if ((angle+GMT_CONV8_LIMIT) >= 0.0 && (angle-GMT_CONV8_LIMIT) <= 180.0) *justify = 2, *text_angle = angle - 90.0;
 			else *justify = 10, *text_angle = angle + 90.0;
 			break;
-		case 3:
-			//if (angle >= 0.0 && angle < 180.0) *justify = 5, *text_angle = angle;
-			//else  *justify = 7, *text_angle = 180.0 - angle;
+		case W_SIDE:
 			if ((angle+GMT_CONV8_LIMIT) >= 90.0 && (angle-GMT_CONV8_LIMIT) < 270.0) *justify = 7, *text_angle = angle - 180;
 			else  *justify = 5, *text_angle = angle;
 			break;
