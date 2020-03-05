@@ -241,6 +241,8 @@ export GMT_SESSION_NAME=<some unique string>
 before gmt begin starts the script.  This is most easily done by using the **gmt --new-script**
 option to print a shell template to the standard output.
 
+Footnotes
+---------
 
 .. [2]
    See GNU Lesser General Public License (`<http://www.gnu.org/copyleft/gpl.html>`_)

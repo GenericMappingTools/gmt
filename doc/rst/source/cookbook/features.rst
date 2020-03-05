@@ -2556,7 +2556,8 @@ Parameter :term:`DIR_GSHHG`
 Note that files whose full path is given will never be searched for in
 any of these directories.
 
-
+Footnotes
+---------
 
 .. [7]
    Vicenty, T. (1975), Direct and inverse solutions of geodesics on the

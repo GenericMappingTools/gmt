@@ -28,6 +28,8 @@ offered by :doc:`subplot </subplot>`.
 
    Volumes and geo-spatial selections.
 
+Footnote
+~~~~~~~~
 
 .. [1]
    See http://topex.ucsd.edu/marine_grav/mar_grav.html.
