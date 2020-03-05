@@ -1908,6 +1908,8 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 	if (GMT->current.map.frame.internal_annot == 0) return;	/* Not requested */
 
 	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+	PSL_comment (PSL, "Map annotations (Internal)\n");
+	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 
 	if (GMT->current.map.frame.internal_annot == 1) {	/* Placement of latitude or radial annotations along selected meridian */
 		dy = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER]);
@@ -2081,6 +2083,7 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 			gmt_M_free (GMT, label_c);
 		}
 	}
+	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 }
 
 GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
@@ -2152,7 +2155,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	is_dual = (dual[GMT_X] | dual[GMT_Y]);
 	check_edges = (!GMT->common.R.oblique && (GMT->current.setting.map_frame_type & GMT_IS_INSIDE));
 
-	PSL_comment (PSL, "Map annotations\n");
+	PSL_comment (PSL, "Map annotations (external)\n");
 	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 
 	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
