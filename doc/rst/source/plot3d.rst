@@ -29,7 +29,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *value*\ \|\ *file*\ [**+f**\|\ **l**]]
+[ |-Z|\ *value*\|\ *file*\ [**+f**\|\ **l**]]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
