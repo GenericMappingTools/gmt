@@ -2585,8 +2585,7 @@ Footnotes
    For an overview of color systems such as HSV, see Chapter :doc:`colorspace`.
 
 .. [18]
-   Convert other graphics formats to Sun ras format using GraphicsMagick's
-	 or ImageMagick's **convert** program.
+   Convert other graphics formats to Sun ras format using GraphicsMagick's or ImageMagick's **convert** program.
 
 .. [19]
    Requires building GMT with GDAL.
