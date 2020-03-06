@@ -202,6 +202,13 @@ EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
 };
+
+static int sort_on_classic (const void *vA, const void *vB) {
+	const struct Gmt_moduleinfo *A = vA, *B = vB;
+	if (A == NULL) return +1;	/* Get the NULL entry to the end */
+	if (B == NULL) return -1;	/* Get the NULL entry to the end */
+	return strcmp(A->cname, B->cname);
+}
 EOF
 
 if [ "$U_TAG" = "CORE" ]; then
@@ -359,6 +366,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 /* Produce single list on stdout of all GMT ${L_TAG} module names for gmt --show-classic [i.e., classic mode names] */
 void gmt_${L_TAG}_module_classic_all (void *V_API) {
 	unsigned int module_id = 0;
+	size_t n_modules = 0;
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
@@ -370,6 +378,13 @@ else
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
+
+	while (g_${L_TAG}_module[n_modules].cname != NULL)	/* Count the modules */
+		++n_modules;
+
+	/* Sort array on classic names since original array is sorted on modern names */
+	qsort (g_${L_TAG}_module, n_modules, sizeof (struct Gmt_moduleinfo), sort_on_classic);
+
 	while (g_${L_TAG}_module[module_id].cname != NULL) {
 EOF
 if [ "$U_TAG" = "CORE" ]; then
