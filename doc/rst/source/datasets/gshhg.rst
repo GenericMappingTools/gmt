@@ -131,8 +131,8 @@ becomes a complicated processing step.
    The five resolutions are called **f**\ ull, **h**\ igh,
    **i**\ ntermediate, **l**\ ow, and **c**\ rude; they are accessed in
    :doc:`/coast`, :doc:`/gmtselect`, and
-   :doc:`/grdlandmask` with the **-D**
-   option [3]_. For each of these 5 data sets (**f**, **h**, **i**,
+   :doc:`/grdlandmask` with the **-D** option.
+   For each of these 5 data sets (**f**, **h**, **i**,
    **l**, **c**) we specified an equidistant grid (1, 2, 5, 10, 20) and
    split all polygons into line-segments that each fit inside one of the
    many boxes defined by these grid lines. Thus, to paint the entire
@@ -143,7 +143,7 @@ becomes a complicated processing step.
    feature is smaller than the cutoff specified by the user. The
    resulting segment coordinates were then scaled to fit in short
    integer format to preserve precision and written in netCDF format for
-   ultimate portability across hardware platforms [4]_.
+   ultimate portability across hardware platforms [3]_.
 
 *  While we are now back to a file of line-segments we are in a much
    better position to create smaller polygons for painting. Two problems
@@ -309,11 +309,6 @@ Footnotes
    caricature, *Canadian Cartographer*, 10, 112–122.
 
 .. [3]
-   The full and high resolution files are in separate archives because
-   of their size. Not all users may need these files as the intermediate
-   data set is better than the data provided with version 2.2.4.
-
-.. [4]
    If you need complete polygons in a simpler format, see the article on
    GSHHG (Wessel, P., and W. H. F. Smith, 1996, A Global,
    self-consistent, hierarchical, high-resolution shoreline database,
