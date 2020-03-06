@@ -33,7 +33,7 @@
 #define THIS_MODULE_MODERN_NAME	"sample1d"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Resample 1-D table data using splines"
-#define THIS_MODULE_KEYS	"<D{,ND(,>D}"
+#define THIS_MODULE_KEYS	"<D{,ND(,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->Vbdefghioqs" GMT_OPT("HMm")
 
