@@ -152,7 +152,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<arg>[+f|l]] [%s]\n\t[%s] %s[%s] [%s] [%s]\n\t[%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<value>|<file>[+f|l]] [%s]\n\t[%s] %s[%s] [%s] [%s]\n\t[%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -163,7 +163,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on t-value in 4rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S.  Without -S, psxyz excepts lines/polygons\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each segment header.  Then, color is\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<value> options in each segment header.  Then, color is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset symbol or line positions by <dx>/<dy>[/<dz>] [no offset].\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [Default is no fill].");
@@ -278,8 +278,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append f to let fill/font colors follow the CPT setting.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        Default is both effects.\n");
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use <arg> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, let <arg> be a file with z-values instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use <value> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, specify <file> with z-values in the last data column instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l for just pen color or +f for fill color [Default sets both].\n");
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
@@ -600,7 +600,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	double dim[PSL_MAX_DIMS], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
 	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
-	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, length, base;
+	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, length, base, *z_for_cpt = NULL;
 
 	struct GMT_PEN default_pen, current_pen, last_headpen, last_spiderpen;
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
@@ -1629,6 +1629,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a single segment with one z-value for each polygon in the input file\n");
 				Return (API->error);
 			}
+			if (Zin->n_columns == 0) {
+				GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a at least one data column and we will choose the last column\n");
+				Return (API->error);
+			}
+			z_for_cpt = Zin->table[0]->segment[0]->data[Zin->n_columns-1];	/* Short hand to the required z-array */
 		}
 
 		if (GMT->common.l.active && S.symbol == GMT_SYMBOL_LINE) {
@@ -1661,7 +1666,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				outline_setting = outline_active ? 1 : 0;
 				if (Zin != NULL) {
 					double rgb[4];
-					(void)gmt_get_rgb_from_z (GMT, P, Zin->table[0]->segment[0]->data[0][seg], rgb);
+					(void)gmt_get_rgb_from_z (GMT, P, z_for_cpt[seg], rgb);
 					if (Ctrl->Z.mode & 1) {	/* To be used in polygon or symbol outline */
 						gmt_M_rgb_copy (current_pen.rgb, rgb);
 						gmt_setpen (GMT, &current_pen);
