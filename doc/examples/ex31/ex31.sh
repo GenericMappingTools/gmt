@@ -8,8 +8,13 @@
 
 # set AWK to awk if undefined
 AWK=${AWK:-awk}
+# Path to current directory
+EX31DIR=$(dirname $0)
 
 gmt begin ex31
+	# Set FONTPATH used in image conversion
+	gmt set PS_CONVERT="C-sFONTPATH=${EX31DIR}/fonts"
+
 	# create file PSL_custom_fonts.txt in current working directory
 	# and add PostScript font names of Linux Biolinum and Libertine
 	$AWK '{print $1, 0.700, 0}' <<- EOF > PSL_custom_fonts.txt
