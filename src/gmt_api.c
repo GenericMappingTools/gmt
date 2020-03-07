@@ -10348,15 +10348,11 @@ GMT_LOCAL bool operator_takes_dataset (struct GMT_OPTION *opt, int *geometry) {
 		*geometry = GMT_IS_POLY;
 		return true;
 	}
-	if (!strncmp (opt->next->arg, "POINT", 5U)) {	/* Compute mean location */
+	if (!strncmp (opt->next->arg, "POINT", 5U) || !strncmp (opt->next->arg, "PDIST", 5U)) {
 		*geometry = GMT_IS_POINT;
 		return true;	/* One of the dataset-requiring operators */
 	}
-	if (!strncmp (&opt->next->arg[1], "PDIST", 5U)) {	/* Distance to points of some sort */
-		*geometry = GMT_IS_POINT;
-		return true;	/* One of the dataset-requiring operators */
-	}
-	if (!strncmp (&opt->next->arg[1], "PDIST", 5U)) {	/* Distance to lines of some sort */
+	if (!strncmp (opt->next->arg, "LDIST", 5U)) {	/* Distance to lines of some sort */
 		*geometry = GMT_IS_LINE;
 		return true;	/* One of the dataset-requiring operators */
 	}
