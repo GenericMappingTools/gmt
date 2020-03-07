@@ -2628,7 +2628,7 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		return;
 	}
 	gmt_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL|GMT_IO_RESET, NULL, info->ASCII_file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator INSIDE reading file %s!\n", info->ASCII_file);
 		info->error = GMT->parent->error;
 		return;
@@ -2883,7 +2883,7 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 		info->error = GMT->parent->error;
 		return NULL;
 	}
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_READ_NORMAL|GMT_IO_RESET, NULL, info->ASCII_file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator %s reading file %s!\n", op, info->ASCII_file);
 		info->error = GMT->parent->error;
 		return NULL;
