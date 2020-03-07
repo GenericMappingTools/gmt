@@ -10336,6 +10336,33 @@ GMT_LOCAL int api_B_custom_annotations (struct GMT_OPTION *opt) {
 	return 1;
 }
 
+GMT_LOCAL bool operator_takes_dataset (struct GMT_OPTION *opt, int *geometry) {
+	/* Check if the sequence ? OPERATOR is one that requires reading a dataset instead of a grid.
+	 * Here, opt is an input argument with value ? and we inquire about the next option (the operator).
+	 * geometry is already set to GMT_IS_GRID */
+	if (opt == NULL) return false;	/* Just being paranoid */
+	if (opt->next == NULL) return false;	/* Just being extra paranoid */
+	if (opt->next->option != GMT_OPT_INFILE) return false;	/* Cannot be an operator */
+	if (!opt->next->arg[0]) return false;	/* No argument given */
+	if (!strncmp (opt->next->arg, "INSIDE", 6U)) {	/* Are nodes inside/outside a polygon */
+		*geometry = GMT_IS_POLY;
+		return true;
+	}
+	if (!strncmp (opt->next->arg, "POINT", 5U)) {	/* Compute mean location */
+		*geometry = GMT_IS_POINT;
+		return true;	/* One of the dataset-requiring operators */
+	}
+	if (!strncmp (&opt->next->arg[1], "PDIST", 5U)) {	/* Distance to points of some sort */
+		*geometry = GMT_IS_POINT;
+		return true;	/* One of the dataset-requiring operators */
+	}
+	if (!strncmp (&opt->next->arg[1], "PDIST", 5U)) {	/* Distance to lines of some sort */
+		*geometry = GMT_IS_LINE;
+		return true;	/* One of the dataset-requiring operators */
+	}
+	return false;	/* No, something else */
+}
+
 #define api_is_required_IO(key) (key == API_PRIMARY_INPUT || key == API_PRIMARY_OUTPUT)			/* Returns true if this is a primary input or output item */
 #define api_not_required_io(key) ((key == API_PRIMARY_INPUT || key == API_SECONDARY_INPUT) ? API_SECONDARY_INPUT : API_SECONDARY_OUTPUT)	/* Returns the optional input or output flag */
 
@@ -10425,7 +10452,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int sdir, k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
-	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false;
+	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false, is_grdmath = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
@@ -10478,7 +10505,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got quoted or decorate line and must strip argument %s from colon to end\n", opt->arg);
 	}
 	/* 1c. Check if this is either gmtmath or grdmath which both use the special = outfile syntax and replace that by -=<outfile> */
-	else if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
+	else if (!strncmp (module, "gmtmath", 7U) || (is_grdmath = (strncmp (module, "grdmath", 7U) == 0))) {
 		struct GMT_OPTION *delete = NULL;
 		for (opt = *head; opt && opt->next; opt = opt->next) {	/* Here opt will end up being the last option */
 			if (!strcmp (opt->arg, "=")) {
@@ -10682,6 +10709,8 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 				GMT_Report (API, GMT_MSG_WARNING, "GMT_Encode_Options: Got a -<option>? argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
+			if (is_grdmath && operator_takes_dataset (opt, &geometry))
+				family = GMT_IS_DATASET;
 			info[n_items].mode = (k >= 0 && api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
 			if (k >= 0 && key[k][K_DIR] != '-')
 				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Make sure required { becomes ( and } becomes ) so we don't add them later */
