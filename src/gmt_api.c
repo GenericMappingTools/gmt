@@ -10411,11 +10411,10 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *      1. -Z is given
 	 *      2. -Z contains ALL the modifiers +a, +b, +c, ...
 	 *      3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
-	 *   The Z magic is a bit confusing so here are several examples:
+	 *   The Z magic is a bit confusing so here is an example:
 	 *   1. grdcontour normally writes PostScript but grdcontour -D will instead export data to std (or a file set by -D), so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and
 	 *      thus allows for a data set export instead.
-	 *   2. pscoast ">TE+w-rR" means if -E given with modifier +w and one of +r or +R are then set to >T}.
 	 *
 	 *   After processing, all magic key sequences are set to "---" to render them inactive.
 	 *
@@ -10635,6 +10634,15 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	}
 	n_alloc = n_keys;	/* Initial number of allocations */
 	info = calloc (n_alloc, sizeof (struct GMT_RESOURCE));
+
+	if (!strncmp (module, "psrose", 6U) && (opt = GMT_Find_Option (API, 'E', *head)) && strcmp (opt->arg, "m")) {
+		/* Giving any -E option but -Em means we have either input or output so must update the key accordingly */
+		if (strstr (opt->arg, "+w")) {	/* Writing output to file */
+			k = api_get_key (API, 'E', key, n_keys);	/* We know this key exist so k is not -1 */
+			gmt_M_str_free (key[k]);
+			key[k] = strdup ("ED)=w");	/* Require key to select output to file given via -E+w<file> */
+		}
+	}
 
 	/* 4. Determine position of file args given as ? or via missing arg (proxy for input matrix) */
 	/* Note: All explicit objects must be given after all implicit matrices have been listed */
