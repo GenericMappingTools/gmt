@@ -84,7 +84,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"grdrotater", "grdrotater", "spotter", "Finite rotation reconstruction of geographic grid", "<G{,FD(,GG},TD("},
 	{"grdspotter", "grdspotter", "spotter", "Create CVA grid from a gravity or topography grid", "<G{,AG(,DG),LG),GG}"},
 	{"hotspotter", "hotspotter", "spotter", "Create CVA grid from seamount locations", "<D{,GG}"},
-	{"originater", "originater", "spotter", "Associate seamounts with nearest hotspot point sources", "<D{,FD(,>D}"},
+	{"originater", "originater", "spotter", "Associate seamounts with nearest hotspot point sources", "<D{,FD(=,>D}"},
 	{"polespotter", "polespotter", "spotter", "Find stage poles given fracture zones and abyssal hills", "AD(,CD),FD(,GG},LD)"},
 	{"rotconverter", "rotconverter", "spotter", "Manipulate total reconstruction and stage rotations", ">D}"},
 	{"rotsmoother", "rotsmoother", "spotter", "Get mean rotations and covariance matrices from set of finite rotations", "<D{,>D}"},

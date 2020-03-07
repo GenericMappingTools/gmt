@@ -48,7 +48,7 @@
 #define THIS_MODULE_MODERN_NAME	"surface_mt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
-#define THIS_MODULE_KEYS	"<D{,DD(,LG(,GG}"
+#define THIS_MODULE_KEYS	"<D{,DD(=,LG(,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVabdefhirs" GMT_ADD_x_OPT GMT_OPT("FH")
 
