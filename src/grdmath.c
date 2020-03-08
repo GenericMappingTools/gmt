@@ -2628,7 +2628,8 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		return;
 	}
 	gmt_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL|GMT_IO_RESET, NULL, info->ASCII_file, NULL)) == NULL) {
+	/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL|GMT_IO_RESET, NULL, info->ASCII_file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator INSIDE reading file %s!\n", info->ASCII_file);
 		info->error = GMT->parent->error;
 		return;
@@ -2883,7 +2884,8 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 		info->error = GMT->parent->error;
 		return NULL;
 	}
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_READ_NORMAL|GMT_IO_RESET, NULL, info->ASCII_file, NULL)) == NULL) {
+	/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, geometry, GMT_READ_NORMAL|GMT_IO_RESET, NULL, info->ASCII_file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator %s reading file %s!\n", op, info->ASCII_file);
 		info->error = GMT->parent->error;
 		return NULL;
@@ -6247,7 +6249,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		if (status != GRDMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		in_file = opt->arg;
 		/* Read but request IO reset since the file (which may be a memory reference) will be read again later */
-		if ((G_in = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_IO_RESET, NULL, in_file, NULL)) == NULL) {	/* Get header only */
+		/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
+		if ((G_in = GMT_Read_Data (API, GMT_IS_GRID|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_IO_RESET, NULL, in_file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	}
@@ -6268,7 +6271,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		}
 		if (subset) {	/* Gave -R and files: Read the subset to set the header properly */
 			gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, in_file, G_in) == NULL) {	/* Get subset only */
+			/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
+			if (GMT_Read_Data (API, GMT_IS_GRID|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, in_file, G_in) == NULL) {	/* Get subset only */
 				Return (API->error);
 			}
 		}
@@ -6559,7 +6563,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			}
 			else if (op == GRDMATH_ARG_IS_FILE) {		/* Filename given */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "%s ", opt->arg);
-				if ((stack[nstack]->G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, wesn, opt->arg, NULL)) == NULL) {	/* Get header only */
+				/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
+				if ((stack[nstack]->G = GMT_Read_Data (API, GMT_IS_GRID|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, wesn, opt->arg, NULL)) == NULL) {	/* Get header only */
 					Return (API->error);
 				}
 				if (!subset && !gmt_M_grd_same_shape (GMT, stack[nstack]->G, info.G)) {
@@ -6571,7 +6576,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "grid files do not cover the same area!\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
-				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, stack[nstack]->G) == NULL) {	/* Get data */
+				/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
+				if (GMT_Read_Data (API, GMT_IS_GRID|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, stack[nstack]->G) == NULL) {	/* Get data */
 					Return (API->error);
 				}
 			}

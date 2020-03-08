@@ -203,7 +203,7 @@ GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_gr
 #if 1
 GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
 	/* Algorithm 2: Replace NaNs with a spline */
-	char input[GMT_STR16] = {""}, output[GMT_STR16] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
+	char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
 	unsigned int row, col, row_hole, col_hole, mode, d_limit[4], n_constraints;
 	uint64_t node, node_hole, k = 0, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 	double *x = NULL, *y = NULL;

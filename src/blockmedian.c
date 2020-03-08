@@ -368,14 +368,15 @@ GMT_LOCAL void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, u
 
 int GMT_blockmedian (void *V_API, int mode, void *args) {
 	int error = 0;
-	bool do_extra = false, duplicate_col;
+	bool do_extra = false, duplicate_col, bail = false;
 	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
 	uint64_t n_read, nz, n_pitched, n_cells_filled, w_col, i_col = 0, sid_col;
 	size_t n_alloc = 0, nz_alloc = 0;
 	unsigned int row, col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
-	unsigned int k, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
+	unsigned int k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, half_dx, *in = NULL, *z_tmp = NULL;
 	char format[GMT_LEN512] = {""}, *old_format = NULL, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "q25", "q75", "h", "w", ""}, *code[BLK_N_FIELDS];
+	char file[PATH_MAX] = {""};
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL, *G = NULL, *GridOut[BLK_N_FIELDS];
@@ -527,10 +528,15 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	if (n_read == 0) {	/* Blank/empty input files */
 		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
-		Return (GMT_NOERROR);
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
 	}
-	if (n_pitched == 0) {	/* No points inside region */
+	else if (n_pitched == 0) {	/* No points inside region */
 		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
+	}
+	if (bail) {	/* Time to quit */
 		Return (GMT_NOERROR);
 	}
 
@@ -545,7 +551,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */
 		char *remarks[BLK_N_FIELDS] = {"Median value per bin", "L1 scale per bin", "Lowest value per bin", "25% quartile", "75% quartile", "Highest value per bin", "Weight per bin"};
-		for (k = NF = 0; k < BLK_N_FIELDS; k++) {
+		for (k = kk = 0; k < BLK_N_FIELDS; k++) {
 			if (!Ctrl->A.selected[k]) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
 			code[NF]  = fcode[k];
@@ -557,7 +563,20 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
 			for (node = 0; node < G->header->size; node++)
 				GridOut[NF]->data[node] = GMT->session.f_NaN;
+			if (API->external && n_read == 0) {	/* Write the empty grids back to the external caller */
+				if (strstr (Ctrl->G.file[kk], "%s"))
+					sprintf (file, Ctrl->G.file[kk], code[k]);
+				else
+					strncpy (file, Ctrl->G.file[kk], PATH_MAX-1);
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, GridOut[k]) != GMT_NOERROR) {
+					Return (API->error);
+				}
+			}
+			if (Ctrl->G.n > 1) kk++;	/* Only true for APIs */
 			NF++;	/* Number of actual field grids */
+		}
+		if (API->external && n_read == 0) {	/* Delayed return */
+			Return (GMT_NOERROR);
 		}
 	}
 	else {	/* Get ready for rec-by-rec output */
@@ -570,6 +589,8 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calculating block medians\n");
 
 	if (emode) {					/* Index column last, with weight col just before */
 		i_col = w_col--;
@@ -648,8 +669,6 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	if (do_extra) gmt_M_free (GMT, z_tmp);
 
 	if (Ctrl->G.active) {	/* Writes the grid(s) */
-		unsigned int kk;
-		char file[PATH_MAX] = {""};
 		for (k = kk = 0; k < NF; k++) {
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);

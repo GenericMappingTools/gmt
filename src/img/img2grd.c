@@ -407,7 +407,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	int16_t *row = NULL;
 	uint16_t *u2 = NULL;
 
-	char infile[PATH_MAX] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_STR16] = {""}, output[PATH_MAX] = {""};
+	char infile[PATH_MAX] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_VF_LEN] = {""}, output[PATH_MAX] = {""};
 	char z_units[GMT_GRID_UNIT_LEN80] = {""}, exact_R[GMT_LEN256] = {""};
 
 	FILE *fp = NULL;

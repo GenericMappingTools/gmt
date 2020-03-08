@@ -834,7 +834,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 			uint64_t row, col, n = 0;
 			double inc[2], lon, lat;
-			char output[GMT_STR16], input[GMT_STR16], cmd[GMT_LEN128] = {""};
+			char output[GMT_VF_LEN], input[GMT_VF_LEN], cmd[GMT_LEN128] = {""};
 			struct GMT_GRID *G = NULL;
 			struct GMT_DATASET *Din = NULL, *Dout = NULL;
 			struct GMT_DATASEGMENT *S = NULL;
@@ -927,7 +927,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	char res = file[strlen(file)-8];
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
-	char grid[GMT_STR16] = {""}, cmd[GMT_LEN256] = {""}, tag[4] = {"01s"};
+	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""}, tag[4] = {"01s"};
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	tag[1] = res;
