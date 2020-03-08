@@ -49,8 +49,6 @@ else
 	grep "#define THIS_MODULE_LIB		" *.c | gawk -F: '{print $1}' | sort -u > ${TMPDIR}/tmp.lis
 	LIB_STRING="GMT $LIB: The $LIB modules of the Generic Mapping Tools"
 	DO_RST=0
-	#echo "Error: Tag must be either core or supplements"
-	#exit
 fi
 rm -f ${TMPDIR}/MNAME.lis ${TMPDIR}/CNAME.lis ${TMPDIR}/LIB.lis ${TMPDIR}/PURPOSE.lis ${TMPDIR}/KEYS.lis ${TMPDIR}/all.lis
 while read program; do
