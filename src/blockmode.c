@@ -488,7 +488,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	int way, error = 0;
 
 	unsigned int row, col, emode = 0, n_input, n_output;
-	unsigned int k, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
+	unsigned int k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id = 0;
@@ -500,6 +500,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	double z_min = DBL_MAX, z_max = -DBL_MAX;
 
 	char format[GMT_LEN512] = {""}, *old_format = NULL, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
+	char file[PATH_MAX] = {""};
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL, *G = NULL, *GridOut[BLK_N_FIELDS];
@@ -650,17 +651,20 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (n_read == 0) {	/* Blank/empty input files */
-		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
-		Return (GMT_NOERROR);
-	}
-	if (n_pitched == 0) {	/* No points inside region */
-		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
-		Return (GMT_NOERROR);
-	}
 	if (Ctrl->D.active && Ctrl->D.width == 0.0 && !is_integer) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -D: No bin width specified and data are not integers\n");
 		Return (GMT_PARSE_ERROR);
+	}
+
+	if (n_read == 0) {	/* Blank/empty input files */
+		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
+		if (!(API->external && Ctrl->G.active)) {
+			Return (GMT_NOERROR);
+		}
+	}
+	else if (n_pitched == 0) {	/* No points inside region */
+		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
+		Return (GMT_NOERROR);
 	}
 	if (n_pitched < n_alloc) {
 		n_alloc = n_pitched;
@@ -673,7 +677,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */
 		char *remarks[BLK_N_FIELDS] = {"Median value per bin", "L1 scale per bin", "Lowest value per bin", "Highest value per bin", "Weight per bin"};
-		for (k = 0; k < BLK_N_FIELDS; k++) {
+		for (k = kk = 0; k < BLK_N_FIELDS; k++) {
 			if (!Ctrl->A.selected[k]) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
 			code[NF]  = fcode[k];
@@ -685,7 +689,20 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
 			for (node = 0; node < G->header->size; node++)
 				GridOut[NF]->data[node] = GMT->session.f_NaN;
+			if (API->external && n_read == 0) {	/* Write the empty grids back to the external caller */
+				if (strstr (Ctrl->G.file[kk], "%s"))
+					sprintf (file, Ctrl->G.file[kk], code[k]);
+				else
+					strncpy (file, Ctrl->G.file[kk], PATH_MAX-1);
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, GridOut[k]) != GMT_NOERROR) {
+					Return (API->error);
+				}
+			}
+			if (Ctrl->G.n > 1) kk++;	/* Only true for APIs */
 			NF++;	/* Number of actual field grids */
+		}
+		if (API->external && n_read == 0) {	/* Delayed return */
+			Return (GMT_NOERROR);
 		}
 	}
 	else {	/* Get ready for rec-by-rec output */
@@ -696,6 +713,8 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calculating block modes\n");
 
 	if (emode) {					/* Index column last, with weight col just before */
 		i_col = w_col--;
