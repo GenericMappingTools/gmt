@@ -368,7 +368,7 @@ GMT_LOCAL void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, u
 
 int GMT_blockmedian (void *V_API, int mode, void *args) {
 	int error = 0;
-	bool do_extra = false, duplicate_col;
+	bool do_extra = false, duplicate_col, bail = false;
 	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
 	uint64_t n_read, nz, n_pitched, n_cells_filled, w_col, i_col = 0, sid_col;
 	size_t n_alloc = 0, nz_alloc = 0;
@@ -528,12 +528,15 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	if (n_read == 0) {	/* Blank/empty input files */
 		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
-		if (!(API->external && Ctrl->G.active)) {
-			Return (GMT_NOERROR);
-		}
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
 	}
 	else if (n_pitched == 0) {	/* No points inside region */
 		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
+	}
+	if (bail) {	/* Time to quit */
 		Return (GMT_NOERROR);
 	}
 

@@ -483,7 +483,7 @@ GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int em
 #define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); gmt_M_free (GMT, data); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_blockmode (void *V_API, int mode, void *args) {
-	bool mode_xy, do_extra = false, is_integer, duplicate_col;
+	bool mode_xy, do_extra = false, is_integer, duplicate_col, bail = false;
 
 	int way, error = 0;
 
@@ -658,12 +658,15 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	if (n_read == 0) {	/* Blank/empty input files */
 		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
-		if (!(API->external && Ctrl->G.active)) {
-			Return (GMT_NOERROR);
-		}
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
 	}
 	else if (n_pitched == 0) {	/* No points inside region */
 		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
+	}
+	if (bail) {	/* Time to quit */
 		Return (GMT_NOERROR);
 	}
 	if (n_pitched < n_alloc) {

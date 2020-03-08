@@ -284,7 +284,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
 	unsigned int row, col, n_input, k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0}, field[BLK_N_FIELDS];
 	int error;
-	bool use_xy, use_weight, duplicate_col;
+	bool use_xy, use_weight, duplicate_col, bail = false;
 	double weight, weight_s2 = 0, weight_pos, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;
 	char format[GMT_LEN512] = {""}, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
 	char file[PATH_MAX] = {""};
@@ -452,12 +452,16 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	if (n_read == 0) {	/* Blank/empty input files */
 		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
-		if (!(API->external && Ctrl->G.active)) {
-			Return (GMT_NOERROR);
-		}
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
 	}
 	else if (n_pitched == 0) {	/* No points inside region */
 		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
+	}
+
+	if (bail) {	/* Time to quit */
 		Return (GMT_NOERROR);
 	}
 
