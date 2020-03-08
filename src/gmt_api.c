@@ -2427,7 +2427,7 @@ GMT_LOCAL int api_decode_id (const char *filename) {
 	int object_ID = GMT_NOTSET;
 
 	if (gmt_M_file_is_memory (filename)) {	/* Passing ID of a registered object */
-		if (sscanf (&filename[22], "%d", &object_ID) != 1) return (GMT_NOTSET);	/* Get the object ID unless we fail scanning */
+		if (sscanf (&filename[GMTAPI_OBJECT_ID_START], "%d", &object_ID) != 1) return (GMT_NOTSET);	/* Get the object ID unless we fail scanning */
 	}
 	return (object_ID);	/* Returns GMT_NOTSET if no embedded ID was found */
 }
@@ -6190,33 +6190,30 @@ GMT_LOCAL char api_debug_geometry_code (unsigned int geometry) {
 }
 
 /*! . */
-GMT_LOCAL char  *api_debug_vf_name (unsigned int module_input, unsigned int direction, unsigned int family, unsigned int actual_family, unsigned int geometry, unsigned int messenger, int object_ID) {
-	static char string[GMT_VF_LEN] = {""}, YN[2] = {'N', 'Y'};
-	/* A more human-readable interpretation of the integer codes in the actual cirtual filename */
-	sprintf (string, "@GMTAPI@-%c-%c-%s-%s-%c-%c-%06d", (module_input) ? 'P' : 'S', (direction == GMT_IN) ? 'I' : 'O', GMT_family_abbrev[family], GMT_family_abbrev[actual_family], api_debug_geometry_code (geometry), YN[messenger], object_ID);
-	return (string);
-}
-
-/*! . */
 GMT_LOCAL int api_encode_id (struct GMTAPI_CTRL *API, unsigned int module_input, unsigned int direction, unsigned int family, unsigned int actual_family, unsigned int geometry, unsigned int messenger, int object_ID, char *filename) {
-	/* Creates a filename with the embedded object information .  Space in filename must exist.
-	 * Name template: @GMTAPI@-#-#-#-#-##-#-###### where all # are integers.
+	/* Creates a virtual filename with the embedded object information .  Space for up to GMT_VF_LEN characters in filename must exist.
+	 * Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.
+	 * S stands for P(rimary) or S(econdary) input or output object (command line is primary, files via options are secondary).
+	 * D stands for Direction and is either I(n) or O(ut).
+	 * F stands for Family and is one of D(ataset), G(rid), I(mage), C(PT), X(PostScript), M(atrix), V(ector), U(ndefined).
+	 * A stands for Actual Family and is one of D, G, I, C, X, M, V, and U as well.
+	 *   Actual family may differ from family if a Dataset is actually passed as a Matrix, for instance.
+	 * G stands for Geometry and is one of (poin)T, L(ine), P(olygon), C(Line|Polygon), A(POint|Line|Polygon), G(rid), N(one), X(text), or U(ndefined).
+	 * M stands for Messenger and is either Y(es) or N(o).
 	 * Limitation:  object_ID must be <= GMTAPI_MAX_ID */
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (!filename) return_error (API, GMT_MEMORY_ERROR);		/* Oops, cannot write to that variable */
-	if (object_ID == GMT_NOTSET) return_error (API, GMT_NOT_A_VALID_ID);	/* ID is not set yet */
+	if (object_ID <= GMT_NOTSET) return_error (API, GMT_NOT_A_VALID_ID);	/* ID is not set yet */
 	if (object_ID > GMTAPI_MAX_ID) return_error (API, GMT_ID_TOO_LARGE);	/* ID is too large to fit in %06d format below */
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
 	if (!valid_input_family (family))  return_error (API, GMT_NOT_A_VALID_FAMILY);
 	if (!valid_actual_family (actual_family))  return_error (API, GMT_NOT_A_VALID_FAMILY);
 	if (api_validate_geometry (API, family, geometry)) return_error (API, GMT_BAD_GEOMETRY);
-	if (!(messenger == 0 || messenger == 1)) return_error (API, GMT_BAD_GEOMETRY);
-	if (module_input) module_input = 1;	/* It may be GMT_VIA_MODULE_INPUT but here we want 0 or 1 */
+	if (!(messenger == 0 || messenger == 1)) return_error (API, GMT_RUNTIME_ERROR);
+	if (module_input) module_input = 1;	/* It may be GMT_VIA_MODULE_INPUT but here we want just 0 or 1 */
 
-	sprintf (filename, "@GMTAPI@-%d-%d-%d-%d-%02d-%d-%06d", module_input, direction, family, actual_family, geometry, messenger, object_ID);	/* Place the object ID in the special GMT API format */
-	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG))
-		GMT_Report (API, GMT_MSG_DEBUG, "Expanded VirtualFile Name: %s\n", api_debug_vf_name (module_input, direction, family, actual_family, geometry, messenger, object_ID));
+	sprintf (filename, "@GMTAPI@-%c-%c-%s-%s-%c-%c-%06d", (module_input) ? 'P' : 'S', (direction == GMT_IN) ? 'I' : 'O', GMT_family_abbrev[family], GMT_family_abbrev[actual_family], api_debug_geometry_code (geometry), (messenger) ? 'Y' : 'N', object_ID);
 	return_error (API, GMT_NOERROR);	/* No error encountered */
 }
 

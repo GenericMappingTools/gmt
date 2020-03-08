@@ -82,7 +82,9 @@ enum GMT_enum_api {
 	GMT_PAD_DEFAULT = 2,	/* Default is 2 rows and 2 cols for grid padding */
 	GMT_VF_LEN	= 32,	/* Bytes needed to hold the @GMTAPI@-* virtual file names */
 	/* For API backwards compatibility only */
-	GMT_STR16	= 16,	/* Bytes needed to hold the @GMTAPI@-###### resource names */
+#ifdef GMT_BACKWARDS_API
+	GMT_STR16	= 32,	/* Bytes needed to hold the @GMTAPI@-* virtual file names */
+#endif
 };
 
 /*! These data primitive identifiers are as follows: */
