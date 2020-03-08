@@ -29,7 +29,7 @@ int main () {
 
 	int status = 0;				/* Status code from GMT API */
 	char cmd[BUFSIZ] = {""};			/* Command string */
-	char string[GMT_STR16] = {""};		/* Encoded ID */
+	char string[GMT_VF_LEN] = {""};		/* Encoded ID */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct GMT_POSTSCRIPT *PS = NULL;	/* Holds our plot */
 

@@ -175,6 +175,7 @@ EXTERN_MSC float GMT_Get_Version   (void *API, unsigned int *major, unsigned int
 EXTERN_MSC void *GMT_Get_Ctrl	   (void *API);
 
 /* These 8 functions are provided for backwards compatibility but are considered obsolete as of 6 */
+#ifdef GMT_BACKWARDS_API
 EXTERN_MSC void *GMT_Get_Data      (void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC int GMT_Put_Data        (void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC void *GMT_Retrieve_Data (void *API, int object_ID);
@@ -183,6 +184,7 @@ EXTERN_MSC int GMT_Get_ID          (void *API, unsigned int family, unsigned int
 EXTERN_MSC int GMT_Get_Value       (void *API, const char *arg, double *par);
 EXTERN_MSC int GMT_Get_Family	   (void *API, unsigned int direction, struct GMT_OPTION *head);
 EXTERN_MSC int GMT_Status_IO       (void *API, unsigned int mode);
+#endif
 
 #ifdef __cplusplus
 }

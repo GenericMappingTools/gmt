@@ -35,7 +35,7 @@ int main () {
 	struct GMTAPI_CTRL *API = NULL;			/* GMT API control structure */
 
 	int in_grdcut_ID, out_grdcut_ID;
-	char *in_grid = "t.nc", *out_grid = "new.nc", string[GMT_STR16] = {""}, arg[GMT_LEN256] = {""};
+	char *in_grid = "t.nc", *out_grid = "new.nc", string[GMT_VF_LEN] = {""}, arg[GMT_LEN256] = {""};
 	double w = 2.0, e = 4.0, s = 1.0, n = 3.0;	/* Hardwired region for test */
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
 

@@ -161,7 +161,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	char *method[] = {"FILE", "STREAM", "FDESC", "COPY", "REF"};
 	char *ifile[] = {"dtesti.txt", "gtesti.nc", "itesti.jpg", "ctesti.cpt", "ptesti.ps", "ttesti.txt", "mtesti.bin", "vtesti.bin", "-"};
 	char *ofile[] = {"dtesto.txt", "gtesto.nc", "itesto.jpg", "ctesto.cpt", "ptesto.ps", "ttesto.txt", "mtesto.bin", "vtesto.bin", "-"};
-	char string[GMT_STR16];
+	char string[GMT_VF_LEN];
 
 	FILE *fp = NULL;
 	int *fdp = NULL, fd = 0;

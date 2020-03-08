@@ -80,7 +80,9 @@ enum GMT_enum_api {
 	GMT_USAGE	= 0,	/* Want to report full program usage message */
 	GMT_SYNOPSIS	= 1,	/* Just want the synopsis of usage */
 	GMT_PAD_DEFAULT = 2,	/* Default is 2 rows and 2 cols for grid padding */
-	GMT_STR16	= 16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
+	GMT_VF_LEN	= 32,	/* Bytes needed to hold the @GMTAPI@-* virtual file names */
+	/* For API backwards compatibility only */
+	GMT_STR16	= 16,	/* Bytes needed to hold the @GMTAPI@-###### resource names */
 };
 
 /*! These data primitive identifiers are as follows: */
@@ -455,6 +457,7 @@ enum GMT_enum_geometry {
 	GMT_IS_POINT	= 1U,
 	GMT_IS_LINE	= 2U,
 	GMT_IS_POLY	= 4U,
+	GMT_IS_LP	= 6U,	/* Could be any one of LINE or POLY */
 	GMT_IS_PLP	= 7U,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8U,
 	GMT_IS_NONE	= 16U,	/* Non-geographical items like color palettes */
@@ -779,7 +782,7 @@ struct GMT_RESOURCE {	/* Information related to passing resources between GMT an
 	enum GMT_enum_geometry geometry;/* One of the recognized GMT geometries */
 	enum GMT_enum_std direction;	/* Either GMT_IN or GMT_OUT */
 	struct GMT_OPTION *option;	/* Pointer to the corresponding module option */
-	char name[GMT_STR16];		/* Virtual file name for resource */
+	char name[GMT_VF_LEN];		/* Virtual file name for resource */
 	int pos;			/* Corresponding index into external object in|out arrays */
 	int mode;			/* Either primary (0) or secondary (1) resource */
 	void *object;			/* Pointer to the actual GMT object */

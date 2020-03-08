@@ -34,7 +34,7 @@ int main () {
 	uint64_t row, col, ij;
 	struct GMTAPI_CTRL *API = NULL;			/* GMT API control structure */
 	float x[4] = {1.0f, 2.0f, 3.0f, 4.0f}, y[4] = {0.5f, 1.5f, 2.5f, 3.5f}, z[4] = {3.3f, 8.1f, 2.9f, 4.4f};
-	char i_string[GMT_STR16], o_string[GMT_STR16], buffer[GMT_BUFSIZ];
+	char i_string[GMT_VF_LEN], o_string[GMT_VF_LEN], buffer[GMT_BUFSIZ];
 	struct GMT_VECTOR *Vi = NULL, *Vo = NULL;
 	struct GMT_GRID *G = NULL;
 

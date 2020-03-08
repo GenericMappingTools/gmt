@@ -394,7 +394,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	char cmd[GMT_BUFSIZ] = {""}, level_dir[PATH_MAX] = {""}, Zgrid[PATH_MAX] = {""}, Igrid[PATH_MAX] = {""};
 	char W[GMT_LEN16] = {""}, E[GMT_LEN16] = {""}, S[GMT_LEN16] = {""}, N[GMT_LEN16] = {""}, file[PATH_MAX] = {""};
 	char DataGrid[PATH_MAX] = {""}, IntensGrid[PATH_MAX] = {""}, path[PATH_MAX] = {""}, im_arg[16] = {""};
-	char region[GMT_LEN128] = {""}, ps_cmd[GMT_LEN128] = {""}, cfile[GMT_STR16] = {""}, K[4] = {""}, *cmd_args = NULL;
+	char region[GMT_LEN128] = {""}, ps_cmd[GMT_LEN128] = {""}, cfile[GMT_VF_LEN] = {""}, K[4] = {""}, *cmd_args = NULL;
 
 	FILE *fp = NULL;
 	struct GMT_DATASET *C = NULL;
@@ -694,7 +694,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 				if (use_tile) {	/* Found data inside this tile, make plot and rasterize */
 					/* Build the grdimage command to make the PostScript plot */
-					char z_data[GMT_STR16] = {""}, psfile[PATH_MAX] = {""};
+					char z_data[GMT_VF_LEN] = {""}, psfile[PATH_MAX] = {""};
 					/* Open the grid subset as a virtual file we can pass to grdimage */
 					if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, T, z_data) == GMT_NOTSET) {
 						GMT_Report (API, GMT_MSG_ERROR, "Unable to open grid tile as virtual file!\n");

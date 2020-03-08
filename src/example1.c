@@ -3,8 +3,8 @@ int main () {
     void *API;                        /* The API control structure */
     struct GMT_DATASET *D = NULL;     /* Structure to hold input dataset */
     struct GMT_GRID *G = NULL;        /* Structure to hold output grid */
-    char input[GMT_STR16] = {""};     /* String to hold virtual input filename */
-    char output[GMT_STR16] = {""};    /* String to hold virtual output filename */
+    char input[GMT_VF_LEN] = {""};     /* String to hold virtual input filename */
+    char output[GMT_VF_LEN] = {""};    /* String to hold virtual output filename */
     char args[128] = {""};            /* String to hold module command arguments */
 
     /* Initialize the GMT session */

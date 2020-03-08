@@ -1512,7 +1512,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
 		}
 		else if (gmt_count_char (GMT, Ctrl->T.file, '/') == 2) {	/* Give a vector specification -Tmin/max/inc, call gmtmath */
-			char output[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""};
+			char output[GMT_VF_LEN] = {""}, cmd[GMT_LEN128] = {""};
 			unsigned int V = GMT->current.setting.verbose;
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, NULL, output) == GMT_NOTSET) {
 				Return (API->error);

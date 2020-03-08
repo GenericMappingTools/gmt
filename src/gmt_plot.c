@@ -7361,7 +7361,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (gmt_M_file_is_memory (&(Out->arg[k]))) {
 			write_to_mem = 2;
 			GMT->current.ps.memory = true;
-			strncpy (GMT->current.ps.memname, &(Out->arg[k]), GMT_STR16-1);
+			strncpy (GMT->current.ps.memname, &(Out->arg[k]), GMT_VF_LEN-1);
 		}
 		else {
 			if ((fp = PSL_fopen (PSL, &(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
