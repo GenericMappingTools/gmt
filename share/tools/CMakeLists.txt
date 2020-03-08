@@ -25,7 +25,6 @@ install (PROGRAMS
 	gmt_aliases.csh
 	gmt_links.sh
 	gmt_prepmex.sh
-	gmt_make_custom_code.sh
 	gmt_uninstall.sh
 	gmt_getremote.sh
 	ncdeflate
