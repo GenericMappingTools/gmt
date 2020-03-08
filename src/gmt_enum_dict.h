@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 230
+#define GMT_N_API_ENUMS 231
 
 GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -135,6 +135,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_GRID", 1},
 	{"GMT_IS_HOLE", 1},
 	{"GMT_IS_LINE", 2},
+	{"GMT_IS_LP", 6},
 	{"GMT_IS_MATRIX", 5},
 	{"GMT_IS_NONE", 16},
 	{"GMT_IS_OUTPUT", 1024},
@@ -208,7 +209,6 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_SESSION_NORMAL", 0},
 	{"GMT_SESSION_RUNMODE", 16},
 	{"GMT_SHORT", 2},
-	{"GMT_VF_LEN", 16},
 	{"GMT_STRICT_CONVERSION", 1024},
 	{"GMT_SYNOPSIS", 1},
 	{"GMT_TBL", 0},
@@ -222,6 +222,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ULONG", 7},
 	{"GMT_USAGE", 0},
 	{"GMT_USHORT", 3},
+	{"GMT_VF_LEN", 32},
 	{"GMT_VIA_CHAR", 100},
 	{"GMT_VIA_DOUBLE", 1000},
 	{"GMT_VIA_FLOAT", 900},
