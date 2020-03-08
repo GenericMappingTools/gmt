@@ -12602,7 +12602,8 @@ int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data) {
 #endif
 
 int GMT_Encode_ID (void *API, char *filename, int object_ID) {
-	return (api_encode_id (API, 0, 0, 0, 0, 0, 0, object_ID, filename));
+	/* Just pass nothing for all the extra arguments */
+	return (api_encode_id (API, 0, 0, 0, 0, GMT_IS_NONE, 0, object_ID, filename));
 }
 
 #ifdef FORTRAN_API
