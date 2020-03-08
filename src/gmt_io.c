@@ -7288,9 +7288,6 @@ int gmt_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t
 	uint64_t col;
 	if (first && n_columns) {	/* First time we allocate the number of columns needed */
 		S->data = gmt_M_memory (GMT, NULL, n_columns, double *);
-#ifdef GMT_BACKWARDS_API
-		S->coord = S->data;
-#endif
 		S->min = gmt_M_memory (GMT, NULL, n_columns, double);
 		S->max = gmt_M_memory (GMT, NULL, n_columns, double);
 		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */

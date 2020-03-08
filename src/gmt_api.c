@@ -2710,11 +2710,7 @@ GMT_LOCAL struct GMT_PALETTE * api_import_palette (struct GMTAPI_CTRL *API, int 
 			break;
 	}
 	S_obj->status = GMT_IS_USED;	/* Mark as read */
-#ifdef GMT_BACKWARDS_API
-	P_obj->range = P_obj->data;
-	P_obj->patch = P_obj->bfn;
-	P_obj->cpt_flags = P_obj->mode;
-#endif
+
 	return (P_obj);	/* Pass back the palette */
 }
 
@@ -3891,10 +3887,6 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				D_obj->table = gmt_M_memory (GMT, D_obj->table, n_alloc, struct GMT_DATATABLE *);
 				gmt_M_memset (&(D_obj->table[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DATATABLE *);	/* Set new memory to NULL */
 			}
-#ifdef GMT_BACKWARDS_API
-			for (seg = 0; seg < D_obj->table[D_obj->n_tables-1]->n_segments; seg++)
-				D_obj->table[D_obj->n_tables-1]->segment[seg]->coord = D_obj->table[D_obj->n_tables-1]->segment[seg]->data;
-#endif
 		}
 		S_obj->alloc_mode = DH->alloc_mode;	/* Clarify allocation mode for this object */
 #if 0
@@ -4482,11 +4474,6 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 	if (!via) S_obj->resource = I_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 
-#ifdef GMT_BACKWARDS_API
-	I_obj->ColorMap = I_obj->colormap;
-	I_obj->nIndexedColors = I_obj->n_indexed_colors;
-#endif
-
 	return ((mode & GMT_DATA_ONLY) ? NULL : I_obj);	/* Pass back out what we have so far */
 }
 
@@ -4927,10 +4914,6 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 
-#ifdef GMT_BACKWARDS_API
-	G_obj->header->nx = G_obj->header->n_columns;
-	G_obj->header->ny = G_obj->header->n_rows;
-#endif
 	return (G_obj);	/* Pass back out what we have so far */
 }
 
@@ -12546,94 +12529,6 @@ int GMT_Get_Enum (void *V_API, char *key) {
 int GMT_Get_Enum_ (char *arg, int len) {
 	return (GMT_Get_Enum (GMT_FORTRAN, arg));
 }
-#endif
-
-#ifdef GMT_BACKWARDS_API
-/* Backwards compatibility for old API functions from 5.1-2 no longer in favor
- * as the Virtual File concept is much easier to understand and use. */
-
-/*! . */
-int GMT_Get_Value (void *V_API, const char *arg, double *par) {
-
-	return (GMT_Get_Values (V_API, arg, par, 999));
-}
-#ifdef FORTRAN_API
-int GMT_Get_Value_ (char *arg, double par[], int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Values (GMT_FORTRAN, arg, par, len));
-}
-#endif
-
-/*! . */
-void *GMT_Retrieve_Data (void *API, int object_ID) {
-	return api_retrieve_data (API, object_ID);
-}
-
-#ifdef FORTRAN_API
-void *GMT_Retrieve_Data_ (int *object_ID) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (api_retrieve_data (GMT_FORTRAN, *object_ID));
-}
-#endif
-
-void *GMT_Get_Data (void *API, int object_ID, unsigned int mode, void *data) {
-	return api_get_data (API, object_ID, mode, data);
-}
-
-#ifdef FORTRAN_API
-void *GMT_Get_Data_ (int *ID, int *mode, void *data) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (api_get_data (GMT_FORTRAN, *ID, *mode, data));
-}
-#endif
-
-int GMT_Put_Data (void *API, int object_ID, unsigned int mode, void *data) {
-	return api_put_data (API, object_ID, mode, data);
-}
-
-#ifdef FORTRAN_API
-int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (api_put_data (GMT_FORTRAN, *object_ID, *mode, data));
-}
-#endif
-
-int GMT_Encode_ID (void *API, char *filename, int object_ID) {
-	/* Just pass nothing for all the extra arguments */
-	return (api_encode_id (API, 0, 0, 0, 0, GMT_IS_NONE, 0, object_ID, filename));
-}
-
-#ifdef FORTRAN_API
-int GMT_Encode_ID_ (char *filename, int *object_ID, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Encode_ID (GMT_FORTRAN, filename, *object_ID));
-}
-#endif
-
-int GMT_Get_ID (void *API, unsigned int family, unsigned int direction, void *resource) {
-	return (api_get_id (API, family, direction, resource));
-}
-
-#ifdef FORTRAN_API
-int GMT_Get_ID_ (unsigned int *family, unsigned int *direction, void *resource) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_ID (GMT_FORTRAN, *family, *direction, resource));
-}
-#endif
-
-/* Changed name to always have a verb */
-
-int GMT_Status_IO (void *V_API, unsigned int mode) {
-	return (GMT_Get_Status (V_API, mode));
-}
-
-#ifdef FORTRAN_API
-int GMT_Status_IO_ (unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Status (GMT_FORTRAN, *mode));
-}
-#endif
-
 #endif
 
 /* A few more FORTRAN bindings moved from gmt_fft.c: */

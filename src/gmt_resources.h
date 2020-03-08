@@ -33,8 +33,6 @@
 #ifndef GMT_RESOURCES_H
 #define GMT_RESOURCES_H
 
-#define GMT_BACKWARDS_API	/* Try to be backwards compatible with API naming for now */
-
 #ifdef DOUBLE_PRECISION_GRID
 /* Build GMT using double-precicion for grids.  Untested and caveat emptor */
 typedef double gmt_grdfloat;
@@ -80,11 +78,7 @@ enum GMT_enum_api {
 	GMT_USAGE	= 0,	/* Want to report full program usage message */
 	GMT_SYNOPSIS	= 1,	/* Just want the synopsis of usage */
 	GMT_PAD_DEFAULT = 2,	/* Default is 2 rows and 2 cols for grid padding */
-	GMT_VF_LEN	= 32,	/* Bytes needed to hold the @GMTAPI@-* virtual file names */
-	/* For API backwards compatibility only */
-#ifdef GMT_BACKWARDS_API
-	GMT_STR16	= 32,	/* Bytes needed to hold the @GMTAPI@-* virtual file names */
-#endif
+	GMT_VF_LEN	= 32	/* Bytes needed to hold the @GMTAPI@-* virtual file names */
 };
 
 /*! These data primitive identifiers are as follows: */
@@ -416,10 +410,6 @@ struct GMT_GRID_HEADER {
 	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
 	int ProjRefEPSG;                /* To store a referencing system EPSG code */
 	void *hidden;                    /* Lower-level information for GMT use only */
-#ifdef GMT_BACKWARDS_API
-	uint32_t nx;
-	uint32_t ny;
-#endif
 };
 
 /* grd is stored in rows going from west (xmin) to east (xmax)
@@ -510,9 +500,6 @@ struct GMT_DATASEGMENT {    /* For holding segment lines in memory */
 	char *header;           /* Segment header (if applicable) */
 	char **text;            /* text beyond the data */
 	void *hidden;		/* Book-keeping variables "hidden" from the API */
-#ifdef GMT_BACKWARDS_API
-	double **coord;
-#endif
 };
 
 struct GMT_DATATABLE {	/* To hold an array of line segment structures and header information in one container */
@@ -624,11 +611,6 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	double wrap_length;		/* z-length of active CPT */
 	char **header;			/* Array with all CPT header records, if any) */		/* Content not counted by sizeof (struct) */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
-#ifdef GMT_BACKWARDS_API
-	struct GMT_LUT *range;
-	struct GMT_BFN *patch;
-	unsigned int cpt_flags;
-#endif
 };
 
 /*============================================================ */
@@ -648,10 +630,6 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	const char *color_interp;
 	double *x, *y;                  /* Vector of coordinates */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
-#ifdef GMT_BACKWARDS_API
-	int *ColorMap;
-	int nIndexedColors;
-#endif
 };
 
 /*==================================================================== */

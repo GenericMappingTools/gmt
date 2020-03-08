@@ -7112,9 +7112,6 @@ struct GMT_PALETTE * gmtlib_create_palette (struct GMT_CTRL *GMT, uint64_t n_col
 	PH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	PH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	PH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
-#ifdef GMT_BACKWARDS_API
-	P->range = P->data;
-#endif
 
 	return (P);
 }
@@ -8585,11 +8582,6 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	GMT->current.setting.color_model = (P->model | GMT_COLORINT);	/* So color interpolation will happen in the color system */
 
 	/* We leave BNF as we got them from the external API */
-#ifdef GMT_BACKWARDS_API
-	P->range = P->data;
-	P->patch = P->bfn;
-	P->cpt_flags = P->mode;
-#endif
 }
 
 /*! . */
