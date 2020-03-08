@@ -6197,6 +6197,8 @@ GMT_LOCAL int api_encode_id (struct GMTAPI_CTRL *API, unsigned int module_input,
 	if (module_input) module_input = 1;	/* It may be GMT_VIA_MODULE_INPUT but here we want just 0 or 1 */
 
 	sprintf (filename, "@GMTAPI@-%c-%c-%s-%s-%c-%c-%06d", (module_input) ? 'P' : 'S', (direction == GMT_IN) ? 'I' : 'O', GMT_family_abbrev[family], GMT_family_abbrev[actual_family], api_debug_geometry_code (geometry), (messenger) ? 'Y' : 'N', object_ID);
+	GMT_Report (API, GMT_MSG_DEBUG, "VirtualFile name created: %s\n", filename);
+	
 	return_error (API, GMT_NOERROR);	/* No error encountered */
 }
 
