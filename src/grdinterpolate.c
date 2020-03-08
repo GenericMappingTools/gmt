@@ -497,7 +497,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		unsigned int io_mode = GMT_WRITE_NORMAL;
 		uint64_t seg, row, rec, col;
 		uint64_t dim[4] = {1, 1, 1, 2};	/* Dataset dimension for one point */
-		char i_file[GMT_STR16] = {""}, o_file[GMT_STR16] = {""}, grid[GMT_LEN128] = {""}, header[GMT_LEN256] = {""}, cmd[GMT_LEN128] = {""};
+		char i_file[GMT_VF_LEN] = {""}, o_file[GMT_VF_LEN] = {""}, grid[GMT_LEN128] = {""}, header[GMT_LEN256] = {""}, cmd[GMT_LEN128] = {""};
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *Si = NULL, *So = NULL;
 

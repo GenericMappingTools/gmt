@@ -602,8 +602,8 @@ this program:
       void *API;        		/* The API control structure */
       struct GMT_DATASET *D = NULL;     /* Structure to hold input dataset */
       struct GMT_GRID *G = NULL;        /* Structure to hold output grid */
-      char input[GMT_STR16] = {""};     /* String to hold virtual input filename */
-      char output[GMT_STR16] = {""};    /* String to hold virtual output filename */
+      char input[GMT_VF_LEN] = {""};    /* String to hold virtual input filename */
+      char output[GMT_VF_LEN] = {""};   /* String to hold virtual output filename */
       char args[128] = {""};    	/* String to hold module command arguments */
 
       /* Initialize the GMT session */
@@ -1644,7 +1644,7 @@ The full syntax is
 		unsigned int direction, void *data, char *filename);
 
 Here, ``data`` is the pointer to your memory object.  The function returns the
-desired filename via ``filename``.  This string must be at least ``GMT_STR16`` bytes (16).
+desired filename via ``filename``.  This string must be at least ``GMT_VF_LEN`` bytes (16).
 The other arguments have been discussed earlier.  Specifically for direction, use
 GMT_IN for reading and GMT_OUT for writing.  Simply pass this filename in
 the calling sequence to the module you want to use to indicate which file should

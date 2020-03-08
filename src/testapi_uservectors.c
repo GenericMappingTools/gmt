@@ -196,8 +196,8 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	double diff, range[2] = {1.0, NROWS}, inc[2] = {1.0, 1.0};
 	//void *API = NULL;                           /* The API control structure */
 	struct GMT_VECTOR *V[2] = {NULL, NULL};     /* Structure to hold input/output datasets as vectors */
-	char input[GMT_STR16] = {""};               /* String to hold virtual input filename */
-	char output[GMT_STR16] = {""};              /* String to hold virtual output filename */
+	char input[GMT_VF_LEN] = {""};               /* String to hold virtual input filename */
+	char output[GMT_VF_LEN] = {""};              /* String to hold virtual output filename */
 	char args[128] = {""};            			/* String to hold module command arguments */
 	void *in_data[NCOLS] = {NULL, NULL}, *out_data[NCOLS] = {NULL, NULL};
 	struct GMTAPI_CTRL *API = NULL;

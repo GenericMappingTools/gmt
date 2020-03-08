@@ -6,7 +6,7 @@
 int main () {
 	void *API = NULL;                /* The API control structure */
 	struct GMT_MATRIX *M = NULL;    /* Structure to hold input matrix */
-	char input[GMT_STR16] = {""};	/* String to hold virtual input filename */
+	char input[GMT_VF_LEN] = {""};	/* String to hold virtual input filename */
 	char args[128] = {""};         	/* String to hold module command arguments */
 	/* Initialize the GMT session */
 	API = GMT_Create_Session ("test", 2U, GMT_SESSION_EXTERNAL, NULL);

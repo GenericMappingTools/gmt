@@ -282,11 +282,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 
 int GMT_blockmean (void *V_API, int mode, void *args) {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
-	unsigned int row, col, n_input, k, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0}, field[BLK_N_FIELDS];
+	unsigned int row, col, n_input, k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0}, field[BLK_N_FIELDS];
 	int error;
-	bool use_xy, use_weight, duplicate_col;
+	bool use_xy, use_weight, duplicate_col, bail = false;
 	double weight, weight_s2 = 0, weight_pos, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;
 	char format[GMT_LEN512] = {""}, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
+	char file[PATH_MAX] = {""};
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL, *G = NULL, *GridOut[BLK_N_FIELDS];
@@ -451,22 +452,27 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	if (n_read == 0) {	/* Blank/empty input files */
 		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
-		Return (GMT_NOERROR);
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
 	}
-	if (n_pitched == 0) {	/* No points inside region */
+	else if (n_pitched == 0) {	/* No points inside region */
 		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
+	}
+
+	if (bail) {	/* Time to quit */
 		Return (GMT_NOERROR);
 	}
 
 	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Index of weight column (the last output column) */
 	n_cells_filled = 0;				/* Number of blocks with values */
 	fcol[4] = (unsigned int)w_col;				/* Since we don't know what it is until parsed */
-	GMT_Report (API, GMT_MSG_INFORMATION, "Calculating block means\n");
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */
 		char *remarks[BLK_N_FIELDS] = {"Mean value per bin", "Standard deviation per bin", "Lowest value per bin",
 		                               "Highest value per bin", "Weight per bin"};
-		for (k = 0; k < BLK_N_FIELDS; k++) {
+		for (k = kk = 0; k < BLK_N_FIELDS; k++) {
 			if (!Ctrl->A.selected[k]) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
 			code[NF]  = fcode[k];
@@ -477,8 +483,21 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remarks[k], GridOut[NF])) Return (API->error);
 			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
 			for (node = 0; node < G->header->size; node++)
-				GridOut[NF]->data[node] = GMT->session.f_NaN;
+				GridOut[NF]->data[node] = GMT->session.f_NaN;	/* Initialize with NaNs */
+			if (API->external && n_read == 0) {	/* Write the empty grids back to the external caller */
+				if (strstr (Ctrl->G.file[kk], "%s"))
+					sprintf (file, Ctrl->G.file[kk], code[k]);
+				else
+					strncpy (file, Ctrl->G.file[kk], PATH_MAX-1);
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, GridOut[k]) != GMT_NOERROR) {
+					Return (API->error);
+				}
+			}
+			if (Ctrl->G.n > 1) kk++;	/* Only true for APIs */
 			NF++;	/* Number of actual field grids */
+		}
+		if (API->external && n_read == 0) {	/* Delayed return */
+			Return (GMT_NOERROR);
 		}
 	}
 	else {	/* Get ready for rec-by-rec output */
@@ -503,6 +522,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 		}
 	}
 
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calculating block means\n");
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	for (node = 0; node < Grid->header->size; node++) {	/* Visit all possible blocks to see if they were visited */
@@ -558,8 +578,6 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 	}
 	if (Ctrl->G.active) {	/* Writes the grid(s) */
-		unsigned int kk;
-		char file[PATH_MAX] = {""};
 		for (k = kk = 0; k < NF; k++) {
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);
