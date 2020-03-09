@@ -871,7 +871,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid */
-		char int_grd[GMT_LEN16] = {""}, cmd[GMT_LEN256] = {""};
+		char int_grd[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
 		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid\n");
 		/* Create a virtual file to hold the intensity grid */
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
