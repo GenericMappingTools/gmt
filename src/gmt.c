@@ -147,7 +147,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Print all classic modules and exit */
-			else if (!strncmp (argv[arg_n], "--show-classic", 8U)) {
+			else if (!strncmp (argv[arg_n], "--show-classic", 9U)) {
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_CLASSIC, NULL);
 				status = GMT_NOERROR;
 			}
