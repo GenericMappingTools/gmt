@@ -3,6 +3,7 @@
 # Useful CMake variables.
 #
 # There are five configuration files:
+#
 #   1) "ConfigDefault.cmake" - is version controlled and used to add new default
 #      variables and set defaults for everyone.
 #   2) "ConfigUser.cmake" in the source tree - is not version controlled
@@ -16,9 +17,11 @@
 #   5) "ConfigUserAdvanced.cmake" in the build tree - is used to override
 #      "ConfigUserAdvanced.cmake" in the source tree.
 #
-# NOTE: If you want to change CMake behaviour just for yourself then copy
-#      "ConfigUserTemplate.cmake" to "ConfigUser.cmake" and then edit
-#      "ConfigUser.cmake" (not "ConfigDefault.cmake" or "ConfigUserTemplate.cmake").
+# NOTE: If you want to change CMake behaviour just for yourself,
+#       copy "ConfigUserTemplate.cmake" to "ConfigUser.cmake" and then edit
+#       "ConfigUser.cmake" for basic settings. For advanced settings,
+#       copy "ConfigUserAdvancedTemplate.cmake" to "ConfigUserAdvanced.cmake" and edit it.
+#       DO NOT EDIT "ConfigDefault.cmake" or the CMake template files.
 #
 include ("${CMAKE_SOURCE_DIR}/cmake/ConfigDefault.cmake")
 
@@ -48,7 +51,7 @@ endif (EXISTS "${CMAKE_BINARY_DIR}/cmake/ConfigUserAdvanced.cmake")
 # Do any needed processing of the configuration variables #
 ###########################################################
 
-# Build type
+# Set default build type to 'Release'
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE Release)
 endif (NOT CMAKE_BUILD_TYPE)
