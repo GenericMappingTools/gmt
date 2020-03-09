@@ -23,7 +23,7 @@
 #    settings, then copy 'ConfigUserAdvancedTemplate.cmake' to 'ConfigUserAdvanced.cmake',
 #    explore and make changes to your ConfigUserAdvanced.cmake file
 #    to override variables in 'ConfigDefault.cmake' on a per-user basis.
-# 4. Follow the rest of the installation instructions in BUILDING.md.
+# 3. Follow the rest of the installation instructions in BUILDING.md.
 #
 # 'ConfigUser.cmake' and 'ConfigUserAdvanced.cmake' are not version controlled
 # (currently listed in .gitignore).
