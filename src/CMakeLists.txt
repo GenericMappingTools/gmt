@@ -434,7 +434,7 @@ endif (HAVE_M_LIBRARY)
 
 if (HAVE_ZLIB)
 	# for DEFLATE encoding
-  target_link_libraries (pslib ${ZLIB_LIBRARIES})
+	target_link_libraries (pslib ${ZLIB_LIBRARIES})
 endif (HAVE_ZLIB)
 
 # set the build version (VERSION) and the API version (SOVERSION)
