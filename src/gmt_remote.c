@@ -142,8 +142,8 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, char *file) {
 			char name[GMT_LEN32] = {""}, *c = NULL;
 			if ((c = strstr (file, ".grd"))) c[0] = '\0';	/* Chop off extension for this message */
 			(len == 3) ? snprintf (name, GMT_LEN32, "earth_relief_%s", file) : snprintf (name, GMT_LEN32, "%s", &file[1]);
-			if (len > 3) GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: Download file from the GMT data server [data set size is %s].\n", name, gmt_data_info[k].size);
-			GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: %s.\n\n", name, gmt_data_info[k].remark);
+			if (len > 3) GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", name, gmt_data_info[k].size);
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s.\n\n", gmt_data_info[k].remark);
 			match = k;
 			if (c) c[0] = '.';	/* Restore extension */
 		}
