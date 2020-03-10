@@ -1573,7 +1573,7 @@ GMT_LOCAL void plot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 	max = (plane == GMT_Y) ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI];
 
 	for (k = 0; k < 2; k++) {
-		if (GMT->current.setting.map_grid_cross_size[k] > 0.0) continue;
+		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
 
 		dz = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Z].item[item[k]]);
 
@@ -1604,7 +1604,7 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	reset = gmt_genper_reset (GMT, reset);
 
 	for (k = 0; k < 2; k++) {
-		if (GMT->current.setting.map_grid_cross_size[k] > 0.0) continue;
+		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
 
 		dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[item[k]]);
 		dy = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[item[k]]);
@@ -1654,19 +1654,20 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 }
 
 GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
-	unsigned int i, j, k, nx, ny, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	unsigned int i, j, k, nx, ny, B = 0, E = 0, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	bool half = false;
 	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL;
-	double x_angle, y_angle, Ca, Sa, L;
+	double x_angle, y_angle, Ca, Sa, L, sgn[2] = {1.0, 0.0};
 
 	for (k = i = 0; k < 2; k++)
-		if (GMT->current.setting.map_grid_cross_size[k] > 0.0) i++;
+		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) i++;
 
 	if (i == 0) return;	/* No grid ticks requested */
 
 	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	for (k = 0; k < 2; k++) {
-		if (GMT->current.setting.map_grid_cross_size[k] <= 0.0) continue;
+		if (gmt_M_is_zero (GMT->current.setting.map_grid_cross_size[k])) continue;
 
 		PSL_comment (PSL, "%s\n", k ? "Map gridcrosses (secondary)" : "Map gridcrosses (primary)");
 
@@ -1675,50 +1676,54 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 		nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item[k]], &x, NULL);
 		ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &y, NULL);
 
-		L = 0.5 * GMT->current.setting.map_grid_cross_size[k];
+		L = 0.5 * fabs (GMT->current.setting.map_grid_cross_size[k]);
+		half = (GMT->current.setting.map_grid_cross_size[k] < 0.0);
 
 		for (j = 0; j < ny; j++) {
 			for (i = 0; i < nx; i++) {
 
-				if (!gmt_map_outside (GMT, x[i], y[j])) {	/* Inside map */
-					yj = y[j];
-					if (gmt_M_pole_is_point(GMT) && doubleAlmostEqual (fabs (yj), 90.0)) {	/* Only place one grid cross at the poles for maps where the poles are points */
-						xi = GMT->current.proj.central_meridian;
-						i = nx;	/* This ends the loop for this particular latitude */
-					}
-					else
-						xi = x[i];
-					gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
-					if (gmt_M_is_geographic (GMT, GMT_IN)) {
-						gmt_geo_to_xy (GMT, xi + GMT->current.map.dlon, yj, &x1, &y1);
-						x_angle = d_atan2 (y1-y0, x1-x0);
-						sincos (x_angle, &Sa, &Ca);
-						xa = x0 - L * Ca;
-						xb = x0 + L * Ca;
-						ya = y0 - L * Sa;
-						yb = y0 + L * Sa;
-					}
-					else {
-						xa = x0 - L, xb = x0 + L;
-						ya = yb = y0;
-					}
-					PSL_plotsegment (PSL, xa, ya, xb, yb);
+				if (gmt_map_outside (GMT, x[i], y[j])) continue;	/* Outside map */
 
-					if (gmt_M_is_geographic (GMT, GMT_IN)) {
-						gmt_geo_to_xy (GMT, xi, yj - copysign (GMT->current.map.dlat, yj), &x1, &y1);
-						y_angle = d_atan2 (y1-y0, x1-x0);
-						sincos (y_angle, &Sa, &Ca);
-						xa = x0 - L * Ca;
-						xb = x0 + L * Ca;
-						ya = y0 - L * Sa;
-						yb = y0 + L * Sa;
-					}
-					else {
-						xa = xb = x0;
-						ya = y0 - L, yb = y0 + L;
-					}
-					PSL_plotsegment (PSL, xa, ya, xb, yb);
+				yj = y[j];
+				if (gmt_M_pole_is_point(GMT) && doubleAlmostEqual (fabs (yj), 90.0)) {	/* Only place one grid cross at the poles for maps where the poles are points */
+					xi = GMT->current.proj.central_meridian;
+					i = nx;	/* This ends the loop for this particular latitude */
 				}
+				else
+					xi = x[i];
+				if (half) { B = E = 0; if (xi >= 0.0 && xi < 180.0) B = 1; else E = 1; }
+				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
+				if (gmt_M_is_geographic (GMT, GMT_IN)) {
+					gmt_geo_to_xy (GMT, xi + GMT->current.map.dlon, yj, &x1, &y1);
+					x_angle = d_atan2 (y1-y0, x1-x0);
+					sincos (x_angle, &Sa, &Ca);
+					xa = x0 - L * Ca * sgn[B];
+					xb = x0 + L * Ca * sgn[E];
+					ya = y0 - L * Sa * sgn[B];
+					yb = y0 + L * Sa * sgn[E];
+				}
+				else {
+					xa = x0 - L * sgn[B], xb = x0 + L * sgn[E];
+					ya = yb = y0;
+				}
+				PSL_plotsegment (PSL, xa, ya, xb, yb);
+
+				if (half) { B = E = 0; if (yj >= 0.0) B = 1; else E = 1; }
+				if (gmt_M_is_geographic (GMT, GMT_IN)) {
+					//gmt_geo_to_xy (GMT, xi, yj - copysign (GMT->current.map.dlat, yj), &x1, &y1);
+					//y_angle = d_atan2 (y1-y0, x1-x0);
+					y_angle = x_angle + M_PI_2;
+					sincos (y_angle, &Sa, &Ca);
+					xa = x0 - L * Ca * sgn[B];
+					xb = x0 + L * Ca * sgn[E];
+					ya = y0 - L * Sa * sgn[B];
+					yb = y0 + L * Sa * sgn[E];
+				}
+				else {
+					xa = xb = x0;
+					ya = y0 - L * sgn[B], yb = y0 + L * sgn[E];
+				}
+				PSL_plotsegment (PSL, xa, ya, xb, yb);
 			}
 		}
 		if (nx) gmt_M_free (GMT, x);
@@ -1985,7 +1990,7 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 			
 		if (do_grid) {
 			/* Either pick current grid-cross size or use half the annotation size as backup */
-			L = 0.5 * ((GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] > 0.0) ? GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] : 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
+			L = 0.5 * fabs ((GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] > 0.0) ? GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] : 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
 			gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 		}
 
@@ -2048,7 +2053,7 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 			
 		if (do_grid) {
 			/* Either pick current grid-cross size or use half the annotation size as backup */
-			L = 0.5 * ((GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] > 0.0) ? GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] : 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
+			L = 0.5 * fabs ((GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] > 0.0) ? GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] : 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
 			gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 		}
 

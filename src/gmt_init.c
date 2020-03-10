@@ -9598,27 +9598,27 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE:
 			dval = gmt_M_to_inch (GMT, value);
-			if (dval >= 0.0)
+			//if (dval >= 0.0)
 				GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
-			else
-				error = true;
+			//else
+			//	error = true;
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
 			dval = gmt_M_to_inch (GMT, value);
-			if (dval >= 0.0)
+			//if (dval >= 0.0)
 				GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = dval;
-			else
-				error = true;
+			//else
+			//	error = true;
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
 			GMT_COMPAT_TRANSLATE ("MAP_GRID_CROSS_SIZE_SECONDARY");
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
 			dval = gmt_M_to_inch (GMT, value);
-			if (dval >= 0.0)
+			//if (dval >= 0.0)
 				GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
-			else
-				error = true;
+			//else
+			//	error = true;
 			break;
 		case GMTCASE_MAP_GRID_PEN:
 			error = gmtlib_setparameter (GMT, "MAP_GRID_PEN_PRIMARY", value, core) +
