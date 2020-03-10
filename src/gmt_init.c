@@ -9076,13 +9076,13 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 char gmt_set_V (int mode) {
 	char val = 0;
 	switch (mode) {
-		case GMT_MSG_QUIET:			val = 'q'; break;
-		case GMT_MSG_ERROR:			val = 'e'; break;
+		case GMT_MSG_QUIET:		val = 'q'; break;
+		case GMT_MSG_ERROR:		val = 'e'; break;
 		case GMT_MSG_WARNING:		val = 'w'; break;
 		case GMT_MSG_TICTOC:		val = 't'; break;
 		case GMT_MSG_INFORMATION:	val = 'i'; break;
 		case GMT_MSG_COMPAT:		val = 'c'; break;
-		case GMT_MSG_DEBUG:			val = 'd'; break;
+		case GMT_MSG_DEBUG:		val = 'd'; break;
 		default: break;
 	}
 	return val;
