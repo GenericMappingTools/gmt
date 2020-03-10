@@ -136,16 +136,6 @@ if (WIN32 AND NOT CYGWIN)
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
 
-	if (WIN32 AND GMTMEX_PATH)
-		# Install the gmtmex on Windows. Its location is controlled by GMTMEX_PATH set in ConfigUserAdvanced.cmake
-		if (BITAGE EQUAL 64)
-			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
-		else ()
-			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw32" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
-		endif ()
-		install (PROGRAMS "${GMTMEX_PATH}/gmt.m" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
-	endif ()
-
 	# Fix bundle:
 	install (CODE "
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages\")
