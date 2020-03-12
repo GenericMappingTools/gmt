@@ -453,9 +453,6 @@ if (BUILD_SUPPLEMENTS)
 		spotter x2sys ${EXTRA_BUILD_DIRS})
 endif (BUILD_SUPPLEMENTS)
 
-# path to all binary dirs (used to set PATH in test scripts)
-set (GMT_BINARY_DIR_PATH "${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_CONFIG_TYPE:-.}")
-
 if (BUILD_SUPPLEMENTS)
 	# process supplement directories
 	if (UNIX)
@@ -463,8 +460,6 @@ if (BUILD_SUPPLEMENTS)
 	endif (UNIX)
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		add_subdirectory (${_dir})
-		list (APPEND GMT_BINARY_DIR_PATH
-			"${CMAKE_CURRENT_BINARY_DIR}/${_dir}/\${CMAKE_CONFIG_TYPE:-.}")
 	endforeach (_dir)
 	# supplement library files
 	get_subdir_var_files (GMT_SUPPL_LIB_SRCS LIB_SRCS ${GMT_SUPPL_DIRS})
@@ -542,12 +537,6 @@ if (EXTRA_INCLUDE_NEWSUPPL)
 		include (${_f})
 	endforeach(_f)
 endif (EXTRA_INCLUDE_NEWSUPPL)
-
-
-# make UNIX PATH variable
-string (REPLACE ";" ":" GMT_BINARY_DIR_PATH "${GMT_BINARY_DIR_PATH}")
-set (GMT_BINARY_DIR_PATH ${GMT_BINARY_DIR_PATH} CACHE INTERNAL
-	"UNIX PATH to all binary dirs")
 
 # libgmt
 add_library (gmtlib
