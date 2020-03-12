@@ -6411,6 +6411,12 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 				size[0] = '\0';
 			}
 		}
+		else if (support_is_fontname (GMT, size)) {	/* name got stored in size and size in name */
+			strncpy (fill, name, GMT_LEN256-1);	/* Copy size */
+			strncpy (name, size, GMT_LEN256-1);	/* Place name where it belongs */
+			strncpy (size, fill, GMT_LEN256-1);	/* Place size where it belongs */
+			fill[0] = '\0';	/* No fill */
+		}
 	}
 	else if (n == 1) {	/* Could be size or name or fill */
 		if (line[0] == ',' && line[1] == ',') {	/* ,,fill got stored in size */
