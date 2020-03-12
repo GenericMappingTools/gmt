@@ -34,7 +34,7 @@ fi
 
 # Get current remote data server
 SERVER=$(gmt get GMT_DATA_SERVER)
-curl -sk ${SERVER}/gmt_hash_server.txt > /tmp/gmt_hash_server.txt
+curl -k ${SERVER}/gmt_hash_server.txt > /tmp/gmt_hash_server.txt
 echo $?
 if [ $? -ne 0 ]; then
 	echo "Error: curl failed with error $?" >&2
