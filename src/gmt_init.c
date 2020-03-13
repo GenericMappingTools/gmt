@@ -828,7 +828,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 	bool was_R, was_J;
 	double wesn[4];
-	char buffer[GMT_LEN256] = {""}, in_string[GMT_VF_LEN] = {""}, out_string[GMT_VF_LEN] = {""};
+	char buffer[GMT_LEN256] = {""}, Jstring[GMT_LEN128] = {""}, in_string[GMT_VF_LEN] = {""}, out_string[GMT_VF_LEN] = {""}, *v = NULL;
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call gmtinit_rectR_to_geoR to convert projected -R to geo -R\n");
@@ -897,8 +897,25 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No map projection specified to auto-determine geographic region\n");
 			break;
 	}
+	strncpy (Jstring, GMT->common.J.string, GMT_LEN128-1);	/* Make a duplicate in case we must mess around with it */
+	if (GMT->current.proj.obl_flip) {	/* Rotating by 90 has some challenges, like flipping rect x and y */
+		In->table[0]->segment[0]->data[GMT_X][0] = rect[YLO];
+		In->table[0]->segment[0]->data[GMT_Y][0] = rect[XLO];
+		In->table[0]->segment[0]->data[GMT_X][1] = rect[YHI];
+		In->table[0]->segment[0]->data[GMT_Y][1] = rect[XHI];
+		if ((v = strstr (Jstring, "+v"))) {	/* Cannot pass +v in this context since we just need to recover corner coordinates, not rotate yet */
+			char *d = strstr (Jstring, "+d");	/* Did we also use +d ? */
+			if (d && d > v) { /* Have both +d and +v, with +v at end, so must move +d up ahead of +v */
+				size_t len = strlen (d);
+				memmove (v, d, len);
+				v[len] = '\0';	/* Truncate the rest */
+			}
+			else /* Just need to skip the trailing +v part */
+				v[0] = '\0';
+		}
+	}
 	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s --GMT_HISTORY=false",
-		wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.J.string, unit, in_string, out_string);
+		wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], Jstring, unit, in_string, out_string);
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtaining geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Get the corners in degrees via mapproject */
 		return (GMT->parent->error);

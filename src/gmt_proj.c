@@ -1140,6 +1140,7 @@ void gmt_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 	if (GMT->current.proj.obl_flip) {
 		/* Let oblique Equator be y-axis, so flip x and y but must let y be negative [that change takes place in map_setxy] */
 		gmt_M_double_swap (*x, *y);
+		if (GMT->current.proj.pars[1] < 0.0) *x = -*x, *y = -*y;	/* S hemisphere must rotate 180 */
 	}
 	else if (GMT->current.proj.o_spole) {
 		*x = -(*x);
@@ -1155,6 +1156,7 @@ void gmt_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 
 	if (GMT->current.proj.obl_flip) {
 		/* Had oblique Equator be y-axis */
+		if (GMT->current.proj.pars[1] < 0.0) x = -x, y = -y;	/* S hemisphere must rotate 180 */
 		gmt_M_double_swap (x, y);
 	}
 	else if (GMT->current.proj.o_spole) {

@@ -2215,7 +2215,7 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
-	if (GMT->current.proj.obl_flip) {	/* Must reverse y-axis direction */
+	if (GMT->current.proj.obl_flip) {
 		GMT->current.proj.origin[GMT_Y] = ymax * GMT->current.proj.scale[GMT_Y];
 		GMT->current.proj.scale[GMT_Y] = -GMT->current.proj.scale[GMT_Y];
 	}
@@ -9106,8 +9106,10 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 	if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 		/* Limit east-west range to 360 and make sure east > -180 and west < 360 */
-		if (wesn[XHI] < wesn[XLO]) wesn[XHI] += 360.0;
-		if ((fabs (wesn[XHI] - wesn[XLO]) - 360.0) > GMT_CONV4_LIMIT) Return (GMT_MAP_EXCEEDS_360);
+		if (!GMT->common.R.oblique) {	/* Only makes sense if not corner coordinates */
+			if (wesn[XHI] < wesn[XLO]) wesn[XHI] += 360.0;
+			if ((fabs (wesn[XHI] - wesn[XLO]) - 360.0) > GMT_CONV4_LIMIT) Return (GMT_MAP_EXCEEDS_360);
+		}
 		while (wesn[XHI] < -180.0) {
 			wesn[XLO] += 360.0;
 			wesn[XHI] += 360.0;
