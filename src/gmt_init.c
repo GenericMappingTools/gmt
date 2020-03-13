@@ -5060,6 +5060,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			break;
 
 		case GMT_OBLIQUE_MERC:		/* Oblique mercator, specifying origin and azimuth or second point */
+			if ((d = strstr (args, "+v"))) {
+				GMT->current.proj.obl_flip = true;
+				d[0] = '\0';	/* Chop off modifier */
+			}
 			GMT->current.proj.N_hemi = (strchr ("AB", GMT->common.J.string[1]) == NULL) ? true : false;	/* Upper case -JoA, -JoB allows S pole views */
 			if (n_slashes == 3) {
 				n = sscanf (args, "%[^/]/%[^/]/%lf/%s", txt_a, txt_b, &az, txt_e);
@@ -5080,6 +5084,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			GMT->current.proj.pars[6] = 0.0;
 			error += !(n == n_slashes + 1);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
+			if (d) d[0] = '+';	/* Restore modifier */
 			break;
 
 		case GMT_OBLIQUE_MERC_POLE:	/* Oblique mercator, specifying origin and pole */
@@ -6542,7 +6547,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t   -Jn|N[<lon0>/]<scale>|<width> (Robinson projection)\n\t     Give central meridian (opt) and scale\n");
 
-			gmt_message (GMT, "\t   -Jo|O<parameters> (Oblique Mercator).  Specify one of three definitions:\n");
+			gmt_message (GMT, "\t   -Jo|O<parameters>[+v] (Oblique Mercator).  Specify one of three definitions:\n");
 			gmt_message (GMT, "\t     -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scale>|<width>\n");
 			gmt_message (GMT, "\t       Give origin, azimuth of oblique equator, and scale at oblique equator\n");
 			gmt_message (GMT, "\t     -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>\n");
@@ -6551,6 +6556,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Give origin, pole of projection, and scale at oblique equator\n");
 			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<>r\n");
 			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
+			gmt_message (GMT, "\t       Append +v to make the oblique Equator the y-axis [x-axis].\n");
 
 			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] (Polar (theta,radius))\n");
 			gmt_message (GMT, "\t     Linear scaling for polar coordinates.  Give scale in %s/units.\n",
@@ -6654,9 +6660,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   -Jn|N[<lon0>/]<scl>|<width> (Robinson projection)\n");
 
 			gmt_message (GMT, "\t   -Jo|O (Oblique Mercator).  Specify one of three definitions:\n");
-			gmt_message (GMT, "\t      -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scl>|<width>\n");
-			gmt_message (GMT, "\t      -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>\n");
-			gmt_message (GMT, "\t      -Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>\n");
+			gmt_message (GMT, "\t      -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scl>|<width>[+v]\n");
+			gmt_message (GMT, "\t      -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>[+v]\n");
+			gmt_message (GMT, "\t      -Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>[+v]\n");
 
 			gmt_message (GMT, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scl>|<width> ((American) Polyconic)\n");
 
