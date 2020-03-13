@@ -735,6 +735,9 @@ degrees about the projection center rather than the usual geographic
 coordinates. This interpretation is chosen since in general the
 parallels and meridians are not very suitable as map boundaries.
 
+Normally, the oblique Equator becomes the horizontal (*x*) axis in the projected units.
+You can select the vertical (*y*) axis by appending **+v**.
+
 When working with oblique projections such as here, it is often much more convenient
 to specify the map domain in the projected coordinates relative to the map center.
 The figure below shows two views of New Zealand using the oblique Mercator projection

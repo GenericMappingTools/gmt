@@ -1137,9 +1137,9 @@ void gmt_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 
 	*x = GMT->current.proj.j_x * tlon;
 	*y = (fabs (tlat) < M_PI_2) ? GMT->current.proj.j_x * d_log (GMT, tan (M_PI_4 + 0.5 * tlat)) - GMT->current.proj.o_shift : copysign (DBL_MAX, tlat);
-	if (GMT->current.proj.obl_flip) {	/* Let oblique Equator be y-axis, so flip x and y but make y negative */
+	if (GMT->current.proj.obl_flip) {
+		/* Let oblique Equator be y-axis, so flip x and y but must let y be negative [that change takes place in map_setxy] */
 		gmt_M_double_swap (*x, *y);
-		*y = -*y;
 	}
 	else if (GMT->current.proj.o_spole) {
 		*x = -(*x);
@@ -1153,9 +1153,9 @@ void gmt_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 	double tlon, tlat;
 	/* o_shift deals with difference between user's origin and our logical origin */
 
-	if (GMT->current.proj.obl_flip) {	/* Had oblique Equator be y-axis */
+	if (GMT->current.proj.obl_flip) {
+		/* Had oblique Equator be y-axis */
 		gmt_M_double_swap (x, y);
-		y = -y;
 	}
 	else if (GMT->current.proj.o_spole) {
 		x = -x;

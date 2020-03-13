@@ -2215,6 +2215,10 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
+	if (GMT->current.proj.obl_flip) {	/* Must reverse y-axis direction */
+		GMT->current.proj.origin[GMT_Y] = ymax * GMT->current.proj.scale[GMT_Y];
+		GMT->current.proj.scale[GMT_Y] = -GMT->current.proj.scale[GMT_Y];
+	}
 
 	if (!strncmp (GMT->init.module_name, "inset", 5U))
 		no_scaling = 1;	/* Don't scale yet if we are calling inset begin (inset end would come here too but not affected since no mapping done by that module) */

@@ -4446,6 +4446,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					return (true);
 					break;
 			}
+			if (strstr (args, "+v"))	/* To guard against -JOa120W/25N/150/6i+dh+v and loosing the +v */
+				GMT->current.proj.obl_flip = true;
 			d[0] = '\0';	/* Chop off this modifier */
 		}
 		else {	/* Backwards compatibility for trailing +,-,h */
