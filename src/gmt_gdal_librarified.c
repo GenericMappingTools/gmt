@@ -99,6 +99,10 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 		}
 	}
 
+	if (GMT_Destroy_Data (GMT->parent, &D)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while freeing input data\n");
+	}
+
 	return hDS;
 }
 
@@ -174,21 +178,40 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 	nXSize = GDALGetRasterXSize(hDstDS);
 	nYSize = GDALGetRasterYSize(hDstDS);
 
-	if ((tmp = calloc((size_t)nYSize * (size_t)nXSize, nPixelSize)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdgdal: failure to allocate enough memory\n");
+	if (nXSize != Grid->header->n_columns || nYSize != Grid->header->n_rows) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Programming error. Output grid dimensions not what is expected.\n");
 		return -1;
 	}
 
-	if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, tmp,
-	                              nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
+	if (nPixelSize != 4) {		/* If outdata type is not 4 bytes, must create a tmp to copy from because GMT requires floats */
+		size_t k;
+		if ((tmp = calloc(Grid->header->nm, 4)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdgdal: failure to allocate temporary memory\n");
+			return -1;
+		}
+		if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, tmp,
+		                              nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
+			return -1;
+		}
+		for (k = 0; k < Grid->header->nm; k++)
+			Grid->data[k] = (float)tmp[k];
+
+		free(tmp);
 	}
-	gmt_grd_flip_vertical (tmp, (unsigned)nXSize, (unsigned)nYSize, 0, nPixelSize);
-	Grid->data = (float *)tmp;
+	else {
+		if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, (void *)Grid->data,
+		                              nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
+			return -1;
+		}
+	}
+
+	gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, 4);
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
 						NULL, fname, Grid) != GMT_NOERROR)
 		return GMT->parent->error;
-	if (!GMT->parent->external) Grid->data = NULL;	/* Since we must avoid deleting this GDAL memory later */
+	GDALClose(hDstDS);
 	return 0;
 }
 
@@ -255,7 +278,7 @@ GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 		*hSrcDS = GDALOpen(GDLL->fname_in, GA_ReadOnly);
 	}
 
-	if ((*Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
+	if ((*Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
 		                          GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
 		return GMT->parent->error;
 	return 0;
@@ -327,6 +350,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "dem");
 
 	GDALDEMProcessingOptionsFree(psOptions);
+    OGRCleanupAll();
 	GDALDestroyDriverManager();
 	return error;
 }
