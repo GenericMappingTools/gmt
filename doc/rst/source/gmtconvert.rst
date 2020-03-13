@@ -26,7 +26,6 @@ Synopsis
 [ |-T|\ [**h**\|\ **d**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+n**] ]
-[ |-Z|\ [*first*][/\ *last*] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -214,11 +213,6 @@ Optional Arguments
     (because they are not numbers) will appear as NaNs.  Use modifier **+n** to
     exclude the columns with NaNs.  Note: These columns are identified based on
     the first input record only.
-
-**-Z**\ [*first*][/\ *last*]
-    Limit output to the specified record range.  If *first* is not set it defaults
-    to record 0 (very first record) and if *last* is not set then it defaults to the
-    very last record.  Only records in the given range will be written out [all].
 
 .. include:: explain_-aspatial.rst_
 

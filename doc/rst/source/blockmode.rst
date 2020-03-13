@@ -68,7 +68,7 @@ Optional Arguments
 ------------------
 
 *table*
-   3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
+    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
     **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values, where [*w*] is an optional weight for the data.
     If no file is specified, **blockmode** will read from standard input.
@@ -108,7 +108,7 @@ Optional Arguments
     Provide Extended report which includes **s** (the L1 scale of the
     mode), **l**, the lowest value, and **h**, the high value for each
     block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
+    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
 **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
     Provide source id **s** or record number **r** output, i.e., append
@@ -178,8 +178,8 @@ Optional Arguments
 
 .. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with
-    **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
-    (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
+    **-R**\ 10/15/10/15 and **-I**\ 1: With **-r** or **-rp**, 10 <=
+    (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
 
