@@ -178,7 +178,7 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 	nXSize = GDALGetRasterXSize(hDstDS);
 	nYSize = GDALGetRasterYSize(hDstDS);
 
-	if (nXSize != Grid->header->n_columns || nYSize != Grid->header->n_rows) {
+	if (nXSize != (int)Grid->header->n_columns || nYSize != (int)Grid->header->n_rows) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Programming error. Output grid dimensions not what is expected.\n");
 		return -1;
 	}
