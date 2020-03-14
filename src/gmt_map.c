@@ -366,7 +366,11 @@ GMT_LOCAL bool central_meridian_not_set (struct GMT_CTRL *GMT) {
 }
 
 GMT_LOCAL void set_default_central_meridian (struct GMT_CTRL *GMT) {
-	GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Not set at all, set to middle lon */
+	/* Pick half-way between w and e, but watch for -R+r */
+	if (GMT->common.R.oblique && GMT->common.R.wesn[XHI] < GMT->common.R.wesn[XLO])
+		GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI] + 360.0);	/* Set to middle lon  but watch for e < w */
+	else
+		GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Set to middle lon */
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian not given, default to %g\n", GMT->current.proj.pars[0]);
 }
 
