@@ -42,7 +42,7 @@ struct GRDCONTOUR_CTRL {
 		char *file;
 	} In;
 	struct GMT_CONTOUR contour;
-	struct GRDCONTOUR_A {	/* -A[-][labelinfo] */
+	struct GRDCONTOUR_A {	/* -A[n|[+]<int>][labelinfo] */
 		bool active;
 		char *file;
 		unsigned int mode;	/* 1 turns off all labels */
@@ -182,7 +182,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A[-|[+]<int>|<list>][<labelinfo>] [%s] [-C<contours>] [%s]\n", name, GMT_B_OPT, GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A[n|[+]<int>|<list>][<labelinfo>] [%s] [-C<contours>] [%s]\n", name, GMT_B_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p]\n", GMT_CONTG, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N[<cpt>]] %s%s[-Q[<cut>][+z]] [%s]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
@@ -198,7 +198,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotation label settings [Default is no annotated contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give annotation interval or comma-separated list of contours.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give - to disable all contour annotations\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give -An to disable all contour annotations\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     implied by the information provided in -C.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively prepend + to annotation interval to plot that as a single contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
@@ -373,13 +373,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 			case 'A':	/* Annotation control */
 				Ctrl->A.active = true;
 				if (gmt_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Expected\n\t-A[-|[+]<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Expected\n\t-A[n|[+]<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
 					n_errors ++;
 				}
 				c = NULL;
 				if (opt->arg[0] != '+') c = strchr (opt->arg, '+');	/* Find start of modifiers */
 				if (c) c[0] = '\0';	/* Chop off modifiers since parsed by gmt_contlabel_specs */
-				if (opt->arg[0] == '-')
+				if (opt->arg[0] == 'n' || opt->arg[0] == '-')	/* -A- is deprecated */
 					Ctrl->A.mode = 1;	/* Turn off all labels */
 				else if (opt->arg[0] == '+' && (isdigit(opt->arg[1]) || strchr ("-+.", opt->arg[1]))) {
 					Ctrl->A.single_cont = atof (&opt->arg[1]);

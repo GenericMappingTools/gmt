@@ -198,7 +198,7 @@ message(
 	"*\n"
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
-	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
+	"*  Found DCW-GMT database     : ${DCW_PATH} (${DCW_VERSION})\n"
 	"*  Found GMT data server      : ${GMT_DATA_SERVER}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"

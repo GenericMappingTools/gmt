@@ -247,7 +247,7 @@ static const char *GMT_direction[] = {"Input", "Output"};
 static const char *GMT_stream[] = {"Standard", "User-supplied"};
 static const char *GMT_status[] = {"Unused", "In-use", "Used"};
 static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Point|Line|Poly", "Line|Poly", "Surface", "Non-Geographical", "Text"};
-static const char *GMT_class[] = {"QUIET", "ERROR", "WARNING", "TIMING", "INFORMATION", "COMPATIBILITY", "DEBUG"};
+static const char *GMT_class[] = {"QUIET", "NOTICE", "ERROR", "WARNING", "TIMING", "INFORMATION", "COMPATIBILITY", "DEBUG"};
 static unsigned int GMT_no_pad[4] = {0, 0, 0, 0};
 static const char *GMT_family_abbrev[] = {"D", "G", "I", "C", "X", "M", "V", "-"};
 
@@ -6196,6 +6196,7 @@ GMT_LOCAL int api_encode_id (struct GMTAPI_CTRL *API, unsigned int module_input,
 	if (!(messenger == 0 || messenger == 1)) return_error (API, GMT_RUNTIME_ERROR);
 	if (module_input) module_input = 1;	/* It may be GMT_VIA_MODULE_INPUT but here we want just 0 or 1 */
 
+	gmt_M_memset (filename, GMT_VF_LEN, char);	/* Wipe any trace of previous text */
 	sprintf (filename, "@GMTAPI@-%c-%c-%s-%s-%c-%c-%06d", (module_input) ? 'P' : 'S', (direction == GMT_IN) ? 'I' : 'O', GMT_family_abbrev[family], GMT_family_abbrev[actual_family], api_debug_geometry_code (geometry), (messenger) ? 'Y' : 'N', object_ID);
 	GMT_Report (API, GMT_MSG_DEBUG, "VirtualFile name created: %s\n", filename);
 	
@@ -10652,6 +10653,13 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	/* 1o. Check if grdinterpolate is producing grids or datasets */
 	else if (!strncmp (module, "grdinterpolate", 14U)) {
 		type = ((opt = GMT_Find_Option (API, 'S', *head))) ? 'D' : 'G';	/* Giving -S means we change default putput from grid to dataset */
+	}
+	/* 1p. Check if grdgdal is reading a dataset */
+	else if (!strncmp (module, "grdgdal", 7U)) {	/* Set input data type based on options */
+		if ((opt = GMT_Find_Option (API, 'A', *head)) && (strstr (opt->arg, "grid") || strstr (opt->arg, "rasterize")))
+			type = 'D';
+		else
+			type = 'G';
 	}
 
 	/* 2a. Get the option key array for this module */

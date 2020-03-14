@@ -65,7 +65,7 @@ respectively):
 
 .. _-Jo_full:
 
-    **-Jo**\ *parameters* (Oblique Mercator **[C]**).
+    **-Jo**\ *parameters*\ [**+v**] (Oblique Mercator **[C]**).
 
         Typically used with **-R**\ *LLx/LLy/URx/URy*\ **r** or with projected coordinates.  Specify one of:
 
@@ -78,7 +78,9 @@ respectively):
             Set projection center *lon0/lat0*, pole of oblique projection
             *lonp/latp*, and *scale*.
             Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
-	    Use upper-case **A**\|\ **B**\|\ **C** to remove enforcement of a northern hemisphere pole.
+ 
+        Use upper-case **A**\|\ **B**\|\ **C** to remove enforcement of a northern hemisphere pole.
+        Append **+v** to let the oblique Equator align with the *y*-axis [*x*-axis].
 
 .. _-Jq_full:
 

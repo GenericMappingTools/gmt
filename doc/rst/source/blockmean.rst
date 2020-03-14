@@ -92,9 +92,9 @@ Optional Arguments
     Provide Extended report which includes **s** (the standard deviation
     about the mean), **l**, the lowest value, and **h**, the high value
     for each block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
-    *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
-    If **-E+p**\|\ **P** are used then input data uncertainties are expected and *s*
+    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
+    *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for enabling *w* output.
+    If **-E+p**\|\ **P** is used then input data uncertainties are expected and *s*
     becomes the propagated error of the weighted (**+p**) or simple (**+P**) *z* mean.
 
 .. _-G:
@@ -159,8 +159,8 @@ Optional Arguments
 
 .. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with
-    **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
-    (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
+    **-R**\ 10/15/10/15 and **-I**\ 1: With **-r** or **-rp**, 10 <=
+    (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
 

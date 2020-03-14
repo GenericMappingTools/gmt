@@ -1507,7 +1507,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 #endif
 	/* Define the 4 different sets of GS parameters for PDF or rasters, before and after SCANCONVERTERTYPE=2 added in 9.21 */
 	/* 2018=09-18 [PW]: Removed -DSAFER since it now prevents using the Adobe transparency extensions.  All our test pass with no -DSAFER so I have removed it */
-	static char *gs_params_pdfnew = "-q -dNOPAUSE -dBATCH -dNOSAFER -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
+	/* 2020-03-14 [PW]: Added -dALLOWPSTRANSPARENCY since 9.51 onwards requires it to do transparency.  It is simply ignored by older gs versions */
+	static char *gs_params_pdfnew = "-q -dNOPAUSE -dBATCH -dNOSAFER -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2 -dALLOWPSTRANSPARENCY";
 	static char *gs_params_pdfold = "-q -dNOPAUSE -dBATCH -dNOSAFER -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
 	static char *gs_params_rasnew = "-q -dNOPAUSE -dBATCH -dNOSAFER -dSCANCONVERTERTYPE=2";
 	static char *gs_params_rasold = "-q -dNOPAUSE -dBATCH -dNOSAFER";

@@ -15,7 +15,7 @@ Synopsis
 
 **gmt contour** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**-**\|\ *contours*][*labelinfo*] ]
+[ |-A|\ [**n**\|\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours* ]
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]

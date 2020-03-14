@@ -101,7 +101,7 @@ struct GMTCONVERT_CTRL {
 		bool active;
 		unsigned int mode;
 	} W;
-	struct Z {	/* -Z[<first>]:[<last>] */
+	struct Z {	/* -Z[<first>]:[<last>] [DEPRECATED - use -q instead]*/
 		bool active;
 		int64_t first, last;
 	} Z;
@@ -131,7 +131,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m|M<stride>]] [-F<arg>] [-I[tsr]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [-Z[<first>][/<last>]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -183,7 +183,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   d: Prevent the writing of duplicate data records.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Convert trailing text to numbers, if possible.  Append +n to suppress NaN columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Select range of output records.  If not set, <first> = 0 and <last> = last record [all records].\n");
 	GMT_Option (API, "a,bi,bo,d,e,f,g,h,i,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -341,6 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
+				GMT_Report (API, GMT_MSG_COMPAT, "Option -Z is deprecated (but still works); Use common option -q instead\n");
 				if ((c = strchr (opt->arg, ':')) || (c = strchr (opt->arg, '/'))) {	/* Got [<first>]:[<last>] or [<first>]/[<last>] */
 					char div = c[0];	/* Either : or / */
 					if (opt->arg[0] == div) /* No first given, default to 0 */
@@ -410,6 +410,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 	                                 "Only one of -Q and -S can be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->F.active,
 	                                 "The -N option cannot be used with -F\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && GMT->common.q.active[GMT_OUT],
+	                                 "The deprecated -Z option cannot be used with -qo\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
