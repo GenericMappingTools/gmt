@@ -446,18 +446,14 @@ if (WIN32 AND PSL_DLL_RENAME)
 endif (WIN32 AND PSL_DLL_RENAME)
 
 if (BUILD_SUPPLEMENTS)
-	# supplement directories (only those, which are to be included in gmtlib)
-	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in git.
-	# See cmake/ConfigUserAdvancedTemplate.cmake for setting this parameter.
-	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis
-		spotter x2sys ${EXTRA_BUILD_DIRS})
-endif (BUILD_SUPPLEMENTS)
-
-if (BUILD_SUPPLEMENTS)
-	# process supplement directories
 	if (UNIX)
 		set (CMAKE_SHARED_MODULE_SUFFIX .so)
 	endif (UNIX)
+	# supplement directories (only those, which are to be included in gmtlib)
+	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in git.
+	# See cmake/ConfigUserAdvancedTemplate.cmake for setting this parameter.
+	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${EXTRA_BUILD_DIRS})
+	# process supplement directories
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		add_subdirectory (${_dir})
 	endforeach (_dir)
