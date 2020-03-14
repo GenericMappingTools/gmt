@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 ps=oblsuite_N.ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/-180/1:60000000 -Ba0fg -P -Gred -K -X1.25i -Y9i > $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/-150/1:60000000 -Ba0fg -O -K -Gred -Y-1.7i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/-120/1:60000000 -Ba0fg -O -K -Gred -Y-1.7i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/-90/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/-60/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/-30/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/0/1:60000000    -Ba0fg -O -K -Gred -X3.45i -Y8.5i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/30/1:60000000   -Ba0fg -O -K -Gred -Y-1.7i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/60/1:60000000   -Ba0fg -O -K -Gred -Y-1.7i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/90/1:60000000   -Ba0fg -O -K -Gred -Y-1.7i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/120/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
-gmt pscoast -Rk-2000/2000/-1000/1000 -Joa-30/60/150/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/-180/1:60000000 -Ba0fg -P -Gred -K -X1.25i -Y9i > $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/-150/1:60000000 -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/-120/1:60000000 -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/-90/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/-60/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/-30/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/0/1:60000000    -Ba0fg -O -K -Gred -X3.45i -Y8.5i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/30/1:60000000   -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/60/1:60000000   -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/90/1:60000000   -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/120/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
+gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/150/1:60000000  -Ba0fg -O -K -Gred -Y-1.7i >> $ps
 gmt pstext -R0/8/0/10 -Jx1i -F+f14p+jRM -O -K -X-3.45i -N << EOF >> $ps
 -0.1 0.7 az: -30
 -0.1 2.4 az: -60

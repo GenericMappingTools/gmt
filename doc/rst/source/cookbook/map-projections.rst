@@ -50,7 +50,7 @@ Conic projections
 Albers conic equal-area projection (**-Jb** **-JB**) :ref:`... <-Jb_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This projection, developed by Albers in 1805, is predominantly used to
+This projection, developed by Heinrich C. Albers in 1805, is predominantly used to
 map regions of large east-west extent, in particular the United States.
 It is a conic, equal-area projection, in which parallels are unequally
 spaced arcs of concentric circles, more closely spaced at the north and
@@ -194,7 +194,7 @@ Azimuthal projections
 Lambert Azimuthal Equal-Area (**-Ja** **-JA**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This projection was developed by Lambert in 1772 and is typically used
+This projection was developed by Johann Heinrich Lambert in 1772 and is typically used
 for mapping large regions like continents and hemispheres. It is an
 azimuthal, equal-area projection, but is not perspective. Distortion is
 zero at the center of the projection, and increases radially away from
@@ -289,7 +289,7 @@ center of projection. The requirements are
    on map in plot-units from projection center to a particular
    oblique latitude (**-Js**), or simply map width (**-JS**).
 
-A default map scale factor of 0.9996 will be applied by default
+A map scale factor of 0.9996 will be applied by default
 (although you may change this with :term:`PROJ_SCALE_FACTOR`). However,
 the setting is ignored when a standard parallel has been specified since
 the scale is then implicitly given. We will look at two different types
@@ -581,7 +581,7 @@ Greenwich would specify the region with **-R**-180/180/-70/70.
 Transverse Mercator projection (**-Jt** **-JT**) :ref:`... <-Jt_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The transverse Mercator was invented by Lambert in 1772. In this
+The transverse Mercator was invented by Johann Heinrich Lambert in 1772. In this
 projection the cylinder touches a meridian along which there is no
 distortion. The distortion increases away from the central meridian and
 goes to infinity at 90° from center. The central meridian, each meridian
@@ -735,10 +735,13 @@ degrees about the projection center rather than the usual geographic
 coordinates. This interpretation is chosen since in general the
 parallels and meridians are not very suitable as map boundaries.
 
+Normally, the oblique Equator becomes the horizontal (*x*) axis in the projected units.
+You can select the vertical (*y*) axis by appending **+v**.
+
 When working with oblique projections such as here, it is often much more convenient
 to specify the map domain in the projected coordinates relative to the map center.
 The figure below shows two views of New Zealand using the oblique Mercator projection
-that in both cases specifies the region using **-Rk**\ -1000/1000/-500/500.  The leading
+that in both cases specifies the region using **-R**\ -1000/1000/-500/500\ **+uk**.  The
 unit **k** means the following bounds are in projected km and we let GMT determine the
 geographic coordinates of the two diagonal corners internally.
 
@@ -757,6 +760,20 @@ geographic coordinates of the two diagonal corners internally.
    i.e., **-JOA**\ 173:17:02E/41:16:15S/215/3i.)
    The projected coordinate system is still aligned as before but the Earth has been rotated
    180 degrees.  The blue point now has projected coordinates (*x* = -426.2, *y* = 399.7).
+
+The oblique Mercator projection will by default arrange the output so that the oblique
+Equator becomes the new horizontal, positive *x*-axis.  For features with an orientation
+more north-south than east-west, it may be preferable to align the oblique Equator with
+the vertical, positive *y*-axis instead.  This configuration is selected by appending
+**+v** to the **-J** projection option.  The example below shows this behaviour.
+
+.. figure:: /_images/GMT_obl_baja.*
+   :width: 300 px
+   :align: center
+
+   Oblique view of Baja California using the vertical oblique Equator modifier.  This plot
+   resulted from the argument **-JOa**\ 120W/25N/-30/6c\ **+v**\ .
+
 
 Cassini cylindrical projection (**-Jc** **-JC**) :ref:`... <-Jc_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -987,7 +1004,7 @@ is obtained as follows:
 Miscellaneous projections
 -------------------------
 
-GMT supports 8 common projections for global presentation of data or
+GMT supports eight common projections for global presentation of data or
 models. These are the Hammer, Mollweide, Winkel Tripel, Robinson, Eckert
 IV and VI, Sinusoidal, and Van der Grinten projections. Due to the small
 scale used for global maps these projections all use the spherical
