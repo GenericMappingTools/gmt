@@ -183,9 +183,9 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 		return -1;
 	}
 
-	if (nPixelSize != 4) {		/* If outdata type is not 4 bytes, must create a tmp to copy from because GMT requires floats */
+	if (nPixelSize != sizeof(float)) {		/* If outdata type is not 4 bytes, must create a tmp to copy from because GMT requires floats */
 		size_t k;
-		if ((tmp = calloc(Grid->header->nm, 4)) == NULL) {
+		if ((tmp = calloc(Grid->header->nm, sizeof(float))) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdgdal: failure to allocate temporary memory\n");
 			return -1;
 		}
@@ -207,7 +207,7 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 		}
 	}
 
-	gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, 4);
+	gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, sizeof(float));
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
 						NULL, fname, Grid) != GMT_NOERROR)
 		return GMT->parent->error;
