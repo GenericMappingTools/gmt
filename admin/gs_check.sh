@@ -20,7 +20,7 @@ fi
 # Do the work in the build directory
 cd build
 if [ ! -f ../admin/PS_orig_for_gs.ps ]; then
-	# Make the original GMT PS plot
+	# Make the original GMT PS plot if it is not present
 	gmt begin PS_orig_for_gs ps
 		gmt set PS_MEDIA letter
 		gmt grdimage -R0/20/0/20 -JM16c @earth_relief_05m -B -B+t"GMT TEST PLOT" -I+d
@@ -33,8 +33,9 @@ if [ ! -f ../admin/PS_orig_for_gs.ps ]; then
 	echo "Add admin/PS_orig_for_gs.ps to GitHub as the basis for comparisons"
 fi
 if [ ! -f ../admin/PS_orig_for_gs.png ]; then
-	# Create the original PNG with transparency via PDF
+	# Create the original PNG with transparency via PDF if it is not present
 	gmt psconvert ../admin/PS_orig_for_gs.ps -TG
+	rm -f ../admin/PS_orig_for_gs_intermediate.pdf
 	echo "Add admin/PS_orig_for_gs.png to GitHub as the basis for comparisons"
 fi
 
