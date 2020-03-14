@@ -257,13 +257,13 @@ GMT_LOCAL void add_defaults(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTR
 
 
 /* ------------------------------------------------------------------------------------------------------------ */
-GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL, GDALDatasetH *hSrcDS, struct GMT_GRID **Grid, int mode) {
+GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL, GDALDatasetH *hSrcDS, struct GMT_GRID **Grid, unsigned int mode) {
 	/* Initialize GDAL, read data and create a GMT Grid container
 	   These operations are common to several functions, so wrap them in a function */
 
 	GDALAllRegister();
 
-	if (mode == 0) {				/* Read vector data */
+	if (mode == GMT_IS_DATASET) {				/* Read vector data */
 		if (GDLL->M.read_gdal) 		/* Read input data with the GDAL machinery */
 			*hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
 		else
@@ -274,7 +274,7 @@ GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 			return -1;
 		}
 	}
-	else {							/* Read raster data */
+	else {							/* Read raster data directly in GDAL */
 		*hSrcDS = GDALOpen(GDLL->fname_in, GA_ReadOnly);
 	}
 
@@ -337,7 +337,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALDEMProcessingOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 1)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_GRID)))	/* Init GDAL and read input data */
 		return error;
 
 	add_defaults(GMT, GDLL, &ext_opts[0]);
@@ -364,7 +364,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALGridOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 0)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_DATASET)))	/* Init GDAL and read input data */
 		return error;
 
 	if (GDLL->M.write_gdal && Grid->header->registration == 0) {
@@ -396,7 +396,7 @@ int gmt_gdal_rasterize(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GD
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALRasterizeOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 0)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_DATASET)))	/* Init GDAL and read input data */
 		return error;
 
 	if (GDLL->M.write_gdal && Grid->header->registration == 0) {
@@ -427,7 +427,7 @@ int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALTranslateOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 1)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_GRID)))	/* Init GDAL and read input data */
 		return error;
 	add_defaults(GMT, GDLL, &ext_opts[0]);
 
@@ -449,7 +449,7 @@ int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALWarpAppOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 1)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_GRID)))	/* Init GDAL and read input data */
 		return error;
 	add_defaults(GMT, GDLL, &ext_opts[0]);
 

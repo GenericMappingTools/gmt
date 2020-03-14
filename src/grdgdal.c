@@ -29,7 +29,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdgdal"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Execute GDAL raster programs from GMT"
-#define THIS_MODULE_KEYS	"<D{,<G(,GG}"
+#define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVbdeghiqr"
 

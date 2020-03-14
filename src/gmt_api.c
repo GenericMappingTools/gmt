@@ -10653,6 +10653,11 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	else if (!strncmp (module, "grdinterpolate", 14U)) {
 		type = ((opt = GMT_Find_Option (API, 'S', *head))) ? 'D' : 'G';	/* Giving -S means we change default putput from grid to dataset */
 	}
+	/* 1p. Check if grdgdal is reading a dataset */
+	else if (!strncmp (module, "grdgdal", 7U)) {
+		if ((opt = GMT_Find_Option (API, 'A', *head)) && !(strstr (opt->arg, "grid") || strstr (opt->arg, "rasterize")))
+			deactivate_input = true;	/* Turn off implicit input since the other GDAL modules read grids directly */
+	}
 
 	/* 2a. Get the option key array for this module */
 	key = api_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
