@@ -761,6 +761,20 @@ geographic coordinates of the two diagonal corners internally.
    The projected coordinate system is still aligned as before but the Earth has been rotated
    180 degrees.  The blue point now has projected coordinates (*x* = -426.2, *y* = 399.7).
 
+THe oblique Mercator projection will by default arrange the output so that the oblique
+Equator becomes the new horizontal, positive *x*-axis.  For features with an orientation
+more north-south than east-west, it may be preferable to align the oblique Equator with
+the vertical, positive *y*-axis instead.  This configuration is selected by appending
+**+v** to the **-J** projection option.  The example below shows this behaviour.
+
+.. figure:: /_images/GMT_obl_baja.*
+   :width: 200 px
+   :align: center
+
+   Oblique view of Baja California using the vertical oblique Equator modifier.  This plot
+   resulted from the argument **-JOa**\ 120W/25N/-30/6c\ **+v**\ .
+
+
 Cassini cylindrical projection (**-Jc** **-JC**) :ref:`... <-Jc_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
