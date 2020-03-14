@@ -82,8 +82,8 @@ distance between two points A and B as
 
 .. math::
 
-	 d_f = R \sqrt{(\theta_A - \theta_B)^2 + \cos \left [ \frac{\theta_A +
-	 \theta_B}{2} \right ] \Delta \lambda^2}, \label{eq:flatearth}
+	 d_f = R \sqrt{(\theta_A - \theta_B)^2 + (\cos \left [ \frac{\theta_A +
+	 \theta_B}{2} \right ] \Delta \lambda)^2}, \label{eq:flatearth}
 
 where *R* is the representative (or spherical) radius of the
 planet, :math:`\theta` is latitude, and the difference in longitudes,
