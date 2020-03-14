@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Test the +v modifer to get the oblique Equator aligned with y-axis
+# Test the +v modifier to get the oblique Equator aligned with y-axis
 # for both northern and southern hemisphere use
 
 ps=vert_obl_merc.ps
