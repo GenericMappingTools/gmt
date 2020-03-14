@@ -13,7 +13,7 @@ cat << EOF > t.txt
 0	0	0	50	50	5000
 EOF
 # Make and plot seamount
-gmt grdseamount -Rk-300/300/-200/200 -I1000 -Gsmt.nc t.txt -Dk -E -F$f -C$m
+gmt grdseamount -R-300/300/-200/200+uk -I1000 -Gsmt.nc t.txt -Dk -E -F$f -C$m
 gmt grdtrack -Gsmt.nc+Uk -ELM/RM -o0,2 | gmt psxy -R-300/300/0/5500 -JX6i/3i -P -K -W1p -Gbrown -Bafg10000 -BWSne -Xc > $ps
 echo "-300 5500 TOPO" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i >>$ps
 # Regular isotropic felxure solution

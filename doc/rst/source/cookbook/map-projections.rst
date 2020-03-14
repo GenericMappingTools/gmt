@@ -735,10 +735,13 @@ degrees about the projection center rather than the usual geographic
 coordinates. This interpretation is chosen since in general the
 parallels and meridians are not very suitable as map boundaries.
 
+Normally, the oblique Equator becomes the horizontal (*x*) axis in the projected units.
+You can select the vertical (*y*) axis by appending **+v**.
+
 When working with oblique projections such as here, it is often much more convenient
 to specify the map domain in the projected coordinates relative to the map center.
 The figure below shows two views of New Zealand using the oblique Mercator projection
-that in both cases specifies the region using **-Rk**\ -1000/1000/-500/500.  The leading
+that in both cases specifies the region using **-R**\ -1000/1000/-500/500**+uk**.  The
 unit **k** means the following bounds are in projected km and we let GMT determine the
 geographic coordinates of the two diagonal corners internally.
 
@@ -757,6 +760,20 @@ geographic coordinates of the two diagonal corners internally.
    i.e., **-JOA**\ 173:17:02E/41:16:15S/215/3i.)
    The projected coordinate system is still aligned as before but the Earth has been rotated
    180 degrees.  The blue point now has projected coordinates (*x* = -426.2, *y* = 399.7).
+
+The oblique Mercator projection will by default arrange the output so that the oblique
+Equator becomes the new horizontal, positive *x*-axis.  For features with an orientation
+more north-south than east-west, it may be preferable to align the oblique Equator with
+the vertical, positive *y*-axis instead.  This configuration is selected by appending
+**+v** to the **-J** projection option.  The example below shows this behaviour.
+
+.. figure:: /_images/GMT_obl_baja.*
+   :width: 300 px
+   :align: center
+
+   Oblique view of Baja California using the vertical oblique Equator modifier.  This plot
+   resulted from the argument **-JOa**\ 120W/25N/-30/6c\ **+v**\ .
+
 
 Cassini cylindrical projection (**-Jc** **-JC**) :ref:`... <-Jc_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -10,8 +10,8 @@ cat << EOF > t.txt
 50	75	-20	60	30	5000	6	1
 150	75	30	50	40	4000	10	4
 EOF
-gmt grdseamount -Rk0/200/0/150 -I1000 -Gsmt_%05.2f.nc t.txt -T10/0/0.25 -Qc/l -Dk -E -F$f -C$m -Z-1
-gmt grdseamount -Rk0/200/0/150 -I1000 -Gsmt.nc t.txt -C$m -Dk -E -F$f -Z-1
+gmt grdseamount -R0/200/0/150+uk -I1000 -Gsmt_%05.2f.nc t.txt -T10/0/0.25 -Qc/l -Dk -E -F$f -C$m -Z-1
+gmt grdseamount -R0/200/0/150+uk -I1000 -Gsmt.nc t.txt -C$m -Dk -E -F$f -Z-1
 gmt grdcontour smt_01.00.nc+Uk -Jx0.03i -Xc -P -C500 -A1000 -GlLM/RM -Bafg -K > $ps
 gmt grdcontour smt.nc+Uk -J -O -K -C500 -A1000 -Gl50/20/50/130,150/20/150/130 -Wc0.25p,red -Wa0.75p,red --FONT_ANNOT_PRIMARY=12p,Helvetica,red >> $ps
 gmt grdtrack -Gsmt_01.00.nc+Uk -E0/75/200/75 -o0,1 -nn | gmt psxy -R0/200/20/130 -J -O -K -W1p >> $ps
