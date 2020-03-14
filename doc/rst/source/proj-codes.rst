@@ -56,7 +56,7 @@ The projection codes for the GMT-style and the PROJ-style are tabulated below.
      - **-Jhammer/**\ |lon0|/\ *scale*
      - Hammer equal area :ref:`... <-Jh_full>`
    * - **-JI**\ [|lon0|/]\ *width*
-     - **-Jsinu/**\ |lat0|/\ *scale*
+     - **-Jsinu/**\ |lon0|/\ *scale*
      - Sinusoidal equal area :ref:`... <-Ji_full>`
    * - **-JJ**\ [|lon0|/]\ *width*
      - **-Jmill/**\ |lon0|/\ *scale*  
