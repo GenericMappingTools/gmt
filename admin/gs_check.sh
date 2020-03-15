@@ -54,6 +54,6 @@ gs -q -dNOPAUSE -dBATCH -dNOSAFER -dPDFSETTINGS=/prepress -dDownsampleColorImage
   -dSCANCONVERTERTYPE=2 -dALLOWPSTRANSPARENCY -dMaxBitmap=2147483647 -dUseFastColor=true -dGraphicsAlphaBits=2 -dTextAlphaBits=4 \
   -sDEVICE=pngalpha  -g2550x3300 -r300 -sOutputFile='PS_orig_for_gs.png' 'PS_orig_for_gs_intermediate.pdf'
 
- echo "Compare PS_orig_for_gs.png to ../admin/PS_orig_for_gs.png"
+echo "Compare PS_orig_for_gs.png to ../admin/PS_orig_for_gs.png"
 gm compare -density 200 -maximum-error 0.003 -highlight-color magenta -highlight-style assign -metric rmse -file diff.png ../admin/PS_orig_for_gs.png PS_orig_for_gs.png
 cd ..
