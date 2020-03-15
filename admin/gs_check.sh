@@ -18,6 +18,7 @@ if [ ! -d build ]; then
 	mkdir -p build
 fi
 # Do the work in the build directory
+echo "Working in build directory"
 cd build
 if [ ! -f ../admin/PS_orig_for_gs.ps ]; then
 	# Make the original GMT PS plot if it is not present
@@ -55,3 +56,4 @@ gs -q -dNOPAUSE -dBATCH -dNOSAFER -dPDFSETTINGS=/prepress -dDownsampleColorImage
 
  echo "Compare PS_orig_for_gs.png to ../admin/PS_orig_for_gs.png"
 gm compare -density 200 -maximum-error 0.003 -highlight-color magenta -highlight-style assign -metric rmse -file diff.png ../admin/PS_orig_for_gs.png PS_orig_for_gs.png
+cd ..
