@@ -321,7 +321,7 @@ int gmt_gdal_info (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 	psOptions = GDALInfoOptionsNew(args, NULL);
 	GMT_Message (GMT->parent, GMT_TIME_NONE, "GDAL Info\n\n%s\n", GDALInfo(hSrcDS, psOptions));
 
-	free_args(GMT, args);
+	if (args) free_args(GMT, args);
 	GDALClose(hSrcDS);
 	GDALInfoOptionsFree(psOptions);
 	GDALDestroyDriverManager();
