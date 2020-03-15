@@ -11,6 +11,13 @@ trigger:
     - 5.4
     - refs/tags/*
 
+# build all PRs
+# Workdround for a bug of Azure Pipelines, see https://github.com/GenericMappingTools/gmt/issues/2913
+pr:
+  branches:
+    include:
+    - '*'  # must quote since "*" is a YAML reserved character; we want a string
+
 # Global variables
 variables:
   # disable auto-display of GMT plots
