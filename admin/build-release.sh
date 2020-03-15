@@ -47,6 +47,8 @@ if [ "X${GMT_DCW_SOURCE}" = "X" ]; then
 	exit 1
 fi
 
+echo "build-release.sh: Remember to run admin/gs-check.sh to test latest GhostScript (must be installed)"
+
 # 1. Set basic ConfigUser.cmake file for a release build
 if [ -f cmake/ConfigUser.cmake ]; then
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig

@@ -14,6 +14,7 @@ assignees: ''
 - [ ] reserve a DOI on [zenodo](https://zenodo.org) (@PaulWessel)
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] check if all tests pass on macOS, Linux and Windows
+- [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update changelog
 - [ ] update INSTALL.md
 - [ ] check if there are any warnings when build the documentation
