@@ -33,6 +33,9 @@ set -e
 # Set LC_ALL to get the same sort order on Linux and macOS
 export LC_ALL=C
 
+# Set temporary directory
+TMPDIR=${TMPDIR:-/tmp}
+
 LIB=$1
 # Make sure we get both upper- and lower-case versions of the tag
 U_TAG=$(echo $LIB | tr '[a-z]' '[A-Z]')
@@ -76,7 +79,7 @@ if [ $DO_RST -eq 1 ]; then
 	# Generate FILE_GMT_MODULE_R
 	#
 	# $1 = mname, $2 = cname, $3 = ${L_TAG}, $4 = tab, $5 = purpose, $6 = tab, $7 = keys
-	
+
 	if [ "$U_TAG" = "CORE" ]; then
 		RSTDIR=../doc/rst/source
 	else
