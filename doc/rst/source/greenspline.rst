@@ -14,7 +14,7 @@ Synopsis
 
 **gmt greenspline** [ *table* ]
 [ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
-[ |-C|\ [**n**]\ *value*\ [**+f**\ *file*] ]
+[ |-C|\ [**n**]\ *value*\ [%][**+f**\ *file*] ]
 [ |-D|\ *mode* ]
 [ |-E|\ [*misfitfile*] ]
 [ |-G|\ *grdfile* ]
@@ -99,7 +99,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**]\ *value*\ [**+f**\ *file*]
+**-C**\ [**n**]\ *value*\ [%][**+f**\ *file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
@@ -108,7 +108,9 @@ Optional Arguments
     eigenvalues to the specified file for further analysis.
     If a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cn** to retain only the *value* largest eigenvalues.
+    output is produced.  Specify **-Cn** to retain only the *value* largest
+    eigenvalues; append % if *value* is the percentage of eigenvalues
+    to use instead.
 
 .. _-D:
 
