@@ -45,7 +45,7 @@ struct GRDINTERPOLATE_CTRL {
 		char **file;
 		unsigned int n_files;
 	} In;
-	struct E {	/* -E<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
+	struct E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
 		bool active;
 		unsigned int mode;
 		char *lines;
@@ -113,7 +113,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <3Dgrid> | <grd1> <grd2> ... -G<outfile> -T[<min>/<max>/]<inc>[+n]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2] [-S<x>/<y>|<table>[+h<header>]] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Zi<levels>|o] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -128,11 +128,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of levels to produce over the range instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output levels in the first column, or a comma-separated list.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set up a crossection based on the given <line1>[,<line2>,...]. Give start and stop coordinates for\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set up a single crossection based on <file> or on the given <line1>[,<line2>,...]. Give start and stop\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   coordinates for each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i<inc> to set the sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +d to insert an extra output column with distances following the coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +g uses gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].\n");
@@ -196,7 +195,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 
 			/* Processes program-specific parameters */
 
+<<<<<<< Updated upstream
 			case 'E':	/* Create an equidistant profile for vertical slicing */
+=======
+			case 'E':	/* Create or read an equidistant profile for slicing */
+>>>>>>> Stashed changes
 				Ctrl->E.active = true;
 				Ctrl->E.lines = strdup (opt->arg);
 				break;
@@ -405,46 +408,72 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		n_layers_used = 2;
 	}
 
-	if (Ctrl->E.active) {	/* Create profiles rather than read them */
-		char prof_args[GMT_LEN128] = {""};
-		if (!(equi_levels || Ctrl->T.active)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Option -E requires either equidistant levels or resampling via -T\n");
-			Return (GMT_RUNTIME_ERROR);
+	if (Ctrl->E.active) {	/* Create or read profile */
+		if (!gmt_access (GMT, Ctrl->E.lines, F_OK)) {	/* Gave a file with a pre-computed crossection */
+			struct GMT_DATASEGMENT *Si = NULL;
+			if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->E.lines, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->E.lines);
+				Return (API->error);
+			}
+			if (In->n_segments > 1) {
+				GMT_Report (API, GMT_MSG_ERROR, "File %s contains more than one segment\n", Ctrl->E.lines);
+				Return (API->error);
+			}
+			if (In->n_columns < 2) {
+				GMT_Report (API, GMT_MSG_ERROR, "File %s does not contain coordinate pairs\n", Ctrl->E.lines);
+				Return (API->error);
+			}
+			Si = In->table[0]->segment[0];	/* Short-hand to only segment */
+			if (In->n_columns < 3) {	/* Need to create distance column array */
+				gmt_adjust_dataset (GMT, In, 3);	/* Add one more output column */
+				gmt_M_free (GMT, Si->data[GMT_Z]);	/* Free it so we can add it next */
+				Si->data[GMT_Z] = gmt_dist_array (GMT, Si->data[GMT_X], Si->data[GMT_Y], Si->n_rows, true);
+			}
+			if (!equidistant_levels (GMT, Si->data[GMT_Z], Si->n_rows)) {
+				GMT_Report (API, GMT_MSG_ERROR, "File %s does not contain equidistant coordinates\n", Ctrl->E.lines);
+				Return (API->error);
+			}
 		}
-		if (gmt_get_dist_units (GMT, Ctrl->E.lines, &Ctrl->E.unit, &Ctrl->E.mode)) {	/* Bad mixing of units in -E specification */
-			GMT_Report (API, GMT_MSG_ERROR, "Cannot mix units in -E (%s)\n", Ctrl->E.lines);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
+		else {	/* Create profile */
+			char prof_args[GMT_LEN128] = {""};
+			if (!(equi_levels || Ctrl->T.active)) {
+				GMT_Report (API, GMT_MSG_ERROR, "Option -E requires either equidistant levels or resampling via -T\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			if (gmt_get_dist_units (GMT, Ctrl->E.lines, &Ctrl->E.unit, &Ctrl->E.mode)) {	/* Bad mixing of units in -E specification */
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot mix units in -E (%s)\n", Ctrl->E.lines);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
 
-		/* Need to get dx,dy from one grid */
-		if (Ctrl->Z.active[GMT_IN])	/* Get the first file */
-			sprintf (file, "%s", Ctrl->In.file[0]);
-		else	/* Get the first layer from 3D cube possibly via a selected variable */
-			sprintf (file, "%s?%s[0]", Ctrl->In.file[0], cube_layer);
-		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to read header from file %s.\n", file);
-			Return (API->error);
+			/* Need to get dx,dy from one grid */
+			if (Ctrl->Z.active[GMT_IN])	/* Get the first file */
+				sprintf (file, "%s", Ctrl->In.file[0]);
+			else	/* Get the first layer from 3D cube possibly via a selected variable */
+				sprintf (file, "%s?%s[0]", Ctrl->In.file[0], cube_layer);
+			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to read header from file %s.\n", file);
+				Return (API->error);
+			}
+			/* Set default spacing to half the min grid spacing: */
+			Ctrl->E.step = 0.5 * MIN (Grid->header->inc[GMT_X], Grid->header->inc[GMT_Y]);
+			if (GMT_Destroy_Data (API, &Grid)) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to destroy temporary grid?\n");
+				Return (API->error);
+			}
+			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
+				if (!GMT->current.map.dist[GMT_MAP_DIST].arc) Ctrl->E.step *= GMT->current.proj.DIST_M_PR_DEG;	/* Convert from degrees to meters or from min/secs to degrees */
+				Ctrl->E.step *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scale to chosen unit */
+				GMT_Report (API, GMT_MSG_INFORMATION, "Default sampling interval in -E is %g %c (may be overridden by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
+			}
+			if (strstr (Ctrl->E.lines, "+c"))
+				strncpy (prof_args, Ctrl->E.lines, GMT_LEN128-1);
+			else /* Make sure we request continuous if possible */
+				sprintf (prof_args, "%s+c", Ctrl->E.lines);
+			In = gmt_make_profiles (GMT, 'E', prof_args, true, false, true, Ctrl->E.step, 0, NULL, &dtype);
+			if (In->table[0] == NULL)
+				Return (GMT_RUNTIME_ERROR);
 		}
-		/* Set default spacing to half the min grid spacing: */
-		Ctrl->E.step = 0.5 * MIN (Grid->header->inc[GMT_X], Grid->header->inc[GMT_Y]);
-		if (GMT_Destroy_Data (API, &Grid)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to destroy temporary grid?\n");
-			Return (API->error);
-		}
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
-			if (!GMT->current.map.dist[GMT_MAP_DIST].arc) Ctrl->E.step *= GMT->current.proj.DIST_M_PR_DEG;	/* Convert from degrees to meters or from min/secs to degrees */
-			Ctrl->E.step *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scale to chosen unit */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Default sampling interval in -E is %g %c (may be overridden by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
-		}
-		if (strstr (Ctrl->E.lines, "+c"))
-			strncpy (prof_args, Ctrl->E.lines, GMT_LEN128-1);
-		else /* Make sure we request continuous if possible */
-			sprintf (prof_args, "%s+c", Ctrl->E.lines);
-		In = gmt_make_profiles (GMT, 'E', prof_args, true, false, true, Ctrl->E.step, 0, NULL, &dtype);
-		if (In->table[0] == NULL)
-			Return (GMT_RUNTIME_ERROR);
-		In->n_columns = In->table[0]->n_columns;	/* Since could have changed via +d */
 	}
 	else if (Ctrl->S.active) {	/* Create time/depth-series and not grid output */
 		/* Since we let grdtrack read the grids we do a separate branch here and the return from the module */
