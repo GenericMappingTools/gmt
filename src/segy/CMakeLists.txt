@@ -22,11 +22,8 @@ set (SUPPL_NAME segy)
 
 # source files
 set (SUPPL_HEADERS segy.h segy_io.h segyreel.h)
-set (SUPPL_LIB_SRCS segy_io.c)
 set (SUPPL_PROGS_SRCS segy2grd.c pssegy.c pssegyz.c)
+set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} segy_io.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.segy)
-
-# lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})

@@ -22,12 +22,9 @@ set (SUPPL_NAME potential)
 
 # source files
 set (SUPPL_HEADERS okbfuns.h talwani.h)
-set (SUPPL_LIB_SRCS okbfuns.c)
 set (SUPPL_PROGS_SRCS grdredpol.c gmtgravmag3d.c gmtflexure.c gravfft.c
 	grdflexure.c grdgravmag3d.c grdseamount.c talwani2d.c talwani3d.c)
+set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} okbfuns.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.potential)
-
-# lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})

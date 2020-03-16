@@ -22,12 +22,10 @@ set (SUPPL_NAME img)
 
 # source files
 set (SUPPL_PROGS_SRCS img2grd.c)
+set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS})
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.img)
-
-# lib sources
-set (LIB_SRCS ${SUPPL_PROGS_SRCS})
 
 # install shell script
 install (PROGRAMS img2google

@@ -453,6 +453,7 @@ if (BUILD_SUPPLEMENTS)
 	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in git.
 	# See cmake/ConfigUserAdvancedTemplate.cmake for setting this parameter.
 	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${EXTRA_BUILD_DIRS})
+
 	# process supplement directories
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		add_subdirectory (${_dir})
@@ -481,7 +482,7 @@ if (BUILD_SUPPLEMENTS)
 	endforeach (_dir)
 
 	# supplement library files
-	get_subdir_var_files (GMT_SUPPL_LIB_SRCS LIB_SRCS ${GMT_SUPPL_DIRS})
+	get_subdir_var_files (GMT_SUPPL_LIB_SRCS SUPPL_LIB_SRCS ${GMT_SUPPL_DIRS})
 
 	# include supplement directories
 	foreach (_dir ${GMT_SUPPL_DIRS})

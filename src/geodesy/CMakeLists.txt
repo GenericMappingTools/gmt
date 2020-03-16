@@ -22,11 +22,8 @@ set (SUPPL_NAME geodesy)
 
 # source files
 set (SUPPL_HEADERS utilvelo.h)
-set (SUPPL_LIB_SRCS utilvelo.c)
 set (SUPPL_PROGS_SRCS gpsgridder.c earthtide.c psvelo.c)
+set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} utilvelo.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.geodesy)
-
-# lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})

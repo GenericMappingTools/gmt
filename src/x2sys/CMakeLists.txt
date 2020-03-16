@@ -22,17 +22,14 @@ set (SUPPL_NAME x2sys)
 
 # source files
 set (SUPPL_HEADERS x2sys.h)
-set (SUPPL_LIB_SRCS x2sys.c)
 set (SUPPL_PROGS_SRCS x2sys_init.c x2sys_put.c x2sys_get.c x2sys_binlist.c
 	x2sys_datalist.c x2sys_cross.c x2sys_list.c x2sys_report.c x2sys_solve.c
 	x2sys_merge.c)
+set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} x2sys.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.x2sys)
 set (SUPPL_EXAMPLE_PROGS test_x2sys.sh)
-
-# lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 
 if (UNIX)
 	install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}

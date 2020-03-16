@@ -23,9 +23,7 @@ set (SUPPL_NAME gshhg)
 # source files
 set (SUPPL_HEADERS gshhg.h gmt_gshhg.h)
 set (SUPPL_PROGS_SRCS gshhg.c)
+set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS})
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.gshhg)
-
-# lib sources
-set (LIB_SRCS ${SUPPL_PROGS_SRCS})
