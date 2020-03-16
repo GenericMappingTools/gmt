@@ -371,15 +371,15 @@ Three classes of files are given special treatment in GMT.
    a grid input named **@earth_relief_**\ *res* on a command line then
    such a grid will automatically be downloaded from the GMT Data Server and placed
    in the *server* directory under **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
-   15 common grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
+   15 common grid spacings: 01d, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
    30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
    11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively) as well
    as the SRTM tile resolutions 03s and 01s (6.8 Gb and 41 Gb for the whole set, respectively). Once
    one of these grids have been downloaded any future reference will simply obtain the
    file from **$GMT_USERDIR** (except if explicitly removed by the user).
-   Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
-   ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
-   of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
+   Note: The 15 arc-sec data comes from the original dataset SRTM15+.
+   Lower resolutions are spherically Gaussian-filtered versions of SRTM15+.
+   The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
    between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
    tiles on the GMT server.  These are individually downloaded as requested, converted to netCDF
    grids and stored in subdirectories srtm1 and srtm3 under the server directory, and assembled
