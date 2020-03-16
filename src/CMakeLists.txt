@@ -453,12 +453,42 @@ if (BUILD_SUPPLEMENTS)
 	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in git.
 	# See cmake/ConfigUserAdvancedTemplate.cmake for setting this parameter.
 	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${EXTRA_BUILD_DIRS})
+
 	# process supplement directories
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		add_subdirectory (${_dir})
+
+		# get variables from subdirectory
+		get_subdir_var (_suppl_name SUPPL_NAME ${_dir})
+		get_subdir_var (_suppl_progs_srcs SUPPL_PROGS_SRCS ${_dir})
+		get_subdir_var_files (_suppl_headers SUPPL_HEADERS ${_dir})
+		get_subdir_var_files (_suppl_example_files SUPPL_EXAMPLE_FILES ${_dir})
+		get_subdir_var_files (_suppl_example_progs SUPPL_EXAMPLE_PROGS ${_dir})
+
+		# create build targets
+		string (REPLACE ".c" "" _gmt_modules "${_supple_progs_src}")
+		install_module_symlink (${_gmt_modules})
+
+		# install example files
+		install (FILES ${_suppl_example_files}
+			DESTINATION ${GMT_DOCDIR}/supplements/${_suppl_name}
+			COMPONENT Documentation)
+
+		# install example scriptss
+		install (PROGRAMS ${_suppl_example_progs}
+			DESTINATION ${GMT_DOCDIR}/supplements/${_suppl_name}
+			COMPONENT Documentation)
+
+		# install headers
+		if (BUILD_DEVELOPER)
+			install (FILES ${_suppl_headers}
+				DESTINATION ${GMT_INCLUDEDIR}/${_suppl_name}
+				COMPONENT Runtime)
+		endif (BUILD_DEVELOPER)
 	endforeach (_dir)
+
 	# supplement library files
-	get_subdir_var_files (GMT_SUPPL_LIB_SRCS LIB_SRCS ${GMT_SUPPL_DIRS})
+	get_subdir_var_files (GMT_SUPPL_LIB_SRCS SUPPL_LIB_SRCS ${GMT_SUPPL_DIRS})
 
 	# include supplement directories
 	foreach (_dir ${GMT_SUPPL_DIRS})
