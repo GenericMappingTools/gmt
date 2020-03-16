@@ -273,6 +273,7 @@
 # endif ()
 # set (GMT_DLL_RENAME gmt_w${BITAGE})
 # set (PSL_DLL_RENAME psl_w${BITAGE})
+# set (SUPP_DLL_RENAME supplements_w${BITAGE})
 #endif(WIN32)
 
 # On Windows Visual C 2012 needs _ALLOW_KEYWORD_MACROS to build
