@@ -15,15 +15,17 @@
 # Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
-# To modify the cmake process, edit your cmake/ConfigUser.cmake and cmake/ConfigUserAdvanced.cmake files
+# CMake settings for supplemental package:
+#
+# 	SUPPL_NAME:          name of the supplemental package
+#   SUPPL_HEADERS:       header files. Will be installed if BUILD_SUPPLEMENTS is TRUE
+#   SUPPL_PROGS_SRCS:    list of C source codes for supplemental modules
+#   SUPPL_LIB_SRCS:      list of C source codes for supplemental library
+#   SUPPL_EXAMPLE_FILES: README and other example files
 #
 
 set (SUPPL_NAME segy)
-
-# source files
 set (SUPPL_HEADERS segy.h segy_io.h segyreel.h)
 set (SUPPL_PROGS_SRCS segy2grd.c pssegy.c pssegyz.c)
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} segy_io.c)
-
-# example files
 set (SUPPL_EXAMPLE_FILES README.segy)
