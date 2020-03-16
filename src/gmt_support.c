@@ -1368,6 +1368,12 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 	return ret;
 }
 
+unsigned int gmt_set_interpolate_mode (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type) {
+	/* Convenience function that hides away the embedding of mode and type via the 10 factor */
+	gmt_M_unused (GMT);
+	return (mode + 10 * type);
+}
+
 /*! . */
 GMT_LOCAL double support_csplint (struct GMT_CTRL *GMT, double *x, double *y, double *c, double xp, uint64_t klo) {
 	uint64_t khi;
