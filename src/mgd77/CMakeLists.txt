@@ -33,19 +33,3 @@ set (SUPPL_EXAMPLE_FILES README.mgd77)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
-
-# create build targets
-string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
-install_module_symlink (${_gmt_modules})
-
-# install example data
-install (FILES ${SUPPL_EXAMPLE_FILES}
-	DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
-	COMPONENT Documentation)
-
-# install headers
-if (BUILD_DEVELOPER)
-	install (FILES ${SUPPL_HEADERS}
-		DESTINATION ${GMT_INCLUDEDIR}/${SUPPL_NAME}
-		COMPONENT Runtime)
-endif (BUILD_DEVELOPER)

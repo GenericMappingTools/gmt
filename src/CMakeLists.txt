@@ -456,7 +456,30 @@ if (BUILD_SUPPLEMENTS)
 	# process supplement directories
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		add_subdirectory (${_dir})
+
+		# get variables from subdirectory
+		get_subdir_var (_suppl_name SUPPL_NAME ${_dir})
+		get_subdir_var (_suppl_progs_srcs SUPPL_PROGS_SRCS ${_dir})
+		get_subdir_var_files (_suppl_headers SUPPL_HEADERS ${_dir})
+		get_subdir_var_files (_suppl_example_files SUPPL_EXAMPLE_FILES ${_dir})
+
+		# create build targets
+		string (REPLACE ".c" "" _gmt_modules "${_supple_progs_src}")
+		install_module_symlink (${_gmt_modules})
+
+		# install example data
+		install (FILES ${_suppl_example_files}
+			DESTINATION ${GMT_DOCDIR}/supplements/${_suppl_name}
+			COMPONENT Documentation)
+
+		# install headers
+		if (BUILD_DEVELOPER)
+			install (FILES ${_suppl_headers}
+				DESTINATION ${GMT_INCLUDEDIR}/${_suppl_name}
+				COMPONENT Runtime)
+		endif (BUILD_DEVELOPER)
 	endforeach (_dir)
+
 	# supplement library files
 	get_subdir_var_files (GMT_SUPPL_LIB_SRCS LIB_SRCS ${GMT_SUPPL_DIRS})
 
