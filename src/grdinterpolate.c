@@ -195,11 +195,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 
 			/* Processes program-specific parameters */
 
-<<<<<<< Updated upstream
-			case 'E':	/* Create an equidistant profile for vertical slicing */
-=======
 			case 'E':	/* Create or read an equidistant profile for slicing */
->>>>>>> Stashed changes
 				Ctrl->E.active = true;
 				Ctrl->E.lines = strdup (opt->arg);
 				break;
