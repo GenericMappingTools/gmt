@@ -9,9 +9,9 @@ that two consecutive (*x*,\ *y*) points define the local distance axis,
 and the local *z* axis is then perpendicular to the distance axis,
 forming a right-handed coordinate system. The
 user may set a preferred positive anomaly plot direction, and if the
-positive normal is outside the plus/minus 90 degree window around the
+positive normal is outside the ±90 degree window around the
 preferred direction, then 180 degrees are added to the direction. Either
-the positive or the negative wiggle may be shaded.
+the positive or the negative wiggle (or both) may be shaded.
 
 Required Arguments
 ------------------
