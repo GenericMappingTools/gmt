@@ -22,6 +22,7 @@
 #   SUPPL_PROGS_SRCS:    list of C source codes for supplemental modules
 #   SUPPL_LIB_SRCS:      list of C source codes for supplemental library
 #   SUPPL_EXAMPLE_FILES: README and other example files
+#   SUPPL_EXAMPLE_PROGS: Example scripts
 #
 
 set (SUPPL_NAME mgd77)

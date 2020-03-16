@@ -463,13 +463,19 @@ if (BUILD_SUPPLEMENTS)
 		get_subdir_var (_suppl_progs_srcs SUPPL_PROGS_SRCS ${_dir})
 		get_subdir_var_files (_suppl_headers SUPPL_HEADERS ${_dir})
 		get_subdir_var_files (_suppl_example_files SUPPL_EXAMPLE_FILES ${_dir})
+		get_subdir_var_files (_suppl_example_progs SUPPL_EXAMPLE_PROGS ${_dir})
 
 		# create build targets
 		string (REPLACE ".c" "" _gmt_modules "${_supple_progs_src}")
 		install_module_symlink (${_gmt_modules})
 
-		# install example data
+		# install example files
 		install (FILES ${_suppl_example_files}
+			DESTINATION ${GMT_DOCDIR}/supplements/${_suppl_name}
+			COMPONENT Documentation)
+
+		# install example scriptss
+		install (PROGRAMS ${_suppl_example_progs}
 			DESTINATION ${GMT_DOCDIR}/supplements/${_suppl_name}
 			COMPONENT Documentation)
 

@@ -22,6 +22,7 @@
 #   SUPPL_PROGS_SRCS:    list of C source codes for supplemental modules
 #   SUPPL_LIB_SRCS:      list of C source codes for supplemental library
 #   SUPPL_EXAMPLE_FILES: README and other example files
+#   SUPPL_EXAMPLE_PROGS: Example scripts
 #
 
 set (SUPPL_NAME x2sys)
@@ -31,12 +32,8 @@ set (SUPPL_PROGS_SRCS x2sys_init.c x2sys_put.c x2sys_get.c x2sys_binlist.c
 	x2sys_merge.c)
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} x2sys.c)
 set (SUPPL_EXAMPLE_FILES README.x2sys)
-
-
-set (SUPPL_EXAMPLE_PROGS test_x2sys.sh)
-
 if (UNIX)
-	install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}
-		DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
-		COMPONENT Documentation)
+	set (SUPPL_EXAMPLE_PROGS test_x2sys.sh)
+else (UNIX)
+	set (SUPPL_EXAMPLE_PROGS test_x2sys.sh)
 endif (UNIX)
