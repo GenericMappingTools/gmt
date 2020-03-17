@@ -196,9 +196,6 @@
 # that only need the GMT API, see the gmt-custom project).
 #set (EXTRA_BUILD_DIRS apidemo)
 
-# List extra new modules for testing without adding them to the module list
-#set (EXTRA_MODULES newmodule1.c newmodule2.c)
-
 # List extra new supplemental modules for testing without adding them to the module list
 #set (EXTRA_MODULES_SUPPL newsuppl1.c newsuppl2.c)
 
