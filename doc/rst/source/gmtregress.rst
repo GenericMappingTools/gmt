@@ -175,7 +175,7 @@ Optional Arguments
 
 .. include:: explain_array.rst_
 
-**Note**:
+Note:
 -----
 
 The output segment header will contain all the various statistics we compute for each segment.
