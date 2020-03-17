@@ -143,7 +143,7 @@ Optional Arguments
 **-G**\ *grdfile*
     Name of resulting output file. (1) If options **-R**, **-I**, and
     possibly **-r** are set we produce an equidistant output table. This
-    will be written to stdout unless **-G** is specified. Note: for 2-D
+    will be written to stdout unless **-G** is specified. **Note**: For 2-D
     grids the **-G** option is required. (2) If option **-T** is
     selected then **-G** is required and the output file is a 2-D binary
     grid file. Applies to 2-D interpolation only. (3) If **-N** is
@@ -424,7 +424,7 @@ be determined by experimentation. Generally, very smooth data (such as
 potential fields) do not require much, if any tension, while rougher
 data (such as topography) will typically interpolate better with
 moderate tension. Make sure you try a range of values before choosing
-your final result. Note: the regularized spline in tension is only
+your final result. **Note**: The regularized spline in tension is only
 stable for a finite range of *scale* values; you must experiment to find
 the valid range and a useful setting. For more information on tension
 see the references below.

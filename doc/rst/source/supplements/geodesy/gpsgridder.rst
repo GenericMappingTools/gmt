@@ -88,7 +88,7 @@ Optional Arguments
     If a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
     output is produced.  Specify **-Cn**\ *value* to retain only the *value* largest eigenvalues.
-    Note: 1/4 of the total number of data constraints is a good starting point
+    **Note**: 1/4 of the total number of data constraints is a good starting point
     for further experiments.
 
 .. _-E:
@@ -141,7 +141,7 @@ Optional Arguments
 
 **-S**\ *nu*
     Specify Poisson's ratio to use for this 2-D elastic sheet [0.5].
-    Note: 1.0 is incompressible in a 2-D formulation while -1
+    **Note**: 1.0 is incompressible in a 2-D formulation while -1
     removes all coupling between the two directions.
 
 .. _-T:

@@ -8,7 +8,7 @@
     By default, the anchor point on the directional rose is assumed to be the center of the rose (MC), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify*
     (see :doc:`text` for list and explanation of codes).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Append **+w**\ *width* to set the width of the rose in plot coordinates (in inches, cm, or points).
     Add **+f** to get a "fancy" rose, and specify in *level* what
@@ -30,7 +30,7 @@
     By default, the anchor point on the magnetic rose is assumed to be the center of the rose (MC), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify*
     (see :doc:`text` for list and explanation of codes).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Append **+w**\ *width* to set the width of the rose in plot coordinates (in inches, cm, or points).
     Use **+d** to assign the magnetic declination and set *dlabel*, which is a label for

@@ -24,7 +24,7 @@
     not required, **+f** is not allowed, and no units should be specified in **+w**.
     You must set any Cartesian data units via **+l**.
     For a vertical rather than horizontal Cartesian scale, append **+v**.
-    Note: Use :term:`FONT_LABEL` to change the label font and
+    **Note**: Use :term:`FONT_LABEL` to change the label font and
     :term:`FONT_ANNOT_PRIMARY`
     to change the annotation font.  The height of the map scale is controlled
     by :term:`MAP_SCALE_HEIGHT`, and the pen thickness is
