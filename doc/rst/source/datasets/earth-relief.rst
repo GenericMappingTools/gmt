@@ -44,7 +44,7 @@ Code Dimensions        Size     Description
 03m      7201 x   3601   27 MB  3 arc minute global relief (SRTM15+V2.1 @ 5.6 km)
 02m     10801 x   5401   58 MB  2 arc minute global relief (SRTM15+V2.1 @ 3.7 km)
 01m     21601 x  10801  214 MB  1 arc minute global relief (SRTM15+V2.1 @ 1.9 km)
-30s     43201 x  21601  765 MB  30 arc second global relief (SRTM15+V2.1 @ 0.9 km)
+30s     43201 x  21601  765 MB  30 arc second global relief (SRTM15+V2.1 @ 1.0 km)
 15s     86400 x  43200  2.6 GB  15 arc second global relief (SRTM15+V2.1)
 03s    432001 x 216001  6.8 GB  3 arc second global relief (SRTM3S)
 01s   1296001 x 432001   41 GB  1 arc second global relief (SRTM1S)
