@@ -184,7 +184,7 @@ Optional Arguments
     for storage in the netCDF file, any scale and offset we should apply
     to the data to make them fit inside the range implied by the chosen
     storage type, and a general comment (< 128 characters) regarding
-    what these data represent. Note: If text data type is selected then
+    what these data represent. **Note**: If text data type is selected then
     the terms "values" in the **-A** discussion refer to your text data.
     Furthermore, the discussion on interpolation does not apply and the
     NaN value becomes a "no string" value (see **-E** for what this is).

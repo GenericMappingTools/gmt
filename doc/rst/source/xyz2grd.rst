@@ -43,7 +43,7 @@ with data. Such unconstrained nodes are set to a value specified by the
 user [Default is NaN]. Nodes with more than one value will be set to the
 mean value. As an option (using **-Z**), a 1-column z-table may be read
 assuming all nodes are present (z-tables can be in organized in a number
-of formats, see **-Z** below.)  Note: **xyz2grd** does not grid the data,
+of formats, see **-Z** below.)  **Note**: **xyz2grd** does not grid the data,
 it simply reformats existing data to a grid structure.  For gridding,
 see **surface**, **greenspline**, **nearneighbor**, or **triangulate**.
 
@@ -122,7 +122,7 @@ Optional Arguments
     Then, append **L** or **R** to indicate that first element is at
     left or right end of row. Likewise for column formats: start with
     **L** or **R** to position first column, and then append **T** or
-    **B** to position first element in a row. Note: These two row/column
+    **B** to position first element in a row. **Note**: These two row/column
     indicators are only required for grids; for other tables they do not
     apply. For gridline registered grids: If data are periodic in x but
     the incoming data do not contain the (redundant) column at x = xmax,

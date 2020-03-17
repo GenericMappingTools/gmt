@@ -16,7 +16,7 @@ appends a constant foreground plot.  The :doc:`movie </movie>` module explains
 the available options and gives simple examples.  Below are more advanced
 movie examples.  You can generate anything from tiny animated gif files
 for your PowerPoint or KeyNote presentations or a full-featured movie with
-thousands of frames at HD or 4k resolution.  Note: Several of the movie
+thousands of frames at HD or 4k resolution.  **Note**: Several of the movie
 examples have been purposefully made simpler by selecting lower frame rates
 and coarser grids so that the automatic building of the documentation (which
 includes the animations) does not take excessive time.
