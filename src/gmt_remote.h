@@ -54,8 +54,8 @@ GMT_LOCAL struct GMT_DATA_INFO gmt_data_info[GMT_N_DATA_INFO_ITEMS] = {
 	{"04m",  "16M", "Earth Relief at 4x4 arc minutes from Gaussian Cartesian filtering (7.5 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
 	{"03m",  "27M", "Earth Relief at 3x3 arc minutes from Gaussian Cartesian filtering (5.6 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
 	{"02m",  "58M", "Earth Relief at 2x2 arc minutes from Gaussian Cartesian filtering (3.7 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
-	{"01m", "214M", "Earth Relief at 1x1 arc minutes from Gaussian Cartesian filtering (1.9 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
-	{"30s", "765M", "Earth Relief at 30x30 arc seconds from Gaussian Cartesian filtering (1.0 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
+	{"01m", "215M", "Earth Relief at 1x1 arc minutes from Gaussian Cartesian filtering (1.9 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
+	{"30s", "769M", "Earth Relief at 30x30 arc seconds from Gaussian Cartesian filtering (1.0 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
 	{"15s", "2.6G", "Earth Relief at 15x15 arc seconds provided by SRTM15+V2.1 [Tozer et al., 2019]"},
 	{"03s", "6.8G", "Earth Relief at 3x3 arc seconds tiles provided by SRTMGL3 (land only) [NASA/USGS]"},
 	{"01s",  "41G", "Earth Relief at 1x1 arc seconds tiles provided by SRTMGL1 (land only) [NASA/USGS]"}
