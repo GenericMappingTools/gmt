@@ -260,7 +260,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
-			case 'Z':	/* Control input/output grid mamagement */
+			case 'Z':	/* Control input/output grid management */
 				switch (opt->arg[0]) {
 					case 'i': mode = GMT_IN; break;		/* Get an array of input levels and read individual level 2-D grids */
 					case 'o': mode = GMT_OUT; break;	/* Write output slices as individual 2-D grids */
