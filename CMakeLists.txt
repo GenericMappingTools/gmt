@@ -115,7 +115,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	find_program (XZ NAMES xz)
 	if (GNUTAR AND GZIP AND XZ)
 		# Targets for creating tarballs
-		string (REGEX REPLACE ".*/" "" _release_dirname "${GMT_RELEASE_PREFIX}")
+		get_filename_component (_release_name ${GMT_RELEASE_PREFIX} NAME)
 		add_custom_command (OUTPUT ${_release_dirname}-src.tar
 			COMMAND ${GNUTAR} -c --owner 0 --group 0 --mode a=rX,u=rwX --force-local
 			-f ${GMT_BINARY_DIR}/${_release_dirname}-src.tar ${_release_dirname}
