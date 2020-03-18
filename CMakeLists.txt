@@ -142,7 +142,7 @@ endif (GIT_FOUND AND HAVE_GIT_VERSION)
 if (BUILD_SHARED_LIBS)
 	set (_lib_suffix ${CMAKE_SHARED_LIBRARY_SUFFIX})
 else (BUILD_SHARED_LIBS)
-    set (_lib_suffix ${CMAKE_STATIC_LIBRARY_SUFFIX})
+	set (_lib_suffix ${CMAKE_STATIC_LIBRARY_SUFFIX})
 endif (BUILD_SHARED_LIBS)
 
 # Get name of GMT core library
