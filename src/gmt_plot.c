@@ -1653,9 +1653,20 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exiting plot_map_gridlines\n");
 }
 
+GMT_LOCAL void plot_set_gridcross_limbs (struct GMT_CTRL *GMT, unsigned int axis, unsigned int kind, double value, unsigned int *B, unsigned int *E) {
+	*B = *E = 0;	/* Default is regular grid cross */
+	if (GMT->current.setting.map_grid_cross_type[kind] != 1) return;	/* Regular cross */
+	if (gmt_M_is_zero (value)) return;	/* Symmetrical as well for zero */
+	if (gmt_M_type (GMT, GMT_IN, axis) == GMT_IS_LON) {	/* Worry about longitudes */
+		if (value > 0.0 && value < 180.0) *B = 1; else *E = 1;	/* One-sided */
+	}
+	else {
+		if (value > 0.0) *B = 1; else *E = 1;	/* One-sided */
+	}
+}
+
 GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	unsigned int i, j, k, nx, ny, B = 0, E = 0, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
-	bool half = false;
 	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL;
 	double x_angle, y_angle, Ca, Sa, L, sgn[2] = {1.0, 0.0};
 
@@ -1677,7 +1688,6 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 		ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &y, NULL);
 
 		L = 0.5 * fabs (GMT->current.setting.map_grid_cross_size[k]);
-		half = (GMT->current.setting.map_grid_cross_size[k] < 0.0);
 
 		for (j = 0; j < ny; j++) {
 			for (i = 0; i < nx; i++) {
@@ -1691,7 +1701,7 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 				}
 				else
 					xi = x[i];
-				if (half) { B = E = 0; if (xi >= 0.0 && xi < 180.0) B = 1; else E = 1; }
+				plot_set_gridcross_limbs (GMT, GMT_X, k, xi, &B, &E);
 				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) {
 					gmt_geo_to_xy (GMT, xi + GMT->current.map.dlon, yj, &x1, &y1);
@@ -1708,7 +1718,7 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 				}
 				PSL_plotsegment (PSL, xa, ya, xb, yb);
 
-				if (half) { B = E = 0; if (yj >= 0.0) B = 1; else E = 1; }
+				plot_set_gridcross_limbs (GMT, GMT_Y, k, yj, &B, &E);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) {
 					//gmt_geo_to_xy (GMT, xi, yj - copysign (GMT->current.map.dlat, yj), &x1, &y1);
 					//y_angle = d_atan2 (y1-y0, x1-x0);

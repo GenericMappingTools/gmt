@@ -5730,6 +5730,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_FRAME_WIDTH] = 'p';
 	/* MAP_GRID_CROSS_SIZE_PRIMARY, MAP_GRID_CROSS_SIZE_SECONDARY */
 	GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = 0; /* 0p */
+	GMT->current.setting.map_grid_cross_type[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_type[GMT_SECONDARY] = 0; /* regular cross type */
 	GMT->current.setting.given_unit[GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY] = 'p';
 	/* MAP_GRID_PEN_PRIMARY */
@@ -9619,18 +9620,24 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE:
 			dval = gmt_M_to_inch (GMT, value);
+			ival = (value[0] == '-') ? 1 : ((value[0] == '+') ? 2 : 0);
 			GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
+			GMT->current.setting.map_grid_cross_type[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_type[GMT_SECONDARY] = ival;
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
 			dval = gmt_M_to_inch (GMT, value);
+			ival = (value[0] == '-') ? 1 : ((value[0] == '+') ? 2 : 0);
 			GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = dval;
+			GMT->current.setting.map_grid_cross_type[GMT_PRIMARY] = ival;
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
 			GMT_COMPAT_TRANSLATE ("MAP_GRID_CROSS_SIZE_SECONDARY");
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
 			dval = gmt_M_to_inch (GMT, value);
+			ival = (value[0] == '-') ? 1 : ((value[0] == '+') ? 2 : 0);
 			GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
+			GMT->current.setting.map_grid_cross_type[GMT_SECONDARY] = ival;
 			break;
 		case GMTCASE_MAP_GRID_PEN:
 			error = gmtlib_setparameter (GMT, "MAP_GRID_PEN_PRIMARY", value, core) +
@@ -10725,7 +10732,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 /*! . */
 char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	/* value must hold at least GMT_BUFSIZ chars */
-	static char value[GMT_BUFSIZ] = {""}, txt[GMT_LEN8];
+	static char value[GMT_BUFSIZ] = {""}, txt[GMT_LEN8], *PRE[3] = {"", "-", "+"};
 	int case_val;
 	bool error = false;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
@@ -11050,7 +11057,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
+			snprintf (value, GMT_LEN256, "%s%g%c", PRE[GMT->current.setting.map_grid_cross_type[GMT_PRIMARY]], GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -11058,7 +11065,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
+			snprintf (value, GMT_LEN256, "%s%g%c", PRE[GMT->current.setting.map_grid_cross_type[GMT_PRIMARY]], GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
 			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
