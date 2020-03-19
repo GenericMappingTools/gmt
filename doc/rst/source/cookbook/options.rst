@@ -172,7 +172,7 @@ Calendar time coordinates:
     where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
     day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
     Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
-    week, and day-of-week) for the ISO calendar. Note: this format requirement
+    week, and day-of-week) for the ISO calendar. **Note**: This format requirement
     only applies to command-line arguments and not time coordinates given via
     data files.  If no *date* is given
     we assume the current day. The **T** flag is required if a *clock* is given.
@@ -934,7 +934,7 @@ subplot's **-A** option) or to specify directly the *row*,\ *col* or
 1-D *index* of the desired panel.  The **-c** option is only allowed
 when in subplot mode.  If no **-c** option is given for the first plot
 then we default to *row* = *col* = *index* = 0, i.e., the upper left
-panel.  Note: *row*, *col*, and *index* all start at 0.
+panel.  **Note**: *row*, *col*, and *index* all start at 0.
 
 .. _option_-d:
 
@@ -1025,7 +1025,7 @@ miles. For programs that map data to map coordinates you can optionally
 specify these criteria to apply to the projected coordinates (by using
 upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
 **c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
-by :term:`PROJ_LENGTH_UNIT`]. Note: For **-gx** or **-gy** with time data
+by :term:`PROJ_LENGTH_UNIT`]. **Note**: For **-gx** or **-gy** with time data
 the unit is instead controlled by :term:`TIME_UNIT`.
 Normally, a gap is computed as the absolute value of the
 specified distance measure (see above).  Append **+n** to compute the gap

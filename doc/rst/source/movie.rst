@@ -76,7 +76,7 @@ Required Arguments
     and are (with pixel dimensions given in parenthesis):
     **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
     **svga** (800 x 600), and **dvd** (640 x 480).
-    Note: Your :term:`PROJ_LENGTH_UNIT` setting determines if **movie** sets
+    **Note**: Your :term:`PROJ_LENGTH_UNIT` setting determines if **movie** sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
@@ -85,7 +85,7 @@ Required Arguments
 
 **-N**\ *prefix*
     Determines the name of the final movie file and a sub-directory with frame images (but see **-W**).
-    Note: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
+    **Note**: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
     old directory by that name first.  This is done to prevent the accidental loss of valuable data.
 
 .. _-T:
@@ -101,7 +101,7 @@ Required Arguments
     the number of frames. Note that the *background* script is allowed to create *timefile*,
     hence we check for its existence both before *and* after the background script has completed.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
-    number via **+s**\ *first*.  Note: All frames are still included; this modifier only affects
+    number via **+s**\ *first*.  **Note**: All frames are still included; this modifier only affects
     the numbering of the given frames.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
     is automatically set but if you are splitting large jobs across several computers then you
@@ -190,7 +190,7 @@ Optional Arguments
     **f** selects the running frame number as the label, **p** selects the percentage of progress so far,
     **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 0), while **t**\ *col* uses word number
-    *col* from the trailing text in *timefile* (first word is 0).  Note: If you use **-Lc**
+    *col* from the trailing text in *timefile* (first word is 0).  **Note**: If you use **-Lc**
     with an absolute time column, then the format of the timestamp will depend on the two default settings
     :term:`FORMAT_DATE_MAP` and :term:`FORMAT_CLOCK_MAP`.  By default,
     both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.

@@ -2877,6 +2877,7 @@ GMT_LOCAL bool map_init_merc (struct GMT_CTRL *GMT) {
 	map_cyl_validate_clon (GMT, 0);	/* Make sure the central longitude is valid */
 	gmt_vmerc (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	GMT->current.proj.j_x *= D;
+	GMT->current.proj.j_yc *= D;
 	GMT->current.proj.j_ix /= D;
 	GMT->current.proj.fwd = &gmt_merc_sph;
 	GMT->current.proj.inv = &gmt_imerc_sph;

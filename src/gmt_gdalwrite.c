@@ -266,7 +266,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	unsigned char *outByte = NULL, *img = NULL, *tmpByte;
 	float *ptr;
 
-	pszFormat = prhs->driver;
+	if (prhs->driver) pszFormat = prhs->driver;
 	adfGeoTransform[0] =  prhs->ULx;
 	adfGeoTransform[3] =  prhs->ULy;
 	adfGeoTransform[1] =  prhs->x_inc;

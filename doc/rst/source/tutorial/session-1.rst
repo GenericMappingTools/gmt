@@ -130,7 +130,7 @@ There are 6 general categories of output produced by GMT:
 
 #. Exit status (0 means success, otherwise failure).
 
-Note: GMT automatically creates and updates a history of past
+**Note**: GMT automatically creates and updates a history of past
 GMT command options for the common switches.  This history
 file is called gmt.history and one will be created in
 every directory from which GMT modules are executed.  Many

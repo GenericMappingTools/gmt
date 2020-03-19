@@ -82,6 +82,6 @@ and **PS_EPS**, **TRANSPARENCY**.
 ================================== ==========================================
 
 
-Note: While **TIME_LEAP_SECONDS** is a recognized keyword it is
+**Note**: While **TIME_LEAP_SECONDS** is a recognized keyword it is
 currently not implemented and has no effect.  We reserve the right
 to enable this feature in the future.

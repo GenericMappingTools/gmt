@@ -1368,6 +1368,12 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 	return ret;
 }
 
+unsigned int gmt_set_interpolate_mode (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type) {
+	/* Convenience function that hides away the embedding of mode and type via the 10 factor */
+	gmt_M_unused (GMT);
+	return (mode + 10 * type);
+}
+
 /*! . */
 GMT_LOCAL double support_csplint (struct GMT_CTRL *GMT, double *x, double *y, double *c, double xp, uint64_t klo) {
 	uint64_t khi;
@@ -3790,12 +3796,21 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 #else
 /*! Dummy functions since not installed */
 GMT_LOCAL uint64_t support_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link) {
+	gmt_M_unused (x_in);
+	gmt_M_unused (y_in);
+	gmt_M_unused (n);
+	gmt_M_unused (link);
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
 	return (0);
 }
 
 /*! . */
 GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, unsigned int mode) {
+	gmt_M_unused (x_in);
+	gmt_M_unused (y_in);
+	gmt_M_unused (n);
+	gmt_M_unused (wesn);
+	gmt_M_unused (mode);
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
 	return (NULL);
 }

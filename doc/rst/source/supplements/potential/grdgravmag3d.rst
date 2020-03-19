@@ -119,7 +119,7 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| replace:: Note: this overrides the source grid region (Default: use same region as input)
+.. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input)
 .. include:: ../../explain_-R.rst_
 
 .. _-S:

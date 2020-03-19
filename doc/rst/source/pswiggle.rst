@@ -85,10 +85,9 @@ see if this is the problem, you should do this:
 
    ::
 
-    awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz | more
+    gmt mapproject -Af yourdata.xyz | more
 
-(note that output is in radians; on some machines you need "nawk" to do
-this). Then if these numbers jump around a lot, you may do this:
+Then if these numbers jump around a lot, you may do this:
 
    ::
 

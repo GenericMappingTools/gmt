@@ -77,7 +77,7 @@ Optional Arguments
 
 **-A**\ *fields*
     Select which fields to write to individual grids.  Requires **-G**.
-    Append comma-separated codes for available fields: **z** (the modal
+    Append the codes for available fields: **z** (the modal
     data z), **s** (the L1 scale of the mode), **l** (lowest
     value), **h** (highest value) and **w** (the output weight; requires **-W**).
     Note **s**\|\ **l**\|\ **h** requires **-E**, and **Es**\|\ **r**
@@ -203,7 +203,7 @@ data representing integer counts, try::
 To determine the mode and L1 scale (MAD) on the mode per 10 minute bin and save these to two separate grids
 called field_z.nc and field_s.nc, run::
 
-    gmt blockmode @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
+    gmt blockmode @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Azs
 
 See Also
 --------
