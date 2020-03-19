@@ -42,6 +42,15 @@ endif (WIN32)
 # Automatically add the current source- and build directories to the include path.
 set (CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
+if (MSVC)
+	# Disable automatic manifest generation
+	string (REGEX REPLACE "/MANIFEST[^ ]*( |$)" "" CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+
+	# To expand the command line arguments in Windows, see:
+	# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
+	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} setargv.obj")
+endif (MSVC)
 
 ##
 ##	Find executables needed by GMT
@@ -314,6 +323,11 @@ if (NOT LICENSE_RESTRICTED) # off
 	set (GMT_TRIANGLE_SRCS triangle.c triangle.h)
 	list (APPEND GMT_EXTRA_LICENSE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.TRIANGLE)
 	set (GMT_EXTRA_LICENSE_FILES ${GMT_EXTRA_LICENSE_FILES} PARENT_SCOPE)
+
+	# extra ugly definitions for triangle
+	set_source_files_properties (triangle.c
+		PROPERTIES
+		COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY;ANSI_DECLARATORS")
 else (NOT LICENSE_RESTRICTED) # on
 	# disable Shewchuk's triangle routine
 	set (GMT_TRIANGULATE "Watson" PARENT_SCOPE)
@@ -422,10 +436,6 @@ configure_file (gmt-config.in gmt-config${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 # gmtprogram
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 
-# extra ugly definitions for triangle
-set_source_files_properties (triangle.c
-	PROPERTIES
-	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY;ANSI_DECLARATORS")
 
 
 ##
@@ -674,11 +684,10 @@ add_executable (script2verbatim script2verbatim.c)
 include (CreateDebugSym)
 # generate and install Mac/Windows debugging symbols
 create_debug_sym (${GMT_BINDIR} gmt)
+create_debug_sym (${GMT_BINDIR} gmtlib pslib)
 if (WIN32)
-	create_debug_sym (${GMT_BINDIR} gmtlib pslib)
 	create_debug_sym (${GMT_BINDIR}/gmt_plugins supplib)
 else (WIN32)
-	create_debug_sym (${GMT_LIBDIR} gmtlib pslib)
 	create_debug_sym (${GMT_LIBDIR}/gmt${GMT_INSTALL_NAME_SUFFIX}/plugins supplib)
 endif (WIN32)
 
@@ -691,16 +700,6 @@ else (BUILD_SUPPLEMENTS)
 	add_dependencies (check ${_gmt_progs} psldemo)
 endif (BUILD_SUPPLEMENTS)
 
-if (MSVC)
-	# Disable automatic manifest generation
-	string(REGEX REPLACE "/MANIFEST[^ ]*( |$)" ""
-		CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
-
-	# To expand the command line arguments in Windows, see:
-	# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} setargv.obj")
-endif (MSVC)
 
 ##
 ##	Install binaries and libraries
