@@ -1367,7 +1367,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			gmt_M_uint_swap (GMT->current.proj.xyz_projection[GMT_X], GMT->current.proj.xyz_projection[GMT_Y]);
 			tmp = GMT->current.proj.fwd_x; GMT->current.proj.fwd_y = GMT->current.proj.fwd_x; GMT->current.proj.fwd_x = tmp;
 			GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;
-			if (label[0] && !flip && (strchr (label, '@') || strchr (label, '(') || !(flip & PSSCALE_FLIP_VERT))) { /* Can let gmt_xy_axis2 set the label directly, else do separately later */
+			if (label[0] && !flip) { /* Can let gmt_xy_axis2 set the label directly, else do separately later */
 				strcpy (GMT->current.map.frame.axis[GMT_Y].label, label);
 				label_set = true;
 			}
