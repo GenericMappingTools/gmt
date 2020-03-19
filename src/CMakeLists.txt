@@ -39,6 +39,9 @@ else (WIN32)
 	set(LIB_PREFIX "lib")
 endif (WIN32)
 
+# Automatically add the current source- and build directories to the include path.
+set (CMAKE_INCLUDE_CURRENT_DIR TRUE)
+
 
 ##
 ##	Find executables needed by GMT
@@ -296,9 +299,6 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 # check for math and POSIX functions
 include(ConfigureChecks)
 
-include_directories (${GMT_SOURCE_DIR}/src)
-include_directories (${CMAKE_CURRENT_BINARY_DIR})
-set (CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 
 if (DO_API_TESTS)
