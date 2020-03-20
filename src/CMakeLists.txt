@@ -765,7 +765,7 @@ if (BUILD_SUPPLEMENTS)
 		get_subdir_var_files (_suppl_example_progs SUPPL_EXAMPLE_PROGS ${_dir})
 
 		# create build targets
-		string (REPLACE ".c" "" _gmt_modules "${_supple_progs_src}")
+		string (REPLACE ".c" "" _gmt_modules "${_suppl_progs_srcs}")
 		install_module_symlink (${_gmt_modules})
 
 		# install example files
