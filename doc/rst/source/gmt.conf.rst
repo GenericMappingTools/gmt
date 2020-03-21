@@ -655,15 +655,19 @@ MAP Parameters
 
     **MAP_GRID_CROSS_SIZE_PRIMARY**
         Size of grid cross at lon-lat intersections. 0 means draw
-        continuous gridlines instead.  A positive size will draw a symmetric
-        cross, while a negative size will only draw ticks away from Equator
-        and Greenwich [0p].
+        continuous gridlines instead.  A nonzero size will draw a symmetric grid
+        cross. Signed sizes have special meaning and imply grid line ticks that
+        embellish an already drawn set of gridlines: A negative size will only
+        draw ticks away from Equator and Greenwich, while a positive size will
+        draw symmetric ticks [0p].
 
     **MAP_GRID_CROSS_SIZE_SECONDARY**
         Size of grid cross at secondary lon-lat intersections. 0 means draw
-        continuous gridlines instead.  A positive size will draw a symmetric
-        cross, while a negative size will only draw ticks away from Equator
-        and Greenwich [0p].
+        continuous gridlines instead.  A nonzero size will draw a symmetric grid
+        cross.  Signed sizes have special meaning and imply grid line ticks that
+        embellish an already drawn set of gridlines: A negative size will only
+        draw ticks away from Equator and Greenwich, while a positive size will
+        draw symmetric ticks [0p].
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
