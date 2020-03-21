@@ -1709,10 +1709,28 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exiting plot_map_gridlines\n");
 }
 
+GMT_LOCAL double plot_cross_angle (struct GMT_CTRL *GMT, double lon, double lat, double dx, double dy, unsigned int type) {
+	/* (lon,alt) is the point and we want a tangent angle there in radians */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* General case with arbitrary orientations */
+		double x0, y0, x1, y1;
+		if (type == GMT_X) {	/* Compute angle from d/dx */
+			gmt_geo_to_xy (GMT, lon - dx, lat, &x0, &y0);
+			gmt_geo_to_xy (GMT, lon + dx, lat, &x1, &y1);
+		}
+		else {	/* Get d/dy */
+			gmt_geo_to_xy (GMT, lon, ((lat + dy) >  90.0) ?  90.0 : lat + dy, &x0, &y0);
+			gmt_geo_to_xy (GMT, lon, ((lat - dy) < -90.0) ? -90.0 : lat - dy, &x1, &y1);
+		}
+		return (d_atan2 (y1-y0, x1-x0));
+	}
+	/* Cartesian is always x horizontal, y 90 degrees up */
+	return ((type == GMT_X) ? 0.0 : M_PI_2);
+}
+
 GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	unsigned int i, j, k, nx, ny, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
-	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL;
-	double x_angle, y_angle, Ca, Sa, L;
+	double x0, y0, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL;
+	double angle, Ca, Sa, L, dx, dy;
 
 	for (k = i = 0; k < 2; k++)
 		if (GMT->current.setting.map_grid_cross_size[k] > 0.0 && GMT->current.setting.map_grid_cross_type[k] == 0) i++;
@@ -1730,51 +1748,38 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 		nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item[k]], &x, NULL);
 		ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &y, NULL);
+		dy = (ny > 1) ? y[1] - y[0] : GMT->current.map.dlat;
+		dx = (nx > 1) ? x[1] - x[0] : GMT->current.map.dlon;
 
 		L = 0.5 * GMT->current.setting.map_grid_cross_size[k];
 
 		for (j = 0; j < ny; j++) {
+			yj = y[j];
 			for (i = 0; i < nx; i++) {
-
-				if (gmt_map_outside (GMT, x[i], y[j])) continue;	/* Outside map */
-
-				yj = y[j];
 				if (gmt_M_pole_is_point(GMT) && doubleAlmostEqual (fabs (yj), 90.0)) {	/* Only place one grid cross at the poles for maps where the poles are points */
 					xi = GMT->current.proj.central_meridian;
 					i = nx;	/* This ends the loop for this particular latitude */
 				}
 				else
 					xi = x[i];
-				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
-				if (gmt_M_is_geographic (GMT, GMT_IN)) {
-					gmt_geo_to_xy (GMT, xi + GMT->current.map.dlon, yj, &x1, &y1);
-					x_angle = d_atan2 (y1-y0, x1-x0);
-					sincos (x_angle, &Sa, &Ca);
-					xa = x0 - L * Ca;
-					xb = x0 + L * Ca;
-					ya = y0 - L * Sa;
-					yb = y0 + L * Sa;
-				}
-				else {
-					xa = x0 - L, xb = x0 + L;
-					ya = yb = y0;
-				}
+
+				if (gmt_map_outside (GMT, xi, yj)) continue;	/* Outside map */
+
+				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);	/* Grid crossing center */
+				angle = plot_cross_angle (GMT, xi, yj, dx, dy, GMT_X);
+				sincos (angle, &Sa, &Ca);
+				xa = x0 - L * Ca;
+				xb = x0 + L * Ca;
+				ya = y0 - L * Sa;
+				yb = y0 + L * Sa;
 				PSL_plotsegment (PSL, xa, ya, xb, yb);
 
-				if (gmt_M_is_geographic (GMT, GMT_IN)) {
-					//gmt_geo_to_xy (GMT, xi, yj - copysign (GMT->current.map.dlat, yj), &x1, &y1);
-					//y_angle = d_atan2 (y1-y0, x1-x0);
-					y_angle = x_angle + M_PI_2;
-					sincos (y_angle, &Sa, &Ca);
-					xa = x0 - L * Ca;
-					xb = x0 + L * Ca;
-					ya = y0 - L * Sa;
-					yb = y0 + L * Sa;
-				}
-				else {
-					xa = xb = x0;
-					ya = y0 - L, yb = y0 + L;
-				}
+				angle += M_PI_2;	/* Since crosses are orthogonal */
+				sincos (angle, &Sa, &Ca);
+				xa = x0 - L * Ca;
+				xb = x0 + L * Ca;
+				ya = y0 - L * Sa;
+				yb = y0 + L * Sa;
 				PSL_plotsegment (PSL, xa, ya, xb, yb);
 			}
 		}
@@ -1801,8 +1806,9 @@ GMT_LOCAL void plot_set_gridcross_limbs (struct GMT_CTRL *GMT, unsigned int axis
 
 GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	/* Draw symmetric or asymmetric grid ticks along the courser gridlines for parallels and meridians */
+	bool single;
 	unsigned int i, j, k, nx, ny, G_nx, G_ny, G_i, G_j, B = 0, E = 0, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
-	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, yj2, *x = NULL, *y = NULL, *G_x = NULL, *G_y = NULL;
+	double x0, y0, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL, *G_x = NULL, *G_y = NULL;
 	double angle, Ca, Sa, L, sgn[2] = {1.0, 0.0}, G_dx, G_dy, dx, dy;
 
 	for (k = i = 0; k < 2; k++)
@@ -1811,9 +1817,10 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	if (i == 0) return;	/* No gridline ticks requested */
 
 	if (gmt_get_current_gridlines (GMT, &G_dx, &G_dy)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gridline ticks specified but no gridlines have been laid down first\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gridline tick embellishments specified but no gridlines have been laid down first\n");
 		return;
 	}
+	/* Get the course gridline spacings */
 	G_nx = gmtlib_linear_array (GMT, w, e, G_dx, 0.0, &G_x);
 	G_ny = gmtlib_linear_array (GMT, s, n, G_dy, 0.0, &G_y);
 
@@ -1822,12 +1829,14 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	for (k = 0; k < 2; k++) {
 		if (gmt_M_is_zero (GMT->current.setting.map_grid_cross_size[k])) continue;
 
-		PSL_comment (PSL, "%s\n", k ? "Map gridcrosses (secondary)" : "Map gridcrosses (primary)");
+		PSL_comment (PSL, "%s\n", k ? "Map gridticks (secondary)" : "Map gridticks (primary)");
 
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[k]);
 
+		/* Get the detailed gridline tick spacings */
 		nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item[k]], &x, NULL);
 		ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &y, NULL);
+		/* Get a small increment in x and y for computing local angle */
 		dy = (ny > 1) ? y[1] - y[0] : GMT->current.map.dlat;
 		dx = (nx > 1) ? x[1] - x[0] : GMT->current.map.dlon;
 
@@ -1835,26 +1844,24 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 		for (G_j = 0; G_j < G_ny; G_j++) {	/* For each gridline parallel */
 			yj = G_y[G_j];	/* Current parallel */
+			single = (gmt_M_pole_is_point(GMT) && doubleAlmostEqualZero (fabs (yj), 90.0));	/* Only place one grid tick at the poles for maps where the poles are points */
 			if (gmt_M_pole_is_point(GMT) && doubleAlmostEqualZero (fabs (yj), 90.0)) continue;	/* No grid tick at single pole points */
 			plot_set_gridcross_limbs (GMT, GMT_Y, k, yj, &B, &E);
 			for (i = 0; i < nx; i++) {	/* Going along this parallel to place ticks */
-				if (gmt_map_outside (GMT, x[i], yj)) continue;	/* Outside map */
-				xi = x[i];
+				if (single) {
+					xi = GMT->current.proj.central_meridian;
+					i = nx;	/* This ends the loop for this particular parallel */
+				}
+				else
+					xi = x[i];	/* Current longitude */
+				if (gmt_map_outside (GMT, xi, yj)) continue;	/* Outside map */
 				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
-				if (gmt_M_is_geographic (GMT, GMT_IN)) {
-					yj2 = doubleAlmostEqual (fabs (yj), 90.0) ? yj - dy : yj + dy;
-					gmt_geo_to_xy (GMT, xi, yj2, &x1, &y1);
-					angle = d_atan2 (y1-y0, x1-x0);
-					sincos (angle, &Sa, &Ca);
-					xa = x0 - L * Ca * sgn[B];
-					xb = x0 + L * Ca * sgn[E];
-					ya = y0 - L * Sa * sgn[B];
-					yb = y0 + L * Sa * sgn[E];
-				}
-				else {
-					xa = xb = x0;
-					ya = y0 - L * sgn[B], yb = y0 + L * sgn[E];
-				}
+				angle = plot_cross_angle (GMT, xi, yj, dx, dy, GMT_Y);
+				sincos (angle, &Sa, &Ca);
+				xa = x0 - L * Ca * sgn[B];
+				xb = x0 + L * Ca * sgn[E];
+				ya = y0 - L * Sa * sgn[B];
+				yb = y0 + L * Sa * sgn[E];
 				PSL_plotsegment (PSL, xa, ya, xb, yb);
 			}
 		}
@@ -1863,23 +1870,16 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 			xi = G_x[G_i];	/* Current meridian */
 			plot_set_gridcross_limbs (GMT, GMT_X, k, xi, &B, &E);
 			for (j = 0; j < ny; j++) {
-				if (gmt_map_outside (GMT, xi, y[j])) continue;	/* Outside map */
 				yj = y[j];
+				if (gmt_map_outside (GMT, xi, yj)) continue;	/* Outside map */
 				if (gmt_M_pole_is_point(GMT) && doubleAlmostEqualZero (fabs (yj), 90.0)) continue; 	/* No grid tick at single pole points */
 				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
-				if (gmt_M_is_geographic (GMT, GMT_IN)) {
-					gmt_geo_to_xy (GMT, xi + dx, yj, &x1, &y1);
-					angle = d_atan2 (y1-y0, x1-x0);
-					sincos (angle, &Sa, &Ca);
-					xa = x0 - L * Ca * sgn[B];
-					xb = x0 + L * Ca * sgn[E];
-					ya = y0 - L * Sa * sgn[B];
-					yb = y0 + L * Sa * sgn[E];
-				}
-				else {
-					xa = x0 - L * sgn[B], xb = x0 + L * sgn[E];
-					ya = yb = y0;
-				}
+				angle = plot_cross_angle (GMT, xi, yj, dx, dy, GMT_X);
+				sincos (angle, &Sa, &Ca);
+				xa = x0 - L * Ca * sgn[B];
+				xb = x0 + L * Ca * sgn[E];
+				ya = y0 - L * Sa * sgn[B];
+				yb = y0 + L * Sa * sgn[E];
 				PSL_plotsegment (PSL, xa, ya, xb, yb);
 			}
 		}
