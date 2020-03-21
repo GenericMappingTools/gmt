@@ -1648,7 +1648,7 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 	for (k = i = 0; k < 2; k++) {	/* First check if any gridlines are requested */
 		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
-		if (GMT->current.setting.map_grid_cross_type[k] > 0) continue;
+		if (GMT->current.setting.map_grid_cross_type[k] > GMT_CROSS_NORMAL) continue;
 		if (!(GMT->current.map.frame.axis[GMT_X].item[item[k]].active || GMT->current.map.frame.axis[GMT_Y].item[item[k]].active)) continue;
 		i++;
 	}
@@ -1733,7 +1733,7 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	double angle, Ca, Sa, L, dx, dy;
 
 	for (k = i = 0; k < 2; k++)
-		if (GMT->current.setting.map_grid_cross_size[k] > 0.0 && GMT->current.setting.map_grid_cross_type[k] == 0) i++;
+		if (GMT->current.setting.map_grid_cross_size[k] > 0.0 && GMT->current.setting.map_grid_cross_type[k] == GMT_CROSS_NORMAL) i++;
 
 	if (i == 0) return;	/* No grid crosses requested */
 
@@ -1794,7 +1794,7 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 GMT_LOCAL void plot_set_gridcross_limbs (struct GMT_CTRL *GMT, unsigned int axis, unsigned int kind, double value, unsigned int *B, unsigned int *E) {
 	*B = *E = 0;	/* Default is symmetric tick */
-	if (GMT->current.setting.map_grid_cross_type[kind] == 2) return;	/* Symmetric tick */
+	if (GMT->current.setting.map_grid_cross_type[kind] == GMT_CROSS_SYMM) return;	/* Symmetric tick */
 	if (gmt_M_is_zero (value)) return;	/* Symmetrical as well for zero */
 	if (gmt_M_type (GMT, GMT_IN, axis) == GMT_IS_LON) {	/* Worry about longitudes */
 		if (value > 0.0 && value < 180.0) *B = 1; else *E = 1;	/* One-sided */
@@ -1812,7 +1812,7 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	double angle, Ca, Sa, L, sgn[2] = {1.0, 0.0}, G_dx, G_dy, dx, dy;
 
 	for (k = i = 0; k < 2; k++)
-		if (GMT->current.setting.map_grid_cross_type[k]) i++;
+		if (GMT->current.setting.map_grid_cross_type[k] > GMT_CROSS_NORMAL) i++;
 
 	if (i == 0) return;	/* No gridline ticks requested */
 

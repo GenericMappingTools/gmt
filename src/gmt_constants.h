@@ -373,6 +373,11 @@ enum GMT_enum_extrap {
 	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */
 	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
 
+enum GMT_enum_cross {
+	GMT_CROSS_NORMAL = 0,	/* Regular grid cross */
+	GMT_CROSS_ASYMM,    	/* Asymmetrical tick away from Equator/Greenwich */
+	GMT_CROSS_SYMM}; 	/* Symmetric grid ticks */
+
 /*! Timer reporting modes */
 enum GMT_enum_tictoc {
 	GMT_NO_TIMER = 0,	/* No timer reported */
