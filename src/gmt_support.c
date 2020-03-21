@@ -7775,7 +7775,11 @@ int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *
 	char panel[GMT_LEN16] = {""};
 	int fig, subplot, inset;
 
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) return (GMT_FILE_NOT_FOUND);	/* This is a modern mode feature only */
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
+		if (!strncmp (item, "cpt", 3U)) return (GMT_FILE_NOT_FOUND);	/* Current CPT not available in classic mode */
+		snprintf (file, PATH_MAX, "%s/gmt.%s", GMT->parent->tmp_dir, item);
+		return (GMT_NOERROR);
+	}
 
 	gmtlib_get_graphics_item (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the graphics item */
 
@@ -7813,7 +7817,16 @@ char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict
 	char path[PATH_MAX] = {""}, panel[GMT_LEN16] = {""}, *file = NULL;
 	int fig, subplot, inset;
 
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) return NULL;		/* Not available in classic mode */
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* A few more checks */
+		if (!strncmp (item, "cpt", 3U)) return NULL;	/* Current CPT not available in classic mode */
+		/* For gridlines we must use a file in TMPDIR */
+		snprintf (path, PATH_MAX, "%s/gmt.%s", GMT->parent->tmp_dir, item);
+		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (strict && file == NULL) goto FOUND_NOTHING;
+	}
+
+	/* Modern mode */
+
 	gmtlib_get_graphics_item (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
 	/* Find the appropriate graphics item for where we are but may have to go up the hierarchy */
 
