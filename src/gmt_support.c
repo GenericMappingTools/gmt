@@ -1368,6 +1368,12 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 	return ret;
 }
 
+unsigned int gmt_set_interpolate_mode (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type) {
+	/* Convenience function that hides away the embedding of mode and type via the 10 factor */
+	gmt_M_unused (GMT);
+	return (mode + 10 * type);
+}
+
 /*! . */
 GMT_LOCAL double support_csplint (struct GMT_CTRL *GMT, double *x, double *y, double *c, double xp, uint64_t klo) {
 	uint64_t khi;
@@ -3790,12 +3796,21 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 #else
 /*! Dummy functions since not installed */
 GMT_LOCAL uint64_t support_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link) {
+	gmt_M_unused (x_in);
+	gmt_M_unused (y_in);
+	gmt_M_unused (n);
+	gmt_M_unused (link);
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
 	return (0);
 }
 
 /*! . */
 GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *wesn, unsigned int mode) {
+	gmt_M_unused (x_in);
+	gmt_M_unused (y_in);
+	gmt_M_unused (n);
+	gmt_M_unused (wesn);
+	gmt_M_unused (mode);
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
 	return (NULL);
 }
@@ -4722,7 +4737,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			}
 			for (bb = 0; bb < 2; bb++) {	/* Check for both flavors of BoundingBox unless found */
 				if (!got_BB[bb] && (strstr (buffer, BB_string[bb]))) {
-					char c1[GMT_STR16] = {""}, c2[GMT_STR16] = {""}, c3[GMT_STR16] = {""}, c4[GMT_STR16] = {""};
+					char c1[GMT_VF_LEN] = {""}, c2[GMT_VF_LEN] = {""}, c3[GMT_VF_LEN] = {""}, c4[GMT_VF_LEN] = {""};
 					sscanf (&buffer[strlen(BB_string[bb])], "%s %s %s %s", c1, c2, c3, c4);
 					head->PS_BB[0] = atof (c1);	head->PS_BB[2] = atof (c2);
 					head->PS_BB[1] = atof (c3);	head->PS_BB[3] = atof (c4);
@@ -6411,6 +6426,12 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 				size[0] = '\0';
 			}
 		}
+		else if (support_is_fontname (GMT, size)) {	/* name got stored in size and size in name */
+			strncpy (fill, name, GMT_LEN256-1);	/* Copy size */
+			strncpy (name, size, GMT_LEN256-1);	/* Place name where it belongs */
+			strncpy (size, fill, GMT_LEN256-1);	/* Place size where it belongs */
+			fill[0] = '\0';	/* No fill */
+		}
 	}
 	else if (n == 1) {	/* Could be size or name or fill */
 		if (line[0] == ',' && line[1] == ',') {	/* ,,fill got stored in size */
@@ -7112,9 +7133,6 @@ struct GMT_PALETTE * gmtlib_create_palette (struct GMT_CTRL *GMT, uint64_t n_col
 	PH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	PH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	PH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
-#ifdef GMT_BACKWARDS_API
-	P->range = P->data;
-#endif
 
 	return (P);
 }
@@ -8585,11 +8603,6 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	GMT->current.setting.color_model = (P->model | GMT_COLORINT);	/* So color interpolation will happen in the color system */
 
 	/* We leave BNF as we got them from the external API */
-#ifdef GMT_BACKWARDS_API
-	P->range = P->data;
-	P->patch = P->bfn;
-	P->cpt_flags = P->mode;
-#endif
 }
 
 /*! . */
@@ -12838,7 +12851,7 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 		if (strchr (sep, string[k]))
 			done = true;
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Modifier +%c found but not a valid modifier! - ignored\n", string[k]);
+			if (isalpha (string[k])) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Modifier +%c found but not a valid modifier! - ignored\n", string[k]);
 			return NULL;
 		}
 	}
@@ -14037,7 +14050,7 @@ int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_
 	return (GMT_OK);
 }
 
-GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double *line_angle, double *text_angle, unsigned int *justify) {
+int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double *line_angle, double *text_angle, unsigned int *justify) {
 	/* Special function to set justification and text angle for polar projections (r/theta, i.e. GMT_POLAR) */
 	/* Normally y-min (south) is at r = 0 and y-max (north) is on the perimeter, but +f reverses that */
 	/* Normally x-min (west) is the boundary with the region on the leeft, and x-max (east) on the right, but +a reverses that */
@@ -14046,22 +14059,20 @@ GMT_LOCAL int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, un
 		side = 2 - side;	/* Turns 2 to 0 and 0 to 2 */
 
 	switch (side) {
-		case 0:	/* We are annotating angles on the inner (donut) boundary */
-			if (gmt_M_is_zero (angle) || (angle >= 180.0 && angle < 360.0)) *justify = 10, *text_angle = angle - 270.0;
+		case S_SIDE:	/* We are annotating angles on the inner (donut) boundary */
+			if (gmt_M_is_zero (angle) || ((angle+GMT_CONV8_LIMIT) >= 180.0 && (angle-GMT_CONV8_LIMIT) < 360.0)) *justify = 10, *text_angle = angle - 270.0;
 			else *justify = 2, *text_angle = angle - 90;
 			break;
-		case 1:
-			if (angle >= 90.0 && angle < 270.0) *justify = 7, *text_angle = angle - 180;
+		case E_SIDE:
+			if ((angle+GMT_CONV8_LIMIT) >= 90.0 && (angle-GMT_CONV8_LIMIT) < 270.0) *justify = 7, *text_angle = angle - 180;
 			else  *justify = 5, *text_angle = angle;
 			break;
-		case 2:	/* We are annotating angles on the outer boundary */
-			if (angle >= 0.0 && angle <= 180.0) *justify = 2, *text_angle = angle - 90.0;
+		case N_SIDE:	/* We are annotating angles on the outer boundary */
+			if ((angle+GMT_CONV8_LIMIT) >= 0.0 && (angle-GMT_CONV8_LIMIT) <= 180.0) *justify = 2, *text_angle = angle - 90.0;
 			else *justify = 10, *text_angle = angle + 90.0;
 			break;
-		case 3:
-			if (angle >= 0.0 && angle < 180.0) *justify = 5, *text_angle = angle;
-			else  *justify = 7, *text_angle = 180.0 - angle;
-			if (angle >= 90.0 && angle < 270.0) *justify = 7, *text_angle = angle - 180;
+		case W_SIDE:
+			if ((angle+GMT_CONV8_LIMIT) >= 90.0 && (angle-GMT_CONV8_LIMIT) < 270.0) *justify = 7, *text_angle = angle - 180;
 			else  *justify = 5, *text_angle = angle;
 			break;
 	}

@@ -29,7 +29,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdgdal"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Execute GDAL raster programs from GMT"
-#define THIS_MODULE_KEYS	"<D{,<G(,GG}"
+#define THIS_MODULE_KEYS	"<?{,GG}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVbdeghiqr"
 
@@ -183,7 +183,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, n_files == 0, "No input files given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "No output file name given\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active && strcmp(Ctrl->A.prog_name, "info")) && !Ctrl->G.file, "No output file name given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && strcmp(Ctrl->A.prog_name, "grid") && strcmp(Ctrl->A.prog_name, "info") && strcmp(Ctrl->A.prog_name, "dem") && strcmp(Ctrl->A.prog_name, "rasterize") && strcmp(Ctrl->A.prog_name, "translate") && strcmp(Ctrl->A.prog_name, "warp"), "Option -A: Must select dem, grid, rasterize, translate, warp or info\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -229,7 +229,7 @@ int GMT_grdgdal (void *V_API, int mode, void *args) {
 	st->opts = Ctrl->F.opts;
 	st->M.read_gdal  = Ctrl->M.read_gdal;
 	st->M.write_gdal = Ctrl->M.write_gdal;
-	if ((ext = gmt_get_ext (st->fname_out)) != NULL) {
+	if (st->fname_out && (ext = gmt_get_ext (st->fname_out)) != NULL) {
 		/* For all others than .nc or .grd force writing with GDAL. This makes life much easier. */
 		if (strcasecmp (ext, "nc") && strcasecmp (ext, "grd"))
 			st->M.write_gdal = true;

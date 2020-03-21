@@ -56,7 +56,7 @@ The projection codes for the GMT-style and the PROJ-style are tabulated below.
      - **-Jhammer/**\ |lon0|/\ *scale*
      - Hammer equal area :ref:`... <-Jh_full>`
    * - **-JI**\ [|lon0|/]\ *width*
-     - **-Jsinu/**\ |lat0|/\ *scale*
+     - **-Jsinu/**\ |lon0|/\ *scale*
      - Sinusoidal equal area :ref:`... <-Ji_full>`
    * - **-JJ**\ [|lon0|/]\ *width*
      - **-Jmill/**\ |lon0|/\ *scale*  
@@ -76,14 +76,14 @@ The projection codes for the GMT-style and the PROJ-style are tabulated below.
    * - **-JN**\ [|lon0|/]\ *width*
      - **-Jrobin/**\ [|lon0|/]\ *scale*
      - Robinson :ref:`... <-Jn_full>`
-   * - **-JOa**\ |lon0|/|lat0|/\ *azim*/*width*
-     - **-Jomerc/**\ |lon0|/|lat0|/\ *azim*/*scale* 
+   * - **-JOa**\ |lon0|/|lat0|/\ *azim*/*width*\ [**+v**]
+     - **-Jomerc/**\ |lon0|/|lat0|/\ *azim*/*scale*\ [**+v**]
      - Oblique Mercator, 1: origin and azim   :ref:`... <-Jo_full>`
-   * - **-JOb**\ |lon0|/|lat0|/|lon1|/|lat1|/\ *width*
-     - **-Jomerc/**\ |lon0|/|lat0|/|lon1|/|lat1|/\ *scale*
+   * - **-JOb**\ |lon0|/|lat0|/|lon1|/|lat1|/\ *width*\ [**+v**]
+     - **-Jomerc/**\ |lon0|/|lat0|/|lon1|/|lat1|/\ *scale*\ [**+v**]
      - Oblique Mercator, 2: two points :ref:`... <-Jo_full>`
-   * - **-JOc**\ |lon0|/|lat0|/|lonp|/|latp|/\ *width*
-     - **-Jomercp/**\ |lon0|/|lat0|/|lonp|/|latp|/\ *scale*
+   * - **-JOc**\ |lon0|/|lat0|/|lonp|/|latp|/\ *width*\ [**+v**]
+     - **-Jomercp/**\ |lon0|/|lat0|/|lonp|/|latp|/\ *scale*\ [**+v**]
      - Oblique Mercator, 3: origin and pole :ref:`... <-Jo_full>`
    * - **-JP**\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
      - **-Jpolar/**\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]

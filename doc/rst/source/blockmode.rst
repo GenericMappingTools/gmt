@@ -68,7 +68,7 @@ Optional Arguments
 ------------------
 
 *table*
-   3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
+    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
     **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values, where [*w*] is an optional weight for the data.
     If no file is specified, **blockmode** will read from standard input.
@@ -77,7 +77,7 @@ Optional Arguments
 
 **-A**\ *fields*
     Select which fields to write to individual grids.  Requires **-G**.
-    Append comma-separated codes for available fields: **z** (the modal
+    Append the codes for available fields: **z** (the modal
     data z), **s** (the L1 scale of the mode), **l** (lowest
     value), **h** (highest value) and **w** (the output weight; requires **-W**).
     Note **s**\|\ **l**\|\ **h** requires **-E**, and **Es**\|\ **r**
@@ -108,7 +108,7 @@ Optional Arguments
     Provide Extended report which includes **s** (the L1 scale of the
     mode), **l**, the lowest value, and **h**, the high value for each
     block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
+    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
 **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
     Provide source id **s** or record number **r** output, i.e., append
@@ -178,8 +178,8 @@ Optional Arguments
 
 .. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with
-    **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
-    (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
+    **-R**\ 10/15/10/15 and **-I**\ 1: With **-r** or **-rp**, 10 <=
+    (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
 
@@ -203,7 +203,7 @@ data representing integer counts, try::
 To determine the mode and L1 scale (MAD) on the mode per 10 minute bin and save these to two separate grids
 called field_z.nc and field_s.nc, run::
 
-    gmt blockmode @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
+    gmt blockmode @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Azs
 
 See Also
 --------

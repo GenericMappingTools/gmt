@@ -98,7 +98,7 @@ Optional Arguments
     the polygon boundary as part of the inside. Alternatively, use
     **-Np** to use a running number as polygon ID; optionally append
     start of the sequence [0]. Here, **-NP** includes the polygon
-    perimeter as inside. Note:
+    perimeter as inside. **Note**:
     **-N**\ **z**\|\ **Z**\|\ **p**\|\ **P** cannot be used in
     conjunction with **-S**; they also all optionally accept /*out* [0].
 

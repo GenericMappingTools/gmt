@@ -51,8 +51,9 @@ steps:
 
 - bash: |
     set -x -e
+    choco install pngquant
     pip install --user sphinx
-    echo "##vso[task.prependpath]C:\\Users\\VssAdministrator\\AppData\\Roaming\\Python\\Python36\\Scripts"
+    echo "##vso[task.prependpath]C:\\Users\\VssAdministrator\\AppData\\Roaming\\Python\\Python37\\Scripts"
   displayName: Install dependencies for documentation
   condition: eq(variables['BUILD_DOCS'], true)
 
@@ -77,7 +78,7 @@ steps:
 
 - task: Cache@2
   inputs:
-    key: coastline
+    key: coastline | ci/download-coastlines.sh
     path: $(COASTLINEDIR)
     cacheHitVar: CACHE_COASTLINE_RESTORED
   displayName: Cache GSHHG and DCW data
@@ -105,6 +106,7 @@ steps:
     set -x -e
     cd build
     cmake --build . --target docs_depends
+    cmake --build . --target optimize_images
     cmake --build . --target docs_html
     cmake --build . --target docs_man
   displayName: Build documentations

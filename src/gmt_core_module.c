@@ -43,6 +43,13 @@ struct Gmt_moduleinfo {
 #endif
 };
 
+static int sort_on_classic (const void *vA, const void *vB) {
+	const struct Gmt_moduleinfo *A = vA, *B = vB;
+	if (A == NULL) return +1;	/* Get the NULL entry to the end */
+	if (B == NULL) return -1;	/* Get the NULL entry to the end */
+	return strcmp(A->cname, B->cname);
+}
+
 static struct Gmt_moduleinfo g_core_module[] = {
 #ifdef BUILD_SHARED_LIBS
 	{"basemap", "psbasemap", "core", "Plot base maps and frames", ">X},>DA@AD)"},
@@ -76,7 +83,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtset", "gmtset", "core", "Change individual GMT default settings", ""},
 	{"gmtsimplify", "gmtsimplify", "core", "Line reduction using the Douglas-Peucker algorithm", "<D{,>D}"},
 	{"gmtspatial", "gmtspatial", "core", "Geospatial operations on points, lines and polygons", "<D{,DD(=f,ND(=,TD(,>D}"},
-	{"gmtvector", "gmtvector", "core", "Operations on Cartesian vectors in 2-D and 3-D", "<D{,AD(,>D}"},
+	{"gmtvector", "gmtvector", "core", "Operations on Cartesian vectors in 2-D and 3-D", "<D{,>D}"},
 	{"gmtwhich", "gmtwhich", "core", "Find full path to specified files", ">D}"},
 	{"gmtwrite", "gmtwrite", "core", "Write GMT objects from external API", "-T-,<?{,>?}"},
 	{"grd2cpt", "grd2cpt", "core", "Make linear or histogram-equalized color palette table from grid", "<G{+,>C}"},
@@ -91,7 +98,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"grdfft", "grdfft", "core", "Mathematical operations on grids in the spectral domain", "<G{+,GG},GDE"},
 	{"grdfill", "grdfill", "core", "Interpolate across holes in a grid", "<G{,>G}"},
 	{"grdfilter", "grdfilter", "core", "Filter a grid in the space (or time) domain", "<G{,FG(=1,GG}"},
-	{"grdgdal", "grdgdal", "core", "Execute GDAL raster programs from GMT", "<D{,<G(,GG}"},
+	{"grdgdal", "grdgdal", "core", "Execute GDAL raster programs from GMT", "<?{,GG}"},
 	{"grdgradient", "grdgradient", "core", "Compute directional gradients from a grid", "<G{,AG(,GG},SG)"},
 	{"grdhisteq", "grdhisteq", "core", "Perform histogram equalization for a grid", "<G{,GG},DD)"},
 	{"grdimage", "grdimage", "core", "Project and plot grids or images", "<G{+,CC(,IG(,>X},>IA,<ID@<G{+,CC(,IG(,AI),<ID"},
@@ -119,12 +126,12 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"mask", "psmask", "core", "Clip or mask map areas with no data table coverage", "<D{,DDD,C-(,>X},LG)@<D{,DD),C-(,LG)"},
 	{"movie", "movie", "core", "Create animation sequences and movies", "<D("},
 	{"nearneighbor", "nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", "<D{,GG}"},
-	{"plot", "psxy", "core", "Plot lines, polygons, and symbols in 2-D", "<D{,CC(,T-<,>X},S?(=2"},
-	{"plot3d", "psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2"},
+	{"plot", "psxy", "core", "Plot lines, polygons, and symbols in 2-D", "<D{,CC(,T-<,S?(=2,ZD(=,>X}"},
+	{"plot3d", "psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,S?(=2,ZD(=,>X}"},
 	{"project", "project", "core", "Project data onto lines or great circles, or generate tracks", "<D{,>D},G-("},
 	{"psconvert", "psconvert", "core", "Convert [E]PS file(s) to other formats using Ghostscript", "<X{+,FI)"},
 	{"rose", "psrose", "core", "Plot a polar histogram (rose, sector, windrose diagrams)", "<D{,CC(,ED(,>X},>D),>DI@<D{,ID),CC("},
-	{"sample1d", "sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}"},
+	{"sample1d", "sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,TD(,>D}"},
 	{"solar", "pssolar", "core", "Plot day-light terminators and other sunlight parameters", ">X},>DI,>DM@ID),MD)"},
 	{"spectrum1d", "spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)"},
 	{"sph2grd", "sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}"},
@@ -133,7 +140,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"sphtriangulate", "sphtriangulate", "core", "Delaunay or Voronoi construction of spherical data", "<D{,>D},ND)"},
 	{"splitxyz", "splitxyz", "core", "Split xyz[dh] data tables into individual segments", "<D{,>D}"},
 	{"subplot", "subplot", "core", "Manage modern mode figure subplot configuration and selection", ""},
-	{"surface", "surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(,LG(,GG}"},
+	{"surface", "surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(=,LG(,GG}"},
 	{"ternary", "psternary", "core", "Plot data on ternary diagrams", "<D{,>X},>DM,C-(@<D{,MD),C-("},
 	{"text", "pstext", "core", "Plot or typeset text", "<D{,>X}"},
 	{"trend1d", "trend1d", "core", "Fit [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data", "<D{,>D}"},
@@ -174,7 +181,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"gmtset", "gmtset", "core", "Change individual GMT default settings", "", &GMT_gmtset},
 	{"gmtsimplify", "gmtsimplify", "core", "Line reduction using the Douglas-Peucker algorithm", "<D{,>D}", &GMT_gmtsimplify},
 	{"gmtspatial", "gmtspatial", "core", "Geospatial operations on points, lines and polygons", "<D{,DD(=f,ND(=,TD(,>D}", &GMT_gmtspatial},
-	{"gmtvector", "gmtvector", "core", "Operations on Cartesian vectors in 2-D and 3-D", "<D{,AD(,>D}", &GMT_gmtvector},
+	{"gmtvector", "gmtvector", "core", "Operations on Cartesian vectors in 2-D and 3-D", "<D{,>D}", &GMT_gmtvector},
 	{"gmtwhich", "gmtwhich", "core", "Find full path to specified files", ">D}", &GMT_gmtwhich},
 	{"gmtwrite", "gmtwrite", "core", "Write GMT objects from external API", "-T-,<?{,>?}", &GMT_gmtwrite},
 	{"grd2cpt", "grd2cpt", "core", "Make linear or histogram-equalized color palette table from grid", "<G{+,>C}", &GMT_grd2cpt},
@@ -189,7 +196,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"grdfft", "grdfft", "core", "Mathematical operations on grids in the spectral domain", "<G{+,GG},GDE", &GMT_grdfft},
 	{"grdfill", "grdfill", "core", "Interpolate across holes in a grid", "<G{,>G}", &GMT_grdfill},
 	{"grdfilter", "grdfilter", "core", "Filter a grid in the space (or time) domain", "<G{,FG(=1,GG}", &GMT_grdfilter},
-	{"grdgdal", "grdgdal", "core", "Execute GDAL raster programs from GMT", "<D{,<G(,GG}", &GMT_grdgdal},
+	{"grdgdal", "grdgdal", "core", "Execute GDAL raster programs from GMT", "<?{,GG}", &GMT_grdgdal},
 	{"grdgradient", "grdgradient", "core", "Compute directional gradients from a grid", "<G{,AG(,GG},SG)", &GMT_grdgradient},
 	{"grdhisteq", "grdhisteq", "core", "Perform histogram equalization for a grid", "<G{,GG},DD)", &GMT_grdhisteq},
 	{"grdimage", "grdimage", "core", "Project and plot grids or images", "<G{+,CC(,IG(,>X},>IA,<ID@<G{+,CC(,IG(,AI),<ID", &GMT_grdimage},
@@ -217,12 +224,12 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"mask", "psmask", "core", "Clip or mask map areas with no data table coverage", "<D{,DDD,C-(,>X},LG)@<D{,DD),C-(,LG)", &GMT_mask},
 	{"movie", "movie", "core", "Create animation sequences and movies", "<D(", &GMT_movie},
 	{"nearneighbor", "nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", "<D{,GG}", &GMT_nearneighbor},
-	{"plot", "psxy", "core", "Plot lines, polygons, and symbols in 2-D", "<D{,CC(,T-<,>X},S?(=2", &GMT_plot},
-	{"plot3d", "psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,>X},S?(=2", &GMT_plot3d},
+	{"plot", "psxy", "core", "Plot lines, polygons, and symbols in 2-D", "<D{,CC(,T-<,S?(=2,ZD(=,>X}", &GMT_plot},
+	{"plot3d", "psxyz", "core", "Plot lines, polygons, and symbols in 3-D", "<D{,CC(,T-<,S?(=2,ZD(=,>X}", &GMT_plot3d},
 	{"project", "project", "core", "Project data onto lines or great circles, or generate tracks", "<D{,>D},G-(", &GMT_project},
 	{"psconvert", "psconvert", "core", "Convert [E]PS file(s) to other formats using Ghostscript", "<X{+,FI)", &GMT_psconvert},
 	{"rose", "psrose", "core", "Plot a polar histogram (rose, sector, windrose diagrams)", "<D{,CC(,ED(,>X},>D),>DI@<D{,ID),CC(", &GMT_rose},
-	{"sample1d", "sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,>D}", &GMT_sample1d},
+	{"sample1d", "sample1d", "core", "Resample 1-D table data using splines", "<D{,ND(,TD(,>D}", &GMT_sample1d},
 	{"solar", "pssolar", "core", "Plot day-light terminators and other sunlight parameters", ">X},>DI,>DM@ID),MD)", &GMT_solar},
 	{"spectrum1d", "spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] time series", "<D{,>D},T-)", &GMT_spectrum1d},
 	{"sph2grd", "sph2grd", "core", "Compute grid from spherical harmonic coefficients", "<D{,GG}", &GMT_sph2grd},
@@ -231,7 +238,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"sphtriangulate", "sphtriangulate", "core", "Delaunay or Voronoi construction of spherical data", "<D{,>D},ND)", &GMT_sphtriangulate},
 	{"splitxyz", "splitxyz", "core", "Split xyz[dh] data tables into individual segments", "<D{,>D}", &GMT_splitxyz},
 	{"subplot", "subplot", "core", "Manage modern mode figure subplot configuration and selection", "", &GMT_subplot},
-	{"surface", "surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(,LG(,GG}", &GMT_surface},
+	{"surface", "surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(=,LG(,GG}", &GMT_surface},
 	{"ternary", "psternary", "core", "Plot data on ternary diagrams", "<D{,>X},>DM,C-(@<D{,MD),C-(", &GMT_ternary},
 	{"text", "pstext", "core", "Plot or typeset text", "<D{,>X}", &GMT_text},
 	{"trend1d", "trend1d", "core", "Fit [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data", "<D{,>D}", &GMT_trend1d},
@@ -299,7 +306,15 @@ void gmt_core_module_list_all (void *V_API) {
 /* Produce single list on stdout of all GMT core module names for gmt --show-classic [i.e., classic mode names] */
 void gmt_core_module_classic_all (void *V_API) {
 	unsigned int module_id = 0;
+	size_t n_modules = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	while (g_core_module[n_modules].cname != NULL)	/* Count the modules */
+		++n_modules;
+
+	/* Sort array on classic names since original array is sorted on modern names */
+	qsort (g_core_module, n_modules, sizeof (struct Gmt_moduleinfo), sort_on_classic);
+
 	while (g_core_module[module_id].cname != NULL) {
 		if (API->external || !(skip_this_module (g_core_module[module_id].cname) || skip_modern_module (g_core_module[module_id].cname)))
 			printf ("%s\n", g_core_module[module_id].cname);

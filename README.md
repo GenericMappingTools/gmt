@@ -14,7 +14,7 @@
 
 GMT is an open source collection of about 90 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
-projecting, etc.) and producing PostScript illustrations ranging from simple x–y
+projecting, etc.) and producing high-quality illustrations ranging from simple x–y
 plots via contour maps to artificially illuminated surfaces and 3D perspective
 views. The GMT supplements add another 50 more specialized and discipline-specific
 tools. GMT supports over 30 map projections and transformations and requires
@@ -45,9 +45,9 @@ other platforms.
 
 Note there are three GMT tar archives available (#3 is optional):
 
-1. gmt-6.x.x.tar.bz2:          The GMT 6 distribution
-2. gshhg-gmt-2.x.x.tar.gz:     All five resolutions of GSHHG coastline data
-3. dcw-gmt-1.x.x.tar.bz2:      Digital Chart of the World polygon data
+1. gmt-6.x.x.tar.gz:          The GMT 6 distribution
+2. gshhg-gmt-2.x.x.tar.gz:    All five resolutions of GSHHG coastline data
+3. dcw-gmt-1.x.x.tar.gz:      Digital Chart of the World polygon data
 
 For macOS and Windows users there are separate installers available.
 You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
@@ -69,7 +69,7 @@ will benefit from the availability of GMT:
 
 You haven't bought anything so you cannot expect full service.  However, if
 you find a bug in any of the programs, please report it to us by
-[opening a issue](https://github.com/GenericMappingTools/gmt/issues/)
+[opening an issue](https://github.com/GenericMappingTools/gmt/issues/)
 rather than trying to fix it yourself so that we, and through us,
 other users may benefit from your find.  Make sure you
 provide us with enough information so that we can recreate the problem.
@@ -96,7 +96,7 @@ operation.  We gratefully acknowledge the importance to GMT of these products.
 GMT may be linked with these libraries (* means optional):
 [Network Common Data Form (netCDF)](https://www.unidata.ucar.edu/software/netcdf/),
 [Geospatial Data Abstraction Library (GDAL*)](https://gdal.org),
-[Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org), 
+[Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org),
 [Fastest Fourier Transform in the West (FFTW*)](http://www.fftw.org),
 [Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),
 [Basic Linear Algebra Subprograms (BLAS*)](http://www.netlib.org/blas/), and

@@ -99,6 +99,10 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 		}
 	}
 
+	if (GMT_Destroy_Data (GMT->parent, &D)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while freeing input data\n");
+	}
+
 	return hDS;
 }
 
@@ -174,21 +178,40 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 	nXSize = GDALGetRasterXSize(hDstDS);
 	nYSize = GDALGetRasterYSize(hDstDS);
 
-	if ((tmp = calloc((size_t)nYSize * (size_t)nXSize, nPixelSize)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdgdal: failure to allocate enough memory\n");
+	if (nXSize != (int)Grid->header->n_columns || nYSize != (int)Grid->header->n_rows) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Programming error. Output grid dimensions not what is expected.\n");
 		return -1;
 	}
 
-	if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, tmp,
-	                              nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
+	if (nPixelSize != sizeof(float)) {		/* If outdata type is not 4 bytes, must create a tmp to copy from because GMT requires floats */
+		size_t k;
+		if ((tmp = calloc(Grid->header->nm, sizeof(float))) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdgdal: failure to allocate temporary memory\n");
+			return -1;
+		}
+		if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, tmp,
+		                              nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
+			return -1;
+		}
+		for (k = 0; k < Grid->header->nm; k++)
+			Grid->data[k] = (float)tmp[k];
+
+		free(tmp);
 	}
-	gmt_grd_flip_vertical (tmp, (unsigned)nXSize, (unsigned)nYSize, 0, nPixelSize);
-	Grid->data = (float *)tmp;
+	else {
+		if ((gdal_code = GDALRasterIO(hBand, GF_Read, 0, 0, nXSize, nYSize, (void *)Grid->data,
+		                              nXSize, nYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to open band [err = %d]\n", gdal_code);
+			return -1;
+		}
+	}
+
+	gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, sizeof(float));
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
 						NULL, fname, Grid) != GMT_NOERROR)
 		return GMT->parent->error;
-	if (!GMT->parent->external) Grid->data = NULL;	/* Since we must avoid deleting this GDAL memory later */
+	GDALClose(hDstDS);
 	return 0;
 }
 
@@ -234,13 +257,13 @@ GMT_LOCAL void add_defaults(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTR
 
 
 /* ------------------------------------------------------------------------------------------------------------ */
-GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL, GDALDatasetH *hSrcDS, struct GMT_GRID **Grid, int mode) {
+GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL, GDALDatasetH *hSrcDS, struct GMT_GRID **Grid, unsigned int mode) {
 	/* Initialize GDAL, read data and create a GMT Grid container
 	   These operations are common to several functions, so wrap them in a function */
 
 	GDALAllRegister();
 
-	if (mode == 0) {				/* Read vector data */
+	if (mode == GMT_IS_DATASET) {				/* Read vector data */
 		if (GDLL->M.read_gdal) 		/* Read input data with the GDAL machinery */
 			*hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
 		else
@@ -251,11 +274,11 @@ GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 			return -1;
 		}
 	}
-	else {							/* Read raster data */
+	else {							/* Read raster data directly in GDAL */
 		*hSrcDS = GDALOpen(GDLL->fname_in, GA_ReadOnly);
 	}
 
-	if ((*Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
+	if ((*Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
 		                          GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
 		return GMT->parent->error;
 	return 0;
@@ -298,7 +321,7 @@ int gmt_gdal_info (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 	psOptions = GDALInfoOptionsNew(args, NULL);
 	GMT_Message (GMT->parent, GMT_TIME_NONE, "GDAL Info\n\n%s\n", GDALInfo(hSrcDS, psOptions));
 
-	free_args(GMT, args);
+	if (args) free_args(GMT, args);
 	GDALClose(hSrcDS);
 	GDALInfoOptionsFree(psOptions);
 	GDALDestroyDriverManager();
@@ -314,7 +337,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALDEMProcessingOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 1)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_GRID)))	/* Init GDAL and read input data */
 		return error;
 
 	add_defaults(GMT, GDLL, &ext_opts[0]);
@@ -327,6 +350,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "dem");
 
 	GDALDEMProcessingOptionsFree(psOptions);
+    OGRCleanupAll();
 	GDALDestroyDriverManager();
 	return error;
 }
@@ -340,7 +364,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALGridOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 0)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_DATASET)))	/* Init GDAL and read input data */
 		return error;
 
 	if (GDLL->M.write_gdal && Grid->header->registration == 0) {
@@ -372,7 +396,7 @@ int gmt_gdal_rasterize(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GD
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALRasterizeOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 0)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_DATASET)))	/* Init GDAL and read input data */
 		return error;
 
 	if (GDLL->M.write_gdal && Grid->header->registration == 0) {
@@ -403,7 +427,7 @@ int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALTranslateOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 1)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_GRID)))	/* Init GDAL and read input data */
 		return error;
 	add_defaults(GMT, GDLL, &ext_opts[0]);
 
@@ -425,7 +449,7 @@ int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 	GDALDatasetH	hSrcDS, hDstDS;
 	GDALWarpAppOptions *psOptions;
 
-	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, 1)))	/* Init GDAL and read input data */
+	if ((error = init_open(GMT, GDLL, &hSrcDS, &Grid, GMT_IS_GRID)))	/* Init GDAL and read input data */
 		return error;
 	add_defaults(GMT, GDLL, &ext_opts[0]);
 

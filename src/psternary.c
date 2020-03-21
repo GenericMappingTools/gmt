@@ -534,7 +534,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->S.active) {	/* Plot symbols */
-		char vfile[GMT_STR16] = {""};
+		char vfile[GMT_VF_LEN] = {""};
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D, vfile) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create a virtual data set\n");
 			Return (API->error);

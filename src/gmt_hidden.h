@@ -80,9 +80,6 @@ struct GMT_DATASEGMENT_HIDDEN {    /* Supporting information hidden from the API
 	struct GMT_DATASEGMENT *next;	/* NULL unless polygon and has holes and pointing to next hole */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
-#ifdef GMT_BACKWARDS_API
-	double **coord;
-#endif
 };
 
 struct GMT_DATATABLE_HIDDEN {	/* Supporting information hidden from the API */

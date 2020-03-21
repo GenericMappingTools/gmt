@@ -1415,10 +1415,6 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	/* unpack z-range: */
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
-#ifdef GMT_BACKWARDS_API
-	header->nx = header->n_columns;
-	header->ny = header->n_rows;
-#endif
 
 	return (GMT_NOERROR);
 }
@@ -1928,10 +1924,6 @@ void gmt_set_grddim (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	h->size = gmt_grd_get_size (h);	/* Sets the number of items (not bytes!) needed to hold this array, which includes the padding (size >= nm) */
 	h->xy_off = 0.5 * h->registration;
 	gmt_set_grdinc (GMT, h);
-#ifdef GMT_BACKWARDS_API
-	h->nx = h->n_columns;
-	h->ny = h->n_rows;
-#endif
 }
 
 void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, bool update) {

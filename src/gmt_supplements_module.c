@@ -40,6 +40,13 @@ struct Gmt_moduleinfo {
 	const char *keys;             /* Program option info for external APIs */
 };
 
+static int sort_on_classic (const void *vA, const void *vB) {
+	const struct Gmt_moduleinfo *A = vA, *B = vB;
+	if (A == NULL) return +1;	/* Get the NULL entry to the end */
+	if (B == NULL) return -1;	/* Get the NULL entry to the end */
+	return strcmp(A->cname, B->cname);
+}
+
 static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"earthtide", "earthtide", "geodesy", "Compute grids or time-series of solid Earth tides", ">D},GG),>DL,>DS"},
 	{"gpsgridder", "gpsgridder", "geodesy", "Interpolate GPS strains using Green's functions for elastic deformation", "<D{,ND(,TG(,CD)=f,GG}"},
@@ -77,7 +84,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"grdrotater", "grdrotater", "spotter", "Finite rotation reconstruction of geographic grid", "<G{,FD(,GG},TD("},
 	{"grdspotter", "grdspotter", "spotter", "Create CVA grid from a gravity or topography grid", "<G{,AG(,DG),LG),GG}"},
 	{"hotspotter", "hotspotter", "spotter", "Create CVA grid from seamount locations", "<D{,GG}"},
-	{"originater", "originater", "spotter", "Associate seamounts with nearest hotspot point sources", "<D{,FD(,>D}"},
+	{"originater", "originater", "spotter", "Associate seamounts with nearest hotspot point sources", "<D{,FD(=,>D}"},
 	{"polespotter", "polespotter", "spotter", "Find stage poles given fracture zones and abyssal hills", "AD(,CD),FD(,GG},LD)"},
 	{"rotconverter", "rotconverter", "spotter", "Manipulate total reconstruction and stage rotations", ">D}"},
 	{"rotsmoother", "rotsmoother", "spotter", "Get mean rotations and covariance matrices from set of finite rotations", "<D{,>D}"},
@@ -126,7 +133,15 @@ void gmt_supplements_module_list_all (void *V_API) {
 /* Produce single list on stdout of all GMT supplements module names for gmt --show-classic [i.e., classic mode names] */
 void gmt_supplements_module_classic_all (void *V_API) {
 	unsigned int module_id = 0;
+	size_t n_modules = 0;
 	gmt_M_unused(V_API);
+
+	while (g_supplements_module[n_modules].cname != NULL)	/* Count the modules */
+		++n_modules;
+
+	/* Sort array on classic names since original array is sorted on modern names */
+	qsort (g_supplements_module, n_modules, sizeof (struct Gmt_moduleinfo), sort_on_classic);
+
 	while (g_supplements_module[module_id].cname != NULL) {
 		printf ("%s\n", g_supplements_module[module_id].cname);
 		++module_id;

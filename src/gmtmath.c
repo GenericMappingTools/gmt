@@ -6281,6 +6281,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (op == GMTMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible */
 		if (op != GMTMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		if (!got_t_from_file) {
+			/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
 			if (!strcmp (opt->arg, "STDIN")) {	/* Special stdin name.  We store this input in a special struct since we may need it again and it can only be read once! */
 				if ((D_stdin = GMT_Read_Data (API, GMT_IS_DATASET|GMT_VIA_MODULE_INPUT, GMT_IS_STREAM, GMT_IS_NONE, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 					Return (API->error);
@@ -6611,6 +6612,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				}
 				else {
 					if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "%s ", opt->arg);
+					/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
 					if ((F = GMT_Read_Data (API, GMT_IS_DATASET|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
 						GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s\n", opt->arg);
 						Return (API->error);

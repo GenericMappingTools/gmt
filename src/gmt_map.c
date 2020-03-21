@@ -366,7 +366,11 @@ GMT_LOCAL bool central_meridian_not_set (struct GMT_CTRL *GMT) {
 }
 
 GMT_LOCAL void set_default_central_meridian (struct GMT_CTRL *GMT) {
-	GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Not set at all, set to middle lon */
+	/* Pick half-way between w and e, but watch for -R+r */
+	if (GMT->common.R.oblique && GMT->common.R.wesn[XHI] < GMT->common.R.wesn[XLO])
+		GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI] + 360.0);	/* Set to middle lon  but watch for e < w */
+	else
+		GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Set to middle lon */
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian not given, default to %g\n", GMT->current.proj.pars[0]);
 }
 
@@ -2215,6 +2219,10 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 	GMT->current.proj.rect[YHI] = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 	GMT->current.proj.origin[GMT_X] = -xmin * GMT->current.proj.scale[GMT_X];
 	GMT->current.proj.origin[GMT_Y] = -ymin * GMT->current.proj.scale[GMT_Y];
+	if (GMT->current.proj.obl_flip) {
+		GMT->current.proj.origin[GMT_Y] = ymax * GMT->current.proj.scale[GMT_Y];
+		GMT->current.proj.scale[GMT_Y] = -GMT->current.proj.scale[GMT_Y];
+	}
 
 	if (!strncmp (GMT->init.module_name, "inset", 5U))
 		no_scaling = 1;	/* Don't scale yet if we are calling inset begin (inset end would come here too but not affected since no mapping done by that module) */
@@ -2869,6 +2877,7 @@ GMT_LOCAL bool map_init_merc (struct GMT_CTRL *GMT) {
 	map_cyl_validate_clon (GMT, 0);	/* Make sure the central longitude is valid */
 	gmt_vmerc (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	GMT->current.proj.j_x *= D;
+	GMT->current.proj.j_yc *= D;
 	GMT->current.proj.j_ix /= D;
 	GMT->current.proj.fwd = &gmt_merc_sph;
 	GMT->current.proj.inv = &gmt_imerc_sph;
@@ -9102,8 +9111,10 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 	if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 		/* Limit east-west range to 360 and make sure east > -180 and west < 360 */
-		if (wesn[XHI] < wesn[XLO]) wesn[XHI] += 360.0;
-		if ((fabs (wesn[XHI] - wesn[XLO]) - 360.0) > GMT_CONV4_LIMIT) Return (GMT_MAP_EXCEEDS_360);
+		if (!GMT->common.R.oblique) {	/* Only makes sense if not corner coordinates */
+			if (wesn[XHI] < wesn[XLO]) wesn[XHI] += 360.0;
+			if ((fabs (wesn[XHI] - wesn[XLO]) - 360.0) > GMT_CONV4_LIMIT) Return (GMT_MAP_EXCEEDS_360);
+		}
 		while (wesn[XHI] < -180.0) {
 			wesn[XLO] += 360.0;
 			wesn[XHI] += 360.0;

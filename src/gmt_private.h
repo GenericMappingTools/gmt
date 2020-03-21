@@ -201,7 +201,9 @@ struct GMTAPI_CTRL {
 
 /* Macro to test if filename is a special name indicating memory location */
 
-#define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", 9U))
+#define GMTAPI_PREFIX_LEN 9U		/* The length of the unique leading prefix of virtual filenames */
+#define GMTAPI_OBJECT_ID_START 21U	/* Start position of the encoded object ID in the virtual filename */
+#define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", GMTAPI_PREFIX_LEN))
 
 #ifdef __cplusplus
 }

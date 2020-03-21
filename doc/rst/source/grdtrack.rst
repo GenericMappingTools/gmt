@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
-[ |-F|\ [**+n**][**+z**\ *z0*] ]
+[ |-F|\ [**+b**][**+n**][**+z**\ *z0*] ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *method*/*modifiers* ]
@@ -158,17 +158,17 @@ Optional Arguments
     this option requires either **+n** or **+i**.  The **+n**\ *np* modifier sets
     the desired number of points, while **+l**\ *length* gives the
     total length of the profile. Append **+d** to output the along-track
-    distances after the coordinates.  Note: No track file will be read.
+    distances after the coordinates.  **Note**: No track file will be read.
     Also note that only one distance unit can be chosen.  Giving different units
     will result in an error.  If no units are specified we default to
     great circle distances in km (if geographic).  If working with geographic
     data you can use **-j** to control distance calculation mode [Great Circle].
-    Note: If **-C** is set and *spacing* is given the that sampling scheme
+    **Note**: If **-C** is set and *spacing* is given the that sampling scheme
     overrules any modifier set in **-E**.
 
 .. _-F:
 
-**-F**\ [**+n**][**+z**\ *z0*]
+**-F**\ [**+b**][**+n**][**+z**\ *z0*]
     Find critical points along each cross-profile.
     Requires **-C** and a single input grid. We examine each cross-profile generated
     and report (*lonc*, *latc*, *distc*, *azimuthc*, *zc*) at the center peak of
@@ -179,6 +179,8 @@ Optional Arguments
     we assume the profile is positive up.  If we instead are looking
     for a trough then you must use **+n** to temporarily flip the profile to positive.
     The threshold *z0* value is always given as >= 0; use **+z** to change it [0].
+    Alternatively, use **+b** to determine the balance point and standard deviation of the profile.
+    Note that we round the exact results to the nearest distance nodes.
     We write 12 output columns per track with an identified center peak, with values
     *lonc, latc, distc, azimuthc, zc, lonl, latl, distl, lonr, latr, distr, width*.
 

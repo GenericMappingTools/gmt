@@ -172,7 +172,7 @@ Calendar time coordinates:
     where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
     day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
     Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
-    week, and day-of-week) for the ISO calendar. Note: this format requirement
+    week, and day-of-week) for the ISO calendar. **Note**: This format requirement
     only applies to command-line arguments and not time coordinates given via
     data files.  If no *date* is given
     we assume the current day. The **T** flag is required if a *clock* is given.
@@ -286,7 +286,7 @@ tick, and gridline intervals, axes labels, and annotation units.
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
+-  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
 
 Here, the optional *axes* dictates which of the axes should be drawn
 and possibly annotated.  By default, all 4 map boundaries (or plot axes)
@@ -303,6 +303,10 @@ corner and the order goes counter-clockwise.  Append **+b** to draw the outline
 of the 3-D box defined by **-R**; this modifier is also needed to display
 gridlines in the x–z, y–z planes.  You may paint the
 map canvas by appending the **+g**\ *fill* modifier [Default is no fill].
+Use **+i** to annotate an internal meridian or parallel when the axis that normally
+would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
+has no latitude axis, and a global Hammer map has no longitude axis);
+optionally append the parallel or meridian [0].
 If gridlines are specified via the Axes parameters (discussed below) then
 by default these are referenced to the North pole.  If, however, you wish
 to produce oblique gridlines about another pole you can append **+o**\ *lon/lat*
@@ -930,7 +934,7 @@ subplot's **-A** option) or to specify directly the *row*,\ *col* or
 1-D *index* of the desired panel.  The **-c** option is only allowed
 when in subplot mode.  If no **-c** option is given for the first plot
 then we default to *row* = *col* = *index* = 0, i.e., the upper left
-panel.  Note: *row*, *col*, and *index* all start at 0.
+panel.  **Note**: *row*, *col*, and *index* all start at 0.
 
 .. _option_-d:
 
@@ -1021,7 +1025,7 @@ miles. For programs that map data to map coordinates you can optionally
 specify these criteria to apply to the projected coordinates (by using
 upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
 **c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
-by :term:`PROJ_LENGTH_UNIT`]. Note: For **-gx** or **-gy** with time data
+by :term:`PROJ_LENGTH_UNIT`]. **Note**: For **-gx** or **-gy** with time data
 the unit is instead controlled by :term:`TIME_UNIT`.
 Normally, a gap is computed as the absolute value of the
 specified distance measure (see above).  Append **+n** to compute the gap
@@ -1360,6 +1364,9 @@ or **o** to restrict the effect to input or output only. Note that
 command line arguments that may take geographic coordinates (e.g.,
 **-R**) *always* expect longitude before latitude. Also, geographical
 grids are expected to have the longitude as first (minor) dimension.
+
+Footnotes
+---------
 
 .. [11]
    The Gregorian Calendar is a revision of the Julian Calendar which was

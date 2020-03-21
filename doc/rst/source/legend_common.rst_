@@ -24,7 +24,7 @@ Required Arguments
     vertical extent of the items to be placed.
     By default, the anchor point on the legend is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Use **+l**\ *spacing* to change the line-spacing factor in units of the current
     font size [1.1].

@@ -47,7 +47,7 @@
 #define THIS_MODULE_MODERN_NAME	"surface"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
-#define THIS_MODULE_KEYS	"<D{,DD(,LG(,GG}"
+#define THIS_MODULE_KEYS	"<D{,DD(=,LG(,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVabdefhiqrs" GMT_ADD_x_OPT GMT_OPT("FH")
 
@@ -2077,7 +2077,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->M.active) {	/* Want to mask the grid first */
-		char input[GMT_STR16] = {""}, mask[GMT_STR16] = {""}, cmd[GMT_LEN256] = {""};
+		char input[GMT_VF_LEN] = {""}, mask[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
 		static char *V_level = "qntcvld";
 		struct GMT_GRID *Gmask = NULL;
 		struct GMT_VECTOR *V = NULL;

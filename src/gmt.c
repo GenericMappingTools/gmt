@@ -147,7 +147,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Print all classic modules and exit */
-			else if (!strncmp (argv[arg_n], "--show-classic", 8U)) {
+			else if (!strncmp (argv[arg_n], "--show-classic", 9U)) {
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_CLASSIC, NULL);
 				status = GMT_NOERROR;
 			}
@@ -303,18 +303,18 @@ int main (int argc, char *argv[]) {
 			strcat (libraries, ", ZLIB");
 #endif
 			fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
-			fprintf (stderr, "\t[Linked with %s]\n", libraries);
 			fprintf (stderr, "\t(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
-			fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
-			fprintf (stderr, "and volunteers from around the world.\n\n");
+			fprintf (stderr, "\tSupported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
+			fprintf (stderr, "\tand volunteers from around the world.\n\n");
 
-			fprintf (stderr, "GMT is distributed under the GNU LGPL License (http://www.gnu.org/licenses/lgpl.html).\n\n");
+			fprintf (stderr, "\tGMT is distributed under the GNU LGPL License (http://www.gnu.org/licenses/lgpl.html).\n");
+			fprintf (stderr, "\tDependencies: %s, Ghostscript, GraphicsMagick, FFmpeg.\n\n", libraries);
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
 			fprintf (stderr, "  --new-script[=L]  Write GMT modern mode script template to stdout.\n");
-			fprintf (stderr, "                    Optionally specify bash|csh|batch [Default is current shell]\n");
+			fprintf (stderr, "                    Optionally specify bash|csh|batch [Default is current shell].\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 			fprintf (stderr, "  --show-citation   Show the most recent citation for GMT.\n");
 			fprintf (stderr, "  --show-classic    Show all classic module names.\n");

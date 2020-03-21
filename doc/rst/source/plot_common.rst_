@@ -192,10 +192,11 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [**l**\|\ **f**]\ *value*
+**-Z**\ *value*\|\ *file*\ [**+f**\|\ **l**]
     Instead of specifying a symbol or polygon fill and outline color via **-G** and **-W**,
-    give both a *level* value via **-Z** and a color lookup table via **-C**.  To just set the
-    fill or outline, use **-Zf** or **-Zl**, respectively.
+    give both a *value* via **-Z** and a color lookup table via **-C**.  Alternatively,
+    give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
+    To just set the fill or outline, append **+f** or **+l**, respectively [both]. 
 
 .. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_

@@ -24,13 +24,12 @@ list (REMOVE_ITEM _fig_fig
 	formatting.png highres.png noantialias.png withantialias.png)
 
 # Copy figures without converting
-FILE(MAKE_DIRECTORY ${RST_BINARY_DIR}/_images)
 set (_fig_fig_out)
 foreach (_fig ${_fig_fig})
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_fig}
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 		${CMAKE_CURRENT_SOURCE_DIR}/${_fig} ${RST_BINARY_DIR}/_images/${_fig}
-		DEPENDS ${_fig})
+		DEPENDS ${_fig} _docs_rst_mkdir_images)
 	list (APPEND _fig_fig_out ${RST_BINARY_DIR}/_images/${_fig})
 endforeach (_fig ${_fig_fig})
 

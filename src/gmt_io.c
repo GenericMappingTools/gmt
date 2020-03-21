@@ -2760,7 +2760,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 
 	int object_ID, col, stop, n_reg, item;
 	uint64_t row, seg, seg1, seg2, k;
-	char buffer[GMT_BUFSIZ] = {""}, in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""};
+	char buffer[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""}, out_string[GMT_VF_LEN] = {""};
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *M = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -2768,7 +2768,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL, *SH1 = NULL, *SH2 = NULL;
 	struct GMTAPI_DATA_OBJECT O;
 
-	/* When this functions is called we have already registered the output destination.  This will normally
+	/* When this function is called we have already registered the output destination.  This will normally
 	 * prevent us from register the data set separately in order to call GMT_gmtinfo.  We must temporarily
 	 * unregister the output, do our thing, then reregister again. */
 
@@ -2786,27 +2786,22 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 
 	/* Determine w/e/s/n via GMT_gmtinfo */
 
-	/* Create option list, register D as input source via ref */
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D)) == GMT_NOTSET) {
-		return (GMT->parent->error);
+	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D, in_string) == GMT_NOTSET) {
+		return (GMT->parent->error);		
 	}
-	if (GMT_Encode_ID (GMT->parent, in_string, object_ID) != GMT_OK) {
-		return (GMT->parent->error);	/* Make filename with embedded object ID */
-	}
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_DUPLICATE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
-		return (GMT->parent->error);
-	}
-	if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {
-		return (GMT->parent->error);	/* Make filename with embedded object ID */
+	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, out_string) == GMT_NOTSET) {
+		return (GMT->parent->error);		
 	}
 	snprintf (buffer, GMT_BUFSIZ, "-C -fg -<%s ->%s --GMT_HISTORY=false", in_string, out_string);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling gmtinfo with args %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "gmtinfo", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Get the extent via gmtinfo */
 		return (GMT->parent->error);
 	}
-	if ((M = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {
+	GMT_Close_VirtualFile (GMT->parent, in_string);
+	if ((M = GMT_Read_VirtualFile (GMT->parent, out_string)) == NULL) {
 		return (GMT->parent->error);
 	}
+	GMT_Close_VirtualFile (GMT->parent, out_string);
 
 	/* Time to reregister the original destination */
 
@@ -7293,9 +7288,6 @@ int gmt_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t
 	uint64_t col;
 	if (first && n_columns) {	/* First time we allocate the number of columns needed */
 		S->data = gmt_M_memory (GMT, NULL, n_columns, double *);
-#ifdef GMT_BACKWARDS_API
-		S->coord = S->data;
-#endif
 		S->min = gmt_M_memory (GMT, NULL, n_columns, double);
 		S->max = gmt_M_memory (GMT, NULL, n_columns, double);
 		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */

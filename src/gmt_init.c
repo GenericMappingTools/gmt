@@ -828,7 +828,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 	bool was_R, was_J;
 	double wesn[4];
-	char buffer[GMT_LEN256] = {""}, in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""};
+	char buffer[GMT_LEN256] = {""}, Jstring[GMT_LEN128] = {""}, in_string[GMT_VF_LEN] = {""}, out_string[GMT_VF_LEN] = {""}, *v = NULL;
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call gmtinit_rectR_to_geoR to convert projected -R to geo -R\n");
@@ -874,9 +874,6 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "UTM projection insufficiently specified to auto-determine geographic region\n");
 				return (GMT_MAP_NO_PROJECTION);
 			}
-			else {
-				wesn[YLO] = -1.0;	wesn[YHI] = 1.0;
-			}
 			break;
 		case 2: /* Conical: Use default patch */
 			break;
@@ -897,8 +894,25 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No map projection specified to auto-determine geographic region\n");
 			break;
 	}
+	strncpy (Jstring, GMT->common.J.string, GMT_LEN128-1);	/* Make a duplicate in case we must mess around with it */
+	if (GMT->current.proj.obl_flip) {	/* Rotating by 90 has some challenges, like flipping rect x and y */
+		In->table[0]->segment[0]->data[GMT_X][0] = rect[YLO];
+		In->table[0]->segment[0]->data[GMT_Y][0] = rect[XLO];
+		In->table[0]->segment[0]->data[GMT_X][1] = rect[YHI];
+		In->table[0]->segment[0]->data[GMT_Y][1] = rect[XHI];
+		if ((v = strstr (Jstring, "+v"))) {	/* Cannot pass +v in this context since we just need to recover corner coordinates, not rotate yet */
+			char *d = strstr (Jstring, "+d");	/* Did we also use +d ? */
+			if (d && d > v) { /* Have both +d and +v, with +v at end, so must move +d up ahead of +v */
+				size_t len = strlen (d);
+				memmove (v, d, len);
+				v[len] = '\0';	/* Truncate the rest */
+			}
+			else /* Just need to skip the trailing +v part */
+				v[0] = '\0';
+		}
+	}
 	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s --GMT_HISTORY=false",
-		wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.J.string, unit, in_string, out_string);
+		wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], Jstring, unit, in_string, out_string);
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtaining geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Get the corners in degrees via mapproject */
 		return (GMT->parent->error);
@@ -3853,6 +3867,7 @@ bool gmtinit_B_is_frame (struct GMT_CTRL *GMT, char *in) {
 	gmt_M_unused (GMT);
 	if (strstr (in, "+b")) return true;	/* Found a +b so likely frame */
 	if (strstr (in, "+g")) return true;	/* Found a +g so likely frame */
+	if (strstr (in, "+i")) return true;	/* Found a +i so likely frame */
 	if (strstr (in, "+n")) return true;	/* Found a +n so likely frame */
 	if (strstr (in, "+o")) return true;	/* Found a +o so likely frame */
 	if (strstr (in, "+t")) return true;	/* Found a +t so likely frame */
@@ -3887,7 +3902,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	/* OK, here we are pretty sure this is a frame -B statement */
 
 	strncpy (text, in, GMT_BUFSIZ-1);
-	gmt_handle5_plussign (GMT, text, "bgnot", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
+	gmt_handle5_plussign (GMT, text, "bginot", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
 	GMT->current.map.frame.header[0] = '\0';
 
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
@@ -3902,6 +3917,29 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 						error++;
 					}
 					GMT->current.map.frame.paint = true;
+					break;
+				case 'i':	/* Turn on internal annotation for radiual or longitudinal axes when there is no other place to annotate */
+					GMT->current.map.frame.internal_annot = 1;	/* Longitude/angle */
+					if (GMT->current.proj.projection == GMT_POLAR)	/* Optional argument is an angle, not longitude, so atof will do */
+						GMT->current.map.frame.internal_arg = (p[1]) ? atof (&p[1]) : GMT->common.R.wesn[XLO];
+					else if (gmt_M_is_azimuthal (GMT)) {	/* Optional argument is a longitude */
+						if (p[1])	/* Giving a specific meridian along which to annotate latitudes or radii */
+							error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, &p[1], GMT_IS_LON, &GMT->current.map.frame.internal_arg), &p[1]);
+						else	/* Default to west */
+							GMT->current.map.frame.internal_arg = GMT->common.R.wesn[XLO];
+					}
+					else if (gmt_M_is_misc (GMT) && gmt_M_pole_is_point (GMT) && gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI])) {
+						GMT->current.map.frame.internal_annot = 2;	/* Want longitude annotations along a parallel */
+						if (p[1])	/* Giving a specific latitude */
+							error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &p[1], GMT_IS_LAT, &GMT->current.map.frame.internal_arg), &p[1]);
+						else	/* Default to Equator */
+							GMT->current.map.frame.internal_arg = 0.0;
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR,
+							"Option -B: Cannot specify internal annotation with +i for this projection and region selection\n");
+						error++;
+					}
 					break;
 				case 'n':	/* Turn off frame entirely; this is also done in gmtinit_decode5_wesnz */
 					GMT->current.map.frame.no_frame = true;
@@ -4008,8 +4046,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if ((error = gmtinit_parse5_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
 	error = 0;	/* Reset since otherwise it is -1 */
 
-	if (strstr (in, "+b") || strstr (in, "+g") || strstr (in, "+n") || strstr (in, "+o") || strstr (in, "+t")) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Found frame setting modifiers (+b|g|n|o|p) mixed with axes settings!\n");
+	if (strstr (in, "+b") || strstr (in, "+g") || strstr (in, "+i") || strstr (in, "+n") || strstr (in, "+o") || strstr (in, "+o") || strstr (in, "+t")) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Found frame setting modifiers (+b|g|i|n|o|p) mixed with axes settings!\n");
 		return (GMT_PARSE_ERROR);
 	}
 
@@ -4422,6 +4460,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					return (true);
 					break;
 			}
+			if (strstr (args, "+v"))	/* To guard against -JOa120W/25N/150/6i+dh+v and loosing the +v */
+				GMT->current.proj.obl_flip = true;
 			d[0] = '\0';	/* Chop off this modifier */
 		}
 		else {	/* Backwards compatibility for trailing +,-,h */
@@ -5036,6 +5076,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			break;
 
 		case GMT_OBLIQUE_MERC:		/* Oblique mercator, specifying origin and azimuth or second point */
+			if ((d = strstr (args, "+v"))) {
+				GMT->current.proj.obl_flip = true;
+				d[0] = '\0';	/* Chop off modifier */
+			}
 			GMT->current.proj.N_hemi = (strchr ("AB", GMT->common.J.string[1]) == NULL) ? true : false;	/* Upper case -JoA, -JoB allows S pole views */
 			if (n_slashes == 3) {
 				n = sscanf (args, "%[^/]/%[^/]/%lf/%s", txt_a, txt_b, &az, txt_e);
@@ -5056,6 +5100,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			GMT->current.proj.pars[6] = 0.0;
 			error += !(n == n_slashes + 1);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
+			if (d) d[0] = '+';	/* Restore modifier */
 			break;
 
 		case GMT_OBLIQUE_MERC_POLE:	/* Oblique mercator, specifying origin and pole */
@@ -6344,7 +6389,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-B Specify both (1) basemap frame settings and (2) axes parameters.\n");
 			gmt_message (GMT, "\t   Frame settings are modified via an optional single invocation of\n");
-			gmt_message (GMT, "\t     -B[<axes>][+b][+g<fill>][+n][+o<lon>/<lat>][+t<title>]\n");
+			gmt_message (GMT, "\t     -B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+t<title>]\n");
 			gmt_message (GMT, "\t   Axes parameters are specified via one or more invocations of\n");
 			gmt_message (GMT, "\t     -B[p|s][x|y|z]<info>\n\n");
 			gmt_message (GMT, "\t   1. Frame settings control which axes to plot, frame fill, title, and type of gridlines:\n");
@@ -6357,6 +6402,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     The optional +b will erect a 3-D frame box to outline the 3-D domain [no frame box]. The +b\n");
 			gmt_message (GMT, "\t     is also required for x-z or y-z gridlines to be plotted (if such gridlines are selected below).\n");
 			gmt_message (GMT, "\t     Append +g<fill> to paint the inside of the map region before further plotting [no fill].\n");
+			gmt_message (GMT, "\t     Append +i<val> to annotate along parallel or meridian <val> [0] when no such axes can be plotted.\n");
 			gmt_message (GMT, "\t     Append +n to have no frame and annotations whatsoever [Default is controlled by WESNZ/wesnz].\n");
 			gmt_message (GMT, "\t     Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines].\n");
 			gmt_message (GMT, "\t     Note: the +o modifier is ignored unless gridlines are specified via the axes parameters (below).\n");
@@ -6517,7 +6563,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t   -Jn|N[<lon0>/]<scale>|<width> (Robinson projection)\n\t     Give central meridian (opt) and scale\n");
 
-			gmt_message (GMT, "\t   -Jo|O<parameters> (Oblique Mercator).  Specify one of three definitions:\n");
+			gmt_message (GMT, "\t   -Jo|O<parameters>[+v] (Oblique Mercator).  Specify one of three definitions:\n");
 			gmt_message (GMT, "\t     -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scale>|<width>\n");
 			gmt_message (GMT, "\t       Give origin, azimuth of oblique equator, and scale at oblique equator\n");
 			gmt_message (GMT, "\t     -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>\n");
@@ -6526,6 +6572,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Give origin, pole of projection, and scale at oblique equator\n");
 			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<>r\n");
 			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
+			gmt_message (GMT, "\t       Append +v to make the oblique Equator the y-axis [x-axis].\n");
 
 			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] (Polar (theta,radius))\n");
 			gmt_message (GMT, "\t     Linear scaling for polar coordinates.  Give scale in %s/units.\n",
@@ -6629,9 +6676,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   -Jn|N[<lon0>/]<scl>|<width> (Robinson projection)\n");
 
 			gmt_message (GMT, "\t   -Jo|O (Oblique Mercator).  Specify one of three definitions:\n");
-			gmt_message (GMT, "\t      -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scl>|<width>\n");
-			gmt_message (GMT, "\t      -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>\n");
-			gmt_message (GMT, "\t      -Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>\n");
+			gmt_message (GMT, "\t      -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scl>|<width>[+v]\n");
+			gmt_message (GMT, "\t      -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>[+v]\n");
+			gmt_message (GMT, "\t      -Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>[+v]\n");
 
 			gmt_message (GMT, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scl>|<width> ((American) Polyconic)\n");
 
@@ -8176,8 +8223,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	else if (scale_coord) {	/* Just scale x/y coordinates to meters according to given unit */
 		double fwd_scale, inv_scale = 0.0, inch_to_unit = 0, unit_to_inch = 0;
-		int k_unit;
-		k_unit = gmtlib_get_unit_number (GMT, item[0]);
+		int k_unit = gmtlib_get_unit_number (GMT, r_unit);
 		gmt_init_scales (GMT, k_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, NULL);
 		for (pos = 0; pos < 4; pos++) p[pos] *= inv_scale;
 	}
@@ -9051,13 +9097,13 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 char gmt_set_V (int mode) {
 	char val = 0;
 	switch (mode) {
-		case GMT_MSG_QUIET:			val = 'q'; break;
-		case GMT_MSG_ERROR:			val = 'e'; break;
+		case GMT_MSG_QUIET:		val = 'q'; break;
+		case GMT_MSG_ERROR:		val = 'e'; break;
 		case GMT_MSG_WARNING:		val = 'w'; break;
 		case GMT_MSG_TICTOC:		val = 't'; break;
 		case GMT_MSG_INFORMATION:	val = 'i'; break;
 		case GMT_MSG_COMPAT:		val = 'c'; break;
-		case GMT_MSG_DEBUG:			val = 'd'; break;
+		case GMT_MSG_DEBUG:		val = 'd'; break;
 		default: break;
 	}
 	return val;
@@ -12743,7 +12789,7 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 	struct GMT_GRID *G = NULL;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
-	char virt_file[GMT_STR16] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:";
+	char virt_file[GMT_VF_LEN] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:";
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	switch (family) {

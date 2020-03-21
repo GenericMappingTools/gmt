@@ -13,11 +13,12 @@ cat << EOF > p
 14.501667 80.028333
 16.563333 76.481667
 EOF
-gmt pscoast -Wfaint -R17/76.3/16/81r -Slightblue -JS66/90/12c -P -K -Dh -Xc > $ps
+gmt set MAP_ANNOT_OBLIQUE 0
+gmt pscoast -Wfaint -R17/76.3/16/81+r -Slightblue -JS66/90/12c -P -K -Dh -Xc -Y2c > $ps
 gmt psxy p -Fr15.65/78.22 -O -R -J -Wthick,red,- -SqD40k:+gwhite+f4+LD+an+p+u"km" -K >> $ps
 gmt psxy p -Sc0.1c -Gblack -O -R -J -Bafg -K >> $ps
 gmt psxy line -R -J -O -K -Wthick,blue >> $ps
-gmt pscoast -Wfaint -R -Slightblue -J -K -Dh -O -Y12c >> $ps
+gmt pscoast -Wfaint -R -Slightblue -J -K -Dh -O -Y13c >> $ps
 gmt psxy p -Fr15.65/78.22 -O -R -J -Wthick,red,- -SqD40k:+f4+LD+an+p+u"km" -K >> $ps
 gmt psxy p -Sc0.1c -Gblack -O -R -J -Bafg -K >> $ps
 gmt psxy line -R -J -O -Wthick,blue >> $ps

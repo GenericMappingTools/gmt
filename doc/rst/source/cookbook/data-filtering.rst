@@ -83,6 +83,9 @@ the wavelength at which the transfer function equals 0.5 is about 5.34
 
    Transfer functions for 2-D (radial) GMT filters.
 
+Footnote
+--------
+
 .. [30]
    R. Bracewell, *The Fourier Transform and its Applications*,
    McGraw-Hill, London, 444 p., 1965.
