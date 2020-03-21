@@ -7775,9 +7775,9 @@ int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *
 	char panel[GMT_LEN16] = {""};
 	int fig, subplot, inset;
 
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Must be more careful */
 		if (!strncmp (item, "cpt", 3U)) return (GMT_FILE_NOT_FOUND);	/* Current CPT not available in classic mode */
-		snprintf (file, PATH_MAX, "%s/gmt.%s", GMT->parent->tmp_dir, item);
+		snprintf (file, PATH_MAX, "%s/gmt.%s", GMT->parent->tmp_dir, item);	/* Global file in the tmp dir only */
 		return (GMT_NOERROR);
 	}
 
@@ -7818,8 +7818,8 @@ char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict
 	int fig, subplot, inset;
 
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* A few more checks */
-		if (!strncmp (item, "cpt", 3U)) return NULL;	/* Current CPT not available in classic mode */
-		/* For gridlines we must use a file in TMPDIR */
+		if (!strncmp (item, "cpt", 3U)) return NULL;	/* Current CPT cocept not available in classic mode */
+		/* For gridlines we must use a global file in the tmp dir */
 		snprintf (path, PATH_MAX, "%s/gmt.%s", GMT->parent->tmp_dir, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		if (strict && file == NULL) goto FOUND_NOTHING;
