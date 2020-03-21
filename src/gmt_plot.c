@@ -1595,16 +1595,72 @@ GMT_LOCAL void plot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 	}
 }
 
+GMT_LOCAL int plot_save_current_gridlines (struct GMT_CTRL *GMT) {
+	/* If only primary gridlines are drawn, save information to items file */
+	unsigned int item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	char file[PATH_MAX] = {""};
+	double dx, dy;
+	FILE *fp = NULL;
+
+	if (!(GMT->current.map.frame.axis[GMT_X].item[item[0]].active || GMT->current.map.frame.axis[GMT_Y].item[item[0]].active)) return (GMT_NOERROR);	/* Primary gridlines not selected, so bail */
+	if (GMT->current.map.frame.axis[GMT_X].item[item[1]].active || GMT->current.map.frame.axis[GMT_Y].item[item[1]].active) return (GMT_NOERROR);		/* Secondary gridlines selected, so bail */
+
+	if (gmtlib_set_current_item_file (GMT, "gridlines", file) == GMT_FILE_NOT_FOUND) return (GMT_NOERROR);
+
+	/* Save the gridline setting for this graphics item */
+
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to save current gridline information to %s !\n", file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[item[0]]);
+	dy = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[item[0]]);
+	fprintf (fp, "%g\t%g\n", dx, dy);
+	fclose (fp);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Save current gridline information to %s\n", file);
+	return (GMT_NOERROR);
+}
+
+GMT_LOCAL int gmt_get_current_gridlines (struct GMT_CTRL *GMT, double *dx, double *dy) {
+	/* If modern mode and a current gridline setting file exists, obtain the gridline intervals */
+	char *file = NULL;
+	FILE *fp = NULL;
+
+	if ((file = gmt_get_current_item (GMT, "gridlines", true)) == NULL) return (GMT_NOERROR);	/* No gridlines drawn yet or we are in classic mode */
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open current gridline information file %s !\n", file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (fscanf (fp, "%lg %lg\n", dx, dy) != 2) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read current gridline information from %s !\n", file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	fclose (fp);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read current gridline information (%g, %g) from %s\n", *dx, *dy, file);
+	gmt_M_str_free (file);
+	return (GMT_NOERROR);
+}
+
 GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
-	unsigned int k, np, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	unsigned int k, i, np, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double dx, dy, *v = NULL;
 	bool reset = false;
+
+	for (k = i = 0; k < 2; k++) {	/* First check if any gridlines are requested */
+		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
+		if (GMT->current.setting.map_grid_cross_type[k] > 0) continue;
+		if (!(GMT->current.map.frame.axis[GMT_X].item[item[k]].active || GMT->current.map.frame.axis[GMT_Y].item[item[k]].active)) continue;
+		i++;
+	}
+	if (i == 0) return;	/* No gridlines requested */
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Entering plot_map_gridlines\n");
 	reset = gmt_genper_reset (GMT, reset);
 
+	if (plot_save_current_gridlines (GMT)) return;	/* Save a file with primary only gridline interval used under modern mode only; return if error */
+
 	for (k = 0; k < 2; k++) {
-		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
+		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;	/* Must have a size of zero to be a grid line, else it is a cross or tick */
 
 		dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[item[k]]);
 		dy = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[item[k]]);
@@ -1653,27 +1709,15 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exiting plot_map_gridlines\n");
 }
 
-GMT_LOCAL void plot_set_gridcross_limbs (struct GMT_CTRL *GMT, unsigned int axis, unsigned int kind, double value, unsigned int *B, unsigned int *E) {
-	*B = *E = 0;	/* Default is regular grid cross */
-	if (GMT->current.setting.map_grid_cross_type[kind] != 1) return;	/* Regular cross */
-	if (gmt_M_is_zero (value)) return;	/* Symmetrical as well for zero */
-	if (gmt_M_type (GMT, GMT_IN, axis) == GMT_IS_LON) {	/* Worry about longitudes */
-		if (value > 0.0 && value < 180.0) *B = 1; else *E = 1;	/* One-sided */
-	}
-	else {
-		if (value > 0.0) *B = 1; else *E = 1;	/* One-sided */
-	}
-}
-
 GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
-	unsigned int i, j, k, nx, ny, B = 0, E = 0, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	unsigned int i, j, k, nx, ny, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL;
-	double x_angle, y_angle, Ca, Sa, L, sgn[2] = {1.0, 0.0};
+	double x_angle, y_angle, Ca, Sa, L;
 
 	for (k = i = 0; k < 2; k++)
-		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) i++;
+		if (GMT->current.setting.map_grid_cross_size[k] > 0.0 && GMT->current.setting.map_grid_cross_type[k] == 0) i++;
 
-	if (i == 0) return;	/* No grid ticks requested */
+	if (i == 0) return;	/* No grid crosses requested */
 
 	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
@@ -1687,7 +1731,7 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 		nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item[k]], &x, NULL);
 		ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &y, NULL);
 
-		L = 0.5 * fabs (GMT->current.setting.map_grid_cross_size[k]);
+		L = 0.5 * GMT->current.setting.map_grid_cross_size[k];
 
 		for (j = 0; j < ny; j++) {
 			for (i = 0; i < nx; i++) {
@@ -1701,29 +1745,107 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 				}
 				else
 					xi = x[i];
-				plot_set_gridcross_limbs (GMT, GMT_X, k, xi, &B, &E);
 				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) {
 					gmt_geo_to_xy (GMT, xi + GMT->current.map.dlon, yj, &x1, &y1);
 					x_angle = d_atan2 (y1-y0, x1-x0);
 					sincos (x_angle, &Sa, &Ca);
-					xa = x0 - L * Ca * sgn[B];
-					xb = x0 + L * Ca * sgn[E];
-					ya = y0 - L * Sa * sgn[B];
-					yb = y0 + L * Sa * sgn[E];
+					xa = x0 - L * Ca;
+					xb = x0 + L * Ca;
+					ya = y0 - L * Sa;
+					yb = y0 + L * Sa;
 				}
 				else {
-					xa = x0 - L * sgn[B], xb = x0 + L * sgn[E];
+					xa = x0 - L, xb = x0 + L;
 					ya = yb = y0;
 				}
 				PSL_plotsegment (PSL, xa, ya, xb, yb);
 
-				plot_set_gridcross_limbs (GMT, GMT_Y, k, yj, &B, &E);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) {
 					//gmt_geo_to_xy (GMT, xi, yj - copysign (GMT->current.map.dlat, yj), &x1, &y1);
 					//y_angle = d_atan2 (y1-y0, x1-x0);
 					y_angle = x_angle + M_PI_2;
 					sincos (y_angle, &Sa, &Ca);
+					xa = x0 - L * Ca;
+					xb = x0 + L * Ca;
+					ya = y0 - L * Sa;
+					yb = y0 + L * Sa;
+				}
+				else {
+					xa = xb = x0;
+					ya = y0 - L, yb = y0 + L;
+				}
+				PSL_plotsegment (PSL, xa, ya, xb, yb);
+			}
+		}
+		if (nx) gmt_M_free (GMT, x);
+		if (ny) gmt_M_free (GMT, y);
+
+		PSL_setdash (PSL, NULL, 0);
+
+	}
+	gmt_map_clip_off (GMT);
+}
+
+GMT_LOCAL void plot_set_gridcross_limbs (struct GMT_CTRL *GMT, unsigned int axis, unsigned int kind, double value, unsigned int *B, unsigned int *E) {
+	*B = *E = 0;	/* Default is symmetric tick */
+	if (GMT->current.setting.map_grid_cross_type[kind] == 2) return;	/* Symmetric tick */
+	if (gmt_M_is_zero (value)) return;	/* Symmetrical as well for zero */
+	if (gmt_M_type (GMT, GMT_IN, axis) == GMT_IS_LON) {	/* Worry about longitudes */
+		if (value > 0.0 && value < 180.0) *B = 1; else *E = 1;	/* One-sided */
+	}
+	else {
+		if (value > 0.0) *B = 1; else *E = 1;	/* One-sided */
+	}
+}
+
+GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
+	/* Draw symmetric or asymmetric grid ticks along the courser gridlines for parallels and meridians */
+	unsigned int i, j, k, nx, ny, G_nx, G_ny, G_i, G_j, B = 0, E = 0, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	double x0, y0, x1, y1, xa, xb, ya, yb, xi, yj, yj2, *x = NULL, *y = NULL, *G_x = NULL, *G_y = NULL;
+	double angle, Ca, Sa, L, sgn[2] = {1.0, 0.0}, G_dx, G_dy, dx, dy;
+
+	for (k = i = 0; k < 2; k++)
+		if (GMT->current.setting.map_grid_cross_type[k]) i++;
+
+	if (i == 0) return;	/* No gridline ticks requested */
+
+	if (gmt_get_current_gridlines (GMT, &G_dx, &G_dy)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gridline ticks specified but no gridlines have been laid down first\n");
+		return;
+	}
+	G_nx = gmtlib_linear_array (GMT, w, e, G_dx, 0.0, &G_x);
+	G_ny = gmtlib_linear_array (GMT, s, n, G_dy, 0.0, &G_y);
+
+	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
+
+	for (k = 0; k < 2; k++) {
+		if (gmt_M_is_zero (GMT->current.setting.map_grid_cross_size[k])) continue;
+
+		PSL_comment (PSL, "%s\n", k ? "Map gridcrosses (secondary)" : "Map gridcrosses (primary)");
+
+		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[k]);
+
+		nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item[k]], &x, NULL);
+		ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &y, NULL);
+		dy = (ny > 1) ? y[1] - y[0] : GMT->current.map.dlat;
+		dx = (nx > 1) ? x[1] - x[0] : GMT->current.map.dlon;
+
+		L = 0.5 * fabs (GMT->current.setting.map_grid_cross_size[k]);
+
+		for (G_j = 0; G_j < G_ny; G_j++) {	/* For each gridline parallel */
+			yj = G_y[G_j];	/* Current parallel */
+			if (gmt_M_pole_is_point(GMT) && doubleAlmostEqualZero (fabs (yj), 90.0)) continue;	/* No grid tick at single pole points */
+			plot_set_gridcross_limbs (GMT, GMT_Y, k, yj, &B, &E);
+			for (i = 0; i < nx; i++) {	/* Going along this parallel to place ticks */
+				if (gmt_map_outside (GMT, x[i], yj)) continue;	/* Outside map */
+				xi = x[i];
+				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
+				if (gmt_M_is_geographic (GMT, GMT_IN)) {
+					yj2 = doubleAlmostEqual (fabs (yj), 90.0) ? yj - dy : yj + dy;
+					gmt_geo_to_xy (GMT, xi, yj2, &x1, &y1);
+					angle = d_atan2 (y1-y0, x1-x0);
+					sincos (angle, &Sa, &Ca);
 					xa = x0 - L * Ca * sgn[B];
 					xb = x0 + L * Ca * sgn[E];
 					ya = y0 - L * Sa * sgn[B];
@@ -1736,12 +1858,39 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 				PSL_plotsegment (PSL, xa, ya, xb, yb);
 			}
 		}
+
+		for (G_i = 0; G_i < G_nx; G_i++) {	/* For each gridline meridian */
+			xi = G_x[G_i];	/* Current meridian */
+			plot_set_gridcross_limbs (GMT, GMT_X, k, xi, &B, &E);
+			for (j = 0; j < ny; j++) {
+				if (gmt_map_outside (GMT, xi, y[j])) continue;	/* Outside map */
+				yj = y[j];
+				if (gmt_M_pole_is_point(GMT) && doubleAlmostEqualZero (fabs (yj), 90.0)) continue; 	/* No grid tick at single pole points */
+				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
+				if (gmt_M_is_geographic (GMT, GMT_IN)) {
+					gmt_geo_to_xy (GMT, xi + dx, yj, &x1, &y1);
+					angle = d_atan2 (y1-y0, x1-x0);
+					sincos (angle, &Sa, &Ca);
+					xa = x0 - L * Ca * sgn[B];
+					xb = x0 + L * Ca * sgn[E];
+					ya = y0 - L * Sa * sgn[B];
+					yb = y0 + L * Sa * sgn[E];
+				}
+				else {
+					xa = x0 - L * sgn[B], xb = x0 + L * sgn[E];
+					ya = yb = y0;
+				}
+				PSL_plotsegment (PSL, xa, ya, xb, yb);
+			}
+		}
 		if (nx) gmt_M_free (GMT, x);
 		if (ny) gmt_M_free (GMT, y);
 
 		PSL_setdash (PSL, NULL, 0);
-
 	}
+	if (G_nx) gmt_M_free (GMT, G_x);
+	if (G_ny) gmt_M_free (GMT, G_y);
+
 	gmt_map_clip_off (GMT);
 }
 
@@ -5222,8 +5371,9 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 		clip_on = true;
 	}
 
-	plot_map_gridlines (GMT, PSL, w, e, s, n);	/* At most only one of these two would kick in */
+	plot_map_gridlines (GMT, PSL, w, e, s, n);	/* At most only one of these three would kick in */
 	plot_map_gridcross (GMT, PSL, w, e, s, n);
+	plot_map_gridticks (GMT, PSL, w, e, s, n);
 
 	plot_map_tickmarks (GMT, PSL, w, e, s, n);
 

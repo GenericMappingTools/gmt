@@ -50,6 +50,7 @@ struct GMT_XINGS {
 
 EXTERN_MSC char *opt (struct GMTAPI_CTRL *API,char code);
 
+EXTERN_MSC int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *file);
 EXTERN_MSC int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double *line_angle, double *text_angle, unsigned int *justify);
 EXTERN_MSC bool gmtinit_B_is_frame (struct GMT_CTRL *GMT, char *in);
 EXTERN_MSC int64_t gmt_parse_index_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t *stop);
@@ -57,7 +58,7 @@ EXTERN_MSC void gmtlib_handle_escape_text (char *text, char key, int way);
 EXTERN_MSC int gmtlib_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt);
 EXTERN_MSC void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns);
 EXTERN_MSC void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns);
-EXTERN_MSC void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset);
+EXTERN_MSC void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset);
 EXTERN_MSC unsigned int gmtlib_char_count (char *txt, char c);
 EXTERN_MSC void gmt_check_modern_oneliner (struct GMTAPI_CTRL *API, const char *module, struct GMT_OPTION *head);
 EXTERN_MSC void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API);

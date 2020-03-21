@@ -16716,12 +16716,12 @@ int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
 	return (fig_no);
 }
 
-void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset) {
-	/* Determine figure number, subplot panel, inset */
+void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset) {
+	/* Determine figure number, subplot panel, inset for current graphics item */
 	*fig = gmt_get_current_figure (API);	/* Return figure number 1-? or 0 if a session plot */
 	*subplot = gmtinit_subplot_status (API, *fig);	/* Get information about subplot, if active */
 	panel[0] = '\0';
-	if ((*subplot) & GMT_SUBPLOT_ACTIVE) {	/* subplot active */
+	if ((*subplot) & GMT_SUBPLOT_ACTIVE) {	/* subplot is active */
 		if (((*subplot) & GMT_PANEL_NOTSET) == 0) {
 			int row, col;
 			if (get_current_panel (API, *fig, &row, &col, NULL, NULL, NULL) == 0)	/* panel set */
@@ -16729,7 +16729,7 @@ void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char
 		}
 	}
 	*inset = gmtinit_get_inset_dimensions (API, *fig, NULL);	/* True if inset is active */
-	GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_cpt_level: Fig: %d Subplot: %d Panel: (%s) Inset: %d\n", *fig, *subplot, panel, *inset);
+	GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_graphics_item: Fig: %d Subplot: %d Panel: (%s) Inset: %d\n", *fig, *subplot, panel, *inset);
 }
 
 bool gmt_is_integer (char *L) {
@@ -16887,7 +16887,7 @@ GMT_LOCAL void set_legend_filename (struct GMTAPI_CTRL *API, char *file) {
 	int fig, subplot, inset;
 
 	file[0] = '\0';	/* Initialize the path */
-	gmtlib_get_cpt_level (API, &fig, &subplot, panel, &inset);	/* Determine current plot item */
+	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine current plot item */
 	/* Set the correct output file name given the CPT level */
 	if (inset)	/* Only one inset may be active at any given time */
 		snprintf (file, PATH_MAX, "%s/gmt.inset.legend", API->gwf_dir);

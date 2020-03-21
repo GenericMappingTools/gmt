@@ -380,7 +380,7 @@ EXTERN_MSC void gmt_free_array (struct GMT_CTRL *GMT, struct GMT_ARRAY *T);
 EXTERN_MSC uint64_t gmt_time_array (struct GMT_CTRL *GMT, double min, double max, double inc, char unit, bool interval, double **array);
 EXTERN_MSC void gmt_set_inside_mode (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned int mode);
 EXTERN_MSC void gmt_str_tolower (char *string);
-EXTERN_MSC char * gmt_get_current_cpt (struct GMT_CTRL *GMT);
+EXTERN_MSC char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict);
 EXTERN_MSC struct GMT_RECORD *gmt_new_record (struct GMT_CTRL *GMT, double *d, char *t);
 EXTERN_MSC void gmt_just_to_code (struct GMT_CTRL *GMT, int justify, char *key);
 EXTERN_MSC int gmt_just_validate (struct GMT_CTRL *GMT, char *key, char *def);
