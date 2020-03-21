@@ -25,7 +25,7 @@
  *	   gmt subplot begin <nrows>x<ncols> -F[f|s][<W/H>[+f<wfracs/hfracs>]] [-A<labels>]
  *		[-SC<layout>] [-SR<layout>] [-M<margins>] [-T<title>] [-R<region>] [-J<proj>] [-V]
  *	2) Select the current subplot window for plotting, usually so we can use -A or -C (since -crow,col is faster):
- *	   gmt subplot [set] <row>,<col>|<index> [-A<fixlabel>] [-C<side><clearance>[u]] [-V]
+ *	   gmt subplot [set] <row>,<col>|<index> [-A<fixlabel>] [-C<side><clearance>] [-V]
  *	3) Finalize the figure:
  *	   gmt subplot end [-V]
  */
@@ -90,11 +90,11 @@ struct SUBPLOT_CTRL {
 		double off[2];			/* Offset from placement location [20% of font size] */
 		double clearance[2];		/* Padding around text for rectangle behind the tag [15%] */
 	} A;
-	struct C {	/* -C[side]<clearance>[u]  */
+	struct C {	/* -C[side]<clearance>  */
 		bool active;
 		double gap[4];	/* Internal margins (in inches) on the 4 sides [0/0/0/0] */
 	} C;
-	struct F {	/* -F[f|s][<width>[u]/<height>[u]][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d][+w<pen>] */
+	struct F {	/* -F[f|s][<width>/<height>][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d][+w<pen>] */
 		bool active;
 		bool lines;
 		bool debug;		/* Draw red faint lines to illustrate the result of space partitioning */
@@ -119,7 +119,7 @@ struct SUBPLOT_CTRL {
 		unsigned tick;		/* 1 if only l|r or t|b, 0 for both */
 		unsigned parallel;	/* 1 if we want axis parallel annotations */
 	} S[2];
-	struct M {	/* -M<margin>[u] | <xmargin>[u]/<ymargin>[u]  | <wmargin>[u]/<emargin>[u]/<smargin>[u]/<nmargin>[u]  */
+	struct M {	/* -M<margin> | <xmargin>/<ymargin>  | <wmargin>/<emargin>/<smargin>/<nmargin>  */
 		bool active;
 		double margin[4];
 	} M;
@@ -167,9 +167,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+c<gap>][+g<fill>][+p<pen>][+w<pen>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>[u]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\t[%s] [%s]\n\n",
 	 	GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C<side><clearance>[u]] [%s]\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C<side><clearance>] [%s]\n", name, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tSet <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range [next subplot].\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s]\n\n", name, GMT_V_OPT);
 
@@ -202,7 +202,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase [arabic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v to number down columns [subplots are numbered across rows].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a gap of dimension <clearance>[u] to the <side> (w|e|s|n) of the plottable subplot.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a gap of dimension <clearance> to the <side> (w|e|s|n) of the plottable subplot.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Shrinks the size for the main plot to make room for scales, bars, etc.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Repeatable for more than one side. Use <side> = x or y to set w|e or s|n, respectively.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No specified <side> means set the same clearance on all sides [no clearances].\n");
@@ -264,12 +264,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		opt = opt->next;	/* The row,col part */
 		if (opt) {	/* There is an argument */
 			if (isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col)) < 1) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error set: Unable to parse row,col: %s\n", opt->arg);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse row,col: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
 			}
 			if (n == 1) Ctrl->In.col = INT_MAX;	/* Flag we gave the 1-D index only */
 			if (Ctrl->In.row == GMT_NOTSET || Ctrl->In.col == GMT_NOTSET) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error set: Unable to parse row,col|index: %s\n", opt->arg);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse row,col|index: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
 			}
 		}
@@ -288,7 +288,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	}
 	else if (gmt_is_integer (opt->arg)) {	/* Implicitly called set via an index without using the word "set" */
 		if ((Ctrl->In.row = atoi (opt->arg)) < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error set: Unable to parse index: %s\n", opt->arg);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse index: %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}
 		Ctrl->In.col = INT_MAX;	/* Flag we gave the 1-D index only */
@@ -402,7 +402,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					default:	Ctrl->F.mode = SUBPLOT_FIGURE;  n = 0;	break; /* Figure dimension is default */
 				}
 				if (Ctrl->F.mode == SUBPLOT_PANEL && strstr (opt->arg, "+f")) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error Option -F: +f modifier can only be used with -F[f].\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: +f modifier can only be used with -F[f].\n");
 					n_errors++;
 				}
 				Ctrl->F.w = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_X], double);	/* Normalized fractional widths */
@@ -561,7 +561,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			case 'M':	/* Margins between subplots */
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Got nothing */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: No margins given.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: No margins given.\n");
 					n_errors++;
 				}
 				else {	/* Process 1, 2, or 4 margin values */
@@ -573,7 +573,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 						Ctrl->M.margin[XHI] = Ctrl->M.margin[XLO];
 					}
 					else if (k != 4) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: Bad number of margins given.\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Bad number of margins given.\n");
 						n_errors++;
 					}
 					/* Since GMT_Get_Values returns values in default project length unit, convert to inch */
@@ -596,8 +596,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Setting up a subplot system */
 		unsigned int px = 0, py = 0;
 		/* Was both -R -J given? */
-		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Syntax error -J: Requires -R as well!\n");
-		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Syntax error -J: Requires -Fs to determine subplot height!\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Option -J: Requires -Fs to determine subplot height!\n");
 		if (GMT->common.J.active) {	/* Compute map height from -R -J */
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
@@ -605,7 +605,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -SR, -SC */
 			if (!noB) {
 				if ((Bxy && (Bx || By)) || (!Bxy && ((Bx && !By) || (By && !Bx)))) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -B: Must either set -Bx and -By or -B that applies to both axes.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Must either set -Bx and -By or -B that applies to both axes.\n");
 					n_errors++;
 				}
 			}
@@ -619,7 +619,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 			}
 			else if (Bframe) {
 				static char *Bx_items = "SsNnbt", *By_items = "WwEelr";
-				if ((c = gmt_first_modifier (GMT, Bframe->arg, "bgnot"))) {	/* Gave valid frame modifiers */
+				if ((c = gmt_first_modifier (GMT, Bframe->arg, "bginot"))) {	/* Gave valid frame modifiers */
 					Ctrl->S[GMT_X].extra = strdup (c);
 					c[0] = '\0';	/* Chop off for now */
 				}
@@ -648,14 +648,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 		}
 		if (Ctrl->S[GMT_X].b == NULL) Ctrl->S[GMT_X].b = strdup ("af");	/* Default is -Baf if not set */
 		if (Ctrl->S[GMT_Y].b == NULL) Ctrl->S[GMT_Y].b = strdup ("af");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == SUBPLOT_LABEL_IS_LETTER && Ctrl->A.roman, "Syntax error -A: Cannot select Roman numerals AND letters!\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_subplots == 0, "Syntax error: Number of RowsxCols is required!\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Syntax error -F: Must specify figure and subplot dimensions!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode == SUBPLOT_LABEL_IS_LETTER && Ctrl->A.roman, "Option -A: Cannot select Roman numerals AND letters!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_subplots == 0, "Number of RowsxCols is required!\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Option -F: Must specify figure and subplot dimensions!\n");
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* Move focus to a particular subplot, so flag other options */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "Syntax error -F: Only available for gmt subset begin!\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S[GMT_X].active || Ctrl->S[GMT_Y].active, "Syntax error -S: Only available for gmt subset begin!\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active, "Syntax error -T: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "Option -F: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S[GMT_X].active || Ctrl->S[GMT_Y].active, "Option -S: Only available for gmt subset begin!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active, "Option -T: Only available for gmt subset begin!\n");
 
 	}
 
@@ -715,7 +715,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		double x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
 		double *cx = NULL, *cy = NULL, *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
-		char vfile[GMT_STR16] = {""}, xymode = 'r', report[GMT_LEN256] = {""}, txt[GMT_LEN32] = {""};
+		char vfile[GMT_VF_LEN] = {""}, xymode = 'r';
 		bool add_annot, no_frame = false;
 		FILE *fp = NULL;
 
@@ -738,6 +738,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 		if (!access (file, F_OK))	{	/* Subplot information file already exists, two begin subplot commands? */
 			GMT_Report (API, GMT_MSG_ERROR, "Subplot information file already exists: %s\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "Please run 'gmt clear sessions' (or equivalent if from Julia, Matlab, Python, etc...) to solve this issue.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		/* COmpute dimensions such as ticks and distance from tick to top of annotation etc */
@@ -853,21 +854,41 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		height = Ctrl->F.dim[GMT_Y];
 		y_heading = height + y_header_off + Ctrl->M.margin[YHI];
 		//y_heading = height + y_header_off;
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure width:  %g\n", Ctrl->F.dim[GMT_X]);
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure height: %g\n", Ctrl->F.dim[GMT_Y]);
-		sprintf (report, "%g", Ctrl->F.w[0]);
-		for (col = 1; col < Ctrl->N.dim[GMT_X]; col++) {
-			sprintf (txt, ", %g", Ctrl->F.w[col]);
-			strcat (report, txt);
+		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Lots of debug calculations and reporting here */
+			size_t len, tlen;
+			char report[GMT_LEN256] = {""}, txt[GMT_LEN32] = {""};
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure width:  %g\n", Ctrl->F.dim[GMT_X]);
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure height: %g\n", Ctrl->F.dim[GMT_Y]);
+			sprintf (report, "%g", Ctrl->F.w[0]);
+			for (col = 1; col < Ctrl->N.dim[GMT_X]; col++) {
+				len = strlen (report);
+				sprintf (txt, ", %g", Ctrl->F.w[col]);
+				tlen = strlen (txt);
+				if ((len+tlen) < GMT_LEN256) {	/* OK to add to report */
+					if (col == 10) {	/* Don't bother to give more than the first 10 columns */
+						sprintf (txt, ", ...");
+						col = Ctrl->N.dim[GMT_X];	/* This will exit the loop */
+					}
+					strcat (report, txt);
+				}
+			}
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Column dimensions: %s\n", report);
+			sprintf (report, "%g", Ctrl->F.h[0]);
+			for (row = 1; row < Ctrl->N.dim[GMT_Y]; row++) {
+				len = strlen (report);
+				sprintf (txt, ", %g", Ctrl->F.h[row]);
+				tlen = strlen (txt);
+				if ((len+tlen) < GMT_LEN256) {	/* OK to add to report */
+					if (row == 10) {	/* Don't bother to give more than the first 10 rows */
+						sprintf (txt, ", ...");
+						row = Ctrl->N.dim[GMT_Y];	/* This will exit the loop */
+					}
+					strcat (report, txt);
+				}
+			}
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Row dimensions: %s\n", report);
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Main heading BC point: %g %g\n", 0.5 * width, y_heading);
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Column dimensions: %s\n", report);
-		sprintf (report, "%g", Ctrl->F.h[0]);
-		for (row = 1; row < Ctrl->N.dim[GMT_Y]; row++) {
-			sprintf (txt, ", %g", Ctrl->F.h[row]);
-			strcat (report, txt);
-		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Row dimensions: %s\n", report);
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Main heading BC point: %g %g\n", 0.5 * width, y_heading);
 
 		/* Allocate subplot info array */
 		cx = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_X], double);
@@ -1203,13 +1224,13 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		double gap[4], legend_width = 0.0, legend_scale = 1.0;
 
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
-			char cmd[GMT_LEN64] = {""};
+			char cmd[GMT_LEN128] = {""};
 			if ((P = gmt_subplot_info (API, fig)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No subplot information file!\n");
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
+			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to place legend on current subplot figure\n");
 				Return (error);
@@ -1227,7 +1248,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	}
 	else {	/* SUBPLOT_END */
 		int k, id;
-		char *wmode[2] = {"w","a"}, vfile[GMT_STR16] = {""}, Rtxt[GMT_LEN64] = {""}, tag[GMT_LEN16] = {""};
+		char *wmode[2] = {"w","a"}, vfile[GMT_VF_LEN] = {""}, Rtxt[GMT_LEN64] = {""}, tag[GMT_LEN16] = {""};
 		char legend_justification[4] = {""}, Jstr[3] = {"J"};
 		double legend_width = 0.0, legend_scale = 1.0;
 		FILE *fp = NULL;
@@ -1238,9 +1259,9 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
-			char cmd[GMT_LEN64] = {""};
+			char cmd[GMT_LEN128] = {""};
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
+			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to place legend on current subplot figure\n");
 				Return (error);

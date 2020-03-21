@@ -85,7 +85,7 @@ struct X2SYS_SOLVE_CTRL {
 		bool active;
 		char *TAG;
 	} T;
-	struct X2S_SOLVE_W {	/* -W */
+	struct X2S_SOLVE_W {	/* -W[+u] */
 		bool active;
 		bool unweighted_stats;
 	} W;
@@ -178,7 +178,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -Ec|d|g|h|s|t|z -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s] [%s]%s[%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -Ec|d|g|h|s|t|z -T<TAG> [<coedata>] [%s] [-W[+u]]\n\t[%s] [%s]%s[%s]\n\n",
 		name, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -197,7 +197,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<coedata> is the ASCII data output file from x2sys_list [or we read stdin].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Weights are present in last column for weighted fit [no weights].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append 'u' to report unweighted mean/std [Default, report weighted stats].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +u to report unweighted mean/std [Default, report weighted stats].\n");
 	GMT_Option (API, "bi,di,x,.");
 
 	return (GMT_MODULE_USAGE);
@@ -267,7 +267,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				if (opt->arg[0] == 'u')		/* Report unweighted statistics anyway */
+				if (!strcmp (opt->arg, "+u") || opt->arg[0] == 'u')		/* Report unweighted statistics anyway */
 					Ctrl->W.unweighted_stats = true;
 				break;
 

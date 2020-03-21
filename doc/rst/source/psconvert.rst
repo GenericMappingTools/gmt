@@ -43,7 +43,7 @@ size of the resulting images is determined by the BoundingBox (or
 HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
 may be computed first. As another option, it can compute ESRI type world
 files used to reference, for instance, tif files and make them be
-recognized as geotiff.  Note: If the PostScript file calls on any of
+recognized as geotiff.  **Note**: If the PostScript file calls on any of
 the Adobe PDF transparency extensions *and* PDF is not the selected output
 format, then the file will first be converted to a temporary PDF file
 (for the transparency to take effect) before converting the PDF to the
@@ -64,7 +64,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+f**\ *fade*][**+g**\ *paint*][**+m**\ *margins*][**+n**][**+p**\ [*pen*]][**+r**][**+s**\ [**m**]\|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]][**+u**]
+**-A**\ [**+f**\ *fade*][**+g**\ *paint*][**+m**\ *margins*][**+n**][**+p**\ [*pen*]][**+r**][**+s**\ [**m**]\|\ **S**\ *width*/\ *height*][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **+n** to leave the BoundingBoxes as they are
     (e.g., to override any automatic setting of **-A** by **-W**).
@@ -108,7 +108,7 @@ Optional Arguments
 
 **-E**\ *resolution*
     Set raster resolution in dpi [default = 720 for PDF, 300 for others].
-    Note: Ghostscript limits the final width and height pixel dimensions
+    **Note**: Ghostscript limits the final width and height pixel dimensions
     of a raster to be less than or equal to 65536.
 
 .. _-F:
@@ -256,7 +256,7 @@ Optional Arguments
     `KML documentation <https://code.google.com/apis/kml/documentation/>`_
     for further explanation.
 
-    Note: If any of your titles or names contain a plus symbol next to
+    **Note**: If any of your titles or names contain a plus symbol next to
     a letter it can be confused with an option modifier. Escape such
     plus signs by placing a backslash in front of it.  Alternatively,
     enclose the string in double quotes and then the entire **-W**
@@ -265,10 +265,10 @@ Optional Arguments
     Further notes on the creation of georeferenced rasters.
     **psconvert** can create a georeferenced raster image with a world
     file OR uses GDAL to convert the GMT PostScript file to geotiff.
-    GDAL uses Proj.4 for its projection library. To provide with the
+    GDAL uses `PROJ <https://proj.org/>`_ for its projection library. To provide with the
     information it needs to do the georeferencing, GMT 4.5 embeds a
     comment near the start of the PostScript file defining the
-    projection using Proj.4 syntax. Users with pre-GMT v4.5 PostScript
+    projection using **PROJ** syntax. Users with pre-GMT v4.5 PostScript
     files, or even non-GMT ps files, can provide the information
     **psconvert** requires by manually editing a line into the
     PostScript file, prefixed with %%PROJ.
@@ -285,7 +285,7 @@ Optional Arguments
 
     where 'merc' is the keyword for the coordinate conversion; the 2 to
     5th elements contain the map limits, 6 to 9th the map limits in
-    projected coordinates and the rest of the line has the regular proj4
+    projected coordinates and the rest of the line has the regular **PROJ**
     string for this projection.
 
 **-Z**

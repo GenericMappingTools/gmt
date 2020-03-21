@@ -20,7 +20,7 @@ gmt begin ex43
 	grep -v '^#' $file > B.txt
 	$AWK '{if ($7 == 0) printf "%dp\n", NR}' A.txt > sed.txt
 	gmt makecpt -Clightred,green -T0/2/1 -F+c -N
-	gmt basemap -R0.01/1e6/0.1/1e5 -JX15cl -Ba1pf3 -Bx+l"Log@-10@- body weight (kg)" -By+l"Log@-10@- brain weight (g)" -BWSne+glightblue -Y12c
+	gmt basemap -R0.01/1e6/0.1/1e5 -JX15cl -Ba1pf3 -Bx+l"Log@-10@- body weight (kg)" -By+l"Log@-10@- brain weight (g)" -BWSne+glightblue -Y10c
 	gmt plot -R-2/6/-1/5 -JX15c rls_line.txt -L+yt -Glightgoldenrod
 	sed -n -f sed.txt B.txt | gmt text -R0.01/1e6/0.1/1e5 -JX15cl -F+f12p+jRM -Dj10p
 	gmt plot -R-2/6/-1/5 -JX15c -L+d+p0.25p,- -Gcornsilk1 rls_line.txt

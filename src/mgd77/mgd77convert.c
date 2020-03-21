@@ -137,6 +137,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 						break;
 					case 'C':		/* Enhanced MGD77+ netCDF file */
 						Ctrl->F.mode = true;	/* Overlook revisions */
+						/* Intentionally fall through - to 'c' */
 					case 'c':	/* Falling through from 'C' to 'c' on purpose */
 						Ctrl->F.format = MGD77_FORMAT_CDF;
 						break;
@@ -202,11 +203,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 	}
 
 	if (Ctrl->C.active) {
-		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active || Ctrl->F.active || Ctrl->L.active || Ctrl->T.active, "Syntax error -C: No other options allowed\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active || Ctrl->F.active || Ctrl->L.active || Ctrl->T.active, "Option -C: No other options allowed\n");
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "Syntax error: Must specify format of input files\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "Syntax error: Must specify format of output files\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "Option -F: Must specify format of input files\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "Option -f: Must specify format of output files\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -331,7 +332,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 		D = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header sequence for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		sprintf (file, "%s.%s", M.NGDC_id, MGD77_suffix[Ctrl->T.format]);
@@ -359,7 +360,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		/* OK, now we can read the data set */
 
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data set for cruise %s\n", list[argno]);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		MGD77_Close_File (GMT, &M);
@@ -382,13 +383,12 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		strcpy (D->H.author, M.user);									/* Pass current user login id as author */
 		gmt_M_free (GMT, D->H.history);	/* Make sure history is blank so it is reset by MGD77_Write_File */
 		if (MGD77_Write_File (GMT, file, &M, D)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error writing new file for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing new file for cruise %s\n", list[argno]);
 			Return (GMT_DATA_WRITE_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Converted cruise %s to %s format\n", list[argno], format_name[Ctrl->T.format]);
-		if (D->H.errors[0]) GMT_Report (API, GMT_MSG_WARNING, " [%02d header problems (%d warnings + %d errors)]", D->H.errors[0], D->H.errors[1], D->H.errors[2]);
-		if (D->errors) GMT_Report (API, GMT_MSG_WARNING, " [%d data errors]", D->errors);
-		GMT_Report (API, GMT_MSG_WARNING, "\n");
+		if (D->H.errors[0]) GMT_Report (API, GMT_MSG_WARNING, "%s [%02d header problems (%d warnings + %d errors)]", list[argno], D->H.errors[0], D->H.errors[1], D->H.errors[2]);
+		if (D->errors) GMT_Report (API, GMT_MSG_WARNING, "%s [%d data errors]", list[argno], D->errors);
 
 		MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
 		n_cruises++;

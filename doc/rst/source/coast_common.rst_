@@ -71,8 +71,9 @@ Optional Arguments
 **-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*]
     Select painting or dumping country polygons from the Digital Chart of the World.
     This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
-    Append one or more comma-separated countries using the 2-character
-    ISO 3166-1 alpha-2 convention.  To select a state of a country
+    Append one or more comma-separated countries using the
+    `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_.
+    To select a state of a country
     (if available), append .state, e.g, US.TX for Texas.  To specify a
     whole continent, prepend = to any of the continent codes AF (Africa),
     AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
@@ -169,7 +170,7 @@ Optional Arguments
     Dump a single multisegment ASCII (or binary, see
     **-bo**) file to standard output. No plotting
     occurs. Specify one of **-E**, **-I**, **-N** or **-W**.
-    Note: if **-M** is used with **-E** then **-R** or the **+r** modifier
+    **Note**: If **-M** is used with **-E** then **-R** or the **+r** modifier
     to **-E** are not required as we automatically determine the region
     given the selected geographic entities.  If using **-W** and you want
     just certain levels (1-4) then use the full syntax **-W**\ *level*/\ *pen*

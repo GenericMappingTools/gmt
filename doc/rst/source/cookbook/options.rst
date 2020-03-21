@@ -172,7 +172,7 @@ Calendar time coordinates:
     where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
     day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
     Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
-    week, and day-of-week) for the ISO calendar. Note: this format requirement
+    week, and day-of-week) for the ISO calendar. **Note**: This format requirement
     only applies to command-line arguments and not time coordinates given via
     data files.  If no *date* is given
     we assume the current day. The **T** flag is required if a *clock* is given.
@@ -242,7 +242,7 @@ general format is
 
 Since GMT version 4.3.0, there is an alternative way to specify the
 projections: use the same abbreviation as in the mapping package
-**Proj4**. The options thus either look like:
+`PROJ <https://proj.org/>`_. The options thus either look like:
 
 -  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a
    *lower-case* abbreviation that selects a particular map projection,
@@ -260,7 +260,7 @@ The projections available in GMT are presented in Figure
 :ref:`gmt_projections`. For details on all GMT projections and the required
 parameters, see the :doc:`/basemap` man page. We will also show examples of
 every projection in the next Chapters, and a quick summary of projection
-syntax is listed in :doc:`/proj_codes`.
+syntax is listed in :doc:`/proj-codes`.
 
 .. _gmt_projections:
 
@@ -286,7 +286,7 @@ tick, and gridline intervals, axes labels, and annotation units.
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
+-  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
 
 Here, the optional *axes* dictates which of the axes should be drawn
 and possibly annotated.  By default, all 4 map boundaries (or plot axes)
@@ -303,6 +303,10 @@ corner and the order goes counter-clockwise.  Append **+b** to draw the outline
 of the 3-D box defined by **-R**; this modifier is also needed to display
 gridlines in the x–z, y–z planes.  You may paint the
 map canvas by appending the **+g**\ *fill* modifier [Default is no fill].
+Use **+i** to annotate an internal meridian or parallel when the axis that normally
+would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
+has no latitude axis, and a global Hammer map has no longitude axis);
+optionally append the parallel or meridian [0].
 If gridlines are specified via the Axes parameters (discussed below) then
 by default these are referenced to the North pole.  If, however, you wish
 to produce oblique gridlines about another pole you can append **+o**\ *lon/lat*
@@ -347,7 +351,7 @@ but you may also split this into two separate invocations for clarity, i.e.,
 
 The *intervals* specification is a concatenated string made up of substrings of the form
 
-[**t**]\ *stride*\ [*phase*][**u**].
+[**t**]\ *stride*\ [*phase*][*unit*].
 
 The **t** flag sets the axis
 item of interest; the available items are listed in Table :ref:`inttype <tbl-inttype>`.
@@ -491,7 +495,7 @@ is a C language format statement for floating point numbers [13]_, and
 with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the *stride*
 settings. If :term:`FORMAT_FLOAT_OUT` is set to another format it will be
-used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
+used directly (e.g., "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
 
@@ -776,10 +780,10 @@ Verbose feedback: The **-V** option
 
 The **-V** option controls the verbosity mode, which determines which
 messages are sent to standard error [Default **-Vw** reports errors and warnings].
-Even more verbose levels are **-Vi**(or just **-V**; for informational messages)
+Even more verbose levels are **-Vi** (or just **-V**; for informational messages)
 and **-Vd** (debug). If compiled with backward-compatibility
 you can select **-Vc**, which includes warnings about deprecated usage.  To study
-the run-time of time-intensive algoriths you can use **-Vt** (where available).
+the run-time of time-intensive algorithms you can use **-Vt** (where available).
 Finally, **-Vq** can be used to run without any warnings or errors. This
 option can also be set by specifying the default :term:`GMT_VERBOSE`, as
 **quiet**, **error**, **warning**, **timing**, **compat**, **information**, or
@@ -825,7 +829,7 @@ OGR/GMT GIS i/o: The **-a** option
 GMT relies on external tools to translate geospatial files such as
 shapefiles into a format we can read. The tool **ogr2ogr** in the GDAL
 package can do such translations and preserve the aspatial metadata via
-a new OGR/GMT format specification (See Chapter :doc:`ogrgmt_format`).
+a new OGR/GMT format specification (See Chapter :doc:`ogrgmt-format`).
 For this to be useful we need a mechanism to associate certain metadata values with
 required input and output columns expected by GMT programs. The **-a**
 option allows you to supply one or more comma-separated associations
@@ -848,7 +852,7 @@ associate aspatial fields with other settings such as labels, fill
 colors, pens, and values used to look-up colors. Do so by letting the
 *col* value be one of **D**, **G**, **L**, **T**, **W**, or **Z**. This
 works analogously to how standard multi-segment files can pass such
-options via its segment headers (See Chapter :doc:`file_formats`).
+options via its segment headers (See Chapter :doc:`file-formats`).
 
 OGR/GMT output with **-a** option
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -916,7 +920,7 @@ name, where *var1*, *var2*, etc. are the names of the variables to be
 processed. No **-bi** option is needed in this case.
 
 Currently, netCDF tables can only be input, not output. For more
-information, see Chapter :doc:`file_formats`.
+information, see Chapter :doc:`file-formats`.
 
 .. _option_-c:
 
@@ -930,7 +934,7 @@ subplot's **-A** option) or to specify directly the *row*,\ *col* or
 1-D *index* of the desired panel.  The **-c** option is only allowed
 when in subplot mode.  If no **-c** option is given for the first plot
 then we default to *row* = *col* = *index* = 0, i.e., the upper left
-panel.  Note: *row*, *col*, and *index* all start at 0.
+panel.  **Note**: *row*, *col*, and *index* all start at 0.
 
 .. _option_-d:
 
@@ -1001,7 +1005,7 @@ Data gap detection: The **-g** option
 
 GMT has several mechanisms that can determine line
 segmentation. Typically, data segments are separated by multiple segment
-header records (see Chapter :doc:`file_formats`). However, if key data columns contain a
+header records (see Chapter :doc:`file-formats`). However, if key data columns contain a
 NaN we may also use that information to break lines into multiple
 segments. This behavior is modified by the parameter
 :term:`IO_NAN_RECORDS` which by default is set to *skip*, meaning such
@@ -1021,7 +1025,7 @@ miles. For programs that map data to map coordinates you can optionally
 specify these criteria to apply to the projected coordinates (by using
 upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
 **c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
-by :term:`PROJ_LENGTH_UNIT`]. Note: For **-gx** or **-gy** with time data
+by :term:`PROJ_LENGTH_UNIT`]. **Note**: For **-gx** or **-gy** with time data
 the unit is instead controlled by :term:`TIME_UNIT`.
 Normally, a gap is computed as the absolute value of the
 specified distance measure (see above).  Append **+n** to compute the gap
@@ -1142,11 +1146,7 @@ added to the *specfile* by hand.  For instance, a simple plot with two
 symbols can obtain a legend by using this option and modifiers and is shown
 in Figure :ref:`Auto Legend <auto_legend>`::
 
-   gmt begin fruit
-     gmt plot -R0/7.2/3/7.2 -Jx2c @Table_5_11.txt -Sc0.35c -Glightgreen -Wfaint -lApples+h"LEGEND"+f16p+d
-     gmt plot @Table_5_11.txt -St0.35c -Gorange -B -BWStr -lOranges
-     gmt legend -DjTR+w3c+o0.25c -F+p1p+ggray95+s
-   gmt end show
+.. literalinclude:: /_verbatim/GMT_autolegend.txt
 
 As the script shows, when no *specfile* is given to :doc:`/legend` then we
 look for the automatically generated on in the session directory.
@@ -1364,6 +1364,9 @@ or **o** to restrict the effect to input or output only. Note that
 command line arguments that may take geographic coordinates (e.g.,
 **-R**) *always* expect longitude before latitude. Also, geographical
 grids are expected to have the longitude as first (minor) dimension.
+
+Footnotes
+---------
 
 .. [11]
    The Gregorian Calendar is a revision of the Julian Calendar which was

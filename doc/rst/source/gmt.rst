@@ -190,7 +190,7 @@ modules. No space between the option flag and the associated arguments.
 
 .. include:: explain_-Jz_full.rst_
 
-.. include:: explain_-Jproj4_full.rst_
+.. include:: explain_-Jproj_full.rst_
 
 .. include:: explain_-R_full.rst_
 

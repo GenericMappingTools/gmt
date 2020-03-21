@@ -20,7 +20,7 @@ Synopsis
 [ |-J|\ *parameters* ]
 [ |-D|\ *breakline_file*\ [**+z**\ [*level*]] ]
 [ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
-[ |-M|\ *max_radius*\ [**u**] ]
+[ |-M|\ *max_radius* ]
 [ |-N|\ *max_iterations* ]
 [ |-Q| ]
 [ |-S|\ *search_radius*\ [**m**\|\ **s**] ]
@@ -147,7 +147,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ *max_radius*\ [**u**]
+**-M**\ *max_radius*
     After solving for the surface, apply a mask so that nodes farther
     than *max_radius* away from a data constraint is set to NaN [no masking].
     Append a distance unit (see `Units`_) if needed.

@@ -69,7 +69,7 @@ Optional Arguments
    averaged) coordinates and the updated NN distances and point IDs.  A
    negative point number means the original point was replaced by a weighted
    average (the absolute ID value gives the ID of the first original point
-   ID to be included in the average.).  Note: The input data are assumed to
+   ID to be included in the average.).  **Note**: The input data are assumed to
    contain (*lon, lat*) or (*x, y*), optionally followed by a *z* and a *weight* [1] column.
    We compute a weighted average of the location and *z* (if present).
 
@@ -159,10 +159,10 @@ Optional Arguments
     using the mean of the 3-D Cartesian vectors making up the polygon
     vertices, while the area is obtained via an equal-area projection.
     Normally, all input segments
-    will be be reflected on output.  Use **c** to restrict processing to
+    will be be reflected on output.  Use **+c** to restrict processing to
     those whose length (or area for polygons) fall inside the specified
     range set by *min* and *max*.  If *max* is not set it defaults to infinity.
-    To sort the segments based on their lengths or area, use **s** and
+    To sort the segments based on their lengths or area, use **+s** and
     append **a** for ascending and **d** for descending order [ascending].
     By default, we consider open polygons as lines.
     Append **+p** to close open polygons and thus consider all input
@@ -184,7 +184,7 @@ Optional Arguments
     the intersection of polygons (closed), **-Su** which returns the
     union of polygons (closed), **-Ss** which will split polygons that
     straddle the Dateline, and **-Sj** which will join polygons that
-    were split by the Dateline.  Note: Only **-Ss** has been implemented.
+    were split by the Dateline.  **Note**: Only **-Ss** has been implemented.
 
 .. _-T:
 

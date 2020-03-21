@@ -87,9 +87,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for this compilation.\n");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-D Remove the listed tracks  [Default will add to database].\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t-F Force updates to earlier entries for a track with new information.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   [Default refuses to process tracks already in the database].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Remove the listed tracks  [Default will add to database].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force updates to earlier entries for a track with new information.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default refuses to process tracks already in the database].\n");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -139,8 +139,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->F.active, "Syntax error: Only specify one of -D and -F\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->F.active, "Only specify one of -D and -F\n");
 
 	if (Ctrl->F.active) Ctrl->D.active = true;	/* Ironic, given previous if-test, but that is how the logic below in the main */
 
@@ -325,11 +325,11 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp) && line[0] != '>') {
 				i = sscanf (line, "%*s %*s %d %d", &index, &flag);
 				if (i != 2) {	/* Could not decode the index and the flag entries */
-					GMT_Report (API, GMT_MSG_ERROR, "Error processing record for track %s [%s]\n", track, line);
+					GMT_Report (API, GMT_MSG_ERROR, "Processing record for track %s [%s]\n", track, line);
 					Return (GMT_DATA_READ_ERROR);
 				}
 				else if (flag > max_flag) {
-					GMT_Report (API, GMT_MSG_ERROR, "data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
+					GMT_Report (API, GMT_MSG_ERROR, "Data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
 					Return (GMT_DATA_READ_ERROR);
 				}
 				if (B.base[index].n_tracks == 0) {	/* First track to cross this bin */

@@ -203,7 +203,7 @@ GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_gr
 #if 1
 GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
 	/* Algorithm 2: Replace NaNs with a spline */
-	char input[GMT_STR16] = {""}, output[GMT_STR16] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
+	char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
 	unsigned int row, col, row_hole, col_hole, mode, d_limit[4], n_constraints;
 	uint64_t node, node_hole, k = 0, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 	double *x = NULL, *y = NULL;
@@ -214,7 +214,9 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 
 	/* Allocate a vector container for input to greenspline */
 	dim[0] = 3;	/* Want three input columns but let length be 0 - this signals that no vector allocations should take place */
-	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) GMT_exit (API->GMT, EXIT_FAILURE);
+	if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		return (API->error);
+	}
 	/* Create a virtual file to hold the resampled grid */
 	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output) == GMT_NOTSET) {
 		return (API->error);
@@ -282,12 +284,12 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 
 	/* Close the two virtual files */
 	if (GMT_Close_VirtualFile (API, output)) {
-		return (API->error);
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to close virtual output file %s\n", output);
+		return (API->error);
 	}
 	if (GMT_Close_VirtualFile (API, input)) {
-		return (API->error);
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to close virtual input file %s\n", input);
+		return (API->error);
 	}
 
 	/* Free our custom vectors */

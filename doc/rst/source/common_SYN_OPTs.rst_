@@ -6,9 +6,9 @@
 
 .. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**+r**][**+u**\ *unit*]
 
-.. |SYN_OPT-X| replace:: |-X|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*\ [**u**]]
+.. |SYN_OPT-X| replace:: |-X|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*]
 
-.. |SYN_OPT-Y| replace:: |-Y|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*\ [**u**]]
+.. |SYN_OPT-Y| replace:: |-Y|\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*]
 
 .. |SYN_OPT-U| replace:: |-U|\ [*stamp*]
 
@@ -70,7 +70,7 @@
 
 .. |SYN_OPT--| replace:: **--PAR**\ =\ *value*
 
-.. |SYN_OPT-Area| replace:: **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+r**\|\ **l**][**+p**\ *percent*]
+.. |SYN_OPT-Area| replace:: **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+l**\|\ **r**][**+p**\ *percent*]
 
 
 .. |br| raw:: html

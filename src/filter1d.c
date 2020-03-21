@@ -182,7 +182,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<type><width>[<modifiers>] [-D<increment>] [-E]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>[<unit>][+e|n|a]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>[+e|n|a]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -231,7 +231,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only <inc> is given, optionally append +e to keep increment exact [Default will adjust to fit range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time filtering, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For spatial filtering with distance computed from the first two columns, specify increment as\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <inc>[<unit>] and append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   <inc> and append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column or a comma-separated list.\n");
 	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,j,o,q,:,.");
@@ -302,16 +302,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 							if (opt->arg[1] && !gmt_access (GMT, &opt->arg[1], R_OK))
 								Ctrl->F.file = strdup (&opt->arg[1]);
 							else {
-								GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
+								GMT_Report (API, GMT_MSG_ERROR, "Option -F[Ff]: Could not find file %s.\n", &opt->arg[1]);
 								++n_errors;
 							}
 							break;
 					}
 					n_errors += gmt_M_check_condition (GMT, Ctrl->F.file == NULL && Ctrl->F.width <= 0.0,
-					                                   "Syntax error -F option: Filterwidth must be positive\n");
+					                                   "Option -F: Filterwidth must be positive\n");
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
 					++n_errors;
 				}
 				break;
@@ -330,7 +330,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 						int sval0;
 						GMT_Report (API, GMT_MSG_COMPAT, "-N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
 						if (sscanf (opt->arg, "%d/%d", &sval0, &sval) != 2) {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -N option: Syntax is -N<tcol>\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -N: Syntax is -N<tcol>\n");
 							++n_errors;
 						}
 					}
@@ -340,7 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 				else
 					sval = atoi (opt->arg);
 				if (gmt_M_compat_check (GMT, 5) && (strstr (opt->arg, "+a") || (opt->arg[0] == 'g' || opt->arg[0] == 'c'))) {	/* Deprecated syntax */
-					GMT_Report (API, GMT_MSG_COMPAT, "-Nc|g[<unit>][+a] option is deprecated; use -T[<min>/<max>/]<int>[<unit>][+a|n] instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-Nc|g[+a] option is deprecated; use -T[<min>/<max>/]<int>[+a|n] instead.\n");
 					if ((c = strstr (opt->arg, "+a"))) {	/* Want to output any spatial distances computed */
 						c[0] = '\0';	/* Chop off the modifier */
 						Ctrl->N.add_col = true;
@@ -360,7 +360,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 					}
 				}
 				else {
-					n_errors += gmt_M_check_condition (GMT, sval < 0, "Syntax error -N option: Time column cannot be negative.\n");
+					n_errors += gmt_M_check_condition (GMT, sval < 0, "Option -N: Time column cannot be negative.\n");
 					Ctrl->N.col = sval;
 				}
 				break;
@@ -394,12 +394,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 
 	/* Check arguments */
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F is required\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Syntax error -D: must give positive increment\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.T.set == 3 && (Ctrl->T.T.max - Ctrl->T.T.min) < Ctrl->F.width, "Syntax error -T option: Output interval < filterwidth\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Syntax error -L option: Unreasonable lack-of-data interval\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Syntax error -S option: Enter a factor between 0 and 1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Syntax error -Q option: Enter a factor between 0 and 1\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Option -F is required\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Option -D: must give positive increment\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.T.set == 3 && (Ctrl->T.T.max - Ctrl->T.T.min) < Ctrl->F.width, "Option -T: Output interval < filterwidth\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Option -L: Unreasonable lack-of-data interval\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Option -S: Enter a factor between 0 and 1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Option -Q: Enter a factor between 0 and 1\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -912,7 +912,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	load_parameters_filter1d (&F, Ctrl, D->n_columns);	/* Pass parameters from Control structure to Filter structure */
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < F.n_cols) Return (GMT_N_COLS_VARY,
-		"Syntax error: Binary input data must have at least %d fields\n", F.n_cols);
+		"Binary input data must have at least %d fields\n", F.n_cols);
 
 	if (strchr ("BCGMPF", Ctrl->F.filter)) {	/* First deal with robustness request */
 		F.robust = true;
@@ -1056,7 +1056,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 		Return (API->error, "Error in End_IO\n");
 	}
 
-	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_WARNING, "%d multiple modes found\n", F.n_multiples);
+	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_INFORMATION, "%d separate modes found by the mode filter\n", F.n_multiples);
 
 	free_space_filter1d (GMT, &F);
 

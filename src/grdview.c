@@ -540,7 +540,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						n_errors++;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error option -G: Usage is -G<z.grd|image> | -G<r.grd> -G<g.grd> -G<b.grd>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Usage is -G<z.grd|image> | -G<r.grd> -G<g.grd> -G<b.grd>\n");
 					n_errors++;
 				}
 				break;
@@ -568,7 +568,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					Ctrl->I.constant = true;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -I: Requires a valid grid file or a constant\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
 					n_errors++;
 				}
 				break;
@@ -590,7 +590,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						Ctrl->N.level = atof (opt->arg);
 						c[0] = '+';	/* Restore the + */
 						n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, &c[2], &Ctrl->N.fill),
-						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						                                 "Option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 					}
 					else if (gmt_M_compat_check (GMT, 4) && (c = strchr (opt->arg, '/')) != NULL) {	/* Deprecated <level>/<fill> */
@@ -599,7 +599,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						c[0] = ' ';	/* Take out the slash for now */
 						sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
 						n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, colors, &Ctrl->N.fill),
-						                                   "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						                                   "Option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 						c[0] = '/';	/* Restore the slash */
 					}
@@ -607,7 +607,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						Ctrl->N.level = atof (opt->arg);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Usage is -N<level>[+g<fill>]\n");
 					n_errors++;
 				}
 				break;
@@ -626,7 +626,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						break;
 					case 't':	/* Image without color interpolation */
 						Ctrl->Q.special = true;
-						/* Deliberate fall-through to 'i' */
+						/* Intentionally fall through - to 'i' */
 					case 'i':	/* Image with clipmask */
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
 						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
@@ -649,7 +649,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						if (opt->arg[n+1]) {	/* Appended /<color> or just <color> */
 							k = ((opt->arg[n+1] == '/') ? 2 : 1) + n;
 							n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
-							                                 "Syntax error -Qm option: To give mesh color, use -Qm[x|y]<color>\n");
+							                                 "Option -Qm: To give mesh color, use -Qm[x|y]<color>\n");
 						}
 						break;
 					case 's':	/* Color without contours */
@@ -657,7 +657,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						if (opt->arg[1] == 'm') Ctrl->Q.outline = 1;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -671,7 +671,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = true;
 				sval = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -S option: smooth value must be positive\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -S: smooth value must be positive\n");
 				Ctrl->S.value = sval;
 				break;
 			case 'T':	/* Tile plot -T[+s][+o<pen>] */
@@ -737,32 +737,32 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 		Ctrl->N.facade = false;
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
-	                                   "Error: Piping of topofile not supported!\n");
+	                                   "Piping of topofile not supported!\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active,
-		                               "Syntax error: Must specify a map projection with the -J option\n");
+		                               "Must specify a map projection with the -J option\n");
 
 	/* Gave more than one -Q setting */
-	n_errors += gmt_M_check_condition (GMT, q_set > 1, "Error: -Qm, -Qs, -Qc, and -Qi are mutually exclusive options\n");
+	n_errors += gmt_M_check_condition (GMT, q_set > 1, "Options -Qm, -Qs, -Qc, and -Qi are mutually exclusive.\n");
 	/* Gave both -Q and -T */
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Error: -Q and -T are mutually exclusive options\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Options -Q and -T are mutually exclusive.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->G.n < 1 || Ctrl->G.n > 3),
-	                                   "Error: -G requires either 1 or 3 grids\n");
+	                                   "Option -G: Requires either 1 or 3 grids\n");
 	if (Ctrl->G.active) {	/* Draping was requested */
 		for (k = 0; k < Ctrl->G.n; k++)
-			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file[k][0], "Syntax error -G option: Must specify drape file\n");
+			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file[k][0], "Option -G: Must specify drape file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE,
 		                                   "The draping option requires -Qi option\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
-	                                   "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
+	                                   "Option -I: Must specify intensity file, value, or modifiers\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
-	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt, "Syntax error: Must specify color palette table\n");
+	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt, "Must specify color palette table\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
-	                                 "Syntax error -Qi option: Must specify positive dpi\n");
+	                                 "Option -Qi: Must specify positive dpi\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
-	                                 "Syntax error -T option: Cannot specify -JZ|z\n");
+	                                 "Option -T: Cannot specify -JZ|z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -871,7 +871,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid */
-		char int_grd[GMT_LEN16] = {""}, cmd[GMT_LEN256] = {""};
+		char int_grd[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
 		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid\n");
 		/* Create a virtual file to hold the intensity grid */
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
@@ -1487,13 +1487,13 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Creating PostScript image ");
 		if (Ctrl->Q.monochrome) {
-			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "[B/W image]\n");
+			if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Report (API, GMT_MSG_INFORMATION, "[B/W image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
 			                    x_width, y_width, PSL_BL, bitimage_8, nx_i, ny_i, 8);
 			gmt_M_free (GMT, bitimage_8);
 		}
 		else {
-			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "[color image]\n");
+			if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Report (API, GMT_MSG_INFORMATION, "[color image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
 			                    x_width, y_width, PSL_BL, bitimage_24, Ctrl->Q.mask ? -nx_i : nx_i, ny_i, 24);
 			gmt_M_free (GMT, bitimage_24);

@@ -957,7 +957,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					}
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Error in custom limits file [%s]\n", custom_limit_line);
+					GMT_Report (API, GMT_MSG_ERROR, "Failure in custom limits file [%s]\n", custom_limit_line);
 					gmt_fclose (GMT, custom_fp);
 					MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 					Return (API->error);
@@ -1249,7 +1249,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		/* Adjust along-track gradient type for time */
 		if (!strcmp(derivative,"TIME") && !gotTime) {
 			/*derivative = "SPACE";*/
-			if (warn[TIME_WARN]) GMT_Report (API, GMT_MSG_WARNING, "Warning: cruise contains no time - time gradients invalid.\n");
+			if (warn[TIME_WARN]) GMT_Report (API, GMT_MSG_WARNING, "Cruise contains no time - time gradients invalid.\n");
 		}
 
 		/* Allocate memory for error array */
@@ -1421,7 +1421,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				this_grid[i].g_pts = 0;
 				/* Skip if cruise lacks data field */
 				if (!(M.bit_pattern[0] & (1 << this_grid[i].col)) && strcmp (this_grid[i].abbrev, "nav")) {
-					GMT_Report (API, GMT_MSG_WARNING, "Warning: %s field not present in MGD77 file\n", this_grid[i].abbrev);
+					GMT_Report (API, GMT_MSG_WARNING, "Field %s not present in MGD77 file\n", this_grid[i].abbrev);
 					continue;
 				}
 

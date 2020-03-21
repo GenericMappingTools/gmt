@@ -15,14 +15,14 @@ Synopsis
 
 **gmt contour** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**-**\|\ *contours*][*labelinfo*] ]
+[ |-A|\ [**n**\|\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours* ]
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
 [ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
 [ |-I| ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-L|\ *pen* ] [ |-N| ]
-[ |-Q|\ [*cut*\ [*unit*]][**+z**] ]
+[ |-Q|\ [*cut*][**+z**] ]
 [ |-S|\ [*p*\|\ *t*] ]
 [ |-T|\ [**h**\|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]

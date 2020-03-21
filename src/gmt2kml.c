@@ -117,7 +117,7 @@ struct GMT2KML_CTRL {
 		unsigned int mode;
 		char *fmt;
 	} N;
-	struct Q {	/* -Qi|a<az> and -Qs<scale>[unit] */
+	struct Q {	/* -Qi|a<az> and -Qs<scale> */
 		bool active;
 		unsigned int mode, dmode;
 		char unit;
@@ -205,7 +205,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E[+e][+s]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-G[<color>][+f|n]] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<col>|t|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>[unit]] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N<col>|t|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W[<pen>][<attr>]] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -337,7 +337,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 						Ctrl->A.mode = (Ctrl->A.altitude != 0.0 || Ctrl->A.get_alt) ? KML_SEAFLOOR_REL : KML_SEAFLOOR;
 						break;
 					default:
-						GMT_Message (API, GMT_TIME_NONE, "Bad altitude mode. Use a, g or s.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Bad altitude mode. Use a, g or s.\n");
 						n_errors++;
 						break;
 				}
@@ -386,7 +386,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 						Ctrl->F.geometry = GMT_IS_LINE;	/* And poly, but need LINE first so read works as line */
 						break;
 					default:
-						GMT_Message (API, GMT_TIME_NONE, "Bad feature type. Use s, e, t, l, p or w.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Bad feature type. Use s, e, t, l, p or w.\n");
 						n_errors++;
 						break;
 				}
@@ -462,7 +462,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					Ctrl->N.mode = NO_LABEL;
 				}
 				break;
-			case 'Q':	/* Wiggle azimuth and scale settings in data units for map distance [unit] */
+			case 'Q':	/* Wiggle azimuth and scale settings in data units for map distance  */
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'i': Ctrl->Q.mode = 1; Ctrl->Q.value[1] = atof (&opt->arg[1]); break;
@@ -487,7 +487,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				else if (opt->arg[0] == 'n')
 					Ctrl->S.scale[N_ID] = atof (&opt->arg[1]);
 				else {
-					GMT_Message (API, GMT_TIME_NONE, "-S requires c or n, then nondimensional scale\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-S requires c or n, then nondimensional scale\n");
 					n_errors++;
 				}
 				break;
@@ -527,21 +527,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					switch (p[0]) {
 						case 'a':	/* Altitude range */
 							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
-								GMT_Message (API, GMT_TIME_NONE, "-Z+a requires 2 arguments\n");
+								GMT_Report (API, GMT_MSG_ERROR, "-Z+a requires 2 arguments\n");
 								n_errors++;
 							}
 							Ctrl->Z.min[ALT] = atof (T[0]);	Ctrl->Z.max[ALT] = atof (T[1]);
 							break;
 						case 'l':	/* LOD */
 							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
-								GMT_Message (API, GMT_TIME_NONE, "-Z+l requires 2 arguments\n");
+								GMT_Report (API, GMT_MSG_ERROR, "-Z+l requires 2 arguments\n");
 								n_errors++;
 							}
 							Ctrl->Z.min[LOD] = atof (T[0]);	Ctrl->Z.max[LOD] = atof (T[1]);
 							break;
 						case 'f':	/* Fading */
 							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
-								GMT_Message (API, GMT_TIME_NONE, "-Z+f requires 2 arguments\n");
+								GMT_Report (API, GMT_MSG_ERROR, "-Z+f requires 2 arguments\n");
 								n_errors++;
 							}
 							Ctrl->Z.min[FADE] = atof (T[0]);	Ctrl->Z.max[FADE] = atof (T[1]);
@@ -553,7 +553,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 							Ctrl->Z.open = true;
 							break;
 						default:
-							GMT_Message (API, GMT_TIME_NONE, "-Z unrecognized modifier +%c\n", p[0]);
+							GMT_Report (API, GMT_MSG_ERROR, "-Z unrecognized modifier +%c\n", p[0]);
 							n_errors++;
 							break;
 					}
@@ -568,18 +568,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Need to supply color palette name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && access (Ctrl->D.file, R_OK), "Syntax error -D: Cannot open HTML description file %s\n", Ctrl->D.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Option -C: Need to supply color palette name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && access (Ctrl->D.file, R_OK), "Option -D: Cannot open HTML description file %s\n", Ctrl->D.file);
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_OUT], "Syntax error: Cannot produce binary KML output\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "Syntax error: -Ra without arguments only accepted for single table\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "Syntax error: -S takes scales > 0.0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Syntax error: -Q takes transparencies in range 0-1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Syntax error: -Nt not valid for lines and polygons\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == WIGGLE && Ctrl->Q.scale <= 0.0, "Syntax error: -Fw requires -Qs\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Syntax error: -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option.\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->N.mode == GET_LABEL, "Syntax error: Cannot use -Nt when -b is used.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_OUT], "Cannot produce binary KML output\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "Option -Ra without arguments only accepted for single table\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "Option -S takes scales > 0.0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Option -Q takes transparencies in range 0-1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Option -Nt not valid for lines and polygons\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == WIGGLE && Ctrl->Q.scale <= 0.0, "Option -Fw requires -Qs\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Option -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Option -W+|-<pen> requires the -C option.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->N.mode == GET_LABEL, "Cannot use -Nt when -b is used.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -911,7 +911,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (P->is_continuous) {
-			GMT_Message (API, GMT_TIME_NONE, "Cannot use continuous color palette\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot use continuous color palette\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
@@ -1031,7 +1031,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		char line[GMT_BUFSIZ];
 		FILE *fp = NULL;
 		if ((fp = gmt_fopen (GMT, Ctrl->D.file, "r")) == NULL) {
-			GMT_Message (API, GMT_TIME_NONE, "Could not open description file %s\n", Ctrl->D.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Could not open description file %s\n", Ctrl->D.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		kml_print (API, Out, N++, "<description>");

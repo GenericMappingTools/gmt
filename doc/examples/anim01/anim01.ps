@@ -1,17 +1,16 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 288 144
-%%HiResBoundingBox: 0 0 288 144             
-%%Title: GMT v6.0.0_r19681M [64-bit] Document from psbasemap
+%%HiResBoundingBox: 0 0 288.0000 144.0000
+%%Title: GMT v6.1.0_9ee9cff_2020.02.16 [64-bit] Document from psbasemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jan 29 18:26:07 2018
+%%CreationDate: Sun Feb 16 19:25:34 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
 %%Pages: 1
 %%EndComments
-
 %%BeginProlog
 250 dict begin
 /! {bind def} bind def
@@ -643,32 +642,27 @@ end
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
-
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [288 144] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
-
 %%Page: 1 1
-
 %%BeginPageSetup
 V 0.06 0.06 scale
 %%EndPageSetup
-
 /PSL_page_xsize 4800 def
 /PSL_page_ysize 2400 def
-/PSL_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
 FQ
 O0
 420 300 TM
-
 % PostScript produced by:
-%@GMT: psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i -BWSne+glightgreen -Bxa90g90f30+u\232 -Bya0.5f0.1g1 --FONT_ANNOT_PRIMARY=9p
+%@GMT: gmt psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i -BWSne+glightgreen -Bxa90g90f30+u@. -Bya0.5f0.1g1 --FONT_ANNOT_PRIMARY=9p
 %@PROJ: xy 0.00000000 360.00000000 -1.20000000 1.60000000 0.000 360.000 -1.200 1.600 +xy
-%GMTBoundingBox: 25.2 18 252 118.8
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -811,23 +805,23 @@ N 3150 0 M 0 -83 D S
 N 4200 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(0\232) sh mx
-(90\232) sh mx
-(180\232) sh mx
-(270\232) sh mx
-(360\232) sh mx
+(0\260) sh mx
+(90\260) sh mx
+(180\260) sh mx
+(270\260) sh mx
+(360\260) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(0\232) bc Z
+(0\260) bc Z
 1050 PSL_A0_y MM
-(90\232) bc Z
+(90\260) bc Z
 2100 PSL_A0_y MM
-(180\232) bc Z
+(180\260) bc Z
 3150 PSL_A0_y MM
-(270\232) bc Z
+(270\260) bc Z
 4200 PSL_A0_y MM
-(360\232) bc Z
+(360\260) bc Z
 N 350 0 M 0 -42 D S
 N 700 0 M 0 -42 D S
 N 1400 0 M 0 -42 D S
@@ -860,32 +854,38 @@ N 3850 0 M 0 42 D S
 0 -1980 T
 0 setlinecap
 %%EndObject
-
 grestore
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 gsave
 0 A
 FQ
 O0
 420 300 TM
-
 % PostScript produced by:
-%@GMT: psxy -W1p,blue -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i
+%@GMT: gmt psxy -W1p,blue -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i
 %@PROJ: xy 0.00000000 360.00000000 -1.20000000 1.60000000 0.000 360.000 -1.200 1.600 +xy
-%GMTBoundingBox: 25.2 18 252 118.8
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 17 W
 0 0 1 C
+clipsave
+0 0 M
+4200 0 D
+0 1980 D
+-4200 0 D
+P
+PSL_clip N
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: psxy -Sc0.1i -Gdarkred -R0/360/-1.2/1.6 -JX3.5i/1.65i
+%@GMT: gmt psxy -Sc0.1i -Gdarkred -R0/360/-1.2/1.6 -JX3.5i/1.65i
 %@PROJ: xy 0.00000000 360.00000000 -1.20000000 1.60000000 0.000 360.000 -1.200 1.600 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -909,9 +909,8 @@ PSL_cliprestore
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: psxy -Sc0.1i -Gred -R0/360/-1.2/1.6 -JX3.5i/1.65i
+%@GMT: gmt psxy -Sc0.1i -Gred -R0/360/-1.2/1.6 -JX3.5i/1.65i
 %@PROJ: xy 0.00000000 360.00000000 -1.20000000 1.60000000 0.000 360.000 -1.200 1.600 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -935,9 +934,8 @@ PSL_cliprestore
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: pstext -F+f14p,Helvetica-Bold+jTL -N -Dj0.1i/0.05i -R0/360/-1.2/1.6 -JX3.5i/1.65i
+%@GMT: gmt pstext -F+f14p,Helvetica-Bold+jTL -N -Dj0.1i/0.05i -R0/360/-1.2/1.6 -JX3.5i/1.65i
 %@PROJ: xy 0.00000000 360.00000000 -1.20000000 1.60000000 0.000 360.000 -1.200 1.600 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -947,14 +945,13 @@ PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold 
 120 1920 M 233 F1
 (a = 000) tl Z
 %%EndObject
-
 grestore
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
-
 %%Trailer
-
 end
 %%EOF

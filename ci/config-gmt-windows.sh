@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and install GMT
+# Configure GMT settings under Windows
 
 # To return a failure if any commands inside fail
 set -e
@@ -8,8 +8,6 @@ cat > cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
-set (COPY_GSHHG TRUE)
-set (COPY_DCW TRUE)
 
 set (GMT_ENABLE_OPENMP TRUE)
 # Uncomment following line to enable static build

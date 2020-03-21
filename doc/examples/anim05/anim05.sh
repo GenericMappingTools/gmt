@@ -26,7 +26,7 @@ gmt begin
 	gmt grdcontour t.nc -C25 -A50 -Baf -BWsNE -JX4i -Gl3.6/6.5/4.05/0.75 -X0.25i -Y0.4i
 	gmt plot misfit.txt -Ct.cpt -Sc0.15c -Wfaint -i0,1,4
 	printf "%2.2d" \$k | gmt text -F+cTR+jTR+f18p -Dj0.1i -Gwhite -W0.25p
-	gmt psscale -Ct.cpt -DJBC+e -Bxaf -By+l"misfit"
+	gmt colorbar -Ct.cpt -DJBC+e -Bxaf -By+l"misfit"
 gmt end
 EOF
 # 3. Run the movie

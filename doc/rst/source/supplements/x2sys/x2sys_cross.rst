@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *combi.lis* ]
+**gmt x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *combitable* ]
 [ |-C|\ [*runtimes*] ]
 [ |-D|\ [**S**\|\ **N**] ]
 [ |-I|\ **l**\|\ **a**\|\ **c** ]
@@ -50,10 +50,10 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *combi.lis*
-    Only process the pair-combinations found in the file *combi.lis*
+**-A**\ *combitable*
+    Only process the pair-combinations found in the file *combitable*
     [Default process all possible combinations among the specified
-    files]. The file *combi.lis* created by :doc:`x2sys_get` **-L** option
+    files]. The file *combitable* created by :doc:`x2sys_get` **-L** option
 
 .. _-C:
 

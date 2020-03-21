@@ -444,29 +444,29 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Grid->header->registration = GMT_GRID_NODE_REG;
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->n_columns) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding ncols record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode ncols record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->n_rows) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding ncols record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode ncols record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[XLO]) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding xll record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode xll record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!strncmp (line, "xllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[YLO]) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding yll record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode yll record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		if (!strncmp (line, "yllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->inc[GMT_X]) != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error decoding cellsize record\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Could not decode cellsize record\n");
 			Return (GMT_DATA_READ_ERROR);
 		}
 		Grid->header->inc[GMT_Y] = Grid->header->inc[GMT_X];
@@ -679,7 +679,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 					flag[ij]++;
 					break;
 				case 'S': 	/* Add up squares and means to compute standard deviation */
-					data[ij] += (gmt_grdfloat)in[zcol];	/* This adds up the means; we fall through to next case on purpose to also add up squares */
+					data[ij] += (gmt_grdfloat)in[zcol];
+					/* Intentionally fall through - This adds up the means; we fall through to next case on purpose to also add up squares */
 				case 'r': 	/* Add up squares in case we must rms */
 					Grid->data[ij] += (gmt_grdfloat)in[zcol] * (gmt_grdfloat)in[zcol];
 					flag[ij]++;
@@ -741,14 +742,14 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 							break;
 						case 'd':	/* Keep the lowest in 'data' */
 							if (data[ij_east] < data[ij_west]) data[ij_west] = data[ij_east];
-							/* Fall through on purpose since range also needs the highsets */
+							/* Intentionally fall through - since range also needs the highsets */
 						case 'u':	/* Keep the highest */
 							if (Grid->data[ij_east] > Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
 							flag[ij_west] += flag[ij_east];
 							break;
 						case 'S':	/* Sum up the sums in 'data' */
 							data[ij_west] += data[ij_east];
-							/* Fall through on purpose */
+							/* Intentionally fall through */
 						default:	/* Add up in case we must sum, rms, mean, or standard deviation */
 							Grid->data[ij_west] += Grid->data[ij_east];
 							flag[ij_west] += flag[ij_east];
@@ -792,7 +793,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			(GMT->common.d.active[GMT_IN]) ? sprintf (e_value, GMT->current.setting.format_float_out, GMT->common.d.nan_proxy[GMT_IN]) : sprintf (e_value, "NaN");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
 				n_read, n_used, n_filled, n_empty, e_value);
-			if (n_confused) GMT_Report (API, GMT_MSG_WARNING, "Warning - %" PRIu64 " values gave bad indices: Pixel vs Gridline registration confusion?\n", n_confused);
+			if (n_confused) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " values gave bad indices: Pixel vs Gridline registration confusion?\n", n_confused);
 		}
 	}
 

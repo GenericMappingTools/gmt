@@ -1,4 +1,4 @@
-**-I**\ *xinc*\ [*unit*][**+e**\|\ **n**][/\ *yinc*\ [*unit*][**+e**\|\ **n**]]
+**-I**\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]]
     *x_inc* [and optionally *y_inc*] is the grid spacing. Optionally,
     append a suffix modifier. **Geographical (degrees) coordinates**: Append
     **m** to indicate arc minutes or **s** to indicate arc seconds. If one
@@ -17,5 +17,5 @@
     recalculated from the number of nodes and the domain. The resulting
     increment value depends on whether you have selected a
     gridline-registered or pixel-registered grid; see :ref:`GMT File Formats` for
-    details. Note: if **-R**\ *grdfile* is used then the grid spacing (and registration) have
+    details. **Note**: If **-R**\ *grdfile* is used then the grid spacing (and registration) have
     already been initialized; use **-I** (and **-r**) to override the values.

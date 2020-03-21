@@ -6,53 +6,66 @@
 #
 # Below, <TAG> is either core, supplements, or a users custom shared lib tag
 #
-# This script will find all the C files in the current dir (if core)
+# This script will find all the C files in the current dir (if core or custom)
 # or in subdirs (if supplements) and extract all the THIS_MODULE_PURPOSE
 # and other strings from the sources files, then create one file:
 # 	gmt_<TAG>_module.h	Function prototypes (required for Win32)
 # 	gmt_<TAG>_module.c	Look-up functions
 #
-# Note: gmt_<TAG>_module.[ch] are in GitHub.  Only rerun this
-# script when there are changes in the code, e.g. a new module.
+# Developer note: gmt_core_module.[ch] and gmt_supplements_module.[ch]
+# are in GitHub.  Only rerun this script when there are changes in the
+# core or supplemental codes, e.g. a new module.
 #
 if [ $# -ne 1 ]; then
 cat << EOF
+gmt_make_module_src.sh - Create C and H glue codes for GMT modules
+
 usage: gmt_make_module_src.sh [tag]
 	tag is the name of the set of modules.
 	Choose between core or supplements.
+	Developers of their own supplements can give the tag for their custom supplement;
+	run from your supplements src directory.
 EOF
 	exit 0
 fi
 set -e
 
+# Set LC_ALL to get the same sort order on Linux and macOS
+export LC_ALL=C
+
+# Set temporary directory
+TMPDIR=${TMPDIR:-/tmp}
+
 LIB=$1
 # Make sure we get both upper- and lower-case versions of the tag
 U_TAG=$(echo $LIB | tr '[a-z]' '[A-Z]')
 L_TAG=$(echo $LIB | tr '[A-Z]' '[a-z]')
+DO_RST=1	# We only build RST snippets for GMT, not custom
 
 if [ "$U_TAG" = "SUPPLEMENTS" ]; then	# Look in directories under the current directory and set LIB_STRING
-	grep "#define THIS_MODULE_LIB		" */*.c | gawk -F: '{print $1}' | sort -u > /tmp/tmp.lis
+	grep "#define THIS_MODULE_LIB		" */*.c | gawk -F: '{print $1}' | sort -u > ${TMPDIR}/tmp.lis
 	LIB_STRING="GMT suppl: The official supplements to the Generic Mapping Tools"
 elif [ "$U_TAG" = "CORE" ]; then	# Just look in current dir and set LIB_STRING
-	grep "#define THIS_MODULE_LIB		" *.c | egrep -v '_mt|_old|_experimental' | gawk -F: '{print $1}' | sort -u > /tmp/tmp.lis
+	grep "#define THIS_MODULE_LIB		" *.c | egrep -v '_mt|_old|_experimental' | gawk -F: '{print $1}' | sort -u > ${TMPDIR}/tmp.lis
 	LIB_STRING="GMT core: The main modules of the Generic Mapping Tools"
 else
-	echo "Error: Tag must be either core or supplements"
-	exit
+	grep "#define THIS_MODULE_LIB		" *.c | gawk -F: '{print $1}' | sort -u > ${TMPDIR}/tmp.lis
+	LIB_STRING="GMT $LIB: The $LIB modules of the Generic Mapping Tools"
+	DO_RST=0
 fi
-rm -f /tmp/MNAME.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis /tmp/all.lis
+rm -f ${TMPDIR}/MNAME.lis ${TMPDIR}/CNAME.lis ${TMPDIR}/LIB.lis ${TMPDIR}/PURPOSE.lis ${TMPDIR}/KEYS.lis ${TMPDIR}/all.lis
 while read program; do
-	grep "#define THIS_MODULE_MODERN_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> /tmp/MNAME.lis
-	grep "#define THIS_MODULE_CLASSIC_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> /tmp/CNAME.lis
-	grep "#define THIS_MODULE_LIB" $program     | gawk '{print $3}' | sed -e 's/"//g' >> /tmp/LIB.lis
-	grep "#define THIS_MODULE_PURPOSE" $program | sed -e 's/#define THIS_MODULE_PURPOSE//g' | gawk '{print $0}' >> /tmp/PURPOSE.lis
-	grep "#define THIS_MODULE_KEYS" $program    | sed -e 's/#define THIS_MODULE_KEYS//g' | gawk '{print $0}' >> /tmp/KEYS.lis
-done < /tmp/tmp.lis
+	grep "#define THIS_MODULE_MODERN_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> ${TMPDIR}/MNAME.lis
+	grep "#define THIS_MODULE_CLASSIC_NAME" $program    | gawk '{print $3}' | sed -e 's/"//g' >> ${TMPDIR}/CNAME.lis
+	grep "#define THIS_MODULE_LIB" $program     | gawk '{print $3}' | sed -e 's/"//g' >> ${TMPDIR}/LIB.lis
+	grep "#define THIS_MODULE_PURPOSE" $program | sed -e 's/#define THIS_MODULE_PURPOSE//g' | gawk '{print $0}' >> ${TMPDIR}/PURPOSE.lis
+	grep "#define THIS_MODULE_KEYS" $program    | sed -e 's/#define THIS_MODULE_KEYS//g' | gawk '{print $0}' >> ${TMPDIR}/KEYS.lis
+done < ${TMPDIR}/tmp.lis
 # Prepend group+name so we can get a list sorted on group name then individual programs
-paste /tmp/LIB.lis /tmp/MNAME.lis /tmp/CNAME.lis | gawk '{printf "%s%s |%s\t%s\n", $1, $2, $2, $3}' > /tmp/SORT.txt
-paste /tmp/SORT.txt /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/KEYS.lis | sort -k1 -u > /tmp/SORTED.txt
-gawk -F"|" '{print $2}' /tmp/SORTED.txt > /tmp/$LIB.txt
-rm -f /tmp/tmp.lis /tmp/MNAME.lis /tmp/CNAME.lis /tmp/LIB.lis /tmp/PURPOSE.lis /tmp/SORTED.txt /tmp/SORT.txt /tmp/KEYS.lis
+paste ${TMPDIR}/LIB.lis ${TMPDIR}/MNAME.lis ${TMPDIR}/CNAME.lis | gawk '{printf "%s%s |%s\t%s\n", $1, $2, $2, $3}' > ${TMPDIR}/SORT.txt
+paste ${TMPDIR}/SORT.txt ${TMPDIR}/LIB.lis ${TMPDIR}/PURPOSE.lis ${TMPDIR}/KEYS.lis | sort -k1 -u > ${TMPDIR}/SORTED.txt
+gawk -F"|" '{print $2}' ${TMPDIR}/SORTED.txt > ${TMPDIR}/$LIB.txt
+rm -f ${TMPDIR}/tmp.lis ${TMPDIR}/MNAME.lis ${TMPDIR}/CNAME.lis ${TMPDIR}/LIB.lis ${TMPDIR}/PURPOSE.lis ${TMPDIR}/SORTED.txt ${TMPDIR}/SORT.txt ${TMPDIR}/KEYS.lis
 
 # The output files produced
 FILE_GMT_MODULE_C=gmt_${L_TAG}_module.c
@@ -61,22 +74,25 @@ FILE_GMT_MODULE_R=module_${L_TAG}_purpose.rst_
 
 COPY_YEAR=$(date +%Y)
 
-#
-# Generate FILE_GMT_MODULE_R
-#
-# $1 = mname, $2 = cname, $3 = ${L_TAG}, $4 = tab, $5 = purpose, $6 = tab, $7 = keys
+if [ $DO_RST -eq 1 ]; then
+	#
+	# Generate FILE_GMT_MODULE_R
+	#
+	# $1 = mname, $2 = cname, $3 = ${L_TAG}, $4 = tab, $5 = purpose, $6 = tab, $7 = keys
 
-if [ "$U_TAG" = "CORE" ]; then
-	RSTDIR=../doc/rst/source
-else
-	RSTDIR=../doc/rst/source/supplements
+	if [ "$U_TAG" = "CORE" ]; then
+		RSTDIR=../doc/rst/source
+	else
+		RSTDIR=../doc/rst/source/supplements
+	fi
+	gawk '
+		BEGIN {
+			FS = "\t";
+		}
+		{ printf ".. |%s_purpose| replace:: %s\n.. |%s_purpose| replace:: %s\n", $1, substr($5,2,length($5)-2), $2, substr($5,2,length($5)-2);
+	}' ${TMPDIR}/$LIB.txt | sort -u | gawk '{printf "%s\n\n", $0}' > ${RSTDIR}/${FILE_GMT_MODULE_R}
+	echo "Created ${FILE_GMT_MODULE_R}"
 fi
-gawk '
-	BEGIN {
-		FS = "\t";
-	}
-	{ printf ".. |%s_purpose| replace:: %s\n.. |%s_purpose| replace:: %s\n", $1, substr($5,2,length($5)-2), $2, substr($5,2,length($5)-2);
-}' /tmp/$LIB.txt | sort -u | gawk '{printf "%s\n\n", $0}' > ${RSTDIR}/${FILE_GMT_MODULE_R}
 
 #
 # Generate FILE_GMT_MODULE_H
@@ -108,7 +124,7 @@ extern "C" {
 
 /* Prototypes of all modules in the GMT ${L_TAG} library */
 EOF
-gawk '{printf "EXTERN_MSC int GMT_%s (void *API, int mode, void *args);\n", $2;}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_H}
+gawk '{printf "EXTERN_MSC int GMT_%s (void *API, int mode, void *args);\n", $2;}' ${TMPDIR}/$LIB.txt >> ${FILE_GMT_MODULE_H}
 cat << EOF >> ${FILE_GMT_MODULE_H}
 
 /* Pretty print all modules in the GMT ${L_TAG} library and their purposes */
@@ -128,6 +144,7 @@ EXTERN_MSC const char * gmt_${L_TAG}_module_group (void *API, char *candidate);
 
 #endif /* !GMT_${U_TAG}_MODULE_H */
 EOF
+echo "Created ${FILE_GMT_MODULE_H}"
 
 #
 # Generate FILE_GMT_MODULE_C
@@ -199,6 +216,13 @@ EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
 };
+
+static int sort_on_classic (const void *vA, const void *vB) {
+	const struct Gmt_moduleinfo *A = vA, *B = vB;
+	if (A == NULL) return +1;	/* Get the NULL entry to the end */
+	if (B == NULL) return -1;	/* Get the NULL entry to the end */
+	return strcmp(A->cname, B->cname);
+}
 EOF
 
 if [ "$U_TAG" = "CORE" ]; then
@@ -214,7 +238,7 @@ gawk '
 		FS = "\t";
 	}
 	{ printf "\t{\"%s\", \"%s\", \"%s\", %s, %s},\n", $1, $2, $3, $5, $7;
-}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
+}' ${TMPDIR}/$LIB.txt >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
@@ -246,7 +270,7 @@ gawk '
 		FS = "\t";
 	}
 	{ printf "\t{\"%s\", \"%s\", \"%s\", %s, %s},\n", $1, $2, $3, $5, $7;
-}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
+}' ${TMPDIR}/$LIB.txt >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
@@ -356,6 +380,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 /* Produce single list on stdout of all GMT ${L_TAG} module names for gmt --show-classic [i.e., classic mode names] */
 void gmt_${L_TAG}_module_classic_all (void *V_API) {
 	unsigned int module_id = 0;
+	size_t n_modules = 0;
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
@@ -367,6 +392,13 @@ else
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
+
+	while (g_${L_TAG}_module[n_modules].cname != NULL)	/* Count the modules */
+		++n_modules;
+
+	/* Sort array on classic names since original array is sorted on modern names */
+	qsort (g_${L_TAG}_module, n_modules, sizeof (struct Gmt_moduleinfo), sort_on_classic);
+
 	while (g_${L_TAG}_module[module_id].cname != NULL) {
 EOF
 if [ "$U_TAG" = "CORE" ]; then
@@ -435,5 +467,7 @@ void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
 #endif
 EOF
 fi
-rm -f /tmp/$LIB.txt
+echo "Created ${FILE_GMT_MODULE_C}"
+
+rm -f ${TMPDIR}/$LIB.txt
 exit 0

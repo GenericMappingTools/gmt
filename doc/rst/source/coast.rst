@@ -16,7 +16,7 @@ Synopsis
 |SYN_OPT-R|
 [ |SYN_OPT-Area| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *fill*\ [**+l**\|\ **+r**] ]
+[ |-C|\ *fill*\ [**+l**\|\ **r**] ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ *dcw* ]
 [ |-F|\ *box* ]

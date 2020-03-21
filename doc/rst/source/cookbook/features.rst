@@ -17,6 +17,26 @@ indicate the units of your arguments by appending the unit character, as
 discussed below. This will aid you in debugging, let others understand your
 scripts, and remove any uncertainty as to what unit you thought you wanted.
 
+Dimension units
+~~~~~~~~~~~~~~~
+
+GMT programs accept plot dimensional quantities (widths, offsets, etc.) in
+**c**\ m, **i**\ nch, or **p**\ oint (1/72 of an inch) [8]_. There are
+two ways to ensure that GMT understands which unit you intend to use:
+
+#. Append the desired unit to the dimension you supply. This way is
+   explicit and clearly communicates what you intend, e.g.,
+   **-JM**\ 10\ **c** means the map width being passed to the **-JM** switch
+   is 10 cm, and modifier **+o**\ 24p means we are offsetting a feature
+   by 24 points from its initial location.
+
+#. Set the parameter :term:`PROJ_LENGTH_UNIT` to the desired unit. Then,
+   all dimensions without explicit units will be interpreted accordingly.
+
+The latter method is less robust as other users may have a different
+default unit set and then your script may not work as intended. For portability,
+we therefore recommend you always append the desired unit explicitly.
+
 Distance units
 ~~~~~~~~~~~~~~
 
@@ -35,7 +55,7 @@ Distance units
 | **m**   | Minute of arc     |         |                  |
 +---------+-------------------+---------+------------------+
 
-For Cartesian data and scaling the data units do not normally matter
+For Cartesian data the data units do not normally matter
 (they could be kg or Lumens for all we know) and are never entered.
 Geographic data are different, as distances can be specified in a variety
 of ways. GMT programs that accept actual Earth length scales like
@@ -62,8 +82,8 @@ distance between two points A and B as
 
 .. math::
 
-	 d_f = R \sqrt{(\theta_A - \theta_B)^2 + \cos \left [ \frac{\theta_A +
-	 \theta_B}{2} \right ] \Delta \lambda^2}, \label{eq:flatearth}
+	 d_f = R \sqrt{(\theta_A - \theta_B)^2 + (\cos \left [ \frac{\theta_A +
+	 \theta_B}{2} \right ] \Delta \lambda)^2}, \label{eq:flatearth}
 
 where *R* is the representative (or spherical) radius of the
 planet, :math:`\theta` is latitude, and the difference in longitudes,
@@ -95,7 +115,7 @@ for an ellipsoid is required (typically for a limited surface area). For
 instance, a search radius of 5000 feet using this mode of computation
 would be specified as **-S**\ 5000\ **f**.
 
-Note: There are two additional
+**Note**: There are two additional
 GMT defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
@@ -123,25 +143,6 @@ setting :term:`PROJ_GEODESIC` which defaults to
 *Vincenty* but may also be set to *Rudoe* for old GMT4-style calculations
 or *Andoyer* for an approximate geodesic (within a few tens of meters)
 that is much faster to compute.
-
-Length units
-~~~~~~~~~~~~
-
-GMT programs can accept dimensional quantities and plot lengths in
-**c**\ m, **i**\ nch, or **p**\ oint (1/72 of an inch) [8]_. There are
-two ways to ensure that GMT understands which unit you intend to use:
-
-#. Append the desired unit to the dimension you supply. This way is
-   explicit and clearly communicates what you intend, e.g.,
-   **-X**\ 4\ **c** means the length being passed to the **-X** switch
-   is 4 cm.
-
-#. Set the parameter :term:`PROJ_LENGTH_UNIT` to the desired unit. Then,
-   all dimensions without explicit unit will be interpreted accordingly.
-
-The latter method is less secure as other users may have a different
-unit set and your script may not work as intended. We therefore
-recommend you always supply the desired unit explicitly.
 
 GMT defaults
 ------------
@@ -340,7 +341,7 @@ binary table data the **-h** option may specify how many bytes should be
 skipped before the data section is reached. Binary files may also
 contain segment-headers separating data segments. These segment-headers
 are simply data records whose fields are all set to NaN; see Chapter
-:doc:`file_formats` for complete documentation.
+:doc:`file-formats` for complete documentation.
 
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
@@ -370,15 +371,15 @@ Three classes of files are given special treatment in GMT.
    a grid input named **@earth_relief_**\ *res* on a command line then
    such a grid will automatically be downloaded from the GMT Data Server and placed
    in the *server* directory under **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
-   15 common grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
+   15 common grid spacings: 01d, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
    30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
    11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively) as well
    as the SRTM tile resolutions 03s and 01s (6.8 Gb and 41 Gb for the whole set, respectively). Once
    one of these grids have been downloaded any future reference will simply obtain the
    file from **$GMT_USERDIR** (except if explicitly removed by the user).
-   Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
-   ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
-   of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
+   **Note**: The 15 arc-sec data comes from the original dataset SRTM15+.
+   Lower resolutions are spherically Gaussian-filtered versions of SRTM15+.
+   The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
    between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
    tiles on the GMT server.  These are individually downloaded as requested, converted to netCDF
    grids and stored in subdirectories srtm1 and srtm3 under the server directory, and assembled
@@ -558,7 +559,7 @@ with embedded printer directives. To produce Encapsulated
 PostScript (EPS) that can be imported into graphics programs such as
 **CorelDraw**, **Illustrator** or **InkScape** for further
 embellishment, simply run gmt :doc:`/psconvert`
-**-Te**. See Chapter :doc:`include_figures` for an extensive discussion of converting
+**-Te**. See Chapter :doc:`include-figures` for an extensive discussion of converting
 PostScript to other formats.
 
 .. _-Wpen_attrib:
@@ -713,13 +714,13 @@ Given as modifiers to a pen specification, one or more modifiers may be appended
 specification. The line attribute modifiers are:
 
 
-* **+o**\ *offset*\ [**u**]
+* **+o**\ *offset*
     Lines are normally drawn from the beginning to the end point. You can modify this behavior
     by requesting a gap between these terminal points and the start and end of the
     visible line.  Do this by specifying the desired offset between the terminal point and the
     start of the visible line.  Unless you are giving distances in Cartesian data units,
     please append the distance unit, **u**.  Depending on your desired effect, you can append
-    plot distance units (i.e., **c**\ m, **i**\ nch, **p**\ oint; Section `Length units`_)) or map distance units,
+    plot distance units (i.e., **c**\ m, **i**\ nch, **p**\ oint; Section `Dimension units`_)) or map distance units,
     such as **k**\ m, **d**\ egrees, and many other standard distance units listed in
     Section `GMT units`_.  If only one offset is given then it applies equally to both ends of
     the line.  Give two slash-separated distances to indicate different offsets at the
@@ -791,7 +792,7 @@ use **-G** for this task and some have several options specifying different fill
     *pattern* can either be a number in the range 1–90 or the name of a
     1-, 8-, or 24-bit image raster file. The former will result in one of
     the 90 predefined 64 x 64 bit-patterns provided with GMT and
-    reproduced in Chapter :doc:`predefined_patterns`.
+    reproduced in Chapter :doc:`predefined-patterns`.
     The latter allows the user to create
     customized, repeating images using image raster files.
     The optional **+r**\ *dpi* modifier sets the resolution of this image on the page;
@@ -809,7 +810,7 @@ use **-G** for this task and some have several options specifying different fill
 Due to PostScript implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
 images see :doc:`/image`. The format of Sun raster files [18]_ is
-outlined in Chapter :doc:`file_formats`. However, if you built GMT
+outlined in Chapter :doc:`file-formats`. However, if you built GMT
 with GDAL then other image formats can be used as well. Note that under
 PostScript Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
@@ -864,7 +865,7 @@ append **=~**\ *pen* instead; in that case only half the linewidth is plotted
 on the outside of the font only.  If an outline is requested, you may optionally
 skip the text *fill* by setting it to **-**, in which case the full pen width
 is always used. If any of the font attributes is omitted their default or
-previous setting will be retained. See Chapter :doc:`postscript_fonts`
+previous setting will be retained. See Chapter :doc:`postscript-fonts`
 for a list of all fonts recognized by GMT.
 
 Stroke, Fill and Font Transparency
@@ -890,7 +891,7 @@ neither print nor show transparency. They will simply ignore your
 attempt to create transparency and will plot any material as opaque.
 Ghostscript and its derivatives such as GMT's
 :doc:`/psconvert` support transparency (if
-compiled with the correct build option). Note: If you use **Acrobat
+compiled with the correct build option). **Note**: If you use **Acrobat
 Distiller** to create a PDF file you must first change some settings to
 make transparency effective: change the parameter /AllowTransparency to
 true in your \*.joboptions file.
@@ -1426,7 +1427,7 @@ GMT strings using the Standard+ encoding:
 The option in :doc:`/text` to draw a
 rectangle surrounding the text will not work for strings with escape
 sequences. A chart of characters and their octal codes is given in
-Chapter :doc:`octal_codes`.
+Chapter :doc:`octal-codes`.
 
 .. _GMT_Embellishments:
 
@@ -1607,7 +1608,7 @@ addition to the the required *refpoint* and anchor arguments specifying where th
 are both required and optional modifiers.  These are given via these modules' **-L** option.
 Here is a list of the attributes that is under your control:
 
-#. Scale bar length.  Required modifier is given with **+w**\ *length*\ [*unit*], where
+#. Scale bar length.  Required modifier is given with **+w**\ *length*, where
    *unit* is one of the recognized distance units.  An example might be **+w**\ 250n for
    a bar representing 250 nautical miles at the map scale origin.
 
@@ -1881,7 +1882,7 @@ projections you may wish to specify the domain using the lower-left and upper-ri
 instead (similar to how the **-R** option works), by adding **+r**\ .  Some optional modifiers are available:
 
 #. Set inset size.  If you specified a reference point then you must also specify the inset dimensions with the
-   **+w**\ *width*\ [*unit*][/*height*\ [*unit*]], where *height* defaults to *width* if not given.
+   **+w**\ *width*\ [/*height*], where *height* defaults to *width* if not given.
    Append the unit of the dimensions, which may be distance units such as km, feet, etc., and
    the map projection will be used to determine inset dimensions on the map.  For instance,
    **+w**\ 300k/200k is a 300x200 km region (which depends on the projection) while **+w**\ 5c
@@ -2158,7 +2159,7 @@ the coordinates of the grid passed to such programs:
 -  You have a geographic grid (i.e., in longitude and latitude). Simply
    supply the **-fg** option and your grid coordinates will
    automatically be converted to meters via a "Flat Earth" approximation
-   on the currently selected ellipsoid (Note: this is only possible in
+   on the currently selected ellipsoid (**Note**: This is only possible in
    those few programs that require this capability. In general, **-fg**
    is used to specify table coordinates).
 
@@ -2445,7 +2446,7 @@ u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes signed\|unsigned. If not
 is float32. Both driver names and data types are case insensitive. The *options* is a list of one or more concatenated
 number of GDAL *-co* options. For example, to write a lossless JPG2000 grid one would append
 **+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO
-Note: you will have to specify a *nan* value for integer data types unless you wish that all NaN data values
+**Note**: You will have to specify a *nan* value for integer data types unless you wish that all NaN data values
 should be replaced by zero.
 
 The NaN data value
@@ -2495,14 +2496,14 @@ Directory parameters
 --------------------
 
 GMT versions prior to GMT 5 relied solely on several environment variables
-($GMT_SHAREDIR, $GMT_DATADIR, $GMT_USERDIR, and $GMT_TMPDIR), pointing
+(**$GMT_SHAREDIR**, **$GMT_DATADIR**, **$GMT_USERDIR**, and **$GMT_TMPDIR**), pointing
 to folders with data files and program settings. Beginning with version
 5, some of these locations are now (also or exclusively) configurable
 with the :doc:`/gmtset` utility.
 When an environment variable has an equivalent parameter in the :doc:`/gmt.conf` file,
 then the parameter setting will take precedence over the environment variable.
 
-Variable $GMT_SHAREDIR
+Variable **$GMT_SHAREDIR**
     was sometimes required in previous GMT versions to locate the GMT
     share directory where all run-time support files such as coastlines,
     custom symbols, PostScript macros, color tables, and much more reside.
@@ -2510,7 +2511,7 @@ Variable $GMT_SHAREDIR
     guess of the location of its share folder. Setting this variable is
     usually not required and recommended only under special circumstances.
 
-Variable $GMT_DATADIR and parameter DIR_DATA
+Variable **$GMT_DATADIR** and parameter :term:`DIR_DATA`
     may point to one or more directories where large and/or widely used
     data files can be placed. All GMT programs look in these directories
     when a file is specified on the command line and it is not present in
@@ -2521,32 +2522,33 @@ Variable $GMT_DATADIR and parameter DIR_DATA
     name that ends in a trailing slash (/) will be searched recursively
     (not under Windows).
 
-Variable $GMT_USERDIR
+Variable **$GMT_USERDIR**
     may point to a directory where the user places custom configuration
     files (e.g., an alternate ``coastline.conf`` file, preferred default
     settings in ``gmt.conf``, custom symbols and color palettes, math
     macros for :doc:`/gmtmath` and :doc:`/grdmath`, and shorthands for
-    gridfile extensions via ``gmt.io``). When $GMT_USERDIR is not defined,
-    then the default value $HOME/.gmt will be assumed. Users may also place their own
+    gridfile extensions via ``gmt.io``). When **$GMT_USERDIR** is not defined,
+    then the default value **$HOME**/.gmt will be assumed. Users may also place their own
     data files in this directory as GMT programs will search for files
-    given on the command line in both DIR_DATA and $GMT_USERDIR.
+    given on the command line in both :term:`DIR_DATA` and **$GMT_USERDIR**.
 
-Variable $GMT_CACHEDIR
+Variable **$GMT_CACHEDIR**
     may point to a directory where the user places cached data files
-    downloaded from the GMT data server. When $GMT_CACHEDIR is not defined,
-    then the default value $HOME/.gmt/cache will be assumed. The cache
+    downloaded from the GMT data server. When **$GMT_CACHEDIR** is not defined,
+    then the default value **$HOME**/.gmt/cache will be assumed. The cache
     directory can be emptied by running gmt **gmt clear cache**.
 
-Variable $GMT_TMPDIR
+Variable **$GMT_TMPDIR**
     may indicate the location, where GMT will write its state parameters
-    via the two files ``gmt.history`` and ``gmt.conf``. If $GMT_TMPDIR is not
-    set, these files are written to the current directory.
+    via the two files ``gmt.history`` and ``gmt.conf``. If **$GMT_TMPDIR** is not
+    set, these files are written to GMT session directory [for modern mode] or
+    the current directory [for classic mode].
 
-Parameter DIR_DCW
+Parameter :term:`DIR_DCW`
     specifies where to look for the optional Digital Charts of the World
     database (for country coloring or selections).
 
-Parameter DIR_GSHHG
+Parameter :term:`DIR_GSHHG`
     specifies where to look for the required
     Global Self-consistent Hierarchical High-resolution Geography database.
 
@@ -2554,7 +2556,8 @@ Parameter DIR_GSHHG
 Note that files whose full path is given will never be searched for in
 any of these directories.
 
-
+Footnotes
+---------
 
 .. [7]
    Vicenty, T. (1975), Direct and inverse solutions of geodesics on the
@@ -2582,8 +2585,7 @@ any of these directories.
    For an overview of color systems such as HSV, see Chapter :doc:`colorspace`.
 
 .. [18]
-   Convert other graphics formats to Sun ras format using GraphicsMagick's
-	 or ImageMagick's **convert** program.
+   Convert other graphics formats to Sun ras format using GraphicsMagick's or ImageMagick's **convert** program.
 
 .. [19]
    Requires building GMT with GDAL.

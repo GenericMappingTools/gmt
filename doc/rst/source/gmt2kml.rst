@@ -17,13 +17,13 @@ Synopsis
 [ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ]
 [ |-E|\ [**+e**][**+s**] ]
 [ |-F|\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w** ]
-[ |-G|\ [*color*]\ [**+f**\|\ **+n**] ]
+[ |-G|\ [*color*]\ [**+f**\|\ **n**] ]
 [ |-I|\ *icon* ] [ **-K**]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
 [ |-N|\ [**t**\|\ *col*\|\ *name\_template*\|\ *name*] ]
 [ **-O**]
 [ |-Q|\ **a**\|\ **i**\ *az* ]
-[ |-Q|\ **s**\ *scale*\ [*unit*] ]
+[ |-Q|\ **s**\ *scale* ]
 [ |-R|\ **e**\|\ *w/e/s/n* ]
 [ |-S|\ **c**\|\ **n**\ *scale*] ]
 [ |-T|\ *title*\ [/*foldername*] ]
@@ -136,7 +136,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*color*]\ [**+f**\|\ **+n**]
+**-G**\ [*color*]\ [**+f**\|\ **n**]
     Sets *color* for fill (modifier **+f** [Default]) or label font (modifier **+n**).
     Fill sets infill color for symbols, extrusions, polygons and positive anomaly
     wiggles [Default is light orange at 75% transparency].  Alternatively,
@@ -208,7 +208,7 @@ Optional Arguments
     will plot.  If outside then switch by 180 degrees.  Alternatively,
     use **-Qi** to set a fixed direction with no further variation.
 
-**-Qs**\ *scale*\ [*unit*]
+**-Qs**\ *scale*
     Required setting for wiggle plots (i.e., it requires **-Fw**).
     Sets a wiggle scale in *z*-data units per the user's units (given
     via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale

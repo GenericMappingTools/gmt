@@ -132,8 +132,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Syntax error: No files specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Syntax error: Cannot use -D if -C is set\n");
+	n_errors += gmt_M_check_condition (GMT, n_files == 0, "No files specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Cannot use -D if -C is set\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -185,7 +185,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_WARNING, "Unable to determine current working directory!\n");
 	}
 	fmode = (Ctrl->A.active) ? R_OK : F_OK;	/* Either readable or existing files */
-	Out = gmt_new_record (GMT, NULL, path);	//* Place coordinates in data and message in text */
+	Out = gmt_new_record (GMT, NULL, path);	/* Place coordinates in data and message in text */
 
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
@@ -193,7 +193,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 
 		if (Ctrl->G.active)
 			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
-		else if (opt->arg[0] == '@') /* Giave @ without -G is likely a user mistake; remove it */
+		else if (opt->arg[0] == '@') /* Gave @ without -G is likely a user mistake; remove it */
 			first = 1;
 		if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd"))
 			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote earth_relief grids */
@@ -203,7 +203,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			char *L = NULL;
 			if (Ctrl->D.active) {
 				p = strstr (path, &file[first]);	/* Start of filename */
-				if (!strcmp (p, path)) /* Found in current directory */
+				if (!strcmp (p, path)) /* Found file in current directory */
 					strcpy (path, cwd);
 				else
 					*(--p) = 0;	/* Chop off file, report directory */
@@ -214,7 +214,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 				/* File found on system but we want a copy in the current directory */
 				if (gmt_rename_file (GMT, path, &L[1], GMT_COPY_FILE))
 					Return (GMT_RUNTIME_ERROR);
-				strncpy (path, &L[1], PATH_MAX-1);	/* Report the file in the local directory now */
+				memmove (path, &L[1], strlen (&L[1])+1);	/* Report the file in the local directory now */
 			}
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}

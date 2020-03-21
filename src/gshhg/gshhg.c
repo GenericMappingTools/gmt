@@ -149,14 +149,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 					Ctrl->I.mode = 1;
 				else {
 					sval = atoi (opt->arg);
-					n_errors += gmt_M_check_condition (GMT, sval < 0, "Syntax error -I: ID cannot be negative!\n");
+					n_errors += gmt_M_check_condition (GMT, sval < 0, "Option -I: ID cannot be negative!\n");
 					Ctrl->I.id = sval;
 				}
 				break;
 			case 'N':
 				Ctrl->N.active = true;
 				sval = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, sval < 0, "Syntax error -N: Level cannot be negative!\n");
+				n_errors += gmt_M_check_condition (GMT, sval < 0, "Option -N: Level cannot be negative!\n");
 				Ctrl->N.level = sval;
 				break;
 			case 'Q':
@@ -174,10 +174,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: No data file specified!\n");
-	n_errors += gmt_M_check_condition (GMT, n_files == 1 && strstr (Ctrl->In.file, ".nc"), "Syntax error: gshhs does not read GMT netCDF coastline files!  See man page for binary files.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Syntax error -A: area cannot be negative!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Syntax error -Q: Append e or i!\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "No data file specified!\n");
+	n_errors += gmt_M_check_condition (GMT, n_files == 1 && strstr (Ctrl->In.file, ".nc"), "gshhs does not read GMT netCDF coastline files!  See man page for binary files.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Option -A: area cannot be negative!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Option -Q: Append e or i!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -367,7 +367,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 				SH->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
-					GMT_Report (API, GMT_MSG_ERROR, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
+					GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
 					gmt_fclose (GMT, fp);
 					Return (GMT_DATA_READ_ERROR);
 				}

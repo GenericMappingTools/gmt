@@ -1107,7 +1107,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 			if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin, nYOff, nXSize, buffy, tmp,
 		                 nBufXSize, buffy, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
 				continue;
 			}
 

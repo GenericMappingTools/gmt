@@ -14,7 +14,7 @@ Synopsis
 
 **gmt project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
 [ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
-[ |-G|\ *dist*\ [/*colat*][**+h**] ]
+[ |-G|\ *dist*\ [/*colat*][**+c**\|\ **h**] ]
 [ |-L|\ [**w**\|\ *l\_min*/*l\_max*] ]
 [ |-N| ] [ |-Q| ] [ |-S| ]
 [ |-T|\ *px*/*py* ]
@@ -142,16 +142,18 @@ Optional Arguments
     special and refers to all numerical columns beyond the leading **x** and **y** in
     your input record.  If output format is ASCII then **z** also includes any
     trailing text (which is placed at the end of the record regardless
-    of the order of **z** in *flags*). Note: If **-G** is selected, then the
+    of the order of **z** in *flags*). **Note**: If **-G** is selected, then the
     output order is hardwired to be **rsp** and **-F** is not allowed.
 
 .. _-G:
 
-**-G**\ *dist*\ [/*colat*][**+h**]
+**-G**\ *dist*\ [/*colat*][**+c**\|\ **h**]
     Generate mode. No input is read. Create (*r*, *s*, *p*) output
     points every *dist* units of *p*. See **-Q** option. Alternatively,
     append **/**\ *colat* for a small circle instead [Default is a
-    colatitude of 90, i.e., a great circle]. Use **-C** and **-E** to
+    colatitude of 90, i.e., a great circle]. If setting a pole with **-T**
+    and you want the small circle to go through *cx*/*cy*, append **+c** to
+    compute the required colatitude. Use **-C** and **-E** to
     generate a circle that goes through the center and end point. Note,
     in this case the center and end point cannot be farther apart than
     2\*\|\ *colat*\|. Finally, if you append **+h** the we will report

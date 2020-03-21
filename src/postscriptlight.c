@@ -965,7 +965,7 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 	PSL_command (PSL, "] def\n");
 	PSL_comment (PSL, "Set array with number of points per line segments:\n");
 	psl_set_int_array (PSL, "path_n", new_n, npath);
-	if (k > 100000) PSL_message (PSL, PSL_MSG_WARNING, "Warning: PSL array placed has %d items - may exceed gs_init.ps MaxOpStack setting\n", k);
+	if (k > PSL_MaxOpStack_Size) PSL_message (PSL, PSL_MSG_WARNING, "Warning: PSL array placed has %d items - may exceed gs_init.ps MaxOpStack setting [%d].\n", k, PSL_MaxOpStack_Size);
 
 	/* Free up temp arrays */
 	PSL_free (use);
@@ -1375,7 +1375,7 @@ static unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, size_t *nbytes, 
 
 	if (zstatus != Z_STREAM_END) {
 		/* "compressed" size is larger or other failure */
-		PSL_message (PSL, PSL_MSG_WARNING, "Warning: no deflate compression done.\n");
+		PSL_message (PSL, PSL_MSG_INFORMATION, "Warning: no deflate compression done.\n");
 		PSL_free (output);
 		return NULL;
 	}
@@ -1637,7 +1637,7 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 					break;
 				case '~':	/* Symbol font toggle */
 					psl_encodefont (PSL, PSL_SYMBOL_FONT);
-					/* Fall through and place the text? */
+					/* Intentionally fall through - to place the text? */
 				default:
 					string[j++] = '@';
 					string[j++] = text[i++];
@@ -2462,7 +2462,7 @@ static int psl_search_userimages (struct PSL_CTRL *PSL, char *imagefile) {
 }
 
 static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned char *image, unsigned int width, unsigned int height, unsigned int depth) {
-	int k;
+	int k, i;
 	unsigned char *picture = NULL;
 	/* image_no is 1-90 (PSL_N_PATTERNS) if a standard PSL pattern, else we examine imagefile.
 	 * User images are numbered PSL_N_PATTERNS+1,2,3 etc. */
@@ -2472,7 +2472,11 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 		picture = PSL_pattern[k];
 	}
 	else {	/* User image, check to see if already used */
-		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
+		if (imagefile == NULL) {
+			PSL_message (PSL, PSL_MSG_ERROR, "Error: Gave NULL as imagefile name\n");
+			PSL_exit (EXIT_FAILURE);
+		}
+		i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
 		if (i >= 0) return (PSL_N_PATTERNS + i + 1);	/* Already registered, just return number */
 		if (PSL->internal.n_userimages > (PSL_N_PATTERNS-1)) {
 			PSL_message (PSL, PSL_MSG_ERROR, "Error: Already maintaining %d user images and cannot accept any more\n", PSL->internal.n_userimages+1);

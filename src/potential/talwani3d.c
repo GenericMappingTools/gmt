@@ -167,7 +167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 						break;
 					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Syntax error -F: Unrecognized field %c\n", opt->arg[0]);
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 						case 'z': Ctrl->M.active[TALWANI3D_VER] = true; break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
@@ -215,16 +215,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 	}
 	if (GMT->common.R.active[RSET]) {
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[ISET],
-		                                 "Syntax error -R option: Must specify both -R and -I (and optionally -r)\n");
+		                                 "Option -R: Must specify both -R and -I (and optionally -r)\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) && Ctrl->Z.mode == 1,
-	                                 "Syntax error -Z option: Cannot also specify -R -I\n");
+	                                 "Option -Z: Cannot also specify -R -I\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
-	                                 "Syntax error -G option: Must specify output gridfile name.\n");
+	                                 "Option -G: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file,
-	                                 "Syntax error -G option: Must specify output gridfile name.\n");
+	                                 "Option -G: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file,
-	                                 "Syntax error -N option: Must specify output gridfile name.\n");
+	                                 "Option -N: Must specify output gridfile name.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -771,7 +771,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	flat_earth = gmt_M_is_geographic (GMT, GMT_IN);		/* If true then input is in degrees and we must convert to km later on */
 
 	if (flat_earth && Ctrl->M.active[TALWANI3D_HOR]) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error -M: Cannot specify both geographic coordinates (degrees) AND -Mh\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -M: Cannot specify both geographic coordinates (degrees) AND -Mh\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 

@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*] ]
 [ |-C|\ **c**\|\ **d**\|\ **g**\|\ **p** ]
-[ |-D|\ [*unit*] ]
+[ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
 [ |-G|\ *grdfile* ]
@@ -25,7 +25,7 @@ Synopsis
 [ |-M|\ *list* ] [ |-N|\ *norm* ]
 [ |-Q|\ *bmode*/*qmode* ]
 [ |-S|\ *scale* ]
-[ |-T|\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\|\ *n*]\ [**+l**] ]
+[ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -144,10 +144,10 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\|\ *n*]\ [**+l**]
+**-T**\ *t0*\ [/*t1*/*dt*]\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
     [Default is one step, with no time dependency].  For a single specific time, just
-    give start time *t0*. The unit is years; append **k** for kyr and **M** for Myr.
+    give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a file with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).  Note that the grid

@@ -153,7 +153,12 @@ enum Greenspline_modes {	/* Various integer mode flags */
 	GREENSPLINE_NORM		= 2,		/* Normalize residual data to 0-1 range */
 	SQ_N_NODES 			= 10001,	/* Default number of nodes in the precalculated -Sq spline */
 	GSP_GOT_SIG			= 0,
-	GSP_GOT_WEIGHTS			= 1
+	GSP_GOT_WEIGHTS			= 1,
+	GREENSPLINE_NO_MOVIE		= 0,
+	GREENSPLINE_INC_MOVIE		= 1,
+	GREENSPLINE_CUM_MOVIE		= 2,
+	GREENSPLINE_EIGEN_RATIO		= 0,
+	GREENSPLINE_EIGEN_CUTOFF	= 1
 };
 
 #ifndef M_LOG_2
@@ -223,7 +228,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[+f<file>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[%%][+f<file>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<mode>] [-E[<misfitfile>] [-I<dx>[/<dy>[/<dz>]] [-L] [-N<nodefile>] [-Q<az>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s] [%s]\n\n", GMT_V_OPT,
@@ -249,6 +254,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +f<filename> to save the eigenvalues to this file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <val> eigenvalues [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use <val>%% to select a percentage of the eigenvalues instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Distance flag determines how we calculate distances between (x,y) points:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Options 0 apples to Cartesian 1-D spline interpolation.\n");
@@ -334,7 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					Ctrl->R3.range[0] = 0.0;	Ctrl->R3.range[1] = 360.0;	Ctrl->R3.range[2] = -90.0;	Ctrl->R3.range[3] = 90.0;
 					n_items = sscanf (&opt->arg[2], "%[^/]/%s", txt[4], txt[5]);
 					if (n_items != 2) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Rg/z0/z1 option: Append the z-range\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Rg/z0/z1: Append the z-range\n");
 						n_errors++;
 					}
 					Ctrl->R3.dimension = 3;
@@ -349,7 +355,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					Ctrl->R3.range[0] = -180.0;	Ctrl->R3.range[1] = 180.0;	Ctrl->R3.range[2] = -90.0;	Ctrl->R3.range[3] = 90.0;
 					n_items = sscanf (&opt->arg[2], "%[^/]/%s", txt[4], txt[5]);
 					if (n_items != 2) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Rd/z0/z1 option: Append the z-range\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Rd/z0/z1: Append the z-range\n");
 						n_errors++;
 					}
 					Ctrl->R3.dimension = 3;
@@ -374,7 +380,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				/* Only get here if the above cases did not trip */
 				n_items = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s", txt[0], txt[1], txt[2], txt[3], txt[4], txt[5]);
 				if (!(n_items == 2 || n_items == 4 || n_items == 6)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -R: Give 2, 4, or 6 coordinates\n");
 					n_errors++;
 				}
 				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[0], gmt_M_type (GMT, GMT_IN, GMT_X), true, &Ctrl->R3.range[0]), txt[0]);
@@ -403,21 +409,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 						Ctrl->A.file = strdup (&opt->arg[2]);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Expect -A>gradientfile>+f<format>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Expect -A>gradientfile>+f<format>\n");
 						n_errors++;
 					}
 					break;
 				}
 				/* New syntax */
 				if ((c = strstr (opt->arg, "+f")) == NULL) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: Expect -A>gradientfile>+f<format>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Expect -A>gradientfile>+f<format>\n");
 						n_errors++;
 				}
 				else {
 					Ctrl->A.mode = (int)(c[2] - '0');
 					c[0] = '\0';	/* Temporarily chop off the modifier */
 					if (opt->arg[0] == 0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -A option: No file given\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: No file given\n");
 						n_errors++;
 					}
 					else
@@ -427,26 +433,30 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				break;
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'n') Ctrl->C.mode = 1;
+				if (opt->arg[0] == 'n') Ctrl->C.mode = GREENSPLINE_EIGEN_CUTOFF;
 				k = (Ctrl->C.mode) ? 1 : 0;
 				if (gmt_get_modifier (opt->arg, 'f', p))
 					Ctrl->C.file = strdup (p);
 				if (gmt_get_modifier (opt->arg, 'm', p))
-					Ctrl->C.movie = 1;
+					Ctrl->C.movie = GREENSPLINE_INC_MOVIE;
 				else if (gmt_get_modifier (opt->arg, 'M', p))
-					Ctrl->C.movie = 2;
+					Ctrl->C.movie = GREENSPLINE_CUM_MOVIE;
 				if (strchr (opt->arg, '/')) {	/* Old-style file specification */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
 						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
 						Ctrl->C.file = strdup (p);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Expected -C[n]<cut>[+<file>]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C[n]<cut>[+<file>]\n");
 						n_errors++;
 					}
 				}
-				else
-					Ctrl->C.value = (opt->arg[k]) ? atof (&opt->arg[k]) : 0.0;
+				else {
+					if (opt->arg[k])	/* Check if we got percentages or a value */
+						Ctrl->C.value = (Ctrl->C.mode && strchr (opt->arg, '%')) ? 0.01 * atof (&opt->arg[k]) : atof (&opt->arg[k]);
+					else
+						Ctrl->C.value = 0.0;
+				}
 				break;
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = true;
@@ -491,7 +501,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				if (strchr (opt->arg, '/')) {	/* Got 3-D vector components */
 					n_items = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
 					if (n_items != 3) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Append azimuth (2-D) or x/y/z components (3-D)\n");
 						n_errors++;
 					}
 					gmt_normalize3v (GMT, Ctrl->Q.dir);	/* Normalize to unit vector */
@@ -499,7 +509,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				else if (opt->arg[0])	/* 2-D azimuth */
 					Ctrl->Q.az = atof(opt->arg);
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Append azimuth (2-D) or x/y/z components (3-D)\n");
 					n_errors++;
 				}
 				break;
@@ -545,7 +555,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 								Ctrl->S.value[0] = atof (&opt->arg[1]);
 						}
 						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Append c|l|t|g|p|q\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -S: Append c|l|t|g|p|q\n");
 							n_errors++;
 						}
 						break;
@@ -562,7 +572,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 									case 'l':	Ctrl->S.rval[0]  = atof (&p[1]);	break;	/* Min value for spline, undocumented for testing only */
 									case 'u':	Ctrl->S.rval[1]  = atof (&p[1]);	break;	/* Max value for spline, undocumented for testing only */
 									default:
-										GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sq option: Unknown modifier %s\n", p);
+										GMT_Report (API, GMT_MSG_ERROR, "Option -Sq: Unknown modifier %s\n", p);
 										n_errors++;
 										break;
 								}
@@ -570,7 +580,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 						}
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Append c|l|t|g|p|q[<params>]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Append c|l|t|g|p|q[<params>]\n");
 						n_errors++;
 					break;
 				}
@@ -629,11 +639,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 		double fn = rint (Ctrl->S.value[3]);
 		int64_t n = lrint (fn);
 		if (!doubleAlmostEqual (Ctrl->S.value[3], fn) || ((n%2) == 0)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sq option +n<N> modifier: <N> must be an odd integer\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Sq option +n<N> modifier: <N> must be an odd integer\n");
 			n_errors++;
 		}
 		if (Ctrl->S.value[2] < 0.0 || Ctrl->S.value[2] > 1.0e-4) {
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -Sq option +e<err> modifier: <err> must be positive and < 1.0e-4\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Sq option +e<err> modifier: <err> must be positive and < 1.0e-4\n");
 			n_errors++;
 		}
 	}
@@ -657,27 +667,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode > 5, "Syntax error -A: format must be in 0-5 range\n");
-	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active[RSET] || Ctrl->N.active || Ctrl->T.active), "Syntax error: No output locations specified (use either [-R -I], -N, or -T)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "Syntax error: The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK), "Option -A: Cannot read file %s!\n", Ctrl->A.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode > 5, "Option -A: format must be in 0-5 range\n");
+	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active[RSET] || Ctrl->N.active || Ctrl->T.active), "No output locations specified (use either [-R -I], -N, or -T)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && dimension != 2, "The -C +m|M modifier only applies to 2-D gridding\n");
 #ifdef DEBUG
-	n_errors += gmt_M_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
+	n_errors += gmt_M_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -D options disagree on the dimension\n");
 #else
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -D options disagree on the dimension\n");
 #endif
 	n_errors += gmt_check_binary_io (GMT, dimension + 1);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Syntax error -S option: Tension must be in range 0 <= t < 1\n");
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) && Ctrl->D.mode == 3, "Syntax error -Sc|t|r option: Cannot select -D3\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == LINEAR_1D && Ctrl->D.mode > 3, "Syntax error -Sl option: Cannot select -D4 or higher\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Syntax error -G option: Must specify output grid file name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Syntax error -C option: Must specify file name for eigenvalues if cut < 0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error -T option: Must specify mask grid file name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && dimension != 2, "Syntax error -T option: Only applies to 2-D gridding\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active[RSET]) == 1 && dimension == 2, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Option -S: Tension must be in range 0 <= t < 1\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) && Ctrl->D.mode == 3, "Option -Sc|t|r: Cannot select -D3\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == LINEAR_1D && Ctrl->D.mode > 3, "Option -Sl: Cannot select -D4 or higher\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Option -G: Must specify output grid file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Option -C: Must specify file name for eigenvalues if cut < 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T: Must specify mask grid file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && dimension != 2, "Option -T: Only applies to 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Option -N: Must specify node file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Option -N: Cannot read file %s!\n", Ctrl->N.file);
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active[RSET]) == 1 && dimension == 2, "Must specify -R, -I, [-r], -G for gridding\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1611,6 +1622,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	} while (true);
 
+	if (n_skip && n < n_alloc && X[n])	/* If we end with a skip then we have allocated one too many */
+		gmt_M_free (GMT, X[n]);
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
 		gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
@@ -2178,7 +2192,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (n_use == -1) Return (GMT_RUNTIME_ERROR);
 		GMT_Report (API, GMT_MSG_INFORMATION, "[%d of %" PRIu64 " eigen-values used]\n", n_use, nm);
 
-		if (Ctrl->C.movie == 0) {
+		if (Ctrl->C.movie == GREENSPLINE_NO_MOVIE) {
 			gmt_M_free (GMT, s);
 			gmt_M_free (GMT, v);
 			gmt_M_free (GMT, b);
@@ -2225,7 +2239,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_header[GMT_OUT] = was;	/* Restore default */
 	}
 
-	if (Ctrl->C.movie == 0) gmt_M_free (GMT, A);
+	if (Ctrl->C.movie == GREENSPLINE_NO_MOVIE) gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {
 		double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2, chi2_sum = 0, pvar_sum = 0.0, *predicted = NULL;
@@ -2388,7 +2402,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (Ctrl->C.movie) {	/* Write out grid after adding contribution for each eigenvalue separately */
 			gmt_grdfloat *tmp = NULL;
 			char file[PATH_MAX] = {""};
-			if (Ctrl->C.movie == 1) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
+			if (Ctrl->C.movie == GREENSPLINE_INC_MOVIE) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			gmt_grd_init (GMT, Out->header, options, true);
 			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
@@ -2420,7 +2434,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					}
 				}
 				sprintf (file, Ctrl->G.file, (int)k+1);
-				if (Ctrl->C.movie == 1) {
+				if (Ctrl->C.movie == GREENSPLINE_INC_MOVIE) {
 					gmt_M_grd_loop (GMT, Out, row, col, ij) Out->data[ij] -= tmp[ij];	/* Incremental improvement since last time */
 					gmt_M_grd_loop (GMT, Out, row, col, ij) tmp[ij] += Out->data[ij];	/* Current solution */
 				}
@@ -2428,7 +2442,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					Return (API->error);
 				}
 			}
-			if (Ctrl->C.movie == 1) gmt_M_free_aligned (GMT, tmp);	/* Free original column-oriented grid */
+			if (Ctrl->C.movie == GREENSPLINE_INC_MOVIE) gmt_M_free_aligned (GMT, tmp);	/* Free original column-oriented grid */
 			gmt_M_free (GMT, A);
 			gmt_M_free (GMT, s);
 			gmt_M_free (GMT, v);

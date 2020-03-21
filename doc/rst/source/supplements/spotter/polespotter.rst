@@ -113,7 +113,8 @@ Optional Arguments
 
 **-Sl**\|\ **p**\|\ **s**\ [*modifiers*]
     Set the scan mode for this run.  Choose from **l**\ ines, **p**\ oles, or
-    **s**\ pots.  Depending on the mode there may be required and optional arguments.
+    **s**\ pots.  Depending on the mode there may be required and optional arguments
+    as indicated below:
 
 **-Sl**\ *plon*\ /*plat*\ [**+m**]
 

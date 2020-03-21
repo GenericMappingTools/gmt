@@ -18,7 +18,7 @@ Synopsis
 [ |-F|\ *flags* ]
 [ |-N|\ **1**\|\ **2**\|\ **r**\|\ **w** ]
 [ |-S|\ [**r**] ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\|\ *list* ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -44,7 +44,7 @@ input points, but alternatively you can specify an equidistant range over which 
 the model, or turn off evaluation completely.  Instead of determining the best fit we can
 perform a scan of all possible regression lines
 (for a range of slope angles) and examine how the chosen misfit measure varies with slope.
-This is particularly useful when analyzing data with many outliers.  Note: If you
+This is particularly useful when analyzing data with many outliers.  **Note**: If you
 actually need to work with log10 of *x* or *y* you can accomplish that transformation during read by using the **-i** option.
 
 
@@ -118,7 +118,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
     **-T**\ *inc* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment.
     To skip the model evaluation entirely, simply provide **-T**\ 0.
@@ -134,7 +134,7 @@ Optional Arguments
     Giving both **x** and **y** (and optionally **r**) implies an orthogonal regression, otherwise giving
     **x** requires **-Ex** and **y** requires **-Ey**.
     We convert uncertainties in *x* and *y* to regression weights via the relationship weight = 1/sigma.
-    Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.  Note: residuals
+    Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.  **Note**: Residuals
     with respect to the regression line will be scaled by the given weights.  Most norms will then square this weighted
     residual (**-N1** is the only exception).
 

@@ -1,6 +1,6 @@
 .. _-g_full:
 
-**-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [**u**][**+n**\|\ **p**]
+**-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [**+n**\|\ **p**]
     Examine the spacing between consecutive data points in order to
     impose breaks in the line. Append **x**\|\ **X** or
     **y**\|\ **Y** to define a gap when there is a large enough change
@@ -19,7 +19,7 @@
     mile, or s\ **u**\ rvey foot. For projected data
     (**X**\|\ **Y**\|\ **D**), choose from **i**\ nch,
     **c**\ entimeter, or **p**\ oint [Default unit set by
-    :term:`PROJ_LENGTH_UNIT`]. Note: For **x**\|\ **y**\|\ **z** with
+    :term:`PROJ_LENGTH_UNIT`]. **Note**: For **x**\|\ **y**\|\ **z** with
     time data the unit is instead controlled by :term:`TIME_UNIT`. Repeat
     the option to specify multiple criteria, of which any can be met to
     produce a line break. Issue an additional **-ga** to indicate that

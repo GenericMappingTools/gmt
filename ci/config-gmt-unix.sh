@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and install GMT
+# Configure GMT setting under UNIX
 
 # To return a failure if any commands inside fail
 set -e
@@ -8,8 +8,6 @@ cat > cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
-set (COPY_GSHHG TRUE)
-set (COPY_DCW TRUE)
 
 set (GMT_USE_THREADS TRUE)
 set (GMT_ENABLE_OPENMP TRUE)
@@ -30,8 +28,9 @@ enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_API_TESTS ON)
-set (N_TEST_JOBS 2)
 set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
+
+# For code coverage
 set (CMAKE_C_FLAGS "-coverage -O0 ${CMAKE_C_FLAGS}")
 
 # Turn on testing of upcoming long-option syntax for common GMT options

@@ -261,7 +261,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -J is no longer needed or used in x2sys_cross, ignored\n");
 					break;
 				}
-				/* If not compat mode we fall down here on purpose and fail I think */
+				/* Intentionally fall through - if not compat mode we fall down here on purpose and fail I think */
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -492,7 +492,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			gmt_chop (line);	/* Get rid of CR, LF stuff */
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
-				GMT_Report (API, GMT_MSG_ERROR, "Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to decode combinations file for pair %" PRIu64 "!\n", n_pairs);
 				fclose (fp);
 				Crashout (GMT_RUNTIME_ERROR);
 			}

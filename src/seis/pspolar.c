@@ -187,7 +187,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +j<justify> or +o<dx>/<dy> to change the text justification or offset relative to the symbol.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is above the symbol, with font size of 12p].\n");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X,c,di,e,h,i,qi,t,.");
 
 	return (GMT_MODULE_USAGE);
@@ -276,17 +276,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 					gmt_pen_syntax (GMT, 'C', NULL, "Line connecting new and old point [Default current pen]", 0);
 					n_errors++;
 				}
-				if ((p = strstr (opt->arg, "+s"))) {	/* Found +s<size>[unit] */
+				if ((p = strstr (opt->arg, "+s"))) {	/* Found +s<size> */
 					char *q = strstr (p, "+p");
 					if (q) q[0] = '\0';	/* Chop off the +p modifier */
 					if ((Ctrl->C.size = gmt_M_to_inch (GMT, &p[2]))) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Could not decode pointsize %s\n", &p[1]);
 						n_errors++;
 					}
 					if (q) q[0] = '+';	/* Restore the +p modifier */
 				}
 				else if ((p = strchr (opt->arg, 'P')) && sscanf (&p[1], "%lf", &Ctrl->C.size)) {	/* Old syntax */
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Could not decode pointsize %s\n", &p[1]);
 					n_errors++;
 				}
 				break;
@@ -424,7 +424,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Unrecognized symbol type %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unrecognized symbol type %c\n", opt->arg[0]);
 						break;
 				}
 				Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
@@ -469,9 +469,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.ech <= 0.0, "Syntax error: -M must specify a size\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "Syntax error: -D, -M, -S must be set together\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.ech <= 0.0, "Option -M: must specify a size\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "-D, -M, -S must be set together\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

@@ -22,7 +22,7 @@ Synopsis
 [ |-G|\ [**p**\|\ **n**][**+g**\ *fill*][**+z**\ *zero*][**+t**\ *t0/t1*] ]
 [ |-M|\ *size*\ [*u*][/*alpha*] ]
 [ |-Q| ]
-[ |-S|\ [**i**]\ *scale*\ [*unit*] ]
+[ |-S|\ [**i**]\ *scale* ]
 [ |-T|\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]

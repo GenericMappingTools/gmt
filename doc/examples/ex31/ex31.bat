@@ -5,6 +5,9 @@ REM GMT modules:	set, coast, plot, text, legend
 REM
 
 gmt begin ex31
+	REM Set FONTPATH used in image conversion
+	REM %~dp0 is the path to the current batch file
+	gmt set PS_CONVERT="C-sFONTPATH=%~dp0fonts"
 	REM create file PSL_custom_fonts.txt in current working directory
 	REM and add PostScript font names of Linux Biolinum and Libertine
 	echo LinBiolinumO   0.700 0 > PSL_custom_fonts.txt

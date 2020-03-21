@@ -27,7 +27,7 @@ one. That is, it MUST NOT contain any new two tracks intersections (This
 point is NOT checked in the code). This program is useful when, for any
 good reason like file editing NAV correction or whatever, one had to
 recompute only the COEs between the edited files and the rest of the
-database.
+database.  The complete data base is written to *stdout*.
 
 Required Arguments
 ------------------

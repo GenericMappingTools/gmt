@@ -65,7 +65,7 @@ struct GRDEDIT_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L[+n|+p] */
+	struct L {	/* -L[+n|p] */
 		bool active;
 		int mode;
 	} L;
@@ -104,7 +104,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A] [-C] [%s]\n", name, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|+p]] [-N<table>] [%s] [-S] [-T]\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] [-N<table>] [%s] [-S] [-T]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -183,7 +183,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 					Ctrl->E.mode = opt->arg[0];
 				else {
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax Error -E: Unrecognized modifier %c\n", opt->arg[0]);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Unrecognized modifier %c\n", opt->arg[0]);
 				}
 				break;
 			case 'G':	/* Separate output grid file */
@@ -218,21 +218,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify an output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Option -G: Must specify an output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->A.active,
-	                                 "Syntax error -S option: Incompatible with -A\n");
+	                                 "Option -S: Incompatible with -A\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active &&
 	                                 (Ctrl->A.active || Ctrl->D.active || Ctrl->N.active || Ctrl->S.active || Ctrl->T.active),
-	                                 "Syntax error -E option: Incompatible with -A, -D, -N, -S, and -T\n");
+	                                 "Option -E: Incompatible with -A, -D, -N, -S, and -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->T.active,
-	                                 "Syntax error -S option: Incompatible with -T\n");
+	                                 "Option -S: Incompatible with -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active,
-	                                 "Syntax error -S option: Incompatible with -N\n");
+	                                 "Option -S: Incompatible with -N\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !GMT->common.R.active[RSET],
-	                                 "Syntax error -S option: Must also specify -R\n");
+	                                 "Option -S: Must also specify -R\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]),
-	                                 "Syntax error -S option: -R longitudes must span exactly 360 degrees\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
+	                                 "Option -S: -R longitudes must span exactly 360 degrees\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
 	if (Ctrl->N.active) {
 		n_errors += gmt_check_binary_io (GMT, 3);
 	}

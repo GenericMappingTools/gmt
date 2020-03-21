@@ -22,5 +22,5 @@ gmt grdimage E.grd -Ct.cpt -J -B0 -O -K -X-3.25i -Y-3.25i >> $ps
 echo -2 -2 D2DX2 + D2DY2 | gmt pstext -R -J -O -K -Dj0.1i -F+jLB+f12p >> $ps
 gmt grdimage F.grd -Ct.cpt -J -B0 -O -K -X3.25i >> $ps
 echo -2 -2 EXTREMA | gmt pstext -R -J -O -K -Dj0.1i -F+jLB+f12p >> $ps
-gmt psscale -Ct.cpt -D3.125i/-0.2i+w6i/0.2i+h+jTC -L0.1i -O -K -X-3.25i >> $ps
+gmt psscale -Ct.cpt -Dx3.125i/-0.2i+w6i/0.2i+h+jTC -L0.1i -O -K -X-3.25i >> $ps
 gmt psxy -R -J -O -T >> $ps

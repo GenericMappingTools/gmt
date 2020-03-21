@@ -317,7 +317,7 @@ L1:
 						sprintf(path, "%s/%s%s", dir, stem, ".cdf");
 						if (access(path, R_OK) == 0)	/* Yes, old .cdf version found */
 							goto L1;
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "2. GSHHG: Did not find %s nor ithe older *.cdf version\n", path);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "2. GSHHG: Did not find %s nor the older *.cdf version\n", path);
 					}
 				}
 			}
@@ -353,7 +353,7 @@ L1:
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: Failure, could not access any GSHHG files\n");
 	if (warn_once && reset) {
 		warn_once = false;
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GSHHG version %d.%d.%d or newer is "
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GSHHG version %d.%d.%d or newer is "
 								"needed to use coastlines with GMT.\n\tGet and install GSHHG from "
 								GSHHG_SITE ".\n", version.major, version.minor, version.patch);
 	}
@@ -407,18 +407,18 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 				case 's': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP;		break;	/* Skip Antarctica data south of 60S */
 				case 'S': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP_INV;	break;	/* Skip everything BUT Antarctica data south of 60S */
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A modifier +a: Invalid code %c\n", p[0]);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A modifier +a: Invalid code %c\n", p[0]);
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 					break;
 			}
 			p++;	/* Go to next code */
 		}
 		if ((I->antarctica_mode & GSHHS_ANTARCTICA_GROUND) && (I->antarctica_mode & GSHHS_ANTARCTICA_ICE)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A modifier +a: Cannot select both g and i\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A modifier +a: Cannot select both g and i\n");
 			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 		}
 		if ((I->antarctica_mode & GSHHS_ANTARCTICA_SKIP) && (I->antarctica_mode & GSHHS_ANTARCTICA_SKIP_INV)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A modifier +a: Cannot select both s and S\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A modifier +a: Cannot select both s and S\n");
 			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 		}
 	}
@@ -430,7 +430,7 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	if (info[0] == '+') return (GMT_OK);	/* No area, etc, just modifiers that we just processed */
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -A option: No area given\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: No area given\n");
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;
@@ -479,7 +479,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 					base = 0;	/* full */
 			}
 			else {	/* No basis - select low */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-%c option: Cannot select automatic resolution without -R or -J [Default to low]\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "-%c option: Cannot select automatic resolution without -R or -J [Default to low]\n");
 				base = 3;	/* low */
 			}
 			*res = choice[base];
@@ -501,7 +501,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 			base = 4;
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Syntax error -%c option: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -%c: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
 			base = 3;
 			*res = 'l';
 			break;
@@ -576,7 +576,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		int_areas = true;
 	}
 	else if (nc_inq_varid (c->cdfid, "The_km_squared_area_of_polygons", &c->GSHHS_area_id) != NC_NOERR) {	/* New file with km^2 areas as doubles */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GSHHS: Unable to determine how polygon areas were stored.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GSHHS: Unable to determine how polygon areas were stored.\n");
 	}
 	if (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin_ANT", &c->bin_info_id_ANT) == NC_NOERR) {	/* New file with two Antarcticas */
 		gmt_M_err_trap (nc_inq_varid (c->cdfid, "Embedded_ANT_flag", &c->seg_info_id_ANT));

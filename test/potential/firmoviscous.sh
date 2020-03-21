@@ -8,7 +8,7 @@ rhom=3300
 rhos=2700
 rhow=1000
 # Create a truncated seamount load or 5km height
-gmt grdseamount -Rk-512/511/-512/511 -I1000 -Gsmt.nc+uk -Cg -Dk -E -F0.2 -Z-6000 << EOF
+gmt grdseamount -R-512/511/-512/511+uk -I1000 -Gsmt.nc+uk -Cg -Dk -E -F0.2 -Z-6000 << EOF
 0	0	0	40	40	5000	75	73
 EOF
 # Select times for calculation

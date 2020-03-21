@@ -17,7 +17,7 @@ Synopsis
 [ |-D|\ *abbrev1*,\ *abbrev2*,...) ]
 [ |-E|\ *empty* ]
 [ |-F| ]
-[ |-I|\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment* ]
+[ |-I|\ *abbrev*/*name*/*unit*/**c**/*scale*/*offset*/*comment* ]
 [ |-N|\ *unit* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -174,17 +174,17 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment*
+**-I**\ *abbrev*/*name*/*unit*/**c**/*scale*/*offset*/*comment*
     In addition to file information we must specify additional
     information about the extra column. Specify a short (16 char or
     less, using lower case letters, digits, or underscores only)
     abbreviation for the selected data, its more descriptive name, the
-    data unit, the data type 1-character code (**b**\ yte, **s**\ hort,
+    data unit, the data type 1-character **c**\ ode (**b**\ yte, **s**\ hort,
     **f**\ loat, **i**\ nt, **d**\ ouble, or **t**\ ext) you want used
     for storage in the netCDF file, any scale and offset we should apply
     to the data to make them fit inside the range implied by the chosen
     storage type, and a general comment (< 128 characters) regarding
-    what these data represent. Note: If text data type is selected then
+    what these data represent. **Note**: If text data type is selected then
     the terms "values" in the **-A** discussion refer to your text data.
     Furthermore, the discussion on interpolation does not apply and the
     NaN value becomes a "no string" value (see **-E** for what this is).

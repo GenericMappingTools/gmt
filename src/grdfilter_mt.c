@@ -34,7 +34,7 @@ To compile I patched src/CMakeList.txt by adding these two lines
     include_directories (${GLIB_INCLUDE_DIR})
     list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARY})
 
-and added this to ConfigUserCmake
+and added this to ConfigUserAdvanced.cmake
 
     # Set location of GLIB ...:
     set (GLIB_INCLUDE_DIR "C:/programs/compa_libs/glib-2.38.2/compileds/${VC}_${BITAGE}/include/glib-2.0")
@@ -1005,11 +1005,11 @@ int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 	}
 
 	if (n_nan) GMT_Report (API, GMT_MSG_WARNING, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
-	if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_WARNING, "%d multiple modes found by the mode filter\n", GMT_n_multiples);
+	if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_INFORMATION, "%d separate modes found by the mode filter\n", GMT_n_multiples);
 
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.R.active[GSET]) {	/* Must resample result so grids are coregistered */
-			char in_string[GMT_STR16], out_string[GMT_STR16], cmd[GMT_LEN256];
+			char in_string[GMT_VF_LEN], out_string[GMT_VF_LEN], cmd[GMT_LEN256];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
 			/* Create a virtual file for the low-pass filtered grid */
 			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Gout, in_string) == GMT_NOTSET) {

@@ -218,7 +218,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     z|Z      to compute the Vertical component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     h|H      to compute the Horizontal component.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t|T|f|F  to compute the total field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     For a variable inclination and declination use IGRF. Set any of -H+i|+g|+r|+f|+n to do that.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     For a variable inclination and declination use IGRF. Set any of -H+i|g|r|f|n to do that.\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets level of observation [Default = 0].\n");
@@ -321,7 +321,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 					break;
 				}
 				else if (opt->arg[0] == '+' && (opt->arg[1] == 'g' || opt->arg[1] == 'r' || opt->arg[1] == 'f' || opt->arg[1] == 'n')) {
-					Ctrl->H.do_igrf = true;                         /* Any of -H+i|+g|+r|+f|+n is allowed to mean use IGRF */
+					Ctrl->H.do_igrf = true;                         /* Any of -H+i|g|r|f|n is allowed to mean use IGRF */
 					if (gmt_M_is_cartesian(GMT, GMT_IN))
 						gmt_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 					break;
@@ -351,7 +351,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 				if (Ctrl->H.pirtt) i = 1;
 				if (opt->arg[i] && (sscanf(&opt->arg[i], "%lf/%lf/%lf/%lf/%lf",
 				            &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_Report(API, GMT_MSG_ERROR, "Syntax error -H option: Can't dechiper values\n");
+					GMT_Report(API, GMT_MSG_ERROR, "Option -H: Can't dechiper values\n");
 					n_errors++;
 				}
 				break;
@@ -391,7 +391,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 					else if (n == 3)
 						strncpy(Ctrl->Q.region, opt->arg, GMT_BUFSIZ);	/* Pad given as a -R region */
 					else {
-						GMT_Report(API, GMT_MSG_ERROR, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
+						GMT_Report(API, GMT_MSG_ERROR, "Option -Q: Either -Q<pad> or -Q<region>\n");
 						n_errors++;
 					}
 				}
@@ -417,9 +417,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file[0], "Option -S: Must specify input file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || gmt_M_is_dnan(Ctrl->S.radius)),
-	                                "Syntax error: -S Radius is NaN or negative\n");
+	                                "Option -S: Radius is NaN or negative\n");
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active,
 	                                "Error: Must specify either -G or -F options\n");
 	n_errors += gmt_M_check_condition(GMT, !GMT->common.R.active[RSET] && Ctrl->Q.active && !Ctrl->Q.n_pad,
@@ -427,13 +427,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active,
 	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.active && Ctrl->H.active,
-	                                "Syntax error Cannot specify both -C and -H options\n");
+	                                "Cannot specify both -C and -H options\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file,
-	                                "Syntax error -G option: Must specify output file\n");
+	                                "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->H.got_maggrid && !Ctrl->H.magfile,
-	                                "Syntax error -H+m option: Must specify source file\n");
+	                                "Option -H+m: Must specify source file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->F.active && gmt_access(GMT, Ctrl->F.file, R_OK),
-	                                "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
+	                                "Option -F: Cannot read file %s!\n", Ctrl->F.file);
 	i += gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -501,7 +501,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL)
 			Return (API->error);
 		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n",
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: %s does not have at least 2 columns with coordinates\n",
 			            Ctrl->F.file);
 			Return (GMT_PARSE_ERROR);
 		}
@@ -1228,7 +1228,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 	for (row = r_start; row < r_stop; row++) {                     /* Loop over input grid rows */
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING))
-			GMT_Message(GMT->parent, GMT_TIME_NONE, frmt, t->thread_num + 1, row + 1, r_stop);
+			GMT_Message (GMT->parent, GMT_TIME_NONE, frmt, t->thread_num + 1, row + 1, r_stop);
 
 		if (Ctrl->H.do_igrf) {                                     /* Compute a row of IGRF dec & dip */
 			for (col = 0; col < Grid->header->n_columns - 1 + MIN(indf,1); col++) {

@@ -13,15 +13,15 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt ternary** [ *table* ]
-[ **-JX**\ *width*\ [unit] ]
-[ |-R|\ *amin/amax/bmin/bmax/cmin/cmax* ]
+[ **-JX**\ *width* ]
+[ |-R|\ *amin*\ /*amax*\ /*bmin*\ /*bmax*\ /*cmin*\ /*cmax* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
 [ |-L|\ *a*\ /*b*\ /*c* ]
 [ |-M| ]
 [ |-N| ]
-[ |-S|\ [*symbol*][*size*\ [**u**] ]
+[ |-S|\ [*symbol*][*size*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]

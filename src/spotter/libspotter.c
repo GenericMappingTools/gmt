@@ -596,7 +596,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 	/* Extend oldest stage pole back to t_max Ma */
 
 	if ((*t_max) > 0.0 && e[0].t_start < (*t_max)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "libspotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "libspotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
 
 		e[0].t_start = (*t_max);
 		e[0].duration = e[0].t_start - e[0].t_stop;
@@ -1369,7 +1369,7 @@ void spotter_get_rotation (struct GMT_CTRL *GMT, struct EULER *p, unsigned int n
 
 	i--;
 	if ((i+2) > np) {	/* p[i] and p[i+1] must should exist but Coverity is not sure */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "spotter_get_rotation: Internal error - cannot copy two rotations!");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "spotter_get_rotation: Cannot copy two rotations!");
 		return;
 	}
 	gmt_M_memcpy (&e[0], &p[i], 1, struct EULER);	/* Duplicate the two finite rotations bracketing the desired time */

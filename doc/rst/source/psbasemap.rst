@@ -53,7 +53,7 @@ Synopsis
     Append **+w**\ *width*\ [/*height*] of bounding rectangle or box in plot coordinates (inches, cm, etc.).
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Add **+o** to offset the inset fig by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
@@ -78,12 +78,12 @@ Linear x-y plot
 ~~~~~~~~~~~~~~~
 
 To make a linear x/y frame with all axes, but with only left and bottom
-axes annotated, using xscale = yscale = 1.0, ticking every 1 unit and
+axes annotated, using xscale = yscale = 1 cm per unit, ticking every 1 unit and
 annotating every 2, and using xlabel = "Distance" and ylabel = "No of samples", use
 
    ::
 
-    gmt psbasemap -R0/9/0/5 -Jx1 -Bf1a2 -Bx+lDistance -By+l"No of samples" -BWeSn -P > linear.ps
+    gmt psbasemap -R0/9/0/5 -Jx1c -Bf1a2 -Bx+lDistance -By+l"No of samples" -BWeSn -P > linear.ps
 
 Log-log plot
 ~~~~~~~~~~~~
@@ -100,12 +100,12 @@ Power axes
 ~~~~~~~~~~
 
 To design an axis system to be used for a depth-sqrt(age) plot with
-depth positive down, ticked and annotated every 500m, and ages annotated
-at 1 my, 4 my, 9 my etc, use
+depth positive down, ticked and annotated every 500m, and ages (in millions of years) annotated
+at 1 My, 4 My, 9 My etc., use
 
    ::
 
-    gmt psbasemap -R0/100/0/5000 -Jx1p0.5/-0.001 -Bx1p+l"Crustal age" -By500+lDepth -P > power.ps
+    gmt psbasemap -R0/100/0/5000 -Jx1cp0.5/-0.001c -Bx1p+l"Crustal age" -By500+lDepth -P > power.ps
 
 Polar (theta,r) plot
 ~~~~~~~~~~~~~~~~~~~~

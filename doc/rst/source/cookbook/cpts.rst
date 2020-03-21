@@ -72,6 +72,9 @@ and how to switch the color bar around (by using a negative length).
    :width: 600 px
    :align: center
 
+Footnote
+--------
+
 .. [35]
    The 3rd palette is called *categorical* and produces a set of
    colors suitable for categorical plots.

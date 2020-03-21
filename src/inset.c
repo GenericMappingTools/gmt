@@ -49,7 +49,7 @@ struct INSET_CTRL {
 		bool active;
 		unsigned int mode;	/* INSET_BEGIN|END*/
 	} In;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+t][+u] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+t][+u] */
 		bool active;
 		struct GMT_MAP_INSET inset;
 	} D;
@@ -57,7 +57,7 @@ struct INSET_CTRL {
 		bool active;
 		/* The panel is a member of GMT_MAP_INSET */
 	} F;
-	struct M {	/* -M<margin>[u] | <xmargin>[u]/<ymargin>[u]  | <wmargin>[u]/<emargin>[u]/<smargin>[u]/<nmargin>[u]  */
+	struct M {	/* -M<margin> | <xmargin>/<ymargin>  | <wmargin>/<emargin>/<smargin>/<nmargin>  */
 		bool active;
 		double margin[4];
 	} M;
@@ -148,7 +148,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 			case 'M':	/* inset margins */
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Gave nothing */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: No margins given.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: No margins given.\n");
 					n_errors++;
 				}
 				else {	/* Process 1, 2, or 4 margin values */
@@ -160,7 +160,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 						Ctrl->M.margin[XHI] = Ctrl->M.margin[XLO];
 					}
 					else if (k != 4) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: Bad number of margins given.\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Bad number of margins given.\n");
 						n_errors++;
 					}
 					/* Since GMT_Get_Values returns in default project length unit, convert to inch */
@@ -181,26 +181,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 
 	if (Ctrl->In.mode == INSET_BEGIN) {
 		/* Was -R -J given */
-		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Syntax error -J: Requires -R as well!\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
 		if (GMT->common.J.active) {	/* Compute map height */
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
 		}
 	}
 	else {	/* gmt inset end was given, when -D -F -M -N are not allowed */
 		if (Ctrl->D.active) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -D: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->F.active) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -F: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->M.active) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -M: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->N.active) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -N: Not valid for gmt inset end.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 	}
@@ -284,9 +284,11 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
 		if ((fp = fopen (ffile, "r")) == NULL)
 			GMT_Report (API, GMT_MSG_INFORMATION, "No file %s with frame information - no adjustments made\n", ffile);
-		fgets (Bopts, GMT_LEN256, fp);
-		gmt_chop (Bopts);
-		fclose (fp);
+		else {
+			fgets (Bopts, GMT_LEN256, fp);
+			gmt_chop (Bopts);
+			fclose (fp);
+		}
 
 		/* Write out the inset information file */
 

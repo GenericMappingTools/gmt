@@ -68,11 +68,11 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *x|e,y|n,z|v*
+**-C**\ **x**\|\ **e**,\ **y**\|\ **n**,\ **z**\|\ **v**
     Select which component to write to individual grids. Requires **-G**.
     Append comma-separated codes for available components: **x** or **e** for the east component;
     **y** or **n** for the north component; and **z** or **v** for the vertical component.
-    For example, **-C**\ *e,v*, will write 2 grids. One with east and other with the vertical components.
+    For example, **-Ce**,\ **v**, will write 2 grids. One with east and other with the vertical components.
     If **-G** is set but not **-C** then the default is to write the vertical component.
 
 .. _-I:
@@ -95,6 +95,7 @@ Optional Arguments
     current time in UTC from the computer clock. If no **-G** or **-S** are provided then **-T** is interpreted to mean compute
     a time-series at the location specified by **-L**, thus then **-L** becomes mandatory.
     When **-G** and **-T**, only first time T series is considered. Finally, dates may range from 1901 through 2099.
+    For details on array creation, see `Generate 1D Array`_.
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
@@ -111,6 +112,7 @@ Optional Arguments
 
 .. include:: ../../explain_help.rst_
 
+.. include:: /explain_array.rst_
 
 Examples
 --------

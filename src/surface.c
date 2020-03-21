@@ -47,7 +47,7 @@
 #define THIS_MODULE_MODERN_NAME	"surface"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
-#define THIS_MODULE_KEYS	"<D{,DD(,LG(,GG}"
+#define THIS_MODULE_KEYS	"<D{,DD(=,LG(,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVabdefhiqrs" GMT_ADD_x_OPT GMT_OPT("FH")
 
@@ -83,7 +83,7 @@ struct SURFACE_CTRL {
 		double limit[2];
 		unsigned int mode[2];
 	} L;
-	struct SRF_M {	/* -M<radius>[u] */
+	struct SRF_M {	/* -M<radius> */
 		bool active;
 		char *arg;
 	} M;
@@ -818,11 +818,11 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	if (C->set_limit[LO] == DATA)	/* Wanted to set lower limit based on minimum observed z value */
 		C->limit[LO] = C->data[kmin].z;
 	else if (C->set_limit[LO] == VALUE && C->limit[LO] > C->data[kmin].z)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your lower value is > than min data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Your lower value is > than min data value.\n");
 	if (C->set_limit[HI] == DATA)	/* Wanted to set upper limit based on maximum observed z value */
 		C->limit[HI] = C->data[kmax].z;
 	else if (C->set_limit[HI] == VALUE && C->limit[HI] < C->data[kmax].z)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your upper value is < than max data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Your upper value is < than max data value.\n");
 	return (0);
 }
 
@@ -1472,7 +1472,9 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 				z = gmt_M_memory (GMT, z, n_alloc, double);
 			}
 
-			dx /= n_int;	dy /= n_int;	dz /= n_int;
+			dx /= n_int;
+			dy /= n_int;
+			if (!fix_z) dz /= n_int;
 			for (n = 0; n < n_int; k++, n++) {
 				x[k] = xline[row] + n * dx;
 				y[k] = yline[row] + n * dy;
@@ -1624,7 +1626,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>|m] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>[+z[<zlevel>]]] [%s] [-Ll<limit>] [-Lu<limit>] [-M<radius>[<unit>]] [-N<n_iterations>] [-Q]\n", GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>[+z[<zlevel>]]] [%s] [-Ll<limit>] [-Lu<limit>] [-M<radius>] [-N<n_iterations>] [-Q]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<search_radius>[m|s]] [-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s\n\t[%s] [%s] [%s]%s[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -1756,7 +1758,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'l': case 'u':	/* Lower or upper limits  */
 						end = (opt->arg[0] == 'l') ? LO : HI;	/* Which one it is */
-						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Syntax error -L%c option: No argument given\n", opt->arg[0]);
+						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Option -L%c: No argument given\n", opt->arg[0]);
 						Ctrl->L.file[end] = strdup (&opt->arg[1]);
 						if (!gmt_access (GMT, Ctrl->L.file[end], F_OK))	/* File exists */
 							Ctrl->L.mode[end] = SURFACE;
@@ -1792,7 +1794,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 					Ctrl->S.unit = 's';
 				}
 				if (!strchr ("sm ", Ctrl->S.unit)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -S option: Unrecognized unit %c\n", Ctrl->S.unit);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unrecognized unit %c\n", Ctrl->S.unit);
 					n_errors++;
 				}
 				break;
@@ -1820,7 +1822,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 					Ctrl->T.i_tension = Ctrl->T.b_tension = atof (opt->arg);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Unrecognized modifier %c\n", modifier);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T: Unrecognized modifier %c\n", modifier);
 					n_errors++;
 				}
 				break;
@@ -1842,15 +1844,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
-	                                   "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value < 1, "Syntax error -N option: Max iterations must be nonzero\n");
+	                                   "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value < 1, "Option -N: Max iterations must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.value < 0.0 || Ctrl->Z.value > 2.0,
-	                                   "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->Q.active, "Syntax error option -G: Must specify output grid file\n");
+	                                   "Option -Z: Relaxation value must be 1 <= z <= 2\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->Q.active, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && gmt_M_is_cartesian (GMT, GMT_IN),
-	                                   "Syntax error option -Am: Requires geographic input data\n");
+	                                   "Option -Am: Requires geographic input data\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -2075,7 +2077,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->M.active) {	/* Want to mask the grid first */
-		char input[GMT_STR16] = {""}, mask[GMT_STR16] = {""}, cmd[GMT_LEN256] = {""};
+		char input[GMT_VF_LEN] = {""}, mask[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
 		static char *V_level = "qntcvld";
 		struct GMT_GRID *Gmask = NULL;
 		struct GMT_VECTOR *V = NULL;

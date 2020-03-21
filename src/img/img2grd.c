@@ -266,6 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
+				/* Intentionally fall through */
 			case 'I':
 				Ctrl->I.active = true;
 				L = strlen (opt->arg);
@@ -406,7 +407,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	int16_t *row = NULL;
 	uint16_t *u2 = NULL;
 
-	char infile[PATH_MAX] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_STR16] = {""}, output[PATH_MAX] = {""};
+	char infile[PATH_MAX] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_VF_LEN] = {""}, output[PATH_MAX] = {""};
 	char z_units[GMT_GRID_UNIT_LEN80] = {""}, exact_R[GMT_LEN256] = {""};
 
 	FILE *fp = NULL;
@@ -524,7 +525,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->T.value == 3) strcpy (z_units, "T/F, one or more constraints fell in this pixel.");
 
 	if (img_setup_coord (GMT, &imgrange, &imgcoord) ) {
-		GMT_Report (API, GMT_MSG_ERROR, "Error in img coordinate specification [-I -W or -D].\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failure in img coordinate specification [-I -W or -D].\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	else if (Ctrl->N.active && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {

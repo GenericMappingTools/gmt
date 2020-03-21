@@ -317,7 +317,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 					Return (GMT_ERROR_ON_FOPEN);
 				}
 			}
-			GMT_Report (API, GMT_MSG_WARNING, "Found deprecated file extension .%s, please rename to .%s\n", X2SYS_FMT_EXT_OLD, X2SYS_FMT_EXT);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Found deprecated file extension .%s, please rename to .%s\n", X2SYS_FMT_EXT_OLD, X2SYS_FMT_EXT);
 		}
 	}
 	if ((fp_def = fopen (def_file, "r")) == NULL) {
@@ -353,7 +353,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	sprintf (bin_file,   "%s/%s_index.b",   Ctrl->In.TAG, Ctrl->In.TAG);
 
 	if (!x2sys_access (GMT, tag_file, R_OK)) {
-		GMT_Report (API, GMT_MSG_ERROR, "File exists: %s\n", tag_file);
+		GMT_Report (API, GMT_MSG_WARNING, "File exists: %s\n", tag_file);
 		x2sys_path (GMT, tag_file, path);
 		if (Ctrl->F.active) {
 			if (gmt_remove_file (GMT, path))
@@ -365,7 +365,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			n_found++;
 	}
 	if (!x2sys_access (GMT, def_file, R_OK)) {
-		GMT_Message (API, GMT_TIME_NONE, "File exists: %s\n", def_file);
+		GMT_Report (API, GMT_MSG_WARNING, "File exists: %s\n", def_file);
 		x2sys_path (GMT, def_file, path);
 		if (Ctrl->F.active) {
 			if (gmt_remove_file (GMT, path))
@@ -377,7 +377,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			n_found++;
 	}
 	if (!x2sys_access (GMT, track_file, R_OK)) {
-		GMT_Message (API, GMT_TIME_NONE, "File exists: %s\n", track_file);
+		GMT_Report (API, GMT_MSG_WARNING, "File exists: %s\n", track_file);
 		x2sys_path (GMT, track_file, path);
 		if (Ctrl->F.active) {
 			if (gmt_remove_file (GMT, path))
@@ -389,7 +389,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 			n_found++;
 	}
 	if (!x2sys_access (GMT, path_file, R_OK)) {
-		GMT_Message (API, GMT_TIME_NONE, "File exists: %s\n", path_file);
+		GMT_Report (API, GMT_MSG_WARNING, "File exists: %s\n", path_file);
 		x2sys_path (GMT, path_file, path);
 		if (Ctrl->F.active) {
 			if (gmt_remove_file (GMT, path))

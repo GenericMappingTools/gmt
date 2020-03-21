@@ -65,6 +65,8 @@ struct GRDPROJECT_CTRL {
 	} M;
 };
 
+EXTERN_MSC void gmtlib_ellipsoid_name_convert (char *inname, char outname[]);
+
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDPROJECT_CTRL *C;
 
@@ -143,7 +145,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				Ctrl->C.active = true;
 				if (opt->arg[0]) 	/* Also gave shifts */
 					n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->C.easting, &Ctrl->C.northing) != 2,
-						 "Syntax error: Expected -C[<false_easting>/<false_northing>]\n");
+						 "Expected -C[<false_easting>/<false_northing>]\n");
 				break;
 			case 'D':	/* Grid spacings */
 				n_errors += gmt_parse_inc_option (GMT, 'D', opt->arg);
@@ -151,7 +153,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 			case 'E':	/* Set dpi of grid */
 				Ctrl->E.active = true;
 				sval = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -E option: Must specify positive dpi\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -E: Must specify positive dpi\n");
 				Ctrl->E.dpi = sval;
 				break;
 			case 'A':	/* Old Force specific unit option */
@@ -161,7 +163,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
-				/* Fall through on purpose to get -F */
+				/* Intentionally fall through - to get -F */
 			case 'F':	/* Force specific unit */
 				Ctrl->F.active = true;
 				Ctrl->F.unit = opt->arg[0];
@@ -179,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				Ctrl->M.active = true;
 				Ctrl->M.unit = opt->arg[0];
 				n_errors += gmt_M_check_condition (GMT, !Ctrl->M.unit,
-							"Syntax error -M option: projected measure unit must be one of 'c', i', or 'p'\n");
+							"Option -M: projected measure unit must be one of 'c', i', or 'p'\n");
 				break;
 			case 'N':	/* GMT4 Backwards compatible.  n_columns/n_rows can now be set with -D */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -202,17 +204,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 	if (GMT->current.proj.pars[14] == 1)
 		Ctrl->C.active = Ctrl->F.active = true;
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active,
-	                                   "Syntax error: Must specify a map projection with the -J option\n");
+	                                   "Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->M.active + Ctrl->F.active) == 2,
-	                                   "Syntax error: Can specify only one of -F and -M\n");
+	                                   "Can specify only one of -F and -M\n");
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[ISET] + Ctrl->E.active) > 1,
-	                                   "Syntax error: Must specify only one of -D or -E\n");
+	                                   "Must specify only one of -D or -E\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
 	                                   GMT->common.R.inc[GMT_Y] < 0.0),
-	                                   "Syntax error -D option: Must specify positive increment(s)\n");
+	                                   "Option -D: Must specify positive increment(s)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -227,7 +229,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
 	int error = 0;
 
-	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};
+	char format[GMT_LEN256+6] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};
 
 	double wesn[4];
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, fwd_scale, inv_scale;
@@ -401,6 +403,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	                                  GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	if (Ctrl->I.active) {	/* Transforming from rectangular projection to geographical */
+		char buf[GMT_LEN128] = {""}, gdal_ellipsoid_name[GMT_LEN16] = {""};
 
 		/* if (GMT->common.R.oblique) gmt_M_double_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
 
@@ -478,7 +481,24 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
-		Geo->header->ProjRefPROJ4 = strdup("+proj=longlat +no_defs");	/* HOWEVER, this may be quite incorrect for we are ignoring the DATUM */
+		/* Need to convert between GMT and GDAL ellipsoid names. But all are available in both sides. */
+		k = GMT->current.setting.proj_ellipsoid;
+		if (!strcmp (GMT->current.setting.ref_ellipsoid[k].name, "Sphere"))
+			sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+			         GMT->current.setting.ref_ellipsoid[k].eq_radius);
+		else {
+			gmtlib_ellipsoid_name_convert (GMT->current.setting.ref_ellipsoid[k].name, gdal_ellipsoid_name);
+			if (!strcmp (gdal_ellipsoid_name, "unknown"))
+				sprintf (buf, "+proj=longlat +ellps=%s +no_defs", gdal_ellipsoid_name);
+			else if (!strcmp (gdal_ellipsoid_name, "Web-Mercator"))
+				sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				         GMT->current.setting.ref_ellipsoid[k].eq_radius);
+			else {
+				sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				         GMT->current.setting.ref_ellipsoid[k].eq_radius);
+				GMT_Report (API, GMT_MSG_WARNING, "Unknown conversion between GMT and GDAL ellipsoid names. Using a generic spherical body.");
+			}
+		}
 
 		gmt_grd_project (GMT, Rect, Geo, true);
 

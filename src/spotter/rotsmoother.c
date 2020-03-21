@@ -173,7 +173,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 					struct GMT_DATASET *T = NULL;
 					struct GMT_DATASEGMENT *S = NULL;
 					if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
-						GMT_Report (API, GMT_MSG_ERROR, "Error reading file %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s\n", opt->arg);
 						n_errors++;
 						continue;
 					}
@@ -198,7 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 					if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0'))	/* Gave number of points instead; calculate inc */
 						inc = (max - min) / (inc - 1.0);
 					if (inc <= 0.0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Syntax error -T option: Age increment must be positive\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -T: Age increment must be positive\n");
 						n_errors++;
 					}
 					else {
@@ -229,8 +229,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 	if (!Ctrl->A.active) n_in++;	/* Got time in input column 3 */
 	if (Ctrl->W.active) n_in++;		/* Got weights as extra column */
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %u columns\n", n_in);
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->N.active + Ctrl->S.active + Ctrl->W.active) > 1, "Syntax error: Only one of -N, -S, -Z can be set.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Binary input data (-bi) must have at least %u columns\n", n_in);
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->N.active + Ctrl->S.active + Ctrl->W.active) > 1, "Only one of -N, -S, -Z can be set.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

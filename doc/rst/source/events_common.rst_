@@ -30,10 +30,10 @@ Required Arguments
 
 .. _-S:
 
-**-S**\ *symbol*\ [*size*\ [*unit*]]
+**-S**\ *symbol*\ [*size*]
     Specify the symbol to use for the event.  Optionally, append symbol *size* with unit from
     (**c**\|\ **i**\|\ **p**\ ).  If no *size* is given then we read an event-specific size
-    from the data file's third column (fourth if **-C** is used). Note: Not all the symbols that
+    from the data file's third column (fourth if **-C** is used). **Note**: Not all the symbols that
     are available in :doc:`psxy` can be used here.  At the moment we only support the basic
     symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
     be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
@@ -86,7 +86,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **+z**\ [*format*]]
+**-F**\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **z**\ [*format*]]
     By default, event label text will be placed horizontally, using the primary
     annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
     on the data point. Use this option to override these defaults by specifying up to three

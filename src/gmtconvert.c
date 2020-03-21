@@ -101,7 +101,7 @@ struct GMTCONVERT_CTRL {
 		bool active;
 		unsigned int mode;
 	} W;
-	struct Z {	/* -Z[<first>]:[<last>] */
+	struct Z {	/* -Z[<first>]:[<last>] [DEPRECATED - use -q instead]*/
 		bool active;
 		int64_t first, last;
 	} Z;
@@ -131,7 +131,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m|M<stride>]] [-F<arg>] [-I[tsr]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [-Z[<first>][/<last>]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -183,7 +183,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   d: Prevent the writing of duplicate data records.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Convert trailing text to numbers, if possible.  Append +n to suppress NaN columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Select range of output records.  If not set, <first> = 0 and <last> = last record [all records].\n");
 	GMT_Option (API, "a,bi,bo,d,e,f,g,h,i,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -265,7 +264,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 					case 'l':		/* Get last point only */
 						Ctrl->E.mode = -2; break;
 					case 'M':		/* Set modulo step */
-						Ctrl->E.end = true;	/* Include last point; fall through on purpose to set the step */
+						Ctrl->E.end = true;	/* Include last point */
+						/* Intentionally fall through - to set the step */
 					case 'm':		/* Set modulo step */
 						Ctrl->E.mode = atoi (&opt->arg[1]); break;
 					default:		/* Get first and last point only */
@@ -340,6 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
+				GMT_Report (API, GMT_MSG_COMPAT, "Option -Z is deprecated (but still works); Use common option -q instead\n");
 				if ((c = strchr (opt->arg, ':')) || (c = strchr (opt->arg, '/'))) {	/* Got [<first>]:[<last>] or [<first>]/[<last>] */
 					char div = c[0];	/* Either : or / */
 					if (opt->arg[0] == div) /* No first given, default to 0 */
@@ -381,7 +382,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				if ( strspn (p, "diu") == 0 ) {
 					/* No valid conversion specifier */
 					GMT_Report (API, GMT_MSG_ERROR,
-						"Syntax error: Use of unsupported conversion specifier at position %" PRIuS " in format string '%s'.\n",
+						"Option -D: Use of unsupported conversion specifier at position %" PRIuS " in format string '%s'.\n",
 						p - Ctrl->D.name + 1, Ctrl->D.name);
 					n_errors++;
 				}
@@ -389,7 +390,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 			}
 			if ( n_formats == 0 || n_formats > 2 ) {	/* Incorrect number of format specifiers */
 				GMT_Report (API, GMT_MSG_ERROR,
-					"Syntax error: Incorrect number of format specifiers in format string '%s'.\n",
+					"Option -D: Incorrect number of format specifiers in format string '%s'.\n",
 					Ctrl->D.name);
 				n_errors++;
 			}
@@ -398,18 +399,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0,
-	                                 "Syntax error: Must specify number of columns in binary input data (-bi)\n");
+	                                 "Must specify number of columns in binary input data (-bi)\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && (Ctrl->L.active || Ctrl->S.active),
-	                                 "Syntax error: -L or -S requires ASCII input data\n");
+	                                 "Options -L or -S requires ASCII input data\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.min > Ctrl->C.max),
-	                                 "Syntax error: -C minimum records cannot exceed maximum records\n");
+	                                 "Option -C: minimum records cannot exceed maximum records\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.name && !strstr (Ctrl->D.name, "%"),
-	                                 "Syntax error: -D Output template must contain %%d\n");
+	                                 "Option -D: Output template must contain %%d\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active,
-	                                 "Syntax error: Only one of -Q and -S can be used simultaneously\n");
+	                                 "Only one of -Q and -S can be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->F.active,
-	                                 "Syntax error: The -N option cannot be used with -F\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	                                 "The -N option cannot be used with -F\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && GMT->common.q.active[GMT_OUT],
+	                                 "The deprecated -Z option cannot be used with -qo\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -749,7 +752,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		unsigned int flag[3] = {0, 0, GMT_WRITE_SEGMENT};
 		struct GMT_DATASET *D2 = NULL;
 		if ((D2 = GMT_Convert_Data (API, D[GMT_OUT], GMT_IS_DATASET, NULL, GMT_IS_DATASET, flag)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error collating each table's segments into a single segment per table.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while collating each table's segments into a single segment per table.\n");
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &D[GMT_OUT]) != GMT_NOERROR) {	/* Remove the previously registered output dataset */

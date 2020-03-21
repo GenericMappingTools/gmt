@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdcontour** *grid*
-|-J|\ *parameters* [ |-A|\ [**-**\|\ *contours*][*labelinfo*] ]
+|-J|\ *parameters* [ |-A|\ [**n**\|\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours*\|\ *cpt* ]
 [ |-D|\ *template* ]
@@ -21,7 +21,7 @@ Synopsis
 [ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
 [ |-L|\ *low/high*\|\ **n**\|\ **N**\|\ **P**\|\ **p** ]
 [ |-N|\ [*cpt*] ]
-[ |-Q|\ [*cut*\ [*unit*]][**+z**] ]
+[ |-Q|\ [*cut*][**+z**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
 [ |-T|\ [**h**\|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]] ]

@@ -255,7 +255,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	for (i = n = 0; i < n_col; i++) if (!skip[i]) n++;	/* Need to find how many active columns we have */
 	if (n < 2) {
 		char *pre[2] = {"LSQ", "SVD"};
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, %sFIT requires at least 2 active columns!\n", pre[svd]);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%sFIT requires at least 2 active columns!\n", pre[svd]);
 		return (GMT_DIM_TOO_SMALL);
 	}
 	rhs = n_col - 1;
@@ -877,7 +877,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 GMT_LOCAL unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last, struct GMTMATH_STACK *S[], struct GMT_DATATABLE **T, struct GMT_DATATABLE **T_prev) {	/* Centralize the assignment of previous stack ID and the current and previous stack tables */
 	unsigned int prev;
 	if (last == 0) {	/* User error in requesting more items that presently on the stack */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Fatal error: Not enough items on the stack\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Not enough items on the stack\n");
 		return UINT_MAX;	/* Error flag */
 	}
 	prev = last - 1;
@@ -1144,15 +1144,15 @@ GMT_LOCAL int table_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
 	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument p to BCDF must be a 0 <= p <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument p to BCDF must be a 0 <= p <= 1!\n");
 		return -1;
 	}
 	if (S[prev1]->constant && S[prev1]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument n to BCDF must be a positive integer (n >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument n to BCDF must be a positive integer (n >= 0)!\n");
 		return -1;
 	}
 	if (S[last]->constant && S[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument x to BCDF must be a positive integer (x >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument x to BCDF must be a positive integer (x >= 0)!\n");
 		return -1;
 	}
 	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* BCDF is given constant arguments */
@@ -1211,15 +1211,15 @@ GMT_LOCAL int table_BPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
 	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument p to BPDF must be a 0 <= p <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument p to BPDF must be a 0 <= p <= 1!\n");
 		return -1;
 	}
 	if (S[prev1]->constant && S[prev1]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument n to BPDF must be a positive integer (n >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument n to BPDF must be a positive integer (n >= 0)!\n");
 		return -1;
 	}
 	if (S[last]->constant && S[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument x to BPDF must be a positive integer (x >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument x to BPDF must be a positive integer (x >= 0)!\n");
 		return -1;
 	}
 	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* BPDF is given constant arguments */
@@ -1550,7 +1550,7 @@ GMT_LOCAL int table_COL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if (gmt_assign_ptrs (GMT, last, S, &T, &T_prev) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (!S[last]->constant || S[last]->factor < 0.0 || ((k = urint (S[last]->factor)) >= info->n_col)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument to COL must be a constant column number (0 <= k < n_col)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument to COL must be a constant column number (0 <= k < n_col)!\n");
 		return -1;
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
@@ -1569,11 +1569,11 @@ GMT_LOCAL int table_COMB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (S[prev]->constant && S[prev]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument n to COMB must be a positive integer (n >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument n to COMB must be a positive integer (n >= 0)!\n");
 		return -1;
 	}
 	if (S[last]->constant && S[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to COMB must be a positive integer (r >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to COMB must be a positive integer (r >= 0)!\n");
 		return -1;
 	}
 	if (S[prev]->constant && S[last]->constant) {	/* COMBO is given constant args */
@@ -2185,15 +2185,15 @@ GMT_LOCAL int table_FPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
 	if (S[prev2]->constant && S[prev2]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument F to FPDF must be a >= 0!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument F to FPDF must be a >= 0!\n");
 		return -1;
 	}
 	if (S[prev1]->constant && S[prev1]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument nu1 to FPDF must be a positive integer (nu1 > 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument nu1 to FPDF must be a positive integer (nu1 > 0)!\n");
 		return -1;
 	}
 	if (S[last]->constant && S[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument nu2 to FPDF must be a positive integer (nu2 > 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument nu2 to FPDF must be a positive integer (nu2 > 0)!\n");
 		return -1;
 	}
 	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* FPDF is given constant arguments */
@@ -2261,15 +2261,15 @@ GMT_LOCAL int table_HSV2LAB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 360.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument h to HSV2LAB must be a 0 <= h <= 360!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument h to HSV2LAB must be a 0 <= h <= 360!\n");
 			return -1;
 		}
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to HSV2LAB must be a 0 <= s <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to HSV2LAB must be a 0 <= s <= 1!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to HSV2LAB must be a 0 <= v <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to HSV2LAB must be a 0 <= v <= 1!\n");
 			return -1;
 		}
 		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
@@ -2310,15 +2310,15 @@ GMT_LOCAL int table_HSV2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 360.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument h to HSV2RGB must be a 0 <= h <= 360!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument h to HSV2RGB must be a 0 <= h <= 360!\n");
 			return -1;
 		}
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to HSV2RGB must be a 0 <= s <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to HSV2RGB must be a 0 <= s <= 1!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument v to HSV2RGB must be a 0 <= v <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument v to HSV2RGB must be a 0 <= v <= 1!\n");
 			return -1;
 		}
 		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
@@ -2357,15 +2357,15 @@ GMT_LOCAL int table_HSV2XYZ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 360.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument h to HSV2XYZ must be a 0 <= h <= 360!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument h to HSV2XYZ must be a 0 <= h <= 360!\n");
 			return -1;
 		}
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument s to HSV2XYZ must be a 0 <= s <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument s to HSV2XYZ must be a 0 <= s <= 1!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to HSV2XYZ must be a 0 <= b <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to HSV2XYZ must be a 0 <= b <= 1!\n");
 			return -1;
 		}
 		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
@@ -2810,16 +2810,16 @@ GMT_LOCAL int table_LAB2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 100.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
 			return -1;
 		}
 #if 0
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument S to LAB2HSV must be a 0 <= S <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument S to LAB2HSV must be a 0 <= S <= 1!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument V to LAB2HSV must be a 0 <= V <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument V to LAB2HSV must be a 0 <= V <= 1!\n");
 			return -1;
 		}
 #endif
@@ -2861,16 +2861,16 @@ GMT_LOCAL int table_LAB2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 100.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
 			return -1;
 		}
 #if 0
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument S to LAB2RGB must be a 0 <= S <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument S to LAB2RGB must be a 0 <= S <= 1!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument V to LAB2RGB must be a 0 <= V <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument V to LAB2RGB must be a 0 <= V <= 1!\n");
 			return -1;
 		}
 #endif
@@ -2909,16 +2909,16 @@ GMT_LOCAL int table_LAB2XYZ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 100.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument L to LAB2HSV must be a 0 <= L <= 100!\n");
 			return -1;
 		}
 #if 0
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument S to LAB2XYZ must be a 0 <= S <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument S to LAB2XYZ must be a 0 <= S <= 1!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 1.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument V to LAB2XYZ must be a 0 <= V <= 1!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument V to LAB2XYZ must be a 0 <= V <= 1!\n");
 			return -1;
 		}
 #endif
@@ -3820,11 +3820,11 @@ GMT_LOCAL int table_PERM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (S[prev]->constant && S[prev]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument n to PERM must be a positive integer (n >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument n to PERM must be a positive integer (n >= 0)!\n");
 		return -1;
 	}
 	if (S[last]->constant && S[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error, argument r to PERM must be a positive integer (r >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to PERM must be a positive integer (r >= 0)!\n");
 		return -1;
 	}
 	if (S[prev]->constant && S[last]->constant) {	/* PERM is given constant argument */
@@ -4228,15 +4228,15 @@ GMT_LOCAL int table_RGB2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to RGB2HSV must be a 0 <= r <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to RGB2HSV must be a 0 <= r <= 255!\n");
 			return -1;
 		}
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
 			return -1;
 		}
 		rgb[3] = hsv[3] = 0.0;	/* No transparency involved */
@@ -4276,15 +4276,15 @@ GMT_LOCAL int table_RGB2LAB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to RGB2HSV must be a 0 <= r <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to RGB2HSV must be a 0 <= r <= 255!\n");
 			return -1;
 		}
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument g to RGB2HSV must be a 0 <= g <= 255!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to RGB2HSV must be a 0 <= b <= 255!\n");
 			return -1;
 		}
 		rgb[0] = gmt_M_is255 (S[prev2]->factor);
@@ -4323,15 +4323,15 @@ GMT_LOCAL int table_RGB2XYZ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		unsigned int prev1 = last - 1, prev2 = last - 2;
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to RGB2XYZ must be a 0 <= r <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to RGB2XYZ must be a 0 <= r <= 255!\n");
 			return -1;
 		}
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument g to RGB2XYZ must be a 0 <= g <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument g to RGB2XYZ must be a 0 <= g <= 255!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to RGB2XYZ must be a 0 <= b <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to RGB2XYZ must be a 0 <= b <= 255!\n");
 			return -1;
 		}
 		rgb[0] = gmt_M_is255 (S[prev2]->factor);
@@ -4708,11 +4708,11 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_ORDER *Z = NULL;
 
 	if (!S[prev1]->constant || S[prev1]->factor < 0.0 || (scol = urint (S[prev1]->factor)) >= info->n_col) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error SORT: Column must be a constant column number (0 <= k < n_col)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "SORT: Column must be a constant column number (0 <= k < n_col)!\n");
 		return -1;
 	}
 	if (!S[last]->constant || !((dir = lrint (S[last]->factor)) == -1 || dir == +1)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error SORT: Direction must be -1 (decreasing) or +1 (increasing)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "SORT: Direction must be -1 (decreasing) or +1 (increasing)!\n");
 		return 0;
 	}
 
@@ -5252,15 +5252,15 @@ GMT_LOCAL int table_WPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
 	if (S[prev2]->constant && S[prev2]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument x to WPDF must be x >= 0!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument x to WPDF must be x >= 0!\n");
 		return -1;
 	}
 	if (S[prev1]->constant && S[prev1]->factor <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument a to WPDF must be a positive (a > 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument a to WPDF must be a positive (a > 0)!\n");
 		return -1;
 	}
 	if (S[last]->constant && S[last]->factor <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to WPDF must be a positive (b > 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to WPDF must be a positive (b > 0)!\n");
 		return -1;
 	}
 	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* WPDF is given constant arguments */
@@ -5313,15 +5313,15 @@ GMT_LOCAL int table_XYZ2HSV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 #if 0
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to XYZ2HSV must be a 0 <= r <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to XYZ2HSV must be a 0 <= r <= 255!\n");
 			return -1;
 		}
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument g to XYZ2HSV must be a 0 <= g <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument g to XYZ2HSV must be a 0 <= g <= 255!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to XYZ2HSV must be a 0 <= b <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to XYZ2HSV must be a 0 <= b <= 255!\n");
 			return -1;
 		}
 #endif
@@ -5365,15 +5365,15 @@ GMT_LOCAL int table_XYZ2LAB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 #if 0
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to XYZ2LAB must be a 0 <= r <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to XYZ2LAB must be a 0 <= r <= 255!\n");
 			return -1;
 		}
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument g to XYZ2LAB must be a 0 <= g <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument g to XYZ2LAB must be a 0 <= g <= 255!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to XYZ2LAB must be a 0 <= b <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to XYZ2LAB must be a 0 <= b <= 255!\n");
 			return -1;
 		}
 #endif
@@ -5415,15 +5415,15 @@ GMT_LOCAL int table_XYZ2RGB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		struct GMT_DATATABLE *T_prev1 = S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 #if 0
 		if (S[prev2]->factor < 0.0 || S[prev2]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument r to XYZ2RGB must be a 0 <= r <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument r to XYZ2RGB must be a 0 <= r <= 255!\n");
 			return -1;
 		}
 		if (S[prev1]->factor < 0.0 || S[prev1]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument g to XYZ2RGB must be a 0 <= g <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument g to XYZ2RGB must be a 0 <= g <= 255!\n");
 			return -1;
 		}
 		if (S[last]->factor < 0.0 || S[last]->factor > 255.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error. Argument b to XYZ2RGB must be a 0 <= b <= 255!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Argument b to XYZ2RGB must be a 0 <= b <= 255!\n");
 			return -1;
 		}
 #endif
@@ -6281,6 +6281,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (op == GMTMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible */
 		if (op != GMTMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		if (!got_t_from_file) {
+			/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
 			if (!strcmp (opt->arg, "STDIN")) {	/* Special stdin name.  We store this input in a special struct since we may need it again and it can only be read once! */
 				if ((D_stdin = GMT_Read_Data (API, GMT_IS_DATASET|GMT_VIA_MODULE_INPUT, GMT_IS_STREAM, GMT_IS_NONE, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 					Return (API->error);
@@ -6314,7 +6315,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		}
 		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -A files */
 		if ((A_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Error reading file %s\n", Ctrl->A.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s\n", Ctrl->A.file);
 			Return (API->error);
 		}
 		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
@@ -6611,8 +6612,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				}
 				else {
 					if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "%s ", opt->arg);
+					/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
 					if ((F = GMT_Read_Data (API, GMT_IS_DATASET|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
-						GMT_Report (API, GMT_MSG_ERROR, "Error reading file %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s\n", opt->arg);
 						Return (API->error);
 					}
 					if (Ctrl->N.ncol > F->n_columns) gmt_adjust_dataset (GMT, F, Ctrl->N.ncol);	/* Add more input columns */

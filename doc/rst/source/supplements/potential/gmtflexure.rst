@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt flexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
+**gmt flexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\|\ *D*\|\ *file*
 [ |-A|\ [**l**\|\ **r**]\ *bc*\ [/*args*] ]
 [ |-C|\ **p**\ *Poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *force* ] [ |-L| ]
@@ -51,7 +51,7 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
+**-E**\ *Te*\|\ *D*\|\ *file*
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity **D** instead (by default **D** is computed from *Te*, Young's

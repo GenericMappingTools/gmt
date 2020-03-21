@@ -12,16 +12,18 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te*\ [**u**] |-G|\ *outgrid*
+**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te* |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
 [ |-L|\ *list* ]
-[ |-N|\ [**f**\|\ **q**\|\ **s**\|\ *nx*/*ny*][**+a**\|\ **d**\|\ **h**\|\ **l**][**+e**\|\ **n**\|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][**+z**\ [**p**]]
-[ |-S|\ *beta* ] [ **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\|\ *file*]\  \|\ *n*]\ [**+l**] ]
+[ |-M|\ **\ *tm*
+[ |-N|\ [**a**\|\ **f**\|\ **m**\|\ **r**\|\ **s**\|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\|\ **n**\|\ **m**][**+t**\ *width*][**+v**][**+w**\ [*suffix*]][**+z**\ [**p**]] ]
+[ |-S|\ *beta* ]
+[ |-T|\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *wd*]
-[ |-Z|\ *zm*]
+[ |-W|\ *wd*]\ [**k**]
+[ |-Z|\ *zm*]\ [**k**]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 
@@ -121,7 +123,7 @@ Optional Arguments
 **-M**\ *tm*
     Specify a viscoelastic model in conjunction with an elastic plate
     thickness specified via **-E**.  Append the Maxwell time *tm* for the
-    viscoelastic model (in ).
+    viscoelastic model (in years); add **k** for kyr and **M** for Myr.
 
 .. _-S:
 
@@ -132,10 +134,10 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\|\ *file*]\|\ *n*]\ [**+l**]
+**-T**\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
     [Default is one step, with no time dependency].  For a single specific time, just
-    give start time *t0*. The unit is years; append **k** for kyr and **M** for Myr.
+    give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a *file* with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).
@@ -143,13 +145,13 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *wd*
+**-W**\ *wd*\ [**k**]
     Set reference depth to the undeformed flexed surface in m [0].  Append **k** to indicate
     km.
 
 .. _-Z:
 
-**-Z**\ *zm*
+**-Z**\ *zm*\ [**k**]
     Specify reference depth to flexed surface (e.g., Moho) in m; append **k** for km.
     Must be positive. [0].
 

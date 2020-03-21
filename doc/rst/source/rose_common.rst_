@@ -83,9 +83,9 @@ Optional Arguments
 
 .. _-J:
 
-**-JX**\ *diameter*\ [*unit*]
+**-JX**\ *diameter*
     Sets the diameter of the rose diagram.  Only this form of the projection machinery
-    is supported.  If not given we default to 6 inches (or 7.5 cm).
+    is supported for this module.  If not given, then we default to a diameter of 7.5 cm.
 
 .. _-L:
 
@@ -111,7 +111,7 @@ Optional Arguments
 **-Q**\ [*alpha*]
     Sets the confidence level used to determine if the mean resultant
     is significant (i.e., Lord Rayleigh test for uniformity) [0.05].
-    Note: The critical values are approximated [Berens, 2009] and
+    **Note**: The critical values are approximated [Berens, 2009] and
     requires at least 10 points; the critical resultants are accurate
     to at least 3 significant digits.  For smaller data sets you
     should consult exact statistical tables.

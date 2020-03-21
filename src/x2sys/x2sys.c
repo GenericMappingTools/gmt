@@ -579,7 +579,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 				pos = 0;
 				while ((gmt_strtok (line, s->separators, &pos, p)) && k < s->n_fields) {
 					if (gmt_scanf (GMT, p, G->col_type[GMT_IN][k], &data[k]) == GMT_IS_NAN) data[k] = GMT->session.d_NaN;
-					k++;;
+					k++;
 				}
 				return ((k != s->n_fields) ? -1 : 0);
 				break;
@@ -842,7 +842,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	strcpy (s->path, MC.path);
 
 	if (MGD77_Read_Header_Record (GMT, &file[first], &MC, &H)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error reading header sequence for cruise %s\n", &file[first]);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading header sequence for cruise %s\n", &file[first]);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
@@ -917,12 +917,12 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 	strcpy (s->path, MC.path);
 
 	if (MGD77_Read_Header_Record (GMT, &file[first], &MC, &S->H)) {	/* Returns info on all columns */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_mgd77ncfile: Error reading header sequence for cruise %s\n", &file[first]);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_mgd77ncfile: Failure while reading header sequence for cruise %s\n", &file[first]);
      		return (GMT_GRDIO_READ_FAILED);
 	}
 
 	if (MGD77_Read_Data (GMT, &file[first], &MC, S)) {	/* Only gets the specified columns and barfs otherwise */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_mgd77ncfile: Error reading data set for cruise %s\n", &file[first]);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_mgd77ncfile: Failure while reading data set for cruise %s\n", &file[first]);
      		return (GMT_GRDIO_READ_FAILED);
 	}
 	MGD77_Close_File (GMT, &MC);
@@ -973,7 +973,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 	gmt_parse_common_options (GMT, "b", 'b', "c");	/* Tell GMT this is a netCDF file */
 
 	if ((fp = gmt_fopen (GMT, path, "r")) == NULL)  {	/* Error in opening file */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_ncfile: Error opening file %s\n", &file[first]);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_ncfile: Failure while opening file %s\n", &file[first]);
      		return (GMT_GRDIO_READ_FAILED);
 	}
 
@@ -982,7 +982,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 
 	for (j = 0; j < GMT->current.io.ndim; j++) {
 		if ((in = GMT->current.io.input (GMT, fp, &n_expect, &n_fields)) == NULL || n_fields != ns) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_ncfile: Error reading file %s at record %d\n", &file[first], j);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_ncfile: Failure while reading file %s at record %d\n", &file[first], j);
 			for (i = 0; i < s->n_out_columns; i++) gmt_M_free (GMT, z[i]);
 			gmt_M_free (GMT, z);
 			gmt_fclose (GMT, fp);
@@ -1054,7 +1054,7 @@ int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double *
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		gmt_chop (line);	/* Remove trailing CR or LF */
 		if (sscanf (line, "%s %lg", name, &this_w) != 2) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_weights : Error parsing file %s near line %d\n", file, n);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "x2sys_read_weights : Failure while parsing file %s near line %d\n", file, n);
 			fclose (fp);
 			for (k = 0; k < n; k++) free (p[k]);
 			gmt_M_free (GMT, p);
@@ -1127,7 +1127,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 						gmt_M_memcpy (save_R_wesn, GMT->common.R.wesn, 4, double);	/* Save command-line -R values */
 					}
 					if (gmt_parse_common_options (GMT, "R", 'R', &p[2])) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error processing %s setting in %s!\n", &p[1], tag_file);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while processing %s setting in %s!\n", &p[1], tag_file);
 						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
@@ -1155,7 +1155,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					if (p[2] == 'g') dist_flag = 2;
 					if (p[2] == 'e') dist_flag = 3;
 					if (dist_flag < 0 || dist_flag > 3) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error processing %s setting in %s!\n", &p[1], tag_file);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while processing %s setting in %s!\n", &p[1], tag_file);
 						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (X2SYS_BAD_ARG);
 					}
@@ -1174,7 +1174,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					break;
 				case 'I':
 					if (gmt_getinc (GMT, &p[2], B->inc)) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error processing %s setting in %s!\n", &p[1], tag_file);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while processing %s setting in %s!\n", &p[1], tag_file);
 						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
@@ -1188,7 +1188,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 							k = X2SYS_SPEED_SELECTION;
 							break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error processing %s setting in %s!\n", &p[1], tag_file);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while processing %s setting in %s!\n", &p[1], tag_file);
 							x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 							return (X2SYS_BAD_ARG);
 							break;
@@ -1196,7 +1196,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					if (k == X2SYS_DIST_SELECTION || k == X2SYS_SPEED_SELECTION) {
 						unit[k][0] = p[3];
 						if (!strchr ("cefkMn", (int)unit[k][0])) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error processing %s setting in %s!\n", &p[1], tag_file);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while processing %s setting in %s!\n", &p[1], tag_file);
 							x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 							return (X2SYS_BAD_ARG);
 						}
@@ -1228,11 +1228,11 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 	x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 
 	if (B->time_gap <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -Wt: maximum gap must be > 0!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Wt: maximum gap must be > 0!\n");
 		return (X2SYS_BAD_ARG);
 	}
 	if (B->dist_gap <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error -Wd: maximum gap must be > 0!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Wd: maximum gap must be > 0!\n");
 		return (X2SYS_BAD_ARG);
 	}
 
@@ -1562,7 +1562,7 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 
 	/* Add cache dir, if set */
 
-	if (GMT->session.CACHEDIR) {
+	if (GMT->session.CACHEDIR && n_x2sys_paths < MAX_DATA_PATHS) {
 		x2sys_datadir[n_x2sys_paths] = gmt_M_memory (GMT, NULL, strlen (GMT->session.CACHEDIR)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], GMT->session.CACHEDIR);
 		n_x2sys_paths++;

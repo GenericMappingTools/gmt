@@ -175,7 +175,7 @@ GMT_LOCAL void grdio_grd_parse_xy_units (struct GMT_CTRL *GMT, struct GMT_GRID_H
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmtlib_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
 		return;
 	}
 	/* Got a valid unit */
@@ -932,7 +932,7 @@ void gmt_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (! (desired_mode == GMT_GRID_IS_INTERLEAVED || desired_mode == GMT_GRID_IS_SERIAL)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_mux_demux called with inappropriate mode - skipped.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_grd_mux_demux called with inappropriate mode - skipped.\n");
 		return;
 	}
 	if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) return;	/* Nuthin' to do */
@@ -1303,6 +1303,7 @@ GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 	unsigned int side;
 	static char *type[2] = {"longitude", "latitude"};
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call doctor_geo_increments on a geographic grid\n");
 	for (side = GMT_X; side <= GMT_Y; side++) {	/* Check both increments */
 		scale = (header->inc[side] < GMT_MIN2DEG) ? 3600.0 : 60.0;	/* Check for clean multiples of minutes or seconds */
 		inc = header->inc[side] * scale;
@@ -1327,7 +1328,7 @@ GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEA
 	double norm_v, round_v, d, slop;
 	static char *type[4] = {"xmin", "xmax", "ymin", "ymax"};
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Correct any slop in geographic increments */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && (header->wesn[XHI] - header->wesn[XLO] - header->inc[GMT_X]) <= 360.0) {	/* Correct any slop in geographic increments */
 		doctor_geo_increments (GMT, header);
 		if ((header->wesn[YLO]+90.0) < (-GMT_CONV4_LIMIT*header->inc[GMT_Y]))
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Round-off patrol found south latitude outside valid range (%.16g)!\n", header->wesn[YLO]);
@@ -1414,10 +1415,6 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	/* unpack z-range: */
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
-#ifdef GMT_BACKWARDS_API
-	header->nx = header->n_columns;
-	header->ny = header->n_rows;
-#endif
 
 	return (GMT_NOERROR);
 }
@@ -1528,7 +1525,7 @@ size_t gmt_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloa
 			break;
 		case 'i':
 			if (isnan (*nan_value)) *nan_value = INT_MIN;
-			/* Fall through on purpose */
+			/* Intentionally fall through */
 		case 'm':
 			return (sizeof (int32_t));
 			break;
@@ -1927,10 +1924,6 @@ void gmt_set_grddim (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	h->size = gmt_grd_get_size (h);	/* Sets the number of items (not bytes!) needed to hold this array, which includes the padding (size >= nm) */
 	h->xy_off = 0.5 * h->registration;
 	gmt_set_grdinc (GMT, h);
-#ifdef GMT_BACKWARDS_API
-	h->nx = h->n_columns;
-	h->ny = h->n_rows;
-#endif
 }
 
 void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, bool update) {

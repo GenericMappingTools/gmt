@@ -80,7 +80,7 @@ struct GMTSPATIAL_CTRL {
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -Aa<min_dist>[unit], -A[unit] */
+	struct A {	/* -Aa<min_dist>, -A */
 		bool active;
 		unsigned int mode;
 		int smode;
@@ -743,9 +743,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT);
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<cpol>]] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -797,7 +797,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to consider all input as polygons and close them if necessary\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [only closed polygons are considered polygons].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to consider all input as lines even if closed [closed polygons are considered polygons].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to sort segments based on area or length; append descending [ascending].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to sort segments based on area or length; append a for ascending or d for descending [ascending].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default only reports results to stdout].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Spatial manipulation of polygons; choose among:\n");
@@ -884,7 +884,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 							break;
 						case 'C':	/* Gave a new +C<cmax> value */
 							Ctrl->D.I.mode = 1;	/* Median instead of mean */
-							/* Fall through on purpose */
+							/* Intentionally fall through */
 						case 'c':	/* Gave a new +c<cmax> value */
 							if (p[1]) Ctrl->D.I.c_threshold = atof (&p[1]);	/* This allows +C by itself just to change to median */
 							break;
@@ -960,18 +960,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 			case 'Q':	/* Measure area/length and handedness of polygons */
 				Ctrl->Q.active = true;
 				s = opt->arg;
-				if (s[0] && strchr ("-+", s[0]) && strchr (GMT_LEN_UNITS, s[1])) {	/* Since [-|+] is deprecated as of GMT 6 */
+				/* Handle +sa|d versus +s for deprecated ellipsoidal arc seconds */
+				if (s[0] && !strcmp (s, "+s") && (s[2] == '\0' || !strchr ("ad", s[2]))) {	/* Since [-|+] is deprecated as of GMT 6 we must assume this is +s[a] */
+					GMT_Report (API, GMT_MSG_WARNING, "-Q+s is assumed to mean -A+sa.  If you meant ellipsoidal arc second distances then use -Qs -je\n");
+				}
+				else if (s[0] && strchr ("-+", s[0]) && strchr (GMT_LEN_UNITS, s[1])) {	/* Since [-|+] is deprecated as of GMT 6 */
 					if (gmt_M_compat_check (GMT, 6))
 						GMT_Report (API, GMT_MSG_COMPAT, "Leading -|+ with unit to set flat Earth or ellipsoidal mode is deprecated; use -j<mode> instead\n");
 					else {
 						GMT_Report (API, GMT_MSG_ERROR, "Signed unit is not allowed - ignored\n");
 						n_errors++;
 					}
+
 				}
-				if (s[0] == '-' && strchr (GMT_LEN_UNITS, s[1])) {	/* Flat earth distances */
+				if (s[0] == '-' && strchr (GMT_LEN_UNITS, s[1])) {	/* Flat earth distances [deprecated; use -j instead] */
 					Ctrl->Q.dmode = 1;	Ctrl->Q.unit = s[1];	s += 2;
 				}
-				else if (s[0] == '+' && strchr (GMT_LEN_UNITS, s[1])) {	/* Geodesic distances */
+				else if (s[0] == '+' && s[1] == 's' && (s[2] == '\0' || !strchr ("ad", s[2]))) {	/* Geodesic distances using arc sec [deprecated; use -j instead] */
+					Ctrl->Q.dmode = 3;	Ctrl->Q.unit = s[1];	s += 2;
+				}
+				else if (s[0] == '+' && strchr ("dmefkMnu", s[1])) {	/* Geodesic distances (except arc second) [deprecated; use -j instead] */
 					Ctrl->Q.dmode = 3;	Ctrl->Q.unit = s[1];	s += 2;
 				}
 				else if (s[0] && strchr (GMT_LEN_UNITS, s[0])) {	/* Great circle distances */
@@ -1004,13 +1012,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 								case 'a':	case '\0':	Ctrl->Q.dir = +1;	break;	/* Ascending [Default] */
 								case 'd':	Ctrl->Q.dir = -1;	break;	/* Descending */
 								default:
-									GMT_Report (API, GMT_MSG_ERROR, "Error -Q: Unrecognized direction %c given to modifier +s\n", p[1]);
+									GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Unrecognized direction %c given to modifier +s\n", p[1]);
 									n_errors++;
 									break;
 							}
 							break;
 						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Error -Q: Unrecognized modifier +%c\n", p[0]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Unrecognized modifier +%c\n", p[0]);
 							n_errors++;
 							break;
 					}
@@ -1056,14 +1064,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
  	if (Ctrl->E.active) Ctrl->Q.active = true;
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least %d columns\n", 2);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == POL_CLIP && !Ctrl->T.file && !GMT->common.R.active[RSET], "Syntax error: -T without a polygon requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->T.active && !GMT->common.R.active[RSET], "Syntax error: -C requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !GMT->common.R.active[RSET], "Syntax error: -L requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Syntax error: -L requires a positive cutoff in meters\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D: Cannot read file %s!\n", Ctrl->D.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T: Cannot read file %s!\n", Ctrl->T.file);
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Binary input data (-bi) must have at least %d columns\n", 2);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == POL_CLIP && !Ctrl->T.file && !GMT->common.R.active[RSET], "Option -T without a polygon requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->T.active && !GMT->common.R.active[RSET], "Option -C requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !GMT->common.R.active[RSET], "Option -L requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Option -L requires a positive cutoff in meters\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Option -D: Cannot read file %s!\n", Ctrl->D.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Option -T: Cannot read file %s!\n", Ctrl->T.file);
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

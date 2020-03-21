@@ -144,16 +144,18 @@ Optional Arguments
 
 **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
-    with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see `Units`_ for available
-    units and how distances are computed [great circle using authalic radius]), including
-    **c** (Cartesian distance using input coordinates) or **C**
+    with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see `Units`_
+    for available units and how distances are computed [great circle using authalic
+    radius]), including **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
-    requires **-R** and **-J** to be set. When no fixed point is given
-    we calculate accumulated distances [or by adding **+a**] along the
-    track defined by the input points. Append **+i** to obtain *incremental*
-    distances between successive points, or append both modifiers to get
-    both distance measurements. Alternatively, append **+v** to obtain a
-    *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
+    requires **-R** and **-J** to be set. If no fixed point is given
+    we calculate *accumulated* distances whereas if a fixed point is given
+    we calculate *incremental* distances.  You can override these defaults
+    by adding **+a** for accumulated or **+i** for incremental distances.
+    If both **+a** and **+i** are given we will report both types of distances.
+    Append **+v** to obtain a *variable* 2nd point (*lon0*/*lat0*) via columns
+    3-4 in the input file; this updates the fixed point per record and thus the
+    selection defaults to incremental distances.
     See `Output Order`_ for how **-G** affects the output record.
 
 .. _-I:
@@ -167,7 +169,7 @@ Optional Arguments
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *line.xy*. The distance
     and the coordinates of the nearest point will be appended to the
-    output as three new columns. Append the distance unit (see `Units`_
+    output as three new columns. Append the distance unit via **+u** (see `Units`_
     for available units and how distances are computed [great circle using authalic radius]),
     including **c** (Cartesian distance using input coordinates) or
     **C** (Cartesian distance using projected coordinates). The **C**
@@ -344,7 +346,7 @@ assuming a fixed speed of 12 knots.  We do this with
 
    ::
 
-    gmt mapproject track.txt -Gn+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
+    gmt mapproject track.txt -G+un+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
 
 where :term:`TIME_UNIT` is set to hour so that the speed is
 measured in nm (set by **-G**) per hour (set by :term:`TIME_UNIT`).

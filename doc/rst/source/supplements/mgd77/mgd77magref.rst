@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt mgd77magref** [ *inputfile* ]
-[ |-A|\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**] ]
+[ |-A|\ [**+a**\ *alt*\ ][**+t**\ *date*\ ][**+y**] ]
 [ |-C|\ *cm4file* ]
 [ |-D|\ *Dstfile* ]
 [ |-E|\ *f107file* ]
@@ -78,7 +78,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**]
+**-A**\ [**+a**\ *alt*\ ][**+t**\ *date*\ ][**+y**]
     Adjusts how the input record is interpreted. Append **+a** to set a
     fixed *altitude* (in km) that should apply to all data records
     [Default expects *altitude* to be in the 3rd column of all records].

@@ -10,11 +10,10 @@ Description
 -----------
 
 The following is a list of the parameters that are user-definable in
-GMT. The parameter names are always given in UPPER CASE. The
+GMT. The parameter names are always given in **UPPER CASE**. The
 parameter values are case-insensitive unless otherwise noted. The system
-defaults are given in brackets [ for SI (and US) ]. Those marked **\***
-can be set on the command line as well (the corresponding option is
-given in parentheses). Note that default distances and lengths below are
+defaults are given in brackets [ for SI (or US) ].
+Note that default distances and lengths below are
 given in both cm or inch; the chosen default depends on your choice of
 default unit (see :term:`PROJ_LENGTH_UNIT`). You can explicitly specify
 the unit used for distances and lengths by appending **c** (cm), **i**
@@ -31,32 +30,26 @@ Common Specifications
 The full explanation for how to specify pens, pattern fills, colors, and
 fonts can be found in the :doc:`gmt` man page.
 
+================================= ================
+THEMATIC SUB-SECTIONS             *prefix*
+================================= ================
+`COLOR Parameters`_               **COLOR_**
+`DIR Parameters`_                 **DIR_**
+`FONT Parameters`_                **FONT_**
+`FORMAT Parameters`_              **FORMAT_**
+`GMT Miscellaneous Parameters`_   **GMT_**
+`I/O Parameters`_                 **IO_**
+`MAP Parameters`_                 **MAP_**
+`Projection Parameters`_          **PROJ_**
+`PostScript Parameters`_          **PS_**
+`Calendar/Time Parameters`_       **TIME_**
+================================= ================
 
-+---------------------------------+----------------+
-| THEMATIC SUB-SECTIONS           | *prefix*       |
-+=================================+================+
-| `COLOR Parameters`_             | **COLOR_**     |
-+---------------------------------+----------------+
-| `DIR Parameters`_               | **DIR_**       |
-+---------------------------------+----------------+
-| `FONT Parameters`_              | **FONT_**      |
-+---------------------------------+----------------+
-| `FORMAT Parameters`_            | **FORMAT_**    |
-+---------------------------------+----------------+
-| `GMT Miscellaneous Parameters`_ | **GMT_**       |
-+---------------------------------+----------------+
-| `I/O Parameters`_               | **IO_**        |
-+---------------------------------+----------------+
-| `MAP Parameters`_               | **MAP_**       |
-+---------------------------------+----------------+
-| `Projection Parameters`_        | **PROJ_**      |
-+---------------------------------+----------------+
-| `PostScript Parameters`_        | **PS_**        |
-+---------------------------------+----------------+
-| `Calendar/Time Parameters`_     | **TIME_**      |
-+---------------------------------+----------------+
 
 .. _COLOR Parameters:
+
+COLOR Parameters
+~~~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -85,26 +78,26 @@ fonts can be found in the :doc:`gmt` man page.
         By default, color interpolation takes place directly on the RGB
         values which can produce some unexpected hues, whereas interpolation
         directly on the HSV values better preserves those hues. The choices
-        are: **none** (default: use whatever the COLOR_MODEL setting in the
+        are: **none** (default: use whatever the **COLOR_MODEL** setting in the
         CPT demands), **rgb** (force interpolation in RGB),
         **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
         in CMYK but interpolates in RGB).
 
     **COLOR_NAN**
-        Color used for the non-defined areas of images (i.e., where z == NaN) [127.5].
-
+        Color used for the non-defined areas of images (i.e., where z = NaN) [127.5].
 
 .. _DIR Parameters:
+
+DIR Parameters
+~~~~~~~~~~~~~~
 
 .. glossary::
 
     **DIR_CACHE**
-        Cache directory where we save files downloaded when using external URL addresses, the
-        files called **@earth_relief_**\ *res*\ **.grd** or other remote filenames starting
-        in @ (e.g., @hotspots.txt) [~/.gmt].
+        Cache directory where we save remote filenames starting in **@** (e.g., @hotspots.txt) [~/.gmt/cache].
 
     **DIR_DATA**
-        Session data dir. Overrides the value of the environment variable **$GMT_DATADIR**
+        Session data directory. Overrides the value of the environment variable **$GMT_DATADIR**
         (see :ref:`Directory parameters` in the CookBook).
 
     **DIR_DCW**
@@ -114,6 +107,9 @@ fonts can be found in the :doc:`gmt` man page.
         Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
 
 .. _FONT Parameters:
+
+FONT Parameters
+~~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -152,6 +148,9 @@ fonts can be found in the :doc:`gmt` man page.
         Font to use when plotting titles over graphs [24p,Helvetica,black].
 
 .. _FORMAT Parameters:
+
+FORMAT Parameters
+~~~~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -244,27 +243,16 @@ fonts can be found in the :doc:`gmt` man page.
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
-        +D Output longitude in the range [0,360]
-
-        -D Output longitude in the range [-360,0]
-
-        D Use :term:`FORMAT_FLOAT_OUT` for floating point degrees.
-
-        ddd Fixed format integer degrees
-
-        : delimiter used
-
-        mm Fixed format integer arc minutes
-
-        ss Fixed format integer arc seconds
-
-        .xxx Floating fraction of previous integer field, fixed width.
-
-        F Encode sign using WESN suffix
-
-        G Same as F but with a leading space before suffix
-
-        The default is D.
+        - **D**: Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default].
+        - **+D**: Output longitude in the range [0,360]
+        - **-D**: Output longitude in the range [-360,0]
+        - **ddd**: Fixed format integer degrees
+        - **:**: delimiter used
+        - **mm**: Fixed format integer arc minutes
+        - **ss**: Fixed format integer arc seconds
+        - **.xxx**: Floating fraction of previous integer field, fixed width.
+        - **F**: Encode sign using WESN suffix
+        - **G**: Same as **F** but with a leading space before suffix
 
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax) to be used when plotting double
@@ -307,6 +295,9 @@ fonts can be found in the :doc:`gmt` man page.
 
 .. _GMT Miscellaneous Parameters:
 
+GMT Miscellaneous Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. glossary::
 
     **GMT_AUTO_DOWNLOAD**
@@ -315,10 +306,11 @@ fonts can be found in the :doc:`gmt` man page.
         is *on* but you can turn this off by setting it to *off*.
 
     **GMT_COMPATIBILITY**
-        Determines if this GMT version should be able to parse command-line
-        options for a prior major release.  Specify either 4 or 5. If 4 is
-        set we will parse obsolete GMT 4 options and issue warnings; if 5
-        is set then parsing GMT 4 only syntax will result in errors [4].
+        Determines if the current GMT version should be able to parse command-line
+        options for a prior major release.  Specify the major release version number,
+        e.g., 4-6. If 4 is set we will parse obsolete GMT 4 options and issue warnings; if 5
+        is set then parsing GMT 4 only syntax will result in errors [4]; likewise
+        for 6: obsolete syntax from early GMT 5 will be considered errors.
 
     **GMT_DATA_SERVER**
         Address of the data directory on the remote server [The SOEST server].
@@ -363,12 +355,12 @@ fonts can be found in the :doc:`gmt` man page.
         FFTW can "learn" how to optimally compute Fourier transforms on the
         current hardware and OS by computing several FFTs and measuring
         their execution time. This so gained "Wisdom" will be stored in and
-        reloaded from the file fftw_wisdom_<hostname> in $GMT_USERDIR or, if
-        $GMT_USERDIR is not writable, in the current directory. To use this
+        reloaded from the file fftw_wisdom_<hostname> in **$GMT_USERDIR** or, if
+        **$GMT_USERDIR** is not writable, in the current directory. To use this
         feature append *planner_flag*, which can be one of *measure*,
         *patient*, and *exhaustive*; see FFTW reference for details. The
         default FFTW planner flag is *estimate*, i.e., pick a (probably
-        sub-optimal) plan quickly. Note: if you need a single transform of a
+        sub-optimal) plan quickly. **Note**: If you need a single transform of a
         given size only, the one-time cost of the smart planner becomes
         significant. In that case, stick to the default planner, *estimate*,
         based on heuristics.
@@ -391,40 +383,43 @@ fonts can be found in the :doc:`gmt` man page.
         Language to use when plotting calendar and map items such as months and
         days, map annotations and cardinal points. Select from:
 
-        * CN1 Simplified Chinese
-        * CN2 Traditional Chinese
-        * DE German
-        * DK Danish
-        * EH Basque
-        * ES Spanish
-        * FI Finnish
-        * FR French
-        * GR Greek
-        * HI Hawaiian
-        * HU Hungarian
-        * IE Irish
-        * IL Hebrew
-        * IS Icelandic
-        * IT Italian
-        * JP Japanese
-        * KR Korean
-        * NL Dutch
-        * NO Norwegian
-        * PL Polish
-        * PT Portuguese
-        * RU Russian
-        * SE Swedish
-        * SG Scottish Gaelic
-        * TO Tongan
-        * TR Turkish
-        * UK British English
-        * US US English
+        .. hlist::
+           :columns: 3
+
+           - *CN1*: Simplified Chinese
+           - *CN2*: Traditional Chinese
+           - *DE*: German
+           - *DK*: Danish
+           - *EH*: Basque
+           - *ES*: Spanish
+           - *FI*: Finnish
+           - *FR*: French
+           - *GR*: Greek
+           - *HI*: Hawaiian
+           - *HU*: Hungarian
+           - *IE*: Irish
+           - *IL*: Hebrew
+           - *IS*: Icelandic
+           - *IT*: Italian
+           - *JP*: Japanese
+           - *KR*: Korean
+           - *NL*: Dutch
+           - *NO*: Norwegian
+           - *PL*: Polish
+           - *PT*: Portuguese
+           - *RU*: Russian
+           - *SE*: Swedish
+           - *SG*: Scottish Gaelic
+           - *TO*: Tongan
+           - *TR*: Turkish
+           - *UK*: British English
+           - *US*: US English
 
         If your language is not supported, please examine the
         **$GMT_SHAREDIR**/localization/gmt_us.locale file and make a similar file. Please
         submit it to the GMT Developers for official inclusion. Custom
         language files can be placed in directories **$GMT_SHAREDIR**/localization
-        or ~/.gmt. Note: Some of these languages may require you to also
+        or ~/.gmt. **Note**: Some of these languages may require you to also
         change the :term:`PS_CHAR_ENCODING` setting.
 
     **GMT_TRIANGULATE**
@@ -441,6 +436,9 @@ fonts can be found in the :doc:`gmt` man page.
         **c**\ ompatibility warnings, and **d**\ ebugging messages [**w**].
 
 .. _I/O Parameters:
+
+I/O Parameters
+~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -489,7 +487,7 @@ fonts can be found in the :doc:`gmt` man page.
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [0].
-        Note: This will skip the specified number of records regardless of
+        **Note**: This will skip the specified number of records regardless of
         what they are.  Since any records starting with # is automatically
         considered a header you will only specify a non-zero number in order
         to skip headers that do not conform to that convention.
@@ -551,6 +549,9 @@ fonts can be found in the :doc:`gmt` man page.
         backslash.
 
 .. _MAP Parameters:
+
+MAP Parameters
+~~~~~~~~~~~~~~
 
 .. glossary::
 
@@ -635,8 +636,8 @@ fonts can be found in the :doc:`gmt` man page.
         also choose **graph**\ , which adds a vector to the end of each axis.
         This works best when you reduce the number of axes plotted to one
         per dimension.  By default, the vector tip extends the length of each
-        axis by 7.5%. Alternatively, append ,\ *length*\ [**u**], where **u**
-        can be % (then *length* is the alternate extension in percent) or one
+        axis by 7.5%. Alternatively, append ,\ *length*, where the optional *unit*
+        may be % (then *length* is the alternate extension in percent) or one
         of **c**, **i**, or **p** (then *length* is the absolute extension
         of the axis to the start of the vector base instead).  The vector stem
         is set to match :term:`MAP_FRAME_WIDTH`, while the vector
@@ -644,7 +645,7 @@ fonts can be found in the :doc:`gmt` man page.
         may control its shape via :term:`MAP_VECTOR_SHAPE`.
 
     **MAP_FRAME_WIDTH**
-        Width (> 0) of map borders for fancy map frame [5p]. Note: For fancy
+        Width (> 0) of map borders for fancy map frame [5p]. **Note**: For fancy
         frames, :term:`MAP_FRAME_PEN` is automatically set to 0.1 times the
         :term:`MAP_FRAME_WIDTH` setting.
 
@@ -684,8 +685,8 @@ fonts can be found in the :doc:`gmt` man page.
 
     **MAP_LOGO_POS**
         (**-U**) Sets the justification and the position of the
-        logo/timestamp box relative to the current plots lower left corner
-        of the plot [+jBL+o-54p/-54p].
+        logo/timestamp box relative to the current plot's lower left corner
+        (i.e., map origin) [BL/-54p/-54p].
 
     **MAP_ORIGIN_X**
         (**-X**) Sets the x-coordinate of the origin on the paper for a
@@ -751,6 +752,9 @@ fonts can be found in the :doc:`gmt` man page.
 
 .. _Projection Parameters:
 
+Projection Parameters
+~~~~~~~~~~~~~~~~~~~~~
+
 .. glossary::
 
     **PROJ_AUX_LATITUDE**
@@ -764,82 +768,82 @@ fonts can be found in the :doc:`gmt` man page.
     **PROJ_ELLIPSOID**
         The (case sensitive) name of the ellipsoid used for the map projections [WGS-84]. Choose among:
 
-            *Airy*: Applies to Great Britain (1830)
-            *Airy-Ireland*: Applies to Ireland in 1965 (1830)
-            *Andrae*: Applies to Denmark and Iceland (1876)
-            *APL4.9*: Appl. Physics (1965)
-            *ATS77*: Average Terrestrial System, Canada Maritime provinces (1977)
-            *Australian*: Applies to Australia (1965)
-            *Bessel*: Applies to Central Europe, Chile, Indonesia (1841)
-            *Bessel-Namibia*: Same as Bessel-Schwazeck (1841)
-            *Bessel-NGO1948*: Modified Bessel for NGO 1948 (1841)
-            *Bessel-Schwazeck*: Applies to Namibia (1841)
-            *Clarke-1858*: Clarke's early ellipsoid (1858)
-            *Clarke-1866*: Applies to North America, the Philippines (1866)
-            *Clarke-1866-Michigan*: Modified Clarke-1866 for Michigan (1866)
-            *Clarke-1880*: Applies to most of Africa, France (1880)
-            *Clarke-1880-Arc1950*: Modified Clarke-1880 for Arc 1950 (1880)
-            *Clarke-1880-IGN*: Modified Clarke-1880 for IGN (1880)
-            *Clarke-1880-Jamaica*: Modified Clarke-1880 for Jamaica (1880)
-            *Clarke-1880-Merchich*: Modified Clarke-1880 for Merchich (1880)
-            *Clarke-1880-Palestine*: Modified Clarke-1880 for Palestine (1880)
-            *CPM*: Comm. des Poids et Mesures, France (1799)
-            *Delambre*: Applies to Belgium (1810)
-            *Engelis*: Goddard Earth Models (1985)
-            *Everest-1830*: India, Burma, Pakistan, Afghanistan, Thailand (1830)
-            *Everest-1830-Kalianpur*: Modified Everest for Kalianpur (1956) (1830)
-            *Everest-1830-Kertau*: Modified Everest for Kertau, Malaysia & Singapore (1830)
-            *Everest-1830-Pakistan*: Modified Everest for Pakistan (1830)
-            *Everest-1830-Timbalai*: Modified Everest for Timbalai, Sabah Sarawak (1830)
-            *Fischer-1960*: Used by NASA for Mercury program (1960)
-            *Fischer-1960-SouthAsia*: Same as Modified-Fischer-1960 (1960)
-            *Fischer-1968*: Used by NASA for Mercury program (1968)
-            *FlatEarth*: As Sphere, but implies fast "Flat Earth" distance calculations (1984)
-            *GRS-67*: International Geodetic Reference System (1967)
-            *GRS-80*: International Geodetic Reference System (1980)
-            *Hayford-1909*: Same as the International 1924 (1909)
-            *Helmert-1906*: Applies to Egypt (1906)
-            *Hough*: Applies to the Marshall Islands (1960)
-            *Hughes-1980*: Hughes Aircraft Company for DMSP SSM/I grid products (1980)
-            *IAG-75*: International Association of Geodesy (1975)
-            *Indonesian*: Applies to Indonesia (1974)
-            *International-1924*: Worldwide use (1924)
-            *International-1967*: Worldwide use (1967)
-            *Kaula*: From satellite tracking (1961)
-            *Krassovsky*: Used in the (now former) Soviet Union (1940)
-            *Lerch*: For geoid modeling (1979)
-            *Maupertius*: Really old ellipsoid used in France (1738)
-            *Mercury-1960*: Same as Fischer-1960 (1960)
-            *MERIT-83*: United States Naval Observatory (1983)
-            *Modified-Airy*: Same as Airy-Ireland (1830)
-            *Modified-Fischer-1960*: Applies to Singapore (1960)
-            *Modified-Mercury-1968*: Same as Fischer-1968 (1968)
-            *NWL-10D*: Naval Weapons Lab (Same as WGS-72) (1972)
-            *NWL-9D*: Naval Weapons Lab (Same as WGS-66) (1966)
-            *OSU86F*: Ohio State University (1986)
-            *OSU91A*: Ohio State University (1991)
-            *Plessis*: Old ellipsoid used in France (1817)
-            *SGS-85*: Soviet Geodetic System (1985)
-            *South-American*: Applies to South America (1969)
-            *Sphere*: The mean radius in WGS-84 (for spherical/plate tectonics applications) (1984)
-            *Struve*: Friedrich Georg Wilhelm Struve (1860)
-            *TOPEX*: Used commonly for altimetry (1990)
-            *Walbeck*: First least squares solution by Finnish astronomer (1819)
-            *War-Office*: Developed by G. T. McCaw (1926)
-            *WGS-60*: World Geodetic System (1960)
-            *WGS-66*: World Geodetic System (1966)
-            *WGS-72*: World Geodetic System (1972)
-            *WGS-84*: World Geodetic System [Default] (1984)
-            *Web-Mercator*: Spherical Mercator with WGS-84 radius (1984)
-            *Moon*: Moon (IAU2000) (2000)
-            *Mercury*: Mercury (IAU2000) (2000)
-            *Venus*: Venus (IAU2000) (2000)
-            *Mars*: Mars (IAU2000) (2000)
-            *Jupiter*: Jupiter (IAU2000) (2000)
-            *Saturn*: Saturn (IAU2000) (2000)
-            *Uranus*: Uranus (IAU2000) (2000)
-            *Neptune*: Neptune (IAU2000) (2000)
-            *Pluto*: Pluto (IAU2000) (2000)
+        - *Airy*: Applies to Great Britain (1830)
+        - *Airy-Ireland*: Applies to Ireland in 1965 (1830)
+        - *Andrae*: Applies to Denmark and Iceland (1876)
+        - *APL4.9*: Appl. Physics (1965)
+        - *ATS77*: Average Terrestrial System, Canada Maritime provinces (1977)
+        - *Australian*: Applies to Australia (1965)
+        - *Bessel*: Applies to Central Europe, Chile, Indonesia (1841)
+        - *Bessel-Namibia*: Same as Bessel-Schwazeck (1841)
+        - *Bessel-NGO1948*: Modified Bessel for NGO 1948 (1841)
+        - *Bessel-Schwazeck*: Applies to Namibia (1841)
+        - *Clarke-1858*: Clarke's early ellipsoid (1858)
+        - *Clarke-1866*: Applies to North America, the Philippines (1866)
+        - *Clarke-1866-Michigan*: Modified Clarke-1866 for Michigan (1866)
+        - *Clarke-1880*: Applies to most of Africa, France (1880)
+        - *Clarke-1880-Arc1950*: Modified Clarke-1880 for Arc 1950 (1880)
+        - *Clarke-1880-IGN*: Modified Clarke-1880 for IGN (1880)
+        - *Clarke-1880-Jamaica*: Modified Clarke-1880 for Jamaica (1880)
+        - *Clarke-1880-Merchich*: Modified Clarke-1880 for Merchich (1880)
+        - *Clarke-1880-Palestine*: Modified Clarke-1880 for Palestine (1880)
+        - *CPM*: Comm. des Poids et Mesures, France (1799)
+        - *Delambre*: Applies to Belgium (1810)
+        - *Engelis*: Goddard Earth Models (1985)
+        - *Everest-1830*: India, Burma, Pakistan, Afghanistan, Thailand (1830)
+        - *Everest-1830-Kalianpur*: Modified Everest for Kalianpur (1956) (1830)
+        - *Everest-1830-Kertau*: Modified Everest for Kertau, Malaysia & Singapore (1830)
+        - *Everest-1830-Pakistan*: Modified Everest for Pakistan (1830)
+        - *Everest-1830-Timbalai*: Modified Everest for Timbalai, Sabah Sarawak (1830)
+        - *Fischer-1960*: Used by NASA for Mercury program (1960)
+        - *Fischer-1960-SouthAsia*: Same as Modified-Fischer-1960 (1960)
+        - *Fischer-1968*: Used by NASA for Mercury program (1968)
+        - *FlatEarth*: As Sphere, but implies fast "Flat Earth" distance calculations (1984)
+        - *GRS-67*: International Geodetic Reference System (1967)
+        - *GRS-80*: International Geodetic Reference System (1980)
+        - *Hayford-1909*: Same as the International 1924 (1909)
+        - *Helmert-1906*: Applies to Egypt (1906)
+        - *Hough*: Applies to the Marshall Islands (1960)
+        - *Hughes-1980*: Hughes Aircraft Company for DMSP SSM/I grid products (1980)
+        - *IAG-75*: International Association of Geodesy (1975)
+        - *Indonesian*: Applies to Indonesia (1974)
+        - *International-1924*: Worldwide use (1924)
+        - *International-1967*: Worldwide use (1967)
+        - *Kaula*: From satellite tracking (1961)
+        - *Krassovsky*: Used in the (now former) Soviet Union (1940)
+        - *Lerch*: For geoid modeling (1979)
+        - *Maupertius*: Really old ellipsoid used in France (1738)
+        - *Mercury-1960*: Same as Fischer-1960 (1960)
+        - *MERIT-83*: United States Naval Observatory (1983)
+        - *Modified-Airy*: Same as Airy-Ireland (1830)
+        - *Modified-Fischer-1960*: Applies to Singapore (1960)
+        - *Modified-Mercury-1968*: Same as Fischer-1968 (1968)
+        - *NWL-10D*: Naval Weapons Lab (Same as WGS-72) (1972)
+        - *NWL-9D*: Naval Weapons Lab (Same as WGS-66) (1966)
+        - *OSU86F*: Ohio State University (1986)
+        - *OSU91A*: Ohio State University (1991)
+        - *Plessis*: Old ellipsoid used in France (1817)
+        - *SGS-85*: Soviet Geodetic System (1985)
+        - *South-American*: Applies to South America (1969)
+        - *Sphere*: The mean radius in WGS-84 (for spherical/plate tectonics applications) (1984)
+        - *Struve*: Friedrich Georg Wilhelm Struve (1860)
+        - *TOPEX*: Used commonly for altimetry (1990)
+        - *Walbeck*: First least squares solution by Finnish astronomer (1819)
+        - *War-Office*: Developed by G. T. McCaw (1926)
+        - *WGS-60*: World Geodetic System (1960)
+        - *WGS-66*: World Geodetic System (1966)
+        - *WGS-72*: World Geodetic System (1972)
+        - *WGS-84*: World Geodetic System [Default] (1984)
+        - *Web-Mercator*: Spherical Mercator with WGS-84 radius (1984)
+        - *Moon*: Moon (IAU2000) (2000)
+        - *Mercury*: Mercury (IAU2000) (2000)
+        - *Venus*: Venus (IAU2000) (2000)
+        - *Mars*: Mars (IAU2000) (2000)
+        - *Jupiter*: Jupiter (IAU2000) (2000)
+        - *Saturn*: Saturn (IAU2000) (2000)
+        - *Uranus*: Uranus (IAU2000) (2000)
+        - *Neptune*: Neptune (IAU2000) (2000)
+        - *Pluto*: Pluto (IAU2000) (2000)
 
         Note that for some global projections, GMT may use a spherical
         approximation of the ellipsoid chosen, setting the flattening to
@@ -890,6 +894,9 @@ fonts can be found in the :doc:`gmt` man page.
 
 .. _PostScript Parameters:
 
+PostScript Parameters
+~~~~~~~~~~~~~~~~~~~~~
+
 .. glossary::
 
     **PS_CHAR_ENCODING**
@@ -898,7 +905,7 @@ fonts can be found in the :doc:`gmt` man page.
         that the PostScript output generates the correct characters on the
         plot. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
         ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
-        Appendix F for details [ISOLatin1+ (or Standard+)].  Note: Normally
+        Appendix F for details [ISOLatin1+ (or Standard+)].  **Note**: Normally
         the character set is written as part of the PostScript header.  If
         you need to switch to another character set for a later overlay then
         you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line and
@@ -955,39 +962,27 @@ fonts can be found in the :doc:`gmt` man page.
         if a specific media size is desired then the :term:`PS_MEDIA` may be specified as well.
         The following formats (and their widths and heights in points) are recognized:
 
-        Media width height
-
-        * A0 2380 3368
-        * A1 1684 2380
-        * A2 1190 1684
-        * A3 842 1190
-        * A4 595 842
-        * A5 421 595
-        * A6 297 421
-        * A7 210 297
-        * A8 148 210
-        * A9 105 148
-        * A10 74 105
-        * B0 2836 4008
-        * B1 2004 2836
-        * B2 1418 2004
-        * B3 1002 1418
-        * B4 709 1002
-        * B5 501 709
-        * archA 648 864
-        * archB 864 1296
-        * archC 1296 1728
-        * archD 1728 2592
-        * archE 2592 3456
-        * flsa 612 936
-        * halfletter 396 612
-        * statement 396 612
-        * note 540 720
-        * letter 612 792
-        * legal 612 1008
-        * 11x17 792 1224
-        * tabloid 792 1224
-        * ledger 1224 792
+        ======== ======== ======== ========== ======== ========
+        Media    width    height   Media      width    height
+        ======== ======== ======== ========== ======== ========
+        A0       2380     3368     archA        648     864
+        A1       1684     2380     archB        864     1296
+        A2       1190     1684     archC        1296    1728
+        A3       842      1190     archD        1728    2592
+        A4       595      842      archE        2592    3456
+        A5       421      595      flsa         612     936
+        A6       297      421      halfletter   396     612
+        A7       210      297      statement    396     612
+        A8       148      210      note         540     720
+        A9       105      148      letter       612     792
+        A10      74       105      legal        612     1008
+        B0       2836     4008     11x17        792     1224
+        B1       2004     2836     tabloid      792     1224
+        B2       1418     2004     ledger       1224    792
+        B3       1002     1418
+        B4       709      1002
+        B5       501      709
+        ======== ======== ======== ========== ======== ========
 
         For a completely custom format (e.g., for large format plotters) you
         may also specify WxH, where W and H are in points unless you append
@@ -1030,6 +1025,9 @@ fonts can be found in the :doc:`gmt` man page.
 
 .. _Calendar/Time Parameters:
 
+Calendar/Time Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. glossary::
 
     **TIME_EPOCH**
@@ -1048,13 +1046,13 @@ fonts can be found in the :doc:`gmt` man page.
     **TIME_IS_INTERVAL**
         Used when input calendar data should be truncated and adjusted to
         the middle of the relevant interval. In the following discussion,
-        the unit **u** can be one of these time units: (**y** year, **o**
+        the unit *unit* can be one of these time units: (**y** year, **o**
         month, **u** ISO week, **d** day, **h** hour, **m** minute, and
         **s** second). **TIME_IS_INTERVAL** can have any of the following
         three values: (1) OFF [Default]. No adjustment, time is decoded as
-        given. (2) +\ *n*\ **u**. Activate interval adjustment for input by
+        given. (2) +\ *n*\ *unit*. Activate interval adjustment for input by
         truncate to previous whole number of *n* units and then center time
-        on the following interval. (3) -*n*\ **u**. Same, but center time on
+        on the following interval. (3) -*n*\ *unit*. Same, but center time on
         the previous interval. For example, with **TIME_IS_INTERVAL** =
         +1o, an input data string like 1999-12 will be interpreted to mean
         1999-12-15T12:00:00.0 (exactly middle of December), while if
@@ -1073,19 +1071,17 @@ fonts can be found in the :doc:`gmt` man page.
         units are. Choose from one of the preset systems below (epoch and
         units are indicated):
 
-        JD -4713-11-25T12:00:00 d (Julian Date)
-
-        MJD 1858-11-17T00:00:00 d (Modified Julian Date)
-
-        J2000 2000-01-01T12:00:00 d (Astronomical time)
-
-        S1985 1985-01-01T00:00:00 s (Altimetric time)
-
-        UNIX 1970-01-01T00:00:00 s (UNIX time)
-
-        RD0001 0001-01-01T00:00:00 s
-
-        RATA 0000-12-31T00:00:00 d
+        ============ ====================== =========== =====================
+        TIME_SYSTEM  TIME_EPOCH             TIME_UNIT   Notes
+        ============ ====================== =========== =====================
+        JD           -4713-11-25T12:00:00   d           Julian Date
+        MJD          1858-11-17T00:00:00    d           Modified Julian Date
+        J2000        2000-01-01T12:00:00    d           Astronomical time
+        S1985        1985-01-01T00:00:00    s           Altimetric time
+        UNIX         1970-01-01T00:00:00    s           UNIX time
+        RD0001       0001-01-01T00:00:00    s
+        RATA         0000-12-31T00:00:00    d
+        ============ ====================== =========== =====================
 
         This parameter is not stored in the **gmt.conf** file but is
         translated to the respective values of :term:`TIME_EPOCH` and

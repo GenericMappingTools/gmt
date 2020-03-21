@@ -217,4 +217,15 @@ struct OGR_FEATURES {
 	double *x, *y, *z;
 };
 
+struct GMT_GDALLIBRARIFIED_CTRL {
+	char *fname_in;			/* Input file name */
+	char *fname_out;		/* Output file name */
+	char *opts;				/* A string with GDAL options in GDAL syntax */
+	char *dem_method;		/* The method name for gdaldem */
+	char *dem_cpt;			/* A CPT name to use in gdaldem color-relief method */
+	struct GD_GL_M {		/* If true, write grid with GMT */
+		bool write_gdal, read_gdal;
+	} M;
+};
+
 #endif  /* GMT_GDALREAD_H */

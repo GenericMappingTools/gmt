@@ -11,7 +11,7 @@ plat=40S
 # Centered
 w2=$(gmt math -Q $w 2 DIV =)
 h2=$(gmt math -Q $h 2 DIV =)
-R=-Rk-${w2}/$w2/-${h2}/$h2
+R=-R-${w2}/$w2/-${h2}/${h2}+uk
 gmt coast $R -JOA$lon/$lat/$az/3i -Ba5f5g5 -Gred -Dh -TdjBR+w0.5i+l+o0.2i/-0.05i --FONT_TITLE=9p --MAP_ANNOT_OBLIQUE=34 --FORMAT_GEO_MAP=dddF
 echo $plon $plat | gmt plot -Sc0.2c -Gblue -W0.25p
 gmt plot -R0/3/0/1.5 -Jx1i -W0.25p,- << EOF
