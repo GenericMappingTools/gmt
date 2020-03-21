@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,13 +26,14 @@
  *  gmt_chop                Chops off any CR or LF at end of string
  *  gmt_chop_ext            Chops off the trailing .xxx (file extension)
  *  gmt_get_ext             Returns a pointer to the tailing .xxx (file extension)
+ *  gmt_strdup_noquote		Duplicates a string but removes any surrounding single or double quotes
  *  gmt_strstrip            Strip leading and trailing whitespace from string
  *  gmt_strlshift           Left shift a string by n characters
  *  gmt_strrepc             Replaces all occurrences of a char in the string
  *  gmt_strrep              Replaces all occurrences of a string s2 in the string s1 by s3
  *  gmt_strlcmp             Compares strings (ignoring case) until first reaches null character
  *  gmt_strtok              Reiterant replacement of strtok
- *  gmt_strtok_m            A Matlab style strtok  
+ *  gmt_strtok_m            A Matlab style strtok
  *  gmt_dos_path_fix        Turn /c/dir/... paths into c:/dir/...
  *  str(n)casecmp           Case-insensitive string comparison functions
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
@@ -58,6 +59,17 @@
 #include "common_string.h"
 
 #define BUF_SIZE 4096
+
+char *gmt_strdup_noquote (const char *file) {
+	size_t last;
+	if (file == NULL) return NULL;	/* No string given */
+	if (file[0] == '\0') return strdup (file);	/* Return empty string */
+	last = strlen (file) - 1;	/* We know here that the string is at least 1 character long, so len is >= 0 */
+	if ((file[0] == '\'' || file[0] == '\"') && (file[last] == '\'' || file[last] == '\"'))	/* Quoted file name */
+		return (strndup (&file[1], last-1));
+	else
+		return (strdup (file));
+}
 
 char *gmt_chop_ext (char *string) {
 	/* Chops off the filename extension (e.g., .ps) in the string by replacing the last
@@ -227,7 +239,7 @@ unsigned int gmt_get_modifier (const char *string, char modifier, char *token) {
 	*/
 	bool quoted = false;
 	size_t k, len, start = 0;
-	
+
 	if (!string || string[0] == 0) return 0;	/* No hope */
 	len = strlen (string);
 	for (k = 0; start == 0 && k < (len-1); k++) {
@@ -763,7 +775,7 @@ char *basename(char *path) {
   * optimizing or adapting the code for your own purposes, make a
   * change that breaks an assumption made downstream by the original code.
   */
- 
+
  char *gmt_strrep(const char *s1, const char *s2, const char *s3) {
 	 size_t s1_len, s2_len, s3_len, count, s1_without_s2_len, newstr_len, i, substr_len, remains;
 	 const char *p, *start_substr, *end_substr;
@@ -776,7 +788,7 @@ char *basename(char *path) {
 	 s2_len = strlen(s2);
 	 if (!s2_len)
 		 return (char *)s1;
- 
+
 	 /*
 	  * Two-pass approach: figure out how much space to allocate for
 	  * the new string, pre-allocate it, then perform replacement(s).
@@ -791,10 +803,10 @@ char *basename(char *path) {
 			 count++;
 		 }
 	 } while (p);
- 
+
 	 if (!count)
 		 return (char *)s1;
- 
+
 	 /*
 	  * The following size arithmetic is extremely cautious, to guard against size_t overflows.
 	  */
@@ -805,11 +817,11 @@ char *basename(char *path) {
 	 newstr_len = s1_without_s2_len + count * s3_len;
 	 if (s3_len && ((newstr_len <= s1_without_s2_len) || (newstr_len + 1 == 0))) /* Overflow. */
 		 return 0;
-	 
+
 	 newstr = (char *)calloc(newstr_len + 1, sizeof(char)); /* w/ terminator */
 	 if (!newstr)		/* ENOMEM, but no good way to signal it. */
 		 return 0;
-	 
+
 	 dst = newstr;
 	 start_substr = s1;
 	 for (i = 0; i != count; ++i) {
@@ -822,7 +834,7 @@ char *basename(char *path) {
 		 dst += s3_len;
 		 start_substr = end_substr + s2_len;
 	 }
- 
+
 	 /* copy remainder of s1, including trailing '\0' */
 	 remains = s1_len - (start_substr - s1) + 1;
 	 assert(dst + remains == newstr + newstr_len + 1);

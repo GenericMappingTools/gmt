@@ -12,24 +12,24 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77list** *NGDC-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
-[ |-A|\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*\ [**+f**\ ] ]
-[ |-D|\ **A**\ \|\ **a**\ *startdate* ]
-[ |-D|\ **B**\ \|\ **b**\ *stopdate* ]
+**gmt mgd77list** *GEODAS-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
+[ |-A|\ **c**\|\ **d**\|\ **f**\|\ **m**\|\ **t**\ *code*\ [**+f**] ]
+[ |-D|\ **A**\|\ **a**\ *startdate* ]
+[ |-D|\ **B**\|\ **b**\ *stopdate* ]
 [ |-E| ]
 [ |-G|\ **a**\ *startrec* ]
 [ |-G|\ **b**\ *stoprec* ]
 [ |-I|\ *ignore* ]
 [ |-L|\ [*corrtable*] ]
-[ |-N|\ **d**\ \|\ **s**\ *unit* ]
-[ |-Q|\ **a**\ \|\ **c**\ \|\ **v**\ *min*/*max* ]
+[ |-N|\ **d**\|\ **s**\ *unit* ]
+[ |-Q|\ **a**\|\ **c**\|\ **v**\ *min*/*max* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **a**\ *startdist*\ [unit] ]
-[ |-S|\ **b**\ *stopdist*\ [unit] ]
-[ |-T|\ [**m**\ \|\ **e**] ]
+[ |-S|\ **a**\ *startdist* ]
+[ |-S|\ **b**\ *stopdist* ]
+[ |-T|\ [**m**\|\ **e**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *weight* ]
-[ |-Z|\ **n**\ \|\ **p** ]
+[ |-Z|\ **n**\|\ **p** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-j| ]
@@ -51,7 +51,7 @@ your own custom columns, see :doc:`mgd77manage`). The user may extract any
 combination of these parameters, any of 8 computed quantities (distance,
 heading, course-change, velocity, Carter correction, Eotvos correction
 and gravity and magnetic global reference fields), calendar sub-units of
-time (year, month, day, hour, min, sec), the NGDC id, and finally a
+time (year, month, day, hour, min, sec), the GEODAS id, and finally a
 preset weight (see **-W**). A sub-section can be specified by passing
 time- or distance-intervals along track or by selecting a geographical
 region. Finally, each output record may be required to pass any number
@@ -70,7 +70,7 @@ Required Arguments
     parameter abbreviations given in the desired output order. Any
     parameters given in UPPER case must not be NaN in a record for
     output to occur. Unless specified separately, the output format (if
-    ASCII) is controlled by the GMT parameter :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`.
+    ASCII) is controlled by the GMT parameter :term:`FORMAT_FLOAT_OUT`.
     The available column abbreviations for information stored in the
     files (some columns may be NaN) are:
 
@@ -81,21 +81,21 @@ Required Arguments
     **id**
         The survey ID string (leg name).
     **ngdcid**
-        The 8-character NGDC cruise ID string (usually the file prefix).
+        The 8-character NGDC (now NCEI) cruise ID string (usually the file prefix).
     **time**
         Choose between Absolute calendar time (**atime**, the default) in
-        the format dictated by the GMT parameters :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and
-        :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`, Relative time (**rtime**) in the format
-        dictated by the GMT parameters :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` and
-        :ref:`TIME_SYSTEM <TIME_SYSTEM>` (or :ref:`TIME_EPOCH <TIME_EPOCH>` and :ref:`TIME_UNIT <TIME_UNIT>`)), or
+        the format dictated by the GMT parameters :term:`FORMAT_DATE_OUT` and
+        :term:`FORMAT_CLOCK_OUT`, Relative time (**rtime**) in the format
+        dictated by the GMT parameters :term:`FORMAT_FLOAT_OUT` and
+        :term:`TIME_SYSTEM` (or :term:`TIME_EPOCH` and :term:`TIME_UNIT`)), or
         Fractional year (**ytime**) in the format dictated by
-        :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`.
+        :term:`FORMAT_FLOAT_OUT`.
     **lon**
         Longitude in the format dictated by the GMT parameter
-        :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`.
+        :term:`FORMAT_GEO_OUT`.
     **lat**
         Longitude in the format dictated by the GMT parameter
-        :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`.
+        :term:`FORMAT_GEO_OUT`.
     **twt**
         Two-Way Travel time (in s).
     **depth**
@@ -139,7 +139,7 @@ Required Arguments
         Seismic Shot Point Number string.
     **nqc**
         Navigation Quality Code (5 = suspected, by source institution, 6 =
-        suspected, by NGDC, 9 = no problems identified).
+        suspected, by NCEI, 9 = no problems identified).
 
     In addition, the following derived navigational quantities can be requested:
 
@@ -246,7 +246,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*\ [**+f**\ ]
+**-A**\ **c**\|\ **d**\|\ **f**\|\ **m**\|\ **t**\ *code*\ [**+f**]
     By default, corrected depth (**depth**), magnetic residual anomaly
     (**mag**), free-air gravity anomaly (**faa**), and the derived
     quantity Carter depth correction (**carter**) are all output as is
@@ -332,7 +332,7 @@ Optional Arguments
     **x** is the sensor (**2** or **1**) *not* indicated by the
     **msens** data field (defaults to **2** if unspecified).
 
-    **-Amc**\ *offset*\ [*unit*\ ] applies a correction to compensate
+    **-Amc**\ *offset* applies a correction to compensate
     for the fact that the magnetic field was not acquired at the same
     position as the ship's position [i.e., the navigation]. This is
     accomplished by re-interpolating the total magnetic field to what it
@@ -389,12 +389,9 @@ Optional Arguments
     correction table mgd77_corrections.txt in the **$MGD77_HOME**
     directory]. For the format of this file, see CORRECTIONS below.
 
-**-n**
-    Issue a segment header record with cruise ID for each cruise.
-
 .. _-N:
 
-**-Nd**\ \|\ **s**\ *unit*
+**-Nd**\|\ **s**\ *unit*
     Append **d** for distance or **s** for speed, then give the desired
     *unit* as **e** (meter or m/s), **f** (feet or feet/s), **k** (km or
     km/hr), **m** (miles or miles/hr), **n** (nautical miles or knots),
@@ -414,7 +411,7 @@ Optional Arguments
 **-Qv**\ *min*/*max*
     Specify an accepted range (*min*/*max*; or just *min* if there is no
     upper limit) of velocities. Records whose track speed falls outside
-    this range are ignored [0/infinity]. 
+    this range are ignored [0/infinity].
 
 .. _-R:
 
@@ -423,12 +420,12 @@ Optional Arguments
 
 .. _-S:
 
-**-Sa**\ *startdist*\ [unit]
+**-Sa**\ *startdist*
     Do not list data that are less than *startdist* meter along track
     from port of departure. Append **e** for meter, **f** for feet,
     **k** for km, **m** for miles, **n** for nautical miles, or **u**
     for survey feet [Default is 0e (meters)].
-**-Sb**\ *stopdist*\ [unit]
+**-Sb**\ *stopdist*
     Do not list data that are *stopdist* or more meters along track from
     port of departure. Append **e** for meter, **f** for feet, **k** for
     km, **m** for miles, **n** for nautical miles, or **u** for survey
@@ -436,7 +433,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**m**\ \|\ **e**]
+**-T**\ [**m**\|\ **e**]
     Turns OFF the otherwise automatic adjustment of values based on
     correction terms that are stored in the MGD77+ file and used to
     counteract such things as wrong units used by the source institution
@@ -463,10 +460,10 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ **n**\ \|\ **p**
+**-Z**\ **n**\|\ **p**
     Append the sign you want for **depth**, **carter**, and **msd**
     values below sea level (**-Zn** gives negative bathymetry) [Default
-    is **-Zp** for positive down]. 
+    is **-Zp** for positive down].
 
 .. |Add_-bo| replace:: ignored if **-bo** is selected. Likewise,
     string-fields cannot be selected. Note that if time is one of the
@@ -579,7 +576,7 @@ allowed. All correction records are of the form
 
 *cruiseID observation correction*
 
-where *cruiseID* is a NGDC prefix, *observation* is one of the
+where *cruiseID* is a NCEI prefix, *observation* is one of the
 abbreviations for geophysical observations listed under **-F** above,
 and *correction* consists of one or more *term*\ s that will be summed
 up and then **subtracted** from the observation before output. Each

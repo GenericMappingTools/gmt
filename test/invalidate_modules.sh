@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script creates a function for each GMT module which invalidates
@@ -9,7 +9,7 @@
 # executable from the build dir.
 #
 
-gmt_modules=`gmt --show-modules`
+gmt_modules=$(gmt --show-classic)
 
 for module in ${gmt_modules}; do
   eval "function ${module} () { false; }"

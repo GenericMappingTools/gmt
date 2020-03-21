@@ -3,22 +3,22 @@ Segment Header Parsing
 
 Segment header records may contain one of more of the following options:
 
-**-G**\ *fill* 
+**-G**\ *fill*
     Use the new *fill* and turn filling on
-**-G-** 
+**-G-**
     Turn filling off
-**-G** 
+**-G**
     Revert to default fill (none if not set on command line)
-**-W**\ *pen* 
+**-W**\ *pen*
     Use the new *pen* and turn outline on
-**-W** 
-    Revert to default pen :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
+**-W**
+    Revert to default pen :term:`MAP_DEFAULT_PEN`
     (if not set on command line)
-**-W-** 
+**-W-**
     Turn outline off
-**-Z**\ *zval* 
+**-Z**\ *zval*
     Obtain fill via cpt lookup using z-value *zval*
-**-Z**\ *NaN* 
+**-Z**\ *NaN*
     Get the NaN color from the CPT
 
 Custom Symbols

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   p : PostScript\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "R,V,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -122,7 +122,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GM
 						if (gmt_M_compat_check (GMT, 5))	/* There is no longer a T type but we will honor T as D from GMT5 */
 							Ctrl->T.mode = GMT_IS_DATASET;
 						else {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
 							n_errors++;
 						}
 						break;
@@ -132,7 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GM
 					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;	 break;
 					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;	 break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -143,13 +143,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GM
 				break;
 		}
 	}
-	
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->IO.active[GMT_IN] && Ctrl->IO.active[GMT_OUT]), "Syntax error: Must specify both input and output filenames\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->IO.active[GMT_IN] && (!Ctrl->IO.file[GMT_IN] || !Ctrl->IO.file[GMT_IN][0]), "Syntax error: Must specify input filename\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->IO.active[GMT_OUT] && (!Ctrl->IO.file[GMT_OUT] || !Ctrl->IO.file[GMT_OUT][0]), "Syntax error: Must specify output filename\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Syntax error: Must specify only two filenames (input and output)\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Syntax error -T option: Must specify a valid datatype\n");
-	
+
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->IO.active[GMT_IN] && Ctrl->IO.active[GMT_OUT]), "Must specify both input and output filenames\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->IO.active[GMT_IN] && (!Ctrl->IO.file[GMT_IN] || !Ctrl->IO.file[GMT_IN][0]), "Must specify input filename\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->IO.active[GMT_OUT] && (!Ctrl->IO.file[GMT_OUT] || !Ctrl->IO.file[GMT_OUT][0]), "Must specify output filename\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Must specify only two filenames (input and output)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -T: Must specify a valid datatype\n");
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -175,7 +175,7 @@ int GMT_gmtwrite (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

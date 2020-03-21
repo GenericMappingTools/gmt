@@ -10,8 +10,6 @@ and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases)
 This file provides instructions for installing GMT binary packages on
 different operating systems. Please refer to the [Building Instructions](BUILDING.md)
 for compiling GMT source package (either stable release or development version).
-Note: Distributions may not all update at the same time so check if GMT 6 is
-available first.
 
 ## Contents
 
@@ -25,6 +23,7 @@ available first.
   * [Fedora](#fedora)
   * [RHEL/CentOS](#rhelcentos)
   * [Ubuntu/Debian](#ubuntudebian)
+  * [ArchLinux](#archlinux)
 - [Cross Platform Install Instructions](#cross-platform-install-instructions)
   * [Install via conda](#install-via-conda)
 
@@ -53,7 +52,8 @@ If you like, you can add the GMT programs contained in the application bundle to
 your search path for executables. For that, just run GMT-6.x.x.app once and follow
 the instructions at the end of the GMT splash screen.
 
-Note: The installer is always built for the latest macOS version only.
+**Note**: The installer is always built for the latest macOS version only,
+and works for macOS Sierra (10.12) or higher.
 
 ### Install via Homebrew
 
@@ -63,9 +63,13 @@ You may need to update the formulas so for that you will do:
 
     brew update && brew upgrade
 
-For the latest GMT 6 version, use:
+For the latest stable GMT 6 release, use:
 
     brew install gmt
+
+For the latest unstable/developing version (i.e. the master branch), run:
+
+    brew install gmt --HEAD
 
 You also need to install other GMT run-time dependencies separately:
 
@@ -78,7 +82,7 @@ If you want to install GMT 5 and GMT 6 alongside, do:
 To go from GMT 6 to GMT 5 (but see also the doc about `gmtswitch`):
 
     brew unlink gmt && brew link --force gmt@5
-    
+
 And to go from GMT 5 to GMT 6:
 
     brew unlink gmt@5 && brew link gmt
@@ -110,19 +114,23 @@ or:
 Installation of GMT through [Fink](http://www.finkproject.org/) is quite easy.
 All required packages will also be installed.
 
-For the latest GMT 5 version use:
+For the latest GMT 6 version, use:
 
-    sudo fink install gmt5
-
-For the legacy GMT 4 version use:
-
-    sudo fink install gmt
-
-The two versions cannot live side by side.
+	sudo fink install gmt6
 
 You also need to install other GMT run-time dependencies separately:
 
-    fink install ghostscript graphicsmagick ffmpeg
+    sudo fink install graphicsmagick ffmpeg
+
+For legacy GMT 5 version, use:
+
+	sudo fink install gmt5
+
+For legacy GMT 4 version, use:
+
+    sudo fink install gmt
+
+These three GMT versions cannot live side by side.
 
 ## Linux
 
@@ -131,6 +139,8 @@ You also need to install other GMT run-time dependencies separately:
 The GMT binary packages provided by the Fedora official repositories are usually too old.
 We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 to allow Fedora users access the latest GMT releases in an easy way.
+
+**NOTE: The RPM repository provides GMT packages for Fedora 30 or newer only!**
 
 Fedora users can add the GMT official RPM repository and install gmt by:
 
@@ -145,7 +155,7 @@ Fedora users can add the GMT official RPM repository and install gmt by:
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
     dnf install GraphicsMagick ffmpeg gdal
 
 **Note**:
@@ -153,7 +163,7 @@ If you already installed the GMT packages provided by Fedora,
 you have to uninstall them before installing the new GMT packages provided
 by the official GMT repository. You can uninstall the older packages by:
 
-    dnf uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
+    dnf remove GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
 
 ### RHEL/CentOS
 
@@ -162,12 +172,14 @@ However, EPEL is far hebind packaging a recent version.
 We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 to allow RHEL/CentOS users access the latest GMT releases in an easy way.
 
+**NOTE: Currently, GMT on RHEL/CentOS 8 doesn't provide GDAL support.**:
+
 For RHEL/CentOS, run:
 
     # install epel-release
 	yum install epel-release
 
-    # enable the RPM repository (RHEL/CentOS 7 ONLY)
+    # enable the RPM repository (RHEL/CentOS 7 or 8 ONLY)
     yum install yum-plugin-copr
 	yum copr enable genericmappingtools/gmt
 
@@ -182,7 +194,7 @@ For RHEL/CentOS, run:
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm
+    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
     yum install GraphicsMagick ffmpeg gdal
 
 **Note**:
@@ -190,8 +202,7 @@ If you already installed the GMT packages provided by EPEL,
 you have to uninstall them before installing the new GMT packages provided
 by the official GMT repository. You can uninstall the older packages by:
 
-    yum uninstall GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
-
+    yum remove GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
 
 ### Ubuntu/Debian
 
@@ -215,6 +226,38 @@ Install other GMT dependencies (some are optional) via:
 **Note:** The Ubuntu package under 16.04 LTS for mysterious reasons does not
 include the supplements. If you need them you will need to
 [build from source](BUILDING.md) or upgrade to 18.04 LTS.
+
+### ArchLinux
+
+It's easier to manage installed content and dependencies than directly
+building and manually `make install` in ArchLinux.
+
+    # Full update system packages first
+    sudo pacman -Syu
+
+    # Install tools for building AUR packages
+    sudo pacman -S base-devel
+
+    # Use git command to clone non-official AUR repo of gmt
+    # Here are two options. **You just have to clone one of them:**
+    # If you encounter some problems in those repo,
+    # you can report to the authors first, or choose another one to clone
+    git clone https://aur.archlinux.org/gmt.git
+
+    # alternative repo, for testing stable/rc release in version 6.x branch
+    git clone https://aur.archlinux.org/gmt6.git gmt
+
+    # Optional recommended packages
+    git clone https://aur.archlinux.org/gmt-coast.git
+    git clone https://aur.archlinux.org/gmt-cpt-city.git
+    git clone https://aur.archlinux.org/gmt-dcw.git
+
+    # use makepkg to build packages and use pacman to install
+    cd gmt
+    makepkg -sc
+    sudo pacman -U *.pkg.tar.xz
+
+**Note**: Binary packages of gmt are still not available in [ArchlinuxCN repo](https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror) yet.
 
 ## Cross Platform Install Instructions
 

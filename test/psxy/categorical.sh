@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Test a categorical CPT with text keys on a shapefile using
-# the aspatial field NAME via the CPT to yield pen color 
+# the aspatial field NAME via the CPT to yield pen color
 ps=categorical.ps
 # Get an OGR file from test cache and convert to shapefile
 test_data=`gmt which -Gl @RidgeTest.gmt`

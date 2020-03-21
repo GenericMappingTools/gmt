@@ -2,7 +2,7 @@
 #
 # - Useful CMake macros
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -115,8 +115,8 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 	# install_module_symlink (MODULE [ MODULE ... ])
 	# example: install_module_symlink (grdimage psxy)
 	if (NOT DEFINED GMT_INSTALL_MODULE_LINKS)
-		# If not defined or set to TRUE
-		set (GMT_INSTALL_MODULE_LINKS TRUE)
+		# If not defined we set to FALSE
+		set (GMT_INSTALL_MODULE_LINKS FALSE)
 	endif ()
 	macro (INSTALL_MODULE_SYMLINK)
 		if (WIN32 AND GMT_INSTALL_MODULE_LINKS)

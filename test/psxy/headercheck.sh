@@ -3,7 +3,7 @@
 
 ps=headercheck.ps
 
-gmt psxy -R-1/10/-1/10 -JX6/4 -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -K << EOF > $ps
+gmt psxy -R-1/10/-1/10 -JX6i/4i -P -B2g1 -Sc0.2i -Gyellow -W2.5p,cyan -K << EOF > $ps
 > -Ggreen -W1p,black
 0	0
 1	1

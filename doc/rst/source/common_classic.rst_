@@ -6,13 +6,13 @@ They are not available when using GMT modern mode.
 
 .. _-K:
 
-.. include:: explain_-K.rst_
+.. include:: /explain_-K.rst_
 
 .. _-O:
 
-.. include:: explain_-O.rst_
+.. include:: /explain_-O.rst_
 
 .. _-P:
 
-.. include:: explain_-P.rst_
+.. include:: /explain_-P.rst_
 

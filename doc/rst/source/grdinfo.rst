@@ -12,11 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdinfo** *grdfiles* [ |-C|\ [**n**\ \|\ **t**\] ]
-[ |-D|\ [*xoff*\ [/*yoff*][**+n**] ]
+**gmt grdinfo** *grdfiles* [ |-C|\ [**n**\|\ **t**\] ]
+[ |-D|\ [*xoff*\ [/*yoff*]][**+i**] ]
+[ |-E|\ [**x**\|\ **y**][**+h**\|\ **H**\|\ **l**\|\ **L**] ]
 [ |-F| ]
-[ |-I|\ [*dx*\ [/*dy*]\|\ **b**\ \|\ **i**\ \|\ **r**\ ] ]
-[ |-L|\ [**0**\ \|\ **1**\ \|\ **2**\ \|\ **p**\ \|\ **a**] ] [ |-M| ]
+[ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
+[ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ] [ |-M| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ [*dz*]\ [**+a**\ [*alpha*]]\ [**+s**] ]
 [ |SYN_OPT-V| ]
@@ -35,10 +36,10 @@ various statistics for the (*x*,\ *y*,\ *z*) data in the grid file(s).
 The output information contains the minimum/maximum values for *x*, *y*,
 and *z*, where the min/max of *z* occur, the *x*- and *y*-increments,
 and the number of *x* and *y* nodes, and [optionally] the mean, standard
-deviation, and/or the median, median absolute deviation of *z*, and/or
-the mode (LMS), LMS scale of *z*, and number of nodes set
+deviation, and/or the median, median absolute deviation (MAD) of *z*, and/or
+the mode (Least Median of Squares; LMS), LMS scale of *z*, and number of nodes set
 to NaN. We also report if the grid is pixel- or gridline-registered and
-if it is a Cartesian or Geographic data set (based on metadata in the file). 
+if it is a Cartesian or Geographic data set (based on metadata in the file).
 
 Required Arguments
 ------------------
@@ -51,10 +52,10 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**\ \|\ **t**\]
+**-C**\ [**n**\|\ **t**\]
     Formats the report using tab-separated fields on a single line. The
     output is *name w e s n z0 z1 dx dy nx ny*\ [ *x0 y0 x1 y1* ] [ *med
-    scale* ] [*mean std rms*\ ] [*n\_nan*\ ]. The data in brackets are
+    scale* ] [*mean std rms*] [*n\_nan*]. The data in brackets are
     output only if the corresponding options **-M**, **-L1**, **-L2**,
     and **-M** are used, respectively. Use **-Ct** to place file *name*
     at the end of the output record or **-Cn** to only output numerical
@@ -64,12 +65,25 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*xoff*\ [/*yoff*][**+i**]
+**-D**\ [*xoff*\ [/*yoff*]][**+i**]
     Divide a single grid's domain (or the **-R** domain, if no grid given)
     into tiles of size *dx* times *dy* (set via **-I**).  You can specify
     overlap between tiles by appending *xoff*\ [/*yoff*].  If the single
     grid is given you may use the modifier **+i** to ignore tiles that
-    have no data within each tile subregion.
+    have no data within each tile subregion.  Default output is text
+    region strings.  Use **-C** to instead report four columns with
+    *xmin xmax ymin ymax* per tile, or use **-Ct** to also have the
+    region string appended as trailing text.
+
+.. _-E:
+
+**-E**\ [**x**\|\ **y**][**+h**\|\ **H**\|\ **l**\|\ **L**]
+    Report the extreme values found on a per column (**-Ex**) or per
+    row (**-Ey**) basis.  By default, we look for the global maxima (**+h**\|\ **H**)
+    for each column.  Append **+l**\|\ **L** to look for minima instead.
+    Upper case **+L** means we find the minimum of the positive values only, while
+    upper case **+U** means we find the maximum of the negative values only [use all values].
+    We only allow one input grid when **-E** is selected.
 
 .. _-F:
 
@@ -79,7 +93,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*dx*\ [/*dy*]\|\ **b**\ \|\ **i**\ \|\ **r**\ ]
+**-I**\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**]
     Report the min/max of the region to the nearest multiple of *dx* and
     *dy*, and output this in the form **-R**\ *w/e/s/n* (unless **-C**
     is set). To report the actual grid region, select **-Ir**. For a
@@ -87,12 +101,13 @@ Optional Arguments
     the exact geographic region is given with **-Ii** (if not found
     then we return the actual grid region instead).  If no
     argument is given then we report the grid increment in the form
-    **-I**\ *xinc*\ [/*yinc*\ ]. If **-Ib** is given we write each grid's
-    bounding box polygon instead.
+    **-I**\ *xinc*\ [/*yinc*]. If **-Ib** is given we write each grid's
+    bounding box polygon instead.  Finally, if **-D** is in effect then
+    *dx* and *dy* are the dimensions of the desired tiles.
 
 .. _-L:
 
-**-L**\ [**0**\ \|\ **1**\ \|\ **2**\ \|\ **p**\ \|\ **a**]
+**-L**\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**]
     **-L0**
         Report range of z after actually scanning the data, not just
         reporting what the header says.
@@ -106,7 +121,7 @@ Optional Arguments
     **-La**
         All of the above.
 
-    Note: If the grid is geographic then each node represents a physical
+    **Note**: If the grid is geographic then each node represents a physical
     area that decreases with increasing latitude.  We therefore report
     spherically weighted statistical estimates for such grids.
 
@@ -114,7 +129,7 @@ Optional Arguments
 
 **-M**
     Find and report the location of min/max z-values, and count and
-    report the number of nodes set to NaN, if any. 
+    report the number of nodes set to NaN, if any.
 
 .. _-R:
 
@@ -125,7 +140,7 @@ Optional Arguments
 
 .. _-T:
 
-|-T|\ [*dz*]\ [**+a**\ [*alpha*]]\ [**+s**]
+**-T**\ [*dz*]\ [**+a**\ [*alpha*]]\ [**+s**]
     Determine min and max z-value.  If *dz* is provided then we first round these
     values off to multiples of *dz*. To exclude the two tails of the distribution
     when determining the min and max you can add **+a** to set the *alpha*
@@ -155,8 +170,6 @@ Optional Arguments
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To obtain all the information about the remote data set in file earth_relief_10m::
 

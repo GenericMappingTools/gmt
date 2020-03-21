@@ -32,6 +32,8 @@ near the Chatham plateau (antipodes will be revisited in Example
 
    All great-circle paths lead to Rome.
 
+Footnote
+~~~~~~~~
 
 .. [1]
    Pedants who wish to argue about the "other" arc going the long way

@@ -79,7 +79,7 @@ void *get_array (unsigned int type, unsigned int set) {
 		case GMT_CHAR:
 			sc = vector = calloc (NM, sizeof (char));
 			if (set) for (k = 0; k < NM; k++) sc[k] = k;
-			break;		
+			break;
 	}
 	return (vector);
 }
@@ -128,7 +128,7 @@ void put_array (void *vector, unsigned int type, char *txt) {
 			break;
 		case GMT_CHAR:
 			sc = vector;	for (k = 0; k < NM; k++) printf (" %5.1f", (double)sc[k]);
-			break;		
+			break;
 	}
 	printf ("\n");
 }
@@ -177,7 +177,7 @@ double sum_array (void *vector, unsigned int type) {
 			break;
 		case GMT_CHAR:
 			sc = vector;	for (k = 0; k < NM; k++) sum += sc[k];
-			break;		
+			break;
 	}
 	return (sum);
 }
@@ -191,15 +191,15 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	double diff, wesn[6] = {1.0, NCOLS, 1.0, NROWS, 0.0, 0.0}, inc[2] = {1.0, 1.0};
 	//void *API = NULL;                           /* The API control structure */
 	struct GMT_MATRIX *M[2] = {NULL, NULL};     /* Structure to hold input/output grids as matrix */
-	char input[GMT_STR16] = {""};               /* String to hold virtual input filename */
-	char output[GMT_STR16] = {""};              /* String to hold virtual output filename */
+	char input[GMT_VF_LEN] = {""};               /* String to hold virtual input filename */
+	char output[GMT_VF_LEN] = {""};              /* String to hold virtual output filename */
 	char args[128] = {""};            			/* String to hold module command arguments */
 	void *in_data = NULL, *out_data = NULL;
 	struct GMTAPI_CTRL *API = NULL;
-	
+
 	if (V) mode += (6 << 16);				/* Activate -Vd */
 	in_data = get_array (intype, 1);			/* Create dummy user grid in_data[] = k */
-	
+
 	/* Initialize a GMT session */
 	API = GMT_Create_Session ("test", 2U, mode, NULL);
  	/* Create a blank matrix container that will hold our user in_data */

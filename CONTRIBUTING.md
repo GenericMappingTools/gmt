@@ -57,7 +57,8 @@ read it carefully.
 ## How Can I Talk to You?
 
 Discussion often happens in the issues and pull requests.
-We don't have a good solution for a user forum yet but we're working on it.
+For general questions, you can post on the
+[GMT Community Forum](https://forum.generic-mapping-tools.org/).
 
 
 ## Reporting a Bug
@@ -79,6 +80,17 @@ If you're browsing the documentation and notice a typo or something that could b
 improved, please consider letting us know. You can either
 [create an issue](#reporting-a-bug) on GitHub, or click the "Edit on GitHub" button
 at the top right corner of the documentation, and submit a fix (even better :star2:).
+
+The GMT documentation is written in the plaintext markup language
+[reStructuredText (reST)](https://docutils.sourceforge.io/rst.html) and built
+by documentation generator [Sphinx](https://www.sphinx-doc.org/en/master/).
+The reST plaintext files for the GMT documentation are located in the [doc/rst/source](/doc/rst/source) folder.
+You may need to know some basic reST syntax before making changes. Please refer to our
+[reStructuredText Cheatsheet](https://docs.generic-mapping-tools.org/latest/rst_cheatsheet.html) for details.
+
+Usually you don't need to build the documentation locally for small changes.
+If you want, you can install Sphinx locally,
+then follow the [build instructions](MAINTENANCE.md#building-documentation).
 
 
 ## Contributing Code

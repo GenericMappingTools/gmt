@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -56,10 +56,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->In.file[GMT_IN]);	
-	gmt_M_str_free (C->In.file[GMT_OUT]);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->In.file[GMT_IN]);
+	gmt_M_str_free (C->In.file[GMT_OUT]);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -102,7 +102,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Only two files may be pasted\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only two files may be pasted\n");
 				}
 				break;
 
@@ -121,8 +121,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Syntax error: Must specify two input files\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Must specify two input files\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -166,14 +166,14 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdpaste main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grids\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grids\n");
 	gmt_set_pad (GMT, 0); /* No padding */
 
 	/* Try to find a common side to join on  */
@@ -188,26 +188,26 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	if (A->header->registration != B->header->registration)
 		error++;
 	if ((A->header->z_scale_factor != B->header->z_scale_factor) || (A->header->z_add_offset != B->header->z_add_offset)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Scale/offset not compatible!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (! (fabs (A->header->inc[GMT_X] - B->header->inc[GMT_X]) < 1.0e-6 && fabs (A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) < 1.0e-6)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Grid intervals do not match!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Grid intervals do not match!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if ((C = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, A)) == NULL) Return (API->error);	/* Just to get a header */
-	
+
 	one_or_zero = A->header->registration == GMT_GRID_NODE_REG;
 	x_noise = GMT_CONV4_LIMIT * C->header->inc[GMT_X] * 10;
 	y_noise = GMT_CONV4_LIMIT * C->header->inc[GMT_Y] * 10;
 
 	AH = gmt_get_H_hidden (A->header);
 	BH = gmt_get_H_hidden (B->header);
-	
+
 	common_y = (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise);
-	
+
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must be careful in determining a match since grids may differ by +/-360 in x */
 		double del;
 		if (common_y) {	/* A and B are side-by-side, may differ by +-360 +- 1 pixel width */
@@ -240,7 +240,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			else if (del < (-360.0 + x_noise) && del > (-360.0 - x_noise)) {
 				A->header->wesn[XLO] += 360.0;	A->header->wesn[XHI] += 360.0;
-			}	
+			}
 		}
 	}
 
@@ -278,7 +278,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
 		else {
-			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Grids do not share a common edge!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
@@ -315,12 +315,12 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
 		}
 		else {
-			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Grids do not share a common edge!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 	else {
-		GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Grids do not share a common edge!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (gmt_M_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Take out 360 */
@@ -330,12 +330,12 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	/* Now we can do it  */
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		sprintf (format, "%%s\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "File\tW\tE\tS\tN\tdx\tdy\tnx\tny\n");
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->n_columns, A->header->n_rows);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Ctrl->In.file[1], B->header->wesn[XLO], B->header->wesn[XHI], B->header->wesn[YLO], B->header->wesn[YHI], B->header->inc[GMT_X], B->header->inc[GMT_Y], B->header->n_columns, B->header->n_rows);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->n_columns, C->header->n_rows);
+		GMT_Report (API, GMT_MSG_INFORMATION, "File\tW\tE\tS\tN\tdx\tdy\tnx\tny\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->n_columns, A->header->n_rows);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, Ctrl->In.file[1], B->header->wesn[XLO], B->header->wesn[XHI], B->header->wesn[YLO], B->header->wesn[YHI], B->header->inc[GMT_X], B->header->inc[GMT_Y], B->header->n_columns, B->header->n_rows);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->n_columns, C->header->n_rows);
 	}
 
 	gmt_set_grddim (GMT, C->header);

@@ -27,7 +27,7 @@ gmt text -Y${yy}i -F+f10p+jBC <<EOF
 2.85	0.05	\\043
 4.15	0.05	Font Name
 EOF
-gmt plot <<EOF 
+gmt plot <<EOF
 0	0
 5.4	0
 EOF
@@ -40,8 +40,8 @@ do
 	k1=$i
 	k2=$(( i+17 ))
 
-	f1=`sed -n ${k1}p tt.d`
-	f2=`sed -n ${k2}p tt.d`
+	f1=$(sed -n ${k1}p tt.d)
+	f2=$(sed -n ${k2}p tt.d)
 
 	if [ $i1 -eq "12" ]; then
 		f1="Symbol @%0%(Symbol)@%%"

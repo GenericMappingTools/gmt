@@ -12,20 +12,20 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77track** *NGDC-ids*
+**gmt mgd77track** *GEODAS-ids*
 |SYN_OPT-R|
 |-J|\ *parameters*
 [ |-A|\ [**c**][*size*][**+i**\ *spacing*] ]
 [ |SYN_OPT-B| ]
-[ **-Da**\ *startdate* ] 
+[ **-Da**\ *startdate* ]
 [ |-D|\ **b**\ *stopdate* ]
 [ |-F| ]
-[ |-G|\ **d**\ \|\ **t**\ \|\ **n**\ *gap* ]
+[ |-G|\ **d**\|\ **t**\|\ **n**\ *gap* ]
 [ |-I|\ *ignore* ]
 [ |-L|\ *trackticks* ]
-[ |-S|\ **a**\ *startdist*\ [**u**] ]
-[ |-S|\ **b**\ *stopdist*\ [**u**] ]
-[ |-T|\ **T**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
+[ |-S|\ **a**\ *startdist* ]
+[ |-S|\ **b**\ *stopdist* ]
+[ |-T|\ **T**\|\ **t**\|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*] ]

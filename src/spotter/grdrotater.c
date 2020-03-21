@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *   Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -84,13 +84,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->D.file);	
-	gmt_M_str_free (C->E.rot.file);	
-	gmt_M_str_free (C->F.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->T.value);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->D.file);
+	gmt_M_str_free (C->E.rot.file);
+	gmt_M_str_free (C->F.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->T.value);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				/* Only get here if the above cases did not trip */
 				n_items = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt[0], txt[1], txt[2], txt[3]);
 				if (n_items != 4) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Give g, d, <grdfile>, or <west/east/south/north>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Give g, d, <grdfile>, or <west/east/south/north>\n");
 					n_errors++;
 				}
 				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[0], gmt_M_type (GMT, GMT_IN, GMT_X), true, &Ctrl->A.wesn[0]), txt[0]);
@@ -207,7 +207,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				break;
 			case 'e':
 				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and was removed in 5.3. Use -E instead.\n");
-				/* Fall-through on purpose */
+				/* Intentionally fall through */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
@@ -237,7 +237,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 					struct GMT_DATASET *T = NULL;
 					struct GMT_DATASEGMENT *S = NULL;
 					if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, opt->arg, NULL)) == NULL) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s\n", opt->arg);
 						n_errors++;
 						continue;
 					}
@@ -271,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 						if (strstr(opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+')	/* Gave number of points instead; calculate inc */
 							inc = (max - min) / (inc - 1.0);
 						if (inc <= 0.0) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Age increment must be positive\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -T: Age increment must be positive\n");
 							n_errors++;
 						}
 						else {
@@ -295,15 +295,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	}
 
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "Syntax error: No output grid file allowed with -S\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: Cannot use -N with -S\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: -N and -S cannot both be given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "No output grid file allowed with -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Cannot use -N with -S\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "-N and -S cannot both be given\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3,
-	                                 "Syntax error: Binary input data (-bi) must have at least 2 columns\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "Syntax error: -N and -D cannot both be given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error: Option -E is required\n");
+	                                 "Binary input data (-bi) must have at least 2 columns\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "-N and -D cannot both be given\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E is required\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -441,7 +441,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -463,7 +463,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
 
 		if (!gmt_grd_setregion (GMT, G->header, GMT->common.R.wesn, BCR_BILINEAR)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "No grid values inside selected region - aborting\n");
+			GMT_Report (API, GMT_MSG_ERROR, "No grid values inside selected region - aborting\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
@@ -473,7 +473,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	not_global = !global;
 
 	if (!Ctrl->S.active) {	/* Read the input grid */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocates memory and read grid file\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Allocates memory and read grid file\n");
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, G) == NULL) {
 			Return (API->error);
 		}
@@ -487,7 +487,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	}
 	else if (not_global) {	/* Make a single grid-outline polygon */
 		if (!G) {
-			GMT_Report (API, GMT_MSG_NORMAL, "No grid give so cannot determine grid outline path\n");
+			GMT_Report (API, GMT_MSG_ERROR, "No grid give so cannot determine grid outline path\n");
 			Return (API->error);
 		}
 		if ((D = get_grid_path (GMT, G->header)) == NULL) Return (API->error);
@@ -516,7 +516,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->T.active && !Ctrl->E.rot.single) {	/* Gave no time to go with the rotations, use rotation times */
-		GMT_Report (API, GMT_MSG_VERBOSE, "No reconstruction times specified; using %d reconstruction times from rotation table\n", n_stages);
+		GMT_Report (API, GMT_MSG_INFORMATION, "No reconstruction times specified; using %d reconstruction times from rotation table\n", n_stages);
 		Ctrl->T.n_times = n_stages;
 		Ctrl->T.value = gmt_M_memory (GMT, NULL, Ctrl->T.n_times, double);
 		for (t = 0; t < Ctrl->T.n_times; t++) Ctrl->T.value[t] = p[t].t_start;
@@ -525,12 +525,12 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	if (Ctrl->T.n_times > 1) {	/* Requires that template names be given */
 		if (!Ctrl->N.active) {	/* Did not give -N so require -D template */
 			if (!Ctrl->D.file || !strchr (Ctrl->D.file, '%')) {	/* No file given or filename without C-format specifiers */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Multiple output times requires a template name via -D (unless -N is set)\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Multiple output times requires a template name via -D (unless -N is set)\n");
 				Return (API->error);
 			}
 		}
 		if (!Ctrl->S.active && !strchr (Ctrl->G.file, '%')) {	/* Grid filename without C-format specifiers */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Multiple output times requires a template gridfile name via -G\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Multiple output times requires a template gridfile name via -G\n");
 			Return (API->error);
 		}
 	}
@@ -538,22 +538,22 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	for (t = 0; t < Ctrl->T.n_times; t++) {	/* For each reconstruction time */
 		if (Ctrl->E.rot.single) {
 			plon = Ctrl->E.rot.lon;	plat = Ctrl->E.rot.lat;	pw = Ctrl->E.rot.w;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using rotation (%g, %g, %g)\n", plon, plat, pw);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Using rotation (%g, %g, %g)\n", plon, plat, pw);
 		}
 		else {	/* Extract rotation for given time */
 			if (Ctrl->T.value[t] < p[0].t_stop || Ctrl->T.value[t] > p[n_stages-1].t_start) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Requested a reconstruction time outside range of rotation table - skipped\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Requested a reconstruction time outside range of rotation table - skipped\n");
 				continue;
 			}
 			spotter_get_rotation (GMT, p, n_stages, Ctrl->T.value[t], &plon, &plat, &pw);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Time %g Ma: Using rotation (%g, %g, %g)\n", Ctrl->T.value[t], plon, plat, pw);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Time %g Ma: Using rotation (%g, %g, %g)\n", Ctrl->T.value[t], plon, plat, pw);
 		}
 		gmt_make_rot_matrix (GMT, plon, plat, pw, R);	/* Make rotation matrix from rotation parameters */
 
 		if (Ctrl->E.rot.single)
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reconstruct polygon outline\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Reconstruct polygon outline\n");
 		else
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reconstruct polygon outline for time %g\n", Ctrl->T.value[t]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Reconstruct polygon outline for time %g\n", Ctrl->T.value[t]);
 
 		/* First reconstruct the polygon outline */
 
@@ -629,9 +629,9 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 
 		if (Ctrl->E.rot.single)
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Interpolate reconstructed grid\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate reconstructed grid\n");
 		else
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Interpolate reconstructed grid for time %g\n", Ctrl->T.value[t]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate reconstructed grid for time %g\n", Ctrl->T.value[t]);
 
 		gmt_make_rot_matrix (GMT, plon, plat, -pw, R);	/* Make inverse rotation using negative angle */
 
@@ -690,9 +690,9 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		/* Now write rotated grid */
 
 		if (Ctrl->E.rot.single)
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write reconstructed grid\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Write reconstructed grid\n");
 		else
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write reconstructed grid for time %g\n", Ctrl->T.value[t]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Write reconstructed grid for time %g\n", Ctrl->T.value[t]);
 
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 

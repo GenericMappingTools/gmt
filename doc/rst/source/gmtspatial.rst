@@ -14,14 +14,14 @@ Synopsis
 
 **gmt spatial** [ *table* ] [ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
-[ |-D|\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
-[ |-E|\ **+p**\ \|\ **n** ]
+[ |-D|\ [**+f**\ *file*][**+a**\ *amax*][**+d**\ *dmax*][**+c\|C**\ *cmax*][**+s**\ *fact*] ]
+[ |-E|\ **+p**\|\ **n** ]
 [ |-F|\ [**l**] ]
-[ |-I|\ [**e**\ \|\ **i**] ]
-[ |-N|\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
-[ |-Q|\ [*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]] ]
+[ |-I|\ [**e**\|\ **i**] ]
+[ |-N|\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**] ]
+[ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **h**\ \|\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
+[ |-S|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
 [ |-T|\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -33,6 +33,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -68,7 +69,7 @@ Optional Arguments
    averaged) coordinates and the updated NN distances and point IDs.  A
    negative point number means the original point was replaced by a weighted
    average (the absolute ID value gives the ID of the first original point
-   ID to be included in the average.).  Note: The input data are assumed to
+   ID to be included in the average.).  **Note**: The input data are assumed to
    contain (*lon, lat*) or (*x, y*), optionally followed by a *z* and a *weight* [1] column.
    We compute a weighted average of the location and *z* (if present).
 
@@ -81,7 +82,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*]
+**-D**\ [**+f**\ *file*][**+a**\ *amax*][**+d**\ *dmax*][**+c\|C**\ *cmax*][**+s**\ *fact*]
     Check for duplicates among the input lines or polygons, or, if
     *file* is given via **+f**, check if the input features already
     exist among the features in *file*. We consider the cases of exact
@@ -109,7 +110,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ **+p**\ \|\ **n**
+**-E**\ **+p**\|\ **n**
     Reset the handedness of all polygons to match the given **+p**
     (counter-clockwise; positive) or **+n** (clockwise; negative). Implies **-Q+**.
 
@@ -121,7 +122,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**e**\ \|\ **i**]
+**-I**\ [**e**\|\ **i**]
     Determine the intersection locations between all pairs of polygons.
     Append **i** to only compute internal (i.e., self-intersecting
     polygons) crossovers or **e** to only compute external (i.e.,
@@ -129,7 +130,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**]
+**-N**\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**]
     Determine if one (or all, with **+a**) points of each feature in the
     input data are inside any of the polygons given in the *pfile*. If
     inside, then report which polygon it is; the polygon ID is either
@@ -146,22 +147,22 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]]
+**-Q**\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]]
     Measure the area of all polygons or length of line segments. Use
     **-Q+h** to append the area to each polygons segment header [Default
     simply writes the area to stdout]. For polygons we also compute the
     centroid location while for line data we compute the mid-point
     (half-length) position. Append a distance unit to select the unit
     used (see `Units`_). Note that the area will depend on the current
-    setting of :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`; this should be a
+    setting of :term:`PROJ_ELLIPSOID`; this should be a
     recent ellipsoid to get accurate results. The centroid is computed
     using the mean of the 3-D Cartesian vectors making up the polygon
     vertices, while the area is obtained via an equal-area projection.
     Normally, all input segments
-    will be be reflected on output.  Use **c** to restrict processing to
+    will be be reflected on output.  Use **+c** to restrict processing to
     those whose length (or area for polygons) fall inside the specified
     range set by *min* and *max*.  If *max* is not set it defaults to infinity.
-    To sort the segments based on their lengths or area, use **s** and
+    To sort the segments based on their lengths or area, use **+s** and
     append **a** for ascending and **d** for descending order [ascending].
     By default, we consider open polygons as lines.
     Append **+p** to close open polygons and thus consider all input
@@ -177,13 +178,13 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **h**\ \|\ **i**\ \|\ **j**\ \|\ **s**\ \|\ **u**
+**-S**\ **h**\|\ **i**\|\ **j**\|\ **s**\|\ **u**
     Spatial processing of polygons. Choose from **-Sh** which identifies
     perimeter and hole polygons (and flags/reverses them), **-Si** which returns
     the intersection of polygons (closed), **-Su** which returns the
     union of polygons (closed), **-Ss** which will split polygons that
     straddle the Dateline, and **-Sj** which will join polygons that
-    were split by the Dateline.  Note: Only **-Ss** has been implemented.
+    were split by the Dateline.  **Note**: Only **-Ss** has been implemented.
 
 .. _-T:
 
@@ -225,6 +226,8 @@ Optional Arguments
 .. include:: explain_distcalc.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_colon.rst_
 

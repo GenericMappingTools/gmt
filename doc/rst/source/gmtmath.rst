@@ -12,12 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\ \|\ **w**] ]
+**gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**] ]
 [ |-C|\ *cols* ]
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
-[ |-Q| ] [ |-S|\ [**f**\ \|\ **l**] ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
+[ |-Q| ] [ |-S|\ [**f**\|\ **l**] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -27,6 +27,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
 [ |SYN_OPT--| ]
 *operand* [ *operand* ] **OPERATOR** [ *operand* ] **OPERATOR** ...
@@ -38,9 +39,9 @@ Description
 -----------
 
 **math** will perform operations like add, subtract, multiply, and
-divide on one or more table data files or constants using Reverse Polish
-Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).
-Arbitrarily complicated expressions may therefore be evaluated; the
+numerous other operands on one or more table data files or constants using
+`Reverse Polish Notation (RPN) <https://en.wikipedia.org/wiki/Reverse_Polish_notation>`_
+syntax.  Arbitrarily complicated expressions may therefore be evaluated; the
 final result is written to an output file [or standard output]. Data
 operations are element-by-element, not matrix manipulations (except
 where noted). Some operators only require one operand (see below). If no
@@ -72,7 +73,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\ \|\ **w**]
+**-A**\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**]
     Requires **-N** and will partially initialize a table with values
     from the given file *t_f(t)* containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
@@ -124,11 +125,11 @@ Optional Arguments
 **-Q**
     Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
     In this mode, constants may have plot units (i.e., c, i, p) and if so the final
-    answer will be reported in the unit set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`.
+    answer will be reported in the unit set by :term:`PROJ_LENGTH_UNIT`.
 
 .. _-S:
 
-**-S**\ [**f**\ \|\ **l**]
+**-S**\ [**f**\|\ **l**]
     Only report the first or last row of the results [Default is all
     rows]. This is useful if you have computed a statistic (say the
     **MODE**) and only want to report a single number instead of
@@ -137,7 +138,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Required when no input files are given. Builds an array for
     the "time" column (see **-N**). If there is no time column
     (i.e., your input has only data columns), give **-T** with
@@ -173,6 +174,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_-s.rst_
 
@@ -373,7 +376,7 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **LE**          | 2 1    | 1 if A <= B, else 0                                                                        |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **LMSSCL**      | 1 1    | LMS scale estimate (LMS STD) of A                                                          |
+| **LMSSCL**      | 1 1    | LMS (Least Median of Squares) scale estimate (LMS STD) of A                                |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **LMSSCLW**     | 2 1    | Weighted LMS scale estimate (LMS STD) of A for weights in B                                |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -677,7 +680,7 @@ in Myr and computes the predicted half-space bathymetry:
 **DEPTH** = **SQRT 350 MUL 2500 ADD NEG** : *usage: DEPTH to return
 half-space seafloor depths*
 
-Note: Because geographic or time constants may be present in a macro, it
+**Note**: Because geographic or time constants may be present in a macro, it
 is required that the optional comment flag (:) must be followed by a space.
 As another example, we show a macro **GPSWEEK** which determines which GPS week
 a timestamp belongs to:

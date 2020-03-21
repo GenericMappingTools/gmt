@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt gshhg** *binaryfile.b* [ |-A|\ *min* ] [ |-G| ] [ |-I|\ *id* ]
-[ |-L| ] [ |-N|\ *level* ] [ |-Q|\ **e**\ \|\ **i** ]
+[ |-L| ] [ |-N|\ *level* ] [ |-Q|\ **e**\|\ **i** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
 [ |SYN_OPT-o| ]
@@ -87,7 +87,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qe**\ \|\ **i**
+**-Qe**\|\ **i**
     Control what to do with river-lakes (river sections large enough to
     be stored as closed polygons). Use **-Qe** to exclude them and
     **-Qi** to exclude everything else instead [Default outputs all
@@ -134,42 +134,30 @@ largest polygons:
 
 .. _tbl-polygons:
 
-+-----+--------------------------------+
-| ID  | Landmass                       |
-+=====+================================+
-|  0  | Eurasia                        |
-+-----+--------------------------------+
-|  1  | Africa                         |
-+-----+--------------------------------+
-|  2  | North America                  |
-+-----+--------------------------------+
-|  3  | South America                  |
-+-----+--------------------------------+
-|  4  | Antarctica (AC grounding line) |
-+-----+--------------------------------+
-|  5  | Antarctica (AC ice line)       |
-+-----+--------------------------------+
-|  6  | Australia                      |
-+-----+--------------------------------+
-|  7  | Greenland                      |
-+-----+--------------------------------+
-|  8  | New Guinea                     |
-+-----+--------------------------------+
-|  9  | Borneo                         |
-+-----+--------------------------------+
-| 10  | Madagascar                     |
-+-----+--------------------------------+
-| 11  | Baffin Island                  |
-+-----+--------------------------------+
-| 12  | Indonesia                      |
-+-----+--------------------------------+
+====== =================================
+  ID   Landmass
+====== =================================
+  0    Eurasia
+  1    Africa
+  2    North America
+  3    South America
+  4    Antarctica (AC grounding line)
+  5    Antarctica (AC ice line)
+  6    Australia
+  7    Greenland
+  8    New Guinea
+  9    Borneo
+ 10    Madagascar
+ 11    Baffin Island
+ 12    Indonesia
+====== =================================
 
 Data Files
 ----------
 
 The data files read by gshhg are the native binary polygon files,
-available from NEIC [https://www.ngdc.noaa.gov/mgg/shorelines/] or
-SOEST [http://www.soest.hawaii.edu/pwessel/gshhg]. Note that these
+available from `NCEI Shoreline Coastline Resources <https://www.ngdc.noaa.gov/mgg/shorelines/>`_ or
+the `SOEST GSHHG Site <https://www.soest.hawaii.edu/pwessel/gshhg>`_. Note that these
 are different from the netCDF-formatted files used by GMT in the
 modules :doc:`gmtselect </gmtselect>`, :doc:`grdlandmask </grdlandmask>`,
 or :doc:`coast </coast>`.

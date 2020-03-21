@@ -53,7 +53,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *dx*\ [\ **/**\ *dy*]
+**-D**\ *dx*\ [**/**\ *dy*]
     Offset seismogram positions by the given mount *dx/dy* [Default is no offset].
     If *dy* is not given it is set equal to *dx*.
 
@@ -85,8 +85,8 @@ Optional Arguments
 
         **r**: remove mean value
 
-    **i**\ \|\ **q**\ \|\ **r** can repeat multiple times. For example, **-Frii** will convert acceleration to displacement.
-    The order of **i**\ \|\ **q**\ \|\ **r** controls the order of the data processing.
+    **i**\|\ **q**\|\ **r** can repeat multiple times. For example, **-Frii** will convert acceleration to displacement.
+    The order of **i**\|\ **q**\|\ **r** controls the order of the data processing.
 
 .. _-G:
 
@@ -108,7 +108,7 @@ Optional Arguments
 **-M**\ *size*\ [*u*][*/alpha*]
     Vertical scaling.
 
-        *size*\ [*u*]: scale all traces *size*\ [*u*] on a map. The default unit is :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`.
+        *size*\ [*u*]: scale all traces *size*\ [*u*] on a map. The default unit is :term:`PROJ_LENGTH_UNIT`.
         The scaling factor is defined as ``yscale = size*(north-south)/(depmax-depmin)/map_height``.
 
         *size*/*alpha*:
@@ -126,11 +126,11 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**i**]\ *scale*\ [*unit*]
+**-S**\ [**i**]\ *scale*
     Sets time scale in seconds per *unit* while plotting on geographic plots.
     Append **c**, **i**, or **p** to indicate cm, inch or points as the unit.
-    Use :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` if *unit* is omitted.
-    Use **-Si**\ *scale*\ [*unit*] to give the reciprocal scale,
+    Use :term:`PROJ_LENGTH_UNIT` if *unit* is omitted.
+    Use **-Si**\ *scale* to give the reciprocal scale,
     i.e. cm per second or inch per second.
 
 .. _-T:

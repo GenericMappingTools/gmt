@@ -6,5 +6,5 @@
 # Unix progs:   -
 #
 ps=psldemo.ps
-export PSL_SHAREDIR=`gmt --show-sharedir`
+export PSL_SHAREDIR=$(gmt --show-sharedir)
 psldemo > $ps

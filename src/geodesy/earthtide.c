@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * 	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * 	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -453,7 +453,7 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 		0.,0.,1.,0.,0.,.01,0.,0. };
 
 	int i, j;
-	double h, t2, t3, t4, cosphi2, sinphi2, sin_tf, cos_tf;
+	double h, t2, t3, cosphi2, sinphi2, sin_tf, cos_tf;
 	double p, s, de, dn, dr, pr, ps, zla, tau, zns, rsta, cosla, sinla, thetaf, cosphi, sinphi;
 
 	/* ** note, following table is derived from dehanttideinelMJD.f (2000oct30 16:10) */
@@ -494,7 +494,6 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 	/* *** v.dehant 2 */
 	t2 = t * t;
 	t3 = t * t2;
-	t4 = t2 * t2;
 	s = 218.31664563 + 481267.88194 * t - .0014663889 * t2 + 1.85139e-6 * t3;
 	tau = fhr * 15. + 280.4606184 + t * 36000.7700536 + t * 3.8793e-4 * t - t3 * 2.58e-8 - s;
 	pr = t * 1.396971278f + t * 3.08889e-4f * t + t3 * 2.1e-8f + t2 * 7e-9f;
@@ -992,7 +991,7 @@ GMT_LOCAL void setjd0(int iyr, int imo, int idy) {
 GMT_LOCAL void civmjd(int iyr, int imo, int idy, int ihr, int imn, double sec, int *mjd, double *fmjd) {
 	/* convert civil date to modified julian date */
 	/* imo in range 1-12, idy in range 1-31 */
-	/* only valid in range mar-1900 thru feb-2100     (leap year protocols) */
+	/* only valid in range mar-1900 through feb-2100     (leap year protocols) */
 	/* ref: hofmann-wellenhof, 2nd ed., pg 34-35 */
 	/* operation confirmed against table 3.3 values on pg.34 */
 	int m, y, it1, it2;
@@ -1014,7 +1013,7 @@ GMT_LOCAL void civmjd(int iyr, int imo, int idy, int ihr, int imn, double sec, i
 GMT_LOCAL void mjdciv(int mjd, double fmjd, int *iyr, int *imo, int *idy, int *ihr, int *imn, double *sec) {
 	/* convert modified julian date to civil date */
 	/* imo in range 1-12, idy in range 1-31 */
-	/* only valid in range mar-1900 thru feb-2100 */
+	/* only valid in range mar-1900 through feb-2100 */
 	/* ref: hofmann-wellenhof, 2nd ed., pg 34-35 */
 	/* operation confirmed for leap years (incl. year 2000) */
 	static int ia, ib, ic, id, ie, it1, it2, it3;
@@ -1075,7 +1074,7 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 
 	if (T.n > 1 && tdel2 < (0.5 / 86400)) {
 		tdel2 = 0.5 / 86400;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
 	}
 
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
@@ -1167,8 +1166,8 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 			detide(xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 			/* determine local geodetic horizon components (topocentric) */
 			rge(lat, lons[col], &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
-			grd_n[ij_n] = (float)ut;
-			grd_e[ij_e] = (float)vt;
+			grd_n[ij_n] = (float)vt;
+			grd_e[ij_e] = (float)ut;
 			grd_u[ij_u] = (float)wt;
 			ij_n += n_inc;
 			ij_e += e_inc;
@@ -1176,7 +1175,7 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 		}
 	}
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 
 	/* Free these that were never used anyway */
 	if (!Ctrl->G.do_north) free(grd_n);
@@ -1227,7 +1226,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 
 	if (T.n > 1 && tdel2 < (0.5 / 86400)) {
 		tdel2 = 0.5 / 86400;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time interval too low, must be at least 0.5 s. Reset to 0.5\n");
 	}
 
 	/* here comes the sun  (and the moon)  (go, tide!) */
@@ -1258,7 +1257,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 	gmt_M_free (GMT, Out);
 
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
@@ -1266,7 +1265,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-G<outgrid>] [-C<comp>] [-L<lon>/<lat>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[<unit>][+n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[+n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -1327,20 +1326,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 						case 'y': case 'n':		Ctrl->C.selected[Y_COMP] = Ctrl->G.do_north = true;	break;
 						case 'z': case 'v':		Ctrl->C.selected[Z_COMP] = Ctrl->G.do_up = true;		break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized field argument %s in -C.!\n", p);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -C.!\n", p);
 							n_errors++;
 							break;
 					}
 					Ctrl->C.n_selected++;
 				}
 				if (Ctrl->C.n_selected == 0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-C requires comma-separated component arguments.\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-C requires comma-separated component arguments.\n");
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Output filename */
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G can only be set once!\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
 				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
@@ -1359,7 +1358,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 			case 'L':	/* Location for time-series */
 				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Expected -C<lon>/<lat>\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -C: Expected -C<lon>/<lat>\n");
 					n_errors++;
 				}
 				else {
@@ -1367,8 +1366,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 					                                     false, &Ctrl->L.x), txt_a);
 					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, txt_b, GMT_IS_LAT,
 					                                     false, &Ctrl->L.y), txt_b);
-					if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-					                          "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_Report (GMT->parent, GMT_MSG_ERROR,
+					                          "Option -C: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'S':
@@ -1378,7 +1377,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 			case 'T':	/* Select time range for time-series tide estimates */
 				Ctrl->T.active = true;
 				if (!opt->arg) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: must provide a valide date\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T: must provide a valid date\n", opt->arg);
 					n_errors++;
 					break;
 				}
@@ -1393,7 +1392,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 	if (Ctrl->G.active) {
 		if (Ctrl->C.active && Ctrl->C.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[X_COMP], "%s")) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
 			n_errors++;
 		}
 		if (!Ctrl->C.active) {	/* Default to vertical component */
@@ -1412,18 +1411,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 				n_errors += gmt_parse_inc_option (GMT, 'I', "0.5");
 		}
 		else if (!GMT->common.R.inc[0]) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "When setting -R must set -I too!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "When setting -R must set -I too!\n");
 			n_errors++;
 		}
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.inc[GMT_X] <= 0 || GMT->common.R.inc[GMT_Y] <= 0),
-	                                   "Syntax error -I option: Absent or no positive increment(s)\n");
+	                                   "Option -I: Absent or no positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !Ctrl->G.active && !Ctrl->S.active,
-	                                   "Syntax error: Must specify -S, -G or -L options\n");
+	                                   "Must specify -S, -G or -L options\n");
 	if (!GMT->parent->external)
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->L.active && !Ctrl->S.active && !Ctrl->G.active,
-		                                   "Syntax error: -T option requires one of -G, -L, or -S.\n");
+		                                   "Option -T: requires one of -G, -L, or -S.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1449,7 +1448,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1517,7 +1516,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 
 		if (!Ctrl->T.T.count && (strchr("dhms", Ctrl->T.T.unit) == NULL)){
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must specify valid interval unit (d|h|m|s)\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Must specify valid interval unit (d|h|m|s)\n");
 			return GMT_PARSE_ERROR;
 		}
 

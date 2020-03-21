@@ -17,6 +17,8 @@ original color scale, which can be either discrete or continuous, though
 some (like **globe**) are a mix of the two. The bottom half the color
 bar are built by using :doc:`/makecpt`
 **-T**-1/1/0.25, thus splitting the color scale into 8 discrete colors.
+Black and white triangles indicate which tables have hard or soft hinges,
+respectively.
 
 .. _CPT_files_a:
 
@@ -69,6 +71,9 @@ and how to switch the color bar around (by using a negative length).
 .. figure:: /_images/GMT_App_M_2.*
    :width: 600 px
    :align: center
+
+Footnote
+--------
 
 .. [35]
    The 3rd palette is called *categorical* and produces a set of

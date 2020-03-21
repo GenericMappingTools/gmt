@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -168,7 +168,8 @@
 
 /*! Macros for conversion of RGB in 0-1 range to 0-255 range */
 #define gmt_M_s255(s) ((s) * 255.0)
-#define gmt_M_t255(t) gmt_M_q(gmt_M_s255(t[0])),gmt_M_q(gmt_M_s255(t[1])),gmt_M_q(gmt_M_s255(t[2]))
+#define gmt_M_t255(t,k) gmt_M_q(gmt_M_s255(t[k]))
+
 #define gmt_M_u255(s) ((unsigned char)rint(gmt_M_s255(s)))
 
 /*! Macros for conversion of RGB in 0-255 range to 0-1 range */
@@ -195,12 +196,12 @@
 #define gmt_M_just_default(GMT,refpoint,just) (refpoint->mode == GMT_REFPOINT_JUST_FLIP ? gmt_flip_justify(GMT,refpoint->justify) : refpoint->mode == GMT_REFPOINT_JUST ? refpoint->justify : just)
 
 /*! Determine if we have a special downloadable file */
-#define gmt_M_file_is_remotedata(file) (file && file[0] == '@' && !strncmp (&file[1], GMT_DATA_PREFIX, 13U))
-#define gmt_M_file_is_cache(file) (file && file[0] == '@' && strncmp (file, "@GMTAPI@-", 9U))
-#define gmt_M_file_is_url(file) (file && (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U)))
+#define gmt_M_file_is_remotedata(file) (file != NULL && file[0] == '@' && !strncmp (&file[1], GMT_DATA_PREFIX, 13U))
+#define gmt_M_file_is_cache(file) (file != NULL && file[0] == '@' && strncmp (file, "@GMTAPI@-", 9U))
+#define gmt_M_file_is_url(file) (file != NULL && (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U)))
 
 /*! Determine if file is an image GDAL can read */
-#define gmt_M_file_is_image(file) (file && (strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
+#define gmt_M_file_is_image(file) (file != NULL && (strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
 
 /*! Set the correct column mode (trailing vs no trailing text) based on the given string is NULL or not */
 #define gmt_M_colmode(text) ((text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)

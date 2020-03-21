@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ GMT_LOCAL int esri_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_H
 	strcat  (record, item);	strcat  (record, "\n");
 	gmt_M_fputs (record, fp);		/* Write a text record */
 	if (isnan (header->nan_value)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
 		header->nan_value = -9999.0f;
 	}
 	snprintf (record, GMT_BUFSIZ, "nodata_value %ld\n", lrintf (header->nan_value));
@@ -85,43 +85,43 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 	header->z_scale_factor = 1.0;
 	header->z_add_offset   = 0.0;
 
-	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BYTEORDER */ 
+	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BYTEORDER */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* LAYOUT */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->n_rows) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding NROWS record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding NROWS record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->n_columns) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding NCOLS record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding NCOLS record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &nB) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding NBANDS record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding NBANDS record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	if (nB != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Cannot read file with number of Bands != 1 \n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Cannot read file with number of Bands != 1 \n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->bits) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding NBITS record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding NBITS record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	if ( header->bits != 16 && header->bits != 32 ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: This data type (%d bits) is not supported\n", header->bits);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: This data type (%d bits) is not supported\n", header->bits);
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BANDROWBYTES  */ 
+	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BANDROWBYTES  */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* TOTALROWBYTES */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);		/* BANDGAPBYTES  */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
@@ -132,35 +132,35 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 #else
 	if (sscanf (record, "%*s %f", &header->nan_value) != 1) {
 #endif
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->wesn[XLO]) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding ULXMAP record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding ULXMAP record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->wesn[YHI]) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding ULYMAP record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding ULYMAP record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->inc[GMT_X]) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding XDIM record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding XDIM record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->inc[GMT_Y]) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding YDIM record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding YDIM record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-			
+
 	gmt_fclose (GMT, fp);
 	HH->orig_datatype = (header->bits == 16) ? GMT_SHORT : GMT_INT;
 
@@ -195,28 +195,28 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 
 		header->inc[GMT_X] = header->inc[GMT_Y] = 30.0 * GMT_SEC2DEG;	/* 30 arc seconds */
 		header->wesn[YHI] = atof (&header->title[len-2]);
-		if ( header->title[len-3] == 'S' || header->title[len-3] == 's' ) header->wesn[YHI] *= -1; 
+		if ( header->title[len-3] == 'S' || header->title[len-3] == 's' ) header->wesn[YHI] *= -1;
 		c = header->title[len-3];
 		header->title[len-3] = '\0';
 		header->wesn[XLO] = atof (&header->title[len-6]);
 		header->title[len-3] = (char)c;		/* Reset because this function is called at least twice */
-		if ( header->title[len-7] == 'W' || header->title[len-7] == 'w' ) header->wesn[XLO] *= -1; 
+		if ( header->title[len-7] == 'W' || header->title[len-7] == 'w' ) header->wesn[XLO] *= -1;
 		if (header->wesn[YHI] > -60) {
-			header->wesn[YLO] = header->wesn[YHI] - 50; 
-			header->wesn[XHI] = header->wesn[XLO] + 40; 
+			header->wesn[YLO] = header->wesn[YHI] - 50;
+			header->wesn[XHI] = header->wesn[XLO] + 40;
 			header->n_columns = 4800;
 			header->n_rows = 6000;
 		}
 		else {	/* Antarctica tiles cover 30 degrees of latitude and 60 degrees of longitude each have 3,600 rows and 7,200 columns */
-			header->wesn[YLO] = -90; 
-			header->wesn[XHI] = header->wesn[XLO] + 60; 
+			header->wesn[YLO] = -90;
+			header->wesn[XHI] = header->wesn[XLO] + 60;
 			header->n_columns = 7200;
 			header->n_rows = 3600;
 		}
 		header->registration = GMT_GRID_PIXEL_REG;
 		gmt_set_geographic (GMT, GMT_IN);
 		gmtlib_grd_set_units (GMT, header);
-		
+
 		/* Different sign of NaN value between GTOPO30 and SRTM30 grids */
 		if (strstr (HH->name, ".DEM") || strstr (HH->name, ".dem"))
 			header->nan_value = -9999.0f;
@@ -231,14 +231,14 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		struct stat F;
 
 		header->wesn[XLO] = atof (&header->title[len-3]);
-		if ( header->title[len-4] == 'W' || header->title[len-4] == 'w' ) header->wesn[XLO] *= -1; 
+		if ( header->title[len-4] == 'W' || header->title[len-4] == 'w' ) header->wesn[XLO] *= -1;
 		c = header->title[len-4];
 		header->title[len-4] = '\0';
 		header->wesn[YLO] = atof (&header->title[len-6]);
 		header->title[len-4] = (char)c;		/* Reset because this function is called at least twice */
-		if ( header->title[len-7] == 'S' || header->title[len-7] == 's' ) header->wesn[YLO] *= -1; 
-		header->wesn[YHI] = header->wesn[YLO] + 1; 
-		header->wesn[XHI] = header->wesn[XLO] + 1; 
+		if ( header->title[len-7] == 'S' || header->title[len-7] == 's' ) header->wesn[YLO] *= -1;
+		header->wesn[YHI] = header->wesn[YLO] + 1;
+		header->wesn[XHI] = header->wesn[XLO] + 1;
 		header->nan_value = -32768.0f;
 		header->bits = 16;		/* Temp pocket to store number of bits */
 		HH->orig_datatype = GMT_SHORT;
@@ -269,21 +269,21 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->n_columns) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding ncols record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding ncols record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->n_rows) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nrows record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding nrows record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->wesn[XLO]) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding xll record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding xll record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
@@ -292,7 +292,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	if (!strncmp (record, "xllcorner", 9U)) header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->wesn[YLO]) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding yll record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding yll record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
@@ -301,7 +301,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	if (!strncmp (record, "yllcorner", 9U)) header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->inc[GMT_X]) != 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding cellsize record\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding cellsize record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
@@ -316,7 +316,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 #else
 		if (sscanf (record, "%*s %f", &header->nan_value) != 1) {
 #endif
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
 			if (fpBAK) gmt_fclose (GMT, fp2);
 			gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_READ_FAILED);
@@ -333,7 +333,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		/* Read an extra record containing the endianness info */
 		gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 		if (sscanf (record, "%*s %s", tmp) != 1) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info BINARY Grid: Error decoding endianness record\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Arc/Info BINARY Grid: Error decoding endianness record\n");
 			gmt_fclose (GMT, fp2);
 			return (GMT_GRDIO_READ_FAILED);
 		}
@@ -471,23 +471,23 @@ int gmt_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	gmt_fclose (GMT, fp);
-		
+
 	return (GMT_NOERROR);
 }
 
 int gmt_esri_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	FILE *fp = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
-	
+
 	if (!strcmp (HH->name, "="))	/* Write to stdout */
 		fp = GMT->session.std[GMT_OUT];
 	else if ((fp = gmt_fopen (GMT, HH->name, "w")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
-	
+
 	esri_write_info (GMT, fp, header);
 
 	gmt_fclose (GMT, fp);
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -509,7 +509,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	if (HH->flags[0]) {	/* We are dealing with a ESRI .hdr file or GTOPO30, SRTM30, SRTM1|3 */
 		r_mode = "rb";
 		if (((HH->flags[0] == 'M' || HH->flags[0] == 'B') && !GMT_BIGENDIAN) ||
-			(HH->flags[0] == 'L' && GMT_BIGENDIAN)) 
+			(HH->flags[0] == 'L' && GMT_BIGENDIAN))
 			swap = true;
 		nBits = header->bits;
 		is_binary = true;
@@ -527,7 +527,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
-	
+
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), HH->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
@@ -650,7 +650,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	if (nBits != 32) gmt_M_free (GMT, tmp16);
 
 	if (n_left) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Expected % "PRIu64 " points, found only % "PRIu64 "\n", header->nm, header->nm - n_left);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Expected % "PRIu64 " points, found only % "PRIu64 "\n", header->nm, header->nm - n_left);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 

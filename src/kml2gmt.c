@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"kml2gmt"
@@ -137,7 +137,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT
 						Ctrl->F.geometry = GMT_IS_POLY;
 						break;
 					default:
-						GMT_Message (GMT->parent, GMT_TIME_NONE, "Bad feature type. Use s, l or p.\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad feature type. Use s, l or p.\n");
 						n_errors++;
 						break;
 				}
@@ -152,8 +152,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT
 	}
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one file can be processed at the time\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.active && access (Ctrl->In.file, R_OK), "Syntax error: Cannot read file %s\n", Ctrl->In.file);
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one file can be processed at the time\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.active && access (Ctrl->In.file, R_OK), "Cannot read file %s\n", Ctrl->In.file);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -166,13 +166,13 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	int error = 0, n_scan;
 	size_t length;
 	bool scan = true, first = true, skip, single = false, extended = false;
-	
+
 	char buffer[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
 	char word[GMT_LEN128] = {""}, description[GMT_BUFSIZ] = {""};
 	char *gm[3] = {"Point", "Line", "Polygon"}, *line = NULL;
 
 	double out[3], elev;
-	
+
 	FILE *fp = NULL;
 
 	struct GMT_RECORD *Out = NULL;
@@ -191,18 +191,18 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the kml2gmt main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input KML data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input KML data\n");
 	gmt_set_geographic (GMT, GMT_IN);
 	gmt_set_geographic (GMT, GMT_OUT);
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-	
+
 	GMT_Set_Columns (API, GMT_OUT, 2 + Ctrl->Z.active, GMT_COL_FIX_NO_TEXT);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
@@ -219,29 +219,29 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	 * coordinate pairs/triplets on the same line.  It is also unlikely anyone really
 	 * needs to call GMT_kml2gmt with a memory pointer, so this is a small sacrifice.
 	 * P. Wessel, April 2013. */
-	
+
 	if (Ctrl->In.active) {
 		if ((fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot open file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing %s\n", Ctrl->In.file);
 		sprintf (buffer, "kml2gmt: KML read from %s", Ctrl->In.file);
 	}
 	else {     /* Just read standard input */
 		fp = stdin;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading from standard input\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Reading from standard input\n");
 		sprintf (buffer, "kml2gmt: KML read from standard input");
 	}
 	if (Ctrl->F.active)
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
 
 	Out = gmt_new_record (GMT, out, buffer);
 
 	/* Now we are ready to take on some input values */
 
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
-	
+
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 	Out->text = NULL;
 	line = gmt_M_memory (GMT, NULL, GMT_INITIAL_MEM_ROW_ALLOC, char);
@@ -295,7 +295,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			if (name[0] && description[0]) strcat (GMT->current.io.segment_header, " ");
 			if (description[0]) { strcat (GMT->current.io.segment_header, "-D\""); strcat (GMT->current.io.segment_header, description); strcat (GMT->current.io.segment_header, "\""); }
 		}
-		
+
 		if (Ctrl->E.active && strstr (line, "<ExtendedData>")) {
 			/* https://developers.google.com/kml/documentation/kmlreference#extendeddata
 			   But only a single <SimpleData name="string" is implemented here. */
@@ -316,7 +316,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 
 		if (!strstr (line, "<coordinates>")) continue;
 		/* We get here when the line says coordinates */
-		
+
 		if (fmode == POINT && strstr (line, "</coordinates>")) {	/* Process the single point */
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point");
 		}
@@ -326,7 +326,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 
 		single = (strstr (line, "</coordinates>") != NULL);	/* All on one line */
-		
+
 		if (fmode == POINT && single) {	/* Process the single point from current record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
@@ -359,8 +359,8 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, line);
-	
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %u features with selected geometry\n", n_features);
-	
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "Found %u features with selected geometry\n", n_features);
+
 	Return (GMT_NOERROR);
 }

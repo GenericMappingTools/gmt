@@ -12,11 +12,11 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77info** *NGDC-ids*
-[ |-C|\ [**m**\ \|\ **e**] ]
-[ |-E|\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ]
-[ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h** ]
-[ |-L|\ [**v**\ ] ]
+**gmt mgd77info** *GEODAS-ids*
+[ |-C|\ [**m**\|\ **e**] ]
+[ |-E|\ [**m**\|\ **e**] ] [ **-I**\ *ignore* ]
+[ |-M|\ **f**\ [*item*]\|\ **r**\|\ **e**\|\ **h** ]
+[ |-L|\ [**v**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -35,7 +35,7 @@ section or its individual members.
 If you need to know which tracks are crossing through a given region and
 what kinds of geophysical observations are available, consider using the
 x2sys tools to set up a tracks index data base (see **x2sys\_init** for
-more information). 
+more information).
 
 Required Arguments
 ------------------
@@ -47,19 +47,19 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**m**\ \|\ **e**]
+**-C**\ [**m**\|\ **e**]
     List abbreviations for all columns present in the MGD77[+] files.
     Append **m** or **e** to limit the display to the MGD77 standard or
     MGD77+ extended set only.
 
 .. _-E:
 
-**-E**\ [**m**\ \|\ **e**]
+**-E**\ [**m**\|\ **e**]
     Give a one-line summary for each cruise listed.
 
 .. _-M:
 
-**-Mf**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h**
+**-Mf**\ [*item*]\|\ **r**\|\ **e**\|\ **h**
     List the meta-data (header) and (if present) the MGD77+ history for
     each cruise. Append **f** for a formatted display. This will list
     individual parameters and their values, one entry per output line,
@@ -82,7 +82,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**v**\ ]
+**-L**\ [**v**]
     No cruise information is listed. Instead, we just display a list of
     the GEODAS institution 2-character codes and their names.
     Optionally, append **v** to also display the vessels and their
@@ -102,12 +102,12 @@ Optional Arguments
     (93) CHILE, (J1) HYDR DEPT JAPAN, (J2) GEOL SRVY JAPAN, (J4) UNIV
     TOKYO, (J5) KOBE UNIV, (J7) UNIV OF RYUKYUS, (J8) J.O.D.C. JAPAN,
     (J9) CHIBA UNIV, (JA) INST.POLAR RES., (ZZ) INST NOT CODED.
- 
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-    
+
 .. include:: ../../explain_help.rst_
 
 Examples

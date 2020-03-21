@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * img2grd.c
@@ -65,7 +65,7 @@
 #define THIS_MODULE_OPTIONS "-VRn" GMT_OPT("m")
 
 /* The following values are used to initialize the default values
-	controlling the range covered by the img file and the size 
+	controlling the range covered by the img file and the size
 	of a pixel in minutes of longitude.  The values shown here
 	are for the 2-minute files currently in use (world_grav 7.2
 	and topo_polish 6.2).  */
@@ -78,8 +78,8 @@
 
 #define GMT_IMG_MPIXEL 2.0
 
-/* The following structure contains info corresponding to 
- * the above values, which may be altered by the user at 
+/* The following structure contains info corresponding to
+ * the above values, which may be altered by the user at
  * run time via argv[][] switches:  */
 
 struct GMT_IMG_RANGE {
@@ -89,14 +89,14 @@ struct GMT_IMG_RANGE {
 	double	mpixel;
 };
 
-/* The following structure contains info used to set up the 
+/* The following structure contains info used to set up the
  * coordinate transformations.  These are to be determined
  * based on the values in GMT_IMG_RANGE after argv[][] has
  * been parsed.  Two different structures will be used, one
  * representing the input file, and the other the output,
  * to simplify the computation of coordinates for N by N
  * averages in the output:  */
- 
+
 struct GMT_IMG_COORD {
 	double	radius;		/* # of pixels in 1 radian of longitude */
 	int	nx360;		/* # of pixels in 360 degrees of longtd */
@@ -243,7 +243,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 				Ctrl->D.active = true;
 				if (opt->arg[0] && (sscanf (opt->arg, "%lf/%lf", &Ctrl->D.min, &Ctrl->D.max)) != 2) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D: Failed to decode <minlat>/<maxlat>.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Failed to decode <minlat>/<maxlat>.\n");
 				}
 				else {
 					Ctrl->D.min = GMT_IMG_MINLAT_80;
@@ -266,6 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
+				/* Intentionally fall through */
 			case 'I':
 				Ctrl->I.active = true;
 				L = strlen (opt->arg);
@@ -276,7 +277,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 				}
 				if ((sscanf (opt->arg, "%lf", &Ctrl->I.value)) != 1) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -I requires a positive value.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I requires a positive value.\n");
 				}
 				if (sec) {
 					Ctrl->I.value /= 60.0;
@@ -300,14 +301,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 				Ctrl->T.active = true;
 				if ((sscanf (opt->arg, "%d", &Ctrl->T.value)) != 1) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -T requires an output type 0-3.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T requires an output type 0-3.\n");
 				}
 				break;
 			case 'W':
 				Ctrl->W.active = true;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->W.value)) != 1) {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -W requires a longitude >= 360.0.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -W requires a longitude >= 360.0.\n");
 				}
 				break;
 			default:	/* Report bad options */
@@ -316,18 +317,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Syntax error: Must specify input imgfile name.\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: More than one world image file name given.\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option.\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI] || GMT->common.R.wesn[YLO] >= GMT->common.R.wesn[YHI]), "Syntax error:Must specify -R with west < east and south < north.\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || Ctrl->G.file == NULL, "Syntax error: Must specify output grid file name with -G.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.min <= -90 || Ctrl->D.max >= 90.0 || Ctrl->D.max <= Ctrl->D.min), "Syntax error: Min/max latitudes are invalid.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0 || Ctrl->T.value > 3, "Syntax error: Must specify output type in the range 0-3 with -T.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.value < 360.0, "Syntax error: Requires a maximum longitude >= 360.0 with -W.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.value <= 0.0, "Syntax error: Requires a positive value with -I.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->M.active, "Syntax error: -F requires -M.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->M.active, "Syntax error: -E cannot be used with -M.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.value < 1, "Syntax error: -N requires an integer > 1.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Must specify input imgfile name.\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "More than one world image file name given.\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI] || GMT->common.R.wesn[YLO] >= GMT->common.R.wesn[YHI]), "Must specify -R with west < east and south < north.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || Ctrl->G.file == NULL, "Must specify output grid file name with -G.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.min <= -90 || Ctrl->D.max >= 90.0 || Ctrl->D.max <= Ctrl->D.min), "Min/max latitudes are invalid.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0 || Ctrl->T.value > 3, "Must specify output type in the range 0-3 with -T.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.value < 360.0, "Requires a maximum longitude >= 360.0 with -W.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.value <= 0.0, "Requires a positive value with -I.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->M.active, "Option -F requires -M.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->M.active, "Option -E cannot be used with -M.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.value < 1, "Option -N requires an integer > 1.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -338,7 +339,7 @@ GMT_LOCAL double  img_gud_fwd (double y) {
 	 * developed from a sphere of unit radius, returns the latitude
 	 * in radians.  Should be called with -oo < y < +oo.  Returned
 	 * value will be in -M_PI_2 < value < +M_PI_2.  */
-	 
+
 	return(2.0 * atan(exp(y)) - M_PI_2);
 }
 
@@ -348,7 +349,7 @@ GMT_LOCAL double  img_gud_inv (double phi) {
 	 * latitude on a Mercator map tangent to a sphere of unit
 	 * radius.  Should be called with -M_PI_2 < phi < +M_PI_2.
 	 * Returned value will be in -oo < value < +oo.   */
-	
+
 	return(log(tan(M_PI_4 + 0.5 * phi)));
 }
 
@@ -356,15 +357,15 @@ GMT_LOCAL double img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord) {
 	/* Given Latitude in degrees and pointer to coordinate struct,
 	 * return (double) coordinate from top edge of input img file
 	 * measured downward in coordinate pixels.  */
-	 
+
 	 return(coord->nytop - coord->radius * img_gud_inv(lat*D2R));
 }
 
 GMT_LOCAL double  img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord) {
-	/* Given Y coordinate, measured downward from top edge of 
+	/* Given Y coordinate, measured downward from top edge of
 	 * input img file in pixels, and pointer to coordinate struct,
 	 * return Latitude in degrees.  */
-	
+
 	return( R2D * img_gud_fwd( (coord->nytop - ypix) / coord->radius) );
 }
 
@@ -373,16 +374,16 @@ GMT_LOCAL int img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, st
 	 * 0 on success.  */
 
 	if (r->maxlon < 360.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR from img_setup_coord: Cannot handle maxlon < 360.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR from img_setup_coord: Cannot handle maxlon < 360.\n");
 		return (-1);
 	}
-	
+
 	c->nxcol  = irint (r->maxlon * 60.0 / r->mpixel);
 	c->nx360  = irint (360.0 * 60.0 / r->mpixel);
 	c->radius = c->nx360 / (2.0 * M_PI);
 	c->nytop  = irint (c->radius * img_gud_inv(r->maxlat*D2R) );
 	c->nyrow  = c->nytop - irint (c->radius * img_gud_inv(r->minlat*D2R) );
-	
+
 	return (0);
 }
 
@@ -406,7 +407,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	int16_t *row = NULL;
 	uint16_t *u2 = NULL;
 
-	char infile[PATH_MAX] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_STR16] = {""}, output[PATH_MAX] = {""};
+	char infile[PATH_MAX] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_VF_LEN] = {""}, output[PATH_MAX] = {""};
 	char z_units[GMT_GRID_UNIT_LEN80] = {""}, exact_R[GMT_LEN256] = {""};
 
 	FILE *fp = NULL;
@@ -431,7 +432,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -452,7 +453,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	first = gmt_download_file_if_not_found (GMT, Ctrl->In.file, 0);	/* Deal with downloadable GMT data sets first */
 
 	if (!gmt_getdatapath (GMT, &Ctrl->In.file[first], infile, R_OK)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "img file %s not found\n", &Ctrl->In.file[first]);
+		GMT_Report (API, GMT_MSG_ERROR, "img file %s not found\n", &Ctrl->In.file[first]);
 		Return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 
@@ -486,12 +487,12 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			default:
 				if (lat == 0.0) return (GMT_GRDIO_BAD_IMG_LAT);
 				min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
-				if (!Ctrl->I.active) GMT_Report (API, GMT_MSG_NORMAL, "img file %s has unusual size - grid increment defaults to %d min\n", infile, min);
+				if (!Ctrl->I.active) GMT_Report (API, GMT_MSG_ERROR, "img file %s has unusual size - grid increment defaults to %d min\n", infile, min);
 				break;
 		}
 		if (!Ctrl->D.active) {imgrange.minlat = -lat;	imgrange.maxlat = +lat;}
 		if (!Ctrl->I.active) imgrange.mpixel = Ctrl->I.value = (double) min;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "img file %s determined to have an increment of %d min and a latitude bound at +/- %g\n", infile, min, lat);
+		GMT_Report (API, GMT_MSG_INFORMATION, "img file %s determined to have an increment of %d min and a latitude bound at +/- %g\n", infile, min, lat);
 	}
 
 	strcpy (z_units, "meters, mGal, Eotvos, micro-radians or Myr, depending on img file and -S.");
@@ -499,41 +500,41 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		if (strstr (infile, "age")) {
 			Ctrl->S.value = 0.01;
 			strcpy (z_units, "Myr");
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "img file %s determined to be crustal ages with scale 0.01.\n", infile);
+			GMT_Report (API, GMT_MSG_INFORMATION, "img file %s determined to be crustal ages with scale 0.01.\n", infile);
 		}
 		if (strstr (infile, "topo")) {
 			Ctrl->S.value = 1.0;
 			strcpy (z_units, "meter");
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "img file %s determined to be bathymetry with scale 1.\n", infile);
+			GMT_Report (API, GMT_MSG_INFORMATION, "img file %s determined to be bathymetry with scale 1.\n", infile);
 		}
 		else if (strstr (infile, "grav")) {
 			Ctrl->S.value = 0.1;
 			strcpy (z_units, "mGal");
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "img file %s determined to be free-air anomalies with scale 0.1.\n", infile);
+			GMT_Report (API, GMT_MSG_INFORMATION, "img file %s determined to be free-air anomalies with scale 0.1.\n", infile);
 		}
 		else if (strstr (infile, "curv") || strstr (infile, "vgg")) {
 			Ctrl->S.value = (Ctrl->I.value == 2.0) ? 0.05 : 0.02;
 			strcpy (z_units, "Eotvos");
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "img file %s determined to be VGG anomalies with scale %g.\n", infile, Ctrl->S.value);
+			GMT_Report (API, GMT_MSG_INFORMATION, "img file %s determined to be VGG anomalies with scale %g.\n", infile, Ctrl->S.value);
 		}
 		else {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Unable to determine data type for img file %s; scale not used.\n", infile);
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to determine data type for img file %s; scale not used.\n", infile);
 			Ctrl->S.value = 1.0;
 		}
 	}
 	if (Ctrl->T.value == 3) strcpy (z_units, "T/F, one or more constraints fell in this pixel.");
 
 	if (img_setup_coord (GMT, &imgrange, &imgcoord) ) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Error in img coordinate specification [-I -W or -D].\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Failure in img coordinate specification [-I -W or -D].\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	else if (Ctrl->N.active && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: Bad choice of navg.  Must divide %d and %d\n", imgcoord.nx360, imgcoord.nyrow);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -N: Bad choice of navg.  Must divide %d and %d\n", imgcoord.nx360, imgcoord.nyrow);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if ((fp = gmt_fopen (GMT, infile, "rb")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot open %s for binary read.\n", infile);
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot open %s for binary read.\n", infile);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -556,14 +557,14 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	dx = 1.0 / ((double)imgcoord.nx360 / 360.0);
 	inc[GMT_X] = inc[GMT_Y] = dx * navg;
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Expects %s to be %d by %d pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Expects %s to be %d by %d pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
 
 	if (toplat < wesn[YHI]) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", wesn[YHI], toplat);
+		GMT_Report (API, GMT_MSG_WARNING, "Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", wesn[YHI], toplat);
 		wesn[YHI] = toplat - GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating n_rows */
 	}
 	if (botlat > wesn[YLO]) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", wesn[YLO], botlat);
+		GMT_Report (API, GMT_MSG_WARNING, "Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", wesn[YLO], botlat);
 		wesn[YLO] = botlat + GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating n_rows */
 	}
 
@@ -585,8 +586,8 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	n_columns = (int)(iinstop - iinstart) / navg;
 
 	sprintf (exact_R, "%.16g/%.16g/%.16g/%.16g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "To fit [averaged] input, your %s is adjusted to the exact region -R%s.\n", Ctrl->In.file, exact_R);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "The output grid size will be %d by %d pixels.\n", n_columns, n_rows);
+	GMT_Report (API, GMT_MSG_INFORMATION, "To fit [averaged] input, your %s is adjusted to the exact region -R%s.\n", Ctrl->In.file, exact_R);
+	GMT_Report (API, GMT_MSG_INFORMATION, "The output grid size will be %d by %d pixels.\n", n_columns, n_rows);
 
 	/* Set iinstart so that it is non-negative, for use to index pixels.  */
 	while (iinstart < 0) iinstart += imgcoord.nx360;
@@ -594,7 +595,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	/* Set navgsq, rnavgsq, for the averaging */
 	navgsq = navg * navg;
 	rnavgsq = 1.0 / navgsq;
-	
+
 	/* Set up header with Mercatorized dimensions assuming -Jm1i  */
 	if (Ctrl->F.active || !Ctrl->M.active) {	/* Backwards support for old behavior in -M, or being internally consistent with central meridian */
 		wesn[XLO] = 0.0;
@@ -679,7 +680,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			continue;
 		}
 		if ((fread (row, sizeof (int16_t), n_expected, fp) ) != n_expected) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Read failure at jin = %d.\n", jin);
+			GMT_Report (API, GMT_MSG_ERROR, "Read failure at jin = %d.\n", jin);
 			gmt_M_free (GMT, ix);	gmt_M_free (GMT, row);
 			fclose (fp);
 			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
@@ -754,10 +755,10 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		gmt_M_str_free (GMT->init.history[id]);			/* Free the previous history string set during parsing */
 		GMT->init.history[id] = strdup (exact_R);		/* Replace it with the exact region */
 	}
-	
+
 	/* We now have the Mercator grid in Grid. */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->n_columns, Merc->header->n_rows, Merc->header->z_min, Merc->header->z_max);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->n_columns, Merc->header->n_rows, Merc->header->z_min, Merc->header->z_max);
 	if (Ctrl->M.active) {	/* Write out the Mercator grid and return, no projection needed */
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Merc)) Return (API->error);
@@ -769,7 +770,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 
 	/* Here we need to reproject the data, and Merc becomes a temporary grid */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Undo the implicit spherical Mercator -Jm1i projection.\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Undo the implicit spherical Mercator -Jm1i projection.\n");
 	/* Preparing source and destination for GMT_grdproject */
 	/* a. Register the Mercator grid to be the source read by GMT_grdproject by passing a pointer */
 	GMT_Report (API, GMT_MSG_DEBUG, "Open Mercator Grid as grdproject virtual input\n");
@@ -819,7 +820,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg --GMT_HISTORY=false", west, east, south, north, Ctrl->I.value, input, Ctrl->G.file);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling grdsample with args %s\n", cmd);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdsample with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the grid or fail */
 			Return (API->error);
 		}

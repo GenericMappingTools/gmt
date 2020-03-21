@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt pssac** [ *saclist*\ \|\ *SACfiles* ] |-J|\ *parameters*
+**gmt pssac** [ *saclist*\|\ *SACfiles* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C|\ [*t0/t1*] ]
@@ -25,7 +25,7 @@ Synopsis
 [ |-O| ]
 [ |-P| ]
 [ |-Q| ]
-[ |-S|\ [**i**]\ *scale*\ [*unit*] ]
+[ |-S|\ [**i**]\ *scale* ]
 [ |-T|\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -39,7 +39,7 @@ Synopsis
 
 .. include:: sac_common.rst_
 
-.. include:: ../../common_classic_sup.rst_
+.. include:: ../../common_classic.rst_
 
 Examples
 --------

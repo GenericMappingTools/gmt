@@ -3,7 +3,7 @@
 #
 # Purpose:  Illustrates spherical surface gridding with Green's function of splines
 # GMT modules:  makecpt, grdcontour, grdimage, grdmath greenspline, colorbar, text
-# Unix progs:   echo, rm
+# Unix progs:   rm
 #
 gmt begin ex29
 	# This example uses 370 radio occultation data for Mars to grid the topography.
@@ -21,22 +21,22 @@ gmt begin ex29
 	gmt greenspline -RPROJ_ELLIPSOID.nc @mars370.txt -D4 -Sp -Gmars.nc
 	gmt greenspline -RPROJ_ELLIPSOID.nc @mars370.txt -D4 -Sq0.9975 -Gmars2.nc
 	# Scale to km and remove PROJ_ELLIPSOID
-	gmt grdmath mars.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars.nc
+	gmt grdmath mars.nc  1000 DIV PROJ_ELLIPSOID.nc SUB = mars.nc
 	gmt grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc
 
 	gmt set FONT_TAG 14p,Helvetica-Bold
-	gmt subplot begin 2x1 -Fs7i/0 -Rg -JH0/7i -B30g30 -BWsne -A -M0.25i
+	gmt subplot begin 2x1 -Fs18c/0 -Rg -JH0/18c -B30g30 -BWsne -A -M0.6c
 		gmt subplot set 0
 		gmt grdimage mars.nc -I+ne0.75+a45 --FONT_ANNOT_PRIMARY=12p
 		gmt grdcontour mars.nc -C1 -A5 -Glz+/z-
-		gmt plot -Sc0.045i -Gblack @mars370.txt
-		gmt colorbar -DJBC+o0/0.15i+w6i/0.1i -I --FONT_ANNOT_PRIMARY=12p -Bx2f1 -By+lkm
+		gmt plot -Sc0.1c -Gblack @mars370.txt
+		gmt colorbar -DJBC+o0/0.4c+w6i/0.25c -I --FONT_ANNOT_PRIMARY=12p -Bx2f1 -By+lkm
 
 		gmt subplot set 1
 		gmt makecpt -Crainbow -T-7/15
 		gmt grdimage mars2.nc -I+ne0.75+a45 --FONT_ANNOT_PRIMARY=12p
 		gmt grdcontour mars2.nc -C1 -A5 -Glz+/z-
-		gmt plot -Sc0.045i -Gblack @mars370.txt
+		gmt plot -Sc0.1c -Gblack @mars370.txt
 	gmt subplot end
 	rm -f mars.nc mars2.nc PROJ_ELLIPSOID.nc
 gmt end show

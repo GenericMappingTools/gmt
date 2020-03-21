@@ -31,7 +31,7 @@ be written and to specify scaling, translation, and NaN-value.
 Required Arguments
 ------------------
 
-*ingrdfile* [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
+*ingrdfile*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
     The grid file to be read. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
     below), you may optionally append any of **+s**\ *scale*, **+o**\ *offset*,
@@ -48,7 +48,9 @@ Required Arguments
     *id=gd* forces a read via GDAL.
     See Section :ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more information.
 
-**-G**\ *outgrdfile* [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]][*:driver*\ [/*datatype*]]]
+.. _-G:
+
+**-G**\ *outgrdfile*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]][*:driver*\ [/*datatype*]]]
     The grid file to be written. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
     below), you may optionally append  any of **+s**\ *scale*,
@@ -67,13 +69,13 @@ Required Arguments
     GDAL library. Append the format *:driver* and optionally the output
     *datatype*. The driver names are those used by GDAL itself (e.g.,
     netCDF, GTiFF, etc.), and the data type is one of
-    *u8*\ \|\ *u16*\ \|\ *i16*\ \|\ *u32*\ \|\ *i32*\ \|\ *float32*,
+    *u8*\|\ *u16*\|\ *i16*\|\ *u32*\|\ *i32*\|\ *float32*,
     where 'i' and 'u' denote signed and unsigned integers respectively.
     The default type is *float32*. Note also that both driver names and
     data types are case insensitive.
     See Section :ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more information.
 
-    Consider setting :ref:`IO_NC4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>`
+    Consider setting :term:`IO_NC4_DEFLATION_LEVEL`
     to reduce file size and to further increase read/write performance.
     Especially when working with subsets of global grids, masks, and grids with
     repeating grid values, the improvement is usually significant.
@@ -156,7 +158,7 @@ fails you may append the =\ *id* suffix to the filename *ingrdfile*.
 +----------+---------------------------------------------------------------+
 | **rb**   | SUN rasterfile format (8-bit standard)                        |
 +----------+---------------------------------------------------------------+
-| **rf**   | GEODAS grid format GRD98 (NGDC)                               |
+| **rf**   | GEODAS grid format GRD98 (NCEI)                               |
 +----------+---------------------------------------------------------------+
 | **sf**   | Golden Software Surfer format 6 (32-bit float)                |
 +----------+---------------------------------------------------------------+

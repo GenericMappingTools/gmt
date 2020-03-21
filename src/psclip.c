@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Initialize or terminate polygonal clip paths"
 #define THIS_MODULE_KEYS	"<D{,>X},C-("
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy" GMT_OPT("EZMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy" GMT_OPT("EZMmc")
 
 struct PSCLIP_CTRL {
 	struct A {	/* -A[m|p|step] */
@@ -79,8 +79,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C[a|<n>] [-A[m|p|x|y]] [-K] [-O]  OR\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s <table> %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[-N] %s%s[-T] [%s] [%s] [-W[<pen>]\n", API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] %s[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] %s[%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -98,8 +98,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set clip path for the entire map frame.  No input file is required.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Draw clip path with given pen attributes [Default is no line].", 0);
-	GMT_Option (API, "X,bi2,c,di,e,f,g,h,i,p,t,:,.");
-	
+	GMT_Option (API, "X,bi2,c,di,e,f,g,h,i,p,qi,t,:,.");
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -146,7 +146,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[<n>]\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Correct syntax is -C[<n>]\n");
 							n_errors++;
 						}
 						break;
@@ -173,17 +173,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 	}
 
 	if (Ctrl->C.active) {
-		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Syntax error: Cannot use -W with -C\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Cannot use -W with -C\n");
 	}
 	else {
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	}
 	if (Ctrl->T.active) Ctrl->N.active = true;	/* -T implies -N */
-	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_VERBOSE, "Option -T ignores all input files\n");
+	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 
@@ -196,11 +196,11 @@ GMT_LOCAL void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL,
 	switch (n) {
 		case PSL_ALL_CLIP:
 			PSL_endclipping (PSL, n);	/* Reduce clipping to none */
-			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Restore ALL clip levels\n");
+			GMT_Report (C->parent, GMT_MSG_INFORMATION, "Restore ALL clip levels\n");
 			break;
 		default:
 			PSL_endclipping (PSL, n);	/* Reduce clipping by n levels [1] */
-			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Restore %d clip levels\n", n);
+			GMT_Report (C->parent, GMT_MSG_INFORMATION, "Restore %d clip levels\n", n);
 			break;
 	}
 }
@@ -212,7 +212,7 @@ int GMT_clip (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: clip\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: clip\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psclip (V_API, mode, args);
@@ -239,7 +239,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -259,7 +259,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	}
 
 	/* Here we have -R -J etc to deal with */
-	
+
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -283,7 +283,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 		if (Ctrl->N.active) {	/* Must clip map */
 			eo_flag = PSL_EO_CLIP;	/* Do odd/even clipping when we first lay down the map perimeter */
 			gmt_map_clip_on (GMT, GMT->session.no_rgb, 1 + eo_flag);
@@ -301,16 +301,16 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (D->n_columns < 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
+				GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			DH = gmt_get_DD_hidden (D);
 			duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
 			if (Ctrl->W.active) {
 				gmt_setpen (GMT, &Ctrl->W.pen);
-				gmt_setfill (GMT, &no_fill, true);
+				gmt_setfill (GMT, &no_fill, 1);
 			}
-				
+
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */

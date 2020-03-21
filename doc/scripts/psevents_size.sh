@@ -49,4 +49,4 @@ gmt begin psevents_size
 	EOF
 	rm -f B.txt t.txt
 gmt end show
-	
+

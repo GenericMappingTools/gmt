@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -283,9 +283,9 @@ GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, u
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVOLUME_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDVOLUME_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->L.value = GMT->session.d_NaN;
 	C->S.unit = 'e';	/* Meter if geographic */
@@ -295,8 +295,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -323,7 +323,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> and then multiply data by <fact> before processing [1/0].\n");
 	GMT_Option (API, "f,h,o,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -365,11 +365,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 						n = 2;			/* To cheat the sanity test on -Cr option below */
 					}
 					n_errors += gmt_M_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high,
-					                                   "Syntax error -C option: high must exceed low\n");
+					                                   "Option -C: high must exceed low\n");
 					/* Now apply the trick that makes this option work. Swap and change signs of low/high */
 					Ctrl->C.inc   = Ctrl->C.low;	/* Use inc as the buble sort tmp variable */
 					Ctrl->C.low   = -Ctrl->C.high;
-					Ctrl->C.high  = -Ctrl->C.inc; 
+					Ctrl->C.high  = -Ctrl->C.inc;
 					Ctrl->C.inc   = Ctrl->C.high - Ctrl->C.low;
 					Ctrl->Z.scale = -1;
 				}
@@ -377,7 +377,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->C.low, &Ctrl->C.high, &Ctrl->C.inc);
 					if (n == 3) {
 						n_errors += gmt_M_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high || Ctrl->C.inc <= 0.0,
-								"Syntax error -C option: high must exceed low and delta must be positive\n");
+								"Option -C: high must exceed low and delta must be positive\n");
 					}
 					else
 						Ctrl->C.high = Ctrl->C.low, Ctrl->C.inc = 1.0;	/* So calculation of ncontours will yield 1 */
@@ -403,13 +403,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Append c or h [Default].\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -T: Append c or h [Default].\n");
 				}
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
 				n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset) < 1,
-						"Syntax error option -Z: Must specify <fact> and optionally <shift>\n");
+						"Option -Z: Must specify <fact> and optionally <shift>\n");
 				break;
 
 			default:	/* Report bad options */
@@ -418,19 +418,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.reverse && !(n == 1 || n == 3),
-	                                   "Syntax error option -C: Must specify 1 or 3 arguments\n");
+	                                   "Option -C: Must specify 1 or 3 arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.reverse && n != 2,
-	                                   "Syntax error option -C: Must specify 2 arguments\n");
+	                                   "Option -C: Must specify 2 arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(strchr (GMT_LEN_UNITS2, Ctrl->S.unit)),
-	                                   "Syntax error option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
+	                                   "Option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_dnan (Ctrl->L.value),
-	                                   "Syntax error option -L: Must specify base\n");
+	                                   "Option -L: Must specify base\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active,
-	                                   "Syntax error option -T: Must also specify -Clow/high/delta\n");
+	                                   "Option -T: Must also specify -Clow/high/delta\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && doubleAlmostEqualZero (Ctrl->C.high, Ctrl->C.low),
-	                                   "Syntax error option -T: Must specify -Clow/high/delta\n");
+	                                   "Option -T: Must specify -Clow/high/delta\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -442,7 +442,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	bool bad, shrink, cut[4];
 	int error = 0, ij_inc[5];
 	unsigned int row, col, c, k, pos, neg, nc, n_contours;
-	
+
 	uint64_t ij;
 
 	double take_out, dv, da, cval = 0.0, cellsize, fact, dist_pr_deg, sum, z_range, out[4];
@@ -465,39 +465,39 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 	shrink = gmt_M_is_geographic (GMT, GMT_IN);	/* Must deal with latitude-dependant area */
-	
+
 	if (Ctrl->S.active && !shrink) {	/* Not known to be geographic */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-S requires a geographic grid.\n");
-		if ((Grid->header->wesn[YLO] >= -90.0 && Grid->header->wesn[YHI] <= 90.0) && 
-			(Grid->header->wesn[XLO] >= -360.0 && Grid->header->wesn[XHI] <= 720.0) && 
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "-S requires a geographic grid.\n");
+		if ((Grid->header->wesn[YLO] >= -90.0 && Grid->header->wesn[YHI] <= 90.0) &&
+			(Grid->header->wesn[XLO] >= -360.0 && Grid->header->wesn[XHI] <= 720.0) &&
 			(Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) <= 360.0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "However, your grid domain seems compatible with geographical grid domains.\n");
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "To make sure your Cartesian grid is recognized as geographical, use the -fg option.\n");
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, use gmt grdedit -fg to bless it as a geographic grid first.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "However, your grid domain seems compatible with geographical grid domains.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "To make sure your Cartesian grid is recognized as geographical, use the -fg option.\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Alternatively, use gmt grdedit -fg to bless it as a geographic grid first.\n");
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Yours grid is recognized as Cartesian.\n");
-		
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Yours grid is recognized as Cartesian.\n");
+
 		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Selected base value exceeds the minimum grid z value - aborting\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Selected base value exceeds the minimum grid z value - aborting\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, Grid->header->wesn, 4, double);	/* No -R, use grid domain */
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
@@ -506,17 +506,17 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->C.reverse_min) {		/* Only now we know the min value to use in the -Cr<cval> option */
-		Ctrl->C.high = -Grid->header->z_min; 
+		Ctrl->C.high = -Grid->header->z_min;
 		Ctrl->C.inc  = Ctrl->C.high - Ctrl->C.low;
 		if (Ctrl->C.high <= Ctrl->C.low) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Cr<cval> option: <cval> must exceed grid's minimum.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Cr<cval>: <cval> must exceed grid's minimum.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
 	(void) gmt_set_outgrid (GMT, Ctrl->In.file, false, Grid, &Work);	/* true if input is a read-only array */
 	gmt_grd_init (GMT, Work->header, options, true);
-	
+
 	/* Set node increments relative to the lower-left node of a 4-point box */
 	gmt_grd_set_ij_inc (GMT, Work->header->mx, ij_inc);
 	ij_inc[4] = ij_inc[0];	/* Repeat for convenience */
@@ -535,7 +535,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	area   = gmt_M_memory (GMT, NULL, n_contours, double);
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
 		Work->header->z_min = (Work->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		Work->header->z_max = (Work->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
 		if (Ctrl->Z.scale < 0.0) gmt_M_double_swap (Work->header->z_min, Work->header->z_max);
@@ -556,8 +556,8 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		cval = Ctrl->C.low + c * Ctrl->C.inc;
 		take_out = (c == 0) ? cval + small : Ctrl->C.inc;	/* Take out start contour the first time and just the increment subsequent times */
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute volume, area, and average height for contour = %g\n", cval);
-		
+		GMT_Report (API, GMT_MSG_INFORMATION, "Compute volume, area, and average height for contour = %g\n", cval);
+
 		for (ij = 0; ij < Work->header->size; ij++) {
 			Work->data[ij] -= (gmt_grdfloat)take_out;		/* Take out the zero value */
 			if (Work->data[ij] == 0.0) Work->data[ij] = (gmt_grdfloat)small;	/* But we don't want exactly zero, just + or - */
@@ -565,7 +565,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		if (Ctrl->L.active) this_base -= take_out;
 
 		if (Ctrl->L.active && this_base >= 0.0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Base exceeds the current contour value - contour is ignored.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Base exceeds the current contour value - contour is ignored.\n");
 			continue;
 		}
 

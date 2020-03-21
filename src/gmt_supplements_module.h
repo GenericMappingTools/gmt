@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
@@ -75,8 +75,10 @@ EXTERN_MSC int GMT_x2sys_solve (void *API, int mode, void *args);
 
 /* Pretty print all modules in the GMT supplements library and their purposes */
 EXTERN_MSC void gmt_supplements_module_show_all (void *API);
-/* List all modules in the GMT supplements library to stdout */
+/* List all modern modules in the GMT supplements library to stdout */
 EXTERN_MSC void gmt_supplements_module_list_all (void *API);
+/* List all classic modules in the GMT supplements library to stdout */
+EXTERN_MSC void gmt_supplements_module_classic_all (void *API);
 /* Function called by GMT_Encode_Options so developers can get information about a module */
 EXTERN_MSC const char * gmt_supplements_module_keys (void *API, char *candidate);
 /* Function returns name of group that module belongs to (core, spotter, etc.) */

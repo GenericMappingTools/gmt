@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ struct PSBASEMAP_CTRL {
 		bool active;
 		char *file;
 	} A;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+s<file>][+t][+u<unit>] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+s<file>][+t][+u<unit>] */
 		bool active;
 		struct GMT_MAP_INSET inset;
 	} D;
@@ -83,7 +83,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psbasemap synopsis and optionally full usage information */
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	bool classic = (API->GMT->current.setting.run_mode == GMT_CLASSIC);
-	
+
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	if (classic) {
@@ -140,9 +140,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *kind[3] = {"Specify a rectangular panel for the map inset", "Specify a rectangular panel behind the map scale", "Specify a rectangular panel behind the map rose"};
 	bool get_panel[3] = {false, false, false}, classic;
-	
+
 	classic = (GMT->current.setting.run_mode == GMT_CLASSIC);
-	
+
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
@@ -222,13 +222,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->L.scale.old_style, "Syntax error: Cannot specify -F and use old-style -L settings\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->A.active || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -A, -B, -D, -L, -T\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Cannot use -B, -D, -L, -T with -A\n");
-	//n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_cartesian (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: -F is only allowed with -L and -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->L.scale.old_style, "Cannot specify -F and use old-style -L settings\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->A.active || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Must specify at least one of -A, -B, -D, -L, -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Cannot use -B, -D, -L, -T with -A\n");
+	//n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_cartesian (GMT, GMT_IN), "-L applies to geographical data only\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Option -F is only allowed with -L and -T\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -240,7 +240,7 @@ int GMT_basemap (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: basemap\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: basemap\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_psbasemap (V_API, mode, args);
@@ -249,7 +249,7 @@ int GMT_basemap (void *V_API, int mode, void *args) {
 int GMT_psbasemap (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psbasemap task */
 	int error;
-	
+
 	struct PSBASEMAP_CTRL *Ctrl = NULL;	/* Control structure specific to program */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
@@ -266,7 +266,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -275,21 +275,21 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	/* Ready to make the plot */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constructing the basemap\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Constructing the basemap\n");
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
-	
+
 	if (Ctrl->A.active) {	/* Just save outline in geographic coordinates */
 		/* Loop counter-clockwise around the rectangular projected domain, recovering the lon/lat points */
 		uint64_t nx, ny, k = 0, i, dim[GMT_DIM_SIZE] = {1, 1, 0, 2};
 		char msg[GMT_BUFSIZ] = {""}, *kind[2] = {"regular", "oblique"};
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
-		
+
 		nx = urint (GMT->current.map.width  / GMT->current.setting.map_line_step);
 		ny = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
 		dim[GMT_ROW] = 2 * (nx + ny) + 1;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		S = D->table[0]->segment[0];
 		/* March around perimeter in a counter-clockwise sense */
@@ -311,7 +311,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 	}
 
 	/* Regular plot behaviour */
-	
+
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);

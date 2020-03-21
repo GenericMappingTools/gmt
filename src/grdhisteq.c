@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -138,7 +138,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 			case 'C':	/* Get # of cells */
 				Ctrl->C.active = true;
 				sval = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -C option: n_cells must be positive\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -C: n_cells must be positive\n");
 				Ctrl->C.value = sval;
 				break;
 			case 'D':	/* Dump info to file or stdout */
@@ -165,13 +165,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Must specify a single input grid file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Must also specify output grid file with -G\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Q.active, "Syntax error -N option: Cannot be combined with -Q\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value <= 0, "Syntax error -C option: n_cells must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Syntax error: Either -D or -G is required for output\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Must specify a single input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Option -N: Must also specify output grid file with -G\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Q.active, "Option -N: Cannot be combined with -Q\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value <= 0, "Option -C: n_cells must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Either -D or -G is required for output\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="), "Piping of input grid file not supported!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -222,7 +222,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 	gmt_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
 	if (outfile) {
 		if ((Orig = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid)) == NULL) {	/* Must keep original if readonly */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid duplication failed - memory error?\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid duplication failed - memory error?\n");
 			gmt_M_free (GMT, cell);
 			return (GMT->parent->error);
 		}
@@ -270,7 +270,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 		unsigned int last_cell = n_cells / 2;
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (gmt_M_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
 		if (GMT_Destroy_Data (GMT->parent, &Orig) != GMT_NOERROR) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free Orig\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to free Orig\n");
 		}
 	}
 
@@ -310,7 +310,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 		pair[i].weight *= (gmt_grdfloat)wsum;
 		pair[i].weight += pair[i-1].weight;
 	}
-	
+
 	/* Find the division points using the normalized 0-1 weights */
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
@@ -453,14 +453,14 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);

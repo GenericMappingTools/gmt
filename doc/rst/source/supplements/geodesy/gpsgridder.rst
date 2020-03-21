@@ -16,21 +16,22 @@ Synopsis
 |-G|\ *outfile*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
-[ |-C|\ [**n**\ ]\ *value*\ [**+f**\ *file*] ]
+[ |-C|\ [**n**]\ *value*\ [**+f**\ *file*] ]
 [ |-E|\ [*misfitfile*] ]
-[ |-F|\ [**d**\ \|\ **f**]\ *fudge*\ ]
+[ |-F|\ [**d**\|\ **f**]\ *fudge* ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
 [ |-S|\ *nu* ]
 [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**w**]]
+[ |-W|\ [**w**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -76,7 +77,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**\ ]\ *value*\ [**+f**\ *file*]
+**-C**\ [**n**]\ *value*\ [**+f**\ *file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
@@ -87,13 +88,12 @@ Optional Arguments
     If a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
     output is produced.  Specify **-Cn**\ *value* to retain only the *value* largest eigenvalues.
-    Note: 1/4 of the total number of data constraints is a good starting point
+    **Note**: 1/4 of the total number of data constraints is a good starting point
     for further experiments.
 
 .. _-E:
 
-**E**\ [*misfitfile*]
-
+**-E**\ [*misfitfile*]
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms) for *u* and
     *v* separately and combined.  Optionally, append a filename and we will
@@ -103,7 +103,7 @@ Optional Arguments
 
 .. _-F:
 
-|-F|\ [**d**\ \|\ **f**]\ *fudge*\
+**-F**\ [**d**\|\ **f**]\ *fudge*\
     The Green's functions are proportional to terms like 1/r^2 and log(r)
     and thus blow up for r == 0.  To prevent that we offer two fudging schemes:
     **-Fd**\ *del_radius* lets you add a constant offset to all radii
@@ -141,7 +141,7 @@ Optional Arguments
 
 **-S**\ *nu*
     Specify Poisson's ratio to use for this 2-D elastic sheet [0.5].
-    Note: 1.0 is incompressible in a 2-D formulation while -1
+    **Note**: 1.0 is incompressible in a 2-D formulation while -1
     removes all coupling between the two directions.
 
 .. _-T:
@@ -149,7 +149,7 @@ Optional Arguments
 **-T**\ *maskgrid*
     Only evaluate the solutions at the nodes
     in the *maskgrid* that are not set to NaN. This option eliminates
-    the need to specify options **-R**, **-I** (and **-r**). 
+    the need to specify options **-R**, **-I** (and **-r**).
 
 .. _-W:
 
@@ -181,6 +181,8 @@ Optional Arguments
 
 .. include:: ../../explain_-icols.rst_
 
+.. include:: ../../explain_-qi.rst_
+
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
 
@@ -208,7 +210,7 @@ Haines, A. J. et al., 2015, *Enhanced Surface Imaging of Crustal Deformation*, S
 doi:10.1007/978-3-319-21578-5_2.
 
 Sandwell, D. T. and P. Wessel, 2016, Interpolation of 2-D Vector Data Using Constraints from Elasticity,
-*Geophys. Res. Lett., 43*, 10,703-10,709, 
+*Geophys. Res. Lett., 43*, 10,703-10,709,
 `http://dx.doi.org/10.1002/2016GL070340 <http://dx.doi.org/10.1002/2016GL070340>`_
 
 See Also

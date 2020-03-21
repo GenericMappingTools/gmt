@@ -15,9 +15,9 @@ Synopsis
 **gmt grdmask** *pathfiles* |-G|\ *mask_grd_file*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
-[ |-N|\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ]
-[ |-S|\ *search\_radius*\ [*unit*] \|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
+[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
+[ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
+[ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -27,6 +27,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-n| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
@@ -58,7 +59,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *mask_grd_file*]
+**-G**\ *mask_grd_file*
     Name of resulting output mask grid file. (See GRID FILE FORMATS below).
 
 .. _-I:
@@ -75,7 +76,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**]
+**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**]
     If the input data are geographic (as indicated by **-f**) then the
     sides in the polygons will be approximated by great circle arcs.
     When using the **-A** sides will be regarded as straight lines.
@@ -87,7 +88,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values*
+**-N**\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values*
     Sets the *out/edge/in* that will be assigned to nodes that are
     *out*\ side the polygons, on the *edge*, or *in*\ side. Values can
     be any number, including the textstring NaN [Default is 0/0/1].
@@ -97,13 +98,13 @@ Optional Arguments
     the polygon boundary as part of the inside. Alternatively, use
     **-Np** to use a running number as polygon ID; optionally append
     start of the sequence [0]. Here, **-NP** includes the polygon
-    perimeter as inside. Note:
-    **-N**\ **z**\ \|\ **Z**\ \|\ **p**\ \|\ **P** cannot be used in
+    perimeter as inside. **Note**:
+    **-N**\ **z**\|\ **Z**\|\ **p**\|\ **P** cannot be used in
     conjunction with **-S**; they also all optionally accept /*out* [0].
 
 .. _-S:
 
-**-S**\ *search\_radius*\ [*unit*] \|\ *xlim*\ /*ylim*
+**-S**\ *search\_radius*\|\ *xlim*\ /*ylim*
     Set nodes to inside, on edge, or outside depending on their distance
     to the nearest data point. Nodes within *radius* [0] from the
     nearest data point are considered inside; append a distance unit
@@ -145,9 +146,11 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
+.. include:: explain_-qi.rst_
+
 .. include:: explain_distcalc.rst_
 
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
+**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+t**\ *threshold*]
    Append **+b**\ *BC* to set any boundary conditions to be used,
    adding **g** for geographic, **p** for periodic, or **n** for
    natural boundary conditions. For the latter two you may append **x**

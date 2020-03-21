@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -94,9 +94,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
-	
+
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-	
+
 	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -111,7 +111,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: data columns exclude navigation (lon|x,lat|y,time) columns.)\n");
 	GMT_Option (API, "V,bo,do,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -139,7 +139,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 				break;
 
 			/* Processes program-specific parameters */
-			
+
 			case 'A':
 				Ctrl->A.active = true;
 				break;
@@ -175,11 +175,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] == 0, "Syntax error: No track files given\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: More than one output file given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->F.flags, "Syntax error: -F must be given a comma-separated list of columns.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Syntax error: -I must be given a filename.\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] == 0, "No track files given\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "More than one output file given\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->F.flags, "Option -F must be given a comma-separated list of columns.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Option -I must be given a filename.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -190,10 +190,10 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 	char file[PATH_MAX] = {""}, *line = file; /* Just reusing the file space */
 	FILE *fp = NULL;
 	struct X2SYS_ADJUST *adj = NULL;
-	
+
 	sprintf (file, "%s/%s/%s.%s.adj", DIR, TAG, track, column);
 	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) return false;	/* Nuthin' to read */
-	
+
 	adj = gmt_M_memory (GMT, NULL, 1, struct X2SYS_ADJUST);
 	adj->d = gmt_M_memory (GMT, NULL, n_alloc, double);
 	adj->c = gmt_M_memory (GMT, NULL, n_alloc, double);
@@ -258,7 +258,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -266,13 +266,13 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the x2sys_datalist main code ----------------------------*/
 
 	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
-		Return (GMT_RUNTIME_ERROR);		
+		GMT_Report (API, GMT_MSG_ERROR, "No datafiles given!\n");
+		Return (GMT_RUNTIME_ERROR);
 	}
 	n_tracks = (uint64_t)error;
 
 	if (Ctrl->I.active && (k = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
+		GMT_Report (API, GMT_MSG_ERROR, "Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
@@ -297,7 +297,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION],  &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_SPEED_SELECTION], &vel_scale,  -1);	/* Sets output scale for distances using in velocities */
-	
+
 	switch (s->unit[X2SYS_SPEED_SELECTION][0]) {
 		case 'c':
 			vel_scale = 1.0;
@@ -317,14 +317,15 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
-				/* Fall through on purpose to 'M' */
+				/* Intentionally fall through - to 'M' */
 			else {
-				GMT_Report (API, GMT_MSG_NORMAL, "Unit m for miles is not recognized\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				break;
 			}
+			/* Intentionally fall through */
 		case 'M':
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get miles. dt is in sec so 3600 gives miles/hr */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(mi/hr)");
@@ -354,14 +355,15 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
-				/* Fall through on purpose to 'M' */
+				/* Intentionally fall through - to 'M' */
 			else {
-				GMT_Report (API, GMT_MSG_NORMAL, "Unit m for miles is not recognized\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				break;
 			}
+			/* Intentionally fall through */
 		case 'M':
 			strcpy (auxlist[MGD77_AUX_DS].header, "d(miles)");
 			break;
@@ -375,11 +377,11 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
 
 	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
-	
+
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
 		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR);
 		if (auxlist[MGD77_AUX_SP].requested && s->t_col == -1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Selected correction table requires velocity which implies time (not selected)\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Selected correction table requires velocity which implies time (not selected)\n");
 			MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 			x2sys_end (GMT, s);
 			x2sys_free_list (GMT, trk_name, n_tracks);
@@ -410,10 +412,10 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	if (GMT->common.R.active[RSET]) {	/* Restrict output to given domain */
 		if (xpos == -1 || ypos == -1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
+			GMT_Report (API, GMT_MSG_ERROR, "The -R option was selected but lon,lat not included in -F\n");
 			x2sys_end (GMT, s);
 			x2sys_free_list (GMT, trk_name, n_tracks);
-			Return (GMT_RUNTIME_ERROR);		
+			Return (GMT_RUNTIME_ERROR);
 		}
 		/* Supply dummy linear proj */
 		GMT->current.proj.projection_GMT = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
@@ -461,7 +463,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		adj_col = gmt_M_memory (GMT, NULL, s->n_out_columns, bool);
 	}
 	if (Ctrl->E.active) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Enable segment headers */
-	
+
 	for (trk_no = 0; trk_no < n_tracks; trk_no++) {	/* Process each track */
 
 		if (Ctrl->I.active && n_ignore) {	/* First see if this track is in the ignore list */
@@ -470,7 +472,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			if (skip) continue;	/* Found it, so skip */
 		}
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading track %s\n", trk_name[trk_no]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Reading track %s\n", trk_name[trk_no]);
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &row), trk_name[trk_no]);
 
@@ -518,7 +520,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][ocol].term, data, aux_dvalue, row) : 0.0;
 				if (Ctrl->A.active && adj_col[ocol]) {	/* Determine along-track adjustment */
 					if (gmt_intpol (GMT, A[ocol]->d, A[ocol]->c, A[ocol]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, GMT->current.setting.interpolant)) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[ocol]].name, row);
+						GMT_Report (API, GMT_MSG_ERROR, "Interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[ocol]].name, row);
 						adj_amount = 0.0;
 					}
 					correction -= adj_amount;
@@ -558,7 +560,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	}
 
 	/* Clean up before quitting */
-	
+
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 
 	x2sys_end (GMT, s);
@@ -570,6 +572,6 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	}
 	x2sys_free_list (GMT, trk_name, n_tracks);
 	if (Ctrl->I.active) x2sys_free_list (GMT, ignore, n_ignore);
-	
+
 	Return (GMT_NOERROR);
 }

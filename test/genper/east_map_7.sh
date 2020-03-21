@@ -21,7 +21,7 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${
 
 # first generate a gmt grdimage
 
-GRDFILE=@etopo10m_48.nc
+GRDFILE=@earth_relief_10m
 gmt makecpt -Cearth > t.cpt
 
 gmt grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc -E200 $REGION $PROJ -Ct.cpt -K > $ps

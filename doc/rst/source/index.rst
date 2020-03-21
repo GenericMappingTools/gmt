@@ -9,22 +9,27 @@ it can do.
 Quick links
 -----------
 
-- :doc:`std_opts`
-- :doc:`proj_codes`
-- :doc:`GMT Defaults <gmt.conf>`
-- :doc:`GMT Colors <gmtcolors>`
-- :doc:`35 Postscript Fonts </cookbook/postscript_fonts>`
-- :doc:`Built-in CPTs </cookbook/cpts>`
-- :doc:`Octal Codes of Characters </cookbook/octal_codes>`
-- :ref:`Pen Syntax <-Wpen_attrib>`
-- :ref:`Grid File Format Specifications <tbl-grdformats>`
+.. hlist::
+   :columns: 3
+
+   - :doc:`std-opts`
+   - :doc:`proj-codes`
+   - :doc:`Default Settings (gmt.conf) <gmt.conf>`
+   - :doc:`GMT Colors <gmtcolors>`
+   - :doc:`35 Postscript Fonts </cookbook/postscript-fonts>`
+   - :doc:`Built-in CPTs </cookbook/cpts>`
+   - :doc:`Built-in patterns </cookbook/predefined-patterns>`
+   - :doc:`Octal Codes of Characters </cookbook/octal-codes>`
+   - :ref:`Pen Syntax <-Wpen_attrib>`
+   - :ref:`Fill Syntax <-Gfill_attrib>`
+   - :ref:`Grid Format Specifications <tbl-grdformats>`
 
 .. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
 .. toctree::
    :hidden:
 
-   std_opts
-   proj_codes
+   std-opts
+   proj-codes
    gmt.conf
    gmtcolors
 
@@ -47,18 +52,19 @@ Quick links
    :maxdepth: 1
    :caption: Resources
 
-   users_contrib_scripts
-   users_contrib_symbols
+   users-contrib-scripts
+   users-contrib-symbols
    changes
-   deprecated_defaults
+   deprecated-defaults
    switching
+   migrating
 
 .. toctree::
    :maxdepth: 1
    :caption: Classic Mode
 
-   std_opts_classic
-   modules_classic
+   std-opts-classic
+   modules-classic
 
 .. toctree::
    :maxdepth: 1
@@ -66,6 +72,8 @@ Quick links
 
    Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
    Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+   reStructuredText Cheatsheet <rst-cheatsheet>
+   Debugging GMT <debug>
    GMT C API <api>
    PostScriptLight C API <postscriptlight>
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  */
- 
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdmask"
@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Create mask grid from polygons or point coverage"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabdefghijnrs" GMT_ADD_x_OPT GMT_OPT("FHMm")
+#define THIS_MODULE_OPTIONS "-:RVabdefghijnqrs" GMT_ADD_x_OPT GMT_OPT("FHMm")
 
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
 #define GRDMASK_N_CART_MASK	9
@@ -65,9 +65,9 @@ struct GRDMASK_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDMASK_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.mask[GMT_INSIDE] = 1.0;	/* Default inside value */
 	return (C);
@@ -75,18 +75,18 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s | <xlim>/<ylim>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]%s[%s] [%s]\n\n",
-		GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
-		GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y]] [-N[z|Z|p|P][<values>]] [-S%s | <xlim>/<ylim>]\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]%s[%s] [%s]\n\n",
+		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
+		GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -128,8 +128,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t     y applies the boundary condition for y only\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   [Default: Natural conditions, unless grid is geographic].\n");
 	}
-	GMT_Option (API, "r,s,x,:,.");
-	
+	GMT_Option (API, "qi,r,s,x,:,.");
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -223,7 +223,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 					if (Ctrl->S.limit[GMT_Y] == 0.0) Ctrl->S.limit[GMT_Y] = Ctrl->S.limit[GMT_X];
 					Ctrl->S.mode = GRDMASK_N_CART_MASK;
 				}
-				else {		/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n|c] which means radius is fixed or 0 */ 
+				else {		/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n|c] which means radius is fixed or 0 */
 					if (opt->arg[strlen(opt->arg)-1] == 'c') { 	/* A n of cells request for radius. The problem is that */
 						if (S_copy) free (S_copy);
 						S_copy = strdup (opt->arg);		/* we can't process it yet because we need -I. So, delay it */
@@ -251,19 +251,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->S.mode && Ctrl->S.mode != GRDMASK_N_CART_MASK && gmt_M_is_cartesian (GMT, GMT_IN))	/* Gave a geographic search radius but not -fg so do that automatically */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
-		
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
-	                                        "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
+	                                        "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Option -S: Unrecognized unit\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Option -S: Unable to decode radius\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Option -S: Radius is negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == GRDMASK_N_CART_MASK && (Ctrl->S.limit[GMT_X] <= 0.0 ||
-	                                        Ctrl->S.limit[GMT_Y] <= 0.0), "Syntax error -S: x-limit or y-limit is negative\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.mode, "Syntax error -S, -N: Cannot specify -Nz|Z|p|P for points\n");
+	                                        Ctrl->S.limit[GMT_Y] <= 0.0), "Option -S: x-limit or y-limit is negative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.mode, "Option -S, -N: Cannot specify -Nz|Z|p|P for points\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -276,13 +276,13 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	unsigned int side = 0, known_side, *d_col = NULL, d_row = 0;
 	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2, rowu, colu, x_wrap, y_wrap;
 	int row, col, row_end, col_end, ii, jj, n_columns, n_rows, error = 0, col_0, row_0;
-	
+
 	uint64_t ij, k, seg;
-	
+
 	char text_item[GMT_LEN64] = {""};
 
 	gmt_grdfloat mask_val[3], value;
-	
+
 	double distance, xx, yy, z_value, xtmp, radius = 0.0, last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
 
 	struct GMT_GRID *Grid = NULL;
@@ -306,7 +306,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -314,37 +314,37 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdmask main code ----------------------------*/
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	
+
 	for (k = 0; k < 3; k++) mask_val[k] = (gmt_grdfloat)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
 	z_value = Ctrl->N.mask[GMT_INSIDE];	/* Starting value if using running IDs */
 	HH = gmt_get_H_hidden (Grid->header);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		char line[GMT_BUFSIZ] = {""}, *msg[2] = {"polygons", "search radius"};
-		k = (Ctrl->S.active) ? 1 : 0; 
+		k = (Ctrl->S.active) ? 1 : 0;
 		if (Ctrl->N.mode == 1) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the polygons will be set to the chosen z-value\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes completely inside the polygons will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 2) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 3) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else if (Ctrl->N.mode == 4) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely outside the %s will be set to ", msg[k]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes completely outside the %s will be set to ", msg[k]);
 			(gmt_M_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_OUTSIDE]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the %s will be set to ", msg[k]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes completely inside the %s will be set to ", msg[k]);
 			(gmt_M_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_INSIDE]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes on the %s boundary will be set to ", msg[k]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Nodes on the %s boundary will be set to ", msg[k]);
 			(gmt_M_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_ONEDGE]);
 		}
 	}
@@ -373,8 +373,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		}
 		grd_x0 = Grid->x;
 		grd_y0 = Grid->y;
-	}	
-	
+	}
+
 	periodic = gmt_M_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
 	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
 
@@ -405,7 +405,16 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	D = Din;	/* The default is to work with the input data as is */
 	DH = gmt_get_DD_hidden (D);
-	
+
+	if (!Ctrl->S.active) {	/* Make sure we were given at least one polygon */
+		for (tbl = n_pol = 0; tbl < D->n_tables; tbl++)
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++)
+				if (D->table[tbl]->segment[seg]->n_rows > 2) n_pol++;		/* Count polytons */
+		if (n_pol == 0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Without -S, we expect to read polygons but none found\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
 	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
 		uint64_t n_new;
 		if (DH->alloc_mode == GMT_ALLOC_EXTERNALLY) {
@@ -477,7 +486,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					if (gmt_y_out_of_bounds (GMT, &row_0, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
 					col_0 = gmt_M_grd_x_to_col (GMT, xtmp, Grid->header);
 					if (col_0 == (int)Grid->header->n_columns) col_0--;	/* Was exactly on the xmax edge */
-					if (gmt_x_out_of_bounds (GMT, &col_0, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */ 
+					if (gmt_x_out_of_bounds (GMT, &col_0, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */
 					ij = gmt_M_ijp (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
 					if (Grid->header->registration == GMT_GRID_NODE_REG &&
@@ -506,7 +515,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 						col_end = col_0 + d_col[jj];
 						for (col = col_0 - d_col[row]; col <= col_end; col++) {
 							ii = col;
-							if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */ 
+							if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */
 							colu = ii;
 							ij = gmt_M_ijp (Grid->header, rowu, colu);
 							if (Ctrl->S.mode == GRDMASK_N_CART_MASK)	/* Rectangular are for Cartesian so no need to check radius */
@@ -548,7 +557,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					else if (gmt_parse_segment_item (GMT, S->header, "-L", text_item))	/* Look for segment header ID */
 						z_value = atof (text_item);
 					else
-						GMT_Report (API, GMT_MSG_NORMAL, "No z-value found; z-value set to NaN\n");
+						GMT_Report (API, GMT_MSG_ERROR, "No z-value found; z-value set to NaN\n");
 				}
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					z_value += 1.0;
@@ -557,7 +566,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 				for (row = 0; row < n_rows; row++) {	/* Loop over grid rows */
 					yy = gmt_M_grd_row_to_y (GMT, row, Grid->header);
-					
+
 					/* First check if y/latitude is outside, then there is no need to check all the x/lon values */
 					if (periodic) {	/* Containing annulus test */
 						do_test = true;
@@ -593,17 +602,20 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 						/* Here, point is inside or on edge, we must assign value */
 
 						ij = gmt_M_ijp (Grid->header, row, col);
-						
+
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (gmt_grdfloat)z_value : mask_val[side];
 					}
 					GMT_Report (API, GMT_MSG_DEBUG, "Polygon %d scanning row %05d\n", n_pol, row);
 				}
 			}
+			else {	/* 2 or fewer points in the "polygon" */
+				GMT_Report (API, GMT_MSG_WARNING, "Segment %" PRIu64 " is not a polygon - skipped\n", seg);
+			}
 		}
 	}
 	if (D != Din && GMT_Destroy_Data (API, &D) != GMT_NOERROR) Return (API->error);	/* Free the duplicate dataset */
-	
+
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 		Return (API->error);

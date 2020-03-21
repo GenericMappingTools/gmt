@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script removes the entire GMT installation. If the bin, share
@@ -8,7 +8,7 @@
 # we also remove those parent directories since presumably under build dir.
 #
 # Run this script on the command line with:
-#   $(gmt --show-datadir)/tools/gmt_uninstall.sh
+#   $(gmt --show-sharedir)/tools/gmt_uninstall.sh
 #
 # It expects the GMT executable to be in the search path and that
 # you have permission to perform the changes in the bin directory.
@@ -16,20 +16,25 @@
 # check for bash
 [ -z "$BASH_VERSION" ] && return
 
-inc=`gmt-config --includedir`
-share=`gmt --show-sharedir`
-bin=`gmt --show-bindir`
-lib=`gmt --show-plugindir`
+if ! [ -x "$(command -v gmt)" ]; then
+  echo 'Error: gmt is not found in your search PATH.' >&2
+  exit 1
+fi
 
-cwd=`pwd`
+inc=$(gmt-config --includedir)
+share=$(gmt --show-sharedir)
+bin=$(gmt --show-bindir)
+lib=$(gmt --show-plugindir)
 
-gmt_modules=`gmt --show-modules`
-compat_modules="minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster"
+cwd=$(pwd)
+
+gmt_modules=$(gmt --show-classic)
+compat_modules="minmax gmtstitch gmtdp grdreformat ps2raster originator"
 
 # 2. Remove include directory
 cd $inc
 cd ..
-here=`pwd`
+here=$(pwd)
 printf "Remove: %s\n" $inc
 rm -rf $inc
 if find "$here" -mindepth 1 -print -quit | grep -q .; then
@@ -41,7 +46,7 @@ else
 fi
 
 # 3. Remove share directory
-for dir in conf cpt custom doc localization man mgd77 mgg postscriptlight spotter tools x2sys; do
+for dir in cpt custom doc localization man mgd77 mgg spotter tools x2sys; do
 	printf "Remove: %s/%s\n" $share $dir
 	rm -rf $share/$dir
 done
@@ -79,7 +84,7 @@ fi
 # 5. Lastly remove libs and plugin directory
 cd $lib
 cd ../..
-here=`pwd`
+here=$(pwd)
 if [ -d gmt ]; then	# plugin directory inside a gmt directory; delete gmt instead
 	printf "Remove: %s\n" $here
 	rm -rf gmt

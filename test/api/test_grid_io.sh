@@ -8,7 +8,7 @@
 
 function check_if_zero {
 	gmt grdmath ${2}=$1 ${3}=$1 SUB = diff.nc
-        N=(`gmt grd2xyz diff.nc -ZTLa | uniq | wc -l`)
+        N=($(gmt grd2xyz diff.nc -ZTLa | uniq | wc -l))
         if [ $N -ne 1 ]; then
                 echo "check_if_zero: $1 : $2 $3 not equal" >> fail
         fi
@@ -25,7 +25,7 @@ while read code; do
 		extra=""
 	fi
 	# Create two different grids with same region and size in this grid format
-	gmt grdmath -R1/5/1/5 -I1 Y 1 SUB NX MUL X ADD $extra = in_real.grd=${code} 
+	gmt grdmath -R1/5/1/5 -I1 Y 1 SUB NX MUL X ADD $extra = in_real.grd=${code}
 	gmt grdmath in_real.grd=${code} NX NY MUL ADD $extra  = in_imag.grd=${code}
 	# Run the test with this codec
 	testgrdio =$code

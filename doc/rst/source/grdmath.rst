@@ -38,9 +38,9 @@ Description
 -----------
 
 **grdmath** will perform operations like add, subtract, multiply, and
-divide on one or more grid files or constants using Reverse Polish
-Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).
-Arbitrarily complicated expressions may therefore be evaluated; the
+numerous other operands on one or more grid files or constants using
+`Reverse Polish Notation (RPN) <https://en.wikipedia.org/wiki/Reverse_Polish_notation>`_
+syntax.  Arbitrarily complicated expressions may therefore be evaluated; the
 final result is written to an output grid file. Grid operations are
 element-by-element, not matrix manipulations. Some operators only
 require one operand (see below). If no grid files are used in the
@@ -108,7 +108,7 @@ Optional Arguments
 **-S**
     Reduce (i.e., collapse) the entire stack to a single grid by applying the
     next operator to all co-registered nodes across the entire stack.  You
-    must specify **-S** *after* listing all of your grids.  Note: You can only
+    must specify **-S** *after* listing all of your grids.  **Note**: You can only
     follow **-S** with a reducing operator, i.e., from the list ADD, AND, MAD,
     LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.
 
@@ -376,9 +376,9 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LOG2**      | 1 1   | log2 (A) (base 2)                                                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **LMSSCL**    | 1 1   | LMS scale estimate (LMS STD) of A                                                                      |
+| **LMSSCL**    | 1 1   | LMS (Least Median of Squares) scale estimate (LMS STD) of A                                            |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **LMSSCLW**   | 2 1   | Weighted LMS scale estimate (LMS STD) of A for weights in B                                            |
+| **LMSSCLW**   | 2 1   | Weighted LMS (Least Median of Squares) scale estimate (LMS STD) of A for weights in B                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LOWER**     | 1 1   | The lowest (minimum) value of A                                                                        |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -651,8 +651,8 @@ Notes On Operators
    Similarly, the **SAZ** and **SBAZ** operators calculate spherical
    azimuth and back-azimuths in degrees, respectively. The operators
    **LDIST** and **PDIST** compute spherical distances in km if **-fg** is
-   set or implied, else they return Cartesian distances. Note: If the current
-   :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` is ellipsoidal then
+   set or implied, else they return Cartesian distances. **Note**: If the current
+   :term:`PROJ_ELLIPSOID` is ellipsoidal then
    geodesics are used in calculations of distances, which can be slow.
    You can trade speed with accuracy by changing the algorithm used to
    compute the geodesic (see :ref:`PROJ_GEODESIC <Projection Parameters>`).
@@ -715,7 +715,7 @@ Notes On Operators
    **SAZ**, **SBAZ**, **SDIST**, **YLM**, and **grd_YLMg**.
 
 #. Operators **DEG2KM** and **KM2DEG** are only exact when a spherical Earth
-   is selected with :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`.
+   is selected with :term:`PROJ_ELLIPSOID`.
 
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
    only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
@@ -729,7 +729,7 @@ Notes On Operators
 
 .. include:: explain_sto_rcl_clr.rst_
 
-.. include:: explain_gshhs.rst_
+.. include:: explain_gshhg.rst_
 
 .. include:: explain_inside.rst_
 
@@ -749,7 +749,7 @@ modes that are inside the given circle to 1 and those outside to 0:
 INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1
 inside circle
 
-Note: Because geographic or time constants may be present in a macro, it
+**Note**: Because geographic or time constants may be present in a macro, it
 is required that the optional comment flag (:) must be followed by a space.
 
 Examples

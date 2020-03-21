@@ -13,8 +13,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt psternary** [ *table* ]
-[ **-JX**\ *width*\ [unit] ]
-[ |SYN_OPT-Rz| ]
+[ **-JX**\ *width* ]
+[ |-R|\ *amin/amax/bmin/bmax/cmin/cmax* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
@@ -23,13 +23,12 @@ Synopsis
 [ |-M| ]
 [ |-N| ]
 [ |-O| ] [ |-P| ]
-[ |-S|\ [*symbol*][\ *size*\ [**u**] ]
+[ |-S|\ [*symbol*][*size*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -38,6 +37,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -53,14 +53,12 @@ Examples
 
 To plot circles (diameter = 0.1 cm) on a 6-inch-wide ternary diagram at the positions listed
 in the file ternary.txt, with default annotations and gridline spacings, using the
-specified labeling, tru
+specified labeling, try::
 
-   ::
-
-    gmt psternary ternary.txt -R0/100/0/100/0/100 -JX6i -P -Xc -Baafg+l"Water component"+u" %" \
-    -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %" \
-    -B+givory+t"Example data from MATLAB Central" -Sc0.1c -Ct.cpt -Y2i -LWater/Air/Limestone > map.ps
-
+    gmt makecpt -Cturbo -T0/80/10 > t.cpt
+    gmt psternary @ternary.txt -R0/100/0/100/0/100 -JX6i -P -Sc0.1c -Ct.cpt -LWater/Air/Limestone \
+        -Baafg+l"Water component"+u" %" -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %" \
+        -B+givory+t"Example data from MATLAB Central" > map.ps
 
 See Also
 --------

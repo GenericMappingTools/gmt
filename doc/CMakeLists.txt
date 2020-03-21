@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -33,28 +33,29 @@ install (FILES
 
 # reST documentation
 add_subdirectory (rst)
-set (RST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/rst/_source)
+set (RST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/rst/source)
+set (RST_STATIC_DIR ${CMAKE_CURRENT_BINARY_DIR}/rst/_static)
 add_subdirectory (fig)
 
 # Add tests and make verbatim copies from scripts
 add_subdirectory (scripts)
 add_subdirectory (examples)
 
-if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
-	# Install documentation files from external location
+# Optimize images for HTML documentation
+find_program (PNGQUANT pngquant)
+if (PNGQUANT)
+	add_custom_target (optimize_images
+		COMMAND ${PNGQUANT} --strip --force --ext .png ${RST_BINARY_DIR}/_images/*.png
+	)
+	add_dependencies (optimize_images docs_depends)
+	add_depend_to_target (gmt_release optimize_images)
+endif (PNGQUANT)
 
-	install (DIRECTORY ${GMT_INSTALL_EXTERNAL_DOC}/
-		DESTINATION ${GMT_DOCDIR}
-		COMPONENT Documentation
-		USE_SOURCE_PERMISSIONS)
-endif (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
-
-if (NOT WIN32)
-	# Do not install .bat files
-	set (_exclude_bat "*.bat")
-endif (NOT WIN32)
 
 # Install target for examples
+if (NOT WIN32)
+	set (_exclude_bat "*.bat")  # Do not install .bat files
+endif (NOT WIN32)
 install (DIRECTORY examples
 	DESTINATION ${GMT_DOCDIR}
 	COMPONENT Documentation

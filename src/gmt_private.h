@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 
 /*!
  * \file gmt_private.h
- * \brief Private parts of the GMTAPI_CTRL which we will not expose to the API users 
+ * \brief Private parts of the GMTAPI_CTRL which we will not expose to the API users
  */
 
 #ifndef _GMTAPI_PRIVATE_H
@@ -141,6 +141,7 @@ struct GMTAPI_CTRL {
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	bool module_input;			/* true when we are about to read inputs to the module (command line) */
 	bool usage;				/* Flag when 1-liner modern mode modules just want usage */
+	bool allow_reuse;				/* Flag when get_region_from_data can read a file and not flag it as "used" */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
@@ -200,7 +201,9 @@ struct GMTAPI_CTRL {
 
 /* Macro to test if filename is a special name indicating memory location */
 
-#define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", 9U))
+#define GMTAPI_PREFIX_LEN 9U		/* The length of the unique leading prefix of virtual filenames */
+#define GMTAPI_OBJECT_ID_START 21U	/* Start position of the encoded object ID in the virtual filename */
+#define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", GMTAPI_PREFIX_LEN))
 
 #ifdef __cplusplus
 }

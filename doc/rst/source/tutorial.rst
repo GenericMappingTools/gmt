@@ -39,7 +39,6 @@ after completion of this short tutorial.
 
 .. toctree::
     :maxdepth: 1
-    :hidden:
 
     tutorial/intro
     tutorial/session-1

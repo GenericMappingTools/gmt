@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script creates, removes, or lists symbolic links for each GMT
@@ -8,7 +8,7 @@
 # directly.
 #
 # Run this script on the command line with:
-#   $(gmt --show-datadir)/tools/gmt_links.sh create|remove
+#   $(gmt --show-sharedir)/tools/gmt_links.sh create|remove
 #
 # With no arguments we simply check for the links.
 #
@@ -18,6 +18,11 @@
 # check for bash
 [ -z "$BASH_VERSION" ] && return
 
+if ! [ -x "$(command -v gmt)" ]; then
+  echo 'Error: gmt is not found in your search PATH.' >&2
+  exit 1
+fi
+
 if [ "X$1" = "Xdelete" ]; then
 	mode=1
 elif [ "X$1" = "Xcreate" ]; then
@@ -25,11 +30,11 @@ elif [ "X$1" = "Xcreate" ]; then
 else
 	mode=0
 fi
-bin=`gmt --show-bindir`
-cwd=`pwd`
+bin=$(gmt --show-bindir)
+cwd=$(pwd)
 
-gmt_modules=`gmt --show-modules`
-compat_modules="minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster"
+gmt_modules=$(gmt --show-classic)
+compat_modules="minmax gmtstitch gmtdp grdreformat ps2raster originator"
 
 cd $bin
 for module in ${gmt_modules} ${compat_modules}; do

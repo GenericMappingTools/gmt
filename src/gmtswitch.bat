@@ -1,7 +1,7 @@
 @ECHO OFF
 REM  
 REM
-REM	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+REM	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 REM	See LICENSE.TXT file for copying and redistribution conditions.
 REM
 REM	This program is free software; you can redistribute it and/or modify

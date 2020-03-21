@@ -12,15 +12,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2xyz** *grid* [ |-C|\ [**f**\ \|\ **i**] ]
+**gmt grd2xyz** *grid* [ |-C|\ [**f**\|\ **i**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**a**\ \|\ *weight*] ] [ |-Z|\ [*flags*] ]
+[ |-W|\ [**a**\|\ *weight*] ] [ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-qo| ]
 [ |SYN_OPT-s| ]
 [ |SYN_OPT--| ]
 
@@ -32,10 +33,10 @@ Description
 **grd2xyz** reads one or more binary 2-D grid files and writes out
 xyz-triplets in ASCII [or binary] format to standard output. Modify the
 precision of the ASCII output format by editing the
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your :doc:`gmt.conf` file or use
+:term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file or use
 **-**\ **-D_FORMAT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
-output z-values without the (x,y) coordinates; see **-Z** below. 
+output z-values without the (x,y) coordinates; see **-Z** below.
 
 Required Arguments
 ------------------
@@ -49,7 +50,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**f**\ \|\ **i**]
+**-C**\ [**f**\|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
     **f** to start at 1 (Fortran-style counting). Alternatively, append
@@ -60,7 +61,7 @@ Optional Arguments
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the grid. If this subsection exceeds the
-    boundaries of the grid, only the common region will be output. 
+    boundaries of the grid, only the common region will be output.
 .. include:: explain_-R.rst_
 
 .. _-V:
@@ -70,7 +71,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**a**\ \|\ *weight*]
+**-W**\ [**a**\|\ *weight*]
     Write out *x,y,z,w*\ , where *w* is the supplied *weight* (or 1 if not
     supplied) [Default writes *x,y,z* only].  Choose **-Wa** to compute
     weights equal to the area each node represents.
@@ -106,10 +107,9 @@ Optional Arguments
     * **d** 8-byte floating point double precision
 
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
-    Note that **-Z** only applies to 1-column output. 
 
 .. |Add_-bo| replace:: [Default is 3]. This option
-    only applies to xyz output; see **-Z** for z table output. 
+    only applies to xyz output; see **-Z** for z table output.
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -118,10 +118,12 @@ Optional Arguments
 .. |Add_-f| replace:: See also **TIME
     COORDINATES** below. **-h** Output 1 header record based on
     information in the first grid file header. Ignored if binary output
-    is selected. [Default is no header]. 
+    is selected. [Default is no header].
 ..  include:: explain_-f.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-qo.rst_
 
 .. include:: explain_-s.rst_
 
@@ -138,7 +140,7 @@ Time coordinates in netCDF grids, be it the x, y, or z coordinate, will
 be recognized as such. The variable's **unit** attribute is parsed to
 determine the unit and epoch of the time coordinate in the grid. Values
 are then converted to the internal time system specified by
-:ref:`TIME_UNIT <TIME_UNIT>` and :ref:`TIME_EPOCH <TIME_EPOCH>` in the
+:term:`TIME_UNIT` and :term:`TIME_EPOCH` in the
 :doc:`gmt.conf` file or on the
 command line. The default output is relative time in that time system,
 or absolute time when using the option **-f0T**, **-f1T**, or **-f2T**
@@ -147,18 +149,12 @@ for x, y, or z coordinate, respectively.
 Examples
 --------
 
-.. include:: explain_example.rst_
-
-To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII:
-
-   ::
+To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII::
 
     gmt grd2xyz @AFR.nc > AFR.xyz
 
 To write a single precision binary file without the x,y positions from
-the remote file @AFR.nc file, using scanline orientation, run
-
-   ::
+the remote file @AFR.nc file, using scanline orientation, run::
 
     gmt grd2xyz @AFR.nc -ZTLf > AFR.b
 

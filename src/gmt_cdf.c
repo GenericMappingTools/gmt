@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -57,8 +57,8 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 
 	if (job == 'w') {
 		if (header->nm > limit) {	/* Print error message and let things crash */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your grid contains more than 2^31 - 1 nodes (%" PRIu64 ") and cannot be stored with the deprecated GMT netCDF format.\n", header->nm);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Please choose another grid format such as the default netCDF 4 COARDS-compliant grid format.\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your grid contains more than 2^31 - 1 nodes (%" PRIu64 ") and cannot be stored with the deprecated GMT netCDF format.\n", header->nm);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Please choose another grid format such as the default netCDF 4 COARDS-compliant grid format.\n");
 			return (GMT_DIM_TOO_LARGE);
 		}
 		gmt_M_err_trap (nc_def_dim (ncid, "side", 2U, &side_dim));
@@ -201,7 +201,7 @@ int gmt_cdf_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	if (!strcmp (HH->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	gmt_M_err_trap (nc_open (HH->name, NC_WRITE, &ncid));
-	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
+	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 	gmt_M_err_trap (gmt_cdf_grd_info (GMT, ncid, header, 'u'));
 	gmt_M_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
@@ -212,7 +212,7 @@ int gmt_cdf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	if (!strcmp (HH->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	gmt_M_err_trap (nc_create (HH->name, NC_CLOBBER, &ncid));
-	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
+	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 	gmt_M_err_trap (gmt_cdf_grd_info (GMT, ncid, header, 'w'));
 	gmt_M_err_trap (nc_close (ncid));
 	return (GMT_NOERROR);
@@ -371,7 +371,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	if ((err = nc_set_fill (ncid, NC_NOFILL, &old_fill_mode))) {
 		gmt_M_free (GMT, actual_col);
 		return (err);
-	} 
+	}
 	if ((err = gmt_cdf_grd_info (GMT, ncid, header, 'w'))) {
 		gmt_M_free (GMT, actual_col);
 		return (err);
@@ -441,7 +441,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		gmt_M_free (GMT, tmp_i);
 	}
 
-	if (nr_oor > 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " out-of-range grid values converted to _FillValue [%s]\n", nr_oor, HH->name);
+	if (nr_oor > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%" PRIu64 " out-of-range grid values converted to _FillValue [%s]\n", nr_oor, HH->name);
 
 	gmt_M_free (GMT, actual_col);
 
@@ -449,7 +449,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		limit[0] = header->z_min; limit[1] = header->z_max;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No valid values in grid [%s]\n", HH->name);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No valid values in grid [%s]\n", HH->name);
 		limit[0] = 0.0; limit[1] = 0.0;
 	}
 	gmt_M_err_trap (nc_put_var_double (ncid, HH->z_id - 3, limit));

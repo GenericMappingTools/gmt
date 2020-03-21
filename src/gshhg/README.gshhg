@@ -109,7 +109,7 @@ polygon that yielded this reduced polygon), and the area of the
 reduced resolution polygon.  We also keep track if a lake is a
 river-lake or a regular lake.  The header structure has thus
 increased by three integer items.  The GSHHG data set is now
-version 2.0; from now on we will no longer give version number for 
+version 2.0; from now on we will no longer give version number for
 the gshhg supplement programs since it leads to confusion with the
 GSHHG data version numbers.  See gshhg.h for new structure.
 
@@ -166,7 +166,7 @@ structure is
 
 int id;				/* Unique polygon id number, starting at 0 */
 int n;				/* Number of points in this polygon */
-int flag;			/* level + version << 8 + greenwich << 16 + source << 24 
+int flag;			/* level + version << 8 + greenwich << 16 + source << 24
 int west, east, south, north;	/* min/max extent in micro-degrees */
 int area;			/* Area of polygon in 1/10 km^2 */
 

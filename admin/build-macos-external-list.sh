@@ -10,16 +10,20 @@
 # 1. Separate install command to avoid version number in GraphicsMagick directory name
 # 2. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
 
-if [ `which cmake` = "/opt/local/bin/cmake" ]; then
+if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
 	top=/opt/local
-elif [ `which cmake` = "/usr/local/bin/cmake" ]; then
+elif [ $(which cmake) = "/usr/local/bin/cmake" ]; then
 	distro=HomeBrew
 	top=/usr/local
 else
 	distro=Fink
 	/sw
 fi
+
+# Set temporary directory
+TMPDIR=${TMPDIR:-/tmp}
+
 # 1a. List of executables needed and whose shared libraries also are needed.
 #     Use full path if you need something not in your path
 EXEPLUSLIBS="/opt/bin/gs /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr /opt/local/bin/gdal_translate /opt/local/lib/libfftw3f_threads.dylib"
@@ -34,26 +38,26 @@ EXEONLY=
 EXESHARED="gdal /opt/share/ghostscript /opt/local/lib/proj6/share/proj"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
-rm -f /tmp/raw.lis
+rm -f ${TMPDIR}/raw.lis
 for P in ${EXEONLY} ${EXEPLUSLIBS}; do
-	path=`which $P`
+	path=$(which $P)
 	if [ -L $path ]; then # A symlink
-		grealpath $path >> /tmp/raw.lis
+		grealpath $path >> ${TMPDIR}/raw.lis
 	else
-		echo $path >> /tmp/raw.lis
+		echo $path >> ${TMPDIR}/raw.lis
 	fi
 done
 # 2b. Add the symbolic links to the list given their paths as is
 for P in $EXELINKS; do
-	which $P >> /tmp/raw.lis
+	which $P >> ${TMPDIR}/raw.lis
 done
 # 2c. Call otool -L recursively to list shared libraries used but exclude system libraries
 cc admin/otoolr.c -o build/otoolr
-build/otoolr `pwd` ${EXEPLUSLIBS} >> /tmp/raw.lis
+build/otoolr $(pwd) ${EXEPLUSLIBS} >> ${TMPDIR}/raw.lis
 # 4. sort into unique list then separate executables from libraries
-sort -u /tmp/raw.lis > /tmp/final.lis
-grep dylib /tmp/final.lis > /tmp/libraries.lis
-grep -v dylib /tmp/final.lis > /tmp/programs.lis
+sort -u ${TMPDIR}/raw.lis > ${TMPDIR}/final.lis
+grep dylib ${TMPDIR}/final.lis > ${TMPDIR}/libraries.lis
+grep -v dylib ${TMPDIR}/final.lis > ${TMPDIR}/programs.lis
 # 5. Build the include file for cpack
 cat << EOF
 # List of extra executables and shared libraries to include in the macOS installer
@@ -61,14 +65,14 @@ cat << EOF
 
 install (PROGRAMS
 EOF
-awk '{printf "\t%s\n", $1}' /tmp/programs.lis
+awk '{printf "\t%s\n", $1}' ${TMPDIR}/programs.lis
 cat << EOF
 	DESTINATION \${GMT_BINDIR}
 	COMPONENT Runtime)
 
 install (PROGRAMS
 EOF
-awk '{printf "\t%s\n", $1}' /tmp/libraries.lis
+awk '{printf "\t%s\n", $1}' ${TMPDIR}/libraries.lis
 cat << EOF
 	DESTINATION \${GMT_LIBDIR}
 	COMPONENT Runtime)
@@ -80,7 +84,7 @@ if [ ! "X$EXESHARED" = "X" ]; then
 	echo "install (DIRECTORY"
 fi
 for P in $EXESHARED; do
-	if [ $P = `basename $P` ]; then
+	if [ $P = $(basename $P) ]; then
 		echo "	$top/share/$P"
 	else
 		echo "	$P"

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -141,7 +141,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]%s\n", name, H_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-M] [-N] [-Q] [-S<mode>] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[c][z]] [-M] [-N] [-Q] [-S<mode>] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -176,8 +176,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sp<scl> Make symmetric range around mode and +/- <scl> * LMS_scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sq<low>/<high> Set range from <low> quartile to <high> quartile.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -S<inc>[+d] Read data and round range to nearest <inc>; append +d for discrete CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sr	Read data and use min/max as range.\n");	
-	GMT_Message (API, GMT_TIME_NONE, "\t   Last data column is used in the calculation; see -i to arrange columns.\n");	
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sr	Read data and use min/max as range.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Last data column is used in the calculation; see -i to arrange columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced color boundaries from <min> to <max> in steps of <inc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b for log2 spacing in integer <inc> or +l for log10 spacing via <inc> = 1,2,3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of color boundaries to produce instead.\n");
@@ -185,9 +185,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with color boundaries in the first column, or a comma-separate list of values.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette. Alternatively, append w for a wrapped CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., constant color intervals]. Without -T or when using -T<z_min>/<z_max> this\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   has no effect; the input palette table is used untouched with possible scaling.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Force a continuous color palette when derived from color and z-lists [discrete].\n");
 	GMT_Option (API, "bi,di,h,i,.");
 
 	return (GMT_MODULE_USAGE);
@@ -244,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
 				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E option: Cannot decode value\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
@@ -262,11 +260,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 			case 'G':	/* truncate incoming CPT */
 				Ctrl->G.active = true;
 				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -G option: Must specify z_low/z_high\n");
+				n_errors += gmt_M_check_condition (GMT, n < 2, "Option -G: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
 				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high),
-				                                   "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+				                                   "Option -G: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'H':	/* Modern mode only: write CPT to stdout */
 				Ctrl->H.active = true;
@@ -314,7 +312,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 			case 'T':	/* Sets up color z values */
 				Ctrl->T.active = Ctrl->T.interpolate = true;
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_RANGE | GMT_ARRAY_NOINC, GMT_Z);
-				if (Ctrl->T.T.set == 2) Ctrl->T.interpolate = false;
+				if (Ctrl->T.T.set == 2) Ctrl->T.interpolate = false;	/* Did not give increment, just min/max */
 				break;
 			case 'Q':	/* Logarithmic scale */
 				Ctrl->Q.active = true;
@@ -341,28 +339,30 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	/* Given -Qo and -T...+l are the same, make sure both ways are defined since code uses both */
 	if (Ctrl->Q.active && Ctrl->Q.mode == 2) Ctrl->T.T.logarithmic = true;
-	
+	else if (Ctrl->T.T.logarithmic) Ctrl->Q.active = true, Ctrl->Q.mode = 2;
+
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
 		n_errors++;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized option -H\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -H\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !(Ctrl->E.active || Ctrl->S.active),
-	                                   "Syntax error: No input files expected unless -E or -S are used\n");
+	                                   "No input files expected unless -E or -S are used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
-	                                   "Syntax error: -W and -Z cannot be used simultaneously\n");
+	                                   "Options -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
-	                                   "Syntax error: -F+c and -Z cannot be used simultaneously\n");
+	                                   "Options -F+c and -Z cannot be used simultaneously\n");
 	if (!Ctrl->S.active) {
 		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -T option: Without inc, -Z has no effect (ignored)\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
 			Ctrl->Z.active = false;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
-	                                   "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
+	                                   "Transparency in -A must be n 0-100 range [0 or opaque]\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Cannot combine -E with -T\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -373,7 +373,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 int GMT_makecpt (void *V_API, int mode, void *args) {
 	int i, nz = 0, error = 0;
 	unsigned int cpt_flags = 0;
-	
+
 	bool write = false;
 
 	double *z = NULL;
@@ -396,7 +396,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -411,7 +411,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		Ctrl->C.file = strdup (GMT->init.cpt[0]);
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Prepare CPT via the master file %s\n", Ctrl->C.file);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Prepare CPT via the master file %s\n", Ctrl->C.file);
 
 	/* OK, we can now do the resampling */
 
@@ -422,9 +422,14 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (Ctrl->T.active && (API->error = gmt_validate_cpt_parameters (GMT, Pin, Ctrl->C.file, &(Ctrl->T.interpolate), &(Ctrl->Z.active))))
+			Return (API->error)
+
+	if (Ctrl->Q.active && Pin->has_hinge)
+		GMT_Report (API, GMT_MSG_WARNING, "CPT %s has a hinge but you selected a logarithmic scale\n", Ctrl->C.file);
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
 		gmt_scale_cpt (GMT, Pin, -1.0);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "CPT is %s\n", kind[Pin->is_continuous]);
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)
@@ -513,11 +518,11 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 		gmt_M_free (GMT, zz);
 		if (Ctrl->T.T.set == 3)
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input data and -E|S implies -T%g/%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max, Ctrl->T.T.inc);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Input data and -E|S implies -T%g/%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max, Ctrl->T.T.inc);
 		else
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input data and -S implies -T%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Input data and -S implies -T%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max);
 	}
-		
+
 	/* Set up arrays */
 
 	if (Ctrl->T.active && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) Return (GMT_RUNTIME_ERROR);
@@ -528,13 +533,11 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		int k;
 		extern void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 		if (nz != (int)(Pin->n_colors + 1)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Mistmatch between number of entries in color list and z list\n");
-			gmt_M_free (GMT, z);
+			GMT_Report (API, GMT_MSG_ERROR, "Mismatch between number of entries in color and z lists\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) {
-			gmt_M_free (GMT, z);
-			return (API->error);
+			Return (API->error);
 		}
 		for (i = k = 0; i < (int)Pout->n_colors; i++) {
 			Pout->data[i].z_low  = z[k];
@@ -546,18 +549,18 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Must establish a log10 lattice instead of linear */
 		if (!(Ctrl->T.T.inc == 1.0 || Ctrl->T.T.inc == 2.0 || Ctrl->T.T.inc == 3.0)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "For -Qo logarithmic spacing, inc must be 1, 2, or 3\n");
+			GMT_Report (API, GMT_MSG_ERROR, "For -Qo logarithmic spacing, inc must be 1, 2, or 3\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->T.T.min <= 0.0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "For -Qo logarithmic spacing, min must be > 0\n");
+			GMT_Report (API, GMT_MSG_ERROR, "For -Qo logarithmic spacing, min must be > 0\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_M_free (GMT, Ctrl->T.T.array);	/* Free and rebuild using log scheme */
 		nz = gmtlib_log_array (GMT, Ctrl->T.T.min, Ctrl->T.T.max, Ctrl->T.T.inc, &(Ctrl->T.T.array));
 		z = Ctrl->T.T.array;
 	}
-	if (!Ctrl->T.interpolate) {	/* Just copy what was in the CPT but stretch to given range */
+	if (!Ctrl->T.interpolate) {	/* Just copy what was in the CPT but stretch to given range min/max */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
 		gmt_stretch_cpt (GMT, Pout, Ctrl->T.T.min, Ctrl->T.T.max);	/* Stretch to given range or use natural range if 0/0 */
 		if (Ctrl->I.mode & GMT_CPT_C_REVERSE)	/* Also flip the colors */
@@ -581,14 +584,15 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) Pout->categorical = 1;
-	
+
 	write = (GMT->current.setting.run_mode == GMT_CLASSIC || Ctrl->H.active);	/* Only output to stdout in classic mode and with -H in modern mode */
 
 	if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR) {
 		Return (API->error);
 	}
 
-	if (!write) gmt_save_current_cpt (GMT, Pout);	/* Save for use by session, if modern */
+	if (!write)
+		gmt_save_current_cpt (GMT, Pout, cpt_flags);	/* Save for use by session, if modern */
 
 	Return (GMT_NOERROR);
 }

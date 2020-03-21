@@ -12,9 +12,9 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77header** *NGDC-id.a77*
+**gmt mgd77header** *GEODAS-id.a77*
 [ |-H|\ *headervalues.txt* ]
-[ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **t** ]
+[ |-M|\ **f**\ [*item*]\|\ **r**\|\ **t** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -48,7 +48,7 @@ Optional Arguments
 
 .. _-M:
 
-**-Mf**\ [*item*]\|\ **r**\ \|\ **t**
+**-Mf**\ [*item*]\|\ **r**\|\ **t**
     List the meta-data (header) for
     each cruise. Append **f** for a formatted display. This will list
     individual parameters and their values, one entry per output line,
@@ -59,12 +59,12 @@ Optional Arguments
     parameter names. You may also specify the number of a parameter. For
     the raw, punchcard-formatted MGD77 original header block, append
     **r** instead. For the M77T format, append **t** instead.
- 
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-    
+
 .. include:: ../../explain_help.rst_
 
 Header Item Sample File

@@ -15,12 +15,12 @@ F	white
 N	127.5
 EOF
 # Horizontal
-gmt psscale -D3.25i/0i+w6i/0.25i+h+jTC -Ct.cpt -Ba1 --MAP_FRAME_PEN=thicker,red -P -K > $ps
-gmt psscale -D3.25i/0i+w6i/0.25i+h+jTC -Ct.cpt  --MAP_FRAME_PEN=thicker,red -O -K -Y1i >> $ps
-gmt psscale -D3.25i/0i+w6i/0.25i+h+jTC -Ct.cpt -Ba1 --MAP_FRAME_PEN=thicker,red --FONT_ANNOT_PRIMARY=12p,Helvetica,blue -O -K -Y1i >> $ps
-gmt psscale -D3.25i/0i+w6i/0.25i+h+jTC -Ct.cpt  --MAP_FRAME_PEN=thicker,red --FONT_ANNOT_PRIMARY=12p,Helvetica,blue -O -K -Y1i >> $ps
+gmt psscale -Dx3.25i/0i+w6i/0.25i+h+jTC -Ct.cpt -Ba1 --MAP_FRAME_PEN=thicker,red -P -K > $ps
+gmt psscale -Dx3.25i/0i+w6i/0.25i+h+jTC -Ct.cpt  --MAP_FRAME_PEN=thicker,red -O -K -Y1i >> $ps
+gmt psscale -Dx3.25i/0i+w6i/0.25i+h+jTC -Ct.cpt -Ba1 --MAP_FRAME_PEN=thicker,red --FONT_ANNOT_PRIMARY=12p,Helvetica,blue -O -K -Y1i >> $ps
+gmt psscale -Dx3.25i/0i+w6i/0.25i+h+jTC -Ct.cpt  --MAP_FRAME_PEN=thicker,red --FONT_ANNOT_PRIMARY=12p,Helvetica,blue -O -K -Y1i >> $ps
 # Vertical
-gmt psscale -D0.5i/2i+w4i/0.25i+jML -Ct.cpt -Ba1 --MAP_FRAME_PEN=thicker,red -O -K -Y1i >> $ps
-gmt psscale -D0.5i/2i+w4i/0.25i+jML -Ct.cpt  --MAP_FRAME_PEN=thicker,red -O -K -X1.5i >> $ps
-gmt psscale -D0.5i/2i+w4i/0.25i+jML -Ct.cpt -Ba1 --MAP_FRAME_PEN=thicker,red --FONT_ANNOT_PRIMARY=12p,Helvetica,blue -O -K -X1.5i >> $ps
-gmt psscale -D0.5i/2i+w4i/0.25i+jML -Ct.cpt  --MAP_FRAME_PEN=thicker,red --FONT_ANNOT_PRIMARY=12p,Helvetica,blue -O -X1.5i >> $ps
+gmt psscale -Dx0.5i/2i+w4i/0.25i+jML -Ct.cpt -Ba1 --MAP_FRAME_PEN=thicker,red -O -K -Y1i >> $ps
+gmt psscale -Dx0.5i/2i+w4i/0.25i+jML -Ct.cpt  --MAP_FRAME_PEN=thicker,red -O -K -X1.5i >> $ps
+gmt psscale -Dx0.5i/2i+w4i/0.25i+jML -Ct.cpt -Ba1 --MAP_FRAME_PEN=thicker,red --FONT_ANNOT_PRIMARY=12p,Helvetica,blue -O -K -X1.5i >> $ps
+gmt psscale -Dx0.5i/2i+w4i/0.25i+jML -Ct.cpt  --MAP_FRAME_PEN=thicker,red --FONT_ANNOT_PRIMARY=12p,Helvetica,blue -O -X1.5i >> $ps

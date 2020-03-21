@@ -14,22 +14,23 @@ Synopsis
 
 **gmt backtracker** [ *table* ] |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
 [ |-A|\ [*young*/*old*] ]
-[ |-D|\ **f**\ \|\ **b** ]
+[ |-D|\ **f**\|\ **b** ]
 [ |-F|\ *drift.txt* ]
-[ |-L|\ **f**\ \|\ **b**\ [*step*] ]
+[ |-L|\ **f**\|\ **b**\ [*step*] ]
 [ |-M|\ [*fact*] ]
 [ |-N|\ *upper_age* ]
 [ |-Q|\ *fixed_age* ]
 [ |-S|\ *filestem* ]
 [ |-T|\ *zero_age* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**a**\ \|\ **t**] ]
+[ |-W|\ [**a**\|\ **t**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -50,35 +51,7 @@ additional data fields after the first 3 columns which must have
 Required Arguments
 ------------------
 
-.. _-E:
-
-**-E**\ *rotfile*
-    Give file with rotation parameters. This file must contain one
-    record for each rotation; each record must be of the following
-    format:
-
-    *lon lat tstart [tstop] angle* [ *khat a b c d e f g df* ]
-
-    where *tstart* and *tstop* are in Myr and *lon lat angle* are in
-    degrees. *tstart* and *tstop* are the ages of the old and young ends
-    of a stage. If *tstop* is not present in the record then a total
-    reconstruction rotation is expected and *tstop* is implicitly set to
-    0 and should not be specified for any of the records in the file. If
-    a covariance matrix **C** for the rotation is available it must be
-    specified in a format using the nine optional terms listed in
-    brackets. Here, **C** = (*g*/*khat*)\*[ *a b d; b c e; d e f* ]
-    which shows **C** made up of three row vectors. If the degrees of
-    freedom (*df*) in fitting the rotation is 0 or not given it is set
-    to 10000. Blank lines and records whose first column contains # will
-    be ignored. You may append **+i** to the filename to indicate
-    you wish to invert the rotations.
-    Alternative 1: Give the filename composed of two plate IDs
-    separated by a hyphen (e.g., PAC-MBL) and we will instead extract
-    that rotation from the GPlates rotation database. We return an error
-    if the rotation cannot be found.
-    Alternative 2: Specify *lon*/*lat*/*angle*, i.e., the longitude,
-    latitude, and opening angle (all in degrees and separated by /) for
-    a single total reconstruction rotation.
+.. include:: explain_rots.rst_
 
 Optional Arguments
 ------------------
@@ -89,19 +62,19 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [*young*/*old*]
-    Used in conjunction with **-Lb**\ \|\ **f** to limit the track
+    Used in conjunction with **-Lb**\|\ **f** to limit the track
     output to those sections whose predicted ages lie between the
-    specified *young* and *old* limits. If **-LB**\ \|\ **F** is used
+    specified *young* and *old* limits. If **-LB**\|\ **F** is used
     instead then the limits apply to the stage ids (id 1 is the youngest
     stage). If no limits are specified then individual limits for each
     record are expected in columns 4 and 5 of the input file.
 
 .. _-D:
 
-**-Df**\ \|\ **b**
+**-Df**\|\ **b**
     Set the direction to go: **-Df** will go backward in time (from
     younger to older positions), while **-Db** will go forward in time
-    (from older to younger positions) [Default]. Note: For **-Db** you
+    (from older to younger positions) [Default]. **Note**: For **-Db** you
     are specifying the age at the given location, whereas for **-Df**
     you are not; instead you specify the age at the reconstructed point.
 
@@ -114,13 +87,13 @@ Optional Arguments
     location of the hotspot at that time, via an interpolation of the
     hotspot motion history. Input data locations are then adjusted by the
     change in hotspot location when reconstructing the point or path [No drift].
-    Note: (1) When **-F** is used the **-L** *step* values will be in time (Myr).
+    **Note**: (1) When **-F** is used the **-L** *step* values will be in time (Myr).
     (2) Drift is only considered when backtracking a point (**-Db**) or predicting
     seamount trails (**-Df** **-Lb**). (3) Cannot be used with **-M**.
 
 .. _-L:
 
-**-Lf**\ \|\ **b**\ [*step*]
+**-Lf**\|\ **b**\ [*step*]
     Specify a sampled path between initial and final position: **-Lf**
     will draw particle flowlines, while **-Lb** will draw backtrack
     (hotspot track) paths. Append sampling interval in km. If *step* < 0 or not provided
@@ -132,7 +105,7 @@ Optional Arguments
 .. _-M:
 
 **-M**\ [*fact*]
-    Scale opening angles by *fact* on output [0.5]. 
+    Scale opening angles by *fact* on output [0.5].
     Typically used to get half-rates needed for flowlines.
 
 .. _-N:
@@ -168,7 +141,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**a**\ \|\ **t**]
+**-W**\ [**a**\|\ **t**]
     Rotates the given input (lon,lat,t) and calculates the confidence
     ellipse for the projected point. The input point *must* have a time
     coordinate that exactly matches a particular total reconstruction
@@ -195,6 +168,7 @@ Optional Arguments
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-ocols.rst_
+.. include:: ../../explain_-q.rst_
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -124,7 +124,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 	else if ((nGeoms > 1) && (eType == wkbPolygon))	/* Other geometries are Islands and those are dealt separately */
 		nGeoms = 1;
 	else if (nGeoms == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Screammm: No Geometries in this Feature\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Screammm: No Geometries in this Feature\n");
 		return -1;
 	}
 
@@ -212,11 +212,11 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			hRing = OGR_G_GetGeometryRef(hGeom, j);
 			r = get_data(GMT, out, hFeature, hFeatureDefn, hRing, iLayer, nFeature, nLayers, nAttribs, nMaxGeoms, j);
 			if (r)
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get data from element of a Multi<something>\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to get data from element of a Multi<something>\n");
 			continue;	/* We are done here */
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unforeseen case -> unknown geometry type\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unforeseen case -> unknown geometry type\n");
 			return -1;
 		}
 
@@ -253,7 +253,7 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 	int	i, ind, iLayer, nEmptyGeoms, nAttribs = 0;
 	//int	region = 0;
 	int	nLayers;		/* number of layers in dataset */
-	double	x_min, y_min, x_max, y_max;
+	//double	x_min, y_min, x_max, y_max;
 
 	int	nFeature, nMaxFeatures, nMaxGeoms;
 	struct OGR_FEATURES *out = NULL;
@@ -269,20 +269,20 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 	OGREnvelope sEnvelop;
 	OGRwkbGeometryType eType;
 
-	x_min = y_min = x_max = y_max = 0.0;
+	// x_min = y_min = x_max = y_max = 0.0;
 
 	GDALAllRegister();
 
 	hDS = GDALOpenEx(ogr_filename, GDAL_OF_VECTOR, NULL, NULL, NULL);
 	if (hDS == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open data source <%s>\n", ogr_filename);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open data source <%s>\n", ogr_filename);
 		GDALDestroyDriverManager();
 		return NULL;
 	}
 
 	nLayers = OGR_DS_GetLayerCount(hDS);	/* Get available layers */
 	if (nLayers < 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No OGR layers available. Bye.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No OGR layers available. Bye.\n");
 		GDALClose(hDS);
 		GDALDestroyDriverManager();
 		return NULL;
@@ -359,7 +359,7 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 
 		nAttribs = OGR_FD_GetFieldCount(hFeatureDefn);
 
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Importing %lld features from layer <%s>\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Importing %lld features from layer <%s>\n",
 		            OGR_L_GetFeatureCount(hLayer, 1), out[ind].name);
 
 		while ((hFeature = OGR_L_GetNextFeature(hLayer)) != NULL) {		/* Loop over number of features of this layer */

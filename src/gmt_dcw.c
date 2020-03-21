@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -89,10 +89,10 @@ GMT_LOCAL bool dcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, cha
 	}
 	if (!found && gmt_getsharepath (GMT, "dcw", name, suffix, path, R_OK)) found = true;	/* Found it in share or user somewhere */
 	if (!found) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find or open the Digital Chart of the World for GMT\n");
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Perhaps you did not install this file in DIR_DCW, the shared dir, or the user dir?\n");
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Use your package manager to install package dcw-gmt.\n");
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, get the latest dcw-gmt-<version>.tar.gz or dcw-gmt-<version>.zip from the %s.\n", DCW_SITE);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to find or open the Digital Chart of the World for GMT\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Perhaps you did not install this file in DIR_DCW, the shared dir, or the user dir?\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Use your package manager to install package dcw-gmt.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Alternatively, get the latest dcw-gmt-<version>.tar.gz or dcw-gmt-<version>.zip from the %s.\n", DCW_SITE);
 	}
 	return (found);
 }
@@ -111,7 +111,7 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 
 	/* Get countries first */
 	if ((fp = fopen (path, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open file %s [permission trouble?]\n", path);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open file %s [permission trouble?]\n", path);
 		return -1;
 	}
 	Country = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DCW_COUNTRY);
@@ -135,7 +135,7 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 		return -1;
 	}
 	if ((fp = fopen (path, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open file %s [permission trouble?]\n", path);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open file %s [permission trouble?]\n", path);
 		gmt_M_free (GMT, Country);
 		return -1;
 	}
@@ -252,7 +252,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (mode & GMT_DCW_REGION) {	/* Wish to determine region from polygons */
 		if (wesn == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Implementation error: Must pass wesn array if mode == %d\n", GMT_DCW_REGION);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Implementation error: Must pass wesn array if mode == %d\n", GMT_DCW_REGION);
 			return NULL;
 		}
 		wesn[XLO] = wesn[XHI] = 0.0;			/* Set to zero so it can grow below */
@@ -281,9 +281,9 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					n_items++;
 				}
 				if (n_items)
-					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
 				else
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Continent code %s unrecognized\n", code);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Continent code %s unrecognized\n", code);
 			}
 			else {	/* Just append this single one */
 				if (n_items) strcat (list, ",");
@@ -310,13 +310,13 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (mode > GMT_DCW_REGION) {	/* Wish to get actual polygons */
 		P = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 0, 2, NULL, NULL);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Extract polygons from DCW - The Digital Chart of the World\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Extract polygons from DCW - The Digital Chart of the World\n");
 	}
 
 	if (mode & GMT_DCW_EXTRACT) {	/* Plan to return a dataset */
 		uint64_t dim[4] = {n_items, 0, 0, 2};	/* n_items tables whose records (to be allocated) will have 2 columns */
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create empty dataset for DCW polygons\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create empty dataset for DCW polygons\n");
 			gmt_free_segment (GMT, &P);
 			gmt_M_free (GMT, order);
 			return NULL;
@@ -324,37 +324,37 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	}
 
 	if ((retval = nc_open (path, NC_NOWRITE, &ncid))) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open file %s!\n", path);
 		gmt_free_segment (GMT, &P);
 		gmt_M_free (GMT, order);
 		return NULL;
 	}
 
 	/* Get global attributes */
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
 		char version[GMT_LEN16] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
 		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute version\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain attribute version\n");
 			gmt_free_segment (GMT, &P);
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
 		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute title\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain attribute title\n");
 			gmt_free_segment (GMT, &P);
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
 		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute source\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain attribute source\n");
 			gmt_free_segment (GMT, &P);
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Using country and state data from gmt-dcw\n");
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Title  : %s\n", title);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Source : %s\n", source);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Version: %s\n", version);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using country and state data from dcw-gmt\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Title  : %s\n", title);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Source : %s\n", source);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Version: %s\n", version);
 	}
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
 		gmt_set_geographic (GMT, GMT_OUT);
@@ -375,25 +375,25 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		ks = dcw_find_country (code, GMT_DCW_country, GMT_DCW_COUNTRIES);
 		if (ks == -1) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No country code matching %s (skipped)\n", code);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No country code matching %s (skipped)\n", code);
 			continue;
 		}
 		k = ks;
 		if (want_state) {
 			if ((item = dcw_find_state (state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Country %s does not have states (skipped)\n", code);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Country %s does not have states (skipped)\n", code);
 				continue;
 			}
 			snprintf (TAG, GMT_LEN16, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[item].code);
-			snprintf (msg, GMT_BUFSIZ, "Extract data for %s (%s)\n", GMT_DCW_state[item].name, GMT_DCW_country[k].name);
+			snprintf (msg, GMT_BUFSIZ, "-Z%s %s (%s)\n", TAG, GMT_DCW_state[item].name, GMT_DCW_country[k].name);
 		}
 		else {
 			snprintf (TAG, GMT_LEN16, "%s", GMT_DCW_country[k].code);
-			snprintf (msg, GMT_BUFSIZ, "Extract data for %s\n", GMT_DCW_country[k].name);
+			snprintf (msg, GMT_BUFSIZ, "-Z%s %s\n", TAG, GMT_DCW_country[k].name);
 		}
 		if (!strncmp (GMT_DCW_country[k].code, "AQ", 2U)) is_Antarctica = true;
 
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, msg);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, msg);
 		k = strlen (msg) - 1;
 		msg[k] = '\0';	/* Remove the newline for use as segment header */
 
@@ -401,11 +401,11 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 		snprintf (dim, GMT_LEN16, "%s_length", TAG);
 		if ((retval = nc_inq_dimid (ncid, dim, &id))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error getting ID for variable %s in %s!\n", dim, path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while getting ID for variable %s in %s!\n", dim, path);
 			continue;
 		}
 		if ((retval = nc_inq_dimlen (ncid, id, &np))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error getting dimension length for variable %s in %s!\n", dim, path);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while getting dimension length for variable %s in %s!\n", dim, path);
 			continue;
 		}
 		if (mode > GMT_DCW_REGION && np > max_np) {
@@ -413,7 +413,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			gmt_M_malloc2 (GMT, lon, lat, np, &tmp_size, double);
 			gmt_M_malloc2 (GMT, dx, dy, np, &max_np, unsigned short int);
 			if (lon == NULL || lat == NULL || dx == NULL|| dy == NULL) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error allocation memory!\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while allocating memory!\n");
 				continue;
 			}
 		}
@@ -519,20 +519,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		gmt_find_range (GMT, Z, n_items, &wesn[XLO], &wesn[XHI]);
 		gmt_M_free (GMT, Z);
 		GMT->current.io.geo.range = GMT_IGNORE_RANGE;		/* Override this setting explicitly */
-		if (F->adjust) {
-			if (F->extend) {	/* Extend the region by increments */
-				wesn[XLO] -= F->inc[XLO];
-				wesn[YLO] -= F->inc[YLO];
-				wesn[XHI] += F->inc[XHI];
-				wesn[YHI] += F->inc[YHI];
-			}
-			else {	/* Make region be in multiples of increments */
-				wesn[XLO] = floor (wesn[XLO] / F->inc[XLO]) * F->inc[XLO];
-				wesn[YLO] = floor (wesn[YLO] / F->inc[YLO]) * F->inc[YLO];
-				wesn[XHI] = ceil  (wesn[XHI] / F->inc[XHI]) * F->inc[XHI];
-				wesn[YHI] = ceil  (wesn[YHI] / F->inc[YHI]) * F->inc[YHI];
-			}
-		}
+		gmt_extend_region (GMT, wesn, F->adjust, F->inc);
 		if (is_Antarctica) {	/* Must override to include pole and full longitude range */
 			wesn[YLO] = -90.0;	/* Since it is a South polar cap */
 			wesn[XLO] = 0.0;
@@ -545,7 +532,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			wesn[XLO] = 0.0;
 			wesn[XHI] = 360.0;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Region implied by DCW polygons is %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Region implied by DCW polygons is %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	}
 	gmt_M_free (GMT, order);
 	if (mode > GMT_DCW_REGION) {
@@ -570,7 +557,7 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode) {
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 	GMT_DCW_N_COUNTRIES_WITH_STATES = n_bodies[2];
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "List of ISO 3166-1 alpha-2 codes for DCW supported countries:\n\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "List of ISO 3166-1 alpha-2 codes for DCW supported countries:\n\n");
 	for (i = k = 0; i < GMT_DCW_COUNTRIES; i++) {
 		if (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent) )
 			printf ("%s [%s]:\n", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
@@ -601,7 +588,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To select a whole continent, use =AF|AN|AS|EU|OC|NA|SA as <code>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to just list the countries and their codes [no %s takes place].\n", action2[plot]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/territories for Australia, Brazil, Canada, and the US.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.\n");
 	if (plot == 1) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to draw outline [none] and +g<fill> to fill [none].\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|g must be specified to plot; if -M is in effect we just get the data.\n");
@@ -611,7 +598,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 
 unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F) {
 	/* Parse the F option in pscoast */
-	unsigned int n_errors = 0, pos = 0, n;
+	unsigned int n_errors = 0, pos = 0;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL, *a = NULL, *q = NULL;
 	struct GMT_DCW_ITEM *this_item = NULL;
 
@@ -622,7 +609,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 
 	/* If +g is used with patterns and +r<dpi> is appended then there is conflict with +r for the deprecated region modification.
 	 * We avoid this by checking for this case and replacing +r with @r to avoid the strtok splitting off that modifier. */
-	
+
 	if (a && (c = strchr (a, '+'))) {	/* Handle modifiers */
 		if ((q = strstr (c, "+g")) && strchr ("Pp", q[2]) && strstr (&q[3], "+r")) {	/* There is a +r<dpi> that follows a +g pattern modifier */
 			char *t = &q[3];	/* First character of pattern name or number */
@@ -632,8 +619,8 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				t++;	/* Now t is at first char afterwards */
 				while (t[0] && isdigit (t[0])) t++;	/* Wind pass all integers */
 				if (t[0] == '\0' || t[0] == '+') { /* The modifier could be +r<dpi> or +r<inc>, assume dpi */
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Ambiguous modifier +r<val>; could be dpi of the pattern or (a deprecated) region increment - choosing dpi.\n", option);
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "If you meant the region modifier then place it before the +g pattern specification.\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -%c: Ambiguous modifier +r<val>; could be dpi of the pattern or (a deprecated) region increment - choosing dpi.\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "If you meant the region modifier then place it before the +g pattern specification.\n", option);
 					r[0] = GMT_ASCII_US;	/* Change +r<dpi> to ASCII31<dpi> to pass strtok splitting */
 				}
 				/* Else it is taken to be a deprecated region increment */
@@ -642,25 +629,9 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 		while ((gmt_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
 				/* Listings*/
-				case 'R':	/* Get region from polygon(s) BB */
-					F->extend = true;
-					/* Intentional lack of break to fall through to next case */
-				case 'r':	/* Get region from polygon(s) BB */
+				case 'R':	case 'e': case 'r': /* Get region from polygon(s) BB */
 					F->region = true;
-					if (p[1]) {	/* Supplied increments to add or quantize region with */
-						F->adjust = true;
-						n = GMT_Get_Values (GMT->parent, &p[1], F->inc, 4);
-						if (n == 1)	/* Same round in all directions */
-							F->inc[XHI] = F->inc[YLO] = F->inc[YHI] = F->inc[XLO];
-						else if (n == 2) {	/* Separate round in x and y */
-							F->inc[YLO] = F->inc[YHI] = F->inc[XHI];
-							F->inc[XHI] = F->inc[XLO];
-						}
-						else if (n != 4) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
-							n_errors++;
-						}
-					}
+					n_errors += gmt_parse_region_extender (GMT, option, p, &(F->adjust), F->inc);	/* Possibly extend the final region before reporting */
 					break;
 				case 'l':		/* Country list */
 					F->mode = DCW_GET_COUNTRY;
@@ -688,14 +659,14 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					F->mode |= GMT_DCW_PLOT;
 					break;
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unrecognized modifier +%s.\n", option, p);
 					n_errors++;
 					break;
 			}
 		}
 	}
 	if (this_item->codes[0] == '\0' && !(F->mode & (DCW_GET_COUNTRY+DCW_GET_COUNTRY_AND_STATE))) {	/* Gave +l or +L but no codes */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: No country codes given\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No country codes given\n", option);
 		n_errors++;
 	}
 	F->item = gmt_M_memory (GMT, F->item, F->n_items+1, struct GMT_DCW_ITEM *);	/* Add one more pointer space to the structure (NULL first time) */

@@ -14,10 +14,10 @@ Synopsis
 
 **gmt gravfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
 [ |-C|\ *n/wavelength/mean\_depth/tbw* ]
-[ |-D|\ *density*\ \|\ *rhogrid* ]
+[ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
-[ |-F|\ [**f**\ [**+s**]\ \|\ **b**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ]
-[ |-I|\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t**\ \|\ **k** ]
+[ |-F|\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
+[ |-I|\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k** ]
 [ |-N|\ *params* ]
 [ |-Q| ]
 [ |-T|\ *te/rl/rm/rw*\ [*/ri*]\ [**+m**] ]
@@ -36,7 +36,7 @@ Description
 compute the geopotential due to the surface given in the topo.grd file.
 Requires a density contrast (**-D**) and possibly a different observation
 level (**-W**).  It will take the 2-D
-forward FFT of the grid and 
+forward FFT of the grid and
 use the full Parker's method up to the chosen terms.  Mode 2: Compute the
 geopotential response due to flexure of the topography file. It will take the 2-D
 forward FFT of the grid and use the  full Parker's method applied to the chosen
@@ -85,7 +85,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *density*\ \|\ *rhogrid*
+**-D**\ *density*\|\ *rhogrid*
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
@@ -101,7 +101,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**f**\ [**+s**]\ \|\ **b**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
+**-F**\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
        **f** = Free-air anomalies (mGal) [Default].  Append **+s** to add
@@ -120,14 +120,14 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t**\ \|\ **k**
+**-I**\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k**
     Use *ingrd2* and *ingrd1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
     write it to stdout (**-G** ignored if set). This grid should contain
     gravity or geoid for the same region of *ingrd1*. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,
     optionally, a theoretical admittance. Append dataflags (one to
-    three) from **w**\ \|\ **b**\ \|\ **c**\ \|\ **t**.
+    three) from **w**\|\ **b**\|\ **c**\|\ **t**.
     **w** writes wavelength instead of wavenumber, **k**
     selects km for wavelength unit [m], **c** computes coherence instead of
     admittance, **b** writes a fourth column with "loading from below"
@@ -162,7 +162,7 @@ Optional Arguments
     Give average mantle depth via **-Z**. If the elastic thickness
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
-    with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
+    with the Moho's geopotential effect (see **-F**) from model selected by **-T**.
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
 
 .. _-W:
@@ -173,7 +173,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *zm*\ [*zl*]
-    Moho [and swell] average compensation depths (in meters positive dows – the depth). For the "load from
+    Moho [and swell] average compensation depths (in meters positive down – the depth). For the "load from
     top" model you only have to provide *zm*, but for the "loading from below" don't forget *zl*.
 
 .. _-V:
@@ -255,7 +255,7 @@ offset due to the fact that *z* is positive up):
 
    ::
 
-    gmt gravfft bat.grd=nf/1/-6000 -D600 -Gmoho_g.grd
+    gmt gravfft bat.grd=+o-6000 -D600 -Gmoho_g.grd
 
 Now, subtract it from the Bouguer to obtain the MBA anomaly. That is:
 

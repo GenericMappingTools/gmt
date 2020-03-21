@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,13 @@ struct GMT_XINGS {
 
 EXTERN_MSC char *opt (struct GMTAPI_CTRL *API,char code);
 
+EXTERN_MSC int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double *line_angle, double *text_angle, unsigned int *justify);
+EXTERN_MSC bool gmtinit_B_is_frame (struct GMT_CTRL *GMT, char *in);
+EXTERN_MSC int64_t gmt_parse_index_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t *stop);
+EXTERN_MSC void gmtlib_handle_escape_text (char *text, char key, int way);
+EXTERN_MSC int gmtlib_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt);
+EXTERN_MSC void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns);
+EXTERN_MSC void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns);
 EXTERN_MSC void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset);
 EXTERN_MSC unsigned int gmtlib_char_count (char *txt, char c);
 EXTERN_MSC void gmt_check_modern_oneliner (struct GMTAPI_CTRL *API, const char *module, struct GMT_OPTION *head);
@@ -69,7 +76,6 @@ EXTERN_MSC char *gmtlib_get_srtmlist  (struct GMTAPI_CTRL *API, double wesn[], u
 EXTERN_MSC struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, char *file);
 EXTERN_MSC bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtlib_refpoint_to_panel_xy (struct GMT_CTRL *GMT, int refpoint, struct GMT_SUBPLOT *P, double *x, double *y);
-EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
 EXTERN_MSC int gmtlib_read_figures (struct GMT_CTRL *API, unsigned int mode, struct GMT_FIGURE **figs);
 EXTERN_MSC bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind);
 EXTERN_MSC unsigned int gmtlib_get_pos_of_filename (const char *url);
@@ -229,6 +235,7 @@ EXTERN_MSC void gmtlib_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID
 EXTERN_MSC void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsigned int *orig_pad, double *orig_wesn);
 EXTERN_MSC uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***list);
 EXTERN_MSC void gmtlib_change_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
+EXTERN_MSC void gmtlib_ellipsoid_name_convert (char *inname, char outname[]);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,
@@ -240,7 +247,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 
 /* Definition for an error trap */
 #ifdef DEBUG
-#define gmt_M_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_Report(GMT->parent,GMT_MSG_NORMAL,"gmt_M_err_trap: %d\n", err);return(err);}
+#define gmt_M_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_Report(GMT->parent,GMT_MSG_ERROR,"gmt_M_err_trap: %d\n", err);return(err);}
 #else
 #define gmt_M_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 #endif

@@ -1,12 +1,12 @@
-# PLATE IDENTIFICATIONS FOR MULLER ET AL AREPS MODEL		
-#		
+# PLATE IDENTIFICATIONS FOR MULLER ET AL AREPS MODEL	
+#	
 # Plate Id	Code	Description
 1	AHS	Atlantic-Indian hotspots
 2	PHS	"Pacific Hotspots (Wessel JGR 2008, model WK08-A)"
 3	PPH	Present-day Pacific hotspots
 4	TPWC	True Polar Wander Correction
-8	RHS	Reunion Hotspot 
-9	KHS	Kerguelen Hotspot 
+8	RHS	Reunion Hotspot
+9	KHS	Kerguelen Hotspot
 10	THS	Tristan Hotspot
 11	SHH	St Helena Hotspot
 12	GMH	Great Meteor Hotspot
@@ -25,8 +25,8 @@
 113	NWR	Northwind Ridge
 114	LMN	Lomonosov Ridge
 116	MVR	Marvin Spur
-117	LMN2	Lomonosov Ridge 2 
-118	NSL2	North Slope Alaska 2 
+117	LMN2	Lomonosov Ridge 2
+118	NSL2	North Slope Alaska 2
 120	CAIN	Canadian Arctic Islands North
 121	ELA	South Ellesmere Island
 122	ELB	South Central Ellesmere Island
@@ -45,7 +45,7 @@
 141	CAIS	Canadian Arctic Islands South (Ellesmerian Terrane)
 154	LPA	Laurentia Parautochthon
 173	PUM	Purcell Mountains
-176	EKL	East Klamath 
+176	EKL	East Klamath
 178	RMG	Roberts Mnt and Golkonda
 182	KNTT	"Koyukuk, Nyak, Togiak terranes"
 183	MEG	Meguma
@@ -182,8 +182,8 @@
 509	LEB	Lebanon
 511	CIB	Central Indian Basin
 514	ELA	Elan Bank
-517	WKOHA	West Kohistan Arc 
-518	KOHA	Kohistan Arc 
+517	WKOHA	West Kohistan Arc
+518	KOHA	Kohistan Arc
 520	WPT	West Pontides
 521	SAK	Sakarya
 522	MTB	Menderes Taurides block
@@ -208,11 +208,11 @@
 552	EAR	East Argo Abyssal Plain
 554	LAD	Ladakh Arc
 555		Isochron of AFR
-563	MINO	Mindoro 
+563	MINO	Mindoro
 564	MINA	Mindanao
 565	SES	Southeast Sulawesi
 566	SWS	Southwest Sulawesi
-567	OBI	Obi Island 
+567	OBI	Obi Island
 568	NTI3	NeoTethyan Isochrons - Not in model yet - Reserved
 569	NTI4	NeoTethyan Isochrons - Not in model yet - Reserved
 570		Not in model yet - Reserved
@@ -233,7 +233,7 @@
 603	SBM	Sino Burma Malaya
 604	ICH	Indochina
 605	ARG	Argo Oceanic Crust
-606	LHA	Lhasa (South Tibet) 
+606	LHA	Lhasa (South Tibet)
 607	MAW	Mawgyi (Central Argoland)
 608	SPS	South Philippine Sea
 609	NPS	North Philippine Sea
@@ -277,7 +277,7 @@
 663	SPSC	South Proto South China Sea
 664	BAN	Banda Sea
 665	CLL	Celebes Sea Spreading Centre
-666	ISEM	Intermediate Semitau rotation 
+666	ISEM	Intermediate Semitau rotation
 667	ESW	Northeast Sulawesi
 668	WSW	West Sulawesi
 669	NSU	North Sulawesi
@@ -314,7 +314,7 @@
 710	DAN	Danakil
 712	LVB	Lake Victoria Block
 713	NMZ	North Mozambique
-714	NWA	Northwest Africa 
+714	NWA	Northwest Africa
 715	NEA	Northeast Africa (Nubia)
 716	ILL	Illumeden platelet
 717	BNS	Bangong Nujiang suture east of Karakoram Fault
@@ -324,19 +324,19 @@
 723	BNE	Benue Microplate
 726	BGR	Bongor Microplate
 727	NPSC	North Proto South China Sea
-729	NTJ1	NeoTethys Triple Junction isochrons 1 
+729	NTJ1	NeoTethys Triple Junction isochrons 1
 730	PPSP	Proto Philippine Sea Plate
 731	NSEP	North Sepik isochrons
 732	PMOL	Proto Molucca Plate isochrons
-734	NSOL	North Solomon isochrons 
+734	NSOL	North Solomon isochrons
 735	SEM	Semitau Block
 736	EJAV	WJAV East Java
 737	ELB	East Luzon Block
 738	SPA	South Palawan
-739	NTJ2	NeoTethys Triple Junction isochrons 2 
-740	JUN4	Junction 4 
-741	NTJ3	NeoTethys triple junction 3 
-742	NTJ4	NeoTethys triple junction 4 
+739	NTJ2	NeoTethys Triple Junction isochrons 2
+740	JUN4	Junction 4
+741	NTJ3	NeoTethys triple junction 3
+742	NTJ4	NeoTethys triple junction 4
 750	MLV	Malvinas Plate
 752	LOI1	Isochron of AFR-IBR  Ligurian Ocean
 754	LOI4	"Isochron of IBR-ADR East,  Ligurian Ocean"
@@ -353,7 +353,7 @@
 780	NPMOL	North Proto Molucca Isochrons
 781	SPMOL	South Proto Molucca Plate
 786	JUN3	Junction 3
-787	WOY2	Woyla backarc 2 
+787	WOY2	Woyla backarc 2
 789	WOY1	Woyla backarc
 801	AUS	Australia
 802	ANT	Antarctica
@@ -397,7 +397,7 @@
 838	NSF	Northwest South Fiji Basin
 839	ESF	East South Fiji
 840	EPNG	E of PNG arc active from 62-50 Ma
-841	SLBA	Arc associated with South Loyalty Basin opening 
+841	SLBA	Arc associated with South Loyalty Basin opening
 842	MNF	Mid Norfolk Ridge
 844	LYR	Loyalty Ridge
 845	SLYB	South Loyalty Basin
@@ -418,13 +418,13 @@
 862	SSC	South Santa Cruz Basin
 863	NSC	North Santa Cruz Basin
 864	NIU	Niuafoou
-865	SLBA2	Arc associated with South Loyalty Basin opening 
+865	SLBA2	Arc associated with South Loyalty Basin opening
 866	CS	N Chesterfield Plateau
 867	GSM	Gilbert Seamount Complex
 868	CLP	Challenger Plateau
 869	NLHR	Northern Lord Howe Rise
 870	TOL	Lau Basin Tonga Side
-872	SLBA3	Arc associated with South Loyalty Basin opening 
+872	SLBA3	Arc associated with South Loyalty Basin opening
 873	SLB1	W isochron in Late Cretaceous-Paleocene South Loyalty Basin
 874	SLB2	W isochron in Late Cretaceous-Paleocene South Loyalty Basin
 875	SLB3	W isochron in Late Cretaceous-Paleocene South Loyalty Basin
@@ -448,7 +448,7 @@
 899	CAT	Cato Trough
 901	PAC	Pacific
 902	FAR	Farallon
-903	VAN	Vancouver 
+903	VAN	Vancouver
 904	ALU	Aluk Plate
 907	JMNC	Jan Mayen Central Plate
 908	EMAN	East Manihiki/Chasca
@@ -465,12 +465,12 @@
 925	GAL	Galapagos microplate
 926	IZA1	Izanagi Plate 1
 929	ALK	Aluk Plate 2
-930	PXN	Phoenix/Aluk       
+930	PXN	Phoenix/Aluk      
 932	KUL2	Kula/Farallon
 938	KUL3	Kula Plate 3
 939	KUL4	Kula Plate 4
 941	ALT	Aleutian Basin
-943	SLBA4	Arc associated with South Loyalty Basin opening 
+943	SLBA4	Arc associated with South Loyalty Basin opening
 945	SLB6	E isochron in Late Cretaceous-Paleocene South Loyalty Basin
 949	SLB7	E isochron in Late Cretaceous-Paleocene South Loyalty Basin
 950	WCPB	Western Campbell Plateau
@@ -492,16 +492,16 @@
 971	BAU	Bauer Microplate
 972	BAUC	Bauer Microplate core
 973	TCAR	Trapped Caribbean
-975	GRNS1	Ridge jump is Greenland Sea at C23 
+975	GRNS1	Ridge jump is Greenland Sea at C23
 977	JMN	Jan Mayen Plate
 979	MAR	Makarov Basin
 981	OJP	Ontong Java
 982	MPP	Manihiki
 983	HIK	M Hikurangi
-984	SMC1	Southeast Manihiki/Catequil 1 
-985	SMC2	Southeast Manihiki/Catequil 2 
-986	SMC3	Southeast Manihiki/Catequil 3 
-987	SMC4	Southeast Manihiki/Catequil 4 
+984	SMC1	Southeast Manihiki/Catequil 1
+985	SMC2	Southeast Manihiki/Catequil 2
+986	SMC3	Southeast Manihiki/Catequil 3
+987	SMC4	Southeast Manihiki/Catequil 4
 988	PHIL	Philippine Sea plate
 990	PPHX	Trapped Phoenix
 999	Comment line	This is a comment line - do not use
@@ -549,8 +549,8 @@
 7002		eastern syntaxis flowline
 7003		Bangong
 7007		India proper
-7008		Hangai 
-7009		Western Margin Lake Baikal 
+7008		Hangai
+7009		Western Margin Lake Baikal
 7010		Mongolian Altai topology
 7011		Southweastern boundary Mongolian Altai
 7012		Northeastern boundary Mongolian Altai
@@ -560,7 +560,7 @@
 7016		Main Karakoram Thrust (Shyok suture; Bangong Nujiang suture west of Karakoram Fault?)
 7017		Bangong Nujiang suture east of Karakoram Fault
 7018		Jinsha suture west of Karakoram Fault
-7019		Jinsha suture east of Karakoram Fault 
+7019		Jinsha suture east of Karakoram Fault
 7020		Jinsha suture east of Altyn Tagh Fault
 7021		Ayimaqin-Kunlun-Mutztagh suture west of Karakoram Fault
 7022		Ayimaqin-Kunlun-Mutztagh suture east of Karakoram Fault
@@ -573,10 +573,10 @@
 7029		Western boundary Kazakhstania
 7030		Manchurides-Mongolian terranes boundary
 7031		Songpan-Ganzi-South China Block suture
-7032		Southern margin Tien Shan Neogene shortening topology  
+7032		Southern margin Tien Shan Neogene shortening topology 
 7033		Northern margin Tien Shan Neogene shortening topology
 7034		Darvaz Fault
-7035		North Pamir Thrust 
+7035		North Pamir Thrust
 7036		"rightateral transform fault connecting the main boundary thrust from the Chaman fault, NE boundary of the Kabul block"
 7037		Chaman Fault
 7038		Gardez Fault
@@ -603,14 +603,14 @@
 7059		Southern margin Qaidam marker line
 7060		Marker line NW Indian motion wrt Siberia
 7061		Marker line NE Indian motion wrt Siberia
-7062		Kunlun Fault 
+7062		Kunlun Fault
 7063		Southern boundary Fenghuo Shan
 7064		Southern Boundary Qiangtang/Lhasa
-7065		Gangdese thrust 
+7065		Gangdese thrust
 7066		Jiali Fault
-7067		Longmenshan thrust front 
-7068		Qinling fault 
-7069		Xianshuihe fault 
+7067		Longmenshan thrust front
+7068		Qinling fault
+7069		Xianshuihe fault
 7070		Red River fault zone
 7071		Nyaingtentanghla-Yadon-Gulu rift
 7072		Gurla Mandhata detachment
@@ -628,18 +628,18 @@
 7084		Jinsha Karakoram East
 7085		Ayimaqin-Kunlun-Mustagh suture east within Pamir
 7086		Shyok Suture east
-7087		Outline pre-23 Ma Tadjik Basin margin 
+7087		Outline pre-23 Ma Tadjik Basin margin
 7088		South Tibetan Detachment west
 7089		Main Boundary Thrust center
 7090		Main Boundary Thrust west
-7091		Main Central Thrust west 
+7091		Main Central Thrust west
 7092		Main Mantle Thrust west
 7093		Gurla Mandhata breakaway
 7094		Outline future western margin India proper
 7095		Nyaingtentanghla-Yadon-Gulu rift breakaway
 7096		South China
-7097		marker illustrating E-W Tibetan extension since 10 Ma 
-7098		marker illustrating E-W Tibetan extension since 10 Ma 
+7097		marker illustrating E-W Tibetan extension since 10 Ma
+7098		marker illustrating E-W Tibetan extension since 10 Ma
 7099		Ganzi fault
 7100	GCF	"strike-slip fault of Murphy, 2010"
 7101	GCF	"connected rift of Murphy, 2010"
@@ -650,7 +650,7 @@
 7106		Takkhola Graben
 7107		Takkhola Graben breakaway
 7108		Lopukangri graben Murphy 2010
-7109		Lopukangri break-away 
+7109		Lopukangri break-away
 7110		Unnamed strike-slip and connected rift
 7111		Unnamed strike-slip and connected rift
 7112		Unnamed strike-slip and connected rift beakaway
@@ -662,26 +662,26 @@
 7118		Riganpei Co fault 1 (Taylor & Yin 2009)
 7119		Riganpei Co fault 2 (Taylor & Yin 2009)
 7120		Unnamed strike-slip and connected rift
-7121		Unnamed breakaway 
+7121		Unnamed breakaway
 7122		Unnamed strike-slip and connected rift
-7123		Unnamed breakaway 
+7123		Unnamed breakaway
 7124		Unnamed rift
-7125		Unnamed breakaway 
+7125		Unnamed breakaway
 7126		Unnamed strike-slip and rift 1
 7127		Unnamed strike-slip and rift 2
 7128		Unnamed rift
-7129		Unnamed breakaway 
+7129		Unnamed breakaway
 7130		working line Great Counter Thrust displacement
-7131		Leo Pargil Breakaway 
-7132		Gangdese forearc outline 
+7131		Leo Pargil Breakaway
+7132		Gangdese forearc outline
 7133		Srivastava & Mitra 1994 profile sensu Long
-7134		Robinson et al. 2006 profile sensu Long  
+7134		Robinson et al. 2006 profile sensu Long 
 7135		Schelling 1992 profile sensu Long
-7136		Schelling & Arita 1991 profile sensu Long 
+7136		Schelling & Arita 1991 profile sensu Long
 7137		Mitra 2010 profile sensu Long
 7138		Long et al. 2010 profile Bhutan
-7139		Yin et al. 2010 profile Arunachal Pradesh  
-7140		Main Mantle Thrust @ 7133 
+7139		Yin et al. 2010 profile Arunachal Pradesh 
+7140		Main Mantle Thrust @ 7133
 7141	MCT	@7133
 7142	MBT	@7133
 7143	MFT	@7133
@@ -725,7 +725,7 @@
 7181		TH-LH Boundary
 7182		Northern modern India boundary
 7183		Main frontal thrust shortening topology
-7184		Lesser Himalayas topology 
+7184		Lesser Himalayas topology
 7185		Greater Himalayas south of STD topology
 7186		Eroded GH section topology
 7187		Tethyan Himalayas pre-STD topology
@@ -733,74 +733,74 @@
 7189		"Indo China, combining N & South, using poles of Hall et al. 2008"
 7190		Birma block
 7191		werklijntje
-7192		missing shortening @ 7078 
-7193		missing LH shortening @ 7134 
-7194		missing shortening @ 7135  
+7192		missing shortening @ 7078
+7193		missing LH shortening @ 7134
+7194		missing shortening @ 7135 
 7195		Northern margin India @ 7134
 7196		Northern margin India @ 7135
-7197		missing shortening @ 7136   
+7197		missing shortening @ 7136  
 7198		Northern margin India @ 7136
-7199		missing shortening @ 7137 
+7199		missing shortening @ 7137
 7200		Northern margin India @ 7137
 7201		missing shortening @ 7137
 7202		Northern margin India @ 7138
-7203		missing shortening @ 7138 
+7203		missing shortening @ 7138
 7204		missing shortening @ 7139
 7205		reconstructed LH pre-23
-7206		LH Topology 28-23 
+7206		LH Topology 28-23
 7207		LH 28-23 south of Tibet
 7208		modern Siwaliks plus MFT shortening segment
-7209		Tethyan Himalaya topology 
+7209		Tethyan Himalaya topology
 7210		Tethyan/Greater Himalaya polygon
 7211		Lhasa block pre-100
 7212		Qiangtang block pre-Cenozoic
 7213		Songpan Ganzi block pre-Cenozoic
 7214		Kunlun terranes pre-Cenozoic
-7215		Kohistan Ladakh arc-ophiolite pre-Cenozoic 
+7215		Kohistan Ladakh arc-ophiolite pre-Cenozoic
 7216		Gangdese fore-arc pre-Cenozoic
 7217		Greater Tarim pre-Cenozoic
-7218		Proto-pamir embayment pre-Cenozoic 
+7218		Proto-pamir embayment pre-Cenozoic
 7219		subduction zone post-65
-7220		Indus-Yarlung ophiolites 
+7220		Indus-Yarlung ophiolites
 7221		more or less arbitrarily chosen within the 'missing shortening interval'
 7222		LH & Siwalik/MFT part of Greater India
 7223		LH - GH boundary
-7224		Greater Asia: northern boundary 
-7225		GH Topology 
+7224		Greater Asia: northern boundary
+7225		GH Topology
 7226		'still missing shortening' in LH/GH Topology (explained as uncertainties in estimates rather than geologically meaningful)
-7227		LH Topology 
+7227		LH Topology
 7228		Intra-tethyan subduction zone 100-75 Ma
-7229		Intra-tethyan subduction zone Kohistan/Pakistan segment 75-65 Ma 
-7230		Intra-tethyan subduction zone UAE/Oman segment 75-65 Ma 
-7231		Lhasa topology 100-50 
-7232		Lhasa topology 100-50 
+7229		Intra-tethyan subduction zone Kohistan/Pakistan segment 75-65 Ma
+7230		Intra-tethyan subduction zone UAE/Oman segment 75-65 Ma
+7231		Lhasa topology 100-50
+7232		Lhasa topology 100-50
 7233		India with poles of Achache & Patriat 1984
 7234		Lhasa sensu Replumaz & Tapponnier
-7235		Qiangtang sensu Replumaz & Tapponnier 
-7236		Himalaya sensu Replumaz & Tapponnier  
-7237		Pamir sensu Replumaz & Tapponnier 
+7235		Qiangtang sensu Replumaz & Tapponnier
+7236		Himalaya sensu Replumaz & Tapponnier 
+7237		Pamir sensu Replumaz & Tapponnier
 7238		Ordos sensu Replumaz & Tapponnier
 7239		Bangong Nujiang 2
-7240		Bangong Nujiang Burma North 
+7240		Bangong Nujiang Burma North
 7241		Jinsha 2
 7242		Jinsha 3
-7243		Indus Yarlung 2 
+7243		Indus Yarlung 2
 7244		Indus Yarlung Burma North
 7245		Xianshuihe-displacement: SW S China edge sensu Pubelier et al.
 7246		Indochina-Sibumasu (Bentong-Raub) suture N of Mae Ping fault
-7247		Indochina-Sibumasu suture S of Mae Ping fault 
-7248		Sagain fault - N & W Andaman rift margin 
+7247		Indochina-Sibumasu suture S of Mae Ping fault
+7248		Sagain fault - N & W Andaman rift margin
 7249		Sibumasu-west-Sumatra Block suture
 7250		Neotethys suture Burma-Andaman; western boundary Burma-Andaman Block
 7251		Inner-Outer Indo-Burma Wedge boundary
 7252		Eastern Indochina Block boundary; East Vietnam Fault Zone; N of Mae Ping
-7253		Mae Ping fault zone 
+7253		Mae Ping fault zone
 7254		Three Pagodas - Tho Chu fault zone
-7255		Indochina-Sibumasu (Bentong-Raub) suture Malaysia and Sumatra 
+7255		Indochina-Sibumasu (Bentong-Raub) suture Malaysia and Sumatra
 7256		Eastern Indochina Block boundary; East Vietnam Fault Zone; S of Mae Ping
 7257		Outer Indo-Burma Wedge boundary
 7258		Northern margin Andaman Sea
-7259		Bangong-Nujiang west of Sagaing Fault: Jurassic-early Cretaceous Jadeitite 
+7259		Bangong-Nujiang west of Sagaing Fault: Jurassic-early Cretaceous Jadeitite
 7260		Woyla suture Sumatra (~Melawai Fault)
 7261		eastern boundary Tadjik Depression topology
 7262		connection Chatkal-Peter I topology
@@ -809,10 +809,10 @@
 7265		Shan Scarp
 7266		Bangong Nujiang Burma South
 7267		Northward growing Sagaing Fault 1
-7268		Northward growing Sagaing Fault 2 
-7269		Indus Yarlung Burma South 
+7268		Northward growing Sagaing Fault 2
+7269		Indus Yarlung Burma South
 7270		Truncation Lhasa Burma against Sagaing
-7271		Extending Tibet topology 
+7271		Extending Tibet topology
 7272		Greater India assuming 50 Ma collision
 7300		"intra-oceanic subduction zone creating ophiolites east    van Hinsbergen et al., 2011 Tectonics       "
 7301		"intra-oceanic subduction zone creating ophiolites west    van Hinsbergen et al., 2011 Tectonics       "
@@ -823,10 +823,10 @@
 8331	NLHR	Northern Lord Howe Rise
 8333		S. Norfolk Ridge (part of deforming region)
 8334		N. Norfolk Ridge (part of deforming region)
-8335		Reinga Ridge (part of deforming region) 
+8335		Reinga Ridge (part of deforming region)
 8680	CLP	Challenger Plateau
 8690	NLHR	Used for AUS-LHR Points (deforming region)
-8691		Alteration of 833 rotations as used in Aus-LHR points script 
+8691		Alteration of 833 rotations as used in Aus-LHR points script
 8824	VITO	Older Vitiaz Trench
 8827	NHB	New Hebrides
 8847	MALT	"Malaita Terrane, Solomon Islands"
@@ -854,19 +854,19 @@
 9017	POO	Microplate between Laurentia and Gondwana
 9021	FTALX	Farallon trapped crust in Alexander Plate
 9923	MELS1	Melanesia Basin (Solomon Sea) south flank
-16101	STK	Stikinia Terrane 
-16102	QES	Quesnellia Terrane 
+16101	STK	Stikinia Terrane
+16102	QES	Quesnellia Terrane
 16103	SMT	Slide Mountain Terrane
 16104	YTT	Yukon-Tanana Terrane
 16105	YTUP	Yukon-Tanana Upland
 16106	CSR	Cassiar Terrane
 16107	KOO	Kootenay Terrane
 16110	WRG	Wrangellia Terrane
-16111	ALX	Alexander Terrane 
+16111	ALX	Alexander Terrane
 16112	PNT	Peninsular Terrane
 16113	CCT	Cache Creek Terrane
 16121	CHG1	Chugach Terrane1
-16122	CHG2	Chugach Terrane2 
+16122	CHG2	Chugach Terrane2
 16123	YAK	Yakutat Terrane
 16124	WSMR	Metamorphic rocks b/w Stikinia and Wrangellia
 16130	ALE	Aleutian chain
@@ -904,13 +904,13 @@
 43101	CVK	Central Verkhoyansk Province general
 43102	WVK	Western Verkhoyansk
 43200	KOST	Kolyma
-43201	OMT	Omolon Province 
-43202	CHE	Chersky Range 
+43201	OMT	Omolon Province
+43202	CHE	Chersky Range
 43203	PRK	Prikolyma Terrane
-43204	OMU	Omulevka Terrane 
-43205	ALZ	Alazeya Terrane 
+43204	OMU	Omulevka Terrane
+43205	ALZ	Alazeya Terrane
 43206	OLO	Oloy Terrane
-43207	YRK	Yarakvaam Terrane 
+43207	YRK	Yarakvaam Terrane
 43300	CSBP	Chukotka Peninsula and South Bering Sea Province general
 43301	BSE	Bering Strait East (Nome Alaska)
 43400	VOP	Viligia/Okhotsk Province general
@@ -925,44 +925,44 @@
 60302	MP2	Malay Peninsula 2
 60401	SIM	Simao
 60402	SICH	South Indochina
-60403	ICH1	Indochina sliver 1 
-60404	ICH2	1 Indochina sliver 2 
-60405	ICH3	2 Indochina sliver 3 
-60406	ICH4	3 Indochina sliver 4 
+60403	ICH1	Indochina sliver 1
+60404	ICH2	1 Indochina sliver 2
+60405	ICH3	2 Indochina sliver 3
+60406	ICH4	3 Indochina sliver 4
 61401	KLM4	Kalimantan 4
 61403	CRF	Crocker Formation
 61404	LUC	Luconia
 61405	EKLM	Easternmost Kalimantan
-61406	SPAL2	South Palawan 2 
+61406	SPAL2	South Palawan 2
 61407	SAB	Sabah
-61411	KLM2	Kalimantan 2 
-61412	KLM3	Kalimantan 3 
-61413	KLM1	Kalimantan 1 (Accretionary prism) 
-61501	BH1	Bird's Head Plate 1 
-61502	BH2	Bird's Head Plate 2 
+61411	KLM2	Kalimantan 2
+61412	KLM3	Kalimantan 3
+61413	KLM1	Kalimantan 1 (Accretionary prism)
+61501	BH1	Bird's Head Plate 1
+61502	BH2	Bird's Head Plate 2
 61601	WQIA	West Qiangtang
 61602	AMD	Amdo
 64701	MLP2	East Malay Peninsula (east of Bentong)
 65702	EJAV1	Easternmost Java (recent arc)
-67301	NWSUM1	Northwest Sumatra 1 
-67302	NWSUM2	Northwest Sumatra 2 
-67303	SUN	Sunda Oroclines 
-67304	SUN	Sunda Oroclines 
-67305	SUN	Sunda Oroclines 
-67306	SUN	Sunda Oroclines 
-67307	SUN	Sunda Oroclines 
-67308	SUN	Sunda Oroclines 
-67309	SUN	Sunda Oroclines 
-67310	SUN	Sunda Oroclines 
-67311	SUN	Sunda Oroclines 
-67312	SUN	Sunda Oroclines 
-67313	SUN	Sunda Oroclines 
-67314	SUN	Sunda Oroclines 
-67315	SUN	Sunda Oroclines 
-67316	SUN	Sunda Oroclines 
-67317	SUN	Sunda Oroclines 
-67350	WOY	Woyla Arc terranes 
-67351	BAR	Barisan 
+67301	NWSUM1	Northwest Sumatra 1
+67302	NWSUM2	Northwest Sumatra 2
+67303	SUN	Sunda Oroclines
+67304	SUN	Sunda Oroclines
+67305	SUN	Sunda Oroclines
+67306	SUN	Sunda Oroclines
+67307	SUN	Sunda Oroclines
+67308	SUN	Sunda Oroclines
+67309	SUN	Sunda Oroclines
+67310	SUN	Sunda Oroclines
+67311	SUN	Sunda Oroclines
+67312	SUN	Sunda Oroclines
+67313	SUN	Sunda Oroclines
+67314	SUN	Sunda Oroclines
+67315	SUN	Sunda Oroclines
+67316	SUN	Sunda Oroclines
+67317	SUN	Sunda Oroclines
+67350	WOY	Woyla Arc terranes
+67351	BAR	Barisan
 68601	SUMA	Sumatra Arc
 69701	TPA1	"Central Toricelli, Prince Alexander, Finisterre Arc     "
 69702	TPA2	"Eastern Toricelli, Prince Alexander, Finisterre Arc     "
@@ -974,7 +974,7 @@
 83312		Rigid block in Western LHR (part of deforming region)
 83330		S. Norfolk Ridge outer boundary (part of deforming region)
 83340		N. Norfolk Ridge outer boundary (part of deforming region)
-83350		Reinga Ridge outer boundary (part of deforming region) 
+83350		Reinga Ridge outer boundary (part of deforming region)
 85001		STR Construction Line
 86801		Challenger Plateau COB conjugate to STR
 86802		"Challenger Plateau COB conjugate to ANT, Segment 1"

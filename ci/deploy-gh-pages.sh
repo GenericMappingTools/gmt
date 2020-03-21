@@ -63,7 +63,7 @@ echo -e "Add and commit changes"
 git add -A .
 git status
 # Reuse the last commit if possible
-if [[ `git log -1 --format='%s'` == *"${VERSION}"* ]]; then
+if [[ $(git log -1 --format='%s') == *"${VERSION}"* ]]; then
     echo -e "Amending last commit"
     git commit --amend --reset-author --no-edit
 else

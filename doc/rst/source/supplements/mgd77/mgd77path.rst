@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77path** *NGDC-ids* [ |-A|\ [**c**] ] [ |-D| ]
+**gmt mgd77path** *GEODAS-ids* [ |-A|\ [**c**] ] [ |-D| ]
 [ |-I|\ *ignore* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
@@ -24,7 +24,7 @@ Description
 
 **mgd77path** returns the full pathname to one or more MGD77 files. The
 pathname returned for a given cruise may change with time due to
-reshuffling of disks/subdirectories. 
+reshuffling of disks/subdirectories.
 
 Required Arguments
 ------------------
@@ -56,7 +56,7 @@ Optional Arguments
 
 .. _-V:
 
-.. |Add_-V| replace:: Reports the total number of cruises found. 
+.. |Add_-V| replace:: Reports the total number of cruises found.
 .. include:: ../../explain_-V.rst_
 
 .. include:: ../../explain_help.rst_

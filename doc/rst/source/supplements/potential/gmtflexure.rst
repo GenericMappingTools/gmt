@@ -12,11 +12,11 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt flexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
+**gmt flexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\|\ *D*\|\ *file*
 [ |-A|\ [**l**\|\ **r**]\ *bc*\ [/*args*] ]
 [ |-C|\ **p**\ *Poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *force* ] [ |-L| ]
-[ |-Q|\ *args*\ ] [ |-S| ] [ |-T|\ *wfile*\ ]
+[ |-Q|\ *args*] [ |-S| ] [ |-T|\ *wfile*]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]
 [ |-Z|\ *zm*]
@@ -51,7 +51,7 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
+**-E**\ *Te*\|\ *D*\|\ *file*
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity **D** instead (by default **D** is computed from *Te*, Young's
@@ -84,7 +84,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *force*]
+**-F**\ *force*
     Set a constant horizontal in-plane force, in Pa m [0]
 
 .. _-L:
@@ -94,7 +94,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qn**\ \|\ **q**\ \|\ **t**\ [*args*]
+**-Qn**\|\ **q**\|\ **t**\ [*args*]
     Sets the vertical load specification. Choose among these three options:
     **-Qn** means there is no input load file and that any deformation is
     simply driven by the boundary conditions set via **-A**.  If no rigidity or

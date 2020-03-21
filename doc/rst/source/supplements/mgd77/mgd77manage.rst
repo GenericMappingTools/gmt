@@ -12,12 +12,12 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77manage** *NGDC-ids*
-[ |-A|\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*\ [**+f**]\ ] 
+**gmt mgd77manage** *GEODAS-ids*
+[ |-A|\ **a**\|\ **c**\|\ **d**\|\ **D**\|\ **e**\|\ **E**\|\ **g**\|\ **i**\|\ **n**\|\ **t**\|\ **T**\ *fileinfo*\ [**+f**]\ ]
 [ |-D|\ *abbrev1*,\ *abbrev2*,...) ]
 [ |-E|\ *empty* ]
 [ |-F| ]
-[ |-I|\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment* ]
+[ |-I|\ *abbrev*/*name*/*unit*/**c**/*scale*/*offset*/*comment* ]
 [ |-N|\ *unit* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -42,7 +42,7 @@ obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
 Mercator \*.img grid) along track. The new data will be appended to the
 MGD77+ file in the form of an extra data column of specified type. The
 data file will be modified; no new file will be created. For the big
-issues, see the DISCUSSION section below. 
+issues, see the DISCUSSION section below.
 
 Required Arguments
 ------------------
@@ -55,7 +55,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*\ [**+f**\ ]
+**-A**\ **a**\|\ **c**\|\ **d**\|\ **D**\|\ **e**\|\ **E**\|\ **g**\|\ **i**\|\ **n**\|\ **t**\|\ **T**\ *fileinfo*\ [**+f**]
     Add a new data column. If an existing column with the same
     abbreviation already exists in the file we will cowardly refuse to
     update the file. Append **+f** to overcome this reluctance
@@ -90,7 +90,7 @@ Optional Arguments
     for choosing how distances are calculated.
 
     **e** Expects to find an e77 error/correction log from
-    :doc:`mgd77sniffer` with the name *NGDC_ID*.e77 in the current
+    :doc:`mgd77sniffer` with the name *GEODAS_ID*.e77 in the current
     directory or in $MGD77_HOME/E77; this file will examined and used
     to make modifications to the header values, specify a systematic
     correction for certain columns (such as scale and offset), specify
@@ -174,17 +174,17 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment*
+**-I**\ *abbrev*/*name*/*unit*/**c**/*scale*/*offset*/*comment*
     In addition to file information we must specify additional
     information about the extra column. Specify a short (16 char or
     less, using lower case letters, digits, or underscores only)
     abbreviation for the selected data, its more descriptive name, the
-    data unit, the data type 1-character code (**b**\ yte, **s**\ hort,
+    data unit, the data type 1-character **c**\ ode (**b**\ yte, **s**\ hort,
     **f**\ loat, **i**\ nt, **d**\ ouble, or **t**\ ext) you want used
     for storage in the netCDF file, any scale and offset we should apply
     to the data to make them fit inside the range implied by the chosen
     storage type, and a general comment (< 128 characters) regarding
-    what these data represent. Note: If text data type is selected then
+    what these data represent. **Note**: If text data type is selected then
     the terms "values" in the **-A** discussion refer to your text data.
     Furthermore, the discussion on interpolation does not apply and the
     NaN value becomes a "no string" value (see **-E** for what this is).
@@ -194,22 +194,22 @@ Optional Arguments
 
 **-N**\ *unit*
     Append the distance unit (see `Units`_). [Default is **-Nk** (km)].
-    Only relevant when **-Ag**\ \|\ **i** is selected. 
+    Only relevant when **-Ag**\|\ **i** is selected.
 
 .. _-R:
 
-.. |Add_-R| replace:: Only relevant when **-Ag**\ \|\ **i** is selected. 
+.. |Add_-R| replace:: Only relevant when **-Ag**\|\ **i** is selected.
 .. include:: ../../explain_-R.rst_
 
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
-    
-.. |Add_-bi| replace:: 
+
+.. |Add_-bi| replace::
     This applies to the input 1- or 2-column data files specified under some
     of the **-A** options. The binary input option is only available for
-    numerical data columns. 
+    numerical data columns.
 .. include:: ../../explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -276,7 +276,7 @@ ideas and steps you need to take to maintain your files.
 
 **2. Introduction**
 
-Our starting point is the MGD77 ASCII data files distributed from NGDC
+Our starting point is the MGD77 ASCII data files distributed from NCEI
 on CD-ROMS, DVD-ROMS, and via FTP. Using Geodas to install the files
 locally we choose the "Carter corrected depth" option which will fill in
 the depth column using the two-way travel-times and the Carter tables if

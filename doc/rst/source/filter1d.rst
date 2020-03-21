@@ -16,7 +16,7 @@ Synopsis
 [ |-D|\ *increment* ] [ |-E| ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ]
-[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+e**\ \|\ **+a**\ \|\ **n**] \|\ |-T|\ *file*\ \|\ *list* ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+e**\|\ **a**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -27,6 +27,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -81,13 +82,13 @@ Required Arguments
 
     (**u**) Upper: Return maximum of all values.
 
-    (**U**) Upper: Return maximum or all negative values only.
+    (**U**) Upper: Return maximum of all negative values only.
 
     Upper case type **B**, **C**, **G**, **M**, **P**, **F** will use
     robust filter versions: i.e., replace outliers (2.5 L1 scale off
     median, using 1.4826 \* median absolute deviation [MAD]) with median during filtering.
 
-    In the case of **L**\ \|\ **U** it is possible that no data passes
+    In the case of **L**\|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return 0.0.
 
 Optional Arguments
@@ -138,7 +139,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**+e**\ \|\ **+a**\ \|\ **n**] \|\ |-T|\ *file*\ \|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+e**\|\ **a**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.
 
@@ -173,6 +174,8 @@ Optional Arguments
 .. include:: explain_distcalc.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_colon.rst_
 

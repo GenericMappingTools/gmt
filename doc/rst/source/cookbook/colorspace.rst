@@ -44,29 +44,17 @@ level will turn it into brown.
    value increases to the right and saturation increases up, so the pure
    color is on the top right.
 
-
 Is chocolate your favorite color, but you do not know the RGB equivalent
-values? Then look them up in Figure :ref:`RGB chart <RGBchart>` or type
-``man gmtcolors`` for a full list. It's 210/105/30. But GMT makes it easy
-on you: you can specify pen, fill, and palette colors by any of the more
-than 500 unique colors found in that file.
+values? Then look them up in :doc:`/gmtcolors` for a full list.
+It's 210/105/30. But GMT makes it easy
+on you: you can specify pen, fill, and palette colors by any of the
+unique colors found in that file.
 
 Are you very web-savvy and work best with hexadecimal color codes as
 they are used in HTML? Even that is allowed in GMT. Just start with a
 hash mark (``#``) and follow with the 2 hexadecimal characters for red,
 green, and blue. For example, you can use ``#79ff00`` for chartreuse,
 ``#D2691E`` for chocolate.
-
-.. _RGBchart:
-
-.. figure:: /_images/GMT_RGBchart_a4.*
-   :width: 700 px
-   :align: center
-
-   The 663 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as
-   the british spelling of grey are allowed. A4, Letter, and Tabloid sized versions of this RGB chart can be
-   found in the GMT documentation directory.
-
 
 HSV color system
 ----------------
@@ -107,7 +95,7 @@ you, and *b* increasing up. Keep this sense of (*rgb*) as you look at the cube.
 
 Now tip the cube such that the black corner faces down and the white
 corner up. When looking from the top, you can see the hue, contoured in
-gray solid lines, running around in 360º counter-clockwise. It starts
+gray solid lines, running around in 360° counter-clockwise. It starts
 with shades of red (0), then goes through green (120) and blue (240),
 back to red.
 
@@ -257,9 +245,9 @@ images (e.g., **-I** option in :doc:`/grdimage`) by changing the saturation
 the intensity is non-zero, the color is either lightened or darkened
 depending on the illumination. The color is first converted to HSV (if
 necessary) and then darkened by moving (*sv*) toward
-(:ref:`COLOR_HSV_MIN_S <COLOR_HSV_MIN_S>`, :ref:`COLOR_HSV_MIN_V <COLOR_HSV_MIN_V>`)
+(:term:`COLOR_HSV_MIN_S`, :term:`COLOR_HSV_MIN_V`)
 if the intensity is negative, or lightened by sliding (*sv*) toward
-(:ref:`COLOR_HSV_MAX_S <COLOR_HSV_MAX_S>`, :ref:`COLOR_HSV_MAX_V <COLOR_HSV_MAX_V>`)
+(:term:`COLOR_HSV_MAX_S`, :term:`COLOR_HSV_MAX_V`)
 if the illumination is positive. The extremes of the *s* and *v* are defined in the
 :doc:`/gmt.conf` file and are usually chosen so the corresponding points are nearly black
 (*s = 1*, *v = 0*) and white (*s = 0*, *v = 1*).
@@ -314,4 +302,4 @@ thesis, for example, it might be worth trying to save and print all your
 color plots using the CMYK system. Letting GMT do the conversion to
 CMYK may avoid some nasty surprises when it comes down to printing. To
 specify the color space of your PostScript file, set
-:ref:`PS_COLOR_MODEL <PS_COLOR_MODEL>` in the :doc:`/gmt.conf` file to RGB, HSV, or CMYK.
+:term:`PS_COLOR_MODEL` in the :doc:`/gmt.conf` file to RGB, HSV, or CMYK.

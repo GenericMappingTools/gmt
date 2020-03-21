@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -113,17 +113,17 @@ GMT_LOCAL double proj_robinson_spline (struct GMT_CTRL *GMT, double xp, double *
 
 GMT_LOCAL void proj_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure -R and -J agree for global plots; J given priority */ {
 	double lon0 = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
-	
+
 	if (GMT->current.map.is_world && lon0 != *clon) {
 		GMT->common.R.wesn[XLO] = *clon - 180.0;
 		GMT->common.R.wesn[XHI] = *clon + 180.0;
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
 			*clon, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 	}
 	else if (!GMT->current.map.is_world) {
 		lon0 = *clon - 360.0;
 		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += 360.0;
-		if (lon0 > GMT->common.R.wesn[XHI]) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Central meridian outside region\n");
+		if (lon0 > GMT->common.R.wesn[XHI]) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Central meridian outside region\n");
 	}
 }
 
@@ -588,43 +588,79 @@ void gmt_itranspowz (struct GMT_CTRL *GMT, double *z, double z_in) /* pow z inve
 
 /* -JP POLAR (r-theta) PROJECTION */
 
+GMT_LOCAL double gmtproj_planet_radius (struct GMT_CTRL *GMT, char *modifier) {
+	static char *U[2] = {"m", "km"};
+	unsigned int k = 0;
+	double r;
+	/* Set planetary radius in correct units (m or km) depending on y-range */
+	r = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius;	/* In meters */
+	if ((r/ (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO])) >= METERS_IN_A_KM) {	/* -R seems given in km */
+		r /= METERS_IN_A_KM;
+		k = 1;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Planetary radius (%s) automatically set to %g %s\n", modifier, r, U[k]);
+	return (r);
+}
+
 void gmt_vpolar (struct GMT_CTRL *GMT, double lon0) {
 	/* Set up a Polar (theta,r) transformation */
 
 	GMT->current.proj.p_base_angle = lon0;
 	GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[XHI] + GMT->common.R.wesn[XLO]);
 
-	/* Plus pretend that it is kind of a geographic polar projection */
+	if (GMT->current.proj.flip) {	/* Want radial direction inwards */
+		if (GMT->current.proj.flip_radius < 0.0)	/* Flag to just flip z = north - r */
+			GMT->current.proj.flip_radius = GMT->common.R.wesn[YHI];
+		else if (GMT->current.proj.flip_radius == 0.0)	/* Flag to just flip z = planet_radius - r */
+			GMT->current.proj.flip_radius = gmtproj_planet_radius (GMT, "+fp");
+		/* else the radius was set specifically */
+	}
+	if (GMT->current.proj.z_down) {	/* Annotate a flavor of z = radius - r */
+		if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) {	/* Given z; annotate r = planet_radius - z */
+			if (GMT->current.proj.flip_radius > 0.0) /* Already obtained above */
+				GMT->current.proj.z_radius = GMT->current.proj.flip_radius;
+			else
+				GMT->current.proj.z_radius = GMT->current.proj.flip_radius = gmtproj_planet_radius (GMT, "+zp");
+			GMT->current.proj.flip = true;
+		}
+		else if (GMT->current.proj.z_down == GMT_ZDOWN_Z)	/* z = north - r */
+			GMT->current.proj.z_radius = GMT->common.R.wesn[YHI];
+	}
 
+	/* Plus pretend that it is kind of a geographic polar projection */
 	GMT->current.proj.north_pole = GMT->current.proj.got_elevations;
 	GMT->current.proj.pole = (GMT->current.proj.got_elevations) ? 90.0 : 0.0;
+	GMT->current.proj.radial_offset /= GMT->current.proj.pars[0];	/* Convert any radial offset in inches to user units so we can use it in gmt_polar/ipolar */
 }
 
 void gmt_polar (struct GMT_CTRL *GMT, double x, double y, double *x_i, double *y_i) {
 	/* Transform x and y to polar(cylindrical) coordinates */
-	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* azimuths, not directions */
-	if (GMT->current.proj.got_elevations) y = 90.0 - y;		/* elevations */
+	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* Azimuths, not directions given as x */
+	if (GMT->current.proj.flip) y = GMT->current.proj.flip_radius - y;		/* Depth down or elevations given as y */
 	sincosd (x - GMT->current.proj.p_base_angle, y_i, x_i);	/* Change base line angle */
-	(*x_i) *= y;
-	(*y_i) *= y;
+	(*x_i) *= (y + GMT->current.proj.radial_offset);	/* Allow for inner circle radius before we start plotting */
+	(*y_i) *= (y + GMT->current.proj.radial_offset);
 }
 
 void gmt_ipolar (struct GMT_CTRL *GMT, double *x, double *y, double x_i, double y_i) {
 	/* Inversely transform both x and y from polar(cylindrical) coordinates */
 	*x = d_atan2d (y_i, x_i) + GMT->current.proj.p_base_angle;
-	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* azimuths, not directions */
-	*y = hypot (x_i, y_i);
-	if (GMT->current.proj.got_elevations) *y = 90.0 - (*y);    /* elevations, presumably */
+	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* Azimuths, not directions for x */
+	*y = hypot (x_i, y_i) - GMT->current.proj.radial_offset;	/* Allow for inner circle radius */
+	if (GMT->current.proj.flip) *y = GMT->current.proj.flip_radius - (*y);    /* Depth down or elevations for y */
 }
 
 /* -JM MERCATOR PROJECTION */
 
 void gmt_vmerc (struct GMT_CTRL *GMT, double lon0, double slat) {
-	/* Set up a Mercator transformation */
+	/* Set up a Mercator transformation with origin at (lon0, lat0) */
+
+	if (GMT->current.proj.GMT_convert_latitudes) slat = gmt_M_latg_to_latc (GMT, slat);
 
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.j_x = cosd (slat) / d_sqrt (1.0 - GMT->current.proj.ECC2 * sind (slat) * sind (slat)) * GMT->current.proj.EQ_RAD;
 	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
+	GMT->current.proj.j_yc = (fabs (slat) > 0.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * slat)) : 0.0;
 }
 
 /* Mercator projection for the sphere */
@@ -636,14 +672,14 @@ void gmt_merc_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, doub
 	if (GMT->current.proj.GMT_convert_latitudes) lat = gmt_M_latg_to_latc (GMT, lat);
 
 	*x = GMT->current.proj.j_x * D2R * lon;
-	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) : copysign (DBL_MAX, lat);
+	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) - GMT->current.proj.j_yc : copysign (DBL_MAX, lat);
 }
 
 void gmt_imerc_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Mercator x/y to lon/lat  (GMT->current.proj.EQ_RAD in GMT->current.proj.j_ix) */
 
 	*lon = x * GMT->current.proj.j_ix * R2D + GMT->current.proj.central_meridian;
-	*lat = atand (sinh (y * GMT->current.proj.j_ix));
+	*lat = atand (sinh ((y + GMT->current.proj.j_yc) * GMT->current.proj.j_ix));
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_latc_to_latg (GMT, *lat);
 }
 
@@ -971,7 +1007,7 @@ void gmt_vlamb (struct GMT_CTRL *GMT, double rlong0, double rlat0, double pha, d
 	GMT->current.proj.pole = (GMT->current.proj.north_pole) ? 90.0 : -90.0;
 	sincosd (pha, &sin_pha, &cos_pha);
 	sincosd (phb, &sin_phb, &cos_phb);
-	
+
 	t_pha = tand (45.0 - 0.5 * pha) / pow ((1.0 - GMT->current.proj.ECC *
 		sin_pha) / (1.0 + GMT->current.proj.ECC * sin_pha), GMT->current.proj.half_ECC);
 	m_pha = cos_pha / d_sqrt (1.0 - GMT->current.proj.ECC2 * sin_pha * sin_pha);
@@ -1104,7 +1140,12 @@ void gmt_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 
 	*x = GMT->current.proj.j_x * tlon;
 	*y = (fabs (tlat) < M_PI_2) ? GMT->current.proj.j_x * d_log (GMT, tan (M_PI_4 + 0.5 * tlat)) - GMT->current.proj.o_shift : copysign (DBL_MAX, tlat);
-	if (GMT->current.proj.o_spole) {
+	if (GMT->current.proj.obl_flip) {
+		/* Let oblique Equator be y-axis, so flip x and y but must let y be negative [that change takes place in map_setxy] */
+		gmt_M_double_swap (*x, *y);
+		if (GMT->current.proj.pars[1] < 0.0) *x = -*x, *y = -*y;	/* S hemisphere must rotate 180 */
+	}
+	else if (GMT->current.proj.o_spole) {
 		*x = -(*x);
 		*y = -(*y);
 	}
@@ -1116,7 +1157,12 @@ void gmt_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 	double tlon, tlat;
 	/* o_shift deals with difference between user's origin and our logical origin */
 
-	if (GMT->current.proj.o_spole) {
+	if (GMT->current.proj.obl_flip) {
+		/* Had oblique Equator be y-axis */
+		if (GMT->current.proj.pars[1] < 0.0) x = -x, y = -y;	/* S hemisphere must rotate 180 */
+		gmt_M_double_swap (x, y);
+	}
+	else if (GMT->current.proj.o_spole) {
 		x = -x;
 		y = -y;
 	}
@@ -2482,7 +2528,7 @@ void gmt_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_X,   GMT_N_ROBINSON, GMT->current.proj.n_yx_coeff);
 		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
 	}
-	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Interpolation failed in gmt_vrobinson?\n");
+	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Interpolation failed in gmt_vrobinson?\n");
 }
 
 void gmt_robinson (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {

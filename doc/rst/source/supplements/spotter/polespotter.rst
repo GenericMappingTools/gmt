@@ -15,13 +15,13 @@ Synopsis
 **gmt polespotter**
 [ |-A|\ *abyssalhills* ]
 [ |-D|\ *spacing* ]
-[ |-E|\ **a**\ \|\ **f**\ *sigma* ]
+[ |-E|\ **a**\|\ **f**\ *sigma* ]
 [ |-F|\ *fracturezones* ]
 [ |-G|\ *grid* ]
 [ |SYN_OPT-I| ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **l**\ \|\ **p**\ \|\ **s**\ [*modifiers*] ]
+[ |-S|\ **l**\|\ **p**\|\ **s**\ [*modifiers*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -111,11 +111,12 @@ Optional Arguments
 
 .. _-S:
 
-**-Sl**\ \|\ **p**\ \|\ **s**\ [*modifiers*]
+**-Sl**\|\ **p**\|\ **s**\ [*modifiers*]
     Set the scan mode for this run.  Choose from **l**\ ines, **p**\ oles, or
-    **s**\ pots.  Depending on the mode there may be required and optional arguments.
+    **s**\ pots.  Depending on the mode there may be required and optional arguments
+    as indicated below:
 
-**-Sl**\ *plon*\ /*plat*\ [**+m**\ ]
+**-Sl**\ *plon*\ /*plat*\ [**+m**]
 
     Line mode means we accept a *plon*\ /*plat* trial pole location
     and determine how compatible each data segment is with the predictions of
@@ -123,7 +124,7 @@ Optional Arguments
     default we report summary statistics (*chi2*, *table*, *segment*, *type*)
     for each line segment. Append **+m** to instead report the misfit information
     (*mlon*, *mlat*, *del_angle*, *chi2*, *table*, *segment*, *type*) for each
-    mid-point along all multi-point line segments.  The information is written 
+    mid-point along all multi-point line segments.  The information is written
     to standard output.
 
 **-Sp**
@@ -179,7 +180,7 @@ Notes
    pairs of points define a great circle line segment.  For fracture zones,
    these points should be digitized often enough so that the great circle between
    then can approximate the small circle.
-#. All line segments are given equal angular uncertainty [1, unless changed by **-E**\ ].  However,
+#. All line segments are given equal angular uncertainty [1, unless changed by **-E**].  However,
    individual line segments can override this weight by adding a **-D**\ *sigma*
    argument in the segment headers (in degrees).
 

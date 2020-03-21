@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -206,7 +206,7 @@ struct OGR_FEATURES {
 	int     is3D;       /* True when geometries have a z component */
 	unsigned int np;    /* Number of data points in this feature */
 	int     att_number; /* Feature's number of attributes */
-	char   *name, *wkt, *proj4; 
+	char   *name, *wkt, *proj4;
 	char   *type;	    /* Geometry type. E.g. Point, Polygon or LineString */
 	char  **att_names;	/* Names of the attributes of a Feature */
 	char  **att_values;	/* Values of the attributes of a Feature as strings */
@@ -215,6 +215,17 @@ struct OGR_FEATURES {
 	double  BoundingBox[6];
 	double *BBgeom;     /* Not currently assigned (would be the BoundingBox of each individual geometry) */
 	double *x, *y, *z;
+};
+
+struct GMT_GDALLIBRARIFIED_CTRL {
+	char *fname_in;			/* Input file name */
+	char *fname_out;		/* Output file name */
+	char *opts;				/* A string with GDAL options in GDAL syntax */
+	char *dem_method;		/* The method name for gdaldem */
+	char *dem_cpt;			/* A CPT name to use in gdaldem color-relief method */
+	struct GD_GL_M {		/* If true, write grid with GMT */
+		bool write_gdal, read_gdal;
+	} M;
 };
 
 #endif  /* GMT_GDALREAD_H */

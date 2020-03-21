@@ -12,14 +12,14 @@ C	We will need some sort of include file to set the parameters later
 	integer inarg(2)
 	integer outarg
 	real*4 matrix(3,4)
-	
+
 	call GMTAPI_Create_Session (0, error)
 	if (error .ne. 0) then
 		call GMTAPI_Report_Error (error)
 	endif
 
-C	TEST 1: Create a 2-D array and register it with GMT 
-	
+C	TEST 1: Create a 2-D array and register it with GMT
+
 	do 10 row = 1,NROW
 		do 20 col = 1,NCOL
 			matrix(row,col) = row*NCOL+col
@@ -39,9 +39,9 @@ C	TEST 1: Create a 2-D array and register it with GMT
 	inarg(2) = 0
 	write (*,30) 'fprototype.f: Reg 2D array as ID = ', inarg(1)
    30	format (a, i2)
-	
+
 C	Register stdout as the output
-	
+
 	unit6 = 6
 	val = GMTAPI_FDESC
 	call GMTAPI_Register_Export (val, unit6, array_par,
@@ -49,7 +49,7 @@ C	Register stdout as the output
 	write (*,30) 'fprototype.f: Registered output as ID =', outarg
 
 C	Call the GMT function
-	
+
 	call GMT_read_all_write_all_records ('no command yet',
      +	inarg, outarg, error)
 	if (error .ne. 0) then
@@ -57,7 +57,7 @@ C	Call the GMT function
 	endif
 
 C	Shut down everything
-	
+
 	call GMTAPI_Destroy_Session (error)
 	if (error .ne. 0) then
 		call GMTAPI_Report_Error (error)

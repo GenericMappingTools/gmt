@@ -13,7 +13,7 @@
 #----GMT SHELL FUNCTIONS--------------------
 #	Creates a unique temp directory and points GMT_TMPDIR to it
 gmt_init_tmpdir () {
-	export GMT_TMPDIR=`mktemp -d ${TMPDIR:-/tmp}/gmt.XXXXXX`
+	export GMT_TMPDIR=$(mktemp -d ${TMPDIR:-/tmp}/gmt.XXXXXX)
 }
 
 #	Remove the temp directory created by gmt_init_tmpdir
@@ -59,22 +59,22 @@ gmt_get_field() {
 #	Return w/e/s/n from given table file(s)
 #	May also add -Idx/dy to round off answer
 gmt_get_region() {
-	printf "%s/%s/%s/%s\n" `gmt info -C $* | cut -d'	' -f1-4`
+	printf "%s/%s/%s/%s\n" $(gmt info -C $* | cut -d'	' -f1-4)
 }
 
 #	Return the w/e/s/n from the header in grd file
 gmt_get_gridregion() {
-	printf "%s/%s/%s/%s\n" `gmt grdinfo -Cn $* | cut -d'	' -f1-4`
+	printf "%s/%s/%s/%s\n" $(gmt grdinfo -Cn $* | cut -d'	' -f1-4)
 }
 
 # Make output PostScript file name based on script base name
 gmt_set_psfile() {
-	echo `basename $1 '.sh'`.ps
+	echo $(basename $1 '.sh').ps
 }
 
 # Make output PDF file name based on script base name
 gmt_set_pdffile() {
-	echo `basename $1 '.sh'`.pdf
+	echo $(basename $1 '.sh').pdf
 }
 
 # For animations: Create a lexically increasing file namestem (no extension) based on prefix and frame number
@@ -120,7 +120,7 @@ EOF
 	EOF
 	ls kml/*.kml > /tmp/$$.lis
 	while read file; do
-	        name=`basename $file .kml`
+	        name=$(basename $file .kml)
 		cat << EOF >> doc.kml
 			<NetworkLink>
 	        	<name>$name</name>
@@ -169,7 +169,7 @@ EOF
 		esac
 		shift
 	done
-	delay=`gmt math -Q 100 $rate DIV RINT =`	# Delay to nearest 1/100 s
+	delay=$(gmt math -Q 100 $rate DIV RINT =)	# Delay to nearest 1/100 s
 	if [ $dryrun -eq 1 ]; then
 		cat <<- EOF
 ${GRAPHICSMAGICK-gm} convert -delay $delay -loop $loop +dither "$dir/${1}_*.*" ${1}.gif
@@ -278,12 +278,12 @@ EOF
 			width=9.60; height=5.40; dpi=400
 		fi
 	fi
-	w=`gmt math -Q ${width} ${margin} 2 MUL SUB =`
-	h=`gmt math -Q ${height} ${margin} 2 MUL SUB =`
-	iw=`gmt math -Q ${width} $dpi MUL =`
-	ih=`gmt math -Q ${height} $dpi MUL =`
-	now=`date`
-	you=`finger $LOGNAME | head -1 | awk -F': ' '{print $3}'`
+	w=$(gmt math -Q ${width} ${margin} 2 MUL SUB =)
+	h=$(gmt math -Q ${height} ${margin} 2 MUL SUB =)
+	iw=$(gmt math -Q ${width} $dpi MUL =)
+	ih=$(gmt math -Q ${height} $dpi MUL =)
+	now=$(date)
+	you=$(finger $LOGNAME | head -1 | awk -F': ' '{print $3}')
 	cat << EOF > $name.sh
 #!/usr/bin/env bash
 # Author:	$you
@@ -352,7 +352,7 @@ let frame=0
 while [ \$frame -lt \${VIDEO_FRAMES} ]; do
 	echo "Working on frame \$frame" >&2
 	# 2a. Set current frame prefix for lexically increasing file name
-	ps=\`gmt_set_framename \${VIDEO_PREFIX} \$frame\`.ps
+	ps=\$(gmt_set_framename \${VIDEO_PREFIX} \$frame\).ps
 
 	# 2b. Perform any calculations that depends on the frame number
 
@@ -427,7 +427,7 @@ cat << EOF >> $name.html
 </CENTER>
 Please add a movie caption here.
 <HR>
-<I>Created by $you on `date`</I>
+<I>Created by $you on $(date)</I>
 </BODY>
 </HTML>
 EOF
@@ -440,7 +440,7 @@ gmt_launch_jobs() {
 	# gmt_launch_jobs -c <n_cpu> -j <nlines_per_cluster> <commandfile>
 	# Split the non-comment records in <commandfile> into <n_cpu> files
 	# so that number of lines per file is a multiple of <nlines_per_cluster>.
-	n_cpu=`gmt --show-cores`
+	n_cpu=$(gmt --show-cores)
 	if [ $# -eq 0 ]; then
 		cat << EOF >&2
 gmt_launch_jobs - Run chunks of commands in parallel
@@ -471,9 +471,9 @@ EOF
 		shift
 	done
 	egrep -v '^#|^$' $1 > /tmp/$$.sh
-	nL=`wc -l /tmp/$$.sh | awk '{printf "%d\n", $1}'`
-	n_chunks=`gmt math -Q $nL $n_lines DIV =`
-	bad=`gmt math -Q $n_chunks DUP RINT SUB ABS 1e-10 GT =`
+	nL=$(wc -l /tmp/$$.sh | awk '{printf "%d\n", $1}')
+	n_chunks=$(gmt math -Q $nL $n_lines DIV =)
+	bad=$(gmt math -Q $n_chunks DUP RINT SUB ABS 1e-10 GT =)
 	if [ $bad -eq 1 ]; then
 		echo "gmt_launch_jobs: Your number of commands is not a multiple of $n_lines" >&2
 		exit 1

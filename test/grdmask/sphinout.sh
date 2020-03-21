@@ -15,7 +15,7 @@ EOF
 gmt grdmask 2k.dat -Gmask.nc -N0/0.5/1 -I1 -Rg -fg -A
 gmt grdimage mask.nc -Jx0.015id -Cmask.cpt -Bx60 -By30 -BWSne -K -P -Xc -Y1.5i > $ps
 gmt psxy -Rmask.nc -J -O -K 2k.dat -W0.25p,blue >> $ps
-gmt psscale -Cmask.cpt -L0.1i -D2.7i/-0.5i+w3i/0.1i+h+jTC -O -K >> $ps
+gmt psscale -Cmask.cpt -L0.1i -Dx2.7i/-0.5i+w3i/0.1i+h+jTC -O -K >> $ps
 gmt grdimage mask.nc -R295/345/59/82 -Jx0.108i -Cmask.cpt -B10g1 -BWSne -O -K -Y3.1i >> $ps
 gmt psxy -R -J -O -K 2k.dat -W0.5p,blue >> $ps
 # Now we truncate the coordinates to be all integers, meaning the mask grid
