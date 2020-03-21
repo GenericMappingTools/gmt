@@ -1718,8 +1718,8 @@ GMT_LOCAL double plot_cross_angle (struct GMT_CTRL *GMT, double lon, double lat,
 			gmt_geo_to_xy (GMT, lon + dx, lat, &x1, &y1);
 		}
 		else {	/* Get d/dy */
-			gmt_geo_to_xy (GMT, lon, ((lat + dy) >  90.0) ?  90.0 : lat + dy, &x0, &y0);
-			gmt_geo_to_xy (GMT, lon, ((lat - dy) < -90.0) ? -90.0 : lat - dy, &x1, &y1);
+			gmt_geo_to_xy (GMT, lon, ((lat - dy) < -90.0) ? -90.0 : lat - dy, &x0, &y0);
+			gmt_geo_to_xy (GMT, lon, ((lat + dy) >  90.0) ?  90.0 : lat + dy, &x1, &y1);
 		}
 		return (d_atan2 (y1-y0, x1-x0));
 	}
@@ -1806,10 +1806,10 @@ GMT_LOCAL void plot_set_gridcross_limbs (struct GMT_CTRL *GMT, unsigned int axis
 
 GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	/* Draw symmetric or asymmetric grid ticks along the courser gridlines for parallels and meridians */
-	bool single;
+	bool single, point_point = false;
 	unsigned int i, j, k, nx, ny, G_nx, G_ny, G_i, G_j, B = 0, E = 0, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double x0, y0, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL, *G_x = NULL, *G_y = NULL;
-	double angle, Ca, Sa, L, sgn[2] = {1.0, 0.0}, G_dx, G_dy, dx, dy;
+	double angle, Ca, Sa, L, sgn[2] = {1.0, 0.0}, G_dx, G_dy, dx, dy, ys, yn;
 
 	for (k = i = 0; k < 2; k++)
 		if (GMT->current.setting.map_grid_cross_type[k] > GMT_CROSS_NORMAL) i++;
@@ -1820,9 +1820,25 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gridline tick embellishments specified but no gridlines have been laid down first\n");
 		return;
 	}
+
+	if (gmt_M_pole_is_point (GMT)) {	/* Might have two separate domains of gridlines */
+		point_point = true;
+		if (GMT->current.proj.projection_GMT == GMT_POLAR) {	/* Different for polar graphs since "lat" = 0 is at the center */
+			ys =  90.0 - GMT->current.setting.map_polar_cap[0];
+			yn = n;
+		}
+		else {
+			ys = MAX (s, -GMT->current.setting.map_polar_cap[0]);
+			yn = MIN (n,  GMT->current.setting.map_polar_cap[0]);
+		}
+	}
+	else {	/* No polar cap to worry about */
+		ys = s;
+		yn = n;
+	}
 	/* Get the course gridline spacings */
 	G_nx = gmtlib_linear_array (GMT, w, e, G_dx, 0.0, &G_x);
-	G_ny = gmtlib_linear_array (GMT, s, n, G_dy, 0.0, &G_y);
+	G_ny = gmtlib_linear_array (GMT, ys, yn, G_dy, 0.0, &G_y);
 
 	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
@@ -1835,7 +1851,7 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 		/* Get the detailed gridline tick spacings */
 		nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item[k]], &x, NULL);
-		ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &y, NULL);
+		ny = gmtlib_coordinate_array (GMT, ys, yn, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &y, NULL);
 		/* Get a small increment in x and y for computing local angle */
 		dy = (ny > 1) ? y[1] - y[0] : GMT->current.map.dlat;
 		dx = (nx > 1) ? x[1] - x[0] : GMT->current.map.dlon;
@@ -1872,6 +1888,7 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 			plot_set_gridcross_limbs (GMT, GMT_X, k, xi, &B, &E);
 			for (j = 0; j < ny; j++) {
 				yj = y[j];
+				if (point_point && doubleAlmostEqualZero (fabs (yj), GMT->current.setting.map_polar_cap[0])) continue;	/* No latitude ticks long polar circles */
 				if (gmt_map_outside (GMT, xi, yj)) continue;	/* Outside map */
 				if (gmt_M_pole_is_point(GMT) && doubleAlmostEqualZero (fabs (yj), 90.0)) continue; 	/* No grid tick at single pole points */
 				if (gmt_M_is_zero (fmod (yj, G_dy))) continue;	/* Not draw on top of gridlines */
