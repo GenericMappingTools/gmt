@@ -12,20 +12,19 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt events** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*\ [*units*]]
+**gmt events** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*]
+|-T|\ *now*
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
-[ |-E|\ **s**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*] ]
-[ |-F|\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*]\ \|\ **+z**\ [*format*]] ]
+[ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
+[ |-E|\ **s**\|\ **t**\ [**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*] ]
+[ |-F|\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **z**\ [*format*]] ]
 [ |-G|\ *color* ]
-[ |-L|\ [*length*\ \|\ **t**\ ] ]
-[ |-M|\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
+[ |-L|\ [*length*\|\ **t**] ]
+[ |-M|\ **i**\|\ **s**\|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
 [ |-Q|\ *prefix* ]
-[ |-T|\ *now* ]
-[ |SYN_OPT-V| ]
-[ |-W|\ *pen* ]
 [ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
@@ -36,6 +35,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -43,8 +43,6 @@ Synopsis
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To show the display of events visible for May 1, 2018 given the catalog of
 large (>5) magnitude earthquakes that year, using a 2-day rise time during

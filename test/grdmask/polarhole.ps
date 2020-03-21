@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_0ef8a85_2019.03.19 [64-bit] Document from grdimage
+%%Title: GMT v6.1.0_5032eae_2020.03.02 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Mar 19 09:13:58 2019
+%%CreationDate: Tue Mar  3 08:28:59 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -673,7 +670,7 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt grdimage mask_c.grd -R-180/180/-90/90 -JX5.5id/2.75id -Ct.cpt -Baf -BWSnE -P -K -Xc -Y0.75i --MAP_FRAME_TYPE=plain
-%@PROJ: latlong -180.00000000 180.00000000 -90.00000000 90.00000000 -180.000 180.000 -90.000 90.000 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: latlong -180.00000000 180.00000000 -90.00000000 90.00000000 -180.000 180.000 -90.000 90.000 +proj=latlong +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %GMTBoundingBox: -198 54 396 198
 %%BeginObject PSL_Layer_1
 0 setlinecap
@@ -858,8 +855,8 @@ O0
 -900 3900 TM
 
 % PostScript produced by:
-%@GMT: gmt grdimage mask_c.grd -R0/360/0/80 -JPa2.75i -Ct.cpt -Bafg -O -K -X-0.75i -Y3.25i
-%@PROJ: polar 0.00000000 360.00000000 0.00000000 80.00000000 -80.000 80.000 -80.000 80.000 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdimage mask_c.grd -R0/360/0/80 -JP2.75i+a -Ct.cpt -Bafg -O -K -X-0.75i -Y3.25i
+%@PROJ: polar 0.00000000 360.00000000 0.00000000 80.00000000 -80.000 80.000 -80.000 80.000 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -1017,9 +1014,6 @@ S
 1650 1650 M
 -1650 0 D
 S
-1650 1650 M
-0 0 D
-P S
 1650 2062 M
 49 -2 D
 57 -11 D
@@ -1793,8 +1787,8 @@ P S
 1650 3467 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (0è) bc Z
-3467 1650 M V 90 R (90è) tc Z U
-1650 -167 M (180è) tc Z
+3467 1650 M V -90 R (90è) bc Z U
+1650 -167 M V 360 R (180è) tc Z U
 -167 1650 M V 90 R (î90è) bc Z U
 %%EndObject
 0 A
@@ -1803,8 +1797,8 @@ O0
 4500 0 TM
 
 % PostScript produced by:
-%@GMT: gmt grdimage mask_g.grd -R0/360/0/80 -JPa2.75i -Ct.cpt -Bafg -O -K -X3.75i
-%@PROJ: polar 0.00000000 360.00000000 0.00000000 80.00000000 -80.000 80.000 -80.000 80.000 +unavailable +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdimage mask_g.grd -R0/360/0/80 -JP2.75i+a -Ct.cpt -Bafg -O -K -X3.75i
+%@PROJ: polar 0.00000000 360.00000000 0.00000000 80.00000000 -80.000 80.000 -80.000 80.000 +unavailable +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -1962,9 +1956,6 @@ S
 1650 1650 M
 -1650 0 D
 S
-1650 1650 M
-0 0 D
-P S
 8 W
 N 1650 3300 M 0 83 D S
 N 3300 1650 M 83 0 D S
@@ -2117,8 +2108,8 @@ P S
 1650 3467 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (0è) bc Z
-3467 1650 M V 90 R (90è) tc Z U
-1650 -167 M (180è) tc Z
+3467 1650 M V -90 R (90è) bc Z U
+1650 -167 M V 360 R (180è) tc Z U
 -167 1650 M V 90 R (î90è) bc Z U
 %%EndObject
 0 A
@@ -2128,7 +2119,7 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt grdimage mask_g.grd -JQ0/5.5i -Ct.cpt -Baf -O -X-3i -Y3.5i
-%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -2322,7 +2313,8 @@ N -83 3383 M 0 -3466 D S
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

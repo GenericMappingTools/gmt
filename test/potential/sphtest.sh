@@ -12,9 +12,9 @@ gmt talwani3d @sphere_mod.txt -D1670 -Mh -Ntrk -o0,3 > faa.txt
 gmt talwani3d @sphere_mod.txt -D1670 -Mh -Ntrk -o0,3 -Fv > vgg.txt
 gmt talwani3d @sphere_mod.txt -D1670 -Mh -Ntrk -o0,3 -Fn > n.txt
 gmt psbasemap -R-25/25/-5/120 -JX6i/6i -P -K -Xc -Y4i -Bxafg1000 -Byafg1000+l"mGal or Eotvos" -BWsn+t"Testing FAA, VGG and Geoid over sphere" > $ps
-cg=`gmt math -Q 1.0e5 4.0 MUL PI MUL 6.673e-11 MUL $R 3 POW MUL $z0 MUL 1670.0 MUL 3.0 DIV =`
-cv=`gmt math -Q 1.0e9 4.0 MUL PI MUL 6.673e-11 MUL $R 3 POW MUL 1670.0 MUL 3.0 DIV =`
-cn=`gmt math -Q 4.0 3.0 DIV PI MUL $R 3 POW MUL 1670.0 MUL 6.673e-11 MUL =`
+cg=$(gmt math -Q 1.0e5 4.0 MUL PI MUL 6.673e-11 MUL $R 3 POW MUL $z0 MUL 1670.0 MUL 3.0 DIV =)
+cv=$(gmt math -Q 1.0e9 4.0 MUL PI MUL 6.673e-11 MUL $R 3 POW MUL 1670.0 MUL 3.0 DIV =)
+cn=$(gmt math -Q 4.0 3.0 DIV PI MUL $R 3 POW MUL 1670.0 MUL 6.673e-11 MUL =)
 gmt math -T-25/25/0.1 $cg $z0 T 1000 MUL HYPOT 3 POW DIV = s_g.txt
 gmt math -T-25/25/0.1 $cv $z0 T 1000 MUL R2 $z0 2 POW 3 MUL SUB $z0 T 1000 MUL HYPOT 5 POW DIV MUL NEG = s_v.txt
 gmt math -T-25/25/0.1 $cn $z0 T 1000 MUL HYPOT DIV 9.81 DIV = s_n.txt
@@ -34,8 +34,8 @@ S 0.2i c 0.1i brown - 0.5i N (Talwani3D)
 EOF
 gmt pslegend -R -J -O -K -DjTL+w2.2i+jTL+o0.1i/0.1i legend.txt -F+gwhite+p >> $ps
 # Plot sphere
-mx=`gmt math -Q $R 2 MUL 1000 DIV 50 DIV 6 MUL =`
-mz=`gmt math -Q $R 2 MUL 6000 DIV 2.5 MUL =`
+mx=$(gmt math -Q $R 2 MUL 1000 DIV 50 DIV 6 MUL =)
+mz=$(gmt math -Q $R 2 MUL 6000 DIV 2.5 MUL =)
 gmt psxy -R-25/25/0/6000 -JX6i/-2.5i -O -K -Y-2.75i -Se -Gblack -Bxafg1000+u" km" -Byafg4000 -BWSne << EOF >> $ps
 0 4000 0 ${mx}i ${mz}i
 EOF

@@ -13,19 +13,19 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt 2kml** [ *table* ]
-[ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
+[ |-A|\ **a**\|\ **g**\|\ **s**\ [*alt*\|\ **x**\ *scale*] ]
 [ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ]
-[ |-E|\ [**+e**\ ][**+s**\ ] ]
-[ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w** ]
-[ |-G|\ [*color*\ ]\ [**+f**\ \|\ **+n**\ ] ]
+[ |-E|\ [**+e**][**+s**] ]
+[ |-F|\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w** ]
+[ |-G|\ [*color*]\ [**+f**\|\ **n**] ]
 [ |-I|\ *icon* ] [ **-K**]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
-[ |-N|\ [**t**\ \|\ *col* \ \|\ *name\_template*\ \|\ *name*] ]
+[ |-N|\ [**t**\|\ *col*\|\ *name\_template*\|\ *name*] ]
 [ **-O**]
-[ |-Q|\ **a**\ \|\ **i**\ *az* ]
-[ |-Q|\ **s**\ *scale*\ [*unit*\ ] ]
-[ |-R|\ **e**\ \|\ *w/e/s/n* ]
-[ |-S|\ **c**\ \|\ **n**\ *scale*] ]
+[ |-Q|\ **a**\|\ **i**\ *az* ]
+[ |-Q|\ **s**\ *scale* ]
+[ |-R|\ **e**\|\ *w/e/s/n* ]
+[ |-S|\ **c**\|\ **n**\ *scale*] ]
 [ |-T|\ *title*\ [/*foldername*] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 [ > *output.kml* ]
@@ -79,7 +80,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*]
+**-A**\ **a**\|\ **g**\|\ **s**\ [*alt*\|\ **x**\ *scale*]
     Select one of three altitude modes recognized by Google Earth that
     determines the altitude (in m) of the feature: **a** absolute
     altitude, **g** altitude relative to sea surface or ground, **s**
@@ -108,7 +109,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**+e**\ ][**+s**\ ]
+**-E**\ [**+e**][**+s**]
     Control how lines and polygons are rendered in Google Earth.
     Append **+e** to extrude the feature down to ground level [no extrusion].
     Append **+s** to connect points with straight lines (which may intersect
@@ -116,7 +117,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w**
+**-F**\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w**
     Sets the feature type. Choose from points (**e**\ vent,
     **s**\ ymbol, or **t**\ imespan), **l**\ ine, **p**\ olygon, or
     **w**\ iggle [symbol]. The first two columns of the input file should contain
@@ -135,7 +136,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*color*\ ]\ [**+f**\ \|\ **+n**\ ]
+**-G**\ [*color*]\ [**+f**\|\ **n**]
     Sets *color* for fill (modifier **+f** [Default]) or label font (modifier **+n**).
     Fill sets infill color for symbols, extrusions, polygons and positive anomaly
     wiggles [Default is light orange at 75% transparency].  Alternatively,
@@ -174,7 +175,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**t**\ \|\ *col* \ \|\ *name\_template*\ \|\ *name*]
+**-N**\ [**t**\|\ *col*\|\ *name\_template*\|\ *name*]
     By default, if segment headers contain a **-L**"label string" then
     we use that for the name of the KML feature (polygon, line segment
     or set of symbols). Default names for these segments are "Line %d"
@@ -199,7 +200,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qa**\ \|\ **i**\ *azimuth*
+**-Qa**\|\ **i**\ *azimuth*
     Option in support of wiggle plots (requires **-Fw**). You may
     control which directions the positive wiggles will tend to point
     to with **-Qa**.  The provided azimuth defines a half-circle
@@ -207,7 +208,7 @@ Optional Arguments
     will plot.  If outside then switch by 180 degrees.  Alternatively,
     use **-Qi** to set a fixed direction with no further variation.
 
-**-Qs**\ *scale*\ [*unit*\ ]
+**-Qs**\ *scale*
     Required setting for wiggle plots (i.e., it requires **-Fw**).
     Sets a wiggle scale in *z*-data units per the user's units (given
     via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale
@@ -216,7 +217,7 @@ Optional Arguments
 
 .. _-R:
 
-**-Re**\ \|\ *w/e/s/n*
+**-Re**\|\ *w/e/s/n*
     Issue a single Region tag. Append *w/e/s/n* to set a particular
     region (will ignore points outside the region), or append **e** to
     determine and use the exact domain of the data (single file only)
@@ -224,7 +225,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **c**\ \|\ **n**\ *scale*]
+**-S**\ **c**\|\ **n**\ *scale*]
     Scale icons or labels. Here, **-Sc** sets a scale for the symbol
     icon, whereas **-Sn** sets a scale for the name labels [1 for both].
 
@@ -263,9 +264,9 @@ Optional Arguments
     is visible to infinite size. Append **+f**\ *fade\_min/fade\_max* to
     fade in and out over a ramp [abrupt]. Append **+v** to make a
     feature *not* visible when loaded [visible]. Append **+o** to open a
-    folder or document in the sidebar when loaded [closed]. 
+    folder or document in the sidebar when loaded [closed].
 
-.. |Add_-bi| replace:: [Default is 2 or more input columns, depending on settings]. 
+.. |Add_-bi| replace:: [Default is 2 or more input columns, depending on settings].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -284,6 +285,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_-qi.rst_
 
 .. include:: explain_colon.rst_
 
@@ -463,7 +466,7 @@ like local PNG images), you can consolidate these into a single KMZ file
 for saving space and for grouping related files together.  The bash function
 **gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
 do this.  You need to source gmt_shell_functions.sh first before you can
-use it. 
+use it.
 
 See Also
 --------

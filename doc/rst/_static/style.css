@@ -9,8 +9,20 @@
 }
 
 /* See https://github.com/GenericMappingTools/gmt/pull/1605 */
-.rst-content dl dt {
+/* For Sphinx 1.x only */
+.rst-content dl.docutils dt {
     font-weight: normal;
+}
+
+/* Override the default style for definition list to
+   make sphinx_rtd_theme compatible with Sphinx 2.x */
+.rst-content dl:not(.docutils) dt {
+    all: inherit;
+    margin-bottom: 12px;
+}
+.rst-content dl:not(.docutils) dl dt {
+    all: inherit;
+    margin-bottom: 6px;
 }
 
 /* https://github.com/readthedocs/sphinx_rtd_theme/pull/775 */
@@ -30,3 +42,54 @@
 .highlight {
     tab-size: 2;
 }
+
+/* Revert the old behavior of popups */
+.modalDialog {
+	position: fixed;
+	font-family: Arial, Helvetica, sans-serif;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 99999;
+	opacity:0;
+	-webkit-transition: opacity 400ms ease-in;
+	-moz-transition: opacity 400ms ease-in;
+	transition: opacity 400ms ease-in;
+	pointer-events: none;
+}
+.modalDialog:target {
+	opacity:1;
+	pointer-events: auto;
+}
+.modalDialog > div {
+	font-size:small;
+	width: 500px;
+	position: relative;
+	margin: 10% auto;
+	padding: 5px 20px 13px 20px;
+	border-radius: 10px;
+	background: #fff;
+	background: -moz-linear-gradient(#fff, #999);
+	background: -webkit-linear-gradient(#fff, #999);
+	background: -o-linear-gradient(#fff, #999);
+}
+.close {
+	background: #606061;
+	color: #FFFFFF;
+	line-height: 25px;
+	position: absolute;
+	right: -12px;
+	text-align: center;
+	top: -10px;
+	width: 24px;
+	text-decoration: none;
+	font-weight: bold;
+	-webkit-border-radius: 12px;
+	-moz-border-radius: 12px;
+	border-radius: 12px;
+	-moz-box-shadow: 1px 1px 3px #000;
+	-webkit-box-shadow: 1px 1px 3px #000;
+	box-shadow: 1px 1px 3px #000;
+}
+.close:hover { background: #00d9ff; }

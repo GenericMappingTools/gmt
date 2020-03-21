@@ -12,13 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*\ [*units*]
-[ |-A|\ [\ *azimuth*] ]
+**gmt pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*
+[ |-A|\ [*azimuth*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *center* ]
 [ |-D|\ *refpoint* ]
 [ |-F|\ *panel* ]
-[ |-G|\ *fill*\ [**+n**\ ][**+p**\ ] ]
+[ |-G|\ *fill*\ [**+n**][**+p**] ]
 [ |-I|\ *fix_az* ]
 [ |-K| ]
 [ |-O| ] [ **-P** ]
@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -84,10 +85,9 @@ see if this is the problem, you should do this:
 
    ::
 
-    awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz | more
+    gmt mapproject -Af yourdata.xyz | more
 
-(note that output is in radians; on some machines you need "nawk" to do
-this). Then if these numbers jump around a lot, you may do this:
+Then if these numbers jump around a lot, you may do this:
 
    ::
 

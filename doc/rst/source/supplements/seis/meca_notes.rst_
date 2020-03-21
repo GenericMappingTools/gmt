@@ -1,19 +1,10 @@
 References
 ----------
 
-Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
-
-Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
-
-\F. A. Dahlen and Jeroen Tromp, Theoretical Global Seismology, Princeton, 1998, p.167. Definition of scalar moment.
-
-Cliff Frohlich, Cliff's Nodes Concerning Plotting Nodal Lines for P, Sh and Sv,
-Seismological Research Letters, Volume 67, Number 1, January-February, 1996
-
-Thorne Lay, Terry C. Wallace, Modern Global Seismology, Academic Press, 1995, p.384.
-
-W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery, Numerical
-Recipes in C, Cambridge University press (routine jacobi)
+- Aki, K., & Richards, P. G. (1980). Quantitative seismology: theory and methods. San Francisco: W. H. Freeman.
+- Dahlen, F. A., & Tromp, J. (1998). Theoretical global seismology. Princeton, N.J: Princeton University Press.
+- Frohlich, C. (1996). Cliff's Nodes Concerning Plotting Nodal Lines for P, SH and SV. Seismological Research Letters, 67(1), 16–24. https://doi.org/10.1785/gssrl.67.1.16
+- Lay, T., & Wallace, T. C. (1995). Modern global seismology. San Diego: Academic Press.
 
 Author
 ------

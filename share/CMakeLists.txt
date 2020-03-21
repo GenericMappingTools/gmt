@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,10 @@
 # Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
-# share CMakeLists.txt
+# share/CMakeLists.txt
 #
 
-set (_gmt_share_dirs cpt custom localization mgd77 mgg
-	spotter x2sys)
+set (_gmt_share_dirs cpt custom localization mgd77 mgg spotter x2sys)
 
 # install target for data
 install (DIRECTORY ${_gmt_share_dirs}
@@ -53,26 +52,6 @@ else (DCW_PATH AND COPY_DCW)
 	# set installed location
 	set (DCW_INSTALL_PATH ${DCW_PATH})
 endif (DCW_PATH AND COPY_DCW)
-
-
-if (GDAL_DATA_PATH)
-	install (DIRECTORY ${GDAL_DATA_PATH}/
-		DESTINATION ${GMT_DATADIR}/GDAL_DATA
-		COMPONENT GDALDATA)
-endif ()
-if (PROJ_DATA_PATH)
-	install (DIRECTORY ${PROJ_DATA_PATH}/
-		DESTINATION ${GMT_DATADIR}/proj
-		COMPONENT GDALDATA)
-endif ()
-if (GHOST_DATA_PATH)
-	install (PROGRAMS 
-		${GHOST_DATA_PATH}/gswin${BITAGE}c.exe
-		${GHOST_DATA_PATH}/gsdll${BITAGE}.dll
-		DESTINATION ${GMT_BINDIR}
-		COMPONENT GHOSTSCRIPT)
-endif ()
-
 
 # add subtrees
 add_subdirectory (tools)

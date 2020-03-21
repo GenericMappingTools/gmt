@@ -6,6 +6,6 @@ gmt begin clip ps
 5 1
 5 5
 EOF
-  gmt plot @tut_data.txt -Gred -Sc2c 
+  gmt plot @tut_data.txt -Gred -Sc2c
   gmt psclip -C -B
 gmt end show

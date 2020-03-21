@@ -1,15 +1,15 @@
 .. _-U_full:
 
-**-U**\ [*label*\ ][**+c**\ ][**+j**\ *just*\ ][**+o**\ *dx*/*dy*\ ]
+**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
     Draw the GMT Unix System time stamp on the plot.
-    By appending **+j**\ *just* and/or **+o**\ *dx/dy*, the
+    By appending **+j**\ *just* [BL] and/or **+o**\ *dx/dy* [-54p/-54p], the
     user may specify the justification of the stamp and where the stamp
     should fall on the page relative to lower left corner of the plot.
-    For example, +jBL+o0/0 will align the lower left corner of the time
-    stamp with the bottom left corner of the plot [BL]. Optionally, append a
-    *label*, or give **+c** which will plot the command string. The GMT
-    parameters :ref:`MAP_LOGO <MAP_LOGO>`, :ref:`MAP_LOGO_POS <MAP_LOGO_POS>`,
-    :ref:`FONT_LOGO <FONT_LOGO>` and :ref:`FORMAT_TIME_STAMP <FORMAT_TIME_STAMP>`
+    For example, **+jBL+o**\ 0/0 will align the lower left corner of the time
+    stamp with the bottom left corner of the plot. Optionally, append a
+    *label*, or give **+c** which will plot the module command string. The GMT
+    parameters :term:`MAP_LOGO`, :term:`MAP_LOGO_POS`,
+    :term:`FONT_LOGO` and :term:`FORMAT_TIME_STAMP`
     can affect the appearance; see the :doc:`gmt.conf` man page for details.
     The time string will be in the locale set by the environment variable
     **TZ** (generally local time).

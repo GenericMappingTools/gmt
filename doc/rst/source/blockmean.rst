@@ -17,10 +17,12 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-E|\ [**+p**\ \|\ **P**] ]
+[ |-E|\ [**+p**\|\ **P**] ]
 [ |-G|\ [*grdfile*] ]
+[ |-S|\ [**m**\|\ **n**\|\ **s**\|\ **w**] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\ \|\ **o**][**+s**] ]
+[ |-W|\ [**i**\|\ **o**][**+s**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -28,6 +30,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -47,7 +50,7 @@ Either **blockmean**, :doc:`blockmedian`, or
 :doc:`surface` to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your :doc:`gmt.conf` file, or you may
+:term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file, or you may
 choose binary input and/or output to avoid loss of precision.
 
 Required Arguments
@@ -64,19 +67,19 @@ Optional Arguments
 ------------------
 
 *table*
-    3 [or 4, see **-W**] column ASCII data table file(s) [or binary, see
-    **-bi**] holding (*x*,\ *y*,\ *z*\ [,\ *w*])
-    data values. [\ *w*] is an optional weight for the data. If no file
+    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
+    **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
+    data values, where [*w*] is an optional weight for the data. If no file
     is specified, **blockmean** will read from standard input.
 
 .. _-A:
 
 **-A**\ *fields*
     Select which fields to write to individual grids.  Requires **-G**.
-    Append comma-separated codes for available fields: **z** (the mean
+    Append the codes for available fields: **z** (the mean
     data z, but see **-S**), **s** (standard deviation), **l** (lowest
     value), **h** (highest value) and **w** (the output weight; requires **-W**).
-    Note **s**\ \|\ **l**\ \|\ **h** requires **-E** [Default is just **z**].
+    Note **s**\|\ **l**\|\ **h** requires **-E** [Default is just **z**].
 
 .. _-C:
 
@@ -85,13 +88,13 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**+p**\ \|\ **P**]
+**-E**\ [**+p**\|\ **P**]
     Provide Extended report which includes **s** (the standard deviation
     about the mean), **l**, the lowest value, and **h**, the high value
     for each block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
-    *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
-    If **-E+p**\ \|\ **P** are used then input data uncertainties are expected and *s*
+    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
+    *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for enabling *w* output.
+    If **-E+p**\|\ **P** is used then input data uncertainties are expected and *s*
     becomes the propagated error of the weighted (**+p**) or simple (**+P**) *z* mean.
 
 .. _-G:
@@ -104,10 +107,10 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**]
+**-S**\ [**m**\|\ **n**\|\ **s**\|\ **w**]
     Use **-Sn** to report the number of input points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
-    to report the sum of weights [Default (or **-Sm** reports mean value]. 
+    to report the sum of weights [Default (or **-Sm** reports mean value].
 
 .. _-V:
 
@@ -116,7 +119,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**i**\ \|\ **o**][**+s**]
+**-W**\ [**i**\|\ **o**][**+s**]
     Weighted modifier[s]. Unweighted input and output have 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted mean values for
@@ -126,15 +129,17 @@ Optional Arguments
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
     then append **+s** and we compute weight = 1/sigma.
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
 .. include:: explain_-bi.rst_
-   
- 
+
+
 .. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns.
    The **-Sn** option will work with only 2 input columns (x and y).
 
 .. include:: explain_-bo.rst_
- 
+
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d.rst_
 
@@ -150,10 +155,12 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 .. include:: explain_-ocols.rst_
 
-.. |Add_nodereg| replace:: 
+.. include:: explain_-q.rst_
+
+.. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with
-    **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
-    (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
+    **-R**\ 10/15/10/15 and **-I**\ 1: With **-r** or **-rp**, 10 <=
+    (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
 
@@ -163,8 +170,6 @@ Optional Arguments
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To find 5 by 5 minute block mean values from the ASCII data in ship_15.txt, run
 
@@ -183,7 +188,7 @@ called field_z.nc and field_s.nc, run
 
    ::
 
-    gmt blockmean @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
+    gmt blockmean @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Azs
 
 See Also
 --------

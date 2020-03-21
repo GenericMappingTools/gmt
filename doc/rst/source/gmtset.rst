@@ -12,8 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt set** [ |-C| \| |-D|\ [**s**\ \|\ **u**] \|
-|-G|\ *defaultsfile* ] [ **-**\ [**BJRXxYycp**\ ]\ *value* ]
+**gmt set** [ |-C| \| |-D|\ [**s**\|\ **u**] \|
+|-G|\ *defaultsfile* ] [ **-**\ [**BJRXYp**]\ *value* ]
 PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*
 ...
 
@@ -23,7 +23,8 @@ Description
 -----------
 
 **set** will adjust individual GMT defaults settings in the
-current directory's :doc:`gmt.conf` file. If no such file exists one will
+current directory's :doc:`gmt.conf` file (under classic mode) or in the
+current session directory (modern mode). If no such file exists one will
 be created. The main purpose of **set** is temporarily to change
 certain parameters inside a shell script, e.g., set the map frame type to
 plain, run the script, and reset to fancy.  Only parameters that differ
@@ -52,7 +53,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**s**\ \|\ **u**]
+**-D**\ [**s**\|\ **u**]
     Modify the GMT defaults based on the system settings. Append
     **u** for US defaults or **s** for SI defaults. [**-D** alone gives
     the version selected at compile time]
@@ -64,7 +65,7 @@ Optional Arguments
     first in current directory, then in your home directory, then in
     ~/.gmt and finally in the system defaults].
 
-**-**\ [**BJRXxYycp**]\ *value*
+**-**\ [**BJRXYp**]\ *value*
     Set the expansion of any of these shorthand options.
 
 .. include:: explain_help.rst_

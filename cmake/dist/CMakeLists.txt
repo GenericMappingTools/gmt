@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -135,16 +135,6 @@ if (WIN32 AND NOT CYGWIN)
 	install (PROGRAMS startup_win.bat
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
-
-	if (WIN32 AND GMTMEX_PATH)
-		# Install the gmtmex on Windows. Its location is controlled by GMTMEX_PATH set in ConfigUser.cmake
-		if (BITAGE EQUAL 64)
-			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
-		else ()
-			install (PROGRAMS "${GMTMEX_PATH}/gmtmex.mexw32" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
-		endif ()
-		install (PROGRAMS "${GMTMEX_PATH}/gmt.m" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
-	endif ()
 
 	# Fix bundle:
 	install (CODE "

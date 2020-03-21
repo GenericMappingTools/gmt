@@ -12,11 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
+**gmt clip** [ *table* ] |-J|\ *parameters* |-C|\ [*n*]
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
+[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
 [ |SYN_OPT-B| ]
-|-J|\ **z**\ \|\ **Z**\ *parameters* ]
+|-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-N| ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -40,8 +41,6 @@ Synopsis
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 To see the effect of a simple clip path which result in some symbols
 being partly visible or missing altogether, try::

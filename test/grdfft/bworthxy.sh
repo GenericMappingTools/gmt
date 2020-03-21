@@ -5,7 +5,7 @@ ps=bworthxy.ps
 
 F0=0.25
 gmt math -T0/0.5/0.001 T $F0 DIV 12 POW 1 ADD INV 128 DIV = curve.txt
-L=`gmt math -Q 128 INV =`
+L=$(gmt math -Q 128 INV =)
 # White noise of unit amplitude: Saved since otherwise it would change each time
 # gmt grdmath -R0/256/0/256 -I1 -r 0 1 NRAND = @white_noise.nc
 gmt grdfft @white_noise.nc -Ex -N+a > bworth_x.txt

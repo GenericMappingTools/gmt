@@ -16,10 +16,10 @@ Synopsis
 [ |-A|\ *out_img*\ [**=**\ *driver*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [**r**\ ] ]
-[ |-E|\ [\ **i**\ \|\ *dpi*] ] |-J|\ *parameters*
-[ |-G|\ *color*\ [**+b**\ \|\ **+f**] ]
-[ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
+[ |-D|\ [**r**] ]
+[ |-E|\ [**i**\|\ *dpi*] ] |-J|\ *parameters*
+[ |-G|\ *color*\ [**+b**\|\ **f**] ]
+[ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-M| ] [ |-N| ]
 [ |-Q| ]
 [ |SYN_OPT-Rz| ]
@@ -75,7 +75,7 @@ remotely located Jessica Rabbit::
 
     gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 
-.. include:: explain_cpt.rst_
+.. include:: cpt_notes.rst_
 
 See Also
 --------

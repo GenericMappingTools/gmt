@@ -41,7 +41,7 @@ When **-R** is omitted, the output grid will cover the same region as
 the input grid. When **-I** is omitted, the grid spacing of the output
 grid will be the same as the input grid. Either **-r** or **-T** can be
 used to change the grid registration. When omitted, the output grid will
-have the same registration as the input grid. 
+have the same registration as the input grid.
 
 Required Arguments
 ------------------
@@ -129,20 +129,14 @@ such as
 Examples
 --------
 
-.. include:: explain_example.rst_
+To resample a sub-region of the 5 x 5 minute remote grid earth_relief_05m onto a 1 minute grid::
 
-To resample a sub-region of the 5 x 5 minute remote grid earth_relief_05m onto a 1 minute grid:
+    gmt grdsample @earth_relief_05m -R0/20/0/20 -I1m -Gtopo_1m.nc
 
-   ::
+To translate the gridline-registered remote grid earth_relief_05m to pixel
+registration while keeping the same region and grid interval::
 
-    gmt grdsample @earth_relief_05m -R0/20/0/20 -I1m -Gtopo_1m.nc 
-
-To translate the gridline-registered file surface.nc to pixel
-registration while keeping the same region and grid interval:
-
-   ::
-
-    gmt grdsample surface.nc -T -Gpixel.nc
+    gmt grdsample @earth_relief_05m -T -Gpixel.nc
 
 See Also
 --------

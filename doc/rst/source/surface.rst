@@ -15,14 +15,16 @@ Synopsis
 **gmt surface** [ *table* ] |-G|\ *outputfile.nc*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ *aspect_ratio*\ \|\ **m** ]
+[ |-A|\ *aspect_ratio*\|\ **m** ]
 [ |-C|\ *convergence_limit*\ [%] ]
+[ |-J|\ *parameters* ]
+[ |-D|\ *breakline_file*\ [**+z**\ [*level*]] ]
 [ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
-[ |-M|\ *max_radius*\ [**u**] ]
+[ |-M|\ *max_radius* ]
 [ |-N|\ *max_iterations* ]
 [ |-Q| ]
-[ |-S|\ *search_radius*\ [**m**\ \|\ **s**] ]
-[ |-T|\ [**i**\ \|\ **b**]\ *tension_factor* ]
+[ |-S|\ *search_radius*\ [**m**\|\ **s**] ]
+[ |-T|\ [**i**\|\ **b**]\ *tension_factor* ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ *over-relaxation_factor* ]
 [ |SYN_OPT-a| ]
@@ -32,6 +34,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -71,7 +74,7 @@ Required Arguments
 
 **-G**\ *outputfile.nc*
     Output file name. Output is a binary 2-D *.nc* file. Note that the
-    smallest grid dimension must be at least 4. 
+    smallest grid dimension must be at least 4.
 
 .. _-I:
 
@@ -90,7 +93,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *aspect_ratio*\ \|\ **m**
+**-A**\ *aspect_ratio*\|\ **m**
     Aspect ratio. If desired, grid anisotropy can be added to the
     equations. Enter *aspect_ratio*, where dy = dx / *aspect_ratio*
     relates the grid dimensions. For geographic data, you may use
@@ -110,6 +113,25 @@ Optional Arguments
     intermediate (coarser) grids the effective convergence limit is divided
     by the grid spacing multiplier.
 
+.. _-J:
+
+**-J**\ *parameters*
+
+.. |Add_-J| replace::
+    Select the data map projection. This projection is only used to add a referencing info
+    to the grid formats that support it. E.g. netCDF, GeoTIFF, and others supported by GDAL.
+.. include:: explain_-J.rst_
+
+.. _-D:
+
+**-D**\ *breakline*\ [**+z**\ [*level*]]
+    Use xyz data in the *breakline* file as a 'soft breakline'. A 'soft breakline'
+    is a line whose vertices will be used to constrain the nearest grid nodes without
+    any further interpolation. A coastline or a lake shore are good examples of
+    'soft breaklines'. Multi-segments files are accepted.  If your lines do not have
+    *z*-values or you wish to override those with a constant z-value, then append
+    **+z**\ *level* to the filename. If no value is given then we default to 0.
+
 .. _-L:
 
 **-Ll**\ *lower* and **-Lu**\ *upper*
@@ -125,10 +147,10 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ *max_radius*\ [**u**]
+**-M**\ *max_radius*
     After solving for the surface, apply a mask so that nodes farther
     than *max_radius* away from a data constraint is set to NaN [no masking].
-    Append a distance unit (see UNITS) if needed.
+    Append a distance unit (see `Units`_) if needed.
     One can also select the nodes to mask by using the **-M**\ *n_cells*\ **c** form.
     Here *n_cells* means the number of cells around the node controlled by a data point. As an example
     **-M0c** means that only the cell where point lies is filled, **-M1c** keeps one cell
@@ -155,7 +177,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search_radius*\ [**m**\ \|\ **s**]
+**-S**\ *search_radius*\ [**m**\|\ **s**]
     Search radius. Enter *search\_radius* in same units as x,y data;
     append **m** to indicate arc minutes or **s** for arc seconds. This
     is used to initialize the grid before the first iteration; it is not
@@ -164,7 +186,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**i**\ \|\ **b**]\ *tension_factor*
+**-T**\ [**i**\|\ **b**]\ *tension_factor*
     Tension factor[s]. These must be between 0 and 1. Tension may be
     used in the interior solution (above equation, where it suppresses
     spurious oscillations) and in the boundary conditions (where it
@@ -174,12 +196,12 @@ Optional Arguments
     to set interior tension, and **-Tb**\ *tension_factor* to set
     boundary tension. If you do not prepend **i** or **b**, both will be
     set to the same value. [Default = 0 for both gives minimum curvature
-    solution.] 
+    solution.]
 
 .. _-V:
 
-.. |Add_-V| replace:: 
-    **-V3** will report the convergence after each iteration; 
+.. |Add_-V| replace::
+    **-V3** will report the convergence after each iteration;
     **-V** will report only after each regional grid is converged.
 .. include:: explain_-V.rst_
 
@@ -192,12 +214,12 @@ Optional Arguments
     Larger values overestimate the incremental changes during
     convergence, and will reach a solution more rapidly but may become
     unstable. If you use a large value for this factor, it is a good
-    idea to monitor each iteration with the **-Vl** option. [Default =
-    1.4 converges quickly and is almost always stable.] 
+    idea to monitor each iteration with the **-Vi** option. [Default =
+    1.4 converges quickly and is almost always stable.]
 
 .. include:: explain_-aspatial.rst_
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -211,8 +233,10 @@ Optional Arguments
 
 .. |Add_-h| replace:: Not used with binary data.
 .. include:: explain_-h.rst_
-    
+
 .. include:: explain_-icols.rst_
+
+.. include:: explain_-qi.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
@@ -222,6 +246,8 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_float.rst_
+
+.. include:: explain_distunits.rst_
 
 
 Examples
@@ -236,7 +262,7 @@ hawaii_grd.nc, and monitoring each iteration, try:
 
    ::
 
-    gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vl
+    gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
 
 Gridding Geographic Data: Boundary Conditions
 ---------------------------------------------
@@ -286,7 +312,7 @@ node and suggest that you run :doc:`blockmean`, :doc:`blockmedian`, or
 message it usually means that your grid spacing is so small that you
 need more decimals in the output format used. You may
 specify more decimal places by editing the parameter
-**FORMAT_FLOAT_OUT** in your :doc:`gmt.conf` file prior to running
+:term:`FORMAT_FLOAT_OUT` in your :doc:`gmt.conf` file prior to running
 the decimators or choose binary input and/or output using single or
 double precision storage.
 

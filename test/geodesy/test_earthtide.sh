@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
-# Tests gmt earthtide against the values of the original FORTRAN version 
+# Tests gmt earthtide against the values of the original FORTRAN version
 
 
 rm -f test_earthtide.dat
 
 # Skip the first column with the time since the fortran version prints seconds since t0
-gmt earthtide -T2018-7-7T/2018-7-7T00:04:00/1m -L0/0  --FORMAT_FLOAT_OUT=%.6f -o1,2,3 > test_earthtide.dat
+gmt earthtide -T2018-7-7T/2018-7-7T00:04:00/1m -L0/0  --FORMAT_FLOAT_OUT=%.6f -o1:3 > test_earthtide.dat
 
 # Output from the Fortran version
 #-0.015781 -0.012347 -0.027025

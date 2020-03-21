@@ -5,4 +5,4 @@ Datasets
 
    datasets/gshhg
    datasets/dcw
-   datasets/earth_relief
+   datasets/earth-relief

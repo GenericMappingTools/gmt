@@ -15,19 +15,19 @@ Synopsis
 
 **gmt contour** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**-**\ \|\ *contours*][*labelinfo*] ]
+[ |-A|\ [**n**\|\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours* ]
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
-[ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
-[ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
+[ |-I| ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-L|\ *pen* ] [ |-N| ]
-[ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
-[ |-S|\ [\ *p*\ \|\ *t*] ]
-[ |-T|\ [**h**\ \|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
+[ |-Q|\ [*cut*][**+z**] ]
+[ |-S|\ [*p*\|\ *t*] ]
+[ |-T|\ [**h**\|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
+[ |-W|\ [*type*]\ *pen*\ [**+c**\ [**l**\|\ **f**]] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-b| ]
@@ -35,7 +35,9 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -79,6 +81,8 @@ them into multisegment files (one for each contour level), try
     gmt contour topo.txt -C100 -Dcontours_%.0f.txt
 
 .. include:: contour_notes.rst_
+
+.. include:: auto_legend_info.rst_
 
 See Also
 --------

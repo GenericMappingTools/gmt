@@ -27,6 +27,9 @@ copyright = "@GMT_VERSION_YEAR@, The GMT Team."
 version = '@GMT_PACKAGE_VERSION_MAJOR@.@GMT_PACKAGE_VERSION_MINOR@'
 # The full version shown in the page title
 release = '@GMT_PACKAGE_VERSION@'
+# Make the "Edit on GitHub" button link to the correct branch
+# Default to master branch if Azure Pipelines environmental variable BUILD_SOURCEBRANCHNAME is not defined
+github_version = os.getenv("BUILD_SOURCEBRANCHNAME", 'master')
 
 # -- Options for HTML output ---------------------------------------------------
 html_theme = 'rtd'
@@ -38,12 +41,16 @@ html_theme_options = {
 html_context = {
     "menu_links": [
         (
-            '<i class="fa fa-book fa-fw"></i> License',
-            "https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT",
+            '<i class="fa fa-home fa-fw"></i> GMT Homepage',
+            "https://www.generic-mapping-tools.org/",
         ),
         (
-            '<i class="fa fa-comment fa-fw"></i> Contact',
+            '<i class="fa fa-comment fa-fw"></i> GMT Community Forum',
             "https://forum.generic-mapping-tools.org/",
+        ),
+        (
+            '<i class="fa fa-book fa-fw"></i> License',
+            "https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT",
         ),
         (
             '<i class="fa fa-github fa-fw"></i> Source Code',
@@ -55,13 +62,13 @@ html_context = {
     "display_github": True,
     "github_user": "GenericMappingTools",
     "github_repo": "gmt",
-    "github_version": version,
+    "github_version": github_version,
     "theme_vcs_pageview_mode": "edit",
     "conf_py_path": "/doc/rst/source/"
 }
 # favicon of the docs
 html_favicon = "_static/favicon.png"
-html_static_path = ['_static', 'source/_static']
+html_static_path = ['_static']
 html_last_updated_fmt = '%b %d, %Y'
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = True

@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt originater** [ *tables* ] |-E|\ *rotfile*\ [**+i**]
-|-F|\ *hs_file*\ [**+d**] 
+|-F|\ *hs_file*\ [**+d**]
 [ |-D|\ *d_km* ]
 [ |-L|\ [*flag*] ]
 [ |-N|\ *upper_age* ]
@@ -28,6 +28,7 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -51,8 +52,6 @@ radius, crustal_age) files.
 
 Required Arguments
 ------------------
-
-.. _-E:
 
 .. include:: explain_rots.rst_
 
@@ -120,7 +119,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*n_hs*\ ]
+**-S**\ [*n_hs*]
     Set the number of closest hotspots to report [Default is 1].
 
 .. _-T:
@@ -157,6 +156,7 @@ Optional Arguments
 .. include:: ../../explain_-h.rst_../../explain_-V.rst_
 
 .. include:: ../../explain_-icols.rst_
+.. include:: ../../explain_-q.rst_
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 

@@ -14,9 +14,10 @@ assignees: ''
 - [ ] reserve a DOI on [zenodo](https://zenodo.org) (@PaulWessel)
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] check if all tests pass on macOS, Linux and Windows
+- [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update changelog
 - [ ] update INSTALL.md
-- [ ] build documentations and fix warnings if any
+- [ ] check if there are any warnings when build the documentation
 - [ ] check/set values in `cmake/ConfigDefault.cmake`
     - [ ] `GMT_VERSION_YEAR` is current year
     - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
@@ -30,6 +31,7 @@ assignees: ''
 - [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel)
 - [ ] create macOS bundle (@PaulWessel)
 - [ ] create Windows installers (win32 and win64) (@joa-quim)
+- [ ] check if the source tarballs, macOS bundle and Windows installers work well
 - [ ] make a tag and push it to github
     ```
     git tag x.x.x
@@ -39,7 +41,7 @@ assignees: ''
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
 - [ ] upload the tarball to zenodo (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
-- [ ] make announcements
+- [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
 - [ ] update links on the main site (News, Download & Documentation)
 
 **After release**:

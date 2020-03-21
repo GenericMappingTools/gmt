@@ -37,7 +37,7 @@ gmt pstext -R-74.25/-63.75/-44.0/-39.5 -JB-69/-41.75/-40.625/-42.875/6i \
 -70.31449722 -37.36082778 BC CHOS
 -70.31449722 -37.36082778 BC ELCH
 EOF
-gmt grdcontour test.grd -R -J -C500 -K -O >> $ps 
+gmt grdcontour test.grd -R -J -C500 -K -O >> $ps
 gmt psclip -R -J -C -O -K -V >> $ps
 gmt psxy -R -J -Sa0.5c -Gred -Wthick,red,solid -O >> $ps << EOF
 > -Sa0.5c -Gred -Wthick,red,solid

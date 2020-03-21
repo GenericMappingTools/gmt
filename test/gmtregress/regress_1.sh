@@ -15,7 +15,7 @@ function plot_one {	# 5 args are: -E -N axes -X -Y
 	gmt math tmp -i0,1 DUP DUP LOWER EQ MUL = | awk '{if (NF == 2 && $2 > 0) printf "%s %s %s 0.001\n", $1, $2, $1}' | gmt psxy -R -J -O -K -Sv0.2i+s+b+h1 -Gred $4 $5
 }
 # Allow outliers to be included in the analysis:
-file=`gmt which -G @hertzsprung-russell.txt`
+file=$(gmt which -G @hertzsprung-russell.txt)
 sed -e s/#//g $file > data
 gmt psxy -R-90/90/0.001/100 -JX2i/2il -T -P -K -Xa1i -Ya1i > $ps
 # L1

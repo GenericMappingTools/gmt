@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt simplify** [ *table* ] |-T|\ *tolerance*\ [*unit*]
+**gmt simplify** [ *table* ] |-T|\ *tolerance*
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -22,6 +22,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -43,7 +44,7 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *tolerance*\ [*unit*]
+**-T**\ *tolerance*
     Specifies the maximum mismatch tolerance in the user units. If the
     data are not Cartesian then append a suitable distance unit (see `Units`_).
 
@@ -83,6 +84,8 @@ Optional Arguments
 
 .. include:: explain_-ocols.rst_
 
+.. include:: explain_-q.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
@@ -101,16 +104,8 @@ a tolerance of 500 km, use::
 
     gmt simplify @GSHHS_h_Australia.txt -T500k
 
-To reduce the geographic line segment.txt using a tolerance of 2 km, run
-
-   ::
-
-    gmt simplify segment.txt -T2k > new_segment.txt
-
 To reduce the Cartesian lines xylines.txt using a tolerance of 0.45 and
-write the reduced lines to file new_xylines.txt, run
-
-   ::
+write the reduced lines to file new_xylines.txt, run::
 
     gmt simplify xylines.txt -T0.45 > new_xylines.txt
 

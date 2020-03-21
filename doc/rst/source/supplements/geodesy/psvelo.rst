@@ -31,13 +31,14 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
 .. include:: velo_common.rst_
 
-.. include:: ../../common_classic_sup.rst_
+.. include:: ../../common_classic.rst_
 
 Examples
 --------

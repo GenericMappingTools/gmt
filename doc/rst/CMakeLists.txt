@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -38,17 +38,22 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/source/_verbatim
 		DEPENDS _docs_copy_rst_tree_source)
 
+	add_custom_target (_docs_rst_mkdir_images
+		COMMAND ${CMAKE_COMMAND} -E make_directory
+		${CMAKE_CURRENT_BINARY_DIR}/source/_images
+		DEPENDS _docs_copy_rst_tree_source)
+
 	# clean target
 	add_custom_target (_rst_clean
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		${CMAKE_CURRENT_BINARY_DIR}/_doctrees
-		${CMAKE_CURRENT_BINARY_DIR}/_extensions
-		${CMAKE_CURRENT_BINARY_DIR}/_static
-		${CMAKE_CURRENT_BINARY_DIR}/_templates
-		${CMAKE_CURRENT_BINARY_DIR}/source
-		${CMAKE_CURRENT_BINARY_DIR}/themes
-		${CMAKE_CURRENT_BINARY_DIR}/html
-		${CMAKE_CURRENT_BINARY_DIR}/man
+		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_doctrees
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_extensions
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_static
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_templates
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/source
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/themes
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/html
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/man
 		COMMENT "Removing rst tree")
 	# register with spotless target
 	add_depend_to_target (spotless _rst_clean)

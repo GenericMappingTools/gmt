@@ -40,10 +40,10 @@ Animations
 
     {% for i in range(1, 9) %}
     {% set i = '%02d' % i %}
-    -  .. figure:: /_images/anim_{{i}}.*
+    -  .. figure:: /_images/anim{{i}}.*
           :target: ./gallery/anim{{i}}.html
 
-          :ref:`anim_{{i}}`
+          :ref:`anim{{i}}`
 
     {% endfor %}
 
@@ -51,5 +51,5 @@ Animations
    :hidden:
    :glob:
 
-   gallery/anim_introduction.rst
+   gallery/anim-introduction.rst
    gallery/anim*

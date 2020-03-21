@@ -782,8 +782,8 @@ L2:
 /*   N0 is an interior node.  Find N1. */
 
 L3:
-	if (xp * (y[n0] * z__[n1] - y[n1] * z__[n0]) - yp * (x[n0] * z__[n1] 
-		- x[n1] * z__[n0]) + zp * (x[n0] * y[n1] - x[n1] * y[n0]) < 
+	if (xp * (y[n0] * z__[n1] - y[n1] * z__[n0]) - yp * (x[n0] * z__[n1]
+		- x[n1] * z__[n0]) + zp * (x[n0] * y[n1] - x[n1] * y[n0]) <
 		0.) {
 	    lp = lptr[lp];
 	    n1 = list[lp];
@@ -797,8 +797,8 @@ L3:
 /*   N0 is a boundary node.  Test for P exterior. */
 
 	nl = -nl;
-	if (xp * (y[n0] * z__[nf] - y[nf] * z__[n0]) - yp * (x[n0] * z__[nf] 
-		- x[nf] * z__[n0]) + zp * (x[n0] * y[nf] - x[nf] * y[n0]) < 
+	if (xp * (y[n0] * z__[nf] - y[nf] * z__[n0]) - yp * (x[n0] * z__[nf]
+		- x[nf] * z__[n0]) + zp * (x[n0] * y[nf] - x[nf] * y[n0]) <
 		0.) {
 
 /*   P is to the right of the boundary edge N0->NF. */
@@ -807,8 +807,8 @@ L3:
 	    n2 = nf;
 	    goto L9;
 	}
-	if (xp * (y[nl] * z__[n0] - y[n0] * z__[nl]) - yp * (x[nl] * z__[n0] 
-		- x[n0] * z__[nl]) + zp * (x[nl] * y[n0] - x[n0] * y[nl]) < 
+	if (xp * (y[nl] * z__[n0] - y[n0] * z__[nl]) - yp * (x[nl] * z__[n0]
+		- x[n0] * z__[nl]) + zp * (x[nl] * y[n0] - x[n0] * y[nl]) <
 		0.) {
 
 /*   P is to the right of the boundary edge NL->N0. */
@@ -849,8 +849,8 @@ L4:
 /*     Note:  N1 = NL and LP points to NL. */
 
 L5:
-	if (xp * (y[n1] * z__[n0] - y[n0] * z__[n1]) - yp * (x[n1] * z__[n0] 
-		- x[n0] * z__[n1]) + zp * (x[n1] * y[n0] - x[n0] * y[n1]) >= 
+	if (xp * (y[n1] * z__[n0] - y[n0] * z__[n1]) - yp * (x[n1] * z__[n0]
+		- x[n0] * z__[n1]) + zp * (x[n1] * y[n0] - x[n0] * y[n1]) >=
 		0.) {
 	    lp = lptr[lp];
 	    n1 = (i__1 = list[lp], int64_abs(i__1));
@@ -884,7 +884,7 @@ L7:
 /* Top of edge-hopping loop: */
 
 L8:
-    *b3 = xp * (y[n1] * z__[n2] - y[n2] * z__[n1]) - yp * (x[n1] * z__[n2] - 
+    *b3 = xp * (y[n1] * z__[n2] - y[n2] * z__[n1]) - yp * (x[n1] * z__[n2] -
 	    x[n2] * z__[n1]) + zp * (x[n1] * y[n2] - x[n2] * y[n1]);
     if (*b3 < 0.) {
 
@@ -901,8 +901,8 @@ L8:
 /*   Define a new arc N1->N2 which intersects the geodesic */
 /*     N0-P. */
 
-	if (xp * (y[n0] * z__[n4] - y[n4] * z__[n0]) - yp * (x[n0] * z__[n4] 
-		- x[n4] * z__[n0]) + zp * (x[n0] * y[n4] - x[n4] * y[n0]) < 
+	if (xp * (y[n0] * z__[n4] - y[n4] * z__[n0]) - yp * (x[n0] * z__[n4]
+		- x[n4] * z__[n0]) + zp * (x[n0] * y[n4] - x[n4] * y[n0]) <
 		0.) {
 	    n3 = n2;
 	    n2 = n4;
@@ -994,7 +994,7 @@ L10:
     lp = lptr[lp];
     next = list[lp];
     if (xp * (y[n2] * z__[next] - y[next] * z__[n2]) - yp * (x[n2] * z__[next]
-	     - x[next] * z__[n2]) + zp * (x[n2] * y[next] - x[next] * y[n2]) 
+	     - x[next] * z__[n2]) + zp * (x[n2] * y[next] - x[next] * y[n2])
 	    >= 0.) {
 
 /*   N2 is the rightmost visible node if P Forward N2->N1 */
@@ -1049,7 +1049,7 @@ L11:
 L12:
 	lp = lend[n1];
 	next = -list[lp];
-	if (xp * (y[next] * z__[n1] - y[n1] * z__[next]) - yp * (x[next] * 
+	if (xp * (y[next] * z__[n1] - y[n1] * z__[next]) - yp * (x[next] *
 		z__[n1] - x[n1] * z__[next]) + zp * (x[next] * y[n1] - x[n1] *
 		 y[next]) >= 0.) {
 
@@ -1294,7 +1294,7 @@ GMT_LOCAL logical swptst_(integer *n1, integer *n2, integer *n3, integer *n4, do
 /*   the plane of (N2,N1,N4) if Det(N3-N4,N2-N4,N1-N4) = */
 /*   (N3-N4,N2-N4 X N1-N4) > 0. */
 
-    ret_val = dx3 * (dy2 * dz1 - dy1 * dz2) - dy3 * (dx2 * dz1 - dx1 * dz2) + 
+    ret_val = dx3 * (dy2 * dz1 - dy1 * dz2) - dy3 * (dx2 * dz1 - dx1 * dz2) +
 	    dz3 * (dx2 * dy1 - dx1 * dy2) > 0.;
     return ret_val;
 } /* swptst_ */
@@ -1545,7 +1545,7 @@ GMT_LOCAL doublereal areas_(doublereal *v1, doublereal *v2, doublereal *v3) {
 
     /* Local variables */
     static integer i__;
-    static doublereal a1, a2, a3, s12, s31, s23, u12[3], u23[3], u31[3], ca1, 
+    static doublereal a1, a2, a3, s12, s31, s23, u12[3], u23[3], u31[3], ca1,
 	    ca2, ca3, dv1[3], dv2[3], dv3[3];
 
 
@@ -2459,7 +2459,7 @@ GMT_LOCAL logical left_(doublereal *x1, doublereal *y1, doublereal *z1, doublere
 
 /* LEFT = true if <N0,N1 X N2> = det(N0,N1,N2) .GE. 0. */
 
-    ret_val = *x0 * (*y1 * *z2 - *y2 * *z1) - *y0 * (*x1 * *z2 - *x2 * *z1) + 
+    ret_val = *x0 * (*y1 * *z2 - *y2 * *z1) - *y0 * (*x1 * *z2 - *x2 * *z1) +
 	    *z0 * (*x1 * *y2 - *x2 * *y1) >= 0.;
     return ret_val;
 } /* left_ */
@@ -2469,7 +2469,7 @@ GMT_LOCAL integer trlist_(integer *n, integer *list, integer *lptr, integer *len
     integer ltri_dim1, ltri_offset, i__1, i__2;
 
     /* Local variables */
-    static integer i__, j, i1, i2, i3, n1, n2, n3, ka, kn, lp, kt, nm2, lp2, 
+    static integer i__, j, i1, i2, i3, n1, n2, n3, ka, kn, lp, kt, nm2, lp2,
 	    lpl, isv;
     static logical arcs;
     static integer lpln1;

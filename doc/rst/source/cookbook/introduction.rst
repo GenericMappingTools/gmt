@@ -145,7 +145,7 @@ these types of output:
    table output.
 
 GMT is available over the Internet at no charge. To obtain a copy,
-goto GMT home page https://www.generic-mapping-tools.org and follow instructions.
+go to the `GMT home page <https://www.generic-mapping-tools.org>`_ and follow instructions.
 We also maintain user forums and a bug and feature tracking system on
 the same page.
 
@@ -241,13 +241,15 @@ export GMT_SESSION_NAME=<some unique string>
 before gmt begin starts the script.  This is most easily done by using the **gmt --new-script**
 option to print a shell template to the standard output.
 
+Footnotes
+---------
 
 .. [2]
    See GNU Lesser General Public License (`<http://www.gnu.org/copyleft/gpl.html>`_)
    for terms on redistribution and modifications.
 
 .. [3]
-   The tools can also be installed on other platforms (see Chapter :doc:`non_unix_platforms`).
+   The tools can also be installed on other platforms (see Chapter :doc:`non-unix-platforms`).
 
 .. [4]
    One public-domain RIP is ghostscript, available from `<https://www.ghostscript.com/>`_.

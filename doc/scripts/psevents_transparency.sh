@@ -45,4 +45,4 @@ gmt begin psevents_transparency
 	EOF
 	rm -f B.txt t.txt
 gmt end show
-	
+

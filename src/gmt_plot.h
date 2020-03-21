@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
 /*!
  * \file gmt_plot.h
- * \brief 
+ * \brief
  */
 
 #ifndef GMT_PLOT_H
@@ -159,7 +159,7 @@ struct GMT_SYMBOL {
 	unsigned int w_mode;	/* Distance mode */
 	enum GMT_enum_wedgetype w_type;	/* Wedge type */
 	bool w_active;
-	
+
 	/* These apply to vectors */
 
 	struct GMT_VECT_ATTR v;	/* All attributes for vector shapes etc. [see struct above] */

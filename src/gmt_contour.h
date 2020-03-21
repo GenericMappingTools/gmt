@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -154,7 +154,7 @@ struct GMT_CONTOUR {
 	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
 	struct GMT_DATASET *Out;	/* Textset with positions, angles and labels used in contouring */
 	/* Contour line section */
-	
+
 	struct GMT_CONTOUR_LINE **segment;	/* Array of segments */
 };
 

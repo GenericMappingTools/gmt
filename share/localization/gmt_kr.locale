@@ -29,7 +29,7 @@ W	7	토요일 		토 	S
 # The third column is the name of the compass direction in full (capitalise if that is common in your language).
 # The fourth column is the abbreviation used on the edges of a map for longitude and latitude (in some languages this can be more than one letter).
 # The fifth column is the abbreviation used on on a compass rose (in some languages this can be more than one letter).
-C       1       서 	서   서 
-C       2       동   동   동 
-C       3       남   남   남 
-C       4       북   북   북 
+C       1       서 	서   서
+C       2       동   동   동
+C       3       남   남   남
+C       4       북   북   북

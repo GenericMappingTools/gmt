@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2009-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -178,7 +178,7 @@ int PSL_comment_ (char *text, int len)
 
 int PSL_free_ (void *ptr)
 {
-	return (PSL_free_nonmacro (ptr);
+	return (PSL_free_nonmacro (ptr));
 }
 
 int PSL_beginaxes_ (double *llx, double *lly, double *width, double *height, double *x0, double *y0, double *x1, double *y1)
@@ -218,7 +218,7 @@ int PSL_setpattern_ (int *image_no, char *imagefile, int *image_dpi, double *f_r
 
 int PSL_setimage_ (int *image_no, char *imagefile, unsigned char *image, int *image_dpi, unsigned int *dim, double *f_rgb, double *b_rgb, int len1, int len2)
 {
-	return (PSL_setimage (PSL_FORTRAN, *image_no, imagefile, image, *image_dpi, dim, f_rgb, b_rgb);
+	return (PSL_setimage (PSL_FORTRAN, *image_no, imagefile, image, *image_dpi, dim, f_rgb, b_rgb));
 }
 
 int PSL_plotepsimage_ (double *x, double *y, double *xsize, double *ysize, int *justify, unsigned char *buffer, int size, int *nx, int *ny, int *ox, int *oy)

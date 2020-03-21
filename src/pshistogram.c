@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,8 +29,8 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI@<D{,ID)"
-#define THIS_MODULE_NEEDS	"J"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipstxy" GMT_OPT("Ec")
+#define THIS_MODULE_NEEDS	"Jd"
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipqstxy" GMT_OPT("Ec")
 
 EXTERN_MSC int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
 
@@ -408,7 +408,7 @@ GMT_LOCAL int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, doubl
 	/* Get mode */
 
 	gmt_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
-	if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%d multiple modes found\n", n_multiples);
+	if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "The histogram has multiple (%d) modes (peaks)\n", n_multiples);
 
 	/* Get MAD for L1 */
 
@@ -439,7 +439,7 @@ GMT_LOCAL bool new_syntax (struct GMT_CTRL *GMT, char *L, char *T, char *W) {
 	 * new syntax and no pen was set.  If -L is given and it is -Lh|l|b then it is new syntax,
 	 * else -L must be the pen and it is old syntax.  The remaining case to consider is this:
 	 * -T<number> -W<something>
-	 * if -W contains +l|h|b then it is old syntax, and if there is a trailing unit c,i,p then 
+	 * if -W contains +l|h|b then it is old syntax, and if there is a trailing unit c,i,p then
 	 * is a pen and hence new syntax.  Thus, things like -T1 -W2 cannot be uniquely identified.
 	 * In that case all we can do is warn the user as to how we interpreted their command line. */
 	double w_val, t_val;
@@ -454,11 +454,11 @@ GMT_LOCAL bool new_syntax (struct GMT_CTRL *GMT, char *L, char *T, char *W) {
 	if (w_val == 0.0) return true;	/* Must have given a zero pen width (faint) */
 	if (fabs (rint (t_val) - t_val)) return true;	/* Argument to -T is not an integer, hence new style */
 	if (t_val > 5) {	/* Here we must guess that 6 is too large to be a column entry and hence it is a new syntax */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot tell if -T%s -W%s is new or deprecated syntax; selected new.\n", T, W);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cannot tell if -T%s -W%s is new or deprecated syntax; selected new.\n", T, W);
 		return true;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot tell if -T%s -W%s is new or deprecated syntax; selected deprecated.\n", T, W);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cannot tell if -T%s -W%s is new or deprecated syntax; selected deprecated.\n", T, W);
 		return false;
 	}
 }
@@ -466,11 +466,11 @@ GMT_LOCAL bool new_syntax (struct GMT_CTRL *GMT, char *L, char *T, char *W) {
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s -T[<min>/<max>/]<inc>[<unit>][+n] [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", name, GMT_Jx_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s -T[<min>/<max>/]<inc>[+n] [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", name, GMT_Jx_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fill>] [-I[o|O]] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [-W<pen>] [%s] [%s] [-Z[0-5][+w]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
-		GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -480,7 +480,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of bin boundaries to produce instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time bins, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with bin boundaries in the first column, or a comma-separate list of values.\n");
-	GMT_Option (API, "XZ");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Plot horizontal bars, i.e., flip x and y axis [Default is vertical].\n");
@@ -518,7 +517,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   4 - Log10 (1+counts).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   5 - Log10 (1+frequency percent).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to use bin weights in 2nd column rather than counts.\n");
-	GMT_Option (API, "bi2,c,di,e,f,h,i,p,s,t,.");
+	GMT_Option (API, "bi2,c,di,e,f,h,i,p,qi,s,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -606,7 +605,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 					case '1': mode = PSHISTOGRAM_L1;	break;
 					case '2': mode = PSHISTOGRAM_LMS;	break;
 					default:
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: mode %c unrecognized.\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: mode %c unrecognized.\n", opt->arg[0]);
 					n_errors++;
 				}
 				Ctrl->N.selected[mode] = true;
@@ -638,7 +637,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				}
 				if (opt->arg[0]) {	/* Gave an argument */
 					sval = atoi (opt->arg);
-					n_errors += gmt_M_check_condition (GMT, sval < PSHISTOGRAM_COUNTS || sval > PSHISTOGRAM_LOG10_FREQ_PCT, "Syntax error -Z option: histogram type must be in 0-5 range\n");
+					n_errors += gmt_M_check_condition (GMT, sval < PSHISTOGRAM_COUNTS || sval > PSHISTOGRAM_LOG10_FREQ_PCT, "Option -Z: histogram type must be in 0-5 range\n");
 					Ctrl->Z.mode = sval;
 				}
 				if (c) c[0] = '+';	/* Restore */
@@ -652,12 +651,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
-	/* Must handle some backwards compatible issues first. The problem is a change in syntax: 
+	/* Must handle some backwards compatible issues first. The problem is a change in syntax:
 	 * Old syntax: -W<width>[+l|h|b] [-L<pen>] [-T<col>]
 	 * New syntax: -T<width> [-Ll|h|b] [-W<pen>]
 	 * See logic in get_syntax. */
 	if (new_syntax (GMT, l_arg, t_arg, w_arg)) {
-		/* Process -T<width>[unit] [-Lb|h|l] [-W<pen>] */
+		/* Process -T<width> [-Lb|h|l] [-W<pen>] */
 		Ctrl->T.active = true;
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, 0);
 		if (l_arg) {	/* Gave -Lb|h|l */
@@ -714,19 +713,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 		}
 	}
 	else {
-		GMT_Report (API, GMT_MSG_NORMAL, "Required argument for bin width not set\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Required argument for bin width not set\n");
 		n_errors++;
 	}
-	
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->T.T.vartime, "Syntax error -F option: Cannot be used with variable time bin widths\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Syntax error -T option: Must specify bin width\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active && !gmt_M_is_linear (GMT), "Syntax error -J option: Only linear projection supported.\n");
+
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->T.T.vartime, "Option -F: Cannot be used with variable time bin widths\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -T: Must specify bin width\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active && !gmt_M_is_linear (GMT), "Option -J: Only linear projection supported.\n");
 
 	/* Now must specify either fill color with -G or outline pen with -W */
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->C.active || Ctrl->I.active || Ctrl->G.active || Ctrl->W.active), "Must specify either fill (-G) or lookup colors (-C), outline pen attributes (-W), or both.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both fill (-G) and lookup colors (-C).\n");
 	n_errors += gmt_check_binary_io (GMT, 0);
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -738,7 +737,7 @@ int GMT_histogram (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: histogram\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: histogram\n");
 		return (GMT_NOT_A_VALID_MODULE);
 	}
 	return GMT_pshistogram (V_API, mode, args);
@@ -774,7 +773,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (gmt_M_compat_check (GMT, 4)) {	/* Must see if -E was given and temporarily change it */
 		struct GMT_OPTION *opt = NULL;
 		for (opt = options; opt->next; opt = opt->next) {
@@ -788,7 +787,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	gmt_M_memset (&F, 1, struct PSHISTOGRAM_INFO);
 	gmt_M_memset (stats, 6, double);
 	F.hist_type  = Ctrl->Z.mode;
@@ -865,13 +864,13 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	}
 
 	if (n == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Fatal error, read only 0 points.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Fatal error, read only 0 points.\n");
 		gmt_M_free (GMT, data);
 		if (F.weights) gmt_M_free (GMT, weights);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " points read\n", n);
+	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points read\n", n);
 
 	data = gmt_M_memory (GMT, data, n, double);
 	if (F.weights) {	/* Must use a copy since get_loc_scale sorts the array and that does not work if we have weights */
@@ -884,13 +883,13 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	else
 		get_loc_scl (GMT, data, n, stats);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, data[0], data[n-1]);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, data[0], data[n-1]);
 		sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
 	}
 
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [ and tickmarks] when -R -T missing */
@@ -913,7 +912,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	}
 
 	/* Set up bin boundaries array */
-		
+
 	if (F.center_box) {	/* Initial specification was for bin centers, adjust limits to get bin boundaries */
 		F.T->min -= 0.5 * F.T->inc;
 		F.T->max += 0.5 * F.T->inc;
@@ -925,17 +924,17 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	}
 
 	if (fill_boxes (GMT, &F, data, weights, n)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Fatal error during box fill.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Fatal error during box fill.\n");
 		gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 		if (F.weights) gmt_M_free (GMT, weights);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		sprintf (format, "min/max values are :\t%s\t%s\t%s\t%s\n",
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, x_min, x_max, F.yy0, F.yy1);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, x_min, x_max, F.yy0, F.yy1);
 	}
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
@@ -957,14 +956,14 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 			dim[GMT_ROW] = n_boxes;
 			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for histogram\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for histogram\n");
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-				if (F.weights) gmt_M_free (GMT, weights);	
+				if (F.weights) gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 			if ((error = GMT_Set_Columns (API, GMT_OUT, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-				if (F.weights) gmt_M_free (GMT, weights);	
+				if (F.weights) gmt_M_free (GMT, weights);
 				Return (error);
 			}
 			S = D->table[0]->segment[0];	/* Only one table with one segment here, with 2 cols and F.n_boxes rows */
@@ -990,12 +989,12 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			S->n_rows = row;
 			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, 0, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-				if (F.weights) gmt_M_free (GMT, weights);	
+				if (F.weights) gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (GMT->parent, &D) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-				if (F.weights) gmt_M_free (GMT, weights);	
+				if (F.weights) gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 		}
@@ -1010,22 +1009,22 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
 			if ((error = GMT_Set_Columns (API, GMT_OUT, 4U, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-				if (F.weights) gmt_M_free (GMT, weights);	
+				if (F.weights) gmt_M_free (GMT, weights);
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-				if (F.weights) gmt_M_free (GMT, weights);	
+				if (F.weights) gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-				if (F.weights) gmt_M_free (GMT, weights);	
+				if (F.weights) gmt_M_free (GMT, weights);
 				Return (API->error);	/* Enables data output and sets access mode */
 			}
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-				if (F.weights) gmt_M_free (GMT, weights);	
+				if (F.weights) gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 			sprintf (format, "xmin\txmax\tymin\tymax from pshistogram -I -T%g -Z%u", Ctrl->T.T.inc, Ctrl->Z.mode);
@@ -1035,7 +1034,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
-				if (F.weights) gmt_M_free (GMT, weights);	
+				if (F.weights) gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 			gmt_M_free (GMT, Rec);
@@ -1043,7 +1042,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		gmt_M_free (GMT, data);
 		gmt_M_free (GMT, F.boxh);
-		if (F.weights) gmt_M_free (GMT, weights);	
+		if (F.weights) gmt_M_free (GMT, weights);
 		Return (GMT_NOERROR);
 	}
 
@@ -1064,19 +1063,19 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			GMT->current.map.frame.draw = true;
 		}
 		if (GMT->current.proj.pars[0] == 0.0 && GMT->current.proj.pars[1] == 0.0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Need to provide both x- and y-scale.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Need to provide both x- and y-scale.\n");
 			gmt_M_free (GMT, data);
-			if (F.weights) gmt_M_free (GMT, weights);	
+			if (F.weights) gmt_M_free (GMT, weights);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
-	if (automatic && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+	if (automatic && gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		sprintf (format, "Use w/e/s/n = %s/%s/%s/%s and x-tick/y-tick = %s/%s\n",
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI],
+		GMT_Report (API, GMT_MSG_INFORMATION, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI],
 		            GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval,
 		            GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
 	}
@@ -1103,7 +1102,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	else {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, F.wesn), "")) {
 			gmt_M_free (GMT, data);
-			if (F.weights) gmt_M_free (GMT, weights);	
+			if (F.weights) gmt_M_free (GMT, weights);
 			Return (GMT_PROJECTION_ERROR);
 		}
 	}
@@ -1115,7 +1114,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.just == 0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->W.active, &Ctrl->W.pen, &Ctrl->G.fill, Ctrl->C.active, &Ctrl->D);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Area under histogram is %g\n", area);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Area under histogram is %g\n", area);
 
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
 		unsigned int type, k, NP = 101U;
@@ -1162,7 +1161,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 
 	gmt_M_free (GMT, data);
-	if (F.weights) gmt_M_free (GMT, weights);	
+	if (F.weights) gmt_M_free (GMT, weights);
 	gmt_M_free (GMT, F.boxh);
 
 	Return (GMT_NOERROR);

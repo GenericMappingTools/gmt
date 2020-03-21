@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 2000-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *   Copyright (c) 2000-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -87,7 +87,7 @@
  *    the id is a 3-character tag (e.g., HWI), the name is the
  *    full name of the hotspot (e.g., Hawaii).
  *
- * Example: 
+ * Example:
  *
  * # Partial list (Pacific) of HotSpots from Table 1 of Yamaji, 1992
  * #Lon		Lat	Abbreviation	Hotspot_name
@@ -102,7 +102,7 @@
  * 192		-15	SAM	Samoa
  * 212		-18	SOC	Society
  */
- 
+
 #include "gmt_dev.h"
 #include "spotter.h"
 
@@ -110,9 +110,9 @@
 #define THIS_MODULE_MODERN_NAME	"originater"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Associate seamounts with nearest hotspot point sources"
-#define THIS_MODULE_KEYS	"<D{,FD(,>D}"
+#define THIS_MODULE_KEYS	"<D{,FD(=,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdehis" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdehiqs" GMT_OPT("HMm")
 
 EXTERN_MSC int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
 EXTERN_MSC double gmtlib_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
@@ -136,7 +136,7 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 	/* active is true if the option has been activated */
 	struct D {	/* -D<factor */
 		bool active;
-		double value;	
+		double value;
 	} D;
 	struct E {	/* -Erotfile[+i] */
 		bool active;
@@ -179,11 +179,11 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct ORIGINATOR_CTRL *C;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct ORIGINATOR_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	C->D.value = 5.0;
 	C->N.t_upper = 180.0;
 	C->S.n = 1;
@@ -193,9 +193,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->E.file);	
-	gmt_M_str_free (C->F.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->E.file);
+	gmt_M_str_free (C->F.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int comp_hs (const void *p1, const void *p2) {
@@ -211,7 +211,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -E<rottable>[+i] -F<hotspottable>[+d] [-D<d_km>] [-H] [-L[<flag>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -236,8 +236,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Report seamounts whose closest encounter to a hotspot is less than <maxdist> km\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default reports for all seamounts].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
-	GMT_Option (API, "bi5,d,e,h,i,s,:,.");
-	
+	GMT_Option (API, "bi5,d,e,h,i,q,s,:,.");
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -295,7 +295,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 				switch (opt->arg[0]) {
 					case 'L':
 						Ctrl->L.degree = true;
-						/* Fall through on purpose to 'l' */
+						/* Intentionally fall through - to 'l' */
 					case 'l':
 						Ctrl->L.mode = 3;
 						break;
@@ -305,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 						break;
 					case 'T':
 						Ctrl->L.degree = true;
-						/* Fall through on purpose to 't' */
+						/* Intentionally fall through - to 't' */
 					case 't':
 						Ctrl->L.mode = 1;
 						break;
@@ -325,7 +325,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 			case 'S':
 				Ctrl->S.active = true;
 				k = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, k < 1, "Syntax error -S: Must specify a positive number of hotspots\n");
+				n_errors += gmt_M_check_condition (GMT, k < 1, "Option -S: Must specify a positive number of hotspots\n");
 				Ctrl->S.n = k;
 				break;
 			case 'T':
@@ -347,11 +347,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 	n_input = (Ctrl->Q.active) ? 3 : 5;
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_input;
 
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_input, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_input);
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.file, "Syntax error -F: Must specify hotspot file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file, "Syntax error -F: Must specify Euler pole file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value <= 0.0, "Syntax error -D: Must specify a positive interval\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.dist <= 0.0, "Syntax error -W: Must specify a positive distance in km\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_input, "Binary input data (-bi) must have at least %d columns\n", n_input);
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.file, "Option -F: Must specify hotspot file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file, "Option -F: Must specify Euler pole file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value <= 0.0, "Option -D: Must specify a positive interval\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.dist <= 0.0, "Option -W: Must specify a positive distance in km\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -363,7 +363,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 	unsigned int n_max_spots, n_input;
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np, n_expected_fields, n_out;
-	
+
 	int error = 0, ns;
 	bool better;
 
@@ -393,7 +393,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -407,7 +407,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 	}
 	n_hotspots = (unsigned int)ns;
 	if (Ctrl->S.n > n_hotspots) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
+		GMT_Report (API, GMT_MSG_ERROR, "Option -S: Give value between 1 and %d\n", n_hotspots);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	n_max_spots = MIN (Ctrl->S.n, n_hotspots);
@@ -438,19 +438,19 @@ int GMT_originater (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (F->n_columns < 3) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 3 are needed\n", file, (int)F->n_columns);
+				GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 3 are needed\n", file, (int)F->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			hotspot[spot].D = F->table[0]->segment[0];	/* Only one table with one segment for histories */
 			for (row = 0; row < hotspot[spot].D->n_rows; row++) hotspot[spot].D->data[GMT_Y][row] = gmt_lat_swap (GMT, hotspot[spot].D->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 		}
 	}
-	
+
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, 1, false, Ctrl->E.mode, &Ctrl->N.t_upper);
 
 	hot = gmt_M_memory (GMT, NULL, n_hotspots, struct HOTSPOT_ORIGINATOR);
 
-	sprintf (fmt1, "%s%s%s%s%s%s%s%s%%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, 
+	sprintf (fmt1, "%s%s%s%s%s%s%s%s%%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out,
 		GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator,
 		GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	if (Ctrl->Z.active)
@@ -505,7 +505,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
 		Out->text = In->text;
-	
+
 		if (n_input == 3) {	/* Set constant r,t values based on -Q */
 			in[3] = Ctrl->Q.r_fix;
 			in[4] = Ctrl->Q.t_fix;
@@ -518,7 +518,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 				if (Ctrl->T.active)
 					t_smt = Ctrl->N.t_upper;
 				else {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Seamounts near line %d has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
+					GMT_Report (API, GMT_MSG_WARNING, "Seamounts near line %d has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
 					continue;
 				}
 			}
@@ -532,10 +532,10 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		z_smt = in[GMT_Z];
 		r_smt = in[3];
 
-		if (!(smt % 10)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on seamount # %5d\r", smt);
+		if (!(smt % 10)) GMT_Report (API, GMT_MSG_INFORMATION, "Working on seamount # %5d\r", smt);
 
 		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, n_stages, Ctrl->D.value, 0.0, 1, NULL, &c) <= 0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - aborting\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from spotter_forthtrack - aborting\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -623,10 +623,10 @@ int GMT_originater (void *V_API, int mode, void *args) {
 			/* Assign sign to distance: If the vector from the hotspot pointing up along the trail is positive
 			 * x-axis and y-axis is normal to that, flowlines whose closest approach point's longitude is
 			 * further east are said to have negative distance. */
-			 
+
 			gmt_M_set_delta_lon (hot[spot].np_lon, lon, dlon);
 			hot[spot].np_sign = copysign (1.0, dlon);
-			 
+
 			/* Assign stage id for this point on the flowline */
 
 			k = 0;
@@ -677,7 +677,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, c);
 		smt++;
 	} while (true);
-	
+
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
@@ -685,7 +685,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on seamount # %5d\n", smt);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Working on seamount # %5d\n", smt);
 
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, hotspot);

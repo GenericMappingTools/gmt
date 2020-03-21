@@ -14,7 +14,7 @@ Synopsis
 
 **gmt triangulate** [ *table* ]
 [ |-C|\ *slpfile* ]
-[ |-D|\ **x**\ \|\ **y** ]
+[ |-D|\ **x**\|\ **y** ]
 [ |-E|\ *empty* ]
 [ |-G|\ *grdfile* ]
 [ |SYN_OPT-I| ]
@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -83,7 +84,7 @@ Optional Arguments
 
 .. _-D:
 
-**-Dx**\ \|\ **y**
+**-Dx**\|\ **y**
     Take either the *x*- or *y*-derivatives of surface represented by
     the planar facets (only used when **-G** is set).
 
@@ -142,7 +143,7 @@ Optional Arguments
 
 **-S**
     Output triangles as polygon segments separated by a segment header
-    record. Requires Delaunay triangulation. 
+    record. Requires Delaunay triangulation.
 
 .. _-T:
 
@@ -160,12 +161,12 @@ Optional Arguments
 
 **-Z**
     Controls whether we read (x,y) or (x,y,z) data and if z should be
-    output when **-M** or **-S** are used [Read (x,y) only]. 
+    output when **-M** or **-S** are used [Read (x,y) only].
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is same as input].  Node ids are stored as double triplets. 
+.. |Add_-bo| replace:: [Default is same as input].  Node ids are stored as double triplets.
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -182,7 +183,9 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. |Add_nodereg| replace:: (Only valid with **-G**). 
+.. include:: explain_-qi.rst_
+
+.. |Add_nodereg| replace:: (Only valid with **-G**).
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_colon.rst_

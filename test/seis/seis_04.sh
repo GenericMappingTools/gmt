@@ -6,7 +6,7 @@ gmt set PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1
 
 # Plotting 2 mechanisms on map
 gmt psmeca -R128/130/10/11.1 -JX2id -Fa0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K << EOF > $ps
-# lon   lat  dep str dip rake str dip rake m ex nx ny 
+# lon   lat  dep str dip rake str dip rake m ex nx ny
 129.5  10.5 10  0   90   0  90   90 180  1 24  0  0 10km
 128.5  10.5 40  0   45  90 180   45  90  1 24  0  0 40km
 EOF
@@ -22,7 +22,7 @@ for a in $1 $2 $3 ; do
     gmt pscoupe -R0/250/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN \
         -Q -L -Sc0.4 -Ab$4/$5/$a/250/90/$6/0/100f -Ggrey -Fa0.1i/cc $7 $8 \
         -Y$y_offset -X$x_offset -O -K << EOF
-# lon   lat  dep str dip rake str dip rake m ex nx ny 
+# lon   lat  dep str dip rake str dip rake m ex nx ny
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10km
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40km
 EOF

@@ -7,7 +7,7 @@ ps=gspline_5.ps
 # Generalized Green's Function for a Spherical Surface Spline in Tension,
 # Geophys. J. Int., 174, 21-28.
 
-data=`gmt which -G @mag_obs_1990.txt`
+data=$(gmt which -G @mag_obs_1990.txt)
 # First find Parker's solution for no tension:
 gmt greenspline -Rg -I1 $data -Sp -GFig_2_p0.nc
 # Then repeat but use the wrong Oslo longitude to recreate Parker's original figure in his book

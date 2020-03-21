@@ -15,9 +15,9 @@ Synopsis
 **gmt grdseamount** [ *intable* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ [*out*/*in*\ ] ]
-[ |-C|\ **c**\|\ **d**\ \|\ **g**\ \|\ **p** ]
-[ |-D|\ [*unit*\ ] ]
+[ |-A|\ [*out*/*in*] ]
+[ |-C|\ **c**\|\ **d**\|\ **g**\|\ **p** ]
+[ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
 [ |-G|\ *grdfile* ]
@@ -25,14 +25,14 @@ Synopsis
 [ |-M|\ *list* ] [ |-N|\ *norm* ]
 [ |-Q|\ *bmode*/*qmode* ]
 [ |-S|\ *scale* ]
-[ |-T|\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**] ]
+[ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-i| ]
-[ |SYN_OPT-r| ] 
+[ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -93,7 +93,7 @@ Optional Arguments
     Elliptical data format. We expect the input records to contain
     *lon, lat, azimuth, major, minor, height* (with  the latter in m)
     for each seamount.  [Default is Circular data format, expecting
-    *lon, lat, radius, height*\ ].
+    *lon, lat, radius, height*].
 
 .. _-F:
 
@@ -144,10 +144,10 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**]
+**-T**\ *t0*\ [/*t1*/*dt*]\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
     [Default is one step, with no time dependency].  For a single specific time, just
-    give start time *t0*. The unit is years; append **k** for kyr and **M** for Myr.
+    give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a file with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).  Note that the grid
@@ -159,7 +159,7 @@ Optional Arguments
 **-Z**\ *level*
     Set the background depth [0].
 
-.. |Add_-bi| replace:: [Default is 4 input columns]. 
+.. |Add_-bi| replace:: [Default is 4 input columns].
 .. include:: ../../explain_-bi.rst_
 
 .. |Add_-e| unicode:: 0x20 .. just an invisible code

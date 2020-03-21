@@ -14,9 +14,9 @@ Synopsis
 
 **gmt grdgradient** *in_grdfile* |-G|\ *out_grdfile*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
-[ |-E|\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] ] 
-[ |-N|\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ] ]
-[ |-Q|\ **c**\ \|\ **r**\ \|\ **R**
+[ |-E|\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] ]
+[ |-N|\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*] ]
+[ |-Q|\ **c**\|\ **r**\|\ **R** ]
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
 [ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
@@ -32,7 +32,7 @@ given direction (**-A**), or to find the direction (**-S**) [and the magnitude
 (**-D**)] of the vector gradient of the data.
 
 Estimated values in the first/last row/column of output depend on
-boundary conditions (see **-n**). 
+boundary conditions (see **-n**).
 
 Required Arguments
 ------------------
@@ -84,7 +84,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ]
+**-E**\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*]
     Compute Lambertian radiance appropriate to use with :doc:`grdimage` and :doc:`grdview`.
     The Lambertian Reflection assumes an ideal surface that
     reflects all the light that strikes it and the surface appears
@@ -102,7 +102,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ]
+**-N**\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*]
     Normalization. [Default is no normalization.] The actual gradients *g*
     are offset and scaled to produce normalized gradients *gn* with a
     maximum output magnitude of *amp*. If *amp* is not given, default
@@ -117,11 +117,12 @@ Optional Arguments
     *sigma*) where *sigma* is estimated using the L2 norm of (*g* -
     *offset*) if it is not given. To use *offset* and/or *sigma* from a
     previous calculation, leave out the argument to the modifier(s) and
-    see **-Q** for usage.
+    see **-Q** for usage.  As a final option, you may add **+a**\ *ambient*
+    to add *ambient* to all nodes after gradient calculations are completed.
 
 .. _-Q:
 
-**-Qc**\ \|\ **r**\ \|\ **R**
+**-Qc**\|\ **r**\|\ **R**
     Controls how normalization via **-N** is carried out.  When multiple grids
     should be normalized the same way (i.e., with the same *offset* and/or *sigma*),
     we must pass these values via **-N**.  However, this is inconvenient if we
@@ -142,7 +143,7 @@ Optional Arguments
 
 **-S**\ *slopefile*
     Name of output grid file with scalar magnitudes of gradient vectors.
-    Requires **-D** but makes **-G** optional. 
+    Requires **-D** but makes **-G** optional.
 
 .. _-V:
 
@@ -202,12 +203,20 @@ with the resulting *offset* and *sigma*.  Then, for each of your grid tile calcu
 the values from the hidden statistics file and use them in the normalization.
 If you use **-QR** for the final tile then the statistics file is removed after use.
 
+Ambient
+-------
+
+The *ambient* light offset is used to darken or brighten all intensities.  This
+modifier is typically used to darken an entire image by subtracting a constant from
+all the intensities.  E.g., if you use **+a**\ -0.5 then you subtract 0.5 from all
+intensities, making them more negative and hence darken the image.
+
 Examples
 --------
 
 .. include:: explain_example.rst_
 
-To make a file for illuminating a portion of the data in the remote file @earth_relief_05 using 
+To make a file for illuminating a portion of the data in the remote file @earth_relief_05 using
 exponentially  normalized gradients in the range [-0.6,0.6] imitating light sources in
 the north and west directions::
 
@@ -244,7 +253,7 @@ IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmt.conf` 
+:doc:`gmt`, :doc:`gmt.conf`
 :doc:`grdhisteq`,
 :doc:`grdinfo`,
 :doc:`grdmath`,

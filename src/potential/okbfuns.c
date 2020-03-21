@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 
 GMT_LOCAL double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi);
 GMT_LOCAL double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
-	double c_tet, double s_tet, double c_phi, double s_phi); 
+	double c_tet, double s_tet, double c_phi, double s_phi, struct MAG_PARAM *okabe_mag_param, struct MAG_VAR *okabe_mag_var);
 GMT_LOCAL double eq_30 (double c, double s, double x, double y, double z);
 GMT_LOCAL double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z);
 GMT_LOCAL void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or, double *c_tet, double *s_tet,
@@ -27,19 +27,19 @@ GMT_LOCAL void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or, dou
 
 /*--------------------------------------------------------------------*/
 double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, bool is_grav,
-              struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int pm, struct LOC_OR *loc_or_) {
+              struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int pm, struct LOC_OR *loc_or_, struct MAG_PARAM *okabe_mag_param, struct MAG_VAR *okabe_mag_var) {
 
 	double okb = 0, c_tet = 0, s_tet = 0, c_phi = 0, s_phi = 0;
 	unsigned int i, l, k, cnt_v = 0, n_vert;
 	bool top = true;
 	struct LOC_OR loc_or[32];
-	gmt_M_unused(loc_or_);
 	GMT_declare_gmutex		/* A no-op when no HAVE_GLIB_GTHREAD */
+	gmt_M_unused(loc_or_);
 
 /* x_o, y_o, z_o are the coordinates of the observation point
  * rho is the body density times G constant
  * km is an: index of current body facet (if they have different mags); or 0 if mag=const
- * pm is an: index of current body facet (when all F, Mag may vary); or 0 if mag=const. This an UNDOCUMENTED feature 
+ * pm is an: index of current body facet (when all F, Mag may vary); or 0 if mag=const. This an UNDOCUMENTED feature
  * bd_desc is a structure containing the body's description. It contains the following members
  * n_f -> number of facets (int)
  * n_v -> number of vertex of each facet (pointer)
@@ -87,7 +87,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 	for (i = 0; i < bd_desc.n_f; i++) {	/* Loop over facets */
 		n_vert = bd_desc.n_v[i];	/* Number of vertices of each face */
 		if (n_vert < 3)
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Facet with less than 3 vertex\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Facet with less than 3 vertex\n");
 		for (l = 0; l < n_vert; l++) {
 			k = bd_desc.ind[l+cnt_v];
 			loc_or[l].x = body_verts[k].x - x_o;
@@ -96,7 +96,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 		}
 		rot_17 (n_vert, top, loc_or, &c_tet, &s_tet, &c_phi, &s_phi); /* rotate coords by eq (17) of okb */
 		okb += (is_grav) ? okb_grv (n_vert, loc_or, c_phi) :
-				okb_mag (n_vert, km, pm, loc_or, c_tet, s_tet, c_phi, s_phi);
+				okb_mag (n_vert, km, pm, loc_or, c_tet, s_tet, c_phi, s_phi, okabe_mag_param, okabe_mag_var);
 		cnt_v += n_vert;
 	}
 	GMT_set_gmutex		/* A no-op when no HAVE_GLIB_GTHREAD */
@@ -188,7 +188,7 @@ GMT_LOCAL double eq_30 (double c, double s, double x, double y, double z) {
 
 /* ---------------------------------------------------------------------- */
 GMT_LOCAL double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
-	                      double c_tet, double s_tet, double c_phi, double s_phi) {
+	                      double c_tet, double s_tet, double c_phi, double s_phi, struct MAG_PARAM *okabe_mag_param, struct MAG_VAR *okabe_mag_var) {
 /*  Computes the total magnetic anomaly due to a facet. */
 
 	unsigned int i;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2009-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *    Copyright (c) 2009-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*
@@ -374,14 +374,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 				if (opt->arg[0] == 'c') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[0], &Ctrl->CM4->CM4_S.nhmf[0]);
 					if (j != 2) {
-						GMT_Report (API, GMT_MSG_NORMAL, "-Sc option usage is -Sc<low/high>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "-Sc option usage is -Sc<low/high>\n");
 						n_errors++;
 					}
 				}
 				if (opt->arg[0] == 'l') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[1], &Ctrl->CM4->CM4_S.nhmf[1]);
 					if (j != 2) {
-						GMT_Report (API, GMT_MSG_NORMAL, "-Sl option usage is -Sl<low/high>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "-Sl option usage is -Sl<low/high>\n");
 						n_errors++;
 					}
 				}
@@ -395,12 +395,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 	n_out = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);	/* Minimum input columns (could be more) */
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0)
 		GMT->common.b.ncol[GMT_IN] = n_out;
-	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, 
-			"Syntax error: Binary input data (-bi) must have at least %d columns\n", n_out);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, 
-			"Syntax error: You cannot select both -F and -L options\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0,
+			"Binary input data (-bi) must have at least %d columns\n", n_out);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr,
+			"You cannot select both -F and -L options\n");
 	n_errors += gmt_M_check_condition (GMT, (do_CM4core && Ctrl->do_IGRF) || (do_CM4core && Ctrl->joint_IGRF_CM4),
-			"Syntax error: You cannot select both CM4 core (1) and IGRF as they are both core fields.\n");
+			"You cannot select both CM4 core (1) and IGRF as they are both core fields.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -413,7 +413,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	unsigned int lval = 0, lfval = 0, n_field_components, tbl;
 	unsigned int n_out = 0, n_in, t_col = 3;
 	bool cm4_igrf_T = false;
-	
+
 	size_t i, s, need = 0, n_alloc = 0;
 
 	double the_altitude, the_time, *time_array = NULL, *alt_array = NULL, *time_years = NULL, IGRF[7], out[GMT_MAX_COLUMNS];
@@ -438,7 +438,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
@@ -479,9 +479,9 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 				for (i = 0; i < 3; i++) Ctrl->CM4->CM4_F.field_components[i] = (int)i+2;	/* Force the x,y,z request */
 				cm4_igrf_T = true;
 			}
-			else if (!((nval == 3) && (Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) && 
+			else if (!((nval == 3) && (Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) &&
 						(Ctrl->CM4->CM4_F.field_components[2] == 4)) ) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: In mix CM4/IGRF mode -F option can oly be -Ft[r]/... or -Fxyz[r]/...\n");
+				GMT_Report (API, GMT_MSG_ERROR, "In mix CM4/IGRF mode -F option can only be -Ft[r]/... or -Fxyz[r]/...\n");
 				error++;
 			}
 
@@ -553,7 +553,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (Din->n_columns < n_in) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %d are needed\n", (int)Din->n_columns, n_in);
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least %d are needed\n", (int)Din->n_columns, n_in);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 	n_out = n_field_components + ((Ctrl->copy_input) ? (unsigned int)Din->n_columns : 0);
@@ -563,7 +563,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] > 0 && n_out > GMT->common.b.ncol[GMT_OUT]) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Binary output must have at least %d columns (your -bo option only set %d)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
+		GMT_Report (API, GMT_MSG_ERROR, "Binary output must have at least %d columns (your -bo option only set %d)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -579,7 +579,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 		T = Din->table[tbl];	/* Current table */
 
 		if (T->n_columns < n_in) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Table %d has %d columns, but from the used options we expect %d\n",
+			GMT_Report (API, GMT_MSG_ERROR, "Table %d has %d columns, but from the used options we expect %d\n",
 			            tbl + 1, T->n_columns, n_in);
 			continue;
 		}
@@ -614,8 +614,8 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 			}
 
 			if (!(Ctrl->do_IGRF || Ctrl->joint_IGRF_CM4 ) && !s && time_array[0] > 2002.7) {	/* Only atmospheric terms may be reliable */
-				GMT_Message (API, GMT_TIME_NONE, "Time is outside the CM4 strict validity domain [1960.0-2002.7].\n");
-				GMT_Message (API, GMT_TIME_NONE, "\tThe secular variation estimation will be unreliable. In this"
+				GMT_Report (API, GMT_MSG_WARNING, "Time is outside the CM4 strict validity domain [1960.0-2002.7].\n");
+				GMT_Report (API, GMT_MSG_WARNING, "\tThe secular variation estimation will be unreliable. In this"
 				                                 "\n\tcase you really should use the IGRF to estimate the core contribution\n");
 			}
 
@@ -645,7 +645,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 				int err;
 				if ((err = MGD77_cm4field (GMT, Ctrl->CM4, T->segment[s]->data[GMT_X],
 							T->segment[s]->data[GMT_Y], alt_array, time_array)) != 0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "this segment has a record generating an error.\n"
+					GMT_Report (API, GMT_MSG_ERROR, "this segment has a record generating an error.\n"
 					                                 "Unfortunately, this means all other eventually good\n"
 					                                 "records are also ignored. Fix the bad record and rerun the command.\n");
 					continue;

@@ -13,10 +13,10 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt sample1d** [ *table* ]
-[ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **2**] ]
+[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
+[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
 [ |-N|\ *col* ]
-[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] \|\ |-T|\ *file*\ \|\ *list* ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -27,6 +27,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -43,7 +44,7 @@ variable, here called *time* (it may of course be any type of quantity) when tha
 Equidistant or arbitrary sampling can be selected. All columns
 are resampled based on the new sampling interval. Several interpolation
 schemes are available. Extrapolation outside the range of the input data
-is not supported. 
+is not supported.
 
 Required Arguments
 ------------------
@@ -62,7 +63,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**
+**-A**\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**
     For track resampling (if **-T**...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
     add intermediate points if needed; note this selection does not
@@ -76,11 +77,11 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **2**]
+**-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
-    :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
+    :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
     by appending **+1** or **+2**, respectively.
 
@@ -88,11 +89,11 @@ Optional Arguments
 
 **-N**\ *col*
     Sets the column number of the independent *time* variable [Default is 0
-    (first)]. 
+    (first)].
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] \|\ |-T|\ *file*\ \|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.
 
@@ -101,7 +102,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by **-T**)]. 
+.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by **-T**)].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
@@ -123,6 +124,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_distcalc.rst_
 

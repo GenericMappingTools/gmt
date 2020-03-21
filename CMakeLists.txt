@@ -1,5 +1,5 @@
 #
-#	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+#	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -14,9 +14,14 @@
 #	Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
-# To configure the cmake process, first copy the configuration template
-# 'cmake/ConfigUserTemplate.cmake' to 'cmake/ConfigUser.cmake',
-# then edit 'cmake/ConfigUser.cmake'.
+# To configure the cmake process:
+#
+# 1. copy the configuration template 'cmake/ConfigUserTemplate.cmake'
+#    to 'cmake/ConfigUser.cmake', then edit 'cmake/ConfigUser.cmake' to
+#    override basic default settings on a per-user basis;
+# 2. copy the configuration template 'cmake/ConfigUserAdvancedTemplate.cmake'
+#    to 'cmake/ConfigUserAdvanced.cmake', then edit 'cmake/ConfigUserAdvanced.cmake' to
+#    override advanced default settings on a per-user basis.
 #
 # To build out-of-source do (example):
 #
@@ -44,22 +49,14 @@ endif (${srcdir} STREQUAL ${bindir})
 cmake_minimum_required (VERSION 2.8.7)
 
 # Use NEW behavior with newer CMake releases
-foreach(p
+foreach (p
 		CMP0025 # CMake 3.0: Compiler id for Apple Clang is now AppleClang
+		CMP0026 # CMake 3.0: Disallow use of the LOCATION target property
 		CMP0058 # CMake 3.3: Ninja requires custom command byproducts to be explicit
 		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
 		)
-	if(POLICY ${p})
-		cmake_policy(SET ${p} NEW)
-	endif()
-endforeach()
-
-# Use OLD behavior with newer CMake releases
-foreach(p
-		CMP0026 # CMake 3.0: Disallow use of the LOCATION target property
-		)
-	if(POLICY ${p})
-		cmake_policy(SET ${p} OLD)
+	if (POLICY ${p})
+		cmake_policy (SET ${p} NEW)
 	endif()
 endforeach()
 
@@ -104,22 +101,21 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	# so that they are not included in the final release tarball
 	add_custom_target (git_export_release
 		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-			${GMT_RELEASE_PREFIX}/.git
-			${GMT_RELEASE_PREFIX}/.github
-			${GMT_RELEASE_PREFIX}/admin
-			${GMT_RELEASE_PREFIX}/ci
-			${GMT_RELEASE_PREFIX}/test
-		COMMAND ${CMAKE_COMMAND} -E remove
-			${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
-			${GMT_RELEASE_PREFIX}/.gitignore
+		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/admin
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/ci
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.gitignore
 	)
 	add_depend_to_target (gmt_release git_export_release)
 	find_program (GNUTAR NAMES gnutar gtar tar)
 	find_program (XZ NAMES xz)
 	if (GNUTAR AND GZIP AND XZ)
 		# Targets for creating tarballs
-		string (REGEX REPLACE ".*/" "" _release_dirname "${GMT_RELEASE_PREFIX}")
+		get_filename_component (_release_dirname "${GMT_RELEASE_PREFIX}" NAME)
 		add_custom_command (OUTPUT ${_release_dirname}-src.tar
 			COMMAND ${GNUTAR} -c --owner 0 --group 0 --mode a=rX,u=rwX --force-local
 			-f ${GMT_BINARY_DIR}/${_release_dirname}-src.tar ${_release_dirname}
@@ -142,16 +138,28 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	endif (GNUTAR AND GZIP AND XZ)
 endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
-get_target_property (_location gmtlib LOCATION)
-get_filename_component (GMT_CORE_LIB_NAME ${_location} NAME)
+# Get suffix for libraries
+if (BUILD_SHARED_LIBS)
+	set (_lib_suffix ${CMAKE_SHARED_LIBRARY_SUFFIX})
+else (BUILD_SHARED_LIBS)
+	set (_lib_suffix ${CMAKE_STATIC_LIBRARY_SUFFIX})
+endif (BUILD_SHARED_LIBS)
 
-get_target_property (_location pslib LOCATION)
-get_filename_component (PSL_LIB_NAME ${_location} NAME)
+# Get name of GMT core library
+get_target_property (_name gmtlib OUTPUT_NAME)
+get_target_property (_prefix gmtlib PREFIX)
+set (GMT_CORE_LIB_NAME ${_prefix}${_name}${_lib_suffix})
 
+# Get name of PSL library
+get_target_property (_name pslib OUTPUT_NAME)
+get_target_property (_prefix pslib PREFIX)
+set (PSL_LIB_NAME ${_prefix}${_name}${_lib_suffix})
+
+# Get name of shared supplemental library
 if (BUILD_SUPPLEMENTS)
-	# Get name of shared supplemental library
-	get_target_property (_location supplib LOCATION)
-	get_filename_component (GMT_SUPPL_LIB_NAME ${_location} NAME)
+	get_target_property (_name supplib OUTPUT_NAME)
+	get_target_property (_prefix supplib PREFIX)
+	set (GMT_SUPPL_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_MODULE_SUFFIX})
 	set (SUPPL "yes [${GMT_SUPPL_LIB_NAME}]")
 else (BUILD_SUPPLEMENTS)
 	set (SUPPL "no")
@@ -191,7 +199,7 @@ message(
 	"*\n"
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
-	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
+	"*  Found DCW-GMT database     : ${DCW_PATH} (${DCW_VERSION})\n"
 	"*  Found GMT data server      : ${GMT_DATA_SERVER}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
@@ -212,6 +220,7 @@ message(
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
 	"*  OpenMP support             : ${GMT_CONFIG_OPENMP_MESSAGE}\n"
 	"*  GLIB GTHREAD support       : ${GMT_CONFIG_GTHREAD_MESSAGE}\n"
+	"*  Build generator            : ${CMAKE_GENERATOR}\n"
 	"*  Build mode                 : ${BUILD_MODE}\n"
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"

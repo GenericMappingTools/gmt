@@ -5,7 +5,7 @@ makeps () {
 
 # Must redirect gmt sample1d's stderr messages to avoid seeing them for the 3 bad records
 gmt set IO_NAN_RECORDS skip
-R=-R-1/15/-3/3 
+R=-R-1/15/-3/3
 gmt psbasemap $R -JX6i/3i -P -K -Y6i -B5f1g1 -B+t"Skipping NaNs and interpolating through" --FONT_TITLE=18p
 gmt psxy $tmp $R -JX6i/3i -Sc0.1i -W0.25p -Ggreen -O -K 2> /dev/null
 gmt math $tmp ISNAN 4 SUB = | gmt psxy -R -J -O -K -St0.2i -Gblack -W0.25p

@@ -1,0 +1,9 @@
+Auto-legend entries
+-------------------
+
+This module allows you to use the **-l** option to specify an automatic legend entry.
+This option is available for lines or symbols only.  If there is no size specified
+(which is always true for lines) or if the symbol size is computed from other information
+(which may be true for some symbols deriving size from other input columns), then you need
+to supply a legend size (i.e., length of a line symbol) via the **+s** modifier.
+

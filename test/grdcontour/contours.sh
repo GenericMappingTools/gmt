@@ -11,7 +11,7 @@ color_contour () {
 	for name in contour_*.txt; do
 		# For each contour we compute distance a
 		gmt mapproject -G+uk $name > contour.d
-		L=`gmt info -C contour.d | cut -f8`
+		L=$(gmt info -C contour.d | cut -f8)
 		$AWK -v L=$L '{print $1, $2, $4/L}' contour.d | gmt psxy -R -J -O -K -Ccontour.cpt -Sc0.005i >> $ps
 	done
 }
@@ -28,7 +28,7 @@ gmt grdcontour BigIsland.nc -J -C1000 -T+d0.1i/0.02i+l -S8 -O -K --FONT_ANNOT_PR
 
 color_contour r
 
-gmt psscale -Ccontour.cpt -D2i/-0.35i+w4i/0.1i+h+jTC -B1 -O -K >> $ps
+gmt psscale -Ccontour.cpt -Dx2i/-0.35i+w4i/0.1i+h+jTC -B1 -O -K >> $ps
 
 # The top map will have contours oriented so that as you move along
 # them (color goes from red to blue) the higher topography will be to

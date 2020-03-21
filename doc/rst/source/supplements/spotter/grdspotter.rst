@@ -23,7 +23,7 @@ Synopsis
 [ |-P|\ *PAgrid* ]
 [ |-Q|\ *IDinfo* ]
 [ |-S| ]
-[ |-T|\ **t**\ \|\ **u**\ *fixed_val* ] [
+[ |-T|\ **t**\|\ **u**\ *fixed_val* ] [
 [ |SYN_OPT-V| ]
 [ |-W|\ *n\_try* ]] [ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ]
 [ |SYN_OPT-r| ]
@@ -126,7 +126,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ **t**\ \|\ **u**\ *fixed_val*
+**-T**\ **t**\|\ **u**\ *fixed_val*
     Selects ways to adjust ages; repeatable. Choose from **-Tt** to
     truncate crustal ages given via the |-A| option that exceed the
     upper age set with |-N| [no truncation], or |-T|\ **u**\ *fixed_val*

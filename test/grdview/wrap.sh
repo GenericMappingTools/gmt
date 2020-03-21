@@ -10,4 +10,4 @@
 # The script below shows both problems by plotting -JA (only problem 1) and -JP (both problems)
 ps=wrap.ps
 gmt grdview test.grd -JA0/90/6i -Bg10a30p/g10a10p -JZ3i -pz130/30 -P -Qmpink -K -Y-3.5i > $ps
-gmt grdview test.grd -JP6i/-90  -Bg10a30p/g10a10p -JZ3i -pz130/30 -O -Qmpink -Y5i >> $ps
+gmt grdview test.grd -JP6i+t-90  -Bg10a30p/g10a10p -JZ3i -pz130/30 -O -Qmpink -Y5i >> $ps

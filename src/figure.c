@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     eps:	Encapsulated PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     jpg:	Joint Photographic Experts Group format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     pdf:	Portable Document Format [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     png:	Portable Network Graphics (opaque).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     PNG:	Portable Network Graphics (transparent).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     png:	Portable Network Graphics.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     PNG:	Portable Network Graphics (with transparency layer).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ppm:	Portable Pixel Map.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File.\n");
@@ -61,7 +61,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
 	GMT_Option (API, "V,;");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -81,18 +81,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	char p[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	GMT->current.ps.crop_to_fit = true;	/* Default is to make a tight PDF plot */
 	if ((opt = options) == NULL) {	/* Gave no arguments */
 		if (GMT->parent->external) return GMT_NOERROR;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required figure name not specified!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Required figure name not specified!\n");
 		return GMT_PARSE_ERROR;
 	}
 	gmt_filename_set (opt->arg);
-	
+
 	/* Gave a figure prefix so can go on to check optional items */
-	
+
 	opt = opt->next;	/* Skip the figure prefix since we don't need to check it here */
-	
+
 	while (opt) {
 		gmt_filename_set (opt->arg);
 		arg_category = GMT_NOTSET;	/* We know noothing */
@@ -103,15 +102,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 			if (arg_category == GMT_IS_FMT) {	/* Got format specifications, check if OK */
 				int k = gmt_get_graphics_id (GMT, p);
 				if (k == GMT_NOTSET) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", p);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", p);
 					n_errors++;
 				}
-				else if (!strcmp (p, "ps"))	/* Need to honor PS_MEDIA setting */
-					GMT->current.ps.crop_to_fit = false;
 			}
 			else {	/* Check if valid psconvert options */
 				if (!strchr ("ACDEHMQS", p[0])) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized psconvert option  -%s\n", p);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized psconvert option  -%s\n", p);
 					n_errors++;
 				}
 			}
@@ -119,9 +116,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		opt = opt->next;
 		if (opt && opt->option == 'V') opt = opt->next;	/* Skip the verbose option */
 	}
-	
+
 	/* If we get here without errors then we know the input arguments are all valid */
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -146,13 +143,13 @@ int GMT_figure (void *V_API, int mode, void *args) {
 		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 	}
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Not available in classic mode\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Not available in classic mode\n");
 		return (GMT_NOT_MODERN_MODE);
 	}
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	if ((error = parse (GMT, options)) != 0) Return (error);
 
@@ -161,7 +158,7 @@ int GMT_figure (void *V_API, int mode, void *args) {
 	if (options) arg = GMT_Create_Cmd (API, options);
 	if (gmt_add_figure (API, arg))
 		error = GMT_RUNTIME_ERROR;
-		
+
 	if (options) GMT_Destroy_Cmd (API, &arg);
 
 	opt = options;
@@ -169,8 +166,8 @@ int GMT_figure (void *V_API, int mode, void *args) {
 		gmt_filename_get (opt->arg);
 		opt = opt->next;
 	}
-	
+
 	gmt_reset_history (GMT);	/* Prevent gmt figure from copying previous history to this new fig */
-	
+
 	Return (error);
 }

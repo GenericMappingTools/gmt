@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt pssegyz** *SEGYfile* |-J|\ *parameters*
-|-J|\ **z**\ \|\ **Z**\ *parameters*
+|-J|\ **z**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 |-D|\ *deviation* |-F|\ [*color*] **-W**
 [ |-C|\ *clip* ]
@@ -35,7 +35,7 @@ Synopsis
 
 .. include:: segyz_common.rst_
 
-.. include:: ../../common_classic_sup.rst_
+.. include:: ../../common_classic.rst_
 
 Examples
 --------

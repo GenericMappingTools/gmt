@@ -13,16 +13,16 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt greenspline** [ *table* ]
-[ |-A|\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5** ]
-[ |-C|\ [**n**\ ]\ *value*\ [**+f**\ *file*] ]
+[ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
+[ |-C|\ [**n**]\ *value*\ [%][**+f**\ *file*] ]
 [ |-D|\ *mode* ]
 [ |-E|\ [*misfitfile*] ]
 [ |-G|\ *grdfile* ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
-[ |-Q|\ *az*\ \|\ *x/y/z* ]
-[ **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*\ ]] ]
+[ |-Q|\ *az*\|\ *x/y/z* ]
+[ **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]] ]
 [ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**]]
@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -59,7 +60,7 @@ solution yields an exact interpolation of the supplied data points.
 Alternatively, you may choose to perform a singular value decomposition
 (SVD) and eliminate the contribution from the smallest eigenvalues; this
 approach yields an approximate solution. Trends and scales are restored
-when evaluating the output. 
+when evaluating the output.
 
 Required Arguments
 ------------------
@@ -76,7 +77,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**
+**-A**\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**
     The solution will partly be constrained by surface gradients **v** =
     *v*\ \*\ **n**, where *v* is the gradient magnitude and **n** its
     unit vector direction. The gradient direction may be specified
@@ -94,11 +95,11 @@ Optional Arguments
     or 3-D data: **3**: records contain **x**, *direction(s)*, *v*
     (*direction(s)* in degrees are measured counter-clockwise from the
     horizontal (and for 3-D the vertical axis). **4**: records contain
-    **x**, **v**. **5**: records contain **x**, **n**, *v*. 
+    **x**, **v**. **5**: records contain **x**, **n**, *v*.
 
 .. _-C:
 
-**-C**\ [**n**\ ]\ *value*\ [**+f**\ *file*]
+**-C**\ [**n**]\ *value*\ [%][**+f**\ *file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
@@ -107,7 +108,9 @@ Optional Arguments
     eigenvalues to the specified file for further analysis.
     If a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cn** to retain only the *value* largest eigenvalues.
+    output is produced.  Specify **-Cn** to retain only the *value* largest
+    eigenvalues; append % if *value* is the percentage of eigenvalues
+    to use instead.
 
 .. _-D:
 
@@ -119,7 +122,7 @@ Optional Arguments
     interpolation: **-D**\ 1 means (*x*,\ *y*) in user units, Cartesian
     distances, **-D**\ 2 for (*x*,\ *y*) in degrees, Flat Earth
     distances, and **-D**\ 3 for (*x*,\ *y*) in degrees, Spherical
-    distances in km. Then, if :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` is spherical, we
+    distances in km. Then, if :term:`PROJ_ELLIPSOID` is spherical, we
     compute great circle arcs, otherwise geodesics. Option *mode* = 4
     applies to spherical surface spline interpolation only: **-D**\ 4
     for (*x*,\ *y*) in degrees, use cosine of great circle (or geodesic)
@@ -129,8 +132,7 @@ Optional Arguments
 
 .. _-E:
 
-**E**\ [*misfitfile*]
-
+**-E**\ [*misfitfile*]
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by
@@ -141,7 +143,7 @@ Optional Arguments
 **-G**\ *grdfile*
     Name of resulting output file. (1) If options **-R**, **-I**, and
     possibly **-r** are set we produce an equidistant output table. This
-    will be written to stdout unless **-G** is specified. Note: for 2-D
+    will be written to stdout unless **-G** is specified. **Note**: For 2-D
     grids the **-G** option is required. (2) If option **-T** is
     selected then **-G** is required and the output file is a 2-D binary
     grid file. Applies to 2-D interpolation only. (3) If **-N** is
@@ -152,7 +154,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]]
+**-I**\ *xinc*\ [/*yinc*\ [/*zinc*]]
     Specify equidistant sampling intervals, on for each dimension, separated by slashes.
 
 .. _-L:
@@ -177,7 +179,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *az*\ \|\ *x/y/z*
+**-Q**\ *az*\|\ *x/y/z*
     Rather than evaluate the surface, take the directional derivative in
     the *az* azimuth and return the magnitude of this derivative
     instead. For 3-D interpolation, specify the three components of the
@@ -185,7 +187,7 @@ Optional Arguments
 
 .. _-R:
 
-**-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*\ ]]
+**-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]]
     Specify the domain for an equidistant lattice where output
     predictions are required. Requires **-I** and optionally **-r**.
 
@@ -195,7 +197,7 @@ Optional Arguments
     *y* coordinates. These may be Cartesian or geographical. If
     geographical, then *west*, *east*, *south*, and *north* specify the
     Region of interest, and you may specify them in decimal degrees or
-    in [±]dd:mm[:ss.xxx][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
+    in [±]dd:mm[:ss.xxx][**W**\|\ **E**\|\ **S**\|\ **N**]
     format. The two shorthands **-Rg**
     and **-Rd** stand for global domain (0/360 and -180/+180 in
     longitude respectively, with -90/+90 in latitude).
@@ -235,7 +237,7 @@ Optional Arguments
 **-T**\ *maskgrid*
     For 2-D interpolation only. Only evaluate the solution at the nodes
     in the *maskgrid* that are not equal to NaN. This option eliminates
-    the need to specify options **-R**, **-I**, and **-r**. 
+    the need to specify options **-R**, **-I**, and **-r**.
 
 .. _-V:
 
@@ -254,7 +256,7 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is 2-4 input
    columns (**x**,\ *w*); the number depends on the chosen dimension].
 .. include:: explain_-bi.rst_
-    
+
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
 
@@ -273,6 +275,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
@@ -409,7 +413,7 @@ Considerations
    (such as the natural cubic spline, which sets the curvatures at the ends
    to zero).  In contrast, **greenspline**\ 's 1-D spline, as is explained in
    note 1, does *not* specify boundary conditions at the end of the data domain.
-   
+
 Tension
 -------
 
@@ -420,7 +424,7 @@ be determined by experimentation. Generally, very smooth data (such as
 potential fields) do not require much, if any tension, while rougher
 data (such as topography) will typically interpolate better with
 moderate tension. Make sure you try a range of values before choosing
-your final result. Note: the regularized spline in tension is only
+your final result. **Note**: The regularized spline in tension is only
 stable for a finite range of *scale* values; you must experiment to find
 the valid range and a useful setting. For more information on tension
 see the references below.

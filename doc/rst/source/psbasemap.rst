@@ -22,9 +22,9 @@ Synopsis
 [ |-L|\ *scalebar* ]
 [ |-O| ]
 [ |-P| ]
-[ |SYN_OPT-U| ]
 [ |-T|\ *rose* ]
 [ |-T|\ *mag_rose* ]
+[ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
@@ -39,7 +39,7 @@ Synopsis
 
 .. _-D:
 
-**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+s**\ *file*][**+t**][**+u**\ *unit*]\  \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
+**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+s**\ *file*][**+t**][**+u**\ *unit*]\  \| **-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
     Draw a simple map inset box on the map.  Requires **-F**.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
@@ -53,7 +53,7 @@ Synopsis
     Append **+w**\ *width*\ [/*height*] of bounding rectangle or box in plot coordinates (inches, cm, etc.).
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Add **+o** to offset the inset fig by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
@@ -65,8 +65,6 @@ Synopsis
 
 Examples
 --------
-
-.. include:: explain_example.rst_
 
 The following section illustrates the use of the options by giving some
 examples for the available map projections. Note how scales may be given
@@ -80,12 +78,12 @@ Linear x-y plot
 ~~~~~~~~~~~~~~~
 
 To make a linear x/y frame with all axes, but with only left and bottom
-axes annotated, using xscale = yscale = 1.0, ticking every 1 unit and
+axes annotated, using xscale = yscale = 1 cm per unit, ticking every 1 unit and
 annotating every 2, and using xlabel = "Distance" and ylabel = "No of samples", use
 
    ::
 
-    gmt psbasemap -R0/9/0/5 -Jx1 -Bf1a2 -Bx+lDistance -By+l"No of samples" -BWeSn -P > linear.ps
+    gmt psbasemap -R0/9/0/5 -Jx1c -Bf1a2 -Bx+lDistance -By+l"No of samples" -BWeSn -P > linear.ps
 
 Log-log plot
 ~~~~~~~~~~~~
@@ -102,12 +100,12 @@ Power axes
 ~~~~~~~~~~
 
 To design an axis system to be used for a depth-sqrt(age) plot with
-depth positive down, ticked and annotated every 500m, and ages annotated
-at 1 my, 4 my, 9 my etc, use
+depth positive down, ticked and annotated every 500m, and ages (in millions of years) annotated
+at 1 My, 4 My, 9 My etc., use
 
    ::
 
-    gmt psbasemap -R0/100/0/5000 -Jx1p0.5/-0.001 -Bx1p+l"Crustal age" -By500+lDepth -P > power.ps
+    gmt psbasemap -R0/100/0/5000 -Jx1cp0.5/-0.001c -Bx1p+l"Crustal age" -By500+lDepth -P > power.ps
 
 Polar (theta,r) plot
 ~~~~~~~~~~~~~~~~~~~~
@@ -324,8 +322,8 @@ define our rectangle. We choose a pole at 130/-30 and use 100/-45 and
 
     gmt psbasemap -R100/-45/160/-5r -JS130/-30/12c -Bafg -B+t"General Stereographic View" -P > stereo2.ps
 
-`Miscellaneous Map Projections <#toc33>`_
------------------------------------------
+Miscellaneous Map Projections
+-----------------------------
 
 Hammer [equal-area]
 ~~~~~~~~~~~~~~~~~~~

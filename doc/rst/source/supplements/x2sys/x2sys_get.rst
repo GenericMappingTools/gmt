@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt x2sys_get** |-T|\ *TAG* [ |-C| ] [ |-F|\ *flags* ] [ |-G| ]
-[ |-L|\ [*list*]\ [**+i**\ ] ]
+[ |-L|\ [*list*]\ [**+i**] ]
 [ |-N|\ *flags* ] [
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -64,7 +64,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*list*]\ [**+i**\ ]
+**-L**\ [*list*]\ [**+i**]
     Crossover mode. Return a list of track pairs that should be checked
     for possible crossovers. The list is determined from the bin-index
     data base on the assumption that tracks occupying the same bin are
@@ -133,7 +133,7 @@ See Also
 --------
 
 :doc:`x2sys_binlist`,
-:doc:`x2sys_cross` 
+:doc:`x2sys_cross`
 :doc:`x2sys_datalist`,
 :doc:`x2sys_init`,
 :doc:`x2sys_list`,

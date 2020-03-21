@@ -1,2 +1,2 @@
-**-U**\ [*label*][**+c**][**+j**\ *just*\ ][**+o**\ *dx*/*dy*\ ] :ref:`(more ...) <-U_full>`
+**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*] :ref:`(more ...) <-U_full>`
     Draw GMT time stamp logo on plot.

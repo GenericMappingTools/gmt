@@ -4,7 +4,7 @@ GMT Modules
 .. note::
 
    Looking for the *classic mode* modules like ``psxy`` and ``pscoast``? See the
-   :doc:`equivalent page for classic mode <modules_classic>`.
+   :doc:`equivalent page for classic mode <modules-classic>`.
 
 This is a list of all GMT core and supplemental modules and their uses,
 as well as some utility scripts.
@@ -47,6 +47,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    gmtconnect
    gmtconvert
    gmtdefaults
+   grdgdal
    gmtget
    gmtinfo
    gmtlogo
@@ -74,6 +75,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    grdhisteq
    grdimage
    grdinfo
+   grdinterpolate
    grdlandmask
    grdmask
    grdmath
@@ -205,6 +207,7 @@ Core Modules
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
     - :doc:`gmtdefaults`
+    - :doc:`grdgdal`
     - :doc:`gmtget`
     - :doc:`gmtinfo`
     - :doc:`gmtlogo`
@@ -232,6 +235,7 @@ Core Modules
     - :doc:`grdhisteq`
     - :doc:`grdimage`
     - :doc:`grdinfo`
+    - :doc:`grdinterpolate`
     - :doc:`grdlandmask`
     - :doc:`grdmask`
     - :doc:`grdmath`
@@ -449,6 +453,8 @@ Gridding
 +-----------------------+---------------------------+
 | :doc:`triangulate`    | |triangulate_purpose|     |
 +-----------------------+---------------------------+
+| :doc:`grdinterpolate` | |grdinterpolate_purpose|  |
++-----------------------+---------------------------+
 
 Sampling of 1-D and 2-D data
 ----------------------------
@@ -584,6 +590,8 @@ Miscellaneous
 
 +-----------------------+-----------------------+
 | :doc:`gmt2kml`        | |gmt2kml_purpose|     |
++-----------------------+-----------------------+
+| :doc:`grdgdal`        | |grdgdal_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+

@@ -15,18 +15,19 @@ Synopsis
 **gmt xyz2grd** [ *table* ] |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **S**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ]
+[ |-A|\ [**d**\|\ **f**\|\ **l**\|\ **m**\|\ **n**\|\ **r**\|\ **S**\|\ **s**\|\ **u**\|\ **z**] ]
 [ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
 [ |-J|\ *parameters* ]
 [ |-S|\ [*zfile*] ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [*flags*\ ] ]
+[ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -42,7 +43,7 @@ with data. Such unconstrained nodes are set to a value specified by the
 user [Default is NaN]. Nodes with more than one value will be set to the
 mean value. As an option (using **-Z**), a 1-column z-table may be read
 assuming all nodes are present (z-tables can be in organized in a number
-of formats, see **-Z** below.)  Note: **xyz2grd** does not grid the data,
+of formats, see **-Z** below.)  **Note**: **xyz2grd** does not grid the data,
 it simply reformats existing data to a grid structure.  For gridding,
 see **surface**, **greenspline**, **nearneighbor**, or **triangulate**.
 
@@ -74,7 +75,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**d**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **S**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
+**-A**\ [**d**\|\ **f**\|\ **l**\|\ **m**\|\ **n**\|\ **r**\|\ **S**\|\ **s**\|\ **u**\|\ **z**]
     By default we will calculate mean values if multiple entries fall on
     the same node. Use **-A** to change this behavior, except it is
     ignored if **-Z** is given. Append **f** or **s** to simply keep the
@@ -94,7 +95,7 @@ Optional Arguments
 .. _-J:
 
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant metadata in
-    netCDF grids. Remember also that PROJ.4 syntax can be used directly in **-J**. This referencing will be
+    netCDF grids. Remember also that PROJ syntax can be used directly in **-J**. This referencing will be
     recognized by GDAL and increasingly also by GMT.
 .. include:: explain_-J.rst_
 
@@ -121,7 +122,7 @@ Optional Arguments
     Then, append **L** or **R** to indicate that first element is at
     left or right end of row. Likewise for column formats: start with
     **L** or **R** to position first column, and then append **T** or
-    **B** to position first element in a row. Note: These two row/column
+    **B** to position first element in a row. **Note**: These two row/column
     indicators are only required for grids; for other tables they do not
     apply. For gridline registered grids: If data are periodic in x but
     the incoming data do not contain the (redundant) column at x = xmax,
@@ -156,10 +157,11 @@ Optional Arguments
     **d** 8-byte floating point double precision
 
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
-    Note that **-Z** only applies to 1-column input. The difference
-    between **A** and **a** is that the latter can decode both
-    *date*\ **T**\ *clock* and *ddd:mm:ss[.xx]* formats while the former
-    is strictly for regular floating point values.
+    The difference between **A** and **a** is that the latter can decode both
+    *date*\ **T**\ *clock* and *ddd:mm:ss[.xx]* formats but expects each
+    input record to have a single value, while the former can handle multiple
+    values per record but can only parse regular floating point values.
+    Translate incoming *z*-values via the **-i**\ 0 option and needed modifiers.
 
 .. |Add_-bi| replace:: [Default is 3 input columns]. This option only applies
     to xyz input files; see **-Z** for z tables.
@@ -179,6 +181,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_-qi.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_

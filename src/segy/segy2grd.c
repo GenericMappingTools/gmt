@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by T. Henstock
+ *	Copyright (c) 1991-2020 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
  * Date:	30-JUN-2002
  * Version:	3.4.1, ported to GMT5 by P. Wessel
  */
- 
+
 #include "gmt_dev.h"
 #include "segy_io.h"
 
@@ -145,7 +145,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   <header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -S not set, assumes even spacing of samples at dx, dy supplied with -I.\n");
 	GMT_Option (API, "V,r,.");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -182,7 +182,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GM
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'z')
 					Ctrl->A.mode = AVERAGE;
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Select -An or -A[z]\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Select -An or -A[z]\n");
 					n_errors++;
 				}
 				break;
@@ -201,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GM
 				break;
 			case 'N':
 				if (!opt->arg[0]) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Must specify value or NaN\n");
 					n_errors++;
 				}
 				else {
@@ -233,7 +233,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GM
 			/* variable spacing */
 			case 'S':
 				if (Ctrl->S.active) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Can only be set once\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Can only be set once\n");
 					n_errors++;
 				}
 				Ctrl->S.active = true;
@@ -255,10 +255,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Option -G: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -273,7 +273,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	unsigned int n_empty = 0, n_stuffed = 0, n_confused = 0, check, ix;
 
 	uint64_t ij, ij0, n_samp = 0, isamp;
-	
+
 	double idy, x0, yval;
 
 	char line[GMT_BUFSIZ] = {""};
@@ -292,7 +292,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	
+
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -303,7 +303,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -320,7 +320,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active && gmt_decode_grd_h_info (GMT, Ctrl->D.text, Grid->header))
 		Return (GMT_PARSE_ERROR);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
+	GMT_Report (API, GMT_MSG_INFORMATION, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 
 	flag = gmt_M_memory (GMT, NULL, Grid->header->size, unsigned int);
 
@@ -330,15 +330,15 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	/* read in reel headers from segy file */
 	if (Ctrl->In.active) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read segy file %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Will read segy file %s\n", Ctrl->In.file);
 		if ((fpi = gmt_fopen (GMT, Ctrl->In.file, "rb")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find segy file %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot find segy file %s\n", Ctrl->In.file);
 			gmt_M_free (GMT, flag);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 	}
 	else {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read segy file from standard input\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Will read segy file from standard input\n");
 		if (fpi == NULL) fpi = stdin;
 	}
 	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {
@@ -357,7 +357,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	if (swap_bytes) {
 		/* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
 		   use a few of these*/
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Swapping bytes for ints in the headers\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Swapping bytes for ints in the headers\n");
 		binhead.num_traces = bswap16 (binhead.num_traces);
 		binhead.nsamp = bswap16 (binhead.nsamp);
 		binhead.dsfc = bswap16 (binhead.dsfc);
@@ -368,47 +368,47 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	/* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of traces in header is %d\n", Ctrl->M.value);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Number of traces in header is %d\n", Ctrl->M.value);
 
 	if (!Ctrl->L.value) {	/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of samples per trace is %d\n", Ctrl->L.value);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
+		GMT_Report (API, GMT_MSG_INFORMATION, "nsampr input %d, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
-		GMT_Report (API, GMT_MSG_NORMAL, "Error, number of samples per trace unknown\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Number of samples per trace unknown\n");
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of samples for reel is %d\n", Ctrl->L.value);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Number of samples for reel is %d\n", Ctrl->L.value);
 
-	if (binhead.dsfc != 5) GMT_Report (API, GMT_MSG_VERBOSE, "Data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_Report (API, GMT_MSG_WARNING, "Data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Y_ID]) {
 		Ctrl->Q.value[Y_ID] = (double) binhead.sr; /* sample interval of data (microseconds) */
 		Ctrl->Q.value[Y_ID] /= 1000000.0;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE,"Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
+		GMT_Report (API, GMT_MSG_INFORMATION,"Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
 	}
 	else if ((Ctrl->Q.value[Y_ID] != binhead.sr) && (binhead.sr)) /* value in header overridden by input */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning s_int input %f, s_int in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
+		GMT_Report (API, GMT_MSG_INFORMATION, "s_int input %f, s_int in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
 
 	if (!Ctrl->Q.value[Y_ID]) { /* still no sample interval at this point is a problem! */
-		GMT_Report (API, GMT_MSG_NORMAL, "Error, no sample interval in reel header\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No sample interval in reel header\n");
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	if (read_cont && (Ctrl->Q.value[Y_ID] != Grid->header->inc[GMT_Y])) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning, grid spacing != sample interval, setting sample interval to grid spacing\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Grid spacing != sample interval, setting sample interval to grid spacing\n");
 		Ctrl->Q.value[Y_ID] = Grid->header->inc[GMT_Y];
 	}
 
 	if (Grid->header->inc[GMT_Y] < Ctrl->Q.value[Y_ID])
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning, grid spacing < sample interval, expect gaps in output....\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Grid spacing < sample interval, expect gaps in output....\n");
 
 	/* starts reading actual data here....... */
 
@@ -416,7 +416,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		ix = 0;
 		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->N.f_value;
 		if (Grid->header->n_columns < Ctrl->M.value) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning, number of traces in header > size of grid. Reading may be truncated\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Number of traces in header > size of grid. Reading may be truncated\n");
 			Ctrl->M.value = Grid->header->n_columns;
 		}
 		while ((ix < Ctrl->M.value) && (header = segy_get_header (fpi)) != 0) {
@@ -551,14 +551,15 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_Message (API, GMT_TIME_NONE, " n_read: %d  n_used: %d  n_filled: %d  n_empty: %d set to ",
-				n_read, n_used, n_filled, n_empty);
-			(gmt_M_is_dnan (Ctrl->N.d_value)) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.d_value);
-			if (n_stuffed) GMT_Message (API, GMT_TIME_NONE, "Warning - %d nodes had multiple entries that were averaged\n", n_stuffed);
-			if (n_confused) GMT_Message (API, GMT_TIME_NONE, "Warning - %d values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
+		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+			if (gmt_M_is_dnan (Ctrl->N.d_value))
+				strcpy (line, "NaN\n");
+			else
+				sprintf (line, GMT->current.setting.format_float_out, Ctrl->N.d_value);
+			GMT_Report (API, GMT_MSG_INFORMATION, " n_read: %d  n_used: %d  n_filled: %d  n_empty: %d set to %s\n", n_read, n_used, n_filled, n_empty, line);
 		}
+		if (n_stuffed) GMT_Report (API, GMT_MSG_WARNING, "%d nodes had multiple entries that were averaged\n", n_stuffed);
+		if (n_confused) GMT_Report (API, GMT_MSG_WARNING, "%d values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
 	}
 	if (fpi != stdin) fclose (fpi);
 	gmt_M_free (GMT, flag);

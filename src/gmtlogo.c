@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2019 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -203,14 +203,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D%s[+w<width>]%s]\n", name, GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n\t[%s] %s%s%s[%s]\n", GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[l|n|u]] [%s] [%s] %s[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[l|n|u]] [%s] [%s]\n\t[%s] [%s] %s[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	gmt_refpoint_syntax (API->GMT, "D", "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LOGO, 2);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to set the width of the GMT logo.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to set the width of the GMT logo. [144p]\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo.", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Control text label plotted beneath the logo:\n");
@@ -292,12 +292,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 			Ctrl->D.width = gmt_M_to_inch (GMT, string);
 		Ctrl->D.active = true;
 	}
+	if (Ctrl->D.width == 0.0) Ctrl->D.width = 2.0;	/* Default width */
 	if (Ctrl->D.refpoint && Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 		static char *kind = "gjJnx";	/* The five types of refpoint specifications */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Option -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.width < 0.0, "Syntax error -D option, +w modifier: Width cannot be zero or negative!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.width < 0.0, "Option -D+w modifier: Width cannot be zero or negative!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -310,11 +311,11 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	int error, fmode;
 
 	uint64_t par[4] = {0, 0, 0, 0};
-	
+
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	double scale, y, dim[2];
 
-	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_STR16] = {""};
+	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_VF_LEN] = {""};
 
 	struct GMT_FONT F;
 	struct GMT_MATRIX *M = NULL;
@@ -334,7 +335,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -343,7 +344,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Ready to make the plot */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constructing the GMT logo\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Constructing the GMT logo\n");
 
 	/* The following is needed to have gmtlogo work correctly in perspective */
 
@@ -406,34 +407,34 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	snprintf (pars, GMT_LEN128, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s --GMT_HISTORY=false", c_grid, scale * 0.3, c_grid);
 	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, y, pars);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psclip with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s --GMT_HISTORY=false", scale * 1.55, c_water, c_land, pars);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling pscoast with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling pscoast with args %s\n", cmd);
 	GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);
 	sprintf (cmd, "-Rd -JI0/%gi -C -O -K -Bxg45 -Byg30  %s --MAP_POLAR_CAP=none --GMT_HISTORY=false", scale * 1.55, pars);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psclip with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psclip with args %s\n", cmd);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 
 	/* Plot the GMT letters as shadows, then full size, using GMT_psxy */
 
 	/* Allocate a matrix container for holding the GMT-matrix coordinates */
 	par[0] = 2;	par[1] = GMT_N_LETTERS;
-	if ((M = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POINT, GMT_CONTAINER_ONLY, par, NULL, NULL, 0, GMT_IS_ROW_FORMAT, NULL)) == NULL)
+	if ((M = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POLY, GMT_CONTAINER_ONLY, par, NULL, NULL, 0, GMT_IS_ROW_FORMAT, NULL)) == NULL)
 		exit (EXIT_FAILURE);
 	GMT_Put_Matrix (API, M, GMT_FLOAT, 0, gmt_letters);	/* Hook in our static float matrix */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POLY, GMT_IN, M, file);	/* Open matrix for reading */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40 --GMT_HISTORY=false",
 		file, scale * 1.55, c_gmt_shadow);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psxy with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", cmd);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 	GMT_Init_VirtualFile (API, 0, file);	/* Reset since we are reading it a 2nd time */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s -W%gp,%s -X-%gi -Y-%gi --GMT_HISTORY=false",
 		file, scale * 2.47, c_gmt_fill, scale * 0.3, c_gmt_outline, scale * 0.483, scale * 0.230);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling psxy with args %s\n", cmd);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", cmd);
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 	GMT_Close_VirtualFile (API, file);
-	
+
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_INV);
 	gmt_plane_perspective (GMT, -1, 0.0);
 	PSL_command (PSL, "U\n");	/* Ending the encapsulation for gmtlogo */

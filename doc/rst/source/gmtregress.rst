@@ -14,11 +14,11 @@ Synopsis
 
 **gmt regress** [ *table* ] [ |-A|\ *min*\ /*max*\ /*inc* ]
 [ |-C|\ *level* ]
-[ |-E|\ **x**\ \|\ **y**\ \|\ **o**\ \|\ **r** ]
+[ |-E|\ **x**\|\ **y**\|\ **o**\|\ **r** ]
 [ |-F|\ *flags* ]
-[ |-N|\ **1**\ \|\ **2**\ \|\ **r**\ \|\ **w** ]
+[ |-N|\ **1**\|\ **2**\|\ **r**\|\ **w** ]
 [ |-S|\ [**r**] ]
-[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list* ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-q| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -43,7 +44,7 @@ input points, but alternatively you can specify an equidistant range over which 
 the model, or turn off evaluation completely.  Instead of determining the best fit we can
 perform a scan of all possible regression lines
 (for a range of slope angles) and examine how the chosen misfit measure varies with slope.
-This is particularly useful when analyzing data with many outliers.  Note: If you
+This is particularly useful when analyzing data with many outliers.  **Note**: If you
 actually need to work with log10 of *x* or *y* you can accomplish that transformation during read by using the **-i** option.
 
 
@@ -69,7 +70,7 @@ Optional Arguments
     is determined based on your regression type (**-E**) and misfit norm (**-N**) settings.
     For each segment we report the four columns *angle*, *E*, *slope*, *intercept*, for
     the range of specified angles. The best model parameters within this range
-    are written into the segment header and reported in verbose mode (**-V**).
+    are written into the segment header and reported in verbose information mode (**-Vi**).
 
 .. _-C:
 
@@ -79,7 +80,7 @@ Optional Arguments
 
 .. _-E:
 
-**-Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r**
+**-Ex**\|\ **y**\|\ **o**\|\ **r**
     Type of linear regression, i.e., select the type of misfit we should calculate.
     Choose from **x** (regress *x* on *y*; i.e., the misfit is measured horizontally from data point to regression line),
     **y** (regress *y* on *x*; i.e., the misfit is measured vertically [Default]), **o** (orthogonal regression;
@@ -99,7 +100,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
+**-N1**\|\ **2**\|\ **r**\|\ **w**
     Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
     absolute residuals), **2** (Least-squares; the mean of the squared residuals),
     **r** (LMS; The least median of the squared residuals), or **w** (RLS; Reweighted Least Squares: the
@@ -117,7 +118,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
     **-T**\ *inc* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment.
     To skip the model evaluation entirely, simply provide **-T**\ 0.
@@ -133,7 +134,7 @@ Optional Arguments
     Giving both **x** and **y** (and optionally **r**) implies an orthogonal regression, otherwise giving
     **x** requires **-Ex** and **y** requires **-Ey**.
     We convert uncertainties in *x* and *y* to regression weights via the relationship weight = 1/sigma.
-    Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.  Note: residuals
+    Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.  **Note**: Residuals
     with respect to the regression line will be scaled by the given weights.  Most norms will then square this weighted
     residual (**-N1** is the only exception).
 
@@ -165,6 +166,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
 
 .. include:: explain_help.rst_
 
