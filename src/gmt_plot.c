@@ -1854,6 +1854,7 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 				}
 				else
 					xi = x[i];	/* Current longitude */
+				if (gmt_M_is_zero (fmod (xi, G_dx))) continue;	/* Not draw on top of gridlines */
 				if (gmt_map_outside (GMT, xi, yj)) continue;	/* Outside map */
 				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
 				angle = plot_cross_angle (GMT, xi, yj, dx, dy, GMT_Y);
@@ -1873,6 +1874,7 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 				yj = y[j];
 				if (gmt_map_outside (GMT, xi, yj)) continue;	/* Outside map */
 				if (gmt_M_pole_is_point(GMT) && doubleAlmostEqualZero (fabs (yj), 90.0)) continue; 	/* No grid tick at single pole points */
+				if (gmt_M_is_zero (fmod (yj, G_dy))) continue;	/* Not draw on top of gridlines */
 				gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
 				angle = plot_cross_angle (GMT, xi, yj, dx, dy, GMT_X);
 				sincos (angle, &Sa, &Ca);
