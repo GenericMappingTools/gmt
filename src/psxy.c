@@ -1798,7 +1798,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		struct GMT_DATASET_HIDDEN *DH = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
-		if (Ctrl->W.pen.mode == PSL_BEZIER && GMT->current.map.path_mode != GMT_LEAVE_PATH)	/* Turn of path-resampling if Bezier */
+		if (Ctrl->W.pen.mode == PSL_BEZIER && GMT->current.map.path_mode != GMT_LEAVE_PATH)	/* Turn off path-resampling if Bezier */
 			GMT->current.map.path_mode = GMT_LEAVE_PATH;
 
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
