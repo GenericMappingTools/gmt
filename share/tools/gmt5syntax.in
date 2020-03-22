@@ -18,6 +18,10 @@ my $progname = 'gmt@GMT_INSTALL_NAME_SUFFIX@';
 my @modulenames = `$progname --show-classic`;
 chomp (@modulenames);
 
+# add more compatibility modules
+my @compat_modules = split (";", "@GMT_COMPAT_MODULES@");
+push @modulenames, @compat_modules;
+
 # Regexp::Assemble creates a single efficient regexp from multiple regexp
 my $have_assemble = eval "use Regexp::Assemble; 1" ? 1 : 0;
 

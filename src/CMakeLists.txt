@@ -339,7 +339,7 @@ endif (NOT LICENSE_RESTRICTED)
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 
 # Legacy modules for which to install compatibility links via install_module_symlink
-set (GMT_COMPAT_MODULES minmax gmtstitch gmtdp grdreformat ps2raster originator)
+set (GMT_COMPAT_MODULES minmax gmtstitch gmtdp grdreformat ps2raster originator PARENT_SCOPE)
 
 # gmt core modules
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c filter1d.c grd2kml.c
