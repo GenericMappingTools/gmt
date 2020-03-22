@@ -402,7 +402,8 @@ Three classes of files are given special treatment in GMT.
    the default setting for :term:`GMT_DATA_SERVER`.  Alternatively, configure the CMake
    parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
-   set the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` to be 0.
+   limit the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` or
+   you can temporarily turn off such downloads by setting :term:`GMT_AUTO_DOWNLOAD` off.
 
 The user cache (:term:`DIR_CACHE`) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
