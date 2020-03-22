@@ -25,6 +25,15 @@
  * Version:	6 API
  */
 
+/* Notes: To add a new operator:
+ * 1) Just add one more entry at the end of the array of operator names at top of GMT_grdmath function.
+ * 2) Add one more entry at the end with the specifics in init_operators in grdmath_init function.
+ * 3) Code up the operator function grd_XXXXX ()
+ * 4) Add message to the usage function
+ * 5) Update value of #define GRDMATH_N_OPERATORS
+ * 6) Add to the rst documentation
+ */
+
 #include "gmt_dev.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdmath"
@@ -240,6 +249,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"	DENAN      2  1    Replace NaNs in A with values from B\n"
 		"	DILOG      1  1    dilog (A)\n"
 		"	DIV        2  1    A / B\n"
+		"	DOT        2  1    Dot product (2-D Cartesian or 3-D geographic) of vector (A,B) with grid nodes locations"
 		"	DUP        1  2    Places duplicate of A on the stack\n"
 		"	ECDF       2  1    Exponential cumulative distribution function for x = A and lambda = B\n"
 		"	ECRIT      2  1    Exponential distribution critical value for alpha = A and lambda = B\n"
@@ -1916,6 +1926,61 @@ GMT_LOCAL void grd_DIV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 		stack[prev]->G->data[node] = (float)(a / b);
 	}
+}
+
+GMT_LOCAL void grd_dot2d (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+{	/* Get x,y and compute 2-D unit vector then take dot products with vectors represented by grid locations */
+	uint64_t node;
+	unsigned int prev = last - 1, row, col;
+	bool update = true;
+	double X[2], P[2];
+
+	if (stack[prev]->constant && stack[last]->constant) {	/* Can compute the constant 2-D vector once */
+		P[GMT_X] = stack[prev]->factor;	P[GMT_Y] = stack[last]->factor;
+		gmt_normalize2v (GMT, P);	/* Normalize vector */
+		update = false;
+	}
+	for (row = 0, node = 0; row < info->G->header->my; row++) {
+		for (col = 0; col < info->G->header->mx; col++, node++) {	/* Visit each node */
+			if (update) {	/* Must compute updated vector from grids A and B */
+				P[GMT_X] = stack[prev]->G->data[node];	P[GMT_Y] = stack[last]->G->data[node];
+				gmt_normalize2v (GMT, P);
+			}
+			X[GMT_X] = info->d_grd_x[col];	X[GMT_Y] = info->d_grd_y[row];
+			gmt_normalize2v (GMT, X);	/* Normalized 2-D unit vector for this node */
+			stack[prev]->G->data[node] = (float)gmt_dot2v (GMT, P, X);
+		}
+	}
+}
+
+GMT_LOCAL void grd_dot3d (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+{	/* Get lon,lat and compute 3-D unit vector then take dot products with vectors represented by grid locations */
+	uint64_t node;
+	unsigned int prev = last - 1, row, col;
+	bool update = true;
+	double X[3], P[3];
+
+	if (stack[prev]->constant && stack[last]->constant) {	/* Can compute the constant 3-D vector once */
+		gmt_geo_to_cart (GMT, stack[last]->factor, stack[prev]->factor, P, true);
+		update = false;
+	}
+	for (row = 0, node = 0; row < info->G->header->my; row++) {
+		for (col = 0; col < info->G->header->mx; col++, node++) {	/* Visit each node */
+			if (update)	/* Must compute updated vector from grids A and B */
+				gmt_geo_to_cart (GMT, stack[last]->G->data[node], stack[prev]->G->data[node], P, true);
+			gmt_geo_to_cart (GMT, info->d_grd_y[row], info->d_grd_x[col], X, true);	/* 3-D unit vector for this node */
+			stack[prev]->G->data[node] = (float)gmt_dot3v (GMT, P, X);
+		}
+	}
+}
+
+GMT_LOCAL void grd_DOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: DOT 2 1 1 Dot product of vector (A,B) with grid nodes.  */
+{
+	if (gmt_M_is_geographic (GMT, GMT_IN))
+		grd_dot3d (GMT, info, stack, last);
+	else
+		grd_dot2d (GMT, info, stack, last);
 }
 
 GMT_LOCAL void grd_DUP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -5533,7 +5598,7 @@ GMT_LOCAL void grd_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 221
+#define GRDMATH_N_OPERATORS 222
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -5760,6 +5825,7 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[218] = grd_XYZ2HSV;	n_args[218] = 3;	n_out[218] = 3;
 	ops[219] = grd_XYZ2LAB;	n_args[219] = 3;	n_out[219] = 3;
 	ops[220] = grd_XYZ2RGB;	n_args[220] = 3;	n_out[220] = 3;
+	ops[221] = grd_DOT;	n_args[221] = 2;	n_out[221] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6173,6 +6239,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		"XYZ2HSV",	/* id = 218 */
 		"XYZ2LAB",	/* id = 219 */
 		"XYZ2RGB",	/* id = 220 */
+		"DOT",	/* id = 221 */
 		"" /* last element is intentionally left blank */
 	};
 
