@@ -1797,6 +1797,7 @@ GMT_LOCAL void plot_set_gridcross_limbs (struct GMT_CTRL *GMT, unsigned int axis
 	if (GMT->current.setting.map_grid_cross_type[kind] == GMT_CROSS_SYMM) return;	/* Symmetric tick */
 	if (gmt_M_is_zero (value)) return;	/* Symmetrical as well for zero */
 	if (gmt_M_type (GMT, GMT_IN, axis) == GMT_IS_LON) {	/* Worry about longitudes */
+		if (doubleAlmostEqualZero (fabs (value), 180.0)) return;	/* Symmetrical at both 0 and 180 longitude */
 		if (value > 0.0 && value < 180.0) *B = 1; else *E = 1;	/* One-sided */
 	}
 	else {
