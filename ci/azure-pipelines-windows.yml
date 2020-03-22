@@ -7,7 +7,7 @@ steps:
 # To rebuild the cache, you have to change the date in the key list
 - task: Cache@2
   inputs:
-    key: $(Agent.OS) | vcpkg | 20200905
+    key: $(Agent.OS) | vcpkg | 20200926
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
@@ -25,7 +25,7 @@ steps:
     echo 'set (VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
     cat ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
     # install libraries
-    vcpkg install netcdf-c gdal pcre2 fftw3[core,threads] clapack openblas --triplet ${WIN_PLATFORM}
+    vcpkg install netcdf-c gdal pcre2 fftw3[core,threads] clapack openblas glib --triplet ${WIN_PLATFORM}
   displayName: Install dependencies via vcpkg
   env:
     WIN_PLATFORM: "x64-windows"

@@ -10,6 +10,7 @@ set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 
 set (GMT_ENABLE_OPENMP TRUE)
+set (GMT_USE_THREADS TRUE)
 EOF
 
 if [[ "$TEST" == "true" ]]; then
