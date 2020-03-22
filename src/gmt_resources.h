@@ -33,8 +33,6 @@
 #ifndef GMT_RESOURCES_H
 #define GMT_RESOURCES_H
 
-#define GMT_BACKWARDS_API	/* Try to be backwards compatible with API naming for now */
-
 #ifdef DOUBLE_PRECISION_GRID
 /* Build GMT using double-precicion for grids.  Untested and caveat emptor */
 typedef double gmt_grdfloat;
@@ -80,7 +78,7 @@ enum GMT_enum_api {
 	GMT_USAGE	= 0,	/* Want to report full program usage message */
 	GMT_SYNOPSIS	= 1,	/* Just want the synopsis of usage */
 	GMT_PAD_DEFAULT = 2,	/* Default is 2 rows and 2 cols for grid padding */
-	GMT_STR16	= 16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
+	GMT_VF_LEN	= 32	/* Bytes needed to hold the @GMTAPI@-* virtual file names */
 };
 
 /*! These data primitive identifiers are as follows: */
@@ -290,16 +288,17 @@ enum GMT_enum_time {
 /* Verbosity levels */
 enum GMT_enum_verbose {
 	GMT_MSG_QUIET		= 0,   	/* No messages whatsoever */
-	GMT_MSG_ERROR		= 1,	/* Errors only */
-	GMT_MSG_WARNING		= 2,	/* Adds warnings */
-	GMT_MSG_TICTOC		= 3,	/* Add timings */
-	GMT_MSG_INFORMATION	= 4,	/* Adds informational messages */
-	GMT_MSG_COMPAT		= 5,	/* Compatibility warnings */
-	GMT_MSG_DEBUG		= 6,	/* Debug messages for developers mostly */
+	GMT_MSG_NOTICE		= 1,	/* Special notices */
+	GMT_MSG_ERROR		= 2,	/* Errors only */
+	GMT_MSG_WARNING		= 3,	/* Adds warnings */
+	GMT_MSG_TICTOC		= 4,	/* Add timings */
+	GMT_MSG_INFORMATION	= 5,	/* Adds informational messages */
+	GMT_MSG_COMPAT		= 6,	/* Compatibility warnings */
+	GMT_MSG_DEBUG		= 7,	/* Debug messages for developers mostly */
 	/* For API backwards compatibility only */
-	GMT_MSG_NORMAL			= 1,	/* Now GMT_MSG_ERROR */
-	GMT_MSG_VERBOSE			= 4,	/* Now GMT_MSG_WARNING  */
-	GMT_MSG_LONG_VERBOSE	= 5		/* Now GMT_MSG_INFORMATION */
+	GMT_MSG_NORMAL		= 2,	/* Now GMT_MSG_ERROR */
+	GMT_MSG_VERBOSE		= 5,	/* Now GMT_MSG_WARNING  */
+	GMT_MSG_LONG_VERBOSE	= 6		/* Now GMT_MSG_INFORMATION */
 };
 
 /* GMT_RECORD Declaration */
@@ -412,10 +411,6 @@ struct GMT_GRID_HEADER {
 	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
 	int ProjRefEPSG;                /* To store a referencing system EPSG code */
 	void *hidden;                    /* Lower-level information for GMT use only */
-#ifdef GMT_BACKWARDS_API
-	uint32_t nx;
-	uint32_t ny;
-#endif
 };
 
 /* grd is stored in rows going from west (xmin) to east (xmax)
@@ -455,6 +450,7 @@ enum GMT_enum_geometry {
 	GMT_IS_POINT	= 1U,
 	GMT_IS_LINE	= 2U,
 	GMT_IS_POLY	= 4U,
+	GMT_IS_LP	= 6U,	/* Could be any one of LINE or POLY */
 	GMT_IS_PLP	= 7U,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8U,
 	GMT_IS_NONE	= 16U,	/* Non-geographical items like color palettes */
@@ -505,9 +501,6 @@ struct GMT_DATASEGMENT {    /* For holding segment lines in memory */
 	char *header;           /* Segment header (if applicable) */
 	char **text;            /* text beyond the data */
 	void *hidden;		/* Book-keeping variables "hidden" from the API */
-#ifdef GMT_BACKWARDS_API
-	double **coord;
-#endif
 };
 
 struct GMT_DATATABLE {	/* To hold an array of line segment structures and header information in one container */
@@ -619,11 +612,6 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	double wrap_length;		/* z-length of active CPT */
 	char **header;			/* Array with all CPT header records, if any) */		/* Content not counted by sizeof (struct) */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
-#ifdef GMT_BACKWARDS_API
-	struct GMT_LUT *range;
-	struct GMT_BFN *patch;
-	unsigned int cpt_flags;
-#endif
 };
 
 /*============================================================ */
@@ -643,10 +631,6 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	const char *color_interp;
 	double *x, *y;                  /* Vector of coordinates */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
-#ifdef GMT_BACKWARDS_API
-	int *ColorMap;
-	int nIndexedColors;
-#endif
 };
 
 /*==================================================================== */
@@ -779,7 +763,7 @@ struct GMT_RESOURCE {	/* Information related to passing resources between GMT an
 	enum GMT_enum_geometry geometry;/* One of the recognized GMT geometries */
 	enum GMT_enum_std direction;	/* Either GMT_IN or GMT_OUT */
 	struct GMT_OPTION *option;	/* Pointer to the corresponding module option */
-	char name[GMT_STR16];		/* Virtual file name for resource */
+	char name[GMT_VF_LEN];		/* Virtual file name for resource */
 	int pos;			/* Corresponding index into external object in|out arrays */
 	int mode;			/* Either primary (0) or secondary (1) resource */
 	void *object;			/* Pointer to the actual GMT object */

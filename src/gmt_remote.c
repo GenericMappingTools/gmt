@@ -142,8 +142,8 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, char *file) {
 			char name[GMT_LEN32] = {""}, *c = NULL;
 			if ((c = strstr (file, ".grd"))) c[0] = '\0';	/* Chop off extension for this message */
 			(len == 3) ? snprintf (name, GMT_LEN32, "earth_relief_%s", file) : snprintf (name, GMT_LEN32, "%s", &file[1]);
-			if (len > 3) GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: Download file from the GMT data server [data set size is %s].\n", name, gmt_data_info[k].size);
-			GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: %s.\n\n", name, gmt_data_info[k].remark);
+			if (len > 3) GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", name, gmt_data_info[k].size);
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s.\n\n", gmt_data_info[k].remark);
 			match = k;
 			if (c) c[0] = '.';	/* Restore extension */
 		}
@@ -834,7 +834,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 			uint64_t row, col, n = 0;
 			double inc[2], lon, lat;
-			char output[GMT_STR16], input[GMT_STR16], cmd[GMT_LEN128] = {""};
+			char output[GMT_VF_LEN], input[GMT_VF_LEN], cmd[GMT_LEN128] = {""};
 			struct GMT_GRID *G = NULL;
 			struct GMT_DATASET *Din = NULL, *Dout = NULL;
 			struct GMT_DATASEGMENT *S = NULL;
@@ -927,7 +927,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	char res = file[strlen(file)-8];
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
-	char grid[GMT_STR16] = {""}, cmd[GMT_LEN256] = {""}, tag[4] = {"01s"};
+	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""}, tag[4] = {"01s"};
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	tag[1] = res;

@@ -57,7 +57,7 @@ steps:
     choco install ffmpeg
     echo "##vso[task.prependpath]C:\\ProgramData\\chocolatey\\lib\\ffmpeg\\tools"
     pip install --user sphinx
-    echo "##vso[task.prependpath]C:\\Users\\VssAdministrator\\AppData\\Roaming\\Python\\Python36\\Scripts"
+    echo "##vso[task.prependpath]C:\\Users\\VssAdministrator\\AppData\\Roaming\\Python\\Python37\\Scripts"
   displayName: Install dependencies for documentation
   condition: eq(variables['BUILD_DOCS'], true)
 
@@ -80,7 +80,7 @@ steps:
 
 - task: Cache@2
   inputs:
-    key: coastline
+    key: coastline | ci/download-coastlines.sh
     path: $(COASTLINEDIR)
     cacheHitVar: CACHE_COASTLINE_RESTORED
   displayName: Cache GSHHG and DCW data

@@ -142,7 +142,7 @@ Optional Arguments
     special and refers to all numerical columns beyond the leading **x** and **y** in
     your input record.  If output format is ASCII then **z** also includes any
     trailing text (which is placed at the end of the record regardless
-    of the order of **z** in *flags*). Note: If **-G** is selected, then the
+    of the order of **z** in *flags*). **Note**: If **-G** is selected, then the
     output order is hardwired to be **rsp** and **-F** is not allowed.
 
 .. _-G:

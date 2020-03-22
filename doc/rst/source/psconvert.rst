@@ -43,7 +43,7 @@ size of the resulting images is determined by the BoundingBox (or
 HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
 may be computed first. As another option, it can compute ESRI type world
 files used to reference, for instance, tif files and make them be
-recognized as geotiff.  Note: If the PostScript file calls on any of
+recognized as geotiff.  **Note**: If the PostScript file calls on any of
 the Adobe PDF transparency extensions *and* PDF is not the selected output
 format, then the file will first be converted to a temporary PDF file
 (for the transparency to take effect) before converting the PDF to the
@@ -108,7 +108,7 @@ Optional Arguments
 
 **-E**\ *resolution*
     Set raster resolution in dpi [default = 720 for PDF, 300 for others].
-    Note: Ghostscript limits the final width and height pixel dimensions
+    **Note**: Ghostscript limits the final width and height pixel dimensions
     of a raster to be less than or equal to 65536.
 
 .. _-F:
@@ -256,7 +256,7 @@ Optional Arguments
     `KML documentation <https://code.google.com/apis/kml/documentation/>`_
     for further explanation.
 
-    Note: If any of your titles or names contain a plus symbol next to
+    **Note**: If any of your titles or names contain a plus symbol next to
     a letter it can be confused with an option modifier. Escape such
     plus signs by placing a backslash in front of it.  Alternatively,
     enclose the string in double quotes and then the entire **-W**

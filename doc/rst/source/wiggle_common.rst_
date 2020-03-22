@@ -9,9 +9,9 @@ that two consecutive (*x*,\ *y*) points define the local distance axis,
 and the local *z* axis is then perpendicular to the distance axis,
 forming a right-handed coordinate system. The
 user may set a preferred positive anomaly plot direction, and if the
-positive normal is outside the plus/minus 90 degree window around the
+positive normal is outside the ±90 degree window around the
 preferred direction, then 180 degrees are added to the direction. Either
-the positive or the negative wiggle may be shaded.
+the positive or the negative wiggle (or both) may be shaded.
 
 Required Arguments
 ------------------
@@ -71,7 +71,7 @@ Optional Arguments
     Append **+w** followed by the *length* or the scale bar in data (*z*) units.
     By default, the anchor point on the scale is assumed to be the middle left corner (ML), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
     Move scale label to the left side with **+al** [Default is to the right of the scale].

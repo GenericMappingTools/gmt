@@ -229,7 +229,7 @@ Text alignment and font attributes
 
 Like the **Sl** symbol in :doc:`/plot`, you can change the current
 font by appending to **l** the modifier **+f**\ *font* [FONT_ANNOT_PRIMARY] and change the text justification
-by appending the modifier **+j**\ *justify* [CM]. Note: Here, the *font* specification
+by appending the modifier **+j**\ *justify* [CM]. **Note**: Here, the *font* specification
 will only be considered for the font type and not its size (which is set separately by your *size*
 argument) or color and outline (which are set separately by **-G** and **-W** arguments).
 Finally, there are two ways to specify the font size.  If a fixed font size is given in points

@@ -82,8 +82,8 @@ distance between two points A and B as
 
 .. math::
 
-	 d_f = R \sqrt{(\theta_A - \theta_B)^2 + \cos \left [ \frac{\theta_A +
-	 \theta_B}{2} \right ] \Delta \lambda^2}, \label{eq:flatearth}
+	 d_f = R \sqrt{(\theta_A - \theta_B)^2 + (\cos \left [ \frac{\theta_A +
+	 \theta_B}{2} \right ] \Delta \lambda)^2}, \label{eq:flatearth}
 
 where *R* is the representative (or spherical) radius of the
 planet, :math:`\theta` is latitude, and the difference in longitudes,
@@ -115,7 +115,7 @@ for an ellipsoid is required (typically for a limited surface area). For
 instance, a search radius of 5000 feet using this mode of computation
 would be specified as **-S**\ 5000\ **f**.
 
-Note: There are two additional
+**Note**: There are two additional
 GMT defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
@@ -371,15 +371,15 @@ Three classes of files are given special treatment in GMT.
    a grid input named **@earth_relief_**\ *res* on a command line then
    such a grid will automatically be downloaded from the GMT Data Server and placed
    in the *server* directory under **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
-   15 common grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
+   15 common grid spacings: 01d, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
    30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
    11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively) as well
    as the SRTM tile resolutions 03s and 01s (6.8 Gb and 41 Gb for the whole set, respectively). Once
    one of these grids have been downloaded any future reference will simply obtain the
    file from **$GMT_USERDIR** (except if explicitly removed by the user).
-   Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
-   ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
-   of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
+   **Note**: The 15 arc-sec data comes from the original dataset SRTM15+.
+   Lower resolutions are spherically Gaussian-filtered versions of SRTM15+.
+   The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
    between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
    tiles on the GMT server.  These are individually downloaded as requested, converted to netCDF
    grids and stored in subdirectories srtm1 and srtm3 under the server directory, and assembled
@@ -891,7 +891,7 @@ neither print nor show transparency. They will simply ignore your
 attempt to create transparency and will plot any material as opaque.
 Ghostscript and its derivatives such as GMT's
 :doc:`/psconvert` support transparency (if
-compiled with the correct build option). Note: If you use **Acrobat
+compiled with the correct build option). **Note**: If you use **Acrobat
 Distiller** to create a PDF file you must first change some settings to
 make transparency effective: change the parameter /AllowTransparency to
 true in your \*.joboptions file.
@@ -2159,7 +2159,7 @@ the coordinates of the grid passed to such programs:
 -  You have a geographic grid (i.e., in longitude and latitude). Simply
    supply the **-fg** option and your grid coordinates will
    automatically be converted to meters via a "Flat Earth" approximation
-   on the currently selected ellipsoid (Note: this is only possible in
+   on the currently selected ellipsoid (**Note**: This is only possible in
    those few programs that require this capability. In general, **-fg**
    is used to specify table coordinates).
 
@@ -2446,7 +2446,7 @@ u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes signed\|unsigned. If not
 is float32. Both driver names and data types are case insensitive. The *options* is a list of one or more concatenated
 number of GDAL *-co* options. For example, to write a lossless JPG2000 grid one would append
 **+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO
-Note: you will have to specify a *nan* value for integer data types unless you wish that all NaN data values
+**Note**: You will have to specify a *nan* value for integer data types unless you wish that all NaN data values
 should be replaced by zero.
 
 The NaN data value

@@ -174,16 +174,6 @@ EXTERN_MSC int GMT_Extract_Region  (void *API, char *file, double wesn[]);
 EXTERN_MSC float GMT_Get_Version   (void *API, unsigned int *major, unsigned int *minor, unsigned int *patch);
 EXTERN_MSC void *GMT_Get_Ctrl	   (void *API);
 
-/* These 8 functions are provided for backwards compatibility but are considered obsolete as of 6 */
-EXTERN_MSC void *GMT_Get_Data      (void *API, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC int GMT_Put_Data        (void *API, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC void *GMT_Retrieve_Data (void *API, int object_ID);
-EXTERN_MSC int GMT_Encode_ID       (void *API, char *string, int object_ID);
-EXTERN_MSC int GMT_Get_ID          (void *API, unsigned int family, unsigned int direction, void *resource);
-EXTERN_MSC int GMT_Get_Value       (void *API, const char *arg, double *par);
-EXTERN_MSC int GMT_Get_Family	   (void *API, unsigned int direction, struct GMT_OPTION *head);
-EXTERN_MSC int GMT_Status_IO       (void *API, unsigned int mode);
-
 #ifdef __cplusplus
 }
 #endif

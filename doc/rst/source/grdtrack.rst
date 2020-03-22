@@ -158,12 +158,12 @@ Optional Arguments
     this option requires either **+n** or **+i**.  The **+n**\ *np* modifier sets
     the desired number of points, while **+l**\ *length* gives the
     total length of the profile. Append **+d** to output the along-track
-    distances after the coordinates.  Note: No track file will be read.
+    distances after the coordinates.  **Note**: No track file will be read.
     Also note that only one distance unit can be chosen.  Giving different units
     will result in an error.  If no units are specified we default to
     great circle distances in km (if geographic).  If working with geographic
     data you can use **-j** to control distance calculation mode [Great Circle].
-    Note: If **-C** is set and *spacing* is given the that sampling scheme
+    **Note**: If **-C** is set and *spacing* is given the that sampling scheme
     overrules any modifier set in **-E**.
 
 .. _-F:

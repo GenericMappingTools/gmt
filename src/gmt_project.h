@@ -266,6 +266,7 @@ struct GMT_PROJ {
 	bool inv_coordinates;	/* true if -fp[unit] was given and we must first recover lon,lat during reading */
 	bool N_hemi;		/* true if we only allow northern hemisphere oblique Mercator poles */
 	bool sph_inside;	/* true is we must use the spherical in-on-out machinery [false = Cartesian] */
+	bool obl_flip;	/* true is we want the oblique equator to be the vertical axis [horizontal] */
 	unsigned int n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
 	struct GMT_LATSWAP_CONSTS lat_swap_vals;
 
@@ -377,7 +378,7 @@ struct GMT_PROJ {
 
 	/* All Cylindrical Projections */
 
-	double j_x, j_y, j_ix, j_iy;
+	double j_x, j_y, j_ix, j_iy, j_yc;
 
 	/* Albers Equal-area conic parameters. */
 

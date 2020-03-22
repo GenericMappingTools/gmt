@@ -653,11 +653,14 @@ void gmt_ipolar (struct GMT_CTRL *GMT, double *x, double *y, double x_i, double 
 /* -JM MERCATOR PROJECTION */
 
 void gmt_vmerc (struct GMT_CTRL *GMT, double lon0, double slat) {
-	/* Set up a Mercator transformation */
+	/* Set up a Mercator transformation with origin at (lon0, lat0) */
+
+	if (GMT->current.proj.GMT_convert_latitudes) slat = gmt_M_latg_to_latc (GMT, slat);
 
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.j_x = cosd (slat) / d_sqrt (1.0 - GMT->current.proj.ECC2 * sind (slat) * sind (slat)) * GMT->current.proj.EQ_RAD;
 	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
+	GMT->current.proj.j_yc = (fabs (slat) > 0.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * slat)) : 0.0;
 }
 
 /* Mercator projection for the sphere */
@@ -669,14 +672,14 @@ void gmt_merc_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, doub
 	if (GMT->current.proj.GMT_convert_latitudes) lat = gmt_M_latg_to_latc (GMT, lat);
 
 	*x = GMT->current.proj.j_x * D2R * lon;
-	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) : copysign (DBL_MAX, lat);
+	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) - GMT->current.proj.j_yc : copysign (DBL_MAX, lat);
 }
 
 void gmt_imerc_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Mercator x/y to lon/lat  (GMT->current.proj.EQ_RAD in GMT->current.proj.j_ix) */
 
 	*lon = x * GMT->current.proj.j_ix * R2D + GMT->current.proj.central_meridian;
-	*lat = atand (sinh (y * GMT->current.proj.j_ix));
+	*lat = atand (sinh ((y + GMT->current.proj.j_yc) * GMT->current.proj.j_ix));
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_latc_to_latg (GMT, *lat);
 }
 
@@ -1137,7 +1140,12 @@ void gmt_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 
 	*x = GMT->current.proj.j_x * tlon;
 	*y = (fabs (tlat) < M_PI_2) ? GMT->current.proj.j_x * d_log (GMT, tan (M_PI_4 + 0.5 * tlat)) - GMT->current.proj.o_shift : copysign (DBL_MAX, tlat);
-	if (GMT->current.proj.o_spole) {
+	if (GMT->current.proj.obl_flip) {
+		/* Let oblique Equator be y-axis, so flip x and y but must let y be negative [that change takes place in map_setxy] */
+		gmt_M_double_swap (*x, *y);
+		if (GMT->current.proj.pars[1] < 0.0) *x = -*x, *y = -*y;	/* S hemisphere must rotate 180 */
+	}
+	else if (GMT->current.proj.o_spole) {
 		*x = -(*x);
 		*y = -(*y);
 	}
@@ -1149,7 +1157,12 @@ void gmt_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 	double tlon, tlat;
 	/* o_shift deals with difference between user's origin and our logical origin */
 
-	if (GMT->current.proj.o_spole) {
+	if (GMT->current.proj.obl_flip) {
+		/* Had oblique Equator be y-axis */
+		if (GMT->current.proj.pars[1] < 0.0) x = -x, y = -y;	/* S hemisphere must rotate 180 */
+		gmt_M_double_swap (x, y);
+	}
+	else if (GMT->current.proj.o_spole) {
 		x = -x;
 		y = -y;
 	}

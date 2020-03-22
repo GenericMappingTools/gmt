@@ -129,7 +129,7 @@ functions made available are:
 **gmt_launch_jobs**
     Takes a file with a long list of commands and splits them into
     many chunks that can be executed concurrently. Without arguments
-    the function will display its usage.  Note: It is your responsibility
+    the function will display its usage.  **Note**: It is your responsibility
     to make sure no race conditions occur (i.e., multiple commands
     writing to the same file).
 

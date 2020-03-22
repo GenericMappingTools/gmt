@@ -247,8 +247,9 @@ static const char *GMT_direction[] = {"Input", "Output"};
 static const char *GMT_stream[] = {"Standard", "User-supplied"};
 static const char *GMT_status[] = {"Unused", "In-use", "Used"};
 static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Point|Line|Poly", "Line|Poly", "Surface", "Non-Geographical", "Text"};
-static const char *GMT_class[] = {"QUIET", "ERROR", "WARNING", "TIMING", "INFORMATION", "COMPATIBILITY", "DEBUG"};
+static const char *GMT_class[] = {"QUIET", "NOTICE", "ERROR", "WARNING", "TIMING", "INFORMATION", "COMPATIBILITY", "DEBUG"};
 static unsigned int GMT_no_pad[4] = {0, 0, 0, 0};
+static const char *GMT_family_abbrev[] = {"D", "G", "I", "C", "X", "M", "V", "-"};
 
 /*! Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
 enum GMT_enum_iomode {
@@ -352,6 +353,11 @@ GMT_LOCAL bool valid_input_family (unsigned int family) {
 	/* Return true for the main input types */
 	return (family == GMT_IS_DATASET || family == GMT_IS_GRID \
 	       || family == GMT_IS_IMAGE || family == GMT_IS_PALETTE || family == GMT_IS_POSTSCRIPT);
+}
+
+GMT_LOCAL bool valid_actual_family (unsigned int family) {
+	/* Return true for the main actual family types */
+	return (family >= GMT_IS_DATASET && family < GMT_N_FAMILIES);
 }
 
 GMT_LOCAL bool valid_output_family (unsigned int family) {
@@ -2421,7 +2427,7 @@ GMT_LOCAL int api_decode_id (const char *filename) {
 	int object_ID = GMT_NOTSET;
 
 	if (gmt_M_file_is_memory (filename)) {	/* Passing ID of a registered object */
-		if (sscanf (&filename[9], "%d", &object_ID) != 1) return (GMT_NOTSET);	/* Get the object ID unless we fail scanning */
+		if (sscanf (&filename[GMTAPI_OBJECT_ID_START], "%d", &object_ID) != 1) return (GMT_NOTSET);	/* Get the object ID unless we fail scanning */
 	}
 	return (object_ID);	/* Returns GMT_NOTSET if no embedded ID was found */
 }
@@ -2704,11 +2710,7 @@ GMT_LOCAL struct GMT_PALETTE * api_import_palette (struct GMTAPI_CTRL *API, int 
 			break;
 	}
 	S_obj->status = GMT_IS_USED;	/* Mark as read */
-#ifdef GMT_BACKWARDS_API
-	P_obj->range = P_obj->data;
-	P_obj->patch = P_obj->bfn;
-	P_obj->cpt_flags = P_obj->mode;
-#endif
+
 	return (P_obj);	/* Pass back the palette */
 }
 
@@ -3885,10 +3887,6 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				D_obj->table = gmt_M_memory (GMT, D_obj->table, n_alloc, struct GMT_DATATABLE *);
 				gmt_M_memset (&(D_obj->table[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DATATABLE *);	/* Set new memory to NULL */
 			}
-#ifdef GMT_BACKWARDS_API
-			for (seg = 0; seg < D_obj->table[D_obj->n_tables-1]->n_segments; seg++)
-				D_obj->table[D_obj->n_tables-1]->segment[seg]->coord = D_obj->table[D_obj->n_tables-1]->segment[seg]->data;
-#endif
 		}
 		S_obj->alloc_mode = DH->alloc_mode;	/* Clarify allocation mode for this object */
 #if 0
@@ -4476,11 +4474,6 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 	if (!via) S_obj->resource = I_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 
-#ifdef GMT_BACKWARDS_API
-	I_obj->ColorMap = I_obj->colormap;
-	I_obj->nIndexedColors = I_obj->n_indexed_colors;
-#endif
-
 	return ((mode & GMT_DATA_ONLY) ? NULL : I_obj);	/* Pass back out what we have so far */
 }
 
@@ -4921,10 +4914,6 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 
-#ifdef GMT_BACKWARDS_API
-	G_obj->header->nx = G_obj->header->n_columns;
-	G_obj->header->ny = G_obj->header->n_rows;
-#endif
 	return (G_obj);	/* Pass back out what we have so far */
 }
 
@@ -6167,17 +6156,51 @@ int GMT_Destroy_Session_ () {
 #endif
 
 /*! . */
-GMT_LOCAL int api_encode_id (void *V_API, char *filename, int object_ID) {
-	/* Creates a filename with the embedded GMTAPI Object ID.  Space must exist.
+GMT_LOCAL char api_debug_geometry_code (unsigned int geometry) {
+	char c;
+	switch (geometry) {
+		case GMT_IS_POINT:	 c = 'T'; break;
+		case GMT_IS_LINE:	 c = 'L'; break;
+		case GMT_IS_POLY:	 c = 'P'; break;
+		case GMT_IS_LP:		 c = 'C'; break;
+		case GMT_IS_PLP:	 c = 'A'; break;
+		case GMT_IS_SURFACE: c = 'G'; break;
+		case GMT_IS_NONE:	 c = 'N'; break;
+		case GMT_IS_TEXT:	 c = 'X'; break;
+		default:	 		 c = 'U'; break;
+	}
+	return c;
+}
+
+/*! . */
+GMT_LOCAL int api_encode_id (struct GMTAPI_CTRL *API, unsigned int module_input, unsigned int direction, unsigned int family, unsigned int actual_family, unsigned int geometry, unsigned int messenger, int object_ID, char *filename) {
+	/* Creates a virtual filename with the embedded object information .  Space for up to GMT_VF_LEN characters in filename must exist.
+	 * Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.
+	 * S stands for P(rimary) or S(econdary) input or output object (command line is primary, files via options are secondary).
+	 * D stands for Direction and is either I(n) or O(ut).
+	 * F stands for Family and is one of D(ataset), G(rid), I(mage), C(PT), X(PostScript), M(atrix), V(ector), U(ndefined).
+	 * A stands for Actual Family and is one of D, G, I, C, X, M, V, and U as well.
+	 *   Actual family may differ from family if a Dataset is actually passed as a Matrix, for instance.
+	 * G stands for Geometry and is one of (poin)T, L(ine), P(olygon), C(Line|Polygon), A(POint|Line|Polygon), G(rid), N(one), X(text), or U(ndefined).
+	 * M stands for Messenger and is either Y(es) or N(o).
 	 * Limitation:  object_ID must be <= GMTAPI_MAX_ID */
 
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
-	if (!filename) return_error (V_API, GMT_MEMORY_ERROR);		/* Oops, cannot write to that variable */
-	if (object_ID == GMT_NOTSET) return_error (V_API, GMT_NOT_A_VALID_ID);	/* ID is not set yet */
-	if (object_ID > GMTAPI_MAX_ID) return_error (V_API, GMT_ID_TOO_LARGE);	/* ID is too large to fit in %06d format below */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
+	if (!filename) return_error (API, GMT_MEMORY_ERROR);		/* Oops, cannot write to that variable */
+	if (object_ID <= GMT_NOTSET) return_error (API, GMT_NOT_A_VALID_ID);	/* ID is not set yet */
+	if (object_ID > GMTAPI_MAX_ID) return_error (API, GMT_ID_TOO_LARGE);	/* ID is too large to fit in %06d format below */
+	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
+	if (!valid_input_family (family))  return_error (API, GMT_NOT_A_VALID_FAMILY);
+	if (!valid_actual_family (actual_family))  return_error (API, GMT_NOT_A_VALID_FAMILY);
+	if (api_validate_geometry (API, family, geometry)) return_error (API, GMT_BAD_GEOMETRY);
+	if (!(messenger == 0 || messenger == 1)) return_error (API, GMT_RUNTIME_ERROR);
+	if (module_input) module_input = 1;	/* It may be GMT_VIA_MODULE_INPUT but here we want just 0 or 1 */
 
-	sprintf (filename, "@GMTAPI@-%06d", object_ID);	/* Place the object ID in the special GMT API format */
-	return_error (V_API, GMT_NOERROR);	/* No error encountered */
+	gmt_M_memset (filename, GMT_VF_LEN, char);	/* Wipe any trace of previous text */
+	sprintf (filename, "@GMTAPI@-%c-%c-%s-%s-%c-%c-%06d", (module_input) ? 'P' : 'S', (direction == GMT_IN) ? 'I' : 'O', GMT_family_abbrev[family], GMT_family_abbrev[actual_family], api_debug_geometry_code (geometry), (messenger) ? 'Y' : 'N', object_ID);
+	GMT_Report (API, GMT_MSG_DEBUG, "VirtualFile name created: %s\n", filename);
+	
+	return_error (API, GMT_NOERROR);	/* No error encountered */
 }
 
 /* Data registration: The main reason for data registration is the following:
@@ -6822,11 +6845,13 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 	 *  beforehand or it is NULL and we create an expanding output resource.
 	 * name is the name given to the virtual file and is returned. */
 	int object_ID = GMT_NOTSET, item_s = 0;
-	unsigned int item, orig_family, actual_family = 0, via_type = 0;
+	unsigned int item, orig_family, actual_family = 0, via_type = 0, messenger = 0, module_input;
 	bool readonly = false;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we registering a resource that is a module input? */
+	family -= module_input;
 	if (direction & GMT_IS_REFERENCE) {	/* Treat this memory as read-only */
 		readonly = true;
 		direction -= GMT_IS_REFERENCE;
@@ -6913,12 +6938,13 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			S_obj = API->object[item_s];	/* Short-hand for later */
 			S_obj->type = (via_type) ? via_type - 1 : API->GMT->current.setting.export_type;	/* Remember what output type we want */
 			S_obj->method = GMT_IS_REFERENCE;	/* Now a memory resource */
+			messenger = 1;
 		}
 		/* If the output is a matrix masquerading as grid then it must be GMT_FLOAT, otherwise change to DUPLICATE */
 		maybe_change_method_to_duplicate (API, S_obj, readonly);
 	}
 	/* Obtain the unique VirtualFile name */
-	if (api_encode_id (API, name, object_ID) != GMT_NOERROR)
+	if (api_encode_id (API, module_input, direction, family, actual_family, geometry, messenger, object_ID, name) != GMT_NOERROR)
 		return (API->error);
 	return GMT_NOERROR;
 }
@@ -10628,6 +10654,13 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	else if (!strncmp (module, "grdinterpolate", 14U)) {
 		type = ((opt = GMT_Find_Option (API, 'S', *head))) ? 'D' : 'G';	/* Giving -S means we change default putput from grid to dataset */
 	}
+	/* 1p. Check if grdgdal is reading a dataset */
+	else if (!strncmp (module, "grdgdal", 7U)) {	/* Set input data type based on options */
+		if ((opt = GMT_Find_Option (API, 'A', *head)) && (strstr (opt->arg, "grid") || strstr (opt->arg, "rasterize")))
+			type = 'D';
+		else
+			type = 'G';
+	}
 
 	/* 2a. Get the option key array for this module */
 	key = api_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
@@ -12505,90 +12538,6 @@ int GMT_Get_Enum (void *V_API, char *key) {
 #ifdef FORTRAN_API
 int GMT_Get_Enum_ (char *arg, int len) {
 	return (GMT_Get_Enum (GMT_FORTRAN, arg));
-}
-#endif
-
-/* Backwards compatibility for old API functions from 5.1-2 no longer in favor
- * as the Virtual File concept is much easier to understand and use. */
-
-/*! . */
-int GMT_Get_Value (void *V_API, const char *arg, double *par) {
-
-	return (GMT_Get_Values (V_API, arg, par, 999));
-}
-#ifdef FORTRAN_API
-int GMT_Get_Value_ (char *arg, double par[], int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Values (GMT_FORTRAN, arg, par, len));
-}
-#endif
-
-/*! . */
-void *GMT_Retrieve_Data (void *API, int object_ID) {
-	return api_retrieve_data (API, object_ID);
-}
-
-#ifdef FORTRAN_API
-void *GMT_Retrieve_Data_ (int *object_ID) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (api_retrieve_data (GMT_FORTRAN, *object_ID));
-}
-#endif
-
-void *GMT_Get_Data (void *API, int object_ID, unsigned int mode, void *data) {
-	return api_get_data (API, object_ID, mode, data);
-}
-
-#ifdef FORTRAN_API
-void *GMT_Get_Data_ (int *ID, int *mode, void *data) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (api_get_data (GMT_FORTRAN, *ID, *mode, data));
-}
-#endif
-
-int GMT_Put_Data (void *API, int object_ID, unsigned int mode, void *data) {
-	return api_put_data (API, object_ID, mode, data);
-}
-
-#ifdef FORTRAN_API
-int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (api_put_data (GMT_FORTRAN, *object_ID, *mode, data));
-}
-#endif
-
-int GMT_Encode_ID (void *API, char *filename, int object_ID) {
-	return (api_encode_id (API, filename, object_ID));
-}
-
-#ifdef FORTRAN_API
-int GMT_Encode_ID_ (char *filename, int *object_ID, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Encode_ID (GMT_FORTRAN, filename, *object_ID));
-}
-#endif
-
-int GMT_Get_ID (void *API, unsigned int family, unsigned int direction, void *resource) {
-	return (api_get_id (API, family, direction, resource));
-}
-
-#ifdef FORTRAN_API
-int GMT_Get_ID_ (unsigned int *family, unsigned int *direction, void *resource) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_ID (GMT_FORTRAN, *family, *direction, resource));
-}
-#endif
-
-/* Changed name to always have a verb */
-
-int GMT_Status_IO (void *V_API, unsigned int mode) {
-	return (GMT_Get_Status (V_API, mode));
-}
-
-#ifdef FORTRAN_API
-int GMT_Status_IO_ (unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Status (GMT_FORTRAN, *mode));
 }
 #endif
 

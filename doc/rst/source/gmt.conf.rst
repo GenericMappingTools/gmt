@@ -360,7 +360,7 @@ GMT Miscellaneous Parameters
         feature append *planner_flag*, which can be one of *measure*,
         *patient*, and *exhaustive*; see FFTW reference for details. The
         default FFTW planner flag is *estimate*, i.e., pick a (probably
-        sub-optimal) plan quickly. Note: if you need a single transform of a
+        sub-optimal) plan quickly. **Note**: If you need a single transform of a
         given size only, the one-time cost of the smart planner becomes
         significant. In that case, stick to the default planner, *estimate*,
         based on heuristics.
@@ -419,7 +419,7 @@ GMT Miscellaneous Parameters
         **$GMT_SHAREDIR**/localization/gmt_us.locale file and make a similar file. Please
         submit it to the GMT Developers for official inclusion. Custom
         language files can be placed in directories **$GMT_SHAREDIR**/localization
-        or ~/.gmt. Note: Some of these languages may require you to also
+        or ~/.gmt. **Note**: Some of these languages may require you to also
         change the :term:`PS_CHAR_ENCODING` setting.
 
     **GMT_TRIANGULATE**
@@ -487,7 +487,7 @@ I/O Parameters
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [0].
-        Note: This will skip the specified number of records regardless of
+        **Note**: This will skip the specified number of records regardless of
         what they are.  Since any records starting with # is automatically
         considered a header you will only specify a non-zero number in order
         to skip headers that do not conform to that convention.
@@ -645,7 +645,7 @@ MAP Parameters
         may control its shape via :term:`MAP_VECTOR_SHAPE`.
 
     **MAP_FRAME_WIDTH**
-        Width (> 0) of map borders for fancy map frame [5p]. Note: For fancy
+        Width (> 0) of map borders for fancy map frame [5p]. **Note**: For fancy
         frames, :term:`MAP_FRAME_PEN` is automatically set to 0.1 times the
         :term:`MAP_FRAME_WIDTH` setting.
 
@@ -905,7 +905,7 @@ PostScript Parameters
         that the PostScript output generates the correct characters on the
         plot. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
         ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
-        Appendix F for details [ISOLatin1+ (or Standard+)].  Note: Normally
+        Appendix F for details [ISOLatin1+ (or Standard+)].  **Note**: Normally
         the character set is written as part of the PostScript header.  If
         you need to switch to another character set for a later overlay then
         you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line and

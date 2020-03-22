@@ -23,7 +23,7 @@
 #    settings, then copy 'ConfigUserAdvancedTemplate.cmake' to 'ConfigUserAdvanced.cmake',
 #    explore and make changes to your ConfigUserAdvanced.cmake file
 #    to override variables in 'ConfigDefault.cmake' on a per-user basis.
-# 4. Follow the rest of the installation instructions in BUILDING.md.
+# 3. Follow the rest of the installation instructions in BUILDING.md.
 #
 # 'ConfigUser.cmake' and 'ConfigUserAdvanced.cmake' are not version controlled
 # (currently listed in .gitignore).
@@ -96,20 +96,6 @@
 
 # Set URL to GMT Data server [auto]:
 #set (GMT_DATA_SERVER "data_server_url")
-
-# Copy GDAL's 'data' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
-#set (GDAL_DATA_PATH C:/programs/compa_libs/gdal_GIT/compileds/VC14_64/data)
-
-# Copy PROJ4's 'share' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
-#set (PROJ_DATA_PATH C:/programs/compa_libs/proj5_GIT/compileds/VC14_64/share/proj)
-
-# FOR WINDOWS ONLY
-# Set path to location of Ghostscript binaries (optional install)
-#set (GHOST_DATA_PATH C:/programs/compa_libs/ghostscript/bin)
-
-# FOR WINDOWS ONLY
-# Set path to location where the gmtmex is located.
-#set (GMTMEX_PATH "C:/progs_cygw/GMTdev/gmtmex/${GMTver}")
 
 # Set location of NetCDF (can be root directory, path to header file or path
 # to nc-config) [auto]:
@@ -210,9 +196,6 @@
 # that only need the GMT API, see the gmt-custom project).
 #set (EXTRA_BUILD_DIRS apidemo)
 
-# List extra new modules for testing without adding them to the module list
-#set (EXTRA_MODULES newmodule1.c newmodule2.c)
-
 # List extra new supplemental modules for testing without adding them to the module list
 #set (EXTRA_MODULES_SUPPL newsuppl1.c newsuppl2.c)
 
@@ -287,6 +270,7 @@
 # endif ()
 # set (GMT_DLL_RENAME gmt_w${BITAGE})
 # set (PSL_DLL_RENAME psl_w${BITAGE})
+# set (SUPP_DLL_RENAME supplements_w${BITAGE})
 #endif(WIN32)
 
 # On Windows Visual C 2012 needs _ALLOW_KEYWORD_MACROS to build

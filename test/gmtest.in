@@ -74,7 +74,6 @@ function psldemo()
 # Must have wrappers for all test programs not part of GMT distro:
 
 for apiprog in \
-    testapi \
     testapi_matrix \
     testapi_matrix_plot \
     testapi_mixmatrix \

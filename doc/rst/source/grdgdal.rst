@@ -51,9 +51,9 @@ Required Arguments
 .. _-A:
 
 **-A**\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*]
-    Select which GDAL program to run (currently one of *info*, *dem*, *grid*, *rasterize*, *translate or *warp*)
-    When program is *dem* append **+m**\ *method* (pick one of *hillshade*, *color-relief*, *slope*, *TRI*, *TPI*
-    or *roughness*) and, for *color-relief*, need also to specify a colormap with **+c**\ *cpt_name*.
+    Select which GDAL program to run (currently one of *info*, *dem*, *grid*, *rasterize*, *translate* or *warp*).
+    When program is *dem* then please append **+m**\ *method* (pick one of *hillshade*, *color-relief*, *slope*, *TRI*, *TPI*
+    or *roughness*) and, for *color-relief*, you also need to specify a colormap with **+c**\ *cpt_name*.
 
 .. _-G:
 
@@ -72,7 +72,7 @@ Optional Arguments
 
 **-M**\ [**+r+w**]
     Read and write files via GDAL. **-M** alone selects both reading and writing with GDAL.
-    Whilst **-M+r** alone instructs the program to read with GDAL (and save with GMT). This option is needed when reading
+    Option **-M+r** alone instructs the program to read with GDAL (and save with GMT). This option is needed when reading
     OGR vector data. **-M+w** indicates that the output will be saved with GDAL.
 
 .. _-R:
@@ -88,7 +88,7 @@ Optional Arguments
 ..  include:: explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 3]. This option
-    only applies to xyz input via GMT
+    only applies to xyz input via GMT.
 .. include:: explain_-bi.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
