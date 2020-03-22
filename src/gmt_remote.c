@@ -477,10 +477,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated\n");
 		return 0; 
 	}
-	if (GMT->current.setting.url_size_limit == 0) {	/* Zero means nothing can be downloaded */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download turned of as max file size limit is zero\n");
-		return 0;
-	}
 	if (GMT->current.io.internet_error) return 0;   			/* Not able to use remote copying in this session */
 
 	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
