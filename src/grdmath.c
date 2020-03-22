@@ -27,7 +27,7 @@
 
 /* Notes: To add a new operator:
  * 1) Just add one more entry at the end of the array of operator names at top of GMT_grdmath function.
- * 2) Add more more entry at the end with the specifics in init_operators in grdmath_init function.
+ * 2) Add one more entry at the end with the specifics in init_operators in grdmath_init function.
  * 3) Code up the operator function grd_XXXXX ()
  * 4) Add message to the usage function
  * 5) Update value of #define GRDMATH_N_OPERATORS
