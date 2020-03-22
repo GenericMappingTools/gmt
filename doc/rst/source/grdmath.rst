@@ -148,7 +148,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 209 operators. "args" are the number of input
+Choose among the following 222 operators. "args" are the number of input
 and output arguments.
 
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -261,6 +261,8 @@ and output arguments.
 | **DILOG**     | 1 1   | dilog (A)                                                                                              |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DIV**       | 2 1   | A / B                                                                                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **DOT**       | 2 1   | 2-D (Cartesian) or 3-D (geographic) dot products between nodes and stack (A, B) unit vector(s)         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DUP**       | 1 2   | Places duplicate of A on the stack                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -716,6 +718,9 @@ Notes On Operators
 
 #. Operators **DEG2KM** and **KM2DEG** are only exact when a spherical Earth
    is selected with :term:`PROJ_ELLIPSOID`.
+
+#. Operator **DOT** normalizes 2-D vectors before the dot-product takes place.
+   For 3-D vector they are all unit vectors to begin with.
 
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
    only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
