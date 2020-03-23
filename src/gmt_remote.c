@@ -473,7 +473,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
 
-	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {  /* Not allowed to use remote copying */
+	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD && (gmt_M_file_is_remotedata (file_name) || gmt_M_file_is_cache (file_name) || gmt_M_file_is_url (file_name))) {  /* Not allowed to use remote copying */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated\n");
 		return 0; 
 	}
