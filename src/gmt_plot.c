@@ -5414,12 +5414,12 @@ void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	}
 }
 
-GMT_LOCAL void plot_arrange_primary_secondary (struct GMT_CTRL *GMT) {
+GMT_LOCAL void plot_check_primary_secondary (struct GMT_CTRL *GMT) {
 	/* We requires the primary interval to be finer than the secondary interval (when given).
 	 * However, it is easy to get this mixed up. Here, we make the check and if we find
-	 * the primary interval is larger than the secondary we will swap the two. */
+	 * the primary interval is larger than the secondary we warn. */
 	struct GMT_PLOT_AXIS *A = NULL;
-	struct GMT_PLOT_AXIS_ITEM *P = NULL, *S = NULL, tmp;
+	struct GMT_PLOT_AXIS_ITEM *P = NULL, *S = NULL;
 	static char *kind[3] = {"annotation", "tick", "grid-line"};
 	static char *axis[2][3] = { {"x", "y", "z"}, {"longitude", "latitude", "z"}};
 	unsigned int no, k, type = gmt_M_is_geographic (GMT, GMT_IN);;
@@ -5427,19 +5427,18 @@ GMT_LOCAL void plot_arrange_primary_secondary (struct GMT_CTRL *GMT) {
 
 	for (no = 0; no <= GMT_Z; no++) {
 		A = &GMT->current.map.frame.axis[no];
-		if (A->type == GMT_TIME) continue;	/* Assume those are set correctly */
+		if (A->type == GMT_TIME) continue;	/* We assume those are set correctly */
 		for (k = 0; k < 3; k++) {	/* For each axis */
 			P = &(A->item[2*k]);	/* Primary item */
 			S = &(A->item[2*k+1]);	/* Secondary item */
 			if ((P->active + S->active) < 2) continue;	/* Primary and secondary not both set */
-			/* Here they are both set, obtain the intervals */
+			/* Here they are both set, check the intervals */
 			dP = gmtlib_get_map_interval (GMT, P);
 			dS = gmtlib_get_map_interval (GMT, S);
-			if (dP > dS) {	/* Must swap since primary should be the finer-grained interval */
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your primary %s %s interval exceeds the secondary interval - switching primary and secondary %ss\n", axis[type][no],kind[k], kind[k]);
-				gmt_M_memcpy (&tmp, P, 1, struct GMT_PLOT_AXIS_ITEM);
-				gmt_M_memcpy (P, S, 1, struct GMT_PLOT_AXIS_ITEM);
-				gmt_M_memcpy (S, &tmp, 1, struct GMT_PLOT_AXIS_ITEM);
+			if (dP > dS) {	/* Must warn since primary should be the finer-grained interval */
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your primary %s %s interval exceeds the secondary interval.\n", axis[type][no], kind[k]);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT expects it to be the other way around (primary annotations are closest to axis, secondary are further away)\n");
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Consider correcting your command - proceeding with your selections\n");
 			}
 		}
 	}
@@ -5455,7 +5454,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	if (GMT->common.B.active[GMT_PRIMARY] && GMT->common.B.active[GMT_SECONDARY]) {
 		/* Make sure primary intervals are < than secondary intervals, otherwise we swap them */
-		plot_arrange_primary_secondary (GMT);
+		plot_check_primary_secondary (GMT);
 	}
 
 	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
