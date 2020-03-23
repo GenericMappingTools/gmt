@@ -7283,7 +7283,7 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 		gmt_message (GMT, "\t        To trim the two ends differently, give two offsets separated by a slash (/).\n");
 	}
 	if (mode & 1)
-		gmt_message (GMT, "\t     +s Draw line using a Bezier spline in the PostScript [Linear spline].\n");
+		gmt_message (GMT, "\t     +s Draw line using a Bezier spline through projected coordinates [Linear spline].\n");
 	if (mode & 4) {
 		gmt_message (GMT, "\t     +v[b|e]<vecspecs> Add vector head with the given specs at the ends of lines.\n");
 		gmt_message (GMT, "\t        Use +ve and +vb separately to give different endings (+v applies to both).\n");
