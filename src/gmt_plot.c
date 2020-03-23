@@ -5427,6 +5427,7 @@ GMT_LOCAL void plot_arrange_primary_secondary (struct GMT_CTRL *GMT) {
 
 	for (no = 0; no <= GMT_Z; no++) {
 		A = &GMT->current.map.frame.axis[no];
+		if (A->type == GMT_TIME) continue;	/* Assume those are set correctly */
 		for (k = 0; k < 3; k++) {	/* For each axis */
 			P = &(A->item[2*k]);	/* Primary item */
 			S = &(A->item[2*k+1]);	/* Secondary item */
