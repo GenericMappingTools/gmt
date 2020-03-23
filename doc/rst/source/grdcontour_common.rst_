@@ -159,7 +159,7 @@ Optional Arguments
     labels, separate the low and high label strings with a comma (e.g.,
     **+l**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
     then only contours marked with upper case C or A will have tick marks
-    [and annotations].  Note: The labeling of local highs and lows may plot sometimes
+    [and annotations].  **Note**: The labeling of local highs and lows may plot sometimes
     outside the innermost contour since only the mean value of the contour coordinates
     is used to position the label.
 

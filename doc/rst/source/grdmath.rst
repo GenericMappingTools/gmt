@@ -108,7 +108,7 @@ Optional Arguments
 **-S**
     Reduce (i.e., collapse) the entire stack to a single grid by applying the
     next operator to all co-registered nodes across the entire stack.  You
-    must specify **-S** *after* listing all of your grids.  Note: You can only
+    must specify **-S** *after* listing all of your grids.  **Note**: You can only
     follow **-S** with a reducing operator, i.e., from the list ADD, AND, MAD,
     LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.
 
@@ -148,7 +148,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 209 operators. "args" are the number of input
+Choose among the following 222 operators. "args" are the number of input
 and output arguments.
 
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -261,6 +261,8 @@ and output arguments.
 | **DILOG**     | 1 1   | dilog (A)                                                                                              |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DIV**       | 2 1   | A / B                                                                                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **DOT**       | 2 1   | 2-D (Cartesian) or 3-D (geographic) dot products between nodes and stack (A, B) unit vector(s)         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DUP**       | 1 2   | Places duplicate of A on the stack                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -651,7 +653,7 @@ Notes On Operators
    Similarly, the **SAZ** and **SBAZ** operators calculate spherical
    azimuth and back-azimuths in degrees, respectively. The operators
    **LDIST** and **PDIST** compute spherical distances in km if **-fg** is
-   set or implied, else they return Cartesian distances. Note: If the current
+   set or implied, else they return Cartesian distances. **Note**: If the current
    :term:`PROJ_ELLIPSOID` is ellipsoidal then
    geodesics are used in calculations of distances, which can be slow.
    You can trade speed with accuracy by changing the algorithm used to
@@ -717,6 +719,9 @@ Notes On Operators
 #. Operators **DEG2KM** and **KM2DEG** are only exact when a spherical Earth
    is selected with :term:`PROJ_ELLIPSOID`.
 
+#. Operator **DOT** normalizes 2-D vectors before the dot-product takes place.
+   For 3-D vector they are all unit vectors to begin with.
+
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
    only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
    sRGB (x, y, z) conversions between all four color spaces.
@@ -749,7 +754,7 @@ modes that are inside the given circle to 1 and those outside to 0:
 INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1
 inside circle
 
-Note: Because geographic or time constants may be present in a macro, it
+**Note**: Because geographic or time constants may be present in a macro, it
 is required that the optional comment flag (:) must be followed by a space.
 
 Examples

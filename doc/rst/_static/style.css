@@ -9,8 +9,20 @@
 }
 
 /* See https://github.com/GenericMappingTools/gmt/pull/1605 */
-.rst-content dl dt {
+/* For Sphinx 1.x only */
+.rst-content dl.docutils dt {
     font-weight: normal;
+}
+
+/* Override the default style for definition list to
+   make sphinx_rtd_theme compatible with Sphinx 2.x */
+.rst-content dl:not(.docutils) dt {
+    all: inherit;
+    margin-bottom: 12px;
+}
+.rst-content dl:not(.docutils) dl dt {
+    all: inherit;
+    margin-bottom: 6px;
 }
 
 /* https://github.com/readthedocs/sphinx_rtd_theme/pull/775 */

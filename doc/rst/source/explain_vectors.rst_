@@ -77,7 +77,7 @@ Finally, Cartesian vectors may take these modifiers:
     **+z**\ *scale* expects input *dx*,\ *dy* vector components and
     uses the *scale* to convert to polar coordinates with length in given unit.
 
-Note: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
+**Note**: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
 from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
 be a straight Cartesian vector. Yes, the old GMT4 vector shape remains accessible if
 you specify a vector (**-Sv**\|\ **V**) using the GMT4 syntax, explained here: *size*, if present, will

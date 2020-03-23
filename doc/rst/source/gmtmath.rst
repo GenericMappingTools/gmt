@@ -680,7 +680,7 @@ in Myr and computes the predicted half-space bathymetry:
 **DEPTH** = **SQRT 350 MUL 2500 ADD NEG** : *usage: DEPTH to return
 half-space seafloor depths*
 
-Note: Because geographic or time constants may be present in a macro, it
+**Note**: Because geographic or time constants may be present in a macro, it
 is required that the optional comment flag (:) must be followed by a space.
 As another example, we show a macro **GPSWEEK** which determines which GPS week
 a timestamp belongs to:

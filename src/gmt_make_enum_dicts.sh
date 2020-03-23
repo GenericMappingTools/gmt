@@ -11,6 +11,9 @@
 # Set LC_ALL to get the same sort order on Linux and macOS
 export LC_ALL=C
 
+# Set temporary directory
+TMPDIR=${TMPDIR:-/tmp}
+
 egrep -v 'struct|union|enum|_GMT|define|char' gmt_resources.h | tr ',' ' ' | awk '{if (substr($1,1,4) == "GMT_") print $1, $3}' > ${TMPDIR}/junk1.txt
 grep -v GMT_OPT_ ${TMPDIR}/junk1.txt > ${TMPDIR}/junk2.txt
 grep GMT_OPT_ ${TMPDIR}/junk1.txt | awk '{print $1, substr($2,1,2)} '> ${TMPDIR}/junk3.txt

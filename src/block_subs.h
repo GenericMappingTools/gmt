@@ -226,6 +226,14 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	gmt_M_free (GMT, C);
 }
 
+GMT_LOCAL void strip_commas (const char *in, char out[]) {
+	/* Remove the commas in the input and return the remaining characters via out */
+	size_t i, o = 0;
+	for (i = 0; in[i]; i++)
+		if (in[i] != ',') out[o++] = in[i];
+	out[o] = '\0';	/* Terminate string */
+}
+
 #if !defined(BLOCKMEAN)	/* Not used by blockmean */
 /* These BLK functions are used in both blockmedian and blockmode and are
  * thus defined here to avoid duplication of code.

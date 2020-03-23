@@ -76,7 +76,7 @@ Optional Arguments
 
 **-A**\ *fields*
     Select which fields to write to individual grids.  Requires **-G**.
-    Append comma-separated codes for available fields: **z** (the mean
+    Append the codes for available fields: **z** (the mean
     data z, but see **-S**), **s** (standard deviation), **l** (lowest
     value), **h** (highest value) and **w** (the output weight; requires **-W**).
     Note **s**\|\ **l**\|\ **h** requires **-E** [Default is just **z**].
@@ -188,7 +188,7 @@ called field_z.nc and field_s.nc, run
 
    ::
 
-    gmt blockmean @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
+    gmt blockmean @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Azs
 
 See Also
 --------

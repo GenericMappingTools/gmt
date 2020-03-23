@@ -170,7 +170,7 @@ Optional Arguments
     Dump a single multisegment ASCII (or binary, see
     **-bo**) file to standard output. No plotting
     occurs. Specify one of **-E**, **-I**, **-N** or **-W**.
-    Note: if **-M** is used with **-E** then **-R** or the **+r** modifier
+    **Note**: If **-M** is used with **-E** then **-R** or the **+r** modifier
     to **-E** are not required as we automatically determine the region
     given the selected geographic entities.  If using **-W** and you want
     just certain levels (1-4) then use the full syntax **-W**\ *level*/\ *pen*

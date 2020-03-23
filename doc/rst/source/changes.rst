@@ -1507,7 +1507,7 @@ Several supplements have new features as well:
    :doc:`rotconverter <supplements/spotter/rotconverter>` can extract plate
    circuit rotations on-the-fly from the GPlates rotation file.
 
-Note: GMT 5 only produces PostScript and no longer has a setting for
+**Note**: GMT 5 only produces PostScript and no longer has a setting for
 Encapsulated PostScript (EPS). We made this decision since (a) our EPS determination
 was always very approximate (no consideration of font metrics, etc.) and quite often wrong,
 and (b) :doc:`psconvert` handles it exactly.  Hence, users who need EPS plots should

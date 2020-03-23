@@ -1597,7 +1597,7 @@ where ``ptr`` is NULL except when reading grids in two steps (i.e.,
 first get a grid structures with a header, then read the data arrays). Most of
 these arguments have been discussed earlier. It is useful when you need to read
 a series of files (e.g., from a list with filenames) or want to specify the items
-to read using a UNIX wildcard specification.  Note: If used with :ref:`GMT_DATASET <struct-dataset>`
+to read using a UNIX wildcard specification.  **Note**: If used with :ref:`GMT_DATASET <struct-dataset>`
 then you will receive an array of structures as well.  Typically, many data files
 are read into separate tables that all form part of a single SET (this is what GMT_Read_Data_ does),
 but if GMT_Read_Group_ is used on the same arguments then an array of one-table sets will
@@ -1653,7 +1653,7 @@ instead of grids or dataset you must add the modifiers GMT_IS_MATRIX or GMT_IS_V
 to ``family`` so that the module knows what to do.  Finally, in the case of passing
 ``data`` as NULL you may also control what type of matrix or vector will be created in
 GMT for the output by adding in the modifiers GMT_VIA_type, as listed in :ref:`types <tbl-viatypes>`.
-Note: GMT tries to minimize data duplication if possible, so if your input arrays are
+**Note**: GMT tries to minimize data duplication if possible, so if your input arrays are
 compatible with the data type used by the modules then we may use your array directly.
 This *may* have the side-effect that your input array is modified by the module.
 If you want to prevent this from happening then add GMT_IS_DUPLICATE to the ``direction``
@@ -2182,7 +2182,7 @@ Table :ref:`comments <tbl-comments>` lists the available options, which may be c
 by adding (bitwise "or"). The GMT_Set_Comment_ function does not actually
 output anything but sets the relevant comment and header records in the
 relevant structure. When a file is written out the information will be
-output as well (Note: Users can always decide if they wish to turn
+output as well (**Note**: Users can always decide if they wish to turn
 header output on or off via the common GMT option ``-h``. For
 record-by-record writing you must enable the header block output when
 you call GMT_Begin_IO_.
@@ -2336,7 +2336,7 @@ where ``data`` is a pointer to any of the four structures discussed previously.
     ``GMT_GRID_IS_GEO`` to ensure that the proper metadata will be written
     to the netCDF header, thus letting the grid be recognized as such.
 
-Note: If ``method`` is GMT_IS_FILE, :ref:`family <tbl-family>` is ``GMT_IS_GRID``,
+**Note**: If ``method`` is GMT_IS_FILE, :ref:`family <tbl-family>` is ``GMT_IS_GRID``,
 and the filename implies a change from NaN to another value then the grid is
 modified accordingly. If you continue to use that grid after writing please be
 aware that the changes you specified were applied to the grid.
@@ -2629,7 +2629,7 @@ obtain the two coordinates in decimal degrees by calling
     n = GMT_Get_Values (API, origin, pair, 2);
 
 Your program can now check that ``n`` equals 2 and then use the values
-in ``pairs`` separately. Note: Dimensions given with units of inches, cm, or points
+in ``pairs`` separately. **Note**: Dimensions given with units of inches, cm, or points
 are converted to the current default unit set via :term:`PROJ_LENGTH_UNIT`,
 while distances given in km, nautical miles, miles, feet, or
 survey feet are returned in meters. Arc lengths in minutes and seconds
@@ -2696,7 +2696,7 @@ where ``enumname`` is the name of one such enum (e.g., GMT_SESSION_EXTERNAL, GMT
 including the ones listed in :ref:`types <tbl-types>` and :ref:`types <tbl-viatypes>`; see
 gmt_resources.h for the full listing.
 The function returns the corresponding integer value.  For unrecognized names we return -99999.
-Note: You may pass a NULL pointer as API if you need to obtain enum values prior to calling GMT_Create_Session_.
+**Note**: You may pass a NULL pointer as API if you need to obtain enum values prior to calling GMT_Create_Session_.
 
 For indexed access to custom grids and images we may need to know the internal matrix layout.
 You can change this information via
@@ -2894,7 +2894,7 @@ Several additional utility functions are available for programmers who
 wish to manipulate program option structures within their own programs.
 These allow you to create new option structures, append them to the
 linked list, replace existing options with new values, find a particular
-option, and remove options from the list. Note: The order in which the
+option, and remove options from the list. **Note**: The order in which the
 options appear in the linked list is of no consequence to GMT.
 Internally, GMT will sort and process the options in the manner
 required. Externally, you are free to maintain your own order.
@@ -2985,7 +2985,7 @@ You may use GMT_Delete_Option_ to remove the ``current`` option from the linked
     int GMT_Delete_Option (void *API, struct GMT_OPTION *current, struct GMT_OPTION **head);
 
 We return 1 if the option is not found in the list and set
-``API->error`` accordingly. Note: Only the first occurrence of the
+``API->error`` accordingly. **Note**: Only the first occurrence of the
 specified option will be deleted. If you need to delete all such options
 you will need to call this function in a loop until it returns a
 non-zero status.
@@ -3737,7 +3737,7 @@ The full definition of the ``GMT_BFN`` structure:
        struct GMT_FILL      *fill;               /* For patterns instead of color */
    };
 
-The full definition of the ``GMT_FILL`` structure.  Note: Not part of the GMT API:
+The full definition of the ``GMT_FILL`` structure.  **Note**: Not part of the GMT API:
 
 .. _struct-fill:
 

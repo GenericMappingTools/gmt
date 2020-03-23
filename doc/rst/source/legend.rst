@@ -93,7 +93,7 @@ to use for the current entry, and **+x** to scale all symbols uniformly (see **-
 Some defaults are hardwired: We draw a white rectangular panel with
 a 1 point black outline offset from the justification point (**+j**) by 0.2 cm.  To use
 different settings you must call **legend** explicitly before :doc:`end` does so
-implicitly instead.  Note: With an explicit call to **legend** you can also use **-T** to
+implicitly instead.  **Note**: With an explicit call to **legend** you can also use **-T** to
 save the auto-generate *specfile*, make modification to it, and then pass that to **legend**
 directly.
 

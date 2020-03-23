@@ -153,7 +153,12 @@ enum Greenspline_modes {	/* Various integer mode flags */
 	GREENSPLINE_NORM		= 2,		/* Normalize residual data to 0-1 range */
 	SQ_N_NODES 			= 10001,	/* Default number of nodes in the precalculated -Sq spline */
 	GSP_GOT_SIG			= 0,
-	GSP_GOT_WEIGHTS			= 1
+	GSP_GOT_WEIGHTS			= 1,
+	GREENSPLINE_NO_MOVIE		= 0,
+	GREENSPLINE_INC_MOVIE		= 1,
+	GREENSPLINE_CUM_MOVIE		= 2,
+	GREENSPLINE_EIGEN_RATIO		= 0,
+	GREENSPLINE_EIGEN_CUTOFF	= 1
 };
 
 #ifndef M_LOG_2
@@ -223,7 +228,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[+f<file>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[%%][+f<file>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<mode>] [-E[<misfitfile>] [-I<dx>[/<dy>[/<dz>]] [-L] [-N<nodefile>] [-Q<az>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s] [%s]\n\n", GMT_V_OPT,
@@ -249,6 +254,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +f<filename> to save the eigenvalues to this file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <val> eigenvalues [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use <val>%% to select a percentage of the eigenvalues instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Distance flag determines how we calculate distances between (x,y) points:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Options 0 apples to Cartesian 1-D spline interpolation.\n");
@@ -427,14 +433,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				break;
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'n') Ctrl->C.mode = 1;
+				if (opt->arg[0] == 'n') Ctrl->C.mode = GREENSPLINE_EIGEN_CUTOFF;
 				k = (Ctrl->C.mode) ? 1 : 0;
 				if (gmt_get_modifier (opt->arg, 'f', p))
 					Ctrl->C.file = strdup (p);
 				if (gmt_get_modifier (opt->arg, 'm', p))
-					Ctrl->C.movie = 1;
+					Ctrl->C.movie = GREENSPLINE_INC_MOVIE;
 				else if (gmt_get_modifier (opt->arg, 'M', p))
-					Ctrl->C.movie = 2;
+					Ctrl->C.movie = GREENSPLINE_CUM_MOVIE;
 				if (strchr (opt->arg, '/')) {	/* Old-style file specification */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
 						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
@@ -445,8 +451,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 						n_errors++;
 					}
 				}
-				else
-					Ctrl->C.value = (opt->arg[k]) ? atof (&opt->arg[k]) : 0.0;
+				else {
+					if (opt->arg[k])	/* Check if we got percentages or a value */
+						Ctrl->C.value = (Ctrl->C.mode && strchr (opt->arg, '%')) ? 0.01 * atof (&opt->arg[k]) : atof (&opt->arg[k]);
+					else
+						Ctrl->C.value = 0.0;
+				}
 				break;
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = true;
@@ -661,6 +671,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode > 5, "Option -A: format must be in 0-5 range\n");
 	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active[RSET] || Ctrl->N.active || Ctrl->T.active), "No output locations specified (use either [-R -I], -N, or -T)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && dimension != 2, "The -C +m|M modifier only applies to 2-D gridding\n");
 #ifdef DEBUG
 	n_errors += gmt_M_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -D options disagree on the dimension\n");
 #else
@@ -2181,7 +2192,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (n_use == -1) Return (GMT_RUNTIME_ERROR);
 		GMT_Report (API, GMT_MSG_INFORMATION, "[%d of %" PRIu64 " eigen-values used]\n", n_use, nm);
 
-		if (Ctrl->C.movie == 0) {
+		if (Ctrl->C.movie == GREENSPLINE_NO_MOVIE) {
 			gmt_M_free (GMT, s);
 			gmt_M_free (GMT, v);
 			gmt_M_free (GMT, b);
@@ -2228,7 +2239,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_header[GMT_OUT] = was;	/* Restore default */
 	}
 
-	if (Ctrl->C.movie == 0) gmt_M_free (GMT, A);
+	if (Ctrl->C.movie == GREENSPLINE_NO_MOVIE) gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {
 		double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2, chi2_sum = 0, pvar_sum = 0.0, *predicted = NULL;
@@ -2391,7 +2402,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (Ctrl->C.movie) {	/* Write out grid after adding contribution for each eigenvalue separately */
 			gmt_grdfloat *tmp = NULL;
 			char file[PATH_MAX] = {""};
-			if (Ctrl->C.movie == 1) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
+			if (Ctrl->C.movie == GREENSPLINE_INC_MOVIE) tmp = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			gmt_grd_init (GMT, Out->header, options, true);
 			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
@@ -2423,7 +2434,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					}
 				}
 				sprintf (file, Ctrl->G.file, (int)k+1);
-				if (Ctrl->C.movie == 1) {
+				if (Ctrl->C.movie == GREENSPLINE_INC_MOVIE) {
 					gmt_M_grd_loop (GMT, Out, row, col, ij) Out->data[ij] -= tmp[ij];	/* Incremental improvement since last time */
 					gmt_M_grd_loop (GMT, Out, row, col, ij) tmp[ij] += Out->data[ij];	/* Current solution */
 				}
@@ -2431,7 +2442,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					Return (API->error);
 				}
 			}
-			if (Ctrl->C.movie == 1) gmt_M_free_aligned (GMT, tmp);	/* Free original column-oriented grid */
+			if (Ctrl->C.movie == GREENSPLINE_INC_MOVIE) gmt_M_free_aligned (GMT, tmp);	/* Free original column-oriented grid */
 			gmt_M_free (GMT, A);
 			gmt_M_free (GMT, s);
 			gmt_M_free (GMT, v);

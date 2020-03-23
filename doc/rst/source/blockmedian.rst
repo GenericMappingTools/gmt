@@ -78,7 +78,7 @@ Optional Arguments
 
 **-A**\ *fields*
     Select which fields to write to individual grids.  Requires **-G**.
-    Append comma-separated codes for available fields: **z** (the median
+    Append the codes for available fields: **z** (the median
     data z, but see **-T**), **s** (the L1 scale of the median), **l** (lowest
     value), **q25** (the 25% quartile), **q75** (the 75% quartile), **h** (highest value),
     and **w** (the output weight; requires **-W**).  Note **s**\|\ **l**\|\ **h**
@@ -206,7 +206,7 @@ mars370.txt and send output to an ASCII table, run::
 To determine the median and L1 scale (MAD) on the median per 10 minute bin and save these to two separate grids
 called field_z.nc and field_s.nc, run::
 
-    gmt blockmedian @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
+    gmt blockmedian @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Azs
 
 See Also
 --------

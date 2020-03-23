@@ -115,7 +115,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	find_program (XZ NAMES xz)
 	if (GNUTAR AND GZIP AND XZ)
 		# Targets for creating tarballs
-		string (REGEX REPLACE ".*/" "" _release_dirname "${GMT_RELEASE_PREFIX}")
+		get_filename_component (_release_dirname "${GMT_RELEASE_PREFIX}" NAME)
 		add_custom_command (OUTPUT ${_release_dirname}-src.tar
 			COMMAND ${GNUTAR} -c --owner 0 --group 0 --mode a=rX,u=rwX --force-local
 			-f ${GMT_BINARY_DIR}/${_release_dirname}-src.tar ${_release_dirname}
@@ -138,24 +138,25 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	endif (GNUTAR AND GZIP AND XZ)
 endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
+# Get suffix for libraries
+if (BUILD_SHARED_LIBS)
+	set (_lib_suffix ${CMAKE_SHARED_LIBRARY_SUFFIX})
+else (BUILD_SHARED_LIBS)
+	set (_lib_suffix ${CMAKE_STATIC_LIBRARY_SUFFIX})
+endif (BUILD_SHARED_LIBS)
+
+# Get name of GMT core library
 get_target_property (_name gmtlib OUTPUT_NAME)
 get_target_property (_prefix gmtlib PREFIX)
-if (BUILD_SHARED_LIBS)
-    set (GMT_CORE_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
-else (BUILD_SHARED_LIBS)
-    set (GMT_CORE_LIB_NAME ${_prefix}${_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
-endif (BUILD_SHARED_LIBS)
+set (GMT_CORE_LIB_NAME ${_prefix}${_name}${_lib_suffix})
 
+# Get name of PSL library
 get_target_property (_name pslib OUTPUT_NAME)
 get_target_property (_prefix pslib PREFIX)
-if (BUILD_SHARED_LIBS)
-    set (PSL_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
-else (BUILD_SHARED_LIBS)
-    set (PSL_LIB_NAME ${_prefix}${_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
-endif (BUILD_SHARED_LIBS)
+set (PSL_LIB_NAME ${_prefix}${_name}${_lib_suffix})
 
+# Get name of shared supplemental library
 if (BUILD_SUPPLEMENTS)
-	# Get name of shared supplemental library
 	get_target_property (_name supplib OUTPUT_NAME)
 	get_target_property (_prefix supplib PREFIX)
 	set (GMT_SUPPL_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_MODULE_SUFFIX})

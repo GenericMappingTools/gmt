@@ -61,9 +61,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids. Choose from\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t-A List of fields to be written as individual grids. Choose from\n");
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids (requires -G). Choose from\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t-A List of fields to be written as individual grids (requires -G). Choose from\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z, s, l, q25, q75, h, and w. s|l|h requires -E; l|q25|q75|h requires -Eb, w requires -W[o].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Er|s [Default is z only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block as location [Default is (median x, median y), but see -Q].\n");
@@ -99,9 +99,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos = 0;
+	unsigned int n_errors = 0, k;
 	bool sigma;
-	char arg[GMT_LEN16] = {""}, p[GMT_LEN16] = {""};
+	char arg[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -115,25 +115,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 
 			case 'A':	/* Requires -G and selects which fields should be written as grids */
 				Ctrl->A.active = true;
-				while ((gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->A.n_selected < BLK_N_FIELDS) {
-					switch (p[0]) {	/* z,s,l,q25,q75,h,w */
+				strip_commas (opt->arg, arg);
+				for (k = 0; arg[k] && Ctrl->A.n_selected < BLK_N_FIELDS; k++) {
+					switch (arg[k]) {	/* z,s,l,q25,q75,h,w */
 						case 'z':	Ctrl->A.selected[0] = true;	break;
 						case 's':	Ctrl->A.selected[1] = true;	break;
 						case 'l':	Ctrl->A.selected[2] = true;	break;
 						case 'q':
-							if (!strcmp (p, "q25"))
+							if (!strncmp (&arg[k], "q25", 3U))
 								Ctrl->A.selected[3] = true;
-							else if (!strcmp (p, "q75"))
+							else if (!strncmp (&arg[k], "q75", 3U))
 								Ctrl->A.selected[4] = true;
 							else {
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", p);
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", arg[k]);
 								n_errors++;
 							}
+							k += 2;	/* Skip the quartile number */
 							break;
 						case 'h':	Ctrl->A.selected[5] = true;	break;
 						case 'w':	Ctrl->A.selected[6] = true;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", p);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", arg[k]);
 							n_errors++;
 							break;
 					}

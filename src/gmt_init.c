@@ -874,9 +874,6 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "UTM projection insufficiently specified to auto-determine geographic region\n");
 				return (GMT_MAP_NO_PROJECTION);
 			}
-			else {
-				wesn[YLO] = -1.0;	wesn[YHI] = 1.0;
-			}
 			break;
 		case 2: /* Conical: Use default patch */
 			break;

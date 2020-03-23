@@ -25,7 +25,7 @@ Required Arguments
     This must be an Encapsulated PostScript (EPS) file or a raster
     image. An EPS file must contain an appropriate BoundingBox. A raster
     file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.
-    Note: If GDAL was not configured during GMT installation then only
+    **Note**: If GDAL was not configured during GMT installation then only
     EPS files are supported.
 
 Optional Arguments
@@ -40,7 +40,7 @@ Optional Arguments
 
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Specify image size in one of two ways:
     Use **+r**\ *dpi* to set the dpi of the image in dots per inch, or use

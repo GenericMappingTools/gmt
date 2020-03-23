@@ -15,18 +15,13 @@
 # Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 
-# List all PS files and convert them to PNG
-
-file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*/*.ps")
-
-set (_examples_png)
-
 # Convert figures to PNG
+file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*/*.ps")
+set (_examples_png)
 foreach (_ps ${_examples})
 	get_filename_component (_fig ${_ps} NAME)
 	string (REPLACE ".ps" ".png" _png_fig ${_fig})
 	list (APPEND _examples_png ${RST_BINARY_DIR}/_images/${_png_fig})
-
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 		COMMAND ${CMAKE_COMMAND} -E env
 		GMT_USERDIR=${GMT_BINARY_DIR}/share
@@ -40,16 +35,13 @@ foreach (_ps ${_examples})
 		DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
 endforeach (_ps ${_examples})
 
-# List of job scripts and convert to verbatim
+# Convert scripts to verbatim
 file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*/*.sh")
-
 set (_examples_txt)
-
 foreach (_script ${_examples})
 	get_filename_component (_txt ${_script} NAME)
 	string (REPLACE ".sh" ".txt" _txt ${_txt})
 	list (APPEND _examples_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
-
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
 		COMMAND ${GMT_BINARY_DIR}/src/script2verbatim
 		${CMAKE_CURRENT_SOURCE_DIR}/${_script}

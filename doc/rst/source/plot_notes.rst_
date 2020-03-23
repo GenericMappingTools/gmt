@@ -42,7 +42,7 @@ a pattern. Other standard geometric symbols can also be used. See Appendix
 GMT4 Vector
 -----------
 
-Note: The old-style, single-polygon vector available in GMT4 and earlier versions
+**Note**: The old-style, single-polygon vector available in GMT4 and earlier versions
 has been added to GMT5 for backwards compatibility with old scripts.
 For reference, the old vector syntax is listed here:
 The *size*, if present, will be interpreted as *arrowwidth/headlength/headwidth*.

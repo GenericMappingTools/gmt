@@ -185,7 +185,7 @@ Optional Arguments
     segments]. Cannot be used with **-Q**. For matching segments based
     on aspatial values (via OGR/GMT format), give the search string as
     *varname*\ =\ *value* and we will compare *value* against the value
-    of *varname* for each segment. Note: If the features are polygons
+    of *varname* for each segment. **Note**: If the features are polygons
     then a match of a particular polygon perimeter also means that any
     associated polygon holes will also be matched. For matching segment
     headers against extended regular expressions enclose the expression
@@ -211,7 +211,7 @@ Optional Arguments
     Attempt to convert each word in the trailing text to a number and append
     such values to the numerical output columns.  Text that cannot be converted
     (because they are not numbers) will appear as NaNs.  Use modifier **+n** to
-    exclude the columns with NaNs.  Note: These columns are identified based on
+    exclude the columns with NaNs.  **Note**: These columns are identified based on
     the first input record only.
 
 .. include:: explain_-aspatial.rst_

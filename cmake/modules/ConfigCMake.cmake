@@ -220,8 +220,8 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT SUPPORT_EXEC_IN_BINARY_DIR)
 	set (SUPPORT_EXEC_IN_BINARY_DIR ON)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT SUPPORT_EXEC_IN_BINARY_DIR)
 
-# Make GNU and Intel C compiler default to C99
-if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel)" AND NOT CMAKE_C_FLAGS MATCHES "-std=")
+# Make GNU, Intel, Clang and AppleClang compilers default to C99
+if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel|Clang)" AND NOT CMAKE_C_FLAGS MATCHES "-std=")
 	set (CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
 endif ()
 

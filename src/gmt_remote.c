@@ -255,7 +255,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 		}
 		if (time_spent >= GMT_HASH_TIME_OUT) {	/* Ten seconds is too long time - server down? */
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GMT data server may be down - delay checking hash file for 24 hours\n");
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "You can turn remote file download off by setting GMT_AUTO_DOWNLOAD off.\n");
 			if (orig && !access (orig, F_OK)) {	/* Refresh modification time of original hash file */
 #ifdef WIN32
 				_utime (orig, NULL);
@@ -473,7 +473,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
 
-	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return 0;   /* Not allowed to use remote copying */
+	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD && (gmt_M_file_is_remotedata (file_name) || gmt_M_file_is_cache (file_name) || gmt_M_file_is_url (file_name))) {  /* Not allowed to use remote copying */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated\n");
+		return 0; 
+	}
 	if (GMT->current.io.internet_error) return 0;   			/* Not able to use remote copying in this session */
 
 	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
@@ -663,7 +666,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "You can turn remote file download off by setting GMT_DATA_SERVER_LIMIT = 0.\n");
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "You can turn remote file download off by setting GMT_AUTO_DOWNLOAD off.\n");
 			if (urlfile.fp != NULL) {
 				fclose (urlfile.fp);
 				urlfile.fp = NULL;

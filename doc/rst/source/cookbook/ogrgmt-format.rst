@@ -317,7 +317,7 @@ polygon (as described in the shapefile specification). Any **@H**
 polygons will NOT have any **@D** values, as the aspatial attribute data
 pertain to the entire feature, the **@H** polygons are not new polygons,
 but are merely a continuation of the definition of the same feature.
-Note: The perimeter and the hole(s) must have different handedness.
+**Note**: The perimeter and the hole(s) must have different handedness.
 E.g., if the perimeter goes counter-clockwise then the holes must go
 clockwise, and vice versa.  This is important to follow if you are creating
 such features manually.

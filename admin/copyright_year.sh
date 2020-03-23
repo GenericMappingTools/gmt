@@ -13,6 +13,9 @@ if [ ! -d cmake ]; then
     exit 1
 fi
 
+# Set temporary directory
+TMPDIR=${TMPDIR:-/tmp}
+
 # 1. Find all files with "Copyright"
 find -E . \
     -regex '.*\.(md|c|h|in|rst|bash|csh|sh|bat|m|cmake|txt|TXT)' \

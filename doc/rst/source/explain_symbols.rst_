@@ -7,7 +7,7 @@
     Optionally, append **c**, **i**, or
     **p** to indicate that the size information in the input data is in
     units of cm, inch, or point, respectively [Default is
-    :term:`PROJ_LENGTH_UNIT`]. Note: if you provide *both* size and symbol via the
+    :term:`PROJ_LENGTH_UNIT`]. **Note**: If you provide *both* size and symbol via the
     input file you must use :term:`PROJ_LENGTH_UNIT` to indicate the unit
     used for the symbol size or append the units to the sizes in the file.
     If symbol sizes are expected via the third data column then you may convert
@@ -86,7 +86,7 @@
         beginning of the front by that amount [0]. The chosen symbol is drawn
         with the same pen as set for the line (i.e., via **-W**). To use an
         alternate pen, append **+p**\ *pen*. To skip the outline, just use
-        **+p**.  Note: By placing **-Sf**
+        **+p**.  **Note**: By placing **-Sf**
         options in the segment header you can change the front types on a
         segment-by-segment basis.
 
@@ -126,7 +126,7 @@
 
     **-Sl**
         **l**\ etter or text string (less than 256 characters). Give size, and
-        append **+t**\ *string* after the size. Note that the size is only approximate;
+        append **+t**\ *string* after the size. **Note**: The size is only approximate;
         no individual scaling is done for different characters. Remember to
         escape special characters like \*. Optionally, you may append **+f**\ *font*
         to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
@@ -153,7 +153,7 @@
     **-Sq**
         **q**\ uoted line, i.e., lines with annotations such as contours. Append
         [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**]\ *info*\ [:*labelinfo*].
-        Note the colon that separates the algorithm settings from the label information.
+        **Note**: The colon that separates the algorithm settings from the label information.
         The required argument controls the placement of labels along the quoted
         lines. Choose among six controlling algorithms:
 
@@ -317,7 +317,7 @@
                 leading hyphen (-) then there will be no space between label
                 value and the prefix. [Default is no prefix].
 
-        Note: By placing **-Sq** options in the segment header you can change
+        **Note**: By placing **-Sq** options in the segment header you can change
         the quoted text attributes on a segment-by-segment basis.
 
     **-Sr**
@@ -388,14 +388,14 @@
         geovector. Azimuth (in degrees east from north) and geographical length
         must be found in columns 3 and 4. The *size* is the length of the
         vector head. Vector width is set by **-W**. See `Vector Attributes`_
-        for specifying attributes. Note: Geovector stems are drawn as thin
+        for specifying attributes. **Note**: Geovector stems are drawn as thin
         filled polygons and hence pen attributes like dashed and dotted are
         not available. For allowable geographical units, see `Units`_.
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append
         [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**]\ *info*\ [:*symbolinfo*].
-        Note the colon that separates the algorithm settings from the symbol information.
+        **Note**: The colon that separates the algorithm settings from the symbol information.
         The required argument controls the placement of symbols along the decorated
         lines. Choose among six controlling algorithms:
 
@@ -477,5 +477,5 @@
                 Specifies how many (*x*,\ *y*) points will be used to estimate
                 symbol angles [Default is 10].
 
-        Note: By placing **-S~** options in the segment header you can change
+        **Note**: By placing **-S~** options in the segment header you can change
         the decorated lines on a segment-by-segment basis.

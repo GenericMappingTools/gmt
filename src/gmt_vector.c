@@ -1041,7 +1041,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 
 int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double cutoff, unsigned int mode) {
 	/* Mode = 0: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
-	 * mode = 1: Use the first cutoff singular values only.
+	 * mode = 1: Use the first cutoff singular values only. If cutoff is < 1 we assume this is the fraction of eigenvalues we want.
 	 */
 	double w_abs, sing_max;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
@@ -1060,7 +1060,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		sing_max = MAX (sing_max, w_abs);
 	}
 
-	if (cutoff > 0.0 && cutoff <= 1.0) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
+	if (mode == 1 && cutoff > 0.0 && cutoff <= 1.0) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
 		double was = cutoff;
 		cutoff = rint (n*cutoff);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));

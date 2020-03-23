@@ -271,7 +271,7 @@ One function provide the functionality for memory output.
 
     Retrieves the pointer to the PostScript plot that is kept in memory
     when **PSL_beginplot** was instructed to use memory rather than
-    stream output.  Note: It is the responsibility of the programmer to
+    stream output.  **Note**: It is the responsibility of the programmer to
     ensure that the object retrieved is duplicated or written or otherwise
     processed before the next call to **PSL_beginplot** or **PSL_endsession**
     either of which will destroy the memory pointed to.

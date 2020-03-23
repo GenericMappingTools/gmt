@@ -23,7 +23,7 @@ jobs:
 
   steps:
   - bash: |
-      set -x
+      set -x -e
       cd src
       bash gmt_make_PSL_strings.sh
       bash gmt_make_pattern_include.sh

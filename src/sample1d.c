@@ -335,7 +335,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	GMT->current.setting.interpolant = Ctrl->F.mode % 10;
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->N.col] = true;				/* ... But disallow NaN in "time" column */
-	int_mode = Ctrl->F.mode + 10*Ctrl->F.type;
+	int_mode = gmt_set_interpolate_mode (GMT, Ctrl->F.mode, Ctrl->F.type);	/* What mode we pass to the interpolator */
 
 	if (Ctrl->T.T.spatial) {
 		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->A.loxo) {

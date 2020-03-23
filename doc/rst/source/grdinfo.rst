@@ -121,7 +121,7 @@ Optional Arguments
     **-La**
         All of the above.
 
-    Note: If the grid is geographic then each node represents a physical
+    **Note**: If the grid is geographic then each node represents a physical
     area that decreases with increasing latitude.  We therefore report
     spherically weighted statistical estimates for such grids.
 

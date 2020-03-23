@@ -196,9 +196,6 @@
 # that only need the GMT API, see the gmt-custom project).
 #set (EXTRA_BUILD_DIRS apidemo)
 
-# List extra new modules for testing without adding them to the module list
-#set (EXTRA_MODULES newmodule1.c newmodule2.c)
-
 # List extra new supplemental modules for testing without adding them to the module list
 #set (EXTRA_MODULES_SUPPL newsuppl1.c newsuppl2.c)
 
@@ -273,6 +270,7 @@
 # endif ()
 # set (GMT_DLL_RENAME gmt_w${BITAGE})
 # set (PSL_DLL_RENAME psl_w${BITAGE})
+# set (SUPP_DLL_RENAME supplements_w${BITAGE})
 #endif(WIN32)
 
 # On Windows Visual C 2012 needs _ALLOW_KEYWORD_MACROS to build

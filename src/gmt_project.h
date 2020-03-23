@@ -378,7 +378,7 @@ struct GMT_PROJ {
 
 	/* All Cylindrical Projections */
 
-	double j_x, j_y, j_ix, j_iy;
+	double j_x, j_y, j_ix, j_iy, j_yc;
 
 	/* Albers Equal-area conic parameters. */
 

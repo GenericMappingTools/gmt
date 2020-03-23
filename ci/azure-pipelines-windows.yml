@@ -53,7 +53,7 @@ steps:
     set -x -e
     choco install pngquant
     pip install --user sphinx
-    echo "##vso[task.prependpath]C:\\Users\\VssAdministrator\\AppData\\Roaming\\Python\\Python36\\Scripts"
+    echo "##vso[task.prependpath]C:\\Users\\VssAdministrator\\AppData\\Roaming\\Python\\Python37\\Scripts"
   displayName: Install dependencies for documentation
   condition: eq(variables['BUILD_DOCS'], true)
 

@@ -41,7 +41,7 @@ replaces the information with values provided on the command line [if
 any]. As an option, global, geographical grids (with 360 degrees
 longitude range) can be rotated in the east-west direction, and
 individual nodal values can be replaced from a table of *x*, *y*, *z*
-values. **grdedit** only operates on files containing a grid header. Note:
+values. **grdedit** only operates on files containing a grid header. **Note**:
 If it is important to retain the original data you should use **-G**
 to save the modified grid to a new file.
 

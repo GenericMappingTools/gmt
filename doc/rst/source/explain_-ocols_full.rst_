@@ -11,6 +11,6 @@
     when **-o** is used you must explicitly add the column **t**. To only output a single word from the
     trailing text, append the word number (first word is 0).  Finally, **-on** will
     simply write the numerical output only and skip any trailing text, while **-ot**
-    will only output the trailing text (or selected word).  Note: If **-i** is
+    will only output the trailing text (or selected word).  **Note**: If **-i** is
     also used then columns given to **-o** correspond to the order *after* the **-i** selection
     and not the columns in the original record.

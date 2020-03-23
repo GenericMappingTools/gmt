@@ -15,28 +15,20 @@
 # Contact info: www.generic-mapping-tools.org
 #-------------------------------------------------------------------------------
 #
-# To modify the cmake process, edit your cmake/ConfigUser.cmake and cmake/ConfigUserAdvanced.cmake files
+# CMake settings for supplemental package:
+#
+# 	SUPPL_NAME:          name of the supplemental package
+#   SUPPL_HEADERS:       header files. Will be installed if BUILD_SUPPLEMENTS is TRUE
+#   SUPPL_PROGS_SRCS:    list of C source codes for supplemental modules
+#   SUPPL_LIB_SRCS:      list of C source codes for supplemental library
+#   SUPPL_EXAMPLE_FILES: README and other example files
+#   SUPPL_EXAMPLE_PROGS: Example scripts
 #
 
 set (SUPPL_NAME img)
-
-# source files
 set (SUPPL_PROGS_SRCS img2grd.c)
-
-# example files
+set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS})
 set (SUPPL_EXAMPLE_FILES README.img)
-
-# lib sources
-set (LIB_SRCS ${SUPPL_PROGS_SRCS})
-
-# create build targets
-string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
-install_module_symlink (${_gmt_modules})
-
-# install example data
-install (FILES ${SUPPL_EXAMPLE_FILES}
-	DESTINATION ${GMT_DOCDIR}/supplements/${SUPPL_NAME}
-	COMPONENT Documentation)
 
 # install shell script
 install (PROGRAMS img2google
