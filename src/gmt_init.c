@@ -4261,7 +4261,7 @@ int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 			error = 1;
 		}
 	}
-	else	/* Clean GMT5 syntax */
+	else	/* Clean >= GMT5 syntax */
 		error = gmtinit_parse5_B_option (GMT, in);
 
 	return (error);
