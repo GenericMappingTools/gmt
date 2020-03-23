@@ -51,6 +51,11 @@
 #define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment length, then they are not the same feature */
 #define MIN_SUBSET		2.0	/* If two close segments deemed approximate fits has lengths that differ by this factor then they are sub/super sets of each other */
 
+#ifdef HAVE_GEOS
+#include <geos_c.h>
+int geos_buffer(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, double buf_dist);
+#endif
+
 struct DUP {	/* Holds information on which single segment is closest to the current test segment */
 	uint64_t point;
 	uint64_t segment;
@@ -140,6 +145,10 @@ struct GMTSPATIAL_CTRL {
 		bool active;
 		char *file;
 	} T;
+	struct Z {	/* Temporary for bufer (GEOS) */
+		bool active;
+		double width;
+	} Z;
 };
 
 struct PAIR {
@@ -1054,6 +1063,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 				Ctrl->C.active = Ctrl->S.active = true;
 				Ctrl->S.mode = POL_CLIP;
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
+				break;
+			case 'Z':	/* Tmp for GEOS buffer */
+				Ctrl->Z.active = true;
+				Ctrl->Z.width = atof (opt->arg);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -2154,5 +2167,106 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
+#ifdef HAVE_GEOS
+	if (Ctrl->Z.active) {	/*  */
+		int error;
+		error = geos_buffer(GMT, D, Ctrl->Out.file, Ctrl->Z.width);
+		finishGEOS();
+		if (error)
+			Return (error);
+	}
+#endif
+
 	Return (GMT_NOERROR);
 }
+
+#ifdef HAVE_GEOS
+
+int geos_buffer(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, double buf_dist) {
+	int i, n_pts;
+	unsigned int nt, ns, nr;
+	uint64_t dim[4];
+	bool is3D = false;
+	struct GMT_DATASET *Dout = NULL;
+	GEOSCoordSequence *seq_in = NULL;
+	const GEOSCoordSequence *seq_out = NULL;
+	GEOSGeometry *geom = NULL, *geom_out = NULL;
+
+	is3D = (D->n_columns >= 3);
+
+	initGEOS(NULL, NULL);
+
+	seq_in = GEOSCoordSeq_create((unsigned int)D->n_records, (D->n_columns == 2) ? 2 : 3);
+
+	if (!seq_in) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create input GEOS sequence.\n");
+		return -1;
+	}
+
+	i = 0;
+	for (nt = 0; nt < D->n_tables; nt++) {
+		for (ns = 0; ns < D->table[nt]->n_segments; ns++) {
+			for (nr = 0; nr < D->table[nt]->segment[ns]->n_rows; nr++) {
+				GEOSCoordSeq_setX(seq_in, i, D->table[nt]->segment[ns]->data[0][nr]);
+				GEOSCoordSeq_setY(seq_in, i, D->table[nt]->segment[ns]->data[1][nr]);
+				if (is3D)
+					GEOSCoordSeq_setY(seq_in, i, D->table[nt]->segment[ns]->data[2][nr]);
+				i++;
+			}
+		}
+	}
+
+	geom = GEOSGeom_createLineString(seq_in);
+	geom_out = GEOSBuffer(geom, buf_dist, 12);
+
+	//GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GEOS type of buffer %s\n", GEOSGeomType(geom_out));
+
+	if (!geom_out) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to compute buffer line.\n");
+		return -1;
+	}
+
+	n_pts = GEOSGetNumCoordinates(geom_out);
+	if (!n_pts) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GEOS geometry is empty.\n");
+		return -1;
+	}
+
+	seq_out = GEOSGeom_getCoordSeq(GEOSGetExteriorRing(geom_out));
+	
+	if (!seq_out) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create output GEOS sequence.\n");
+		return -1;
+	}
+
+	dim[GMT_TBL] = 1;
+	dim[GMT_SEG] = 1;
+	dim[GMT_ROW] = n_pts;
+	dim[GMT_COL] = (D->n_columns == 2) ? 2 : 3;
+	if ((Dout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create output dataset.\n");
+		return GMT->parent->error;
+	}
+
+	for (i = 0; i < n_pts; i++) {
+		GEOSCoordSeq_getX(seq_out, i, &Dout->table[0]->segment[0]->data[0][i]);
+		GEOSCoordSeq_getY(seq_out, i, &Dout->table[0]->segment[0]->data[1][i]);
+		if (is3D)
+			GEOSCoordSeq_getY(seq_out, i, &Dout->table[0]->segment[0]->data[2][i]);
+	}
+
+	GEOSGeom_destroy(geom);
+	GEOSGeom_destroy(geom_out);
+
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, fname, Dout) != GMT_NOERROR) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to write output dataset.\n");
+		return (GMT->parent->error);
+	}
+	if (GMT_Destroy_Data (GMT->parent, &Dout) != GMT_NOERROR) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to detroy dataset container.\n");
+		return (GMT->parent->error);
+	}
+
+	return (GMT_NOERROR);
+}
+#endif

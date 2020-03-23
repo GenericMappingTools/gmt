@@ -244,6 +244,14 @@ if (ZLIB_FOUND)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${ZLIB_LIBRARY})
 endif (ZLIB_FOUND)
 
+if (GEOS_LIBRARY)
+	# Set in ConfigUserAdvanced.cmake
+	set (HAVE_GEOS TRUE CACHE INTERNAL "System has GEOS")
+	#set (GMT_CONFIG_GEOS_MESSAGE "yes" CACHE INTERNAL "GEOS config message")
+	include_directories (${GEOS_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${GEOS_LIBRARY})
+endif (GEOS_LIBRARY)
+
 if (APPLE)
 	# Accelerate framework
 	find_library (ACCELERATE_FRAMEWORK Accelerate)
