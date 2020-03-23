@@ -4261,7 +4261,7 @@ int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 			error = 1;
 		}
 	}
-	else	/* Clean GMT5 syntax */
+	else	/* Clean >= GMT5 syntax */
 		error = gmtinit_parse5_B_option (GMT, in);
 
 	return (error);
@@ -5730,6 +5730,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_FRAME_WIDTH] = 'p';
 	/* MAP_GRID_CROSS_SIZE_PRIMARY, MAP_GRID_CROSS_SIZE_SECONDARY */
 	GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = 0; /* 0p */
+	GMT->current.setting.map_grid_cross_type[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_type[GMT_SECONDARY] = GMT_CROSS_NORMAL; /* regular cross type */
 	GMT->current.setting.given_unit[GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY] = 'p';
 	/* MAP_GRID_PEN_PRIMARY */
@@ -6414,7 +6415,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       -B[p|s][x|y|z][+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
 			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>\n");
 			gmt_message (GMT, "\t     There are two levels of annotations: Primary and secondary (most situations only require primary).\n");
-			gmt_message (GMT, "\t     The -B[p] selects (p)rimary annotations while -Bs specifies (s)econdary annotations.\n");
+			gmt_message (GMT, "\t     The -B[p] sets (p)rimary (more frequent) annotations while -Bs sets (s)econdary (less frequent) annotations.\n");
 			gmt_message (GMT, "\t     The [x|y|z] selects which axes the settings apply to.  If none are given we default to xy.\n");
 			gmt_message (GMT, "\t     To specify different settings for different axes you must repeat the -B axes option for\n");
 			gmt_message (GMT, "\t     each dimension., i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings.\n");
@@ -9619,27 +9620,24 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE:
 			dval = gmt_M_to_inch (GMT, value);
-			if (dval >= 0.0)
-				GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
-			else
-				error = true;
+			ival = (value[0] == '-') ? GMT_CROSS_ASYMM : ((value[0] == '+') ? GMT_CROSS_SYMM : GMT_CROSS_NORMAL);
+			GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
+			GMT->current.setting.map_grid_cross_type[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_type[GMT_SECONDARY] = ival;
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
 			dval = gmt_M_to_inch (GMT, value);
-			if (dval >= 0.0)
-				GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = dval;
-			else
-				error = true;
+			ival = (value[0] == '-') ? GMT_CROSS_ASYMM : ((value[0] == '+') ? GMT_CROSS_SYMM : GMT_CROSS_NORMAL);
+			GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = dval;
+			GMT->current.setting.map_grid_cross_type[GMT_PRIMARY] = ival;
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
 			GMT_COMPAT_TRANSLATE ("MAP_GRID_CROSS_SIZE_SECONDARY");
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
 			dval = gmt_M_to_inch (GMT, value);
-			if (dval >= 0.0)
-				GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
-			else
-				error = true;
+			ival = (value[0] == '-') ? GMT_CROSS_ASYMM : ((value[0] == '+') ? GMT_CROSS_SYMM : GMT_CROSS_NORMAL);
+			GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
+			GMT->current.setting.map_grid_cross_type[GMT_SECONDARY] = ival;
 			break;
 		case GMTCASE_MAP_GRID_PEN:
 			error = gmtlib_setparameter (GMT, "MAP_GRID_PEN_PRIMARY", value, core) +
@@ -10734,7 +10732,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 /*! . */
 char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	/* value must hold at least GMT_BUFSIZ chars */
-	static char value[GMT_BUFSIZ] = {""}, txt[GMT_LEN8];
+	static char value[GMT_BUFSIZ] = {""}, txt[GMT_LEN8], *PRE[3] = {"", "-", "+"};
 	int case_val;
 	bool error = false;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
@@ -11059,7 +11057,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
+			snprintf (value, GMT_LEN256, "%s%g%c", PRE[GMT->current.setting.map_grid_cross_type[GMT_PRIMARY]], GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -11067,7 +11065,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
+			snprintf (value, GMT_LEN256, "%s%g%c", PRE[GMT->current.setting.map_grid_cross_type[GMT_PRIMARY]], GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
 			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -16718,12 +16716,12 @@ int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
 	return (fig_no);
 }
 
-void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset) {
-	/* Determine figure number, subplot panel, inset */
+void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset) {
+	/* Determine figure number, subplot panel, inset for current graphics item */
 	*fig = gmt_get_current_figure (API);	/* Return figure number 1-? or 0 if a session plot */
 	*subplot = gmtinit_subplot_status (API, *fig);	/* Get information about subplot, if active */
 	panel[0] = '\0';
-	if ((*subplot) & GMT_SUBPLOT_ACTIVE) {	/* subplot active */
+	if ((*subplot) & GMT_SUBPLOT_ACTIVE) {	/* subplot is active */
 		if (((*subplot) & GMT_PANEL_NOTSET) == 0) {
 			int row, col;
 			if (get_current_panel (API, *fig, &row, &col, NULL, NULL, NULL) == 0)	/* panel set */
@@ -16731,7 +16729,7 @@ void gmtlib_get_cpt_level (struct GMTAPI_CTRL *API, int *fig, int *subplot, char
 		}
 	}
 	*inset = gmtinit_get_inset_dimensions (API, *fig, NULL);	/* True if inset is active */
-	GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_cpt_level: Fig: %d Subplot: %d Panel: (%s) Inset: %d\n", *fig, *subplot, panel, *inset);
+	GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_graphics_item: Fig: %d Subplot: %d Panel: (%s) Inset: %d\n", *fig, *subplot, panel, *inset);
 }
 
 bool gmt_is_integer (char *L) {
@@ -16889,7 +16887,7 @@ GMT_LOCAL void set_legend_filename (struct GMTAPI_CTRL *API, char *file) {
 	int fig, subplot, inset;
 
 	file[0] = '\0';	/* Initialize the path */
-	gmtlib_get_cpt_level (API, &fig, &subplot, panel, &inset);	/* Determine current plot item */
+	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine current plot item */
 	/* Set the correct output file name given the CPT level */
 	if (inset)	/* Only one inset may be active at any given time */
 		snprintf (file, PATH_MAX, "%s/gmt.inset.legend", API->gwf_dir);

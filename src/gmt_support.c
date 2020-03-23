@@ -1353,14 +1353,14 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 
 	if (gmt_M_cpt_mod (*arg)) {	/* Gave modifiers for a unit change) */
 		char string[PATH_MAX] = {""};
-		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
+		if ((cpt = gmt_get_current_item (API->GMT, "cpt", false)) == NULL) return false;	/* No current CPT */
 		snprintf (string, PATH_MAX, "%s%s", cpt, *arg);	/* Append the modifiers to the current CPT name */
 		gmt_M_str_free (cpt);
 		gmt_M_str_free (*arg);
 		*arg = strdup (string);		/* Pass back the name of the current CPT with modifiers */
 	}
 	else if (*arg == NULL) {	/* Noting given */
-		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
+		if ((cpt = gmt_get_current_item (API->GMT, "cpt", false)) == NULL) return false;	/* No current CPT */
 		*arg = cpt;		/* Pass back the name of the current CPT */
 	}
 	else /* Got something already */
@@ -7771,26 +7771,38 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	return true;	/* Acting as if it is a master table */
 }
 
-void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int cpt_flags) {
-	char file[PATH_MAX] = {""}, panel[GMT_LEN16] = {""};
+int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *file) {
+	char panel[GMT_LEN16] = {""};
 	int fig, subplot, inset;
 
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;
-	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
-	/* Save this specially scaled CPT for other uses in the modern session */
-	/* Set the correct output file name given the CPT level */
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Must be more careful */
+		if (!strncmp (item, "cpt", 3U)) return (GMT_FILE_NOT_FOUND);	/* Current CPT not available in classic mode */
+		snprintf (file, PATH_MAX, "%s/gmt.%s", GMT->parent->tmp_dir, item);	/* Global file in the tmp dir only */
+		return (GMT_NOERROR);
+	}
+
+	gmtlib_get_graphics_item (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the graphics item */
+
+	/* Set the correct output file name given the graphics item */
 	if (inset)	/* Only one inset may be active at any given time */
-		snprintf (file, PATH_MAX, "%s/gmt.inset.cpt", GMT->parent->gwf_dir);
-	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific CPT */
+		snprintf (file, PATH_MAX, "%s/gmt.inset.%s", GMT->parent->gwf_dir, item);
+	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific item */
 		if (subplot & GMT_PANEL_NOTSET)	/* Master for all subplot panels */
-			snprintf (file, PATH_MAX, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
-		else	/* CPT for just this subplot */
-			snprintf (file, PATH_MAX, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
+			snprintf (file, PATH_MAX, "%s/gmt.%d.subplot.%s", GMT->parent->gwf_dir, fig, item);
+		else	/* item for just this subplot */
+			snprintf (file, PATH_MAX, "%s/gmt.%d.panel.%s.%s", GMT->parent->gwf_dir, fig, panel, item);
 	}
 	else if (fig)	/* Limited to one figure only */
-		snprintf (file, PATH_MAX, "%s/gmt.%d.cpt", GMT->parent->gwf_dir, fig);
+		snprintf (file, PATH_MAX, "%s/gmt.%d.%s", GMT->parent->gwf_dir, fig, item);
 	else
-		snprintf (file, PATH_MAX, "%s/gmt.cpt", GMT->parent->gwf_dir);
+		snprintf (file, PATH_MAX, "%s/gmt.%s", GMT->parent->gwf_dir, item);
+	return (GMT_NOERROR);
+}
+
+void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int cpt_flags) {
+	char file[PATH_MAX] = {""};
+
+	if (gmtlib_set_current_item_file (GMT, "cpt", file) == GMT_FILE_NOT_FOUND) return;
 
 	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, P) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to save current CPT file to %s !\n", file);
@@ -7798,42 +7810,61 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Save current CPT file to %s !\n", file);
 }
 
-char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
-	/* If modern and a current CPT exists, allocate a string with its name and return, else NULL */
+char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict) {
+	/* If modern and a current item file exists, allocate a string with its name and return, else NULL.
+	 * Currently, item can be cpt or grid (gridlines).
+	 * if strict is true the file must be available for the current item, otherwise we may look up the hierarchical chain */
 	char path[PATH_MAX] = {""}, panel[GMT_LEN16] = {""}, *file = NULL;
 	int fig, subplot, inset;
 
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) return NULL;		/* Not available in classic mode */
-	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
-	/* Find the appropriate level CPT for where we are but may have to go up the list */
-
-	if (inset) {	/* See if an inset CPT exists */
-		snprintf (path, PATH_MAX, "%s/gmt.inset.cpt", GMT->parent->gwf_dir);
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* A few more checks */
+		if (!strncmp (item, "cpt", 3U)) return NULL;	/* Current CPT cocept not available in classic mode */
+		/* For gridlines we must use a global file in the tmp dir */
+		snprintf (path, PATH_MAX, "%s/gmt.%s", GMT->parent->tmp_dir, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (strict && file == NULL) goto FOUND_NOTHING;
+	}
+
+	/* Modern mode */
+
+	gmtlib_get_graphics_item (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
+	/* Find the appropriate graphics item for where we are but may have to go up the hierarchy */
+
+	if (inset) {	/* See if an inset item exists */
+		snprintf (path, PATH_MAX, "%s/gmt.inset.%s", GMT->parent->gwf_dir, item);
+		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (strict && file == NULL) goto FOUND_NOTHING;
 	}
 	if (!file && (subplot & GMT_SUBPLOT_ACTIVE)) {	/* Nothing yet, see if subplot has one */
-		if ((subplot & GMT_PANEL_NOTSET) == 0) {	/* Panel-specific CPT available? */
-			snprintf (path, PATH_MAX, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
+		if ((subplot & GMT_PANEL_NOTSET) == 0) {	/* Panel-specific item available? */
+			snprintf (path, PATH_MAX, "%s/gmt.%d.panel.%s.%s", GMT->parent->gwf_dir, fig, panel, item);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+			if (strict && file == NULL) goto FOUND_NOTHING;
 		}
-		if (!file) {	/* No, try subplot master CPT instead? */
-			snprintf (path, PATH_MAX, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
+		if (!file) {	/* No, try subplot master item instead? */
+			snprintf (path, PATH_MAX, "%s/gmt.%d.subplot.%s", GMT->parent->gwf_dir, fig, item);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+			if (strict && file == NULL) goto FOUND_NOTHING;
 		}
 	}
-	if (!file && fig) {	/* Not found a CPT yet, so try one for this specific figure */
-		snprintf (path, PATH_MAX, "%s/gmt.%d.cpt", GMT->parent->gwf_dir, fig);
+	if (!file && fig) {	/* Not found a item file yet, so try one for this specific figure */
+		snprintf (path, PATH_MAX, "%s/gmt.%d.%s", GMT->parent->gwf_dir, fig, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (strict && file == NULL) goto FOUND_NOTHING;
 	}
-	if (!file) {	/* Not found a CPT yet, finally try the session master */
-		snprintf (path, PATH_MAX, "%s/gmt.cpt", GMT->parent->gwf_dir);
+	if (!file) {	/* Not found an item file yet, finally try the session master */
+		snprintf (path, PATH_MAX, "%s/gmt.%s", GMT->parent->gwf_dir, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (strict && file == NULL) goto FOUND_NOTHING;
 	}
-	if (file)
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selected current CPT file %s\n", file);
-	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No current CPT file found\n");
-	return (file);
+	if (file) {
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selected current %s file %s\n", file, item);
+		return (file);
+	}
+
+FOUND_NOTHING:	
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No current %s file found\n", item);
+	return (NULL);
 }
 
 /*! . */
@@ -7877,7 +7908,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (NULL);
 		}
 
-		if (file == NULL && (current_cpt = gmt_get_current_cpt (GMT))) {	/* There is a current CPT in modern mode */
+		if (file == NULL && (current_cpt = gmt_get_current_item (GMT, "cpt", false))) {	/* There is a current CPT in modern mode */
 			P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, current_cpt, NULL);
 			gmt_M_str_free (current_cpt);
 			return (P);

@@ -549,7 +549,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Option -Z: Cannot access file %s\n", Ctrl->Z.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Option -W: Scale cannot be zero\n");
 
-	if (!Ctrl->C.active && (c = gmt_get_current_cpt (API->GMT))) {
+	if (!Ctrl->C.active && (c = gmt_get_current_item (API->GMT, "cpt", false))) {
 		Ctrl->C.active = true;	/* Select current CPT */
 		gmt_M_str_free (c);
 	}
