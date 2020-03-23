@@ -1903,6 +1903,59 @@ GMT_LOCAL void plot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 				PSL_plotsegment (PSL, xa, ya, xb, yb);
 			}
 		}
+
+		if (point_point && k == GMT_SECONDARY && MAX (fabs(s), fabs(n)) > GMT->current.setting.map_polar_cap[0]) {
+			/* At least one of the southern or northern polar cap parallels are plotted */
+			unsigned int nx_p, ny_p, cap, m;
+			double limit[2] = {s, n}, sign[2] = {-1.0, +1.0}, *xp = NULL, *yp = NULL;
+
+			/* Do coarser meridional lines inside polar cap */
+			nx_p = gmtlib_linear_array (GMT, w, e, GMT->current.setting.map_polar_cap[1], GMT->current.map.frame.axis[GMT_X].phase, &xp);
+			for (cap = 0; cap < 2; cap++) {	/* For south and north cap */
+				if (GMT->current.setting.map_polar_cap[0] < fabs (limit[cap])) {	/* Tick this polar cap */
+					yj = sign[cap] * GMT->current.setting.map_polar_cap[0];
+					plot_set_gridcross_limbs (GMT, GMT_Y, k, yj, &B, &E);
+					for (i = 0; i < nx; i++) {	/* Going along this parallel to place ticks */
+						xi = x[i];	/* Current longitude */
+						if (gmt_M_is_zero (fmod (xi, GMT->current.setting.map_polar_cap[1]))) continue;	/* Not draw on top of coarse gridlines */
+						if (gmt_map_outside (GMT, xi, yj)) continue;	/* Outside map */
+						gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
+						angle = plot_cross_angle (GMT, xi, yj, dx, dy, GMT_Y);
+						sincos (angle, &Sa, &Ca);
+						xa = x0 - L * Ca * sgn[B];
+						xb = x0 + L * Ca * sgn[E];
+						ya = y0 - L * Sa * sgn[B];
+						yb = y0 + L * Sa * sgn[E];
+						PSL_plotsegment (PSL, xa, ya, xb, yb);
+					}
+					if (cap == 0) /* South cap */
+						ny_p = gmtlib_coordinate_array (GMT, -90.0, ys, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &yp, NULL);
+					else
+						ny_p = gmtlib_coordinate_array (GMT, yn, 90.0, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &yp, NULL);
+					for (m = 0; m < nx_p; m++) {	/* For the coarse meridional polar cap lines */
+						xi = xp[m];	/* Current meridian */
+						plot_set_gridcross_limbs (GMT, GMT_X, k, xi, &B, &E);
+						for (j = 0; j < ny_p; j++) {
+							yj = yp[j];
+							if (point_point && doubleAlmostEqualZero (fabs (yj), GMT->current.setting.map_polar_cap[0])) continue;	/* No latitude ticks long polar circles */
+							if (gmt_map_outside (GMT, xi, yj)) continue;	/* Outside map */
+							if (gmt_M_pole_is_point(GMT) && doubleAlmostEqualZero (fabs (yj), 90.0)) continue; 	/* No grid tick at single pole points */
+							gmt_geo_to_xy (GMT, xi, yj, &x0, &y0);
+							angle = plot_cross_angle (GMT, xi, yj, dx, dy, GMT_X);
+							sincos (angle, &Sa, &Ca);
+							xa = x0 - L * Ca * sgn[B];
+							xb = x0 + L * Ca * sgn[E];
+							ya = y0 - L * Sa * sgn[B];
+							yb = y0 + L * Sa * sgn[E];
+							PSL_plotsegment (PSL, xa, ya, xb, yb);
+						}
+					}
+					if (ny_p) gmt_M_free (GMT, yp);
+				}
+			}
+			if (nx_p) gmt_M_free (GMT, xp);
+		}
+
 		if (nx) gmt_M_free (GMT, x);
 		if (ny) gmt_M_free (GMT, y);
 
