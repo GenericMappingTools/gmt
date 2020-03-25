@@ -103,6 +103,7 @@ EXTERN_MSC void *GMT_Get_Vector        (void *API, struct GMT_VECTOR *V, unsigne
 EXTERN_MSC void *GMT_Get_Matrix        (void *API, struct GMT_MATRIX *M);
 EXTERN_MSC int GMT_Put_Vector          (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector);
 EXTERN_MSC int GMT_Put_Matrix          (void *API, struct GMT_MATRIX *M, unsigned int type, int pad, void *matrix);
+EXTERN_MSC int GMT_Put_Layers          (void *API, struct GMT_GRID_HEADER *header, unsigned int n_layers, double *layer);
 /* These 2 functions are new in 6.0 and are being considered beta */
 EXTERN_MSC int GMT_Put_Strings         (void *API, unsigned int family, void *object, char **array);
 EXTERN_MSC char **GMT_Get_Strings      (void *API, unsigned int family, void *object);
@@ -113,6 +114,7 @@ EXTERN_MSC uint64_t GMT_Get_Index      (void *API, struct GMT_GRID_HEADER *heade
 EXTERN_MSC double * GMT_Get_Coord      (void *API, unsigned int family, unsigned int dim, void *container);
 EXTERN_MSC int GMT_Set_Index	       (void *API, struct GMT_GRID_HEADER *header, char *code);	/* Experimental */
 EXTERN_MSC uint64_t GMT_Get_Pixel      (void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);	/* Experimental */
+EXTERN_MSC uint64_t GMT_Get_Index3     (void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);
 
 /* 11 functions to show and inquire about GMT common options, GMT default settings, object metadata, convert strings to doubles, and message and report printing */
 
