@@ -23,7 +23,7 @@ Description
 Besides the modules names, some special targets
 *gmt*, *api*, *colors*, *cookbook*, *data*, *gallery*, *home*, *settings*, and *tutorial*
 are also accepted. You can also give *forum* (takes you to the GMT Discourse Forum) and
-**website* (or just *site*; takes you to the GMT main website).
+*website* (or just *site*; takes you to the GMT main website).
 
 Required Arguments
 ------------------
