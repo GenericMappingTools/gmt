@@ -112,7 +112,7 @@ GMT_LOCAL inline struct GMT_IMAGE   * grdio_get_image_data (struct GMT_IMAGE *pt
 
 /*! gmt_M_grd_get_size computes grid size including the padding, and doubles it if complex values */
 GMT_LOCAL size_t gmt_grd_get_size (struct GMT_GRID_HEADER *h) {
-	return ((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my);
+	return (((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my) * h->n_layers);
 }
 
 GMT_LOCAL int grdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, unsigned int complex_mode, unsigned int direction) {
@@ -1918,6 +1918,7 @@ void gmt_set_grddim (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Assumes pad is set and then computes n_columns, n_rows, mx, my, nm, size, xy_off based on w/e/s/n.  */
 	h->n_columns = gmt_M_grd_get_nx (GMT, h);		/* Set n_columns, n_rows based on w/e/s/n and offset */
 	h->n_rows = gmt_M_grd_get_ny (GMT, h);
+	if (h->n_layers == 0) h->n_layers = 1;		/* Default is one grid layer */
 	h->mx = gmt_M_grd_get_nxpad (h, h->pad);	/* Set mx, my based on h->{n_columns,n_rows} and the current pad */
 	h->my = gmt_M_grd_get_nypad (h, h->pad);
 	h->nm = gmt_M_grd_get_nm (h);		/* Sets the number of actual data items */
@@ -2724,7 +2725,7 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, struct GMT
 int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options,
                              uint64_t dim[], double wesn[], double inc[], unsigned int registration, unsigned int mode) {
 	/* Convenient way of setting a header struct wesn, inc, and registration, then compute dimensions, etc. */
-	double wesn_dup[4] = {0.0, 0.0, 0.0, 0.0}, inc_dup[2] = {0.0, 0.0};
+	double wesn_dup[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, inc_dup[3] = {0.0, 0.0, 0.0};
 	unsigned int n_layers = 1;
 	char *regtype[2] = {"gridline", "pixel"};
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -2732,8 +2733,8 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struc
 
 	if (registration & GMT_GRID_DEFAULT_REG) registration |= GMT->common.R.registration;	/* Set the default registration */
 	registration = (registration & 1);	/* Knock off any GMT_GRID_DEFAULT_REG bit */
-	if (dim && wesn == NULL && inc == NULL) {	/* Gave dimension instead, set range and inc (1/1) while considering registration */
-		gmt_M_memset (wesn_dup, 4, double);
+	if (dim && wesn == NULL && inc == NULL) {	/* Gave dimensions instead, set range and inc (1/1) while considering registration */
+		gmt_M_memset (wesn_dup, GMT->common.R.dimension * 2, double);
 		wesn_dup[XHI] = (double)(dim[GMT_X]);
 		wesn_dup[YHI] = (double)(dim[GMT_Y]);
 		inc_dup[GMT_X] = inc_dup[GMT_Y] = 1.0;
@@ -2750,7 +2751,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struc
 			}
 		}
 		else	/* In case user is passing header->wesn etc we must save them first as gmt_grd_init will clobber them */
-			gmt_M_memcpy (wesn_dup, wesn, 4, double);
+			gmt_M_memcpy (wesn_dup, wesn, GMT->common.R.dimension * 2, double);
 		if (inc == NULL) {	/* Must select -I setting */
 			if (!GMT->common.R.active[ISET]) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No increment given and no -I in effect.  Cannot initialize new grid\n");
@@ -2758,8 +2759,11 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struc
 			}
 		}
 		else	/* In case user is passing header->inc etc we must save them first as gmt_grd_init will clobber them */
-			gmt_M_memcpy (inc_dup, inc, 2, double);
+			gmt_M_memcpy (inc_dup, inc, GMT->common.R.dimension, double);
 		if (dim && dim[GMT_Z] > 1) n_layers = (unsigned int)dim[GMT_Z];
+		if (n_layers == 1 && inc && inc[GMT_Z] > 0.0) {	/* Compute number of layers from equidistant z-range */
+			n_layers = gmt_M_get_n (API->GMT, wesn[ZLO], wesn[ZHI], inc[GMT_Z], 0.0);
+		}
 		if (inc != NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid/Image dimensions imply w/e/s/n = %g/%g/%g/%g, inc = %g/%g, %s registration, n_layers = %u\n",
 			            wesn_dup[XLO], wesn_dup[XHI], wesn_dup[YLO], wesn_dup[YHI], inc[GMT_X], inc[GMT_Y], regtype[registration], n_layers);
@@ -2785,6 +2789,13 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struc
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 1), "");
 	gmt_M_grd_setpad (GMT, header, GMT->current.io.pad);	/* Assign default GMT pad */
 	if (dim) header->n_bands = n_layers;
+	if (GMT->common.R.dimension == 3 && GMT->common.R.inc[GMT_Z] > 0.0) {	/* Compute number of layers from equidistant z-range */
+		if (wesn == NULL)
+			n_layers = gmt_M_get_n (API->GMT, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], GMT->common.R.inc[GMT_Z], 0.0);
+		else
+			n_layers = gmt_M_get_n (API->GMT, wesn[ZLO], wesn[ZHI], GMT->common.R.inc[GMT_Z], 0.0);
+		header->n_layers = n_layers;
+	}
 	gmt_set_grddim (GMT, header);	/* Set all dimensions before returning */
 	gmtlib_grd_get_units (GMT, header);
 	gmt_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */

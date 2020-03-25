@@ -105,9 +105,10 @@ struct GMT_COMMON {
 		uint32_t registration;	/* Registration mode of a grid given via -r or -Rgrid */
 		int row_order;	/* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
 		unsigned int mode;	/* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
+		unsigned int dimension;	/* 2 for 2-D grid regions, 3 for 3-D regions */
 		double wesn[6];		/* Boundaries of west, east, south, north, low-z and hi-z */
 		double wesn_orig[4];	/* Original Boundaries of west, east, south, north (oblique projection may reset wesn above) */
-		double inc[2];	/* For grid increments set via -Idx/dy or implicitly via -Ggrid */
+		double inc[3];	/* For grid increments set via -Idx/dy[/dz] or implicitly via -Ggrid */
 		char string[GMT_LEN256];
 	} R;
 	struct U {	/* -U */

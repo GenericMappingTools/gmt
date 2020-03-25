@@ -6745,7 +6745,7 @@ bool gmt_getinc (struct GMT_CTRL *GMT, char *line, double inc[]) {
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_ERROR, "No argument given to gmt_getinc\n"); return (true); }
 
-	n = gmt_getincn (GMT, line, inc, 2);
+	n = gmt_getincn (GMT, line, inc, GMT->common.R.dimension);
 	if (n == 1) {	/* Must copy y info from x */
 		inc[GMT_Y] = inc[GMT_X];
 		GMT->current.io.inc_code[GMT_Y] = GMT->current.io.inc_code[GMT_X];	/* Use exact inc codes for both x and y */

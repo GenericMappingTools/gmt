@@ -8262,6 +8262,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "-R with six parameters but no -Jz|Z given - ignore zmin/zmax\n");
 		GMT->common.R.wesn[ZLO] = GMT->common.R.wesn[ZHI] = 0.0;
 	}
+	GMT->common.R.dimension = i / 2;	/* So 2 or 3 */
 	return (error);
 }
 
