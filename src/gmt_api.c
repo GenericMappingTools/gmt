@@ -9095,6 +9095,28 @@ int GMT_Get_Info_ (unsigned int *family, void *container, unsigned int *geometry
 }
 #endif
 
+int GMT_Put_Layers (void *V_API, struct GMT_GRID_HEADER *header, unsigned int n_layers, double *layer) {
+	/*Set the grid header's internal layer information */
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (header == NULL) return_error (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */
+	if (layer == NULL) return_error (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */
+	if (n_layers == 0) return_error (API, GMT_VALUE_NOT_SET);	/* Error if no layers */
+
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+	header->n_layers = n_layers;
+	if (header->layer) gmt_M_free (API->GMT, header->layer);	/* Free whatever was there */
+	gmt_M_memcpy (header->layer, layer, n_layers, double);		/* Copy over the layer values */
+	return (API->error);
+}
+
+#ifdef FORTRAN_API
+int GMT_Put_Layers_ (struct GMT_GRID_HEADER *header, unsigned int *n_layers, double *layer) {
+	return (GMT_Put_Layers (GMT_FORTRAN, header, *n_layers, layer));
+#endif
+
 /*! Convenience function to get grid or image node */
 uint64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, int col) {
 	/* V_API not used but all API functions take V_API so no exceptions! */
@@ -9123,6 +9145,21 @@ uint64_t GMT_Get_Pixel_ (void *h, int *row, int *col, int *layer) {
 	return (GMT_Get_Pixel (GMT_FORTRAN, h, *row, *col, *layer));
 }
 #endif
+
+/*! Convenience function to get 3-D grid node */
+uint64_t GMT_Get_Index3 (void *V_API, struct GMT_GRID_HEADER *header, int row, int col, int layer) {
+	/* V_API not used but all API functions take V_API so no exceptions! */
+	gmt_M_unused(V_API);
+	return (GMTAPI_index_function (header, row, col, 0) * layer);
+}
+
+#ifdef FORTRAN_API
+uint64_t GMT_Get_Index3_ (void *h, int *row, int *col, int *layer) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Index3 (GMT_FORTRAN, h, *row, *col, *layer));
+}
+#endif
+
 
 /*! Specify image memory layout */
 int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
