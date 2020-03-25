@@ -21,15 +21,17 @@ Description
 
 **docs** tells GMT to display the HTML version of a module's documentation using the default browser.
 Besides the modules names, some special targets
-*gmt*, *api*, *colors*, *cookbook*, *gallery*, *settings*, and *tutorial*
-are also accepted.
+*gmt*, *api*, *colors*, *cookbook*, *data*, *gallery*, *home*, *settings*, and *tutorial*
+are also accepted. You can also give *forum* (takes you to the GMT Discourse Forum) and
+**website* (or just *site*; takes you to the GMT main website).
 
 Required Arguments
 ------------------
 
 *module-name*
     One of the core or supplemental modules,
-    or one of *gmt*, *api*, *colors*, *cookbook*, *gallery*, *settings*, and *tutorial*.
+    or one of *gmt*, *api*, *colors*, *cookbook*, *data*, *gallery* *home*, *settings*, and *tutorial*,
+    plus external targets *forum* and *website*.
 
 Optional Arguments
 ------------------
