@@ -4970,7 +4970,6 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			annot_pos = (T->type == 'A' || T->type == 'I') ? 1 : 0;	/* 1 means lower annotation, 0 means upper (close to axis) */
 			font = GMT->current.setting.font_annot[annot_pos];	/* Set the font to use */
 			form = gmt_setfont (GMT, &font);
-			PSL_command (PSL, "/PSL_AH%d 0\n", annot_pos);
 			if (A->type != GMT_TIME) PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus */
 			if (first) {
 				/* Change up/down (neg) and/or flip coordinates (exch) */
@@ -4978,6 +4977,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				first = false;
 				MM_set = true;
 			}
+			PSL_command (PSL, "/PSL_AH%d 0\n", annot_pos);
 
 			for (i = 0; i < nx1; i++) {
 				if (gmtlib_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
