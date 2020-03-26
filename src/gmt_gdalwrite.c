@@ -165,6 +165,12 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		return GMT_NOTSET;
 	}
 
+	if (I->n_indexed_colors > 0 && I->colormap) {
+		to_GDALW->C.active = true;
+		to_GDALW->C.n_colors = I->n_indexed_colors;
+		to_GDALW->C.cpt = I->colormap;
+	}
+
 	HH = gmt_get_H_hidden (I->header);
 	if (HH->pocket && (pch = strstr(HH->pocket, "+c")) != NULL) 		/* If we have a list of +c<options> */
 		to_GDALW->co_options = strdup(pch);				/* This memory is freed in gmt_gdalwrite */
