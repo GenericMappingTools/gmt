@@ -1078,7 +1078,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -L files */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -L files */
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1086,7 +1086,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)Lin->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -L file might have turned it on [should be determined below] */
 		xyline = Lin->table[0];			/* Can only be one table since we read a single file */
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */

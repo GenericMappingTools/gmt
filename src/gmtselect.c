@@ -640,7 +640,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	else	/* Cartesian data */
 		gmt_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
 
-	gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -C,-F,-L files */
+	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
 
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
@@ -749,7 +749,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (error);
