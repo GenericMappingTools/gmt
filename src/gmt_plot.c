@@ -286,7 +286,7 @@ GMT_LOCAL void plot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	x_length = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
 	y_length = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
 
-	PSL_command (PSL, "/PSL_slant_y 0 def\n");	/* Unless x-annotations are slanted there is no adjustment */
+	PSL_command (PSL, "/PSL_slant_y 0 def\n");	/* Unless x-annotations are slanted there is no adjustment. PSL_slant_y may be revised in gmt_xy_axis */
 
 	if (GMT->current.map.frame.draw) {
 		/* Temporarily change to square cap so rectangular frames have neat corners */
@@ -4974,13 +4974,12 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			font = GMT->current.setting.font_annot[annot_pos];	/* Set the font to use */
 			form = gmt_setfont (GMT, &font);
 			if (A->type != GMT_TIME) PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus */
-			if (first) {
-				/* Change up/down (neg) and/or flip coordinates (exch) */
+			if (first) {	/* Change up/down (neg) and/or flip coordinates (exch) */
 				PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 				first = false;
 				MM_set = true;
 			}
-			PSL_command (PSL, "/PSL_AH%d 0\n", annot_pos);
+			PSL_command (PSL, "/PSL_AH%d 0\n", annot_pos);	/* Largest annotation width (or height) so far */
 
 			for (i = 0; i < nx1; i++) {
 				if (gmtlib_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
@@ -4992,17 +4991,18 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				else
 					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
 				PSL_deftextdim (PSL, ortho ? "-w" : "-h", font.size, string);
-				PSL_command (PSL, "mx\n");		/* Update the longest annotation */
+				PSL_command (PSL, "mx\n");		/* Update the longest annotation stored in PSL_AH? */
 			}
-			PSL_command (PSL, "def\n");
-			if (angled) {	/* Also need annotation width since a component of length is projected to height */
+			PSL_command (PSL, "def\n");	/* Finalize the definition of longest (y-axis) or tallest (x-annotation) found */
+			if (angled) {	/* Also need annotation width since a component of length is projected in the y-direction so label and title must be displaced by this amount */
+				/* Note: PSL_slant_y will also be used when placing a Cartesian frame title */
 				PSL_command (PSL, "/PSL_slant_y ");
-				if (label_c && label_c[nx1-1] && label_c[nx1-1][0])
+				if (label_c && label_c[nx1-1] && label_c[nx1-1][0])	/* We only use the string for the max annotation value at index nx1-1 */
 					strncpy (string, label_c[nx1-1], GMT_LEN256-1);
 				else
 					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[nx1-1]);	/* Get annotation string */
-				PSL_deftextdim (PSL, "-w", font.size, string);
-				PSL_command (PSL, " %g mul def\n", sin_a);
+				PSL_deftextdim (PSL, "-w", font.size, string);	/* Compute the width */
+				PSL_command (PSL, " %g mul def\n", sin_a);	/* Multiply this width by sine of the angle to get the y-component */
 			}
 			if (annot_pos == 0)
 				PSL_command (PSL, "/PSL_A0_y PSL_A0_y %d add ", PSL_IZ (PSL, GMT->current.setting.map_annot_offset[annot_pos]));
@@ -5055,7 +5055,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_command (PSL, "def\n");
 		PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", PSL_IZ (PSL, GMT->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
 		/* Move to new anchor point */
-		if (angled)
+		if (angled)	/* Add offset due to angled x-annotations */
 			PSL_command (PSL, "%d PSL_L_y PSL_slant_y add MM\n", PSL_IZ (PSL, 0.5 * length));
 		else
 			PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
