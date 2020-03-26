@@ -53,6 +53,8 @@ given on the command line. By default, all columns except the "time"
 column are operated on, but this can be changed (see **-C**).
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
+**Note**: Do not place regular GMT options *between* operands and operators;
+each *operand(s)* **OPERATOR** sequence should be a contiguous group of arguments.
 
 Required Arguments
 ------------------

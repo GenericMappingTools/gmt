@@ -20,6 +20,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
@@ -38,7 +39,7 @@ Description
 -----------
 
 **grdmath** will perform operations like add, subtract, multiply, and
-numerous other operands on one or more grid files or constants using
+hundreds of other operands on one or more grid files or constants using
 `Reverse Polish Notation (RPN) <https://en.wikipedia.org/wiki/Reverse_Polish_notation>`_
 syntax.  Arbitrarily complicated expressions may therefore be evaluated; the
 final result is written to an output grid file. Grid operations are
@@ -49,6 +50,8 @@ expression then options **-R**, **-I** must be set (and optionally
 the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
+**Note**: Do not place regular GMT options *between* operands and operators;
+each *operand(s)* **OPERATOR** sequence should be a contiguous group of arguments.
 
 Required Arguments
 ------------------
@@ -116,6 +119,8 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: The binary input option
     only applies to the data files needed by operators **LDIST**,
@@ -762,78 +767,56 @@ Examples
 
 .. include:: explain_example.rst_
 
-To compute all distances to north pole:
-
-    ::
+To compute all distances to north pole, try::
 
      gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc
 
-To take log10 of the average of 2 files, use
-
-   ::
+To take log10 of the average of 2 files, use::
 
     gmt grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
 
 Given the file ages.nc, which holds seafloor ages in m.y., use the
-relation depth(in m) = 2500 + 350 \* sqrt (age) to estimate normal seafloor depths:
-
-   ::
+relation depth(in m) = 2500 + 350 \* sqrt (age) to estimate normal seafloor depths, try::
 
     gmt grdmath ages.nc SQRT 350 MUL 2500 ADD = depths.nc
 
 To find the angle a (in degrees) of the largest principal stress from
 the stress tensor given by the three files s_xx.nc s_yy.nc, and
-s_xy.nc from the relation tan (2\*a) = 2 \* s_xy / (s_xx - s_yy), use
-
-   ::
+s_xy.nc from the relation tan (2\*a) = 2 \* s_xy / (s_xx - s_yy), use::
 
     gmt grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN 2 DIV = direction.nc
 
 To calculate the fully normalized spherical harmonic of degree 8 and
 order 4 on a 1 by 1 degree world map, using the real amplitude 0.4 and
-the imaginary amplitude 1.1:
-
-   ::
+the imaginary amplitude 1.1, use::
 
     gmt grdmath -R0/360/-90/90 -I1 8 4 YLM 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
 
-To extract the locations of local maxima that exceed 100 mGal in the file faa.nc:
-
-   ::
+To extract the locations of local maxima that exceed 100 mGal in the file faa.nc, use::
 
     gmt grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
     gmt grd2xyz z.nc -s > max.xyz
 
 To demonstrate the use of named variables, consider this radial wave
-where we store and recall the normalized radial arguments in radians:
-
-   ::
+where we store and recall the normalized radial arguments in radians by::
 
     gmt grdmath -R0/10/0/10 -I0.25 5 5 CDIST 2 MUL PI MUL 5 DIV STO@r COS @r SIN MUL = wave.nc
 
-To create a dumb file saved as a 32 bits float GeoTiff using GDAL, run
-
-   ::
+To create a dumb file saved as a 32 bits float GeoTiff using GDAL, run::
 
     gmt grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
 
 To compute distances in km from the line trace.txt for the area represented by the
-geographic grid data.grd, run
-
-   ::
+geographic grid data.grd, run::
 
     gmt grdmath -Rdata.grd trace.txt LDIST = dist_from_line.grd
 
 To demonstrate the stack-reducing effect of **-S**, we compute the standard deviation
-per node of all the grids matching the name model_*.grd using
-
-   ::
+per node of all the grids matching the name model_*.grd using::
 
     gmt grdmath model_*.grd -S STD = std_of_models.grd
 
-To create a geotiff with resolution 0.5x0.5 degrees with distances in km from the coast line, use
-
-   ::
+To create a geotiff with resolution 0.5x0.5 degrees with distances in km from the coast line, use::
 
     grdmath -RNO,IS -Dc -I.5 LDISTG = distance.tif=gd:GTIFF
 
