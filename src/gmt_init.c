@@ -3338,9 +3338,10 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	save_trailing = GMT->current.io.trailing_text[GMT_IN];
 	save_max_cols_to_read = GMT->current.io.max_cols_to_read;
 	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
-	gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading this file */
+	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
 	GMT->current.io.record_type[GMT_IN] = GMT_READ_MIXED;
 	GMT->current.io.trailing_text[GMT_IN] = true;
+	GMT->current.io.max_cols_to_read = 1;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
 		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
@@ -3349,7 +3350,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
-	gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
 	gmt_M_memset (n_int, 4, int);
 	S = D->table[0]->segment[0];	/* All we got */
@@ -9102,6 +9103,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 	}
 	if ((uint64_t)(GMT->common.g.col[i] + 1) > GMT->common.g.n_col) GMT->common.g.n_col = (uint64_t)(GMT->common.g.col[i] + 1);	/* Needed when checking since it may otherwise not be read */
 	GMT->common.g.n_methods++;
+	GMT->common.g.selected = true;
 	if (t) t[0] = '+';	/* Restore modifiers */
 	return (GMT_NOERROR);
 }

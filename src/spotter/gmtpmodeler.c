@@ -262,7 +262,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmtpmodeler main code ----------------------------*/
 
 	if (Ctrl->F.active) {	/* Read the user's clip polygon file */
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -270,7 +270,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		pol = D->table[0];	/* Since it is a single file */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Restrict evaluation to within polygons in file %s\n", Ctrl->F.file);
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
