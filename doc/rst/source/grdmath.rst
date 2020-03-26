@@ -50,8 +50,6 @@ expression then options **-R**, **-I** must be set (and optionally
 the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
-**Note**: Do not place regular GMT options *between* operands and operators;
-each *operand(s)* **OPERATOR** sequence should be a contiguous group of arguments.
 
 Required Arguments
 ------------------
