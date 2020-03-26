@@ -4854,7 +4854,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		else
 			justify = (below) ? PSL_ML : PSL_MR;
 		cos_a = 0.5 * cosd (text_angle);	/* Half-height of text at an angle */
-		sin_a = sind (text_angle);	/* Fraction of y offset due to slanted annotation */
+		sin_a = fabs (sind (text_angle));	/* Fraction of y offset due to slanted annotation */
 	}
 	flip = (GMT->current.setting.map_frame_type & GMT_IS_INSIDE);	/* Inside annotation */
 	if (axis != GMT_Z && GMT->current.proj.three_D && GMT->current.proj.z_project.cos_az > 0) {	/* Rotate x/y-annotations when seen "from North" */
