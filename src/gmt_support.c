@@ -13979,7 +13979,7 @@ unsigned int gmtlib_coordinate_array (struct GMT_CTRL *GMT, double min, double m
 
 	if (!T->active) return (0);	/* Nothing to do */
 
-	if (GMT->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
+	if (T->special && GMT->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
 		n = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[T->parent], (char)tolower((unsigned char) T->type), array, labels);
 		return (n);
 	}
@@ -14013,9 +14013,10 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 	 * For instance, if our interval is 3 months we do not want "January" centered
 	 * on that quarter.  If the position is outside our range we return true
 	 */
+	bool is_interval = (T->type == 'i' || T->type == 'I');
 	double range, start, stop;
 
-	if (T->special) {
+	if (is_interval && T->special) {
 		range = 0.5 * (coord[1] - coord[0]);	/* Half width of interval in internal representation */
 		start = MAX (min, coord[0]);			/* Start of interval, but not less that start of axis */
 		stop  = MIN (max, coord[1]);			/* Stop of interval,  but not beyond end of axis */
@@ -14023,7 +14024,7 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 		*pos = 0.5 * (start + stop);				/* Set half-way point */
 		if (((*pos) - GMT_CONV8_LIMIT) < min || ((*pos) + GMT_CONV8_LIMIT) > max) return (true);	/* Outside axis range */
 	}
-	else if (T->type == 'i' || T->type == 'I') {
+	else if (is_interval) {
 		if (gmt_M_uneven_interval (T->unit) || T->interval != 1.0) {	/* Must find next month to get month centered correctly */
 			struct GMT_MOMENT_INTERVAL Inext;
 			gmt_M_memset (&Inext, 1, struct GMT_MOMENT_INTERVAL);	/* Wipe it */
