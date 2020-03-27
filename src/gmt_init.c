@@ -2984,11 +2984,11 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	/* Note: gmtinit_set_env cannot use GMT_Report because the verbose level is not yet set */
 
-	if ((this_c = getenv ("GMT6_SHAREDIR")) != NULL)	/* GMT6_SHAREDIR was set */
+	if ((this_c = getenv ("GMT6_SHAREDIR")) != NULL && !access (this_c, F_OK|R_OK))	/* GMT6_SHAREDIR was set to a valid directory */
 		GMT->session.SHAREDIR = gmt_strdup_noquote (this_c);
-	else if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL)	/* GMT5_SHAREDIR was set */
+	else if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL && !access (this_c, F_OK|R_OK))	/* GMT5_SHAREDIR was set to a valid directory */
 		GMT->session.SHAREDIR = gmt_strdup_noquote (this_c);
-	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL) /* GMT_SHAREDIR was set */
+	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL && !access (this_c, F_OK|R_OK)) /* GMT_SHAREDIR was set to a valid directory */
 		GMT->session.SHAREDIR = gmt_strdup_noquote (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	else if (running_in_bindir_src)
@@ -3037,7 +3037,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
-	if ((this_c = getenv ("GMT_USERDIR")) != NULL)		/* GMT_USERDIR was set */
+	if ((this_c = getenv ("GMT_USERDIR")) != NULL && !access (this_c, F_OK|R_OK))		/* GMT_USERDIR was set to a valid directory */
 		GMT->session.USERDIR = gmt_strdup_noquote (this_c);
 	else if (GMT->session.HOMEDIR) {	/* Use default path for GMT_USERDIR (~/.gmt) */
 		snprintf (path, PATH_MAX, "%s/%s", GMT->session.HOMEDIR, ".gmt");
@@ -3057,7 +3057,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			gmt_M_str_free (GMT->session.USERDIR);
 		}
 	}
-	if ((this_c = getenv ("GMT_CACHEDIR")) != NULL)		/* GMT_CACHEDIR was set */
+	if ((this_c = getenv ("GMT_CACHEDIR")) != NULL && !access (this_c, F_OK|R_OK))		/* GMT_CACHEDIR was set to a valid directory */
 		GMT->session.CACHEDIR = gmt_strdup_noquote (this_c);
 	else if (GMT->session.USERDIR != NULL) {	/* Use default path for GMT_CACHEDIR as GMT_USERDIR/cache */
 		snprintf (path, PATH_MAX, "%s/%s", GMT->session.USERDIR, "cache");
@@ -3078,7 +3078,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		}
 	}
 
-	if ((this_c = getenv ("GMT_SESSIONDIR")) != NULL)		/* GMT_SESSIONDIR was set */
+	if ((this_c = getenv ("GMT_SESSIONDIR")) != NULL && !access (this_c, F_OK|R_OK))	/* GMT_SESSIONDIR was set to a valid directory */
 		API->session_dir = gmt_strdup_noquote (this_c);
 	else if (GMT->session.USERDIR != NULL) {	/* Use GMT_USERDIR/sessions as default path for GMT_SESSIONDIR */
 		snprintf (path, PATH_MAX, "%s/%s", GMT->session.USERDIR, "sessions");
@@ -3111,7 +3111,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	if (gmt_M_compat_check (GMT, 4)) {
 		/* Check if obsolete GMT_CPTDIR was specified */
 
-		if ((this_c = getenv ("GMT_CPTDIR")) != NULL) {		/* GMT_CPTDIR was set */
+		if ((this_c = getenv ("GMT_CPTDIR")) != NULL && !access (this_c, F_OK|R_OK)) {		/* GMT_CPTDIR was set to a valid directory */
 			GMT_Report (API, GMT_MSG_WARNING, "Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
 			GMT_Report (API, GMT_MSG_WARNING, "System-wide color tables are in %s/cpt.\n", GMT->session.SHAREDIR);
 			GMT_Report (API, GMT_MSG_WARNING, "Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT->session.USERDIR);
@@ -3130,24 +3130,36 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	/* Determine GMT_DATADIR (data directories) */
 
 	if ((this_c = getenv ("GMT_DATADIR")) != NULL) {		/* GMT_DATADIR was set */
-		if (strchr (this_c, ',') || strchr (this_c, PATH_SEPARATOR) || access (this_c, R_OK) == 0) {
+		if (strchr (this_c, ',') || strchr (this_c, PATH_SEPARATOR)) {
+			/* A list of directories [not checked for validity here] */
+			GMT->session.DATADIR = strdup (this_c);
+			gmt_dos_path_fix (GMT->session.DATADIR);
+		}
+		else if (access (this_c, R_OK) == 0) {	/* GMT_DATADIR was set to a single valid directory */
 			/* A list of directories or a single directory that is accessible */
 			GMT->session.DATADIR = strdup (this_c);
 			gmt_dos_path_fix (GMT->session.DATADIR);
 		}
 #ifdef WIN32
 		else if (strchr(this_c, ':')) {		/* May happen to have ':' as a path separator when running a MSYS bash shell*/
+			/* A list of directories [not checked for validity here] */
 			GMT->session.DATADIR = strdup(this_c);
 			gmt_dos_path_fix (GMT->session.DATADIR);
 		}
 #endif
-		gmt_replace_backslash_in_path (GMT->session.DATADIR);
-		gmt_strrepc (GMT->session.DATADIR, PATH_SEPARATOR, ',');	/* Use comma for OS-independent separator */
+		else {
+			GMT_Report (API, GMT_MSG_WARNING, "Environment variable GMT_DATADIR was set but not pointing to a valid directory - ignored.\n");
+
+		}
+		if (GMT->session.DATADIR) {	/* Fix backslashes and use comma for OS-independent separator */
+			gmt_replace_backslash_in_path (GMT->session.DATADIR);
+			gmt_strrepc (GMT->session.DATADIR, PATH_SEPARATOR, ',');
+		}
 	}
 
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */
 
-	if ((this_c = getenv ("GMT_TMPDIR")) != NULL) {		/* GMT_TMPDIR was set */
+	if ((this_c = getenv ("GMT_TMPDIR")) != NULL) {		/* GMT_TMPDIR was set, check it */
 		if (access (this_c, R_OK|W_OK|X_OK)) {
 			GMT_Report (API, GMT_MSG_WARNING, "Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this_c);
 			GMT_Report (API, GMT_MSG_WARNING, "GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
@@ -3326,9 +3338,10 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	save_trailing = GMT->current.io.trailing_text[GMT_IN];
 	save_max_cols_to_read = GMT->current.io.max_cols_to_read;
 	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
-	gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading this file */
+	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
 	GMT->current.io.record_type[GMT_IN] = GMT_READ_MIXED;
 	GMT->current.io.trailing_text[GMT_IN] = true;
+	GMT->current.io.max_cols_to_read = 1;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
 		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
@@ -3337,7 +3350,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
-	gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
 	gmt_M_memset (n_int, 4, int);
 	S = D->table[0]->segment[0];	/* All we got */
@@ -3550,7 +3563,10 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 				if (!GMT->current.map.frame.primary) flag = (char)toupper ((int)flag);
 				gmtinit_set_titem (GMT, A, "0", flag, str[axis], true);	/* Store the findings for this segment */
 			}
-			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;
+			if (n_int[0]) A->item[GMT_ANNOT_UPPER].special = true;	/* custom  annotations */
+			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom interval annotations */
+			if (n_int[2]) A->item[GMT_TICK_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom tick annotations */
+			if (n_int[3]) A->item[GMT_GRID_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom gridline annotations */
 			GMT->current.map.frame.draw = true;
 			if (axis == GMT_Z) GMT->current.map.frame.drawz = true;
 		}
@@ -9091,6 +9107,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 	}
 	if ((uint64_t)(GMT->common.g.col[i] + 1) > GMT->common.g.n_col) GMT->common.g.n_col = (uint64_t)(GMT->common.g.col[i] + 1);	/* Needed when checking since it may otherwise not be read */
 	GMT->common.g.n_methods++;
+	GMT->common.g.selected = true;
 	if (t) t[0] = '+';	/* Restore modifiers */
 	return (GMT_NOERROR);
 }

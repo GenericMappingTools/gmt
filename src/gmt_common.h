@@ -171,6 +171,7 @@ struct GMT_COMMON {
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
 		bool active;
+		bool selected;
 		unsigned int n_methods;			/* How many different criteria to apply */
 		uint64_t n_col;				/* Largest column-number needed to be read */
 		bool match_all;				/* If true then all specified criteria must be met to be a gap [default is any of them] */
