@@ -356,6 +356,7 @@ GMT_LOCAL unsigned int plot_get_primary_annot (struct GMT_PLOT_AXIS *A) {
 		}
 		val[i] = A->item[no[i]].interval * s;
 	}
+	if (A->item[GMT_ANNOT_UPPER].special) return GMT_ANNOT_UPPER;
 	return ((val[0] > val[1]) ? GMT_ANNOT_UPPER : GMT_ANNOT_LOWER);
 }
 
@@ -1647,6 +1648,7 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	unsigned int k, i, np, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double dx, dy, *v = NULL;
 	bool reset = false;
+	struct GMT_PLOT_AXIS *A[2] = {NULL, NULL};
 
 	for (k = i = 0; k < 2; k++) {	/* First check if any gridlines are requested */
 		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
@@ -1664,20 +1666,22 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	for (k = 0; k < 2; k++) {
 		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;	/* Must have a size of zero to be a grid line, else it is a cross or tick */
 
-		dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[item[k]]);
-		dy = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[item[k]]);
+		A[GMT_X] = &GMT->current.map.frame.axis[GMT_X];	/* Short-hand for x-axis */
+		A[GMT_Y] = &GMT->current.map.frame.axis[GMT_Y];	/* Short-hand for y-axis */
+		dx = gmtlib_get_map_interval (GMT, &A[GMT_X]->item[item[k]]);	/* x grid spacing; will be 0 if custom intervals */
+		dy = gmtlib_get_map_interval (GMT, &A[GMT_Y]->item[item[k]]);	/* y grid spacing; will be 0 if custom intervals */
 
-		if (!(GMT->current.map.frame.axis[GMT_X].item[item[k]].active || GMT->current.map.frame.axis[GMT_Y].item[item[k]].active)) continue;
+		if (!(A[GMT_X]->item[item[k]].active || A[GMT_Y]->item[item[k]].active)) continue;	/* Neither is active */
 
 		PSL_comment (PSL, "%s\n", k ? "Map gridlines (secondary)" : "Map gridlines (primary)");
 
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[k]);
 
-		if (GMT->current.map.frame.axis[GMT_X].special == GMT_CUSTOM && (np = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[GMT_X], 'g', &v, NULL))) {
+		if (A[GMT_X]->item[k].special && (np = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[GMT_X], 'g', &v, NULL))) {
 			plot_x_grid (GMT, PSL, s, n, v, np);
 			gmt_M_free (GMT, v);
 		}
-		else if (!GMT->current.map.frame.axis[GMT_X].item[item[k]].active || fabs(dx) == 0.0) { /* Nothing */ }
+		else if (!A[GMT_X]->item[item[k]].active || fabs(dx) == 0.0) { /* Nothing */ }
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_TIME)
 			plot_timex_grid (GMT, PSL, w, e, s, n, item[k]);
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
@@ -1689,11 +1693,11 @@ GMT_LOCAL void plot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 		else	/* Draw grid lines that go S to N */
 			gmt_linearx_grid (GMT, PSL, w, e, s, n, dx);
 
-		if (GMT->current.map.frame.axis[GMT_Y].special == GMT_CUSTOM && (np = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[GMT_Y], 'g', &v, NULL))) {
+		if (A[GMT_Y]->item[k].special && (np = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[GMT_Y], 'g', &v, NULL))) {
 			plot_y_grid (GMT, PSL, w, e, v, np);
 			gmt_M_free (GMT, v);
 		}
-		else if (!GMT->current.map.frame.axis[GMT_Y].item[item[k]].active || fabs(dy) == 0.0) { /* Nothing */ }
+		else if (!A[GMT_Y]->item[item[k]].active || fabs(dy) == 0.0) { /* Nothing */ }
 		else if (GMT->current.proj.xyz_projection[GMT_Y] == GMT_TIME)
 			plot_timey_grid (GMT, PSL, w, e, s, n, item[k]);
 		else if (GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10)
@@ -1733,6 +1737,7 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	unsigned int i, j, k, nx, ny, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double x0, y0, xa, xb, ya, yb, xi, yj, *x = NULL, *y = NULL;
 	double angle, Ca, Sa, L, dx, dy;
+	struct GMT_PLOT_AXIS *A[2] = {NULL, NULL};
 
 	for (k = i = 0; k < 2; k++)
 		if (GMT->current.setting.map_grid_cross_size[k] > 0.0 && GMT->current.setting.map_grid_cross_type[k] == GMT_CROSS_NORMAL) i++;
@@ -1748,8 +1753,10 @@ GMT_LOCAL void plot_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[k]);
 
-		nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item[k]], &x, NULL);
-		ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item[k]], &y, NULL);
+		A[GMT_X] = &GMT->current.map.frame.axis[GMT_X];	/* Short-hand for x-axis */
+		A[GMT_Y] = &GMT->current.map.frame.axis[GMT_Y];	/* Short-hand for y-axis */
+		nx = gmtlib_coordinate_array (GMT, w, e, &A[GMT_X]->item[item[k]], &x, NULL);
+		ny = gmtlib_coordinate_array (GMT, s, n, &A[GMT_Y]->item[item[k]], &y, NULL);
 		dy = (ny > 1) ? y[1] - y[0] : GMT->current.map.dlat;
 		dx = (nx > 1) ? x[1] - x[0] : GMT->current.map.dlon;
 
@@ -5447,6 +5454,7 @@ GMT_LOCAL void plot_check_primary_secondary (struct GMT_CTRL *GMT) {
 			P = &(A->item[2*k]);	/* Primary item */
 			S = &(A->item[2*k+1]);	/* Secondary item */
 			if ((P->active + S->active) < 2) continue;	/* Primary and secondary not both set */
+			if (P->special || S->special) continue;		/* Primary and/or secondary are custom so no fixed interval to compare with */
 			/* Here they are both set, check the intervals */
 			dP = gmtlib_get_map_interval (GMT, P);
 			dS = gmtlib_get_map_interval (GMT, S);

@@ -3563,7 +3563,10 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 				if (!GMT->current.map.frame.primary) flag = (char)toupper ((int)flag);
 				gmtinit_set_titem (GMT, A, "0", flag, str[axis], true);	/* Store the findings for this segment */
 			}
-			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;
+			if (n_int[0]) A->item[GMT_ANNOT_UPPER].special = true;	/* custom  annotations */
+			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom interval annotations */
+			if (n_int[2]) A->item[GMT_TICK_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom tick annotations */
+			if (n_int[3]) A->item[GMT_GRID_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom gridline annotations */
 			GMT->current.map.frame.draw = true;
 			if (axis == GMT_Z) GMT->current.map.frame.drawz = true;
 		}
