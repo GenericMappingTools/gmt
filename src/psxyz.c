@@ -918,11 +918,20 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
-		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
+		if (S.read_symbol_cmd) {	/* Must prepare for a rough ride */
 			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
-		else if (GMT->common.l.active && !get_rgb && (!S.read_size || GMT->common.l.item.size > 0.0)) {
-			/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
-			gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+			if (GMT->common.l.active)
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol types. Option -l ignored.\n");
+		}
+		else if (GMT->common.l.active) {	/* Can we do auto-legend? */
+			if (get_rgb)
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol color. Option -l ignored.\n");
+			else if (S.read_size && gmt_M_is_zero (GMT->common.l.item.size))
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol size unless +s<size> is used. Option -l ignored.\n");
+			else {
+				/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
+				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+			}
 		}
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
@@ -1636,15 +1645,19 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			z_for_cpt = Zin->table[0]->segment[0]->data[Zin->n_columns-1];	/* Short hand to the required z-array */
 		}
 
-		if (GMT->common.l.active && S.symbol == GMT_SYMBOL_LINE) {
-			if (polygon) {	/* Place a rectangle in the legend */
-				int symbol = S.symbol;
-				S.symbol = PSL_RECT;
-				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
-				S.symbol = symbol;
+		if (GMT->common.l.active) {
+			if (S.symbol == GMT_SYMBOL_LINE) {
+				if (polygon) {	/* Place a rectangle in the legend */
+					int symbol = S.symbol;
+					S.symbol = PSL_RECT;
+					gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+					S.symbol = symbol;
+				}
+				else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
+					gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 			}
-			else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
-				gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+			else
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for selected feature. Option -l ignored.\n");
 		}
 
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
