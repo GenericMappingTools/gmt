@@ -14255,55 +14255,6 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 }
 
 /*! . */
-double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
-	double x1, y1, x2, y2, angle, direction;
-
-	gmt_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
-	gmt_geo_to_xy (GMT, lon2, lat2, &x2, &y2);
-	if (doubleAlmostEqualZero (y1, y2) && doubleAlmostEqualZero (x1, x2)) {	/* Special case that only(?) occurs at N or S pole or r=0 for GMT_POLAR */
-		if (fabs (fmod (lon1 - GMT->common.R.wesn[XLO] + 360.0, 360.0)) > fabs (fmod (lon1 - GMT->common.R.wesn[XHI] + 360.0, 360.0))) {	/* East */
-			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &x1, &y1);
-			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &x2, &y2);
-			GMT->current.map.corner = 1;
-		}
-		else {
-			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &x1, &y1);
-			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &x2, &y2);
-			GMT->current.map.corner = 3;
-		}
-		angle = d_atan2d (y2-y1, x2-x1) - 90.0;
-		if (GMT->current.proj.got_azimuths) angle += 180.0;
-		if (GMT->current.proj.flip) angle += 180.0;
-	}
-	else
-		angle = d_atan2d (y2 - y1, x2 - x1);
-
-	if (abs (GMT->current.map.prev_x_status) == 2 && abs (GMT->current.map.prev_y_status) == 2)	/* Last point outside */
-		direction = angle + 180.0;
-	else if (GMT->current.map.prev_x_status == 0 && GMT->current.map.prev_y_status == 0)		/* Last point inside */
-		direction = angle;
-	else {
-		if (abs (GMT->current.map.this_x_status) == 2 && abs (GMT->current.map.this_y_status) == 2)	/* This point outside */
-			direction = angle;
-		else if (GMT->current.map.this_x_status == 0 && GMT->current.map.this_y_status == 0)		/* This point inside */
-			direction = angle + 180.0;
-		else {	/* Special case of corners and sides only */
-			if (GMT->current.map.prev_x_status == GMT->current.map.this_x_status)
-				direction = (GMT->current.map.prev_y_status == 0) ? angle : angle + 180.0;
-			else if (GMT->current.map.prev_y_status == GMT->current.map.this_y_status)
-				direction = (GMT->current.map.prev_x_status == 0) ? angle : angle + 180.0;
-			else
-				direction = angle;
-
-		}
-	}
-
-	if (direction < 0.0) direction += 360.0;
-	if (direction >= 360.0) direction -= 360.0;
-	return (direction);
-}
-
-/*! . */
 int gmt_flip_justify (struct GMT_CTRL *GMT, unsigned int justify) {
 	/* Return the mirror-image justification */
 
