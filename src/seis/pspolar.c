@@ -116,7 +116,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->C.pen = C->E.pen = C->F.pen = C->G.pen = GMT->current.setting.map_default_pen;
 
 	C->C.size = GMT_DOT_SIZE;
-	gmt_init_fill (GMT, &C->E.fill, 250.0 / 255.0, 250.0 / 255.0, 250.0 / 255.0);
+	gmt_init_fill (GMT, &C->E.fill, gmt_M_is255(250), gmt_M_is255(250), gmt_M_is255(250));
 	gmt_init_fill (GMT, &C->F.fill, -1.0, -1.0, -1.0);
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	gmt_init_fill (GMT, &C->S2.fill, -1.0, -1.0, -1.0);

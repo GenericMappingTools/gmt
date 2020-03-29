@@ -169,7 +169,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->E.tessellate = true;	/* This is the default, use -E+s to turn that off (turned off for symbols later) */
 	C->F.mode = POINT;
 	C->F.geometry = GMT_IS_POINT;
-	gmt_init_fill (GMT, &C->G.fill[F_ID], 1.0, 192.0 / 255.0, 128.0 / 255.0);	/* Default fill color */
+	gmt_init_fill (GMT, &C->G.fill[F_ID], 1.0, gmt_M_is255(192), gmt_M_is255(128));	/* Default fill color */
 	gmt_init_fill (GMT, &C->G.fill[N_ID], 1.0, 1.0, 1.0);				/* Default text color */
 	C->G.fill[N_ID].rgb[3] = 0.25;	/* Default text transparency */
 	C->I.file = strdup ("http://maps.google.com/mapfiles/kml/pal4/icon57.png");	/* Default icon */
