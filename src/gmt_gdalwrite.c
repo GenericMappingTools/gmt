@@ -176,14 +176,14 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		to_GDALW->C.cpt = (float *)calloc(n_colors*4, sizeof(float));
 		for (k = 0; k < n_colors; k++) {
 			to_GDALW->C.cpt[k] = I->colormap[k] / 255.0;
-			to_GDALW->C.cpt[k + n_colors]   = I->colormap[k + n_colors]   / 255.0;
-			to_GDALW->C.cpt[k + n_colors*2] = I->colormap[k + n_colors*2] / 255.0;
+			to_GDALW->C.cpt[k + n_colors]   = gmt_M_is255(I->colormap[k + n_colors]);
+			to_GDALW->C.cpt[k + n_colors*2] = gmt_M_is255(I->colormap[k + n_colors*2]);
 		}
 		if (I->n_indexed_colors > 2000) {		/* Then we either have a Mx4 or a single alpha color */
 			float nc = I->n_indexed_colors / 1000.0;
 			if (nc - rint(nc) == 0) {			/* An Mx4 */
 				for (k = 0; k < n_colors; k++)
-					to_GDALW->C.cpt[k + n_colors*3] = I->colormap[k + n_colors*3] / 255.0;
+					to_GDALW->C.cpt[k + n_colors*3] = gmt_M_is255(I->colormap[k + n_colors*3]);
 			}
 		}
 	}
@@ -376,19 +376,19 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		hColorTable = GDALCreateColorTable (GPI_RGB);
 		if (prhs->C.n_colors < 2000 || dc > 0) {			/* Simple case. Not overloaded meaning */
 			for (i = 0; i < nColors; i++) {
-				sEntry.c1 = (short)(ptr[i] * 255);
-				sEntry.c2 = (short)(ptr[i+nColors] * 255);
-				sEntry.c3 = (short)(ptr[i+2*nColors] * 255);
+				sEntry.c1 = (short)(gmt_M_s255(ptr[i]));
+				sEntry.c2 = (short)(gmt_M_s255(ptr[i+nColors]));
+				sEntry.c3 = (short)(gmt_M_s255(ptr[i+2*nColors]));
 				sEntry.c4 = (short)255;
 				GDALSetColorEntry(hColorTable, i, &sEntry);
 			}
 		}
 		else {			/* Means the pointer points into a 4 columns array: RGB+alpha */
 			for (i = 0; i < (int)nc; i++) {
-				sEntry.c1 = (short)(ptr[i] * 255);
-				sEntry.c2 = (short)(ptr[i+  nColors] * 255);
-				sEntry.c3 = (short)(ptr[i+2*nColors] * 255);
-				sEntry.c4 = (short)(ptr[i+3*nColors] * 255);
+				sEntry.c1 = (short)(gmt_M_s255(ptr[i]));
+				sEntry.c2 = (short)(gmt_M_s255(ptr[i+  nColors]));
+				sEntry.c3 = (short)(gmt_M_s255(ptr[i+2*nColors]));
+				sEntry.c4 = (short)(gmt_M_s255(ptr[i+3*nColors]));
 				GDALSetColorEntry(hColorTable, i, &sEntry);
 			}
 		}
