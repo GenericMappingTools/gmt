@@ -5816,7 +5816,7 @@ static int chmatch (const char *target, const char *pat) {
    [[] - match '['.
    [][abc] match ], [, a, b or c
 */
-int matchwild (const char *str, const char *pattern) {
+GMT_LOCAL int matchwild (const char *str, const char *pattern) {
 	const char *target = str;
 	const char *pat = pattern;
 	int gobble;
@@ -7210,7 +7210,7 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 }
 
 /*! . */
-void gmtlib_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+GMT_LOCAL void support_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	/* Convert a (by default) discrete CPT made from a color list to a continuous CPT instead */
 	unsigned int k, i;
 	gmt_M_unused(GMT);
@@ -7230,7 +7230,7 @@ void gmtlib_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *file, bool *interpolate, bool *force_continuous) {
 	if (P->mode & GMT_CPT_COLORLIST && !P->categorical && !(*interpolate) && P->n_colors > 1) {	/* Color list with -T/min/max should be seen as continuous */
 		*force_continuous = true, P->mode |= GMT_CPT_CONTINUOUS;
-		gmtlib_make_continuous_colorlist (GMT, P);
+		support_make_continuous_colorlist (GMT, P);
 	}
 	if (*interpolate) {
 		if (!P->is_continuous && !(P->mode & GMT_CPT_COLORLIST)) {
@@ -7981,7 +7981,7 @@ unsigned int gmt_parse_inv_cpt (struct GMT_CTRL *GMT, char *arg) {
 	return (mode);
 }
 
-int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double *z_low, double *z_high) {
+GMT_LOCAL int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double *z_low, double *z_high) {
 	int ks;
 	if (!P->has_hinge) return GMT_NOTSET;	/* Not our concern here */
 	/* Claims to have a hinge */
@@ -13858,7 +13858,7 @@ unsigned int gmtlib_pow_array (struct GMT_CTRL *GMT, double min, double max, dou
 }
 
 /*! . */
-uint64_t gmt_time_array (struct GMT_CTRL *GMT, double min, double max, double inc, char unit, bool interval, double **array) {
+GMT_LOCAL uint64_t support_time_array (struct GMT_CTRL *GMT, double min, double max, double inc, char unit, bool interval, double **array) {
 	/* When T->active is true we must return interval start/stop even if outside min/max range */
 	uint64_t n = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
@@ -13894,7 +13894,7 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 
 	if (!T->active) return (0);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only true for i/I axis items */
-	n = (unsigned int)gmt_time_array (GMT, min, max, T->interval, T->unit, interval, array);
+	n = (unsigned int)support_time_array (GMT, min, max, T->interval, T->unit, interval, array);
 
 	return (n);
 }
@@ -16275,7 +16275,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		T->n = 1;
 	}
 	else if (T->vartime)	/* Must call special function that knows about variable months and years */
-		T->n = gmt_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
+		T->n = support_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
 	else if (T->logarithmic)	/* Must call special function that deals with logarithmic arrays */
 		T->n = gmtlib_log_array (GMT, t0, t1, inc, &(T->array));
 	else if (T->logarithmic2)	/* Must call special function that deals with logarithmic arrays */
