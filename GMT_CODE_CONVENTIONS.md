@@ -18,7 +18,7 @@ and will seek to reach a better level of compliance as we go forward.
 The official API provides declaration for all items accessible by
 the users of the API (e.g., the external interfaces to GMT from
 MATLAB, Python, and Julia). The are all accessed by including
-[gmt.h](https://github.com/GenericMappingTools/gmt/blob/master/src/gmt.h)
+[gmt.h](src/gmt.h)
 which includes [gmt_resources.h](https://github.com/GenericMappingTools/gmt/blob/master/src/gmt_resources.h).
 
 ### GMT API Functions
