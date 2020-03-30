@@ -57,7 +57,7 @@ This means all GMT grids would use double precision [default is float].
 Developers writing in C or C++ may choose to include [gmt_dev.h](https://github.com/GenericMappingTools/gmt/blob/master/src/gmt_dev.h)
 in their codes. This opens up access to a myriad of additional, lower-level functions,
 macros, structures, and enums and constants.  These are not documented and
-probably will never be documented.  however, we do have naming conventions
+probably will never be documented.  However, we do have naming conventions
 for these as well since there are different levels of exposure.
 
 ### Use by modules
