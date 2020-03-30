@@ -3,7 +3,7 @@
 ## Contents
 
 * [The documented external GMT API](#the-api)
-* [The undocumented internal GMT library](#the-Developer-library)
+* [The undocumented internal GMT library](#the-developer-library)
 
 The GMT source code contains a large variety of functions, variables,
 structures, macros, and constants (including enums).  Only a small
