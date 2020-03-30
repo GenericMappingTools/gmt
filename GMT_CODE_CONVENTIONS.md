@@ -96,7 +96,7 @@ it easy to find functions when debugging is needed.
 
 GMT defines numerous C macros for things were a functions would be overkill, given
 the extra overhead in calling a function.  Again, access to all GMT macros is given by
-including gmt_dev.h](https://github.com/GenericMappingTools/gmt/blob/master/src/gmt_dev.h).
+including [gmt_dev.h](https://github.com/GenericMappingTools/gmt/blob/master/src/gmt_dev.h).
 All GMT macros have the leading prefix **gmt_M_**, where the **M** indicates it is a macro
 and not a function.
 
