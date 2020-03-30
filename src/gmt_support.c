@@ -7777,7 +7777,7 @@ int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *
 
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Must be more careful */
 		if (!strncmp (item, "cpt", 3U)) return (GMT_FILE_NOT_FOUND);	/* Current CPT not available in classic mode */
-		snprintf (file, PATH_MAX, "%s/gmt.%s", GMT->parent->tmp_dir, item);	/* Global file in the tmp dir only */
+		snprintf (file, PATH_MAX, "%s/%s-gmt.%s", GMT->parent->tmp_dir, GMT->parent->session_name, item);	/* Global file in the tmp dir only */
 		return (GMT_NOERROR);
 	}
 
@@ -7820,7 +7820,7 @@ char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* A few more checks */
 		if (!strncmp (item, "cpt", 3U)) return NULL;	/* Current CPT cocept not available in classic mode */
 		/* For gridlines we must use a global file in the tmp dir */
-		snprintf (path, PATH_MAX, "%s/gmt.%s", GMT->parent->tmp_dir, item);
+		snprintf (path, PATH_MAX, "%s/%s-gmt.%s", GMT->parent->tmp_dir, GMT->parent->session_name, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		if (strict && file == NULL) goto FOUND_NOTHING;
 	}

@@ -1972,6 +1972,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_INFORMATION, "Segment header contained -S%s - ignored\n", s_args);
 					}
 				}
+				if (current_pen.mode == PSL_BEZIER && (S.symbol == GMT_SYMBOL_DECORATED_LINE || S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_FRONT)) {
+					GMT_Report (API, GMT_MSG_WARNING, "Bezier spline mode (modifier +s) is not supported for fronts, quoted, or decorated lines - mode ignored\n");
+					current_pen.mode = PSL_LINEAR;
+				}
 				if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
 					s_args[0] = '\0';	/* Recycle this string for this purpose */
 					strcat (s_args, " -G");

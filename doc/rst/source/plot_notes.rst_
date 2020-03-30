@@ -67,6 +67,13 @@ problem by splitting polygons into a west and east polygon or inserting
 artificial helper lines that makes a cut into the pole and back.  Such
 doctored polygons may be misrepresented in GMT.
 
+Bezier spline
+-------------
+
+The **+s** modifier to pen settings (**-W**) is limited to plotting lines and
+polygons.  Lines with embellishments (fronts, decorated, or quoted lines) are
+excluded.
+
 Auto-Legend
 -----------
 

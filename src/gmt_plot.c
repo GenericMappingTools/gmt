@@ -8172,6 +8172,11 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	}
 	GMT->current.ps.title[0] = '\0';	/* Reset title */
 	if (GMT->current.ps.oneliner) GMT->current.ps.active = true;	/* Since we are plotting we reset this here in case other modules have turned it off */
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Remove any gridline file we may have made in /tmp */
+		char file[PATH_MAX] = {""};
+		snprintf (file, PATH_MAX, "%s/%s-gmt.gridlines", GMT->parent->tmp_dir, GMT->parent->session_name);
+		gmt_remove_file (GMT, file);
+	}
 }
 
 void gmt_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {

@@ -39,6 +39,13 @@ circles) can be designed - these polygons can be painted and filled with
 a pattern. Other standard geometric symbols can also be used. See Appendix
 :ref:`App-custom_symbols` for macro definitions.
 
+Bezier spline
+-------------
+
+The **+s** modifier to pen settings (**-W**) is limited to plotting lines and
+polygons.  Lines with embellishments (fronts, decorated, or quoted lines) are
+excluded.
+
 Auto-Legend
 -----------
 
