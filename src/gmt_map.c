@@ -7255,6 +7255,7 @@ double gmt_mindist_to_point (struct GMT_CTRL *GMT, double lon, double lat, struc
 	return (d_min);
 }
 
+#if 0
 int gmtlib_small_circle_intersection (struct GMT_CTRL *GMT, double Ax, double Ay, double Ar, double Bx, double By, double Br, double Xx[2], double Yy[2]) {
 	/* Let (Ax,Ay) and (Bx,By) be the poles of two small circles, each with radius Ar and Br, respectively, in degrees.
 	 * Pass out the 0-2 intersections via Xx, Yx and return the number of intersections 0-2.
@@ -7293,6 +7294,7 @@ int gmtlib_small_circle_intersection (struct GMT_CTRL *GMT, double Ax, double Ay
 	gmt_cart_to_geo (GMT, &Yy[1], &Xx[1], P, true);		/* Recover lon,lat of 2nd intersection point */
 	return 2;
 }
+#endif
 
 /*! . */
 int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist) {
@@ -8886,6 +8888,7 @@ void gmt_ECEF_inverse (struct GMT_CTRL *GMT, double in[], double out[]) {
 	out[GMT_Z] = (p / cos_lat) - N;
 }
 
+#if 0
 /*! Convert ECEF coordinates to geodetic lon, lat, height given the 'to' parameters. Used in 7 params Bursa-Wolf transform */
 void gmt_ECEF_inverse_dest_datum (struct GMT_CTRL *GMT, double in[], double out[]) {
 	double sin_lat, cos_lat, N, p, theta, sin_theta, cos_theta;
@@ -8899,6 +8902,7 @@ void gmt_ECEF_inverse_dest_datum (struct GMT_CTRL *GMT, double in[], double out[
 	N = GMT->current.proj.datum.to.a / sqrt (1.0 - GMT->current.proj.datum.to.e_squared * sin_lat * sin_lat);
 	out[GMT_Z] = (p / cos_lat) - N;
 }
+#endif
 
 /*! . */
 double gmt_line_length (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, bool project) {

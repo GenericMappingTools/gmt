@@ -166,10 +166,10 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	}
 
 	if (I->n_indexed_colors > 0 && I->colormap) {
-		int n_colors = I->n_indexed_colors;
+		uint64_t n_colors = I->n_indexed_colors;
 
 		if (n_colors > 2000)		/* If colormap is Mx4 or has encoded the alpha color */
-			n_colors = (int)(floor(n_colors / 1000.0));
+			n_colors = (uint64_t)(floor(n_colors / 1000.0));
 
 		to_GDALW->C.active = true;
 		to_GDALW->C.n_colors = I->n_indexed_colors;

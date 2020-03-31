@@ -67,7 +67,6 @@
  *	gmtlib_read_ps              :
  *	gmtlib_write_ps             :
  *	gmtlib_duplicate_ps         :
- *	gmtlib_copy_ps              :
  *
  */
 
@@ -9286,16 +9285,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	return (GMT_NOERROR);
 }
 
-/*! . */
-struct GMT_POSTSCRIPT * gmtlib_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_from, unsigned int mode) {
-	/* Duplicates a GMT_POSTSCRIPT structure.  Mode not used yet */
-	struct GMT_POSTSCRIPT *P = gmtlib_create_ps (GMT, P_from->n_bytes);
-	gmt_M_unused(mode);
-	gmtlib_copy_ps (GMT, P, P_from);
-	return (P);
-}
-
-void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
+void gmtplot_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
 	/* Just duplicate from P_obj into P_copy */
 	struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P_copy);
 	if (P_obj->n_bytes > PH->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n_bytes, char);
@@ -9304,6 +9294,15 @@ void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct
 	P_copy->mode = P_obj->mode;
 	PH->n_alloc = P_copy->n_bytes = P_obj->n_bytes;
 	PH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
+}
+
+/*! . */
+struct GMT_POSTSCRIPT * gmtlib_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_from, unsigned int mode) {
+	/* Duplicates a GMT_POSTSCRIPT structure.  Mode not used yet */
+	struct GMT_POSTSCRIPT *P = gmtlib_create_ps (GMT, P_from->n_bytes);
+	gmt_M_unused(mode);
+	gmtplot_copy_ps (GMT, P, P_from);
+	return (P);
 }
 
 struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {

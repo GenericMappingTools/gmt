@@ -5976,7 +5976,7 @@ GMT_LOCAL void gmtmath_expand_recall_cmd (struct GMT_OPTION *list) {
 	}
 }
 
-bool color_operator_on_table (bool scalar, char *arg) {
+GMT_LOCAL bool color_operator_on_table (bool scalar, char *arg) {
 	if (scalar) return false;
 	if (strlen (arg) < 7) return false;
 	if (arg[3] != '2') return false;

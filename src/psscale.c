@@ -593,7 +593,7 @@ GMT_LOCAL void fix_format (char *unit, char *format) {
 	}
 }
 
-void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
+GMT_LOCAL void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	double vdim[PSL_MAX_DIMS], s = width / 0.1, p_width;
 	struct GMT_SYMBOL S;
 	struct GMT_FILL black;
