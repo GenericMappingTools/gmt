@@ -6311,9 +6311,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		/* Skip table files given as argument to the LDIST, PDIST, POINT, INSIDE operators */
 		next = opt->next;
 		while (next && next->option != GMT_OPT_INFILE) next = next->next;	/* Skip any options splitting the operand OPERATOR sequence */
-		if (next == NULL) continue;
-		if (!(strncmp (next->arg, "LDIST", 5U) && strncmp (next->arg, "PDIST", 5U) && strncmp (next->arg, "POINT", 5U) && strncmp (next->arg, "INSIDE", 6U))) continue;
-		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
+		if (next && !(strncmp (next->arg, "LDIST", 5U) && strncmp (next->arg, "PDIST", 5U) && strncmp (next->arg, "POINT", 5U) && strncmp (next->arg, "INSIDE", 6U))) continue;
+		/* Filenames,  operators, some numbers and = will all have been flagged as input files by the parser */
 		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
 		if (status == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible */
 		if (status != GRDMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
