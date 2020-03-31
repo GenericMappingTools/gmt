@@ -481,11 +481,13 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		if (n_cols > 3 * GDAL_TILE_SIZE && n_rows > 3 * GDAL_TILE_SIZE)
 			papszOptions = CSLAddString(papszOptions, "TILED=YES");
 
-		/* Be respectful to data type registration */
-		if (registration == 0)
-			GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Point", NULL);
-		else
-			GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Area", NULL);
+		if (is_geog || projWKT) {
+			/* Be respectful to data type registration */
+			if (registration == 0)
+				GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Point", NULL);
+			else
+				GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Area", NULL);
+		}
 	}
 	if (prhs->co_options)
 		free (prhs->co_options);		/* Was allocated with an strdup() in gmt_gdal_write_grd() */
@@ -497,8 +499,6 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			OSRSetFromUserInput(hSRS, "+proj=latlong +datum=WGS84");
 		else if (projWKT)				/* Even if is_geog == true, use the WKT string */
 			OSRSetFromUserInput(hSRS, projWKT);
-		else
-			OSRSetFromUserInput(hSRS, "LOCAL_CS[\"Unknown\"]");		/* Need a SRS for AREA_OR_POINT to be taken into account in GeoTiff */
 
 		OSRExportToWkt(hSRS, &pszSRS_WKT);
 		OSRDestroySpatialReference(hSRS);
