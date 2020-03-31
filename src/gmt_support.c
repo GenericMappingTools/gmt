@@ -8556,6 +8556,26 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	return (GMT_NOERROR);
 }
 
+void GMT_LOCAL gmtsupport_reset_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	/* Determine if CPT is continuous, B/W, or gray-scale */
+	unsigned int k;
+	gmt_M_unused (GMT);
+
+	P->is_continuous = false;
+	P->is_gray = P->is_bw = true;	/* May be changed when reading the actual colors */
+	for (k = 0; k < 3; k++) {
+		if (P->bfn[k].rgb[0] == -1.0) P->bfn[k].skip = true;
+		if (P->is_gray && !gmt_M_is_gray (P->bfn[k].rgb)) P->is_gray = P->is_bw = false;
+		if (P->is_bw && !gmt_M_is_bw(P->bfn[k].rgb)) P->is_bw = false;
+	}
+	for (k = 0; k < P->n_colors; k++) {
+		if (!P->is_continuous && !gmt_M_same_rgb(P->data[k].hsv_low,P->data[k].hsv_high)) P->is_continuous = true;
+		if (P->is_gray && !(gmt_M_is_gray (P->data[k].rgb_low) && gmt_M_is_gray (P->data[k].rgb_high))) P->is_gray = P->is_bw = false;
+		if (P->is_bw && !(gmt_M_is_bw(P->data[k].rgb_low) && gmt_M_is_bw(P->data[k].rgb_high))) P->is_bw = false;
+	}
+
+}
+
 /*! . */
 struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Truncate this CPT to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
@@ -8610,6 +8630,8 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	}
 	P->n_colors = last - first + 1;
 	P->data = gmt_M_memory (GMT, P->data, P->n_colors, struct GMT_LUT);	/* Truncate */
+	/* Check if anything has changed regarding continuous, gray scale, or B/W */
+	gmtsupport_reset_cpt (GMT, P);
 	return (P);
 }
 
