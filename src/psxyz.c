@@ -36,8 +36,9 @@
 /* Control structure for psxyz */
 
 struct PSXYZ_CTRL {
-	struct A {	/* -A[step] {NOT IMPLEMENTED YET} */
+	struct A {	/* -A[m|y|p|x|step] */
 		bool active;
+		unsigned int mode;
 		double step;
 	} A;
 	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
@@ -147,7 +148,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I[<intens>]] %s\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[m|p|x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I[<intens>]] %s\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
@@ -160,6 +161,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-Z,R3");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress drawing geographic line segments as great circle arcs, i.e., draw\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   straight lines unless m or p is appended to first follow meridian\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   then parallel, or vice versa. Note: -A requires constant z-coordinates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian data, use -Ax or -Ay to draw x- or y-staircase curves.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on t-value in 4rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S.  Without -S, psxyz excepts lines/polygons\n");
@@ -340,6 +345,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* Turn off draw_arc mode */
+				Ctrl->A.active = true;
+				switch (opt->arg[0]) {
+					case 'm': case 'y': Ctrl->A.mode = GMT_STAIRS_Y; break;
+					case 'p': case 'x': Ctrl->A.mode = GMT_STAIRS_X; break;
+
+#ifdef DEBUG
+					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature */
+#endif
+				}
+				break;
 			case 'C':	/* Vary symbol color with z */
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
@@ -570,6 +586,16 @@ GMT_LOCAL int dist_compare (const void *a, const void *b) {
 #endif
 }
 
+GMT_LOCAL bool no_z_variation (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *L) {
+	/* Determine if we are on a constant z-level plane */
+	unsigned int row;
+	gmt_M_unused (GMT);
+	for (row = 1; row < L->n_rows; row++) {
+		if (!doubleAlmostEqualZero (L->data[GMT_Z][row], L->data[GMT_Z][row-1])) return false;
+	}
+	return (true);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -780,6 +806,12 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	gmt_map_basemap (GMT);
+
+	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
+#ifdef DEBUG
+	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
+	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
+#endif
 
 	if (GMT->current.proj.z_pars[0] == 0.0) {	/* Only consider clipping if there is no z scaling */
 		if ((gmt_M_is_conical(GMT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
@@ -1670,8 +1702,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 				GMT_Report (API, GMT_MSG_INFORMATION, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
 
-				n = (int)L->n_rows;				/* Number of points in this segment */
-
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->data[GMT_X];
 				 * but reallocating x below lead to disasters.  */
 
@@ -1735,6 +1765,24 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
 					gmt_extract_label (GMT, L->header, S.G.label, SH->ogr);
 
+				if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH && no_z_variation (GMT, L)) {	/* Resample if spacing is too coarse and no z-variation */
+					uint64_t n_new;
+					double z_level = L->data[GMT_Z][0];	/* The constant z-level for this line */
+					if (gmt_M_is_geographic (GMT, GMT_IN))
+						n_new = gmt_fix_up_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
+					else
+						n_new = gmt_resample_path (GMT, &L->data[GMT_X], &L->data[GMT_Y], L->n_rows, 0.5 * hypot (L->data[GMT_X][1]-L->data[GMT_X][0], L->data[GMT_Y][1]-L->data[GMT_Y][0]), GMT_TRACK_FILL);
+					if (n_new == 0) {
+						Return (GMT_RUNTIME_ERROR);
+					}
+					L->n_rows = n_new;
+					L->data[GMT_Z] = gmt_M_memory (GMT, L->data[GMT_Z], L->n_rows, double);	/* Must resize this array too */
+					for (k = 0; k < L->n_rows; k++) L->data[GMT_Z][k] = z_level;
+					gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
+				}
+
+
+				n = (int)L->n_rows;				/* Number of points in this segment */
 				xp = gmt_M_memory (GMT, NULL, n, double);
 				yp = gmt_M_memory (GMT, NULL, n, double);
 
