@@ -485,6 +485,7 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 }
 #endif
 
+#if defined(USE_COMMON_LONG_OPTIONS)
 GMT_LOCAL void gmtinit_handle_escape_text (char *text, char key, int way) {
 	/* Deal with text that contains modifiers +? that should be seen as plain text
 	 * because they have a leading escape ("My dumb \+p text").  If way == 1 then
@@ -514,7 +515,6 @@ GMT_LOCAL void gmtinit_handle_escape_text (char *text, char key, int way) {
 	}
 }
 
-#if defined(USE_COMMON_LONG_OPTIONS)
 /*! . */
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
 	/* Determine if this long-format arg is found in one of the two keyword lists kw1 (common) and kw2 (module).
@@ -4714,7 +4714,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 							break;
 						case 't':	/* Gave optional zero-base angle, i.e., a rotation [0] */
 							GMT->current.proj.pars[1] = atof (&word[1]);
-							break;	
+							break;
 						case 'z':	/* Gave optional +z[p|radius] for annotating depths rather than radius */
 							switch (word[1]) {	/* Check argument */
 								case 'p':  /* Annotate planetary radius minus r */
@@ -4744,7 +4744,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				if (d) d[0] = '+';	/* Restore modifiers */
 //				if (GMT->current.proj.z_down && GMT->current.proj.flip) {
 //					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: Cannot select both +f and +z modifiers\n");
-//					error++;				
+//					error++;
 //				}
 			}
 			else {	/* No modifiers, so look for deprecated syntax such as -Jp|p[a|A], slash-separated scale|width and angular offset, and trailing r or z codes */
