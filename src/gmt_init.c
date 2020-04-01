@@ -5236,7 +5236,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 
 	/* text[0] is the leading 'f' for front */
-	if (text[1] == '+' && !strchr ("bcflrsStop", text[2])) S->f.f_exact = true, k0 = 2;	/* Special leading = to be skipped when looking for modifiers */
+	if (text[1] == '+' && !strchr ("bcflrsStop", text[2])) S->f.f_exact = true, k0 = 2;	/* Special leading + to be skipped when looking for modifiers */
 	for (k = k0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 	mods = (text[k] == '+');
