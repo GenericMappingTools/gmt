@@ -329,6 +329,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */
 	double *y;
+	double gridline_spacing[2];		/* Holds last gridline spacing used for this plot, via gmt.history */
 	char format[3][2][GMT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
 	struct GMT_SUBPLOT panel;	/* Current subplot panel settings */
 	struct GMT_INSET inset;		/* Current inset settings */

@@ -7812,13 +7812,13 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned
 
 char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict) {
 	/* If modern and a current item file exists, allocate a string with its name and return, else NULL.
-	 * Currently, item can be cpt or grid (gridlines).
+	 * Currently, item can be cpt.
 	 * if strict is true the file must be available for the current item, otherwise we may look up the hierarchical chain */
 	char path[PATH_MAX] = {""}, panel[GMT_LEN16] = {""}, *file = NULL;
 	int fig, subplot, inset;
 
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* A few more checks */
-		if (!strncmp (item, "cpt", 3U)) return NULL;	/* Current CPT cocept not available in classic mode */
+		if (!strncmp (item, "cpt", 3U)) return NULL;	/* Current CPT concept not available in classic mode */
 		/* For gridlines we must use a global file in the tmp dir */
 		snprintf (path, PATH_MAX, "%s/%s-gmt.%s", GMT->parent->tmp_dir, GMT->parent->session_name, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
