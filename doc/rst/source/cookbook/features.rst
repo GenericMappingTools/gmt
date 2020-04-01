@@ -739,8 +739,9 @@ specification. The line attribute modifiers are:
 
 * **+s**
     Normally, all PostScript line drawing is implemented as a linear spline, i.e., we simply
-    draw straight line-segments between the given data points.  Use this modifier to render the
-    line using Bezier splines for a smoother curve.
+    draw straight line-segments between the map-projected data points.  Use this modifier to render the
+    line using Bezier splines for a smoother curve. **Note**: The spline is fit to the projected
+    2-D coordinates, not the raw user coordinates (i.e., it is not a spherical surface spline).
 
 .. _Line_bezier:
 
@@ -749,7 +750,7 @@ specification. The line attribute modifiers are:
    :align: center
 
    (left) Normal plotting of line given input points (red circles) via **-W**\ 2p. (right) Letting
-   the points be interpolated by a Bezier cubic spline via **-W**\ 2p\ **+s**.
+   the projected points be interpolated by a Bezier cubic spline via **-W**\ 2p\ **+s**.
 
 * **+v**\ [**b**\|\ **e**]\ *vspecs*
     By default, lines are normally drawn from start to end.  Using the **+v** modifier you can

@@ -610,7 +610,7 @@ this program:
       API = GMT_Create_Session ("test", 2U, 0, NULL);
       /* Read in our data table to memory */
       D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL,
-          "@table_5.11", NULL);
+          "@Table_5_11.txt", NULL);
       /* Associate our data table with a virtual file */
       GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, D, input);
       /* Create a virtual file to hold the resulting grid */

@@ -522,9 +522,9 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 		/* If a transparent color was found, we replace it with a unique one */
 		if (has_trans) {
-			Ctrl->G.rgb[PSIMG_TRA][0] = r / 255.;
-			Ctrl->G.rgb[PSIMG_TRA][1] = g / 255.;
-			Ctrl->G.rgb[PSIMG_TRA][2] = b / 255.;
+			Ctrl->G.rgb[PSIMG_TRA][0] = gmt_M_is255(r);
+			Ctrl->G.rgb[PSIMG_TRA][1] = gmt_M_is255(g);
+			Ctrl->G.rgb[PSIMG_TRA][2] = gmt_M_is255(b);
 		}
 
 		picture = (unsigned char *)I->data;

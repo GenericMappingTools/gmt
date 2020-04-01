@@ -549,7 +549,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Option -Z: Cannot access file %s\n", Ctrl->Z.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.scale == 0.0, "Option -W: Scale cannot be zero\n");
 
-	if (!Ctrl->C.active && (c = gmt_get_current_cpt (API->GMT))) {
+	if (!Ctrl->C.active && (c = gmt_get_current_item (API->GMT, "cpt", false))) {
 		Ctrl->C.active = true;	/* Select current CPT */
 		gmt_M_str_free (c);
 	}
@@ -593,7 +593,7 @@ GMT_LOCAL void fix_format (char *unit, char *format) {
 	}
 }
 
-void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
+GMT_LOCAL void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	double vdim[PSL_MAX_DIMS], s = width / 0.1, p_width;
 	struct GMT_SYMBOL S;
 	struct GMT_FILL black;

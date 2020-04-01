@@ -5976,7 +5976,7 @@ GMT_LOCAL void gmtmath_expand_recall_cmd (struct GMT_OPTION *list) {
 	}
 }
 
-bool color_operator_on_table (bool scalar, char *arg) {
+GMT_LOCAL bool color_operator_on_table (bool scalar, char *arg) {
 	if (scalar) return false;
 	if (strlen (arg) < 7) return false;
 	if (arg[3] != '2') return false;
@@ -6313,12 +6313,12 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot have data files when -A is specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -A files */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -A files */
 		if ((A_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s\n", Ctrl->A.file);
 			Return (API->error);
 		}
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		rhs = A_in->table[0];	/* Only one table */
 		if (Ctrl->A.w_mode) {	/* Need at least 3 columns */
 			if (rhs->n_columns < 3) {

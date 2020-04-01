@@ -52,7 +52,6 @@ struct GSHHG_VERSION {
 };
 
 /* Prototypes */
-EXTERN_MSC int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version);
 EXTERN_MSC int gshhg_require_min_version (const char* filename, const struct GSHHG_VERSION min_version);
 
 #ifdef __cplusplus

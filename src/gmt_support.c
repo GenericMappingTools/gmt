@@ -1353,14 +1353,14 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 
 	if (gmt_M_cpt_mod (*arg)) {	/* Gave modifiers for a unit change) */
 		char string[PATH_MAX] = {""};
-		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
+		if ((cpt = gmt_get_current_item (API->GMT, "cpt", false)) == NULL) return false;	/* No current CPT */
 		snprintf (string, PATH_MAX, "%s%s", cpt, *arg);	/* Append the modifiers to the current CPT name */
 		gmt_M_str_free (cpt);
 		gmt_M_str_free (*arg);
 		*arg = strdup (string);		/* Pass back the name of the current CPT with modifiers */
 	}
 	else if (*arg == NULL) {	/* Noting given */
-		if ((cpt = gmt_get_current_cpt (API->GMT)) == NULL) return false;	/* No current CPT */
+		if ((cpt = gmt_get_current_item (API->GMT, "cpt", false)) == NULL) return false;	/* No current CPT */
 		*arg = cpt;		/* Pass back the name of the current CPT */
 	}
 	else /* Got something already */
@@ -5816,7 +5816,7 @@ static int chmatch (const char *target, const char *pat) {
    [[] - match '['.
    [][abc] match ], [, a, b or c
 */
-int matchwild (const char *str, const char *pattern) {
+GMT_LOCAL int matchwild (const char *str, const char *pattern) {
 	const char *target = str;
 	const char *pat = pattern;
 	int gobble;
@@ -7210,7 +7210,7 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 }
 
 /*! . */
-void gmtlib_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+GMT_LOCAL void support_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	/* Convert a (by default) discrete CPT made from a color list to a continuous CPT instead */
 	unsigned int k, i;
 	gmt_M_unused(GMT);
@@ -7230,7 +7230,7 @@ void gmtlib_make_continuous_colorlist (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *file, bool *interpolate, bool *force_continuous) {
 	if (P->mode & GMT_CPT_COLORLIST && !P->categorical && !(*interpolate) && P->n_colors > 1) {	/* Color list with -T/min/max should be seen as continuous */
 		*force_continuous = true, P->mode |= GMT_CPT_CONTINUOUS;
-		gmtlib_make_continuous_colorlist (GMT, P);
+		support_make_continuous_colorlist (GMT, P);
 	}
 	if (*interpolate) {
 		if (!P->is_continuous && !(P->mode & GMT_CPT_COLORLIST)) {
@@ -7771,26 +7771,38 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	return true;	/* Acting as if it is a master table */
 }
 
-void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int cpt_flags) {
-	char file[PATH_MAX] = {""}, panel[GMT_LEN16] = {""};
+int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *file) {
+	char panel[GMT_LEN16] = {""};
 	int fig, subplot, inset;
 
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;
-	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
-	/* Save this specially scaled CPT for other uses in the modern session */
-	/* Set the correct output file name given the CPT level */
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Must be more careful */
+		if (!strncmp (item, "cpt", 3U)) return (GMT_FILE_NOT_FOUND);	/* Current CPT not available in classic mode */
+		snprintf (file, PATH_MAX, "%s/%s-gmt.%s", GMT->parent->tmp_dir, GMT->parent->session_name, item);	/* Global file in the tmp dir only */
+		return (GMT_NOERROR);
+	}
+
+	gmtlib_get_graphics_item (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the graphics item */
+
+	/* Set the correct output file name given the graphics item */
 	if (inset)	/* Only one inset may be active at any given time */
-		snprintf (file, PATH_MAX, "%s/gmt.inset.cpt", GMT->parent->gwf_dir);
-	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific CPT */
+		snprintf (file, PATH_MAX, "%s/gmt.inset.%s", GMT->parent->gwf_dir, item);
+	else if (subplot & GMT_SUBPLOT_ACTIVE) {	/* Either subplot master or a panel-specific item */
 		if (subplot & GMT_PANEL_NOTSET)	/* Master for all subplot panels */
-			snprintf (file, PATH_MAX, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
-		else	/* CPT for just this subplot */
-			snprintf (file, PATH_MAX, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
+			snprintf (file, PATH_MAX, "%s/gmt.%d.subplot.%s", GMT->parent->gwf_dir, fig, item);
+		else	/* item for just this subplot */
+			snprintf (file, PATH_MAX, "%s/gmt.%d.panel.%s.%s", GMT->parent->gwf_dir, fig, panel, item);
 	}
 	else if (fig)	/* Limited to one figure only */
-		snprintf (file, PATH_MAX, "%s/gmt.%d.cpt", GMT->parent->gwf_dir, fig);
+		snprintf (file, PATH_MAX, "%s/gmt.%d.%s", GMT->parent->gwf_dir, fig, item);
 	else
-		snprintf (file, PATH_MAX, "%s/gmt.cpt", GMT->parent->gwf_dir);
+		snprintf (file, PATH_MAX, "%s/gmt.%s", GMT->parent->gwf_dir, item);
+	return (GMT_NOERROR);
+}
+
+void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int cpt_flags) {
+	char file[PATH_MAX] = {""};
+
+	if (gmtlib_set_current_item_file (GMT, "cpt", file) == GMT_FILE_NOT_FOUND) return;
 
 	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, P) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to save current CPT file to %s !\n", file);
@@ -7798,42 +7810,61 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Save current CPT file to %s !\n", file);
 }
 
-char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
-	/* If modern and a current CPT exists, allocate a string with its name and return, else NULL */
+char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict) {
+	/* If modern and a current item file exists, allocate a string with its name and return, else NULL.
+	 * Currently, item can be cpt.
+	 * if strict is true the file must be available for the current item, otherwise we may look up the hierarchical chain */
 	char path[PATH_MAX] = {""}, panel[GMT_LEN16] = {""}, *file = NULL;
 	int fig, subplot, inset;
 
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) return NULL;		/* Not available in classic mode */
-	gmtlib_get_cpt_level (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
-	/* Find the appropriate level CPT for where we are but may have to go up the list */
-
-	if (inset) {	/* See if an inset CPT exists */
-		snprintf (path, PATH_MAX, "%s/gmt.inset.cpt", GMT->parent->gwf_dir);
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* A few more checks */
+		if (!strncmp (item, "cpt", 3U)) return NULL;	/* Current CPT concept not available in classic mode */
+		/* For gridlines we must use a global file in the tmp dir */
+		snprintf (path, PATH_MAX, "%s/%s-gmt.%s", GMT->parent->tmp_dir, GMT->parent->session_name, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (strict && file == NULL) goto FOUND_NOTHING;
+	}
+
+	/* Modern mode */
+
+	gmtlib_get_graphics_item (GMT->parent, &fig, &subplot, panel, &inset);	/* Determine the cpt level */
+	/* Find the appropriate graphics item for where we are but may have to go up the hierarchy */
+
+	if (inset) {	/* See if an inset item exists */
+		snprintf (path, PATH_MAX, "%s/gmt.inset.%s", GMT->parent->gwf_dir, item);
+		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (strict && file == NULL) goto FOUND_NOTHING;
 	}
 	if (!file && (subplot & GMT_SUBPLOT_ACTIVE)) {	/* Nothing yet, see if subplot has one */
-		if ((subplot & GMT_PANEL_NOTSET) == 0) {	/* Panel-specific CPT available? */
-			snprintf (path, PATH_MAX, "%s/gmt.%d.panel.%s.cpt", GMT->parent->gwf_dir, fig, panel);
+		if ((subplot & GMT_PANEL_NOTSET) == 0) {	/* Panel-specific item available? */
+			snprintf (path, PATH_MAX, "%s/gmt.%d.panel.%s.%s", GMT->parent->gwf_dir, fig, panel, item);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+			if (strict && file == NULL) goto FOUND_NOTHING;
 		}
-		if (!file) {	/* No, try subplot master CPT instead? */
-			snprintf (path, PATH_MAX, "%s/gmt.%d.subplot.cpt", GMT->parent->gwf_dir, fig);
+		if (!file) {	/* No, try subplot master item instead? */
+			snprintf (path, PATH_MAX, "%s/gmt.%d.subplot.%s", GMT->parent->gwf_dir, fig, item);
 			if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+			if (strict && file == NULL) goto FOUND_NOTHING;
 		}
 	}
-	if (!file && fig) {	/* Not found a CPT yet, so try one for this specific figure */
-		snprintf (path, PATH_MAX, "%s/gmt.%d.cpt", GMT->parent->gwf_dir, fig);
+	if (!file && fig) {	/* Not found a item file yet, so try one for this specific figure */
+		snprintf (path, PATH_MAX, "%s/gmt.%d.%s", GMT->parent->gwf_dir, fig, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (strict && file == NULL) goto FOUND_NOTHING;
 	}
-	if (!file) {	/* Not found a CPT yet, finally try the session master */
-		snprintf (path, PATH_MAX, "%s/gmt.cpt", GMT->parent->gwf_dir);
+	if (!file) {	/* Not found an item file yet, finally try the session master */
+		snprintf (path, PATH_MAX, "%s/gmt.%s", GMT->parent->gwf_dir, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
+		if (strict && file == NULL) goto FOUND_NOTHING;
 	}
-	if (file)
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selected current CPT file %s\n", file);
-	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No current CPT file found\n");
-	return (file);
+	if (file) {
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selected current %s file %s\n", file, item);
+		return (file);
+	}
+
+FOUND_NOTHING:	
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No current %s file found\n", item);
+	return (NULL);
 }
 
 /*! . */
@@ -7877,7 +7908,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (NULL);
 		}
 
-		if (file == NULL && (current_cpt = gmt_get_current_cpt (GMT))) {	/* There is a current CPT in modern mode */
+		if (file == NULL && (current_cpt = gmt_get_current_item (GMT, "cpt", false))) {	/* There is a current CPT in modern mode */
 			P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, current_cpt, NULL);
 			gmt_M_str_free (current_cpt);
 			return (P);
@@ -7950,7 +7981,7 @@ unsigned int gmt_parse_inv_cpt (struct GMT_CTRL *GMT, char *arg) {
 	return (mode);
 }
 
-int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double *z_low, double *z_high) {
+GMT_LOCAL int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double *z_low, double *z_high) {
 	int ks;
 	if (!P->has_hinge) return GMT_NOTSET;	/* Not our concern here */
 	/* Claims to have a hinge */
@@ -8525,6 +8556,26 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	return (GMT_NOERROR);
 }
 
+void GMT_LOCAL gmtsupport_reset_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	/* Determine if CPT is continuous, B/W, or gray-scale */
+	unsigned int k;
+	gmt_M_unused (GMT);
+
+	P->is_continuous = false;
+	P->is_gray = P->is_bw = true;	/* May be changed when reading the actual colors */
+	for (k = 0; k < 3; k++) {
+		if (P->bfn[k].rgb[0] == -1.0) P->bfn[k].skip = true;
+		if (P->is_gray && !gmt_M_is_gray (P->bfn[k].rgb)) P->is_gray = P->is_bw = false;
+		if (P->is_bw && !gmt_M_is_bw(P->bfn[k].rgb)) P->is_bw = false;
+	}
+	for (k = 0; k < P->n_colors; k++) {
+		if (!P->is_continuous && !gmt_M_same_rgb(P->data[k].hsv_low,P->data[k].hsv_high)) P->is_continuous = true;
+		if (P->is_gray && !(gmt_M_is_gray (P->data[k].rgb_low) && gmt_M_is_gray (P->data[k].rgb_high))) P->is_gray = P->is_bw = false;
+		if (P->is_bw && !(gmt_M_is_bw(P->data[k].rgb_low) && gmt_M_is_bw(P->data[k].rgb_high))) P->is_bw = false;
+	}
+
+}
+
 /*! . */
 struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Truncate this CPT to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
@@ -8579,6 +8630,8 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	}
 	P->n_colors = last - first + 1;
 	P->data = gmt_M_memory (GMT, P->data, P->n_colors, struct GMT_LUT);	/* Truncate */
+	/* Check if anything has changed regarding continuous, gray scale, or B/W */
+	gmtsupport_reset_cpt (GMT, P);
 	return (P);
 }
 
@@ -9983,7 +10036,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading this file */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
 		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {	/* Failure to read the file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
@@ -10004,7 +10057,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 				}
 			}
 		}
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	}
 	else if (G->fixed) {
 		unsigned int first = 0;
@@ -10018,13 +10071,13 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -F files */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
 		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		if (T->n_columns < 2) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Data file %s has only %" PRIu64 " data columns!\n", G->file, T->n_columns);
 			return (error);
@@ -12679,7 +12732,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	P = gmt_M_memory (GMT, NULL, 1, struct GMT_MAP_PANEL);
 	P->radius = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_RADIUS;	/* 6 pt */
 	gmt_init_fill (GMT, &P->fill, -1.0, -1.0, -1.0);			/* Default is no fill unless specified */
-	gmt_init_fill (GMT, &P->sfill, 127.0/255.0, 127.0/255.0, 127.0/255.0);			/* Default if gray shade is used */
+	gmt_init_fill (GMT, &P->sfill, gmt_M_is255 (127), gmt_M_is255 (127), gmt_M_is255 (127));	/* Default if gray shade is used */
 	P->pen1 = GMT->current.setting.map_frame_pen;			/* Heavier pen for main outline */
 	P->pen2 = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
 	P->gap = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_GAP;	/* Default is 2p */
@@ -13827,7 +13880,7 @@ unsigned int gmtlib_pow_array (struct GMT_CTRL *GMT, double min, double max, dou
 }
 
 /*! . */
-uint64_t gmt_time_array (struct GMT_CTRL *GMT, double min, double max, double inc, char unit, bool interval, double **array) {
+GMT_LOCAL uint64_t support_time_array (struct GMT_CTRL *GMT, double min, double max, double inc, char unit, bool interval, double **array) {
 	/* When T->active is true we must return interval start/stop even if outside min/max range */
 	uint64_t n = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
@@ -13863,7 +13916,7 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 
 	if (!T->active) return (0);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only true for i/I axis items */
-	n = (unsigned int)gmt_time_array (GMT, min, max, T->interval, T->unit, interval, array);
+	n = (unsigned int)support_time_array (GMT, min, max, T->interval, T->unit, interval, array);
 
 	return (n);
 }
@@ -13898,14 +13951,15 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	if (!GMT->common.R.oblique)	/* Eliminate items outside rectangular w/e/s/n/z0/z1 bounds */
 		limit[0] = GMT->common.R.wesn[2*A->id], limit[1] = GMT->common.R.wesn[2*A->id+1];
 
-	gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -F files */
+	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+	GMT->current.io.max_cols_to_read = 1;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open custom annotation file %s!\n", A->file_custom);
 		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 		return (0);
 	}
-	gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
@@ -13947,7 +14001,7 @@ unsigned int gmtlib_coordinate_array (struct GMT_CTRL *GMT, double min, double m
 
 	if (!T->active) return (0);	/* Nothing to do */
 
-	if (GMT->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
+	if (T->special && GMT->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
 		n = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[T->parent], (char)tolower((unsigned char) T->type), array, labels);
 		return (n);
 	}
@@ -13981,9 +14035,10 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 	 * For instance, if our interval is 3 months we do not want "January" centered
 	 * on that quarter.  If the position is outside our range we return true
 	 */
+	bool is_interval = (T->type == 'i' || T->type == 'I');
 	double range, start, stop;
 
-	if (T->special) {
+	if (is_interval && T->special) {
 		range = 0.5 * (coord[1] - coord[0]);	/* Half width of interval in internal representation */
 		start = MAX (min, coord[0]);			/* Start of interval, but not less that start of axis */
 		stop  = MIN (max, coord[1]);			/* Stop of interval,  but not beyond end of axis */
@@ -13991,7 +14046,7 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 		*pos = 0.5 * (start + stop);				/* Set half-way point */
 		if (((*pos) - GMT_CONV8_LIMIT) < min || ((*pos) + GMT_CONV8_LIMIT) > max) return (true);	/* Outside axis range */
 	}
-	else if (T->type == 'i' || T->type == 'I') {
+	else if (is_interval) {
 		if (gmt_M_uneven_interval (T->unit) || T->interval != 1.0) {	/* Must find next month to get month centered correctly */
 			struct GMT_MOMENT_INTERVAL Inext;
 			gmt_M_memset (&Inext, 1, struct GMT_MOMENT_INTERVAL);	/* Wipe it */
@@ -14219,55 +14274,6 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	}
 
 	return;
-}
-
-/*! . */
-double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
-	double x1, y1, x2, y2, angle, direction;
-
-	gmt_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
-	gmt_geo_to_xy (GMT, lon2, lat2, &x2, &y2);
-	if (doubleAlmostEqualZero (y1, y2) && doubleAlmostEqualZero (x1, x2)) {	/* Special case that only(?) occurs at N or S pole or r=0 for GMT_POLAR */
-		if (fabs (fmod (lon1 - GMT->common.R.wesn[XLO] + 360.0, 360.0)) > fabs (fmod (lon1 - GMT->common.R.wesn[XHI] + 360.0, 360.0))) {	/* East */
-			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &x1, &y1);
-			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &x2, &y2);
-			GMT->current.map.corner = 1;
-		}
-		else {
-			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &x1, &y1);
-			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &x2, &y2);
-			GMT->current.map.corner = 3;
-		}
-		angle = d_atan2d (y2-y1, x2-x1) - 90.0;
-		if (GMT->current.proj.got_azimuths) angle += 180.0;
-		if (GMT->current.proj.flip) angle += 180.0;
-	}
-	else
-		angle = d_atan2d (y2 - y1, x2 - x1);
-
-	if (abs (GMT->current.map.prev_x_status) == 2 && abs (GMT->current.map.prev_y_status) == 2)	/* Last point outside */
-		direction = angle + 180.0;
-	else if (GMT->current.map.prev_x_status == 0 && GMT->current.map.prev_y_status == 0)		/* Last point inside */
-		direction = angle;
-	else {
-		if (abs (GMT->current.map.this_x_status) == 2 && abs (GMT->current.map.this_y_status) == 2)	/* This point outside */
-			direction = angle;
-		else if (GMT->current.map.this_x_status == 0 && GMT->current.map.this_y_status == 0)		/* This point inside */
-			direction = angle + 180.0;
-		else {	/* Special case of corners and sides only */
-			if (GMT->current.map.prev_x_status == GMT->current.map.this_x_status)
-				direction = (GMT->current.map.prev_y_status == 0) ? angle : angle + 180.0;
-			else if (GMT->current.map.prev_y_status == GMT->current.map.this_y_status)
-				direction = (GMT->current.map.prev_x_status == 0) ? angle : angle + 180.0;
-			else
-				direction = angle;
-
-		}
-	}
-
-	if (direction < 0.0) direction += 360.0;
-	if (direction >= 360.0) direction -= 360.0;
-	return (direction);
 }
 
 /*! . */
@@ -16240,7 +16246,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		unsigned int save_max_cols_to_read = GMT->current.io.max_cols_to_read;
 		int error;
 		if (T->temporal) GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_ABSTIME;
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading this file */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
 		GMT->current.io.record_type[GMT_IN] = GMT_READ_NORMAL;
 		GMT->current.io.trailing_text[GMT_IN] = false;
 		if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) return (GMT_PARSE_ERROR);
@@ -16250,7 +16256,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 		GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 		GMT->current.io.max_cols_to_read = save_max_cols_to_read;
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		if (D->n_segments > 1) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: File %s has more than one segment\n", option, T->file);
 			GMT_Destroy_Data (GMT->parent, &D);
@@ -16291,7 +16297,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		T->n = 1;
 	}
 	else if (T->vartime)	/* Must call special function that knows about variable months and years */
-		T->n = gmt_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
+		T->n = support_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
 	else if (T->logarithmic)	/* Must call special function that deals with logarithmic arrays */
 		T->n = gmtlib_log_array (GMT, t0, t1, inc, &(T->array));
 	else if (T->logarithmic2)	/* Must call special function that deals with logarithmic arrays */

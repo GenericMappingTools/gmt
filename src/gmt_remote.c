@@ -274,7 +274,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 	return 0;
 }
 
-struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
+GMT_LOCAL struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	/* Read contents of the hash file into an array of structs */
 	int k;
 	FILE *fp = NULL;
