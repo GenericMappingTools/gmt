@@ -13236,7 +13236,8 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 }
 
 GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt_J, struct GMT_SUBPLOT *P, struct GMT_INSET *I, bool is_psrose) {
-	/* Look for -J<code>[-]?[d|l|p<pow>][/[-]?[d|l|p<pow>]] which needs one or two ?-marks to be replaced with dummy scales. */
+	/* Look for Cartesian -Jx|X[-]?[d|l|p<pow>][/[-]?[d|l|p<pow>]] which needs one or two ?-marks to be replaced with dummy Cartesian scales.
+	 * Otherwise, -J<code>? or -J<code><arg>/<arg>/.../? which needs only one ?-mark to be replaced with dummy map scale. */
 
 	char sclX[GMT_LEN64] = {""}, sclY[GMT_LEN64] = {""}, arg[GMT_LEN128] = {""}, oldarg[GMT_LEN128] = {""};
 	char *slash = NULL, *c = NULL, *c2 = NULL;
@@ -13246,9 +13247,10 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	strncpy (oldarg, opt_J->arg, GMT_LEN128-1);
 
 	/* Here, c[0] is the first question mark (there may be one or two) */
-	if (strchr ("xX", opt_J->arg[0])) {	/* Cartesian projection */
-		slash = strchr (opt_J->arg, '/');	/* slash[0] == '/' means we got separate x and y scale args for linear/log/power axes */
-		if (slash && slash[1] == '-') P->dir[GMT_Y] = -1;	/* While any negative x-scale will automatically be there, for y we just make sure we scale by -1 */
+	if (strchr ("xX", opt_J->arg[0])) {	/* Cartesian projection, must worry about separate x and y settings if a slash is found */
+		slash = strchr (opt_J->arg, '/');	/* slash[0] == '/' means we got separate x and y scale args for linear[d]/log/power axes */
+		if (slash && slash[1] == '-')	/* While any negative x-scale will automatically be included, for y we just make sure we scale by -1 if a hyphen is found after the slash*/
+			P->dir[GMT_Y] = -1;
 	}
 	if (P) {	/* Subplot mode */
 		if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1) {	/* Nonstandard Cartesian directions set via subplot */
