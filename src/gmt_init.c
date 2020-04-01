@@ -13241,6 +13241,7 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 
 	char sclX[GMT_LEN64] = {""}, sclY[GMT_LEN64] = {""}, arg[GMT_LEN128] = {""}, oldarg[GMT_LEN128] = {""};
 	char *slash = NULL, *c = NULL, *c2 = NULL;
+	int Iyscl = 1;
 
 	if (opt_J == NULL) return false;	/* No -J option to update */
 	if ((c = strchr (opt_J->arg, '?')) == NULL) return false;	/* No questionmark in the argument to update */
@@ -13249,13 +13250,14 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	/* Here, c[0] is the first question mark (there may be one or two) */
 	if (strchr ("xX", opt_J->arg[0])) {	/* Cartesian projection, must worry about separate x and y settings if a slash is found */
 		slash = strchr (opt_J->arg, '/');	/* slash[0] == '/' means we got separate x and y scale args for linear[d]/log/power axes */
-		if (slash && slash[1] == '-')	/* While any negative x-scale will automatically be included, for y we just make sure we scale by -1 if a hyphen is found after the slash*/
-			P->dir[GMT_Y] = -1;
+		if (slash && slash[1] == '-') {	/* While any negative x-scale will automatically be included, for y we just make sure we scale by -1 if a hyphen is found after the slash */
+			if (P) P->dir[GMT_Y] = -1; else if (I) Iyscl = -1;	/* Only use P or I if defined */
+		}
 	}
 	if (P) {	/* Subplot mode */
 		if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1) {	/* Nonstandard Cartesian directions set via subplot */
-			snprintf (sclX, GMT_LEN64, "%gi",  P->dir[GMT_X]*P->w);
-			snprintf (sclY, GMT_LEN64, "%gi",  P->dir[GMT_Y]*P->h);
+			snprintf (sclX, GMT_LEN64, "%gi",  P->dir[GMT_X] * P->w);
+			snprintf (sclY, GMT_LEN64, "%gi",  P->dir[GMT_Y] * P->h);
 		}
 		else if (slash) {	/* Found separate x and y scales */
 			snprintf (sclX, GMT_LEN64, "%gi", P->w);
@@ -13269,7 +13271,7 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	else if (I) {	/* Inset mode */
 		if (slash) {	/* Found separate x and y scales */
 			snprintf (sclX, GMT_LEN64, "%gi", I->w);
-			snprintf (sclY, GMT_LEN64, "%gi", I->h);
+			snprintf (sclY, GMT_LEN64, "%gi", Iyscl * I->h);
 		}
 		else if (is_psrose)	/* Just append the minimum dimension as the diameter */
 			snprintf (sclX, GMT_LEN64, "%gi", MIN(I->w, I->h));
