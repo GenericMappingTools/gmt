@@ -8148,7 +8148,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	GMT->current.ps.title[0] = '\0';	/* Reset title */
 	if (GMT->current.ps.oneliner) GMT->current.ps.active = true;	/* Since we are plotting we reset this here in case other modules have turned it off */
 
-	if (!K_active) GMT->current.plot.gridline_spacing[GMT_X]= GMT->current.plot.gridline_spacing[GMT_Y] = 0.0;	/* Done, if ever used */
+	if (!K_active) GMT->current.plot.gridline_spacing[GMT_X] = GMT->current.plot.gridline_spacing[GMT_Y] = 0.0;	/* Done, if they ever were used */
 #if 0
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Remove any gridline file we may have made in /tmp */
 		char file[PATH_MAX] = {""};

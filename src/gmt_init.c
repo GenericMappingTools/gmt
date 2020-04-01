@@ -2843,7 +2843,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 			if (option[1] == 'C')	/* Read clip level */
 				GMT->current.ps.clip_level = atoi (value);
 			else if (option[1] == 'G')	/* Read gridline spacings */
-				sscanf (value, "%lg %lg", &GMT->current.plot.gridline_spacing[GMT_X], &GMT->current.plot.gridline_spacing[GMT_Y]);	/* Read last gridline spacing */
+				sscanf (value, "%lg %lg", &GMT->current.plot.gridline_spacing[GMT_X], &GMT->current.plot.gridline_spacing[GMT_Y]);
 			else if (option[1] == 'L')	/* Read PS layer */
 				GMT->current.ps.layer = atoi (value);
 			continue;
