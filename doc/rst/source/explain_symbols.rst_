@@ -70,10 +70,12 @@
         the desired diameter to **-SE-** and this fixed diameter is used instead.
 	For allowable geographical units, see `Units`_ [Default is k for km].
 
-    **-Sf**\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
+    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront. Supply distance *gap* between symbols and symbol *size*. If *gap* is
         negative, it is interpreted to mean the number of symbols along the
-        front instead. If *size* is missing it is set to 30% of the *gap*, except
+        front instead. If *gap* has a leading + then we use the value exactly as given
+        [Default will start and end each line with a symbol, hence the *gap* is adjusted to fit].
+        If *size* is missing it is set to 30% of the *gap*, except
         when *gap* is negative and *size* is thus required.  Append **+l** or
         **+r** to plot symbols on the left or
         right side of the front [Default is centered]. Append **+**\ *type* to

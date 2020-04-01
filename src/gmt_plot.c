@@ -8739,11 +8739,18 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 		s[i] = s[i-1] + hypot (dx, y[i] - y[i-1]);
 	}
 
-	if (f->f_gap > 0.0) {	/* Gave positive interval; adjust so we start and end with a tick on each line */
-		ngap = irint (s[n-1] / f->f_gap);
-		gap = s[n-1] / ngap;
+	if (f->f_gap > 0.0) {	/* Gave positive interval */
+		if (f->f_exact) {	/* Use gap exactly as given, not worry about ending line with tick */
+			ngap = floor ((s[n-1] * (1.0 + GMT_CONV6_LIMIT)) / f->f_gap);	/* Allow 1 ppm noise since we use floor */
+			gap = f->f_gap;	/* As given */
+		}
+		else {	/* Adjust so we start and end with a tick on each line */
+			ngap = irint (s[n-1] / f->f_gap);
+			gap = s[n-1] / ngap;	/* Adjust gap to fit line length */
+			ngap++;
+		}
 		dist = f->f_off;	/* Start off at the offset distance [0] */
-		ngap++;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given gap: %g Adjusted gap: %g Number of front gaps: %d\n", f->f_gap, gap, ngap);
 	}
 	else {	/* Gave negative interval which means the # of ticks required */
 		ngap = irint (fabs (f->f_gap));
@@ -8755,6 +8762,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 			dist = 0.5 * s[n-1], gap = s[n-1];
 		else		/* Equidistantly spaced tick starting at 1st point and ending at last */
 			gap = s[n-1] / (ngap - 1);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given number of front gaps: %d Computed gap: %g\n", ngap, gap);
 	}
 
 	len2 = 0.5 * f->f_len;

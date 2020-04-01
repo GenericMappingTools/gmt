@@ -5224,17 +5224,20 @@ GMT_LOCAL int gmtinit_get_unit (struct GMT_CTRL *GMT, char c) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S) {
-	/* Parser for -Sf<tickgap>[/<ticklen>][+l|+r][+<type>][+o<offset>][+p<pen>]
+	/* Parser for -Sf[+|-]<tickgap>[/<ticklen>][+l|+r][+<type>][+o<offset>][+p<pen>]
 	 * <tickgap> is required and is either a distance in some unit (append c|i|p)
 	 * or it starts with - and gives the number of desired ticks instead.
 	 * <ticklen> defaults to 15% of <tickgap> but is required if the number
-	 * of ticks are specified. */
+	 * of ticks are specified. If + is prepended to <tickgap> then we use that
+	 * gap distance as given [Default distributes n gaps evenly along length] */
 
-	unsigned int pos = 0, k, error = 0;
+	unsigned int pos = 0, k, k0 = 1, error = 0;
 	int mods, n;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 
-	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
+	/* text[0] is the leading 'f' for front */
+	if (text[1] == '+' && !strchr ("bcflrsStop", text[2])) S->f.f_exact = true, k0 = 2;	/* Special leading = to be skipped when looking for modifiers */
+	for (k = k0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 	mods = (text[k] == '+');
 	if (mods) text[k] = 0;		/* Temporarily chop off the modifiers */
