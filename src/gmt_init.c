@@ -2839,9 +2839,11 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 		if (!process) continue;		/* Not inside the good stuff yet */
 		if (sscanf (line, "%s %[^\n]", option, value) != 2) continue;	/* Quietly skip malformed lines */
 		if (!value[0]) continue;	/* No argument found */
-		if (option[0] == '@') {	/* PostScript information */
+		if (option[0] == '@') {	/* PostScript plot information */
 			if (option[1] == 'C')	/* Read clip level */
 				GMT->current.ps.clip_level = atoi (value);
+			else if (option[1] == 'G')	/* Read gridline spacings */
+				sscanf (value, "%lg %lg", &GMT->current.plot.gridline_spacing[GMT_X], &GMT->current.plot.gridline_spacing[GMT_Y]);	/* Read last gridline spacing */
 			else if (option[1] == 'L')	/* Read PS layer */
 				GMT->current.ps.layer = atoi (value);
 			continue;
@@ -2916,6 +2918,8 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 		fprintf (fp, "%s\t%s\n", GMT_unique_option[id], GMT->init.history[id]);
 	}
 	if (GMT->current.ps.clip_level) fprintf (fp, "@C\t%d\n", GMT->current.ps.clip_level); /* Write clip level */
+	if (GMT->current.plot.gridline_spacing[GMT_X] > 0.0 || GMT->current.plot.gridline_spacing[GMT_Y] > 0.0)	/* Save gridline spacing in history */
+		fprintf (fp, "@G\t%g %g\n", GMT->current.plot.gridline_spacing[GMT_X], GMT->current.plot.gridline_spacing[GMT_Y]);
 	if (GMT->current.ps.layer) fprintf (fp, "@L\t%d\n", GMT->current.ps.layer); /* Write PS layer, if non-zero */
 	fprintf (fp, "END\n");
 
@@ -13831,6 +13835,9 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	unsigned int i, V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
 	bool pass_changes_back;
 	struct GMT_DEFAULTS saved_settings;
+	double spacing[2];
+
+	gmt_M_memcpy (spacing, GMT->current.plot.gridline_spacing, 2U, double);	/* Remember these so they can survive the end of the module */
 
 #ifdef HAVE_GDAL
 	/* If that's the case, clean up anu GDAL CT object */
@@ -13966,6 +13973,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 			GMT->PSL->internal.font[i].encoded = GMT->PSL->internal.font[i].encoded_orig;
 		GMT->PSL->current.fontsize = 0;
 	}
+
+	gmt_M_memcpy (GMT->current.plot.gridline_spacing, spacing, 2U, double);	/* Put these back so they can go into gmt.history (if nonzero) */
 
 	/*
 	if (GMT->parent->external) {
