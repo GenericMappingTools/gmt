@@ -13236,7 +13236,8 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 }
 
 GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt_J, struct GMT_SUBPLOT *P, struct GMT_INSET *I, bool is_psrose) {
-	/* Look for -J<code>?[l|p<pow>][/?[l|p<pow>]] which needs one or two ?-marks to be replaced with dummy scales */
+	/* Look for -J<code>[-]?[d|l|p<pow>][/[-]?[d|l|p<pow>]] which needs one or two ?-marks to be replaced with dummy scales. */
+
 	char sclX[GMT_LEN64] = {""}, sclY[GMT_LEN64] = {""}, arg[GMT_LEN128] = {""}, oldarg[GMT_LEN128] = {""};
 	char *slash = NULL, *c = NULL, *c2 = NULL;
 
@@ -13245,8 +13246,10 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	strncpy (oldarg, opt_J->arg, GMT_LEN128-1);
 
 	/* Here, c[0] is the first question mark (there may be one or two) */
-	if (strchr ("xX", opt_J->arg[0]))	/* Cartesian projection */
+	if (strchr ("xX", opt_J->arg[0])) {	/* Cartesian projection */
 		slash = strchr (opt_J->arg, '/');	/* slash[0] == '/' means we got separate x and y scale args for linear/log/power axes */
+		if (slash && slash[1] == '-') P->dir[GMT_Y] = -1;	/* While any negative x-scale will automatically be there, for y we just make sure we scale by -1 */
+	}
 	if (P) {	/* Subplot mode */
 		if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1) {	/* Nonstandard Cartesian directions set via subplot */
 			snprintf (sclX, GMT_LEN64, "%gi",  P->dir[GMT_X]*P->w);
@@ -13276,6 +13279,8 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	c[0] = '?';	/* Put back the ? we removed */
 	if (c[1] == 'l')	/* Must add the log character after the scale */
 		strcat (arg, "l");
+	else if (c[1] == 'd')	/* Must add the d (degree) character after the scale */
+		strcat (arg, "d");
 	else if (c[1] == 'p') {	/* Must add p<power> after the scale */
 		size_t len = strlen (arg), k = 1;
 		while (c[k] && c[k] != '/')	/* Copy letters until we hit the slash or run out */
@@ -13286,9 +13291,11 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
 	if (slash && (c2 = strchr (&c[1], '?'))) {	/* Must place a Y-scale instead of the 2nd ? mark */
 		strcat (arg, "/");	/* Add the slash divider */
 		strcat (arg, sclY);	/* Append the y scale/height */
-		if (c2[1] == 'l')	/* Must add the log character */
+		if (c2[1] == 'l')	/* Must add the log character after the y-scale */
 			strcat (arg, "l");
-		else if (c2[1] == 'p') {	/* Must add p<power> */
+		else if (c2[1] == 'd')	/* Must add the d (degree) character after the y-scale */
+			strcat (arg, "d");
+		else if (c2[1] == 'p') {	/* Must add p<power> after the y-scale */
 			size_t len = strlen (arg), k = 1;
 			while (c2[k])	/* Keep copying until we run out */
 				arg[len++] = c2[k++];
