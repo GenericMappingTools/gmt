@@ -6682,6 +6682,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 	else {	/* Input files were closed when we tried to go to next item */
 		if (API->current_get_V_val) gmt_M_free (API->GMT, API->current_get_V_val);
 	}
+	API->is_file = true;
 	API->io_enabled[direction] = false;	/* No longer OK to access resources or destinations */
 	API->current_rec[direction] = 0;	/* Reset count for next time */
 	for (item = 0; item < API->n_objects; item++) {	/* Deselect the used resources */
@@ -7795,6 +7796,7 @@ GMT_LOCAL void api_get_record_init (struct GMTAPI_CTRL *API) {
 		return;
 	}
 	API->error = GMT_NOERROR;
+	API->is_file = false;
 	S = API->current_get_obj;	/* Shorthand for the current data source we are working on */
 	GMT = API->GMT;			/* Shorthand for GMT access */
 	/* Reset to default association for current record's data and text pointers */
@@ -7811,6 +7813,7 @@ GMT_LOCAL void api_get_record_init (struct GMTAPI_CTRL *API) {
 			API->api_get_record = api_get_record_fp_first;
 			GMT->current.io.first_rec = true;
 			gmtlib_reset_input (GMT);	/* Go back to being agnostic about number of columns, etc. */
+			API->is_file = true;
 			break;
 
 		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* Here we copy/read from a user memory location which is a matrix */
