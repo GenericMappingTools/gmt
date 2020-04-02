@@ -44,6 +44,8 @@
 #define POL_SPLIT		4
 #define POL_JOIN		5
 #define POL_HOLE		6
+#define POL_BUFFER		7
+#define POL_CENTROID	8
 
 #define PW_TESTING
 #define MIN_AREA_DIFF		0.01;	/* If two polygons have areas that differ more than 1 % of each other then they are not the same feature */
@@ -53,7 +55,7 @@
 
 #ifdef HAVE_GEOS
 #include <geos_c.h>
-int geos_buffer(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, double buf_dist);
+int geos_method_single_geom(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, double buf_dist, char *method);
 #endif
 
 struct DUP {	/* Holds information on which single segment is closest to the current test segment */
@@ -81,52 +83,52 @@ struct DUP_INFO {
 };
 
 struct GMTSPATIAL_CTRL {
-	struct Out {	/* -> */
+	struct GMTSPAT_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -Aa<min_dist>, -A */
+	struct GMTSPAT_A {	/* -Aa<min_dist>, -A */
 		bool active;
 		unsigned int mode;
 		int smode;
 		double min_dist;
 		char unit;
 	} A;
-	struct C {	/* -C */
+	struct GMTSPAT_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D[pol] */
+	struct GMTSPAT_D {	/* -D[pol] */
 		bool active;
 		int mode;
 		char unit;
 		char *file;
 		struct DUP I;
 	} D;
-	struct E {	/* -E+n|p */
+	struct GMTSPAT_E {	/* -E+n|p */
 		bool active;
 		unsigned int mode;
 	} E;
-	struct F {	/* -F */
+	struct GMTSPAT_F {	/* -F */
 		bool active;
 		unsigned int geometry;
 	} F;
-	struct I {	/* -I[i|e] */
+	struct GMTSPAT_I {	/* -I[i|e] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct L {	/* -L */
+	struct GMTSPAT_L {	/* -L */
 		bool active;
 		char unit;
 		double s_cutoff, path_noise, box_offset;
 	} L;
-	struct N {	/* -N<file>[+a][+p>ID>][+r][+z] */
+	struct GMTSPAT_N {	/* -N<file>[+a][+p>ID>][+r][+z] */
 		bool active;
 		bool all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
 		unsigned int mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
 		unsigned int ID;	/* If 1 we use running numbers */
 		char *file;
 	} N;
-	struct Q {	/* -Q[+c<min>/<max>][+h][+l][+p][+s[a|d]] */
+	struct GMTSPAT_Q {	/* -Q[+c<min>/<max>][+h][+l][+p][+s[a|d]] */
 		bool active;
 		bool header;	/* Place dimension and centroid in segment headers */
 		bool area;		/* Apply range test on dimension */
@@ -137,18 +139,15 @@ struct GMTSPATIAL_CTRL {
 		double limit[2];	/* Min and max area or length for output segments */
 		char unit;
 	} Q;
-	struct S {	/* -S[u|i|c|j|h] */
+	struct GMTSPAT_S {	/* -S[u|i|c|j|h] */
 		bool active;
 		unsigned int mode;
+		double width;
 	} S;
-	struct T {	/* -T[pol] */
+	struct GMTSPAT_T {	/* -T[pol] */
 		bool active;
 		char *file;
 	} T;
-	struct Z {	/* Temporary for bufer (GEOS) */
-		bool active;
-		double width;
-	} Z;
 };
 
 struct PAIR {
@@ -752,9 +751,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sb<width>|h|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sh|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sb<width>|h|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT);
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<cpol>]] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -810,6 +809,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default only reports results to stdout].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Spatial manipulation of polygons; choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     b<width> for computing buffer polygon arround line/polygon. Append width of buffer zone\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     h for detecting holes and reversing them relative to perimeters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     i for intersection [Not implemented yet].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     j for joining polygons that were split by the Dateline [Not implemented yet].\n");
@@ -1043,6 +1043,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 					Ctrl->S.mode = POL_UNION;
 					GMT_Report (API, GMT_MSG_ERROR, "Option -Su not implemented yet\n");
 				}
+#ifdef HAVE_GEOS
+				else if (opt->arg[0] == 'b') {
+					Ctrl->S.mode = POL_BUFFER;
+					Ctrl->S.width = atof (&opt->arg[1]);
+					if (isnan(Ctrl->S.width) || Ctrl->S.width <= 0) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Sb<val> must provide a width > 0\n");
+						n_errors++;
+					}
+				}
+				else if (opt->arg[0] == 'c')
+					Ctrl->S.mode = POL_CENTROID;
+#endif
 				else if (opt->arg[0] == 'i') {
 					Ctrl->S.mode = POL_INTERSECTION;
 					GMT_Report (API, GMT_MSG_ERROR, "Option -Si not implemented yet\n");
@@ -1063,10 +1075,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 				Ctrl->C.active = Ctrl->S.active = true;
 				Ctrl->S.mode = POL_CLIP;
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
-				break;
-			case 'Z':	/* Tmp for GEOS buffer */
-				Ctrl->Z.active = true;
-				Ctrl->Z.width = atof (opt->arg);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -1175,7 +1183,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	if (Ctrl->S.active && !(Ctrl->S.mode == POL_SPLIT || Ctrl->S.mode == POL_HOLE)) external = 1;
+	if (Ctrl->S.active && !(Ctrl->S.mode == POL_SPLIT || Ctrl->S.mode == POL_HOLE || Ctrl->S.mode == POL_BUFFER || Ctrl->S.mode == POL_CENTROID))
+		external = 1;
 
 	gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Use Cartesian calculations and user units */
 
@@ -2159,6 +2168,18 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments were holes in other polygons\n", n_holes);
 	}
+	if (Ctrl->S.active && Ctrl->S.mode == POL_BUFFER) {	/* Compute buffer polygon */
+		error = geos_method_single_geom(GMT, D, Ctrl->Out.file, Ctrl->S.width, "buffer");
+		finishGEOS();
+		if (error)
+			Return (error);
+	}
+	if (Ctrl->S.active && Ctrl->S.mode == POL_CENTROID) {	/* Compute centroid of polygons */
+		error = geos_method_single_geom(GMT, D, Ctrl->Out.file, 0, "centroid");
+		finishGEOS();
+		if (error)
+			Return (error);
+	}
 
 	if (Ctrl->F.active) {	/* We read as polygons to force closure, now write out revised data */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
@@ -2167,22 +2188,12 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-#ifdef HAVE_GEOS
-	if (Ctrl->Z.active) {	/*  */
-		int error;
-		error = geos_buffer(GMT, D, Ctrl->Out.file, Ctrl->Z.width);
-		finishGEOS();
-		if (error)
-			Return (error);
-	}
-#endif
-
 	Return (GMT_NOERROR);
 }
 
 #ifdef HAVE_GEOS
 
-int geos_buffer(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, double buf_dist) {
+int geos_method_single_geom(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, double buf_dist, char *method) {
 	int i, n_pts;
 	unsigned int nt, ns, nr;
 	uint64_t dim[4];
@@ -2191,12 +2202,14 @@ int geos_buffer(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, double
 	GEOSCoordSequence *seq_in = NULL;
 	const GEOSCoordSequence *seq_out = NULL;
 	GEOSGeometry *geom = NULL, *geom_out = NULL;
+    GEOSContextHandle_t handle = NULL;
 
 	is3D = (D->n_columns >= 3);
 
-	initGEOS(NULL, NULL);
+	//initGEOS(NULL, NULL);
+	handle = initGEOS_r(NULL, NULL);
 
-	seq_in = GEOSCoordSeq_create((unsigned int)D->n_records, (D->n_columns == 2) ? 2 : 3);
+	seq_in = GEOSCoordSeq_create_r(handle, (unsigned int)D->n_records, (D->n_columns == 2) ? 2 : 3);
 
 	if (!seq_in) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create input GEOS sequence.\n");
@@ -2207,32 +2220,42 @@ int geos_buffer(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, double
 	for (nt = 0; nt < D->n_tables; nt++) {
 		for (ns = 0; ns < D->table[nt]->n_segments; ns++) {
 			for (nr = 0; nr < D->table[nt]->segment[ns]->n_rows; nr++) {
-				GEOSCoordSeq_setX(seq_in, i, D->table[nt]->segment[ns]->data[0][nr]);
-				GEOSCoordSeq_setY(seq_in, i, D->table[nt]->segment[ns]->data[1][nr]);
+				GEOSCoordSeq_setX_r(handle, seq_in, i, D->table[nt]->segment[ns]->data[0][nr]);
+				GEOSCoordSeq_setY_r(handle, seq_in, i, D->table[nt]->segment[ns]->data[1][nr]);
 				if (is3D)
-					GEOSCoordSeq_setY(seq_in, i, D->table[nt]->segment[ns]->data[2][nr]);
+					GEOSCoordSeq_setY_r(handle, seq_in, i, D->table[nt]->segment[ns]->data[2][nr]);
 				i++;
 			}
 		}
 	}
 
-	geom = GEOSGeom_createLineString(seq_in);
-	geom_out = GEOSBuffer(geom, buf_dist, 12);
+	geom = GEOSGeom_createLineString_r(handle, seq_in);
+	if (!strcmp(method, "buffer"))
+		geom_out = GEOSBuffer_r(handle, geom, buf_dist, 12);
+	else if (!strcmp(method, "centroid"))
+		geom_out = GEOSGetCentroid_r(handle, geom);
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unimplemented method -> %s\n", method);
+		return -1;
+	}
 
-	//GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GEOS type of buffer %s\n", GEOSGeomType(geom_out));
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GEOS type of buffer %s\n", GEOSGeomType_r(handle, geom_out));
 
 	if (!geom_out) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to compute buffer line.\n");
 		return -1;
 	}
 
-	n_pts = GEOSGetNumCoordinates(geom_out);
+	n_pts = GEOSGetNumCoordinates_r(handle, geom_out);
 	if (!n_pts) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GEOS geometry is empty.\n");
 		return -1;
 	}
 
-	seq_out = GEOSGeom_getCoordSeq(GEOSGetExteriorRing(geom_out));
+	if (!strcmp(method, "buffer"))
+		seq_out = GEOSGeom_getCoordSeq_r(handle, GEOSGetExteriorRing_r(handle, geom_out));
+	else if (!strcmp(method, "centroid"))
+		seq_out = GEOSGeom_getCoordSeq_r(handle, geom_out);
 	
 	if (!seq_out) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create output GEOS sequence.\n");
@@ -2249,14 +2272,14 @@ int geos_buffer(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, double
 	}
 
 	for (i = 0; i < n_pts; i++) {
-		GEOSCoordSeq_getX(seq_out, i, &Dout->table[0]->segment[0]->data[0][i]);
-		GEOSCoordSeq_getY(seq_out, i, &Dout->table[0]->segment[0]->data[1][i]);
+		GEOSCoordSeq_getX_r(handle, seq_out, i, &Dout->table[0]->segment[0]->data[0][i]);
+		GEOSCoordSeq_getY_r(handle, seq_out, i, &Dout->table[0]->segment[0]->data[1][i]);
 		if (is3D)
-			GEOSCoordSeq_getY(seq_out, i, &Dout->table[0]->segment[0]->data[2][i]);
+			GEOSCoordSeq_getY_r(handle, seq_out, i, &Dout->table[0]->segment[0]->data[2][i]);
 	}
 
-	GEOSGeom_destroy(geom);
-	GEOSGeom_destroy(geom_out);
+	GEOSGeom_destroy_r(handle, geom);
+	GEOSGeom_destroy_r(handle, geom_out);
 
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, fname, Dout) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to write output dataset.\n");
