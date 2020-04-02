@@ -1007,7 +1007,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	 * angles via the input data file.  S.n_nondim and S.nondim_col are used to reset the in_col_type back to GMT_IS_FLOAT
 	 * for those columns are expected to contain angles.  When NO SYMBOL is specified in -S we must parse the ASCII data
 	 * record to determine the symbol, and this happens AFTER we have already converted the dimensions.  We must therefore
-	 * undo this scaling based on what columns might be angles. */
+	 * undo this scaling based on what columns might be angles. Exception: When input is a virtual file. */
 
 	/* Extra columns 1, 2 and 3 */
 	ex1 = (rgb_from_z) ? 3 : 2;
@@ -1276,7 +1276,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 				/* Since we only now know if some of the input columns should NOT be considered dimensions we
 				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
-				if (S.n_nondim && GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Since these are not dimensions but angles or other quantities */
+				if (S.n_nondim && API->is_file && GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Since these are not dimensions but angles or other quantities */
 					for (j = 0; j < S.n_nondim; j++) in[S.nondim_col[j]+rgb_from_z] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 				}
 

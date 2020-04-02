@@ -479,5 +479,6 @@
                 Specifies how many (*x*,\ *y*) points will be used to estimate
                 symbol angles [Default is 10].
 
+        If neither **+g** nor **+p** are set we select the default pen outline (:term:`MAP_DEFAULT_PEN`.
         **Note**: By placing **-S~** options in the segment header you can change
         the decorated lines on a segment-by-segment basis.

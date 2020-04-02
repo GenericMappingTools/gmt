@@ -9523,7 +9523,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 				if (k == 0) bad++;
 				break;
 
-			case 'p':	/* Draw text box outline [with optional textbox pen specification] */
+			case 'p':	/* Set symbol outline specification */
 				if (p[1]) strncpy (G->pen, &p[1], GMT_LEN64-1);
 				break;
 
@@ -9563,6 +9563,9 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No symbol size specified!\n");
 		bad++;
 	}
+	if (G->fill[0] == '\0' && G->pen[0] == '\0')	/* Neither fill nor pen - select default outline */
+		sprintf (G->pen, "%s", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
+
 	return (bad);
 }
 
