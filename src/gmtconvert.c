@@ -770,7 +770,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			do_it = false;
 		}
 		else
-			GMT_Report (API, GMT_MSG_WARNING, "Sort data based on column %d in %s order\n", (int)Ctrl->N.col, way[Ctrl->N.dir+1]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Sort data based on column %d in %s order\n", (int)Ctrl->N.col, way[Ctrl->N.dir+1]);
 		GMT->current.io.record_type[GMT_OUT] = GMT->current.io.record_type[GMT_IN];
 		for (tbl = 0; do_it && tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 			for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
