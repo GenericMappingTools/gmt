@@ -283,8 +283,10 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *symbol_code, bool decorate_custom) {
 	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
+	unsigned int type = 0, pos = 0;
 	size_t len;
 	char string[GMT_VF_LEN] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[PATH_MAX] = {""}, kode[2] = {'K', 'k'};
+	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column and add up total records */
 	if (D->n_records == 0)	/* No symbols to plot */
@@ -293,26 +295,40 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, cha
 	/* Here we have symbols.  Open up virtual file for the call to psxy */
 	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D, string) != GMT_NOERROR)
 		return (GMT->parent->error);
-	if (decorate_custom)	/* Use the given custom symbol */
-		sprintf (tmp_file, "%s.def", &symbol_code[1]);
-	else if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
+	if (decorate_custom) {	/* Must find the custom symbol */
+		if ((type = gmt_locate_custom_symbol (GMT, &symbol_code[1], name, path, &pos)) == 0) return (GMT_RUNTIME_ERROR);
+	}
+	if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
 		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());
 	else	/* Make unique file in current dir */
 		sprintf (tmp_file, "GMT_symbol%d.def", (int)getpid());
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Number of decorated line symbols: %d\n", (int)D->n_records);
-	if (!decorate_custom) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary decorated line symbol .def file created: %s\n", tmp_file);
-		if ((fp = fopen (tmp_file, "w")) == NULL) {	/* Disaster */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create symbol file needed for decorated lines: %s\n", tmp_file);
-			return GMT_ERROR_ON_FOPEN;
-		}
-		/* Make a rotated plain symbol of type picked up from input file */
-		fprintf (fp, "# Rotated standard symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");
-		fclose (fp);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary decorated line symbol .def file created: %s\n", tmp_file);
+	if ((fp = fopen (tmp_file, "w")) == NULL) {	/* Disaster */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create symbol file needed for decorated lines: %s\n", tmp_file);
+		return GMT_ERROR_ON_FOPEN;
 	}
+	if (decorate_custom == GMT_CUSTOM_DEF) {
+		FILE *fpc = fopen (path, "r");	/* We know the file exists */
+		bool first = true;
+		while (fgets (buffer, GMT_BUFSIZ, fpc)) {
+			if (buffer[0] == '#') { fprintf (fp, "%s", buffer); continue; }
+			if (first) {
+				fprintf (fp, "# Rotated custom symbol, need size and rotation from data file\nN: 1 o\n$1 R\n");
+				first = false;
+			}
+			fprintf (fp, "%s", buffer);
+		}
+		fclose (fpc);
+	}
+	else if (decorate_custom == GMT_CUSTOM_EPS)
+		fprintf (fp, "# Rotated EPS symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 %s\n", symbol_code);
+	else	/* Make a rotated plain symbol of type picked up from input file */
+		fprintf (fp, "# Rotated standard symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");
+	fclose (fp);
 	len = strlen (tmp_file) - 4;	/* Position of the '.' since we know extension is .def */
 	tmp_file[len] = '\0';	/* Temporarily hide the ".def" extension */
-	/* Use -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
+	/* Use -Sk for custom; otherwise -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
 	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -S%c%s %s --GMT_HISTORY=false", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
 		GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], kode[decorate_custom], tmp_file, string);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", buffer);

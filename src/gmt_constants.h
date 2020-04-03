@@ -304,6 +304,11 @@ enum GMT_enum_autolegend {
 	GMT_LEGEND_PEN_D  = 0, GMT_LEGEND_PEN_V  = 1,
 	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2};
 
+/*! Various mode for custom symbols */
+enum GMT_enum_customsymb {
+	GMT_CUSTOM_DEF  = 1,
+	GMT_CUSTOM_EPS  = 2};
+
 //#define GMT_LEGEND_DX1_MUL 1.0	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
 //#define GMT_LEGEND_DX2_MUL 2.0	/* Default offset from margin to start of label if given as '-' times max symbol size */
 #define GMT_LEGEND_DX1_MUL 0.5	/* Default offset from margin to center of symbol if given as '-' times max symbol size */

@@ -4692,13 +4692,13 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 			*pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Deal with downloadable GMT data sets first */
 		if (gmt_getsharepath (GMT, "custom", &name[*pos], ".eps", path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found EPS macro %s\n", path);
-			type = 2;
+			type = GMT_CUSTOM_EPS;
 		}
 		else
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
 	}
 	else {
-		type = 1;
+		type = GMT_CUSTOM_DEF;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s\n", path);
 	}
 	return (type);
@@ -4723,11 +4723,9 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct stat buf;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
-	bool got_EPS = false;
 
 	if ((type = gmt_locate_custom_symbol (GMT, in_name, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
-	if (type == 2) {
-		got_EPS = true;
+	if (type == GMT_CUSTOM_EPS) {
 		if (stat (path, &buf)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS macro %s\n", path);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
@@ -4742,7 +4740,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
 	strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
-		if (got_EPS) {	/* Working on an EPS symbol, just append the text as is */
+		if (type == GMT_CUSTOM_EPS) {	/* Working on an EPS symbol, just append the text as is */
 			if (head->PS == 0) {	/* Allocate memory for the EPS symbol */
 				head->PS_macro = gmt_M_memory (GMT, NULL, (size_t)buf.st_size, char);
 				head->PS = 1;	/* Flag to indicate we already allocated memory */
