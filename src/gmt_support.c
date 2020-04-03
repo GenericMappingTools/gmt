@@ -9193,7 +9193,8 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				G->must_clip = (G->rgb[3] > 0.0);	/* May still be transparent if gave transparency; else opaque */
 				break;
 
-			case 'h':	/* Hide the lines used to place labels */
+			case 'h':	/* Hide the lines used to place labels [Was this ever documented? If not, remove] */
+			case 'i':	/* Make line invisible */
 				G->draw = false;
 				break;
 
@@ -9478,7 +9479,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	char *specs = NULL;
 
-	/* Decode [+a<angle>|n|p[u|d]][+d][+g<fill>][+n|N<dx>[/<dy>]][+p[<pen>]]+s<symbolinfo>[+w<width>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+d][+g<fill>][+i][+n|N<dx>[/<dy>]][+p[<pen>]]+s<symbolinfo>[+w<width>] strings */
 
 	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
 
@@ -9510,6 +9511,10 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 
 			case 'g':	/* Symbol Fill specification */
 				if (p[1]) strncpy (G->fill, &p[1], GMT_LEN64-1);
+				break;
+
+			case 'i':	/* Invisible main line (do not draw line) */
+				G->invisible = true;
 				break;
 
 			case 'n':	/* Nudge specification; dx/dy are increments along local line axes */
