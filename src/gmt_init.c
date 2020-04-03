@@ -7127,7 +7127,7 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	else
 		gmt_message (GMT, "%s +g<fill> sets the fill for the symbol [transparent]\n", pad);
 	if (kind == 1) gmt_message (GMT, "%s +h hide the lines [Draw the lines].\n", pad);
-	if (kind) gmt_message (GMT, "%s +i makes the main line invisible [drawn per -W].\n", pad);
+	if (kind) gmt_message (GMT, "%s +i makes the main line invisible [drawn using pen settings from -W].\n", pad);
 	if (kind < 2) gmt_message (GMT, "%s +j<just> sets %s justification [Default is MC].\n", pad, feature[kind]);
 	if (kind == 1) {
 		gmt_message (GMT, "%s +l<text> Use text as label (quote text if containing spaces).\n", pad);

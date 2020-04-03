@@ -464,7 +464,7 @@
                 Sets the symbol fill [no fill].
 
             **+i**
-                Make the main decorated line invisible [Draw it per **-W**].
+                Make the main decorated line invisible [Draw it using pen settings provided by **-W**].
 
             **+n**\ *dx*\ [/*dy*]
                 Nudges the placement of symbols by the specified amount (append

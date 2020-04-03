@@ -484,7 +484,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     If <tickgap> has leading + then <tickgap> is used exactly [adjusted to fit line length].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     The <ticklen> defaults to 15%% of <tickgap> if not given.  Append\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +l or +r   : Plot symbol to left or right of front [centered]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +i         : Make main front line invisible [drawn per -W]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +i         : Make main front line invisible [drawn using pen settings from -W]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +<type>    : +b(ox), +c(ircle), +f(ault), +s|S(lip), +t(riangle) [f]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     	      +s optionally accepts the arrow angle [20].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       box      : square when centered, half-square otherwise.\n");
