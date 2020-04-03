@@ -280,11 +280,13 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	}
 }
 
-GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *symbol_code, bool decorate_custom) {
 	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
+	unsigned int type = 0, pos = 0;
 	size_t len;
-	char string[GMT_VF_LEN] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[PATH_MAX] = {""};
+	char string[GMT_VF_LEN] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[PATH_MAX] = {""}, kode[2] = {'K', 'k'};
+	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column and add up total records */
 	if (D->n_records == 0)	/* No symbols to plot */
@@ -293,6 +295,13 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	/* Here we have symbols.  Open up virtual file for the call to psxy */
 	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D, string) != GMT_NOERROR)
 		return (GMT->parent->error);
+	if (decorate_custom) {	/* Must find the custom symbol */
+		if ((type = gmt_locate_custom_symbol (GMT, &symbol_code[1], name, path, &pos)) == 0) return (GMT_RUNTIME_ERROR);
+		if (type == GMT_CUSTOM_EPS) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use EPS custom symbol in the decorated line specification: %s\n", name);
+			return (GMT_RUNTIME_ERROR);
+		}
+	}
 	if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
 		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());
 	else	/* Make unique file in current dir */
@@ -303,14 +312,31 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create symbol file needed for decorated lines: %s\n", tmp_file);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	/* Make a rotated plain symbol of type picked up from input file */
-	fprintf (fp, "# Rotated standard symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");
+	if (type == GMT_CUSTOM_DEF) {	/* Use the user's custom symbol but add the rotation requirement */
+		FILE *fpc = fopen (path, "r");	/* We know the file exists from earlier parsing */
+		bool first = true;
+		while (fgets (buffer, GMT_BUFSIZ, fpc)) {
+			if (buffer[0] == '#') { fprintf (fp, "%s", buffer); continue; }	/* Pass comments */
+			if (!strncmp (buffer, "N: ", 3U)) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use custom symbols that expect extra parameters: %s\n", name);
+				return (GMT_RUNTIME_ERROR);
+			}
+			if (first) {	/* Insert our count and rotation as first actionable macro command */
+				fprintf (fp, "# Rotated custom symbol, read size and rotation from data file\nN: 1 o\n$1 R\n");
+				first = false;
+			}
+			fprintf (fp, "%s", buffer);
+		}
+		fclose (fpc);
+	}
+	else	/* Make a rotated plain symbol of type picked up from input file */
+		fprintf (fp, "# Rotated standard symbol, need size, rotation and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");
 	fclose (fp);
 	len = strlen (tmp_file) - 4;	/* Position of the '.' since we know extension is .def */
 	tmp_file[len] = '\0';	/* Temporarily hide the ".def" extension */
-	/* Use -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
-	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -SK%s %s --GMT_HISTORY=false", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
-		GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], tmp_file, string);
+	/* Use -Sk for custom; otherwise -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
+	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -S%c%s %s --GMT_HISTORY=false", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
+		GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], kode[decorate_custom], tmp_file, string);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR)	/* Plot all the symbols */
 		return (GMT->parent->error);
@@ -335,7 +361,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		gmt_set_tableheader (GMT, GMT_OUT, was);	/* Restore what we had */
 	}
 	else {
-		if (gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
+		if (!decorate_custom && gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to delete file: %s\n", tmp_file);
 	}
 
@@ -870,7 +896,7 @@ int GMT_plot (void *V_API, int mode, void *args) {
 
 int GMT_psxy (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxy task */
-	bool polygon, penset_OK = true, not_line, old_is_world, rgb_from_z = false;
+	bool polygon, penset_OK = true, not_line, old_is_world, rgb_from_z = false, decorate_custom = false;
 	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false;
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
@@ -1884,6 +1910,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 4};	/* Put everything in one table */
 			dim[GMT_SEG] = D->n_segments;	/* Make one segment for each input segment so segment headers can be preserved */
 			if ((Decorate = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			if (S.D.symbol_code[0] == 'k') decorate_custom = true;
 		}
 		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
 
@@ -1967,6 +1994,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							gmt_contlabel_free (GMT, &S.G);
 							gmt_parse_symbol_option (GMT, s_args, &S, 0, false);
 							if (change & 1) change -= 1;	/* Don't want polygon to be true later */
+							if (S.symbol == GMT_SYMBOL_DECORATED_LINE && S.D.symbol_code[0] != 'k') decorate_custom = false;
+
 						}
 						else if (S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE || S.symbol == GMT_SYMBOL_FRONT)
 							GMT_Report (API, GMT_MSG_ERROR, "Segment header tries to switch from -S%c to another symbol (%s) - ignored\n", S.symbol, s_args);
@@ -2237,7 +2266,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, -1, 0.0);
 
 	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via call to psxy */
-		if ((error = plot_decorations (GMT, Decorate)) != 0)	/* Cannot possibly be a good thing */
+		if ((error = plot_decorations (GMT, Decorate, S.D.symbol_code, decorate_custom)) != 0)	/* Cannot possibly be a good thing */
 			Return (error);
 		if (GMT_Destroy_Data (API, &Decorate) != GMT_NOERROR) {	/* Might as well delete since no good later */
 			Return (API->error);
