@@ -5240,7 +5240,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 
 	/* text[0] is the leading 'f' for front */
-	if (text[1] == '+' && !strchr ("bcflrsStop", text[2])) S->f.f_exact = true, k0 = 2;	/* Special leading + to be skipped when looking for modifiers */
+	if (text[1] == '+' && !strchr ("bcfilrsStop", text[2])) S->f.f_exact = true, k0 = 2;	/* Special leading + to be skipped when looking for modifiers */
 	for (k = k0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 	mods = (text[k] == '+');
@@ -5263,6 +5263,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 			case 'b':	S->f.f_symbol = GMT_FRONT_BOX;		break;	/* [half-]square front */
 			case 'c':	S->f.f_symbol = GMT_FRONT_CIRCLE;	break;	/* [half-]circle front */
 			case 'f':	S->f.f_symbol = GMT_FRONT_FAULT;	break;	/* Fault front */
+			case 'i':	S->f.invisible = true;				break;	/* Do not draw line */
 			case 'l':	S->f.f_sense  = GMT_FRONT_LEFT;		break;	/* Symbols to the left */
 			case 'r':	S->f.f_sense  = GMT_FRONT_RIGHT;	break;	/* Symbols to the right */
 			case 's':	S->f.f_symbol = GMT_FRONT_SLIP;				/* Strike-slip front */
@@ -7126,6 +7127,7 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	else
 		gmt_message (GMT, "%s +g<fill> sets the fill for the symbol [transparent]\n", pad);
 	if (kind == 1) gmt_message (GMT, "%s +h hide the lines [Draw the lines].\n", pad);
+	if (kind) gmt_message (GMT, "%s +i makes the main line invisible [drawn per -W].\n", pad);
 	if (kind < 2) gmt_message (GMT, "%s +j<just> sets %s justification [Default is MC].\n", pad, feature[kind]);
 	if (kind == 1) {
 		gmt_message (GMT, "%s +l<text> Use text as label (quote text if containing spaces).\n", pad);

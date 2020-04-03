@@ -1901,7 +1901,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					else {
 						for (i = 0; i < n; i++) gmt_geoz_to_xy (GMT, L->data[GMT_X][i], L->data[GMT_Y][i], L->data[GMT_Z][i], &xp[i], &yp[i]);
 					}
-					if (draw_line) {
+					if (draw_line && (S.symbol != GMT_SYMBOL_FRONT || !S.f.invisible)) {
 						PSL_plotline (PSL, xp, yp, (int)n, PSL_MOVE|PSL_STROKE);
 					}
 				}

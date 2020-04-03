@@ -70,7 +70,7 @@
 	the desired diameter to **-SE-** and this fixed diameter is used instead.
 	For allowable geographical units, see `Units`_ [Default is k for km].
 
-    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
+    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+i**][**+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront.  Supply distance *gap* between symbols and symbol size. If *gap* is
         negative, it is interpreted to mean the number of symbols along the
         front instead. If *gap* has a leading + then we use the value exactly as given
@@ -87,9 +87,9 @@
         beginning of the front by that amount [0]. The chosen symbol is drawn
         with the same pen as set for the line (i.e., via **-W**). To use an
         alternate pen, append **+p**\ *pen*. To skip the outline, just use
-        **+p**. **Note**: By placing **-Sf**
-        options in the segment header you can change the front types on a
-        segment-by-segment basis.
+        **+p**.  To make the main front line invisible, add **+i**.  **Note**:
+        By placing **-Sf** options in the segment header you can change the front
+        types on a segment-by-segment basis.
 
     **-Sg**
         octa\ **g**\ on. *size* is diameter of circumscribing circle.
@@ -252,6 +252,9 @@
             **+g**\ [*color*]
                 Selects opaque text boxes [Default is transparent]; optionally
                 specify the color [Default is **PS\_PAGE\_COLOR**].
+
+            **+i**
+                Make the main quoted line invisible [Draw it per **-W**].
 
             **+j**\ *just*
                 Sets label justification [Default is MC]. Ignored when
@@ -470,6 +473,9 @@
 
             **+g**\ [*fill*]
                 Sets the symbol fill [no fill].
+
+            **+i**
+                Make the main decorated line invisible [Draw it per **-W**].
 
             **+n**\ *dx*\ [/*dy*]
                 Nudges the placement of symbols by the specified amount (append

@@ -63,6 +63,7 @@ struct GMT_DECORATE {
 	bool do_interpolate;		/* true if we must resample the crossing lines */
 	bool fixed;			/* true if we chose fixed positions */
 	bool debug;			/* true of we want to draw helper lines/points */
+	bool invisible;			/* true if we do not want to draw the line itself */
 	char line_name[16];		/* Name of line: "contour" or "line" */
 	char file[PATH_MAX];		/* File with crossing lines, if specified */
 	char option[GMT_BUFSIZ];	/* Copy of the option string */

@@ -88,9 +88,9 @@
         beginning of the front by that amount [0]. The chosen symbol is drawn
         with the same pen as set for the line (i.e., via **-W**). To use an
         alternate pen, append **+p**\ *pen*. To skip the outline, just use
-        **+p**.  **Note**: By placing **-Sf**
-        options in the segment header you can change the front types on a
-        segment-by-segment basis.
+        **+p**.  To make the main front line invisible, add **+i**.  **Note**:
+        By placing **-Sf** options in the segment header you can change the front
+        types on a segment-by-segment basis.
 
     **-Sg**
         octa\ **g**\ on. *size* is diameter of circumscribing circle.
@@ -236,6 +236,9 @@
             **+g**\ [*color*]
                 Selects opaque text boxes [Default is transparent]; optionally
                 specify the color [Default is :term:`PS_PAGE_COLOR`].
+
+           **+i**
+                Make the main quoted line invisible [Draw it per **-W**].
 
             **+j**\ *just*
                 Sets label justification [Default is MC]. Ignored when
@@ -459,6 +462,9 @@
 
             **+g**\ [*fill*]
                 Sets the symbol fill [no fill].
+
+            **+i**
+                Make the main decorated line invisible [Draw it per **-W**].
 
             **+n**\ *dx*\ [/*dy*]
                 Nudges the placement of symbols by the specified amount (append
