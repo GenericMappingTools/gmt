@@ -9570,7 +9570,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 				break;
 
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +%s not recognized!\n", p);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S~: Modifier +%s not recognized!\n", p);
 				bad++;
 				break;
 		}
