@@ -483,8 +483,9 @@
                 optionally specify pen for outline [Default is width = 0.25p,
                 color = black, style = solid].
 
-            **+s**\ <symbol><size>
+            **+s**\ <symbol><size> or **+sk**\ *customsymbol*/*size*
                 Specifies the code and size of the decorative symbol.
+                Custom symbols need to be simple, i.e., not require data columns.
 
             **+w**
                 Specifies how many (*x*,\ *y*) points will be used to estimate

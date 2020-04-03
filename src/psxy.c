@@ -297,6 +297,10 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, cha
 		return (GMT->parent->error);
 	if (decorate_custom) {	/* Must find the custom symbol */
 		if ((type = gmt_locate_custom_symbol (GMT, &symbol_code[1], name, path, &pos)) == 0) return (GMT_RUNTIME_ERROR);
+		if (type == GMT_CUSTOM_EPS) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use EPS custom symbol in the decorated line specification: %s\n", name);
+			return (GMT_RUNTIME_ERROR);
+		}
 	}
 	if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
 		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());
@@ -308,23 +312,21 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, cha
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create symbol file needed for decorated lines: %s\n", tmp_file);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	if (decorate_custom == GMT_CUSTOM_DEF) {
-		FILE *fpc = fopen (path, "r");	/* We know the file exists */
+	if (type == GMT_CUSTOM_DEF) {	/* Use the user's custom symbol but add the rotation requirement */
+		FILE *fpc = fopen (path, "r");	/* We know the file exists from earlier parsing */
 		bool first = true;
 		while (fgets (buffer, GMT_BUFSIZ, fpc)) {
-			if (buffer[0] == '#') { fprintf (fp, "%s", buffer); continue; }
-			if (first) {
-				fprintf (fp, "# Rotated custom symbol, need size and rotation from data file\nN: 1 o\n$1 R\n");
+			if (buffer[0] == '#') { fprintf (fp, "%s", buffer); continue; }	/* Pass comments */
+			if (first) {	/* Insert our count and rotation as first actionable macro command */
+				fprintf (fp, "# Rotated custom symbol, read size and rotation from data file\nN: 1 o\n$1 R\n");
 				first = false;
 			}
 			fprintf (fp, "%s", buffer);
 		}
 		fclose (fpc);
 	}
-	else if (decorate_custom == GMT_CUSTOM_EPS)
-		fprintf (fp, "# Rotated EPS symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 %s\n", symbol_code);
 	else	/* Make a rotated plain symbol of type picked up from input file */
-		fprintf (fp, "# Rotated standard symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");
+		fprintf (fp, "# Rotated standard symbol, need size, rotation and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");
 	fclose (fp);
 	len = strlen (tmp_file) - 4;	/* Position of the '.' since we know extension is .def */
 	tmp_file[len] = '\0';	/* Temporarily hide the ".def" extension */
