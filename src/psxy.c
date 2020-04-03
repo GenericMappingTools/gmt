@@ -317,6 +317,10 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, cha
 		bool first = true;
 		while (fgets (buffer, GMT_BUFSIZ, fpc)) {
 			if (buffer[0] == '#') { fprintf (fp, "%s", buffer); continue; }	/* Pass comments */
+			if (!strncmp (buffer, "N: ", 3U)) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot use custom symbols that expect extra parameters: %s\n", name);
+				return (GMT_RUNTIME_ERROR);
+			}
 			if (first) {	/* Insert our count and rotation as first actionable macro command */
 				fprintf (fp, "# Rotated custom symbol, read size and rotation from data file\nN: 1 o\n$1 R\n");
 				first = false;
