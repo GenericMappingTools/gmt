@@ -4663,28 +4663,10 @@ GMT_LOCAL int support_decode_arg (char *txt, int column, struct GMT_CUSTOM_SYMBO
 	return (new_action);
 }
 
-/*! . */
-GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
-	/* Load in an initialize a new custom symbol.  These files can live in many places:
-	 * 1. In the current directory
-	 * 2. In the user dir [~/.gmt]
-	 * 3. In the user cache dir [~/.gmt/cache]
-	 * 4. In the user data dir [~/.gmt/data]
-	 * 5. In the system share/custom dir
-	 * THus we must use both gmt_getsharepath and gmtlib_getuserpath when looking */
-	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0, pos = 0, n_txt = 0;
-	int last;
+int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *name, char *path, unsigned int *pos) {
+	unsigned int type = 0;	/* 0 = not found, 1 = def, 2 = eps */
 	size_t length;
-	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
-	char name[GMT_BUFSIZ] = {""}, file[PATH_MAX] = {""}, path[PATH_MAX] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
-	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
-	char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
-	FILE *fp = NULL;
-	struct GMT_CUSTOM_SYMBOL *head = NULL;
-	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
-	bool got_EPS = false;
-	struct stat buf;
-
+	char file[PATH_MAX] = {""};
 	/* Determine if in_name ends in ".def" or not */
 	length = strlen (in_name);
 	if (length > 4 && !strcmp (&in_name[length-4], ".def"))	/* User gave trailing .def extension (not needed) - just chop */
@@ -4696,9 +4678,9 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	/* Deal with downloadable GMT data sets first.  Passing 4 to avoid hearing about missing remote file
 	 * which can happen when we look for *.def but the file is actually a *.eps [Example 46] */
 	if (gmt_M_file_is_cache (file))	/* Must be a cache file */
-		pos = gmt_download_file_if_not_found (GMT, file, 4);
+		*pos = gmt_download_file_if_not_found (GMT, file, 4);
 	/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
-	if (!gmt_getsharepath (GMT, "custom", &name[pos], ".def", path, R_OK) && !gmtlib_getuserpath (GMT, &file[pos], path)) {	/* No *.def file found */
+	if (!gmt_getsharepath (GMT, "custom", &name[*pos], ".def", path, R_OK) && !gmtlib_getuserpath (GMT, &file[*pos], path)) {	/* No *.def file found */
 		/* See if we got EPS macro */
 		if (length > 4 && !strcmp (&in_name[length-4], ".eps"))	/* User gave trailing .eps extension (not needed) - just chop */
 			strncpy (name, in_name, length-4);
@@ -4707,20 +4689,50 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		/* First check for eps macro */
 		snprintf (file, PATH_MAX, "%s.eps", name);	/* Full name of eps file */
 		if (gmt_M_file_is_cache (file))	/* Must be a cache file */
-			pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Deal with downloadable GMT data sets first */
-		if (gmt_getsharepath (GMT, "custom", &name[pos], ".eps", path, R_OK) || gmtlib_getuserpath (GMT, &file[pos], path)) {
+			*pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Deal with downloadable GMT data sets first */
+		if (gmt_getsharepath (GMT, "custom", &name[*pos], ".eps", path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found EPS macro %s\n", path);
-			if (stat (path, &buf)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS macro %s\n", path);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
-			}
-			got_EPS = true;
+			type = 2;
 		}
 		else
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
 	}
-	else
+	else {
+		type = 1;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s\n", path);
+	}
+	return (type);
+
+}
+/*! . */
+GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
+	/* Load in an initialize a new custom symbol.  These files can live in many places:
+	 * 1. In the current directory
+	 * 2. In the user dir [~/.gmt]
+	 * 3. In the user cache dir [~/.gmt/cache]
+	 * 4. In the user data dir [~/.gmt/data]
+	 * 5. In the system share/custom dir
+	 * THus we must use both gmt_getsharepath and gmtlib_getuserpath when looking */
+	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0, pos = 0, n_txt = 0, type;
+	int last;
+	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
+	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[GMT_LEN8] = {""}, right[GMT_LEN64] = {""};
+	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
+	char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
+	FILE *fp = NULL;
+	struct GMT_CUSTOM_SYMBOL *head = NULL;
+	struct stat buf;
+	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
+	bool got_EPS = false;
+
+	if ((type = gmt_locate_custom_symbol (GMT, in_name, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
+	if (type == 2) {
+		got_EPS = true;
+		if (stat (path, &buf)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of EPS macro %s\n", path);
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		}
+	}
 
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find custom symbol %s\n", &name[pos]);
@@ -5023,7 +5035,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		}
 
 		if (error) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to parse symbol commands in file %s\n", file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to parse symbol commands in file %s\n", path);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Offending line: %s\n", buffer);
 			gmt_M_free (GMT, head);
 			fclose (fp);
@@ -9529,8 +9541,17 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 
 			case 's':	/* Symbol to place */
 				if (p[1]) {
-					strncpy(G->size, &p[2], GMT_LEN64-1);
-					G->symbol_code[0] = p[1];
+					if (p[1] == 'k') {	/* Custom symbol - separate file from size */
+						char *s = strrchr (p, '/');
+						strncpy (G->size, &s[1], GMT_LEN64-1);
+						s[0] = '\0';	/* Truncate size */
+						strncpy (G->symbol_code, &p[1], GMT_LEN64-1);
+						s[0] = '/';	/* Restore size */
+					}
+					else {	/* Regular symbol */
+						strncpy (G->size, &p[2], GMT_LEN64-1);
+						G->symbol_code[0] = p[1];
+					}
 				}
 				break;
 			case 'w':	/* Angle filter width [Default is auto] */
