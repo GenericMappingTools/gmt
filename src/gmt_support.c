@@ -15648,30 +15648,92 @@ double gmt_pol_area (double x[], double y[], uint64_t n) {
 	return (0.5 * area);
 }
 
+<<<<<<< Updated upstream
+=======
+GMT_LOCAL void gmtsupport_cart_centroid (const double *x, const double *y, const uint64_t n, double *centroid) {
+	double det = 0.0, tempDet, m;
+	uint64_t i, j = 1;
+
+	if (n < 4) return;	/* Triangle is smallest polygon */
+	n--;	/* Since last point repeats the first */
+	centroid[GMT_X] = centroid[GMT_Y] = 0.0;
+
+	for (i = 0; i < n; i++, j++) {
+		/* Compute the determinant */
+		tempDet = x[i] * y[j] - x[j] * y[i];
+		det += tempDet;
+		/* Update centroid sum */
+		centroid[GMT_X] += (x[i] + x[j]) * tempDet;
+		centroid[GMT_Y] += (y[i] + y[j]) * tempDet;
+	}
+
+	m = 3 * det;	/* Divide by the total "mass" of the polygon */
+	centroid[GMT_X] /= m;
+	centroid[GMT_Y] /= m;
+}
+
+GMT_LOCAL double gmtsupport_cart_centroid_area (const double *x, const double *y, const uint64_t n, double *centroid) {
+	double *xp = NULL, *yp = NULL;
+	uint64_t i;
+
+	if (n < 4) return;	/* Triangle is smallest polygon */
+	gmtsupport_cart_centroid (x, y, n, centroid);
+
+	n--;	/* Since last point repeats the first */
+
+	xp = gmt_M_memory (GMT, NULL, n, double);	yp = gmt_M_memory (GMT, NULL, n, double);
+	for (i = 0; i < n; i++) {	/* Just take out centroid coordinates */
+		xp[i] = x[i] - centroid[GMT_X];
+		yp[i] = y[i] - centroid[GMT_Y];
+	}
+	area = gmt_pol_area (xp, yp, n);	/* Signed area */
+	gmt_M_free (GMT, xp);
+	gmt_M_free (GMT, yp);
+
+	return (area);
+}
+
 /*! . */
-void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo) {
-	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean)  Input data remains unchanged. */
+double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
+	/* Estimate centroid and area.  geo is 1 if geographic data (requiring vector mean). Input data remains unchanged. */
+	double area;
+	if (geo)	/* Spherical centroid and area */
+		area = gmtlib_geo_centroid_area (GMT, x, y, n, pos);
+	else	/* Cartesian centroid and area */
+		area = gmtsupport_cart_centroid_area (x, y, n, pos);
+}
+
+>>>>>>> Stashed changes
+/*! . */
+void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
+	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean).  Input data remains unchanged. */
 	uint64_t i, k;
 
 	assert (n > 0);	/* So n is >= 1 below */
-	if (n == 1) {
+	if (n == 1) {	/* Single point means we return the point as is */
 		pos[GMT_X] = x[0];	pos[GMT_Y] = y[0];
 		return;
 	}
 	n--; /* Skip 1st point since it is repeated as last.  n is now at least 1 */
 
 	if (geo) {	/* Geographic data, must use vector mean */
+<<<<<<< Updated upstream
 		double P[3], M[3], yc;
 		gmt_M_memset (M, 3, double);
+=======
+		double P[3], M[3] = {0.0, 0.0, 0.0}, yc;
+		n--; /* Skip 1st point since it is repeated as last.  n is now at least 1 */
+>>>>>>> Stashed changes
 		for (i = 0; i < n; i++) {
 			yc = gmt_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			gmt_geo_to_cart (GMT, yc, x[i], P, true);
-			for (k = 0; k < 3; k++) M[k] += P[k];
+			for (k = 0; k < 3; k++) M[k] += P[k];	/* Add up the three components separately */
 		}
 		gmt_normalize3v (GMT, M);
 		gmt_cart_to_geo (GMT, &pos[GMT_Y], &pos[GMT_X], M, true);
 		pos[GMT_Y] = gmt_lat_swap (GMT, pos[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 	}
+<<<<<<< Updated upstream
 	else {	/* Cartesian mean position */
 		pos[GMT_X] = pos[GMT_Y] = 0.0;
 		for (i = 0; i < n; i++) {
@@ -15680,6 +15742,10 @@ void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 		}
 		pos[GMT_X] /= n;	pos[GMT_Y] /= n;
 	}
+=======
+	else	/* Cartesian centroid */
+		gmtsupport_cart_centroid (x, y, n, pos);
+>>>>>>> Stashed changes
 }
 
 /*! . */

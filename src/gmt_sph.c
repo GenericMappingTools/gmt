@@ -388,3 +388,35 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 	gmt_M_free (GMT, grad);
 	return (GMT_OK);
 }
+
+/* Compute spherical triangle area */
+
+double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat, unsigned int n, double *centroid) {
+	/* Baed on http://www.jennessent.com/downloads/Graphics_Shapes_Online.pdf and Renka's area_ */
+	unsigned p, k;
+	double pol_area = 0.0, tri_area, clat, P0[3], P1[3], M[3], C[3] = {0.0, 0.0, 0.0};
+	/* Pick a reference point.  Here, testing with north pole N */
+	double N[3] = {0.0, 0.0, 1.0};	/* North pole in Cartesian coordinates */
+	n--;	/* Since this is a closed polygon with repeated 1st and last point */
+	clat = gmt_lat_swap (GMT, lat[0], GMT_LATSWAP_G2O);	/* Get geocentric latitude */
+	gmt_geo_to_cart (GMT, clat, x[0], P0, true);	/* get x/y/z for first point*/
+
+	for (p = 1; p < n; p++) {
+		/* Each spherical triangle is obtained by point p-1 and p plus N */
+		clat = gmt_lat_swap (GMT, lat[p], GMT_LATSWAP_G2O);	/* Get geocentric latitude */
+		gmt_geo_to_cart (GMT, clat, x[p], P1, true);	/* get x/y/z for next point */
+		tri_area = areas_ (N, P0, P1);	/* Area of this spherical triangle N-P0-P1 */
+		/* Compute centroid of this spherical triangle */
+		for (k = 0; k < 3; k++) M[k] = N[k] + P0[k] + P1[k];
+		gmt_normalize3v (GMT, M);
+		/* Add up contribution to polygon centroid */
+		for (k = 0; k < 3; k++) C[k] += M[k] * tri_area;
+		pol_area += tri_area;
+		gmt_M_memcpy (P0, P1, 3, double);	/* Make P1 the next P0 */
+	}
+	for (k = 0; k < 3; k++) C[k] /= pol_area;
+	gmt_normalize3v (GMT, C);
+	gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
+	centroid[GMT_Y] = gmt_lat_swap (GMT, clat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
+	return (pol_area * GMT->current.proj.mean_radius * GMT->current.proj.mean_radius * 1.0e-6);	/* Area in km^2 */
+}
