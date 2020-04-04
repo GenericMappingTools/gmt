@@ -15726,7 +15726,7 @@ void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, i
 		pos[GMT_Y] = gmt_lat_swap (GMT, pos[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 	}
 	else	/* Cartesian centroid */
-		cart_centroid (x,y, n, pos);
+		gmtsupport_cart_centroid (x, y, n, pos);
 }
 
 /*! . */

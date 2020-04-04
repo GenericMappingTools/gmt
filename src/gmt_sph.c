@@ -390,20 +390,23 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 }
 
 /* Determine if spherical triangle is oriented clockwise or counter-clockwise */
-GMT_LOCAL double orientation (struct GMT_CTRL *GMT, double A[], double B[], double C[]) {
+GMT_LOCAL int orientation (struct GMT_CTRL *GMT, double A[], double B[], double C[]) {
 	double X[3];
 	gmt_cross3v (GMT, A, B, X);
-	return (copysign (1.0, gmt_dot3v (GMT, X, C)));
+	return (gmt_dot3v (GMT, X, C) < 0.0 ? -1 : +1);
 }
 
 /* Compute spherical triangle area */
 
 double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double *centroid) {
 	/* Based on ideas in http://www.jennessent.com/downloads/Graphics_Shapes_Online.pdf and Renka's area_ function.
-	 * Compute area of spherical polygon and its centroid */
-	unsigned int k;
+	 * Compute area of sphe
+	 int sgn;rical polygon and its centroid */
+	unsigned int k, kind;
+	int sgn;
 	uint64_t p;
-	double pol_area = 0.0, tri_area, sgn, clat, P0[3], P1[3], N[3], M[3], C[3] = {0.0, 0.0, 0.0}, center[2];
+	double pol_area = 0.0, tri_area, clat, P0[3], P1[3], N[3], M[3], C[3] = {0.0, 0.0, 0.0}, center[2];
+	static char *way[2] = {"CCW", "CW"};
 	if (n == 4) {	/* Apply directly on the spherical triangle (4 because of repeated point) */
 		clat = gmt_lat_swap (GMT, lat[0], GMT_LATSWAP_G2O);	/* Get geocentric latitude */
 		gmt_geo_to_cart (GMT, clat, lon[0], N, true);	/* get x/y/z for first point*/
@@ -413,7 +416,10 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 		gmt_geo_to_cart (GMT, clat, lon[2], P1, true);	/* get x/y/z for 3rd point*/
 		sgn = orientation (GMT, N, P0, P1);
 		pol_area = areas_ (N, P0, P1);	/* Absolute area of this spherical triangle N-P0-P1 */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical triangle %lg/%lg==%lg/%lg==%lg/%lg area %lg sign %lg\n", lon[0], lat[1], lon[1], lat[1], lon[2], lat[2], pol_area, sgn);
+		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
+			kind = (sgn == -1) ? 0 : 1;
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical triangle %.4lg/%.4lg via %.4lg/%.4lg to %.4lg/%.4lg : Unit area %7.5lg oriented %3s\n", lon[0], lat[1], lon[1], lat[1], lon[2], lat[2], pol_area, way[kind]);
+		}
 		for (k = 0; k < 3; k++) C[k] = N[k] + P0[k] + P1[k];
 		gmt_normalize3v (GMT, C);
 		gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
@@ -424,7 +430,7 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 	/* Must split up polygon in a series of triangles */
 
 	/* Pick a reference point.  Here, we use the mean vector location N */
-	gmt_mean_point (GMT, lon, lat, n-1, 1, center);	/* One less due to repeated point */
+	gmt_mean_point (GMT, lon, lat, n-1, 1, center);	/* One less to skip repeated point */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Mean spherical polygon point is %lg/%lg\n", center[0], center[1]);
 	clat = gmt_lat_swap (GMT, center[GMT_Y], GMT_LATSWAP_G2O);	/* Get geocentric latitude */
 	gmt_geo_to_cart (GMT, clat, center[GMT_X], N, true);	/* Get x/y/z for mean point */
@@ -440,7 +446,10 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 		gmt_geo_to_cart (GMT, clat, lon[p], P1, true);	/* Get x/y/z for next point P1 */
 		tri_area = areas_ (N, P0, P1);	/* Absolute area of this spherical triangle N-P0-P1 */
 		sgn = orientation (GMT, N, P0, P1);	/* Sign of this area */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical triangle %lg/%lg==%lg/%lg==%lg/%lg area %lg sign %lg\n", center[0], center[1], lon[p-1], lat[p-1], lon[p], lat[p], tri_area, sgn);
+		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
+			kind = (sgn == -1) ? 0 : 1;
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical triangle %.4lg/%.4lg via %.4lg/%.4lg to %.4lg/%.4lg : Unit area %7.5lg oriented %3s\n", center[0], center[1], lon[p-1], lat[p-1], lon[p], lat[p], tri_area, way[kind]);
+		}
 		/* Compute centroid of this spherical triangle */
 		for (k = 0; k < 3; k++) M[k] = N[k] + P0[k] + P1[k];
 		gmt_normalize3v (GMT, M);

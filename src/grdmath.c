@@ -3949,7 +3949,7 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 			y = T->segment[0]->data[GMT_Y];
 			n = T->segment[0]->n_rows;
 		}
-		gmt_mean_point (GMT, x, y, n, pos, geo);	/* Get mean location */
+		gmt_mean_point (GMT, x, y, n, geo, pos);	/* Get mean location */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "[Mean point computed as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
 	}
 	/* Place mean x and y on the stack */
