@@ -389,6 +389,8 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 	if (n_components == 3) {	/* Recover lon,lat */
+		gmt_normalize3v (GMT, M);
+		gmt_normalize3v (GMT, X);
 		gmt_cart_to_geo (GMT, &lat, &lon, X, true);
 		lat = gmt_lat_swap (GMT, lat, GMT_LATSWAP_G2O+1);	/* Get geodetic */
 		if (lon < 0.0) lon += 360.0;
@@ -401,6 +403,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	L = sqrt (B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);	/* Length of B */
 	for (k = 0; k < n_components; k++) B[k] /= L;	/* Normalize */
 	if (n_components == 3) {	/* Recover lon,lat */
+		gmt_normalize3v (GMT, B);
 		gmt_cart_to_geo (GMT, &lat2, &lon2, B, true);
 		lat2 = gmt_lat_swap (GMT, lat2, GMT_LATSWAP_G2O+1);	/* Get geodetic */
 		if (lon2 < 0.0) lon2 += 360.0;
