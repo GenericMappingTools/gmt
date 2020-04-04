@@ -15693,7 +15693,7 @@ GMT_LOCAL double gmtsupport_cart_centroid_area (struct GMT_CTRL *GMT, const doub
 
 /*! . */
 double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
-	/* Estimate centroid and area.  geo is 1 if geographic data (requiring vector mean). Input data remains unchanged.
+	/* Estimate centroid and area of a polygon.  geo is 1 if geographic data. Input data remains unchanged.
 	 * area will be +ve if polygon is CW, negative if CCW */
 	double area;
 	if (geo)	/* Spherical centroid and area */
