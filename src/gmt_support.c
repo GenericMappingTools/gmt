@@ -15648,8 +15648,6 @@ double gmt_pol_area (double x[], double y[], uint64_t n) {
 	return (0.5 * area);
 }
 
-<<<<<<< Updated upstream
-=======
 GMT_LOCAL void gmtsupport_cart_centroid (const double *x, const double *y, const uint64_t n, double *centroid) {
 	double det = 0.0, tempDet, m;
 	uint64_t i, j = 1;
@@ -15703,7 +15701,6 @@ double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t
 		area = gmtsupport_cart_centroid_area (x, y, n, pos);
 }
 
->>>>>>> Stashed changes
 /*! . */
 void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
 	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean).  Input data remains unchanged. */
@@ -15717,13 +15714,8 @@ void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, i
 	n--; /* Skip 1st point since it is repeated as last.  n is now at least 1 */
 
 	if (geo) {	/* Geographic data, must use vector mean */
-<<<<<<< Updated upstream
-		double P[3], M[3], yc;
-		gmt_M_memset (M, 3, double);
-=======
 		double P[3], M[3] = {0.0, 0.0, 0.0}, yc;
 		n--; /* Skip 1st point since it is repeated as last.  n is now at least 1 */
->>>>>>> Stashed changes
 		for (i = 0; i < n; i++) {
 			yc = gmt_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			gmt_geo_to_cart (GMT, yc, x[i], P, true);
@@ -15733,7 +15725,6 @@ void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, i
 		gmt_cart_to_geo (GMT, &pos[GMT_Y], &pos[GMT_X], M, true);
 		pos[GMT_Y] = gmt_lat_swap (GMT, pos[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 	}
-<<<<<<< Updated upstream
 	else {	/* Cartesian mean position */
 		pos[GMT_X] = pos[GMT_Y] = 0.0;
 		for (i = 0; i < n; i++) {
@@ -15742,10 +15733,6 @@ void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, i
 		}
 		pos[GMT_X] /= n;	pos[GMT_Y] /= n;
 	}
-=======
-	else	/* Cartesian centroid */
-		gmtsupport_cart_centroid (x, y, n, pos);
->>>>>>> Stashed changes
 }
 
 /*! . */
