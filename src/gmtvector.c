@@ -358,8 +358,10 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 			S = D->table[tbl]->segment[seg];
 			for (row = 0; row < S->n_rows; row++) {
 				if (!cartesian) {	/* Want to turn geographic or polar into Cartesian */
-					if (gmt_M_is_geographic (GMT, GMT_IN))
-						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], X, true);	/* get x/y/z */
+					if (gmt_M_is_geographic (GMT, GMT_IN)) {
+						lat = gmt_lat_swap (GMT, S->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Get geocentric */
+						gmt_geo_to_cart (GMT, lat, S->data[GMT_X][row], X, true);	/* Get x/y/z */
+					}
 					else
 						gmt_polar_to_cart (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], X, true);
 					for (k = 0; k < n_components; k++) P[k][n] = X[k];
@@ -388,6 +390,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	}
 	if (n_components == 3) {	/* Recover lon,lat */
 		gmt_cart_to_geo (GMT, &lat, &lon, X, true);
+		lat = gmt_lat_swap (GMT, lat, GMT_LATSWAP_G2O+1);	/* Get geodetic */
 		if (lon < 0.0) lon += 360.0;
 	}
 	else { lon = X[GMT_X]; lat = X[GMT_Y]; }
@@ -399,6 +402,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	for (k = 0; k < n_components; k++) B[k] /= L;	/* Normalize */
 	if (n_components == 3) {	/* Recover lon,lat */
 		gmt_cart_to_geo (GMT, &lat2, &lon2, B, true);
+		lat2 = gmt_lat_swap (GMT, lat2, GMT_LATSWAP_G2O+1);	/* Get geodetic */
 		if (lon2 < 0.0) lon2 += 360.0;
 		gmt_M_set_delta_lon (lon, lon2, L);
 		scl = cosd (lat);	/* Local flat-Earth approximation */
