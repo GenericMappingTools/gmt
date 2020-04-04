@@ -15648,6 +15648,29 @@ double gmt_pol_area (double x[], double y[], uint64_t n) {
 	return (0.5 * area);
 }
 
+void cart_centroid (double *x, double *y, unsigned int n, double *centroid) {
+	double det = 0.0, tempDet, m;
+	unsigned int i, j = 1;
+
+	if (n < 4) return;	/* Triangle is smallest polygon with area */
+	n--;	/* Since last point repeats the first */
+	centroid[GMT_X] = centroid[GMT_Y] = 0.0;
+
+	for (i = 0; i < n; i++, j++) {
+		/* compute the determinant */
+		tempDet = x[i] * y[j] - x[j] * y[i];
+		det += tempDet;
+
+		centroid[GMT_X] += (x[i] + x[j]) * tempDet;
+		centroid[GMT_Y] += (y[i] + y[j]) * tempDet;
+	}
+
+	/* divide by the total mass of the polygon */
+	m = 3 * det;
+	centroid[GMT_X] /= m;
+	centroid[GMT_Y] /= m;
+}
+
 /*! . */
 void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo) {
 	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean)  Input data remains unchanged. */
@@ -15658,11 +15681,11 @@ void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 		pos[GMT_X] = x[0];	pos[GMT_Y] = y[0];
 		return;
 	}
-	n--; /* Skip 1st point since it is repeated as last.  n is now at least 1 */
 
-	if (geo) {	/* Geographic data, must use vector mean */
+	if (geo) {	/* Geographic data, must use vector mean [NOT CENTROID] */
 		double P[3], M[3], yc;
 		gmt_M_memset (M, 3, double);
+		n--; /* Skip 1st point since it is repeated as last.  n is now at least 1 */
 		for (i = 0; i < n; i++) {
 			yc = gmt_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			gmt_geo_to_cart (GMT, yc, x[i], P, true);
@@ -15672,14 +15695,8 @@ void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 		gmt_cart_to_geo (GMT, &pos[GMT_Y], &pos[GMT_X], M, true);
 		pos[GMT_Y] = gmt_lat_swap (GMT, pos[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 	}
-	else {	/* Cartesian mean position */
-		pos[GMT_X] = pos[GMT_Y] = 0.0;
-		for (i = 0; i < n; i++) {
-			pos[GMT_X] += x[i];
-			pos[GMT_Y] += y[i];
-		}
-		pos[GMT_X] /= n;	pos[GMT_Y] /= n;
-	}
+	else	/* Cartesian centroid */
+		cart_centroid (x,y, n, pos);
 }
 
 /*! . */
