@@ -50,6 +50,7 @@ struct GMT_XINGS {
 
 EXTERN_MSC char *opt (struct GMTAPI_CTRL *API,char code);
 
+EXTERN_MSC double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double *centroid);
 EXTERN_MSC int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *file);
 EXTERN_MSC int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double *line_angle, double *text_angle, unsigned int *justify);
 EXTERN_MSC bool gmtinit_B_is_frame (struct GMT_CTRL *GMT, char *in);

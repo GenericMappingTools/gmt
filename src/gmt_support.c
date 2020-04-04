@@ -15634,7 +15634,7 @@ double gmt_pol_area (double x[], double y[], uint64_t n) {
 	uint64_t i;
 	double area, xold, yold;
 
-	/* Trapezoidal area calculation.
+	/* Trapezoidal area calculation for Cartesian coordinates.
 	 * area will be +ve if polygon is CW, negative if CCW */
 
 	if (n < 3) return (0.0);
@@ -15648,7 +15648,7 @@ double gmt_pol_area (double x[], double y[], uint64_t n) {
 	return (0.5 * area);
 }
 
-GMT_LOCAL void gmtsupport_cart_centroid (const double *x, const double *y, const uint64_t n, double *centroid) {
+GMT_LOCAL void gmtsupport_cart_centroid (const double *x, const double *y, uint64_t n, double *centroid) {
 	double det = 0.0, tempDet, m;
 	uint64_t i, j = 1;
 
@@ -15670,11 +15670,11 @@ GMT_LOCAL void gmtsupport_cart_centroid (const double *x, const double *y, const
 	centroid[GMT_Y] /= m;
 }
 
-GMT_LOCAL double gmtsupport_cart_centroid_area (const double *x, const double *y, const uint64_t n, double *centroid) {
-	double *xp = NULL, *yp = NULL;
+GMT_LOCAL double gmtsupport_cart_centroid_area (struct GMT_CTRL *GMT, const double *x, const double *y, uint64_t n, double *centroid) {
+	double area, *xp = NULL, *yp = NULL;
 	uint64_t i;
 
-	if (n < 4) return;	/* Triangle is smallest polygon */
+	if (n < 4) return 0.0;	/* Triangle is smallest polygon */
 	gmtsupport_cart_centroid (x, y, n, centroid);
 
 	n--;	/* Since last point repeats the first */
@@ -15693,12 +15693,14 @@ GMT_LOCAL double gmtsupport_cart_centroid_area (const double *x, const double *y
 
 /*! . */
 double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
-	/* Estimate centroid and area.  geo is 1 if geographic data (requiring vector mean). Input data remains unchanged. */
+	/* Estimate centroid and area.  geo is 1 if geographic data (requiring vector mean). Input data remains unchanged.
+	 * area will be +ve if polygon is CW, negative if CCW */
 	double area;
 	if (geo)	/* Spherical centroid and area */
 		area = gmtlib_geo_centroid_area (GMT, x, y, n, pos);
 	else	/* Cartesian centroid and area */
-		area = gmtsupport_cart_centroid_area (x, y, n, pos);
+		area = gmtsupport_cart_centroid_area (GMT, x, y, n, pos);
+	return (area);
 }
 
 /*! . */
@@ -15711,11 +15713,9 @@ void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, i
 		pos[GMT_X] = x[0];	pos[GMT_Y] = y[0];
 		return;
 	}
-	n--; /* Skip 1st point since it is repeated as last.  n is now at least 1 */
 
 	if (geo) {	/* Geographic data, must use vector mean */
 		double P[3], M[3] = {0.0, 0.0, 0.0}, yc;
-		n--; /* Skip 1st point since it is repeated as last.  n is now at least 1 */
 		for (i = 0; i < n; i++) {
 			yc = gmt_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			gmt_geo_to_cart (GMT, yc, x[i], P, true);

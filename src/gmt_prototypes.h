@@ -410,7 +410,7 @@ EXTERN_MSC bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT
 EXTERN_MSC struct GMT_TEXT_SELECTION *gmt_set_text_selection (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC int gmt_flip_justify (struct GMT_CTRL *GMT, unsigned int justify);
 EXTERN_MSC int gmt_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mode, double par[]);
-EXTERN_MSC void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo);
+EXTERN_MSC void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos);
 EXTERN_MSC double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos);
 EXTERN_MSC void gmt_decorated_line (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_DATASET *D, uint64_t seg);
 EXTERN_MSC bool gmt_trim_requested (struct GMT_CTRL *GMT, struct GMT_PEN *P);
