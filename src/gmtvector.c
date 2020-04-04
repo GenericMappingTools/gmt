@@ -341,7 +341,7 @@ GMT_LOCAL void get_azpole (struct GMT_CTRL *GMT, double A[3], double P[3], doubl
 	gmt_matrix_vect_mult (GMT, 3U, R, tmp, P);
 }
 
-GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, double *M, double *E) {
+GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, bool geocentric, double *M, double *E) {
 	/* Determines the mean vector M and the covariance matrix C */
 
 	unsigned int i, j, k, n_components, nrots, geo = gmt_M_is_geographic (GMT, GMT_IN);
@@ -359,7 +359,8 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 			for (row = 0; row < S->n_rows; row++) {
 				if (!cartesian) {	/* Want to turn geographic or polar into Cartesian */
 					if (geo) {
-						lat = gmt_lat_swap (GMT, S->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Get geocentric latitude */
+						lat = S->data[GMT_Y][row];
+						if (geocentric) lat = gmt_lat_swap (GMT, lat, GMT_LATSWAP_G2O);	/* Get geocentric latitude */
 						gmt_geo_to_cart (GMT, lat, S->data[GMT_X][row], X, true);	/* Get x/y/z */
 					}
 					else
@@ -391,7 +392,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	if (n_components == 3 && geo) {	/* Special case of geographic unit vectors; normalize and recover lon,lat */
 		gmt_normalize3v (GMT, M);
 		gmt_cart_to_geo (GMT, &lat, &lon, M, true);
-		lat = gmt_lat_swap (GMT, lat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
+		if (geocentric) lat = gmt_lat_swap (GMT, lat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
 		if (lon < 0.0) lon += 360.0;
 	}
 	else	/* Cartesian, get y-component */
@@ -405,7 +406,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	if (n_components == 3 && geo) {	/* Special case of geographic unit vectors; normalize and recover lon,lat */
 		gmt_normalize3v (GMT, B);
 		gmt_cart_to_geo (GMT, &lat2, &lon2, B, true);
-		lat2 = gmt_lat_swap (GMT, lat2, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
+		if (geocentric) lat2 = gmt_lat_swap (GMT, lat2, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
 		if (lon2 < 0.0) lon2 += 360.0;
 		gmt_M_set_delta_lon (lon, lon2, L);
 		scl = cosd (lat);	/* Local flat-Earth approximation */
@@ -510,7 +511,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || geo)) ? 3 : 2;
-			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, vector_1, E);	/* Get mean vector and confidence ellipse parameters */
+			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, Ctrl->E.active, vector_1, E);	/* Get mean vector and confidence ellipse parameters */
 			if (GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
 				Return (API->error);
 			}
