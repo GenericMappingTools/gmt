@@ -388,7 +388,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	if (gmt_jacobi (GMT, C, n_components, n_components, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
-	if (n_components == 3) {	/* Recover lon,lat */
+	if (n_components == 3 && !cartesian) {	/* Normalize and recover lon,lat */
 		gmt_normalize3v (GMT, M);
 		gmt_cart_to_geo (GMT, &lat, &lon, M, true);
 		lat = gmt_lat_swap (GMT, lat, GMT_LATSWAP_G2O+1);	/* Get geodetic */
@@ -401,7 +401,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	for (k = 0; k < n_components; k++) B[k] = X[k] + sqrt (lambda[0]) * V[k];
 	L = sqrt (B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);	/* Length of B */
 	for (k = 0; k < n_components; k++) B[k] /= L;	/* Normalize */
-	if (n_components == 3) {	/* Recover lon,lat */
+	if (n_components == 3 && !cartesian) {	/* Recover lon,lat */
 		gmt_normalize3v (GMT, B);
 		gmt_cart_to_geo (GMT, &lat2, &lon2, B, true);
 		lat2 = gmt_lat_swap (GMT, lat2, GMT_LATSWAP_G2O+1);	/* Get geodetic */
