@@ -818,7 +818,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->z_min = header->z_max = 0.0;
 		}
 		{	/* Get deflation and chunking info */
-			int storage_mode, shuffle, deflate, deflate_level;
+			int storage_mode, shuffle = 0, deflate = 0, deflate_level = 0;
 			size_t chunksize[5]; /* chunksize of z */
 			gmt_M_err_trap (nc_inq_var_chunking (ncid, z_id, &storage_mode, chunksize));
 			if (storage_mode == NC_CHUNKED) {
@@ -828,7 +828,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			else { /* NC_CONTIGUOUS */
 				HH->z_chunksize[0] = HH->z_chunksize[1] = 0;
 			}
-			gmt_M_err_trap (nc_inq_var_deflate (ncid, z_id, &shuffle, &deflate, &deflate_level));
+			if (HH->is_netcdf4) gmt_M_err_trap (nc_inq_var_deflate (ncid, z_id, &shuffle, &deflate, &deflate_level));
 			HH->z_shuffle = shuffle ? true : false; /* if shuffle filter is turned on */
 			HH->z_deflate_level = deflate ? deflate_level : 0; /* if deflate filter is in use */
 		}
