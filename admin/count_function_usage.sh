@@ -31,7 +31,7 @@ comm -23  /tmp/gmt/all_files.lis /tmp/gmt/exclude_files.lis |\
 	#   shore_res_to_int function    386 src/gmt_shore.c  GMT_LOCAL int shore_res_to_int (char res) {
 	ctags --filter=yes --file-scope=no -x | grep -v GMT_LOCAL |\
 	# Further exclude some global variables
-	gawk '$2=="function" {print $1, $4}' > /tmp/gmt/tmp.list
+	gawk '$2=="function" && $5 !~ "^static" {print $1, $4}' > /tmp/gmt/tmp.list
 # Make list of functions and how many files each appear in, then sort that file
 # Make a subdirectory per function in /tmp/gmt so we can print out the final sorted
 # output at the end
