@@ -6,6 +6,10 @@
 # made static, perhaps by moving from where they are declared to where they are
 # used.
 
+if [ ! -d src ]; then
+        echo "count_function_usage.sh: Must be run from top-level gmt directory" >&2
+        exit 1
+fi
 # Use subdir in /tmp as working directory
 rm -rf /tmp/gmt
 mkdir -p /tmp/gmt
