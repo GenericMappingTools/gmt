@@ -355,6 +355,8 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
 
+#define DEF_HEADER_MARKERS "#%!;\"\'"
+
 #if defined(USE_COMMON_LONG_OPTIONS)
 /* List of GMT common keyword/options pairs.  This list is used in gmtinit_kw_replace to convert
  * the new long-format GMT options (e.g., --timestamp="My plot"+offset=5c/6c) to regular GMT short format
@@ -5900,7 +5902,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* IO_HEADER */
 	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header[GMT_OUT] = false;
 	/* IO_HEADER_MARKER */
-	strcpy (GMT->current.setting.io_head_marker_in, "#%\"\'");	/* Accept GMT or MATLAB header records or comments or quoted text */
+	strcpy (GMT->current.setting.io_head_marker_in, DEF_HEADER_MARKERS);	/* Accept GMT or MATLAB header records or comments or quoted text */
 	GMT->current.setting.io_head_marker_out = '#';
 	/* IO_N_HEADER_RECS */
 	GMT->current.setting.io_n_header_items = 0;
@@ -10177,16 +10179,16 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_IO_HEADER_MARKER:
 			if (len == 0) {	/* Blank gives default */
-				strcpy (GMT->current.setting.io_head_marker_in, "#%\"\'");	/* Handle GMT and MATLAB headers and comments */
+				strcpy (GMT->current.setting.io_head_marker_in, DEF_HEADER_MARKERS);	/* Handle GMT and MATLAB headers and comments */
 				GMT->current.setting.io_head_marker_out = '#';
 			}
 			else {
-				char txt[2][GMT_LEN8];
+				char txt[2][GMT_LEN32];
 				if (strchr (value, ',')) {	/* Got separate header record markers for input,output */
 					sscanf (value, "%[^,],%s", txt[GMT_IN], txt[GMT_OUT]);
 				}
 				else {	/* Just duplicate */
-					strncpy (txt[GMT_IN], value, GMT_LEN8-1);	strncpy (txt[GMT_OUT], value, GMT_LEN8-1);
+					strncpy (txt[GMT_IN], value, GMT_LEN32-1);	strncpy (txt[GMT_OUT], value, GMT_LEN32-1);
 				}
 				strcpy (GMT->current.setting.io_head_marker_in, txt[GMT_IN]);
 				GMT->current.setting.io_head_marker_out = txt[GMT_OUT][0];	/* Only pick the first character */
