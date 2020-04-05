@@ -400,8 +400,7 @@ GMT_LOCAL int orientation (struct GMT_CTRL *GMT, double A[], double B[], double 
 
 double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double *centroid) {
 	/* Based on ideas in http://www.jennessent.com/downloads/Graphics_Shapes_Online.pdf and Renka's area_ function.
-	 * Compute area of sphe
-	 int sgn;rical polygon and its centroid */
+	 * Compute area of a spherical polygon and its centroid. */
 	unsigned int k, kind;
 	int sgn;
 	uint64_t p;
