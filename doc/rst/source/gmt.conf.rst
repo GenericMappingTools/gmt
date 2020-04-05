@@ -474,9 +474,10 @@ I/O Parameters
 
     **IO_HEADER_MARKER**
         Give a string from which any character will indicate a header record in
-        an incoming ASCII data table if found in the first position [#%]. If another marker should be
+        an incoming ASCII data table if found in the first position [#%"']. If another marker should be
         used for output than the first character in the list, then append a single character
         for the output header record marker. The two sets must be separated by a comma.
+        **Note**: A maximum of 7 input markers can be specified.
 
     **IO_LONLAT_TOGGLE**
         (**-:**) Set if the first two columns of input and output files
