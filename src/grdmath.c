@@ -3933,8 +3933,8 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		pos[GMT_Y] = T->segment[0]->data[GMT_Y][0];
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "[Single point reported as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
 	}
-	else {	/* Must compute averate point */
-		if (T->n_segments > 1) {	/* Must build a single table for gmt_centroid */
+	else {	/* Must compute mean point */
+		if (T->n_segments > 1) {	/* Must build single x,y arrays for gmt_mean_point */
 			uint64_t seg;
 			size_t n_alloc = 0;
 			gmt_M_malloc2 (GMT, x, y, T->n_records, &n_alloc, double);		/* Allocate one long array for each */
@@ -3949,8 +3949,8 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 			y = T->segment[0]->data[GMT_Y];
 			n = T->segment[0]->n_rows;
 		}
-		gmt_centroid (GMT, x, y, n, pos, geo);	/* Get mean location */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "[Centroid computed as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
+		gmt_mean_point (GMT, x, y, n, geo, pos);	/* Get mean location */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "[Mean point computed as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
 	}
 	/* Place mean x and y on the stack */
 	stack[last]->constant = true;
