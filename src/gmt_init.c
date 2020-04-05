@@ -5884,7 +5884,8 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* IO_HEADER */
 	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header[GMT_OUT] = false;
 	/* IO_HEADER_MARKER */
-	GMT->current.setting.io_head_marker[GMT_OUT] = GMT->current.setting.io_head_marker[GMT_IN] = '#';
+	strcpy (GMT->current.setting.io_head_marker_in, "#%");	/* Accept GMT or MATLAB header records or comments */
+	GMT->current.setting.io_head_marker_out = '#';
 	/* IO_N_HEADER_RECS */
 	GMT->current.setting.io_n_header_items = 0;
 	/* IO_NAN_RECORDS (pass) */
@@ -10159,19 +10160,20 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT->current.setting.io_header[GMT_OUT] = GMT->current.setting.io_header[GMT_IN];
 			break;
 		case GMTCASE_IO_HEADER_MARKER:
-			if (len == 0)	/* Blank gives default */
-				GMT->current.setting.io_head_marker[GMT_OUT] = GMT->current.setting.io_head_marker[GMT_IN] = '#';
+			if (len == 0) {	/* Blank gives default */
+				strcpy (GMT->current.setting.io_head_marker_in, "#%");	/* Handle GMT and MATLAB headers and comments */
+				GMT->current.setting.io_head_marker_out = '#';
+			}
 			else {
-				int dir;
-				char txt[2][GMT_LEN32];
+				char txt[2][GMT_LEN8];
 				if (strchr (value, ',')) {	/* Got separate header record markers for input,output */
 					sscanf (value, "%[^,],%s", txt[GMT_IN], txt[GMT_OUT]);
 				}
 				else {	/* Just duplicate */
-					strncpy (txt[GMT_IN], value, GMT_LEN32-1);	strncpy (txt[GMT_OUT], value, GMT_LEN32-1);
+					strncpy (txt[GMT_IN], value, GMT_LEN8-1);	strncpy (txt[GMT_OUT], value, GMT_LEN8-1);
 				}
-				for (dir = 0; dir < 2; dir++)
-					GMT->current.setting.io_head_marker[dir] = txt[dir][0];
+				strcpy (GMT->current.setting.io_head_marker_in, txt[GMT_IN]);
+				GMT->current.setting.io_head_marker_out = txt[GMT_OUT][0];	/* Only pick the first character */
 			}
 			break;
 		case GMTCASE_N_HEADER_RECS:
@@ -11486,12 +11488,12 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 		case GMTCASE_IO_HEADER_MARKER:
 			value[0] = '\0';
-			if (GMT->current.setting.io_head_marker[GMT_OUT] != GMT->current.setting.io_head_marker[GMT_IN]) {
-				snprintf (txt, 8U, "%c,", GMT->current.setting.io_head_marker[GMT_IN]);	strcat (value, txt);
-				snprintf (txt, 8U, "%c", GMT->current.setting.io_head_marker[GMT_OUT]);	strcat (value, txt);
+			if (strlen (GMT->current.setting.io_head_marker_in) > 1 || GMT->current.setting.io_head_marker_in[0] != GMT->current.setting.io_head_marker_out) {
+				snprintf (txt, 8U, "%s,", GMT->current.setting.io_head_marker_in);	strcat (value, txt);
+				snprintf (txt, 8U, "%c", GMT->current.setting.io_head_marker_out);	strcat (value, txt);
 			}
-			else {
-				snprintf (txt, 8U, "%c", GMT->current.setting.io_head_marker[GMT_IN]);	strcat (value, txt);
+			else {	/* Just a single character for both ways */
+				snprintf (txt, 8U, "%c", GMT->current.setting.io_head_marker_out);	strcat (value, txt);
 			}
 			break;
 		case GMTCASE_N_HEADER_RECS:
