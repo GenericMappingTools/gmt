@@ -47,8 +47,9 @@
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 
-# Exclude optional GDAL, PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
+# Exclude optional GDAL, GEOS ,PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
 #set (GMT_EXCLUDE_GDAL TRUE)
+#set (GMT_EXCLUDE_GEOS TRUE)
 #set (GMT_EXCLUDE_PCRE TRUE)
 #set (GMT_EXCLUDE_PCRE2 TRUE)
 #set (GMT_EXCLUDE_FFTW3 TRUE)
@@ -104,6 +105,10 @@
 # Set location of GDAL (can be root directory, path to header file or path to
 # gdal-config) [auto]:
 #set (GDAL_ROOT "gdal_install_prefix")
+
+# Set location of GEOS (can be root directory, path to header file or path to
+# geos-config) [auto]:
+#set (GEOS_ROOT "geos_install_prefix")
 
 # Set location of PCRE (can be root directory, path to header file or path to
 # pcre-config) [auto]:
