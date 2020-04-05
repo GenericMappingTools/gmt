@@ -67,7 +67,6 @@
  *	gmtlib_read_ps              :
  *	gmtlib_write_ps             :
  *	gmtlib_duplicate_ps         :
- *	gmtlib_copy_ps              :
  *
  */
 
@@ -1599,48 +1598,23 @@ GMT_LOCAL void plot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 }
 
 GMT_LOCAL int plot_save_current_gridlines (struct GMT_CTRL *GMT) {
-	/* If only primary gridlines are drawn, save information to items file */
-	unsigned int item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
-	char file[PATH_MAX] = {""};
-	double dx, dy;
-	FILE *fp = NULL;
+	/* If only primary gridlines are drawn, we save information to gmt.history */
 
-	if (!(GMT->current.map.frame.axis[GMT_X].item[item[0]].active || GMT->current.map.frame.axis[GMT_Y].item[item[0]].active)) return (GMT_NOERROR);	/* Primary gridlines not selected, so bail */
-	if (GMT->current.map.frame.axis[GMT_X].item[item[1]].active || GMT->current.map.frame.axis[GMT_Y].item[item[1]].active) return (GMT_NOERROR);		/* Secondary gridlines selected, so bail */
+	if (!(GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].active || GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].active)) return (GMT_NOERROR);	/* Primary gridlines not selected, so bail */
+	if (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_LOWER].active || GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_LOWER].active) return (GMT_NOERROR);		/* Secondary gridlines selected, so bail */
 
-	if (gmtlib_set_current_item_file (GMT, "gridlines", file) == GMT_FILE_NOT_FOUND) return (GMT_NOERROR);
-
-	/* Save the gridline setting for this graphics item */
-
-	if ((fp = fopen (file, "w")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to save current gridline information to %s !\n", file);
-		return (GMT_RUNTIME_ERROR);
-	}
-	dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[item[0]]);
-	dy = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[item[0]]);
-	fprintf (fp, "%g\t%g\n", dx, dy);
-	fclose (fp);
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Save current gridline information to %s\n", file);
+	GMT->current.plot.gridline_spacing[GMT_X] = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER]);
+	GMT->current.plot.gridline_spacing[GMT_Y] = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER]);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Save current gridline information to gmt.history\n");
 	return (GMT_NOERROR);
 }
 
 GMT_LOCAL int gmt_get_current_gridlines (struct GMT_CTRL *GMT, double *dx, double *dy) {
-	/* If modern mode and a current gridline setting file exists, obtain the gridline intervals */
-	char *file = NULL;
-	FILE *fp = NULL;
+	/* Obtain the previous gridline intervals, if nonzero */
 
-	if ((file = gmt_get_current_item (GMT, "gridlines", true)) == NULL) return (GMT_NOERROR);	/* No gridlines drawn yet or we are in classic mode */
-	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open current gridline information file %s !\n", file);
-		return (GMT_RUNTIME_ERROR);
-	}
-	if (fscanf (fp, "%lg %lg\n", dx, dy) != 2) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read current gridline information from %s !\n", file);
-		return (GMT_RUNTIME_ERROR);
-	}
-	fclose (fp);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read current gridline information (%g, %g) from %s\n", *dx, *dy, file);
-	gmt_M_str_free (file);
+	if (gmt_M_is_zero (GMT->current.plot.gridline_spacing[GMT_X]) && gmt_M_is_zero (GMT->current.plot.gridline_spacing[GMT_Y])) return (GMT_NOERROR);	/* No gridlines drawn yet */
+	*dx = GMT->current.plot.gridline_spacing[GMT_X];
+	*dy = GMT->current.plot.gridline_spacing[GMT_Y];
 	return (GMT_NOERROR);
 }
 
@@ -8173,6 +8147,15 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	}
 	GMT->current.ps.title[0] = '\0';	/* Reset title */
 	if (GMT->current.ps.oneliner) GMT->current.ps.active = true;	/* Since we are plotting we reset this here in case other modules have turned it off */
+
+	if (!K_active) GMT->current.plot.gridline_spacing[GMT_X] = GMT->current.plot.gridline_spacing[GMT_Y] = 0.0;	/* Done, if they ever were used */
+#if 0
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Remove any gridline file we may have made in /tmp */
+		char file[PATH_MAX] = {""};
+		snprintf (file, PATH_MAX, "%s/%s-gmt.gridlines", GMT->parent->tmp_dir, GMT->parent->session_name);
+		gmt_remove_file (GMT, file);
+	}
+#endif
 }
 
 void gmt_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {
@@ -8735,11 +8718,18 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 		s[i] = s[i-1] + hypot (dx, y[i] - y[i-1]);
 	}
 
-	if (f->f_gap > 0.0) {	/* Gave positive interval; adjust so we start and end with a tick on each line */
-		ngap = irint (s[n-1] / f->f_gap);
-		gap = s[n-1] / ngap;
+	if (f->f_gap > 0.0) {	/* Gave positive interval */
+		if (f->f_exact) {	/* Use gap exactly as given, not worry about ending line with tick */
+			ngap = floor ((s[n-1] * (1.0 + GMT_CONV6_LIMIT)) / f->f_gap);	/* Allow 1 ppm noise since we use floor */
+			gap = f->f_gap;	/* As given */
+		}
+		else {	/* Adjust so we start and end with a tick on each line */
+			ngap = irint (s[n-1] / f->f_gap);
+			gap = s[n-1] / ngap;	/* Adjust gap to fit line length */
+			ngap++;
+		}
 		dist = f->f_off;	/* Start off at the offset distance [0] */
-		ngap++;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given gap: %g Adjusted gap: %g Number of front gaps: %d\n", f->f_gap, gap, ngap);
 	}
 	else {	/* Gave negative interval which means the # of ticks required */
 		ngap = irint (fabs (f->f_gap));
@@ -8751,6 +8741,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 			dist = 0.5 * s[n-1], gap = s[n-1];
 		else		/* Equidistantly spaced tick starting at 1st point and ending at last */
 			gap = s[n-1] / (ngap - 1);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given number of front gaps: %d Computed gap: %g\n", ngap, gap);
 	}
 
 	len2 = 0.5 * f->f_len;
@@ -9281,16 +9272,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	return (GMT_NOERROR);
 }
 
-/*! . */
-struct GMT_POSTSCRIPT * gmtlib_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_from, unsigned int mode) {
-	/* Duplicates a GMT_POSTSCRIPT structure.  Mode not used yet */
-	struct GMT_POSTSCRIPT *P = gmtlib_create_ps (GMT, P_from->n_bytes);
-	gmt_M_unused(mode);
-	gmtlib_copy_ps (GMT, P, P_from);
-	return (P);
-}
-
-void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
+void gmtplot_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
 	/* Just duplicate from P_obj into P_copy */
 	struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P_copy);
 	if (P_obj->n_bytes > PH->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n_bytes, char);
@@ -9299,6 +9281,15 @@ void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct
 	P_copy->mode = P_obj->mode;
 	PH->n_alloc = P_copy->n_bytes = P_obj->n_bytes;
 	PH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
+}
+
+/*! . */
+struct GMT_POSTSCRIPT * gmtlib_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_from, unsigned int mode) {
+	/* Duplicates a GMT_POSTSCRIPT structure.  Mode not used yet */
+	struct GMT_POSTSCRIPT *P = gmtlib_create_ps (GMT, P_from->n_bytes);
+	gmt_M_unused(mode);
+	gmtplot_copy_ps (GMT, P, P_from);
+	return (P);
 }
 
 struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {

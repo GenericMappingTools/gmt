@@ -70,10 +70,12 @@
 	the desired diameter to **-SE-** and this fixed diameter is used instead.
 	For allowable geographical units, see `Units`_ [Default is k for km].
 
-    **-Sf**\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
-        Draw a **f**\ ront.  Supply distance gap between symbols and symbol size. If *gap* is
+    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+i**][**+o**\ *offset*][**+p**\ [*pen*]].
+        Draw a **f**\ ront.  Supply distance *gap* between symbols and symbol size. If *gap* is
         negative, it is interpreted to mean the number of symbols along the
-        front instead. If *size* is missing it is set to 30% of the *gap*, except
+        front instead. If *gap* has a leading + then we use the value exactly as given
+        [Default will start and end each line with a symbol, hence the *gap* is adjusted to fit].
+        If *size* is missing it is set to 30% of the *gap*, except
         when *gap* is negative and *size* is thus required.  Append **+l** or
         **+r** to plot symbols on the left or
         right side of the front [Default is centered]. Append **+**\ *type* to
@@ -85,9 +87,9 @@
         beginning of the front by that amount [0]. The chosen symbol is drawn
         with the same pen as set for the line (i.e., via **-W**). To use an
         alternate pen, append **+p**\ *pen*. To skip the outline, just use
-        **+p**. **Note**: By placing **-Sf**
-        options in the segment header you can change the front types on a
-        segment-by-segment basis.
+        **+p**.  To make the main front line invisible, add **+i**.  **Note**:
+        By placing **-Sf** options in the segment header you can change the front
+        types on a segment-by-segment basis.
 
     **-Sg**
         octa\ **g**\ on. *size* is diameter of circumscribing circle.
@@ -250,6 +252,9 @@
             **+g**\ [*color*]
                 Selects opaque text boxes [Default is transparent]; optionally
                 specify the color [Default is **PS\_PAGE\_COLOR**].
+
+            **+i**
+                Make the main quoted line invisible [Draw it per **-W**].
 
             **+j**\ *just*
                 Sets label justification [Default is MC]. Ignored when
@@ -469,6 +474,9 @@
             **+g**\ [*fill*]
                 Sets the symbol fill [no fill].
 
+            **+i**
+                Make the main decorated line invisible [Draw it using pen settings provided by **-W**].
+
             **+n**\ *dx*\ [/*dy*]
                 Nudges the placement of symbols by the specified amount (append
                 **c**\|\ **i**\|\ **p** to specify the units). Increments
@@ -481,12 +489,14 @@
                 optionally specify pen for outline [Default is width = 0.25p,
                 color = black, style = solid].
 
-            **+s**\ <symbol><size>
+            **+s**\ <symbol><size> or **+sk**\ *customsymbol*/*size*
                 Specifies the code and size of the decorative symbol.
+                Custom symbols need to be simple, i.e., not require data columns.
 
             **+w**
                 Specifies how many (*x*,\ *y*) points will be used to estimate
                 symbol angles [Default is 10].
 
+        If neither **+g** nor **+p** are set we select the default pen outline (:term:`MAP_DEFAULT_PEN`).
         **Note**: By placing **-S~** options in the segment header you can change
         the decorated lines on a segment-by-segment basis.

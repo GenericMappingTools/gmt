@@ -3933,8 +3933,8 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		pos[GMT_Y] = T->segment[0]->data[GMT_Y][0];
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "[Single point reported as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
 	}
-	else {	/* Must compute averate point */
-		if (T->n_segments > 1) {	/* Must build a single table for gmt_centroid */
+	else {	/* Must compute mean point */
+		if (T->n_segments > 1) {	/* Must build single x,y arrays for gmt_mean_point */
 			uint64_t seg;
 			size_t n_alloc = 0;
 			gmt_M_malloc2 (GMT, x, y, T->n_records, &n_alloc, double);		/* Allocate one long array for each */
@@ -3949,8 +3949,8 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 			y = T->segment[0]->data[GMT_Y];
 			n = T->segment[0]->n_rows;
 		}
-		gmt_centroid (GMT, x, y, n, pos, geo);	/* Get mean location */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "[Centroid computed as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
+		gmt_mean_point (GMT, x, y, n, geo, pos);	/* Get mean location */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "[Mean point computed as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
 	}
 	/* Place mean x and y on the stack */
 	stack[last]->constant = true;
@@ -6311,9 +6311,8 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		/* Skip table files given as argument to the LDIST, PDIST, POINT, INSIDE operators */
 		next = opt->next;
 		while (next && next->option != GMT_OPT_INFILE) next = next->next;	/* Skip any options splitting the operand OPERATOR sequence */
-		if (next == NULL) continue;
-		if (!(strncmp (next->arg, "LDIST", 5U) && strncmp (next->arg, "PDIST", 5U) && strncmp (next->arg, "POINT", 5U) && strncmp (next->arg, "INSIDE", 6U))) continue;
-		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
+		if (next && !(strncmp (next->arg, "LDIST", 5U) && strncmp (next->arg, "PDIST", 5U) && strncmp (next->arg, "POINT", 5U) && strncmp (next->arg, "INSIDE", 6U))) continue;
+		/* Filenames,  operators, some numbers and = will all have been flagged as input files by the parser */
 		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
 		if (status == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible */
 		if (status != GRDMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */

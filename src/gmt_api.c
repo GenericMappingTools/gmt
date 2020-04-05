@@ -690,7 +690,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 /* Function to get PPID under Windows is a bit different */
 #ifdef _WIN32
 #include <TlHelp32.h>
-int winppid (int pidin) {
+GMT_LOCAL int winppid (int pidin) {
 	/* If pidin == 0 get the PPID of current process
 	   otherwise, get the PPID of pidin process
 	*/
@@ -6682,6 +6682,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 	else {	/* Input files were closed when we tried to go to next item */
 		if (API->current_get_V_val) gmt_M_free (API->GMT, API->current_get_V_val);
 	}
+	API->is_file = true;
 	API->io_enabled[direction] = false;	/* No longer OK to access resources or destinations */
 	API->current_rec[direction] = 0;	/* Reset count for next time */
 	for (item = 0; item < API->n_objects; item++) {	/* Deselect the used resources */
@@ -7565,7 +7566,7 @@ int GMT_Set_Geometry_ (unsigned int *direction, unsigned int *geometry) {	/* For
 }
 #endif
 
-void *api_get_record_fp_sub (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields, struct GMTAPI_DATA_OBJECT **S_obj) {
+GMT_LOCAL void *api_get_record_fp_sub (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields, struct GMTAPI_DATA_OBJECT **S_obj) {
 	/* Gets next data record from current open stream */
 	int status;
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
@@ -7728,7 +7729,7 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 	return record;
 }
 
-struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets next data record from current dataset */
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -7795,6 +7796,7 @@ GMT_LOCAL void api_get_record_init (struct GMTAPI_CTRL *API) {
 		return;
 	}
 	API->error = GMT_NOERROR;
+	API->is_file = false;
 	S = API->current_get_obj;	/* Shorthand for the current data source we are working on */
 	GMT = API->GMT;			/* Shorthand for GMT access */
 	/* Reset to default association for current record's data and text pointers */
@@ -7811,6 +7813,7 @@ GMT_LOCAL void api_get_record_init (struct GMTAPI_CTRL *API) {
 			API->api_get_record = api_get_record_fp_first;
 			GMT->current.io.first_rec = true;
 			gmtlib_reset_input (GMT);	/* Go back to being agnostic about number of columns, etc. */
+			API->is_file = true;
 			break;
 
 		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* Here we copy/read from a user memory location which is a matrix */
@@ -8648,7 +8651,7 @@ int GMT_Destroy_Data_ (void *object) {
 }
 #endif
 
-int api_destroy_grids (struct GMTAPI_CTRL *API, struct GMT_GRID ***obj, unsigned int n_items)
+GMT_LOCAL int api_destroy_grids (struct GMTAPI_CTRL *API, struct GMT_GRID ***obj, unsigned int n_items)
 {	/* Used to destroy a group of grids read via GMT_Read_Group */
 	unsigned int k;
 	int error;
@@ -8658,7 +8661,7 @@ int api_destroy_grids (struct GMTAPI_CTRL *API, struct GMT_GRID ***obj, unsigned
 	return_error (API, GMT_NOERROR);
 }
 
-int api_destroy_datasets (struct GMTAPI_CTRL *API, struct GMT_DATASET ***obj, unsigned int n_items)
+GMT_LOCAL int api_destroy_datasets (struct GMTAPI_CTRL *API, struct GMT_DATASET ***obj, unsigned int n_items)
 {	/* Used to destroy a group of datasets read via GMT_Read_Group */
 	unsigned int k;
 	int error;
@@ -8668,7 +8671,7 @@ int api_destroy_datasets (struct GMTAPI_CTRL *API, struct GMT_DATASET ***obj, un
 	return_error (API, GMT_NOERROR);
 }
 
-int api_destroy_images (struct GMTAPI_CTRL *API, struct GMT_IMAGE ***obj, unsigned int n_items)
+GMT_LOCAL int api_destroy_images (struct GMTAPI_CTRL *API, struct GMT_IMAGE ***obj, unsigned int n_items)
 {	/* Used to destroy a group of images read via GMT_Read_Group */
 	unsigned int k;
 	int error;
@@ -8678,7 +8681,7 @@ int api_destroy_images (struct GMTAPI_CTRL *API, struct GMT_IMAGE ***obj, unsign
 	return_error (API, GMT_NOERROR);
 }
 
-int api_destroy_palettes (struct GMTAPI_CTRL *API, struct GMT_PALETTE ***obj, unsigned int n_items)
+GMT_LOCAL int api_destroy_palettes (struct GMTAPI_CTRL *API, struct GMT_PALETTE ***obj, unsigned int n_items)
 {
 	unsigned int k;
 	int error;
@@ -8688,7 +8691,7 @@ int api_destroy_palettes (struct GMTAPI_CTRL *API, struct GMT_PALETTE ***obj, un
 	return_error (API, GMT_NOERROR);
 }
 
-int api_destroy_postscripts (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT ***obj, unsigned int n_items)
+GMT_LOCAL int api_destroy_postscripts (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT ***obj, unsigned int n_items)
 {	/* Used to destroy a group of palettes read via GMT_Read_Group */
 	unsigned int k;
 	int error;
@@ -8698,7 +8701,7 @@ int api_destroy_postscripts (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT ***o
 	return_error (API, GMT_NOERROR);
 }
 
-int api_destroy_matrices (struct GMTAPI_CTRL *API, struct GMT_MATRIX ***obj, unsigned int n_items)
+GMT_LOCAL int api_destroy_matrices (struct GMTAPI_CTRL *API, struct GMT_MATRIX ***obj, unsigned int n_items)
 {	/* Used to destroy a group of matrices read via GMT_Read_Group */
 	unsigned int k;
 	int error;
@@ -8708,7 +8711,7 @@ int api_destroy_matrices (struct GMTAPI_CTRL *API, struct GMT_MATRIX ***obj, uns
 	return_error (API, GMT_NOERROR);
 }
 
-int api_destroy_vectors (struct GMTAPI_CTRL *API, struct GMT_VECTOR ***obj, unsigned int n_items)
+GMT_LOCAL int api_destroy_vectors (struct GMTAPI_CTRL *API, struct GMT_VECTOR ***obj, unsigned int n_items)
 {	/* Used to destroy a group of vectors read via GMT_Read_Group */
 	unsigned int k;
 	int error;
@@ -8718,7 +8721,7 @@ int api_destroy_vectors (struct GMTAPI_CTRL *API, struct GMT_VECTOR ***obj, unsi
 	return_error (API, GMT_NOERROR);
 }
 
-void **void3_to_void2 (void ***p) { return (*p); }	/* To avoid warnings and troubles */
+GMT_LOCAL void **void3_to_void2 (void ***p) { return (*p); }	/* To avoid warnings and troubles */
 
 /*! . */
 int GMT_Destroy_Group (void *V_API, void *object, unsigned int n_items) {

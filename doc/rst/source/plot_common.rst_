@@ -35,7 +35,8 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**]
-    By default, geographic line segments are drawn as great circle arcs. To draw them as
+    By default, geographic line segments are drawn as great circle arcs by resampling
+    coarse input data along such arcs. To disable this sampling and draw them as
     straight lines, use the **-A** flag.  Alternatively, add **m** to draw
     the line by first following a meridian, then a parallel. Or append **p**
     to start following a parallel, then a meridian. (This can be practical

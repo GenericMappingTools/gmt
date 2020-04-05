@@ -185,6 +185,13 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/* 
 }
 
 GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int geo) {
+	double size = gmt_centroid_area (GMT, x, y, n, geo, out);
+ 	out[GMT_Z] = fabs (size);
+	return ((size < 0.0) ? POL_IS_CCW : POL_IS_CW);
+}
+
+#if 0
+GMT_LOCAL unsigned int area_size_old (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int geo) {
 	uint64_t i;
 	double wesn[4], xx, yy, size, ix, iy;
 	double *xp = NULL, *yp = NULL;
@@ -238,6 +245,7 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 	out[GMT_Z] = fabs (size);
 	return ((size < 0.0) ? POL_IS_CCW : POL_IS_CW);
 }
+#endif
 
 GMT_LOCAL void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out) {
 	uint64_t i;
