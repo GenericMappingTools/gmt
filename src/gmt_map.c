@@ -5108,7 +5108,7 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 		if (lat < s) s = lat;
 		if (lat > n) n = lat;
 	}
-	gmtlib_get_lon_minmax (GMT, lon, k, &w, &e);	/* Determine lon-range by robust quandrant check */
+	gmtlib_get_lon_minmax (GMT, lon, k, &w, &e);	/* Determine lon-range by robust quadrant check */
 	gmt_M_free (GMT, lon);
 
 	/* Then check if one or both poles are inside map; then the above won't be correct */
@@ -9678,4 +9678,24 @@ struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, 
 	snprintf (header, GMT_LEN256, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
 	S->header = strdup (header);
 	return (S);
+}
+
+bool gmt_segment_BB_outside_map_BB (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
+	/* Determine if the bounding box for this segment is completely outside the current map w/e/s/n region.
+	 * Note: If an oblique projection is selected then the gmt_wesn_search has updated the GMT->common.R.wesn
+	 * to be the bounding box of that oblique region. */
+
+	/* First check latitude or y-coordinates since they are straightforward to check */
+	if (S->min[GMT_Y] > GMT->common.R.wesn[YHI]) return true;	/* BB is above of our max region */
+	if (S->max[GMT_Y] < GMT->common.R.wesn[YLO]) return true;	/* BB is below of our max region */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must take periodicity of longitudes into account when checking if we are outside */
+		if ((S->min[GMT_X] > GMT->common.R.wesn[XHI]) && ((S->max[GMT_X] - 360.0) < GMT->common.R.wesn[XLO])) return true;	/* BB is to the right of our max region */
+		if ((S->max[GMT_X] < GMT->common.R.wesn[XLO]) && ((S->min[GMT_X] + 360.0) > GMT->common.R.wesn[XHI])) return true;	/* BB is to the left of our max region */
+	}
+	else {	/* Cartesian x is easy to check */
+		if (S->min[GMT_X] > GMT->common.R.wesn[XHI]) return true;	/* BB is to the right of our max region */
+		if (S->max[GMT_X] < GMT->common.R.wesn[XLO]) return true;	/* BB is to the left of our max region */
+
+	}
+	return false;
 }
