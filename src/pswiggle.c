@@ -544,10 +544,12 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 		T = D->table[tbl];
 		TH = gmt_get_DT_hidden (T);
 
-                GMT_Report (API, GMT_MSG_INFORMATION, "Working on file %s\n", TH->file[GMT_IN]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Working on file %s\n", TH->file[GMT_IN]);
 		PSL_comment (PSL, "File %s\n", TH->file[GMT_IN]);
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
+
+			if (gmt_segment_BB_outside_map_BB (GMT, T->segment[seg])) continue;
 
 			PSL_comment (PSL, "%s\n", T->segment[seg]->header);
 
