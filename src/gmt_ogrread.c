@@ -248,14 +248,13 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 	return 0;
 }
 
-struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
+struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename, double *region) {
 
-	int	i, ind, iLayer, nEmptyGeoms, nAttribs = 0;
-	//int	region = 0;
-	int	nLayers;		/* number of layers in dataset */
-	//double	x_min, y_min, x_max, y_max;
-
-	int	nFeature, nMaxFeatures, nMaxGeoms;
+	bool have_region = false;
+	int	 i, ind, iLayer, nEmptyGeoms, nAttribs = 0;
+	int	 nLayers;		/* number of layers in dataset */
+	int	 nFeature, nMaxFeatures, nMaxGeoms;
+	double	x_min, y_min, x_max, y_max;
 	struct OGR_FEATURES *out = NULL;
 
 	GDALDatasetH hDS;
@@ -263,13 +262,16 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 	OGRFeatureH hFeature;
 	OGRFeatureDefnH hFeatureDefn;
 	OGRGeometryH hGeom;
-	// OGRGeometryH hPolygon;
-	//OGRGeometryH poSpatialFilter = NULL;
+	OGRGeometryH hPolygon;
+	OGRGeometryH poSpatialFilter = NULL;
 	OGRSpatialReferenceH hSRS;
 	OGREnvelope sEnvelop;
 	OGRwkbGeometryType eType;
 
-	// x_min = y_min = x_max = y_max = 0.0;
+	if (region != NULL) {
+		x_min = region[0];	x_max = region[1];	y_min = region[2];	y_max = region[3];
+		have_region = true;
+	}
 
 	GDALAllRegister();
 
@@ -288,8 +290,8 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 		return NULL;
 	}
 
-	/* If we have a sub-region request.
-	if (region) {
+	/* If we have a sub-region request. */
+	if (have_region) {
 		poSpatialFilter = OGR_G_CreateGeometry(wkbPolygon);
 		hPolygon = OGR_G_CreateGeometry(wkbLinearRing);
 		OGR_G_AddPoint(hPolygon, x_min, y_min, 0.0);
@@ -299,14 +301,13 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 		OGR_G_AddPoint(hPolygon, x_min, y_min, 0.0);
 		OGR_G_AddGeometryDirectly(poSpatialFilter, hPolygon);
 	}
-	*/
 
 	/* Get MAX number of features of all layers */
 	nMaxFeatures = nMaxGeoms = 1;
 	for (i = 0; i < nLayers; i++) {
 		hLayer = GDALDatasetGetLayer(hDS, i);
 
-		//if (region) OGR_L_SetSpatialFilter(hLayer, poSpatialFilter);
+		if (have_region) OGR_L_SetSpatialFilter(hLayer, poSpatialFilter);
 
 		nMaxFeatures = MAX((int)OGR_L_GetFeatureCount(hLayer, 1), nMaxFeatures);
 		OGR_L_ResetReading(hLayer);
