@@ -21,6 +21,8 @@
 struct FUNCTION {
 	char name[64];	/* Name of function */
 	char file[64];	/* Name if file it is declared in */
+	int dev;		/* 1 if used in a module */
+	int lib;		/* 1 if used in gmt_*.c */
 	int local;		/* True if function declared static */
 	unsigned int n_files;	/* How many files referenced */
 	unsigned int n_calls;	/* How many times referenced */
@@ -43,11 +45,161 @@ static int compare_n (const void *v1, const void *v2) {
 	return (0);
 }
 
+static char *modules[] = {
+		"blockmean.c",
+	"blockmedian.c",
+	"blockmode.c",
+	"dimfilter.c",
+	"filter1d.c",
+	"fitcircle.c",
+	"gmt2kml.c",
+	"gmtconnect.c",
+	"gmtconvert.c",
+	"gmtdefaults.c",
+	"gmtget.c",
+	"gmtinfo.c",
+	"gmtlogo.c",
+	"gmtmath.c",
+	"gmtregress.c",
+	"gmtselect.c",
+	"gmtset.c",
+	"gmtsimplify.c",
+	"gmtspatial.c",
+	"gmtvector.c",
+	"gmtwhich.c",
+	"grd2cpt.c",
+	"grd2kml.c",
+	"grd2xyz.c",
+	"grdblend.c",
+	"grdclip.c",
+	"grdcontour.c",
+	"grdconvert.c",
+	"grdcut.c",
+	"grdedit.c",
+	"grdfft.c",
+	"grdfill.c",
+	"grdfilter.c",
+	"grdgdal.c",
+	"grdgradient.c",
+	"grdhisteq.c",
+	"grdimage.c",
+	"grdinfo.c",
+	"grdinterpolate.c",
+	"grdlandmask.c",
+	"grdmask.c",
+	"grdmath.c",
+	"grdpaste.c",
+	"grdproject.c",
+	"grdsample.c",
+	"grdtrack.c",
+	"grdtrend.c",
+	"grdvector.c",
+	"grdview.c",
+	"grdvolume.c",
+	"greenspline.c",
+	"kml2gmt.c",
+	"makecpt.c",
+	"mapproject.c",
+	"nearneighbor.c",
+	"project.c",
+	"psbasemap.c",
+	"psclip.c",
+	"pscoast.c",
+	"pscontour.c",
+	"psconvert.c",
+	"psevents.c",
+	"pshistogram.c",
+	"psimage.c",
+	"pslegend.c",
+	"psmask.c",
+	"psrose.c",
+	"psscale.c",
+	"pssolar.c",
+	"psternary.c",
+	"pstext.c",
+	"pswiggle.c",
+	"psxy.c",
+	"psxyz.c",
+	"sample1d.c",
+	"spectrum1d.c",
+	"sph2grd.c",
+	"sphdistance.c",
+	"sphinterpolate.c",
+	"sphtriangulate.c",
+	"splitxyz.c",
+	"surface.c",
+	"trend1d.c",
+	"trend2d.c",
+	"triangulate.c",
+	"xyz2grd.c",
+	"backtracker.c",
+	"earthtide.c",
+	"gmtflexure.c",
+	"gmtgravmag3d.c",
+	"gmtpmodeler.c",
+	"gpsgridder.c",
+	"gravfft.c",
+	"grdflexure.c",
+	"grdgravmag3d.c",
+	"grdpmodeler.c",
+	"grdredpol.c",
+	"grdrotater.c",
+	"grdseamount.c",
+	"grdspotter.c",
+	"gshhg.c",
+	"hotspotter.c",
+	"img2grd.c",
+	"mgd77convert.c",
+	"mgd77header.c",
+	"mgd77info.c",
+	"mgd77list.c",
+	"mgd77magref.c",
+	"mgd77manage.c",
+	"mgd77path.c",
+	"mgd77sniffer.c",
+	"mgd77track.c",
+	"originater.c",
+	"polespotter.c",
+	"pscoupe.c",
+	"psmeca.c",
+	"pspolar.c",
+	"pssac.c",
+	"pssegy.c",
+	"pssegyz.c",
+	"psvelo.c",
+	"rotconverter.c",
+	"rotsmoother.c",
+	"segy2grd.c",
+	"talwani2d.c",
+	"talwani3d.c",
+	"x2sys_binlist.c",
+	"x2sys_cross.c",
+	"x2sys_datalist.c",
+	"x2sys_get.c",
+	"x2sys_init.c",
+	"x2sys_list.c",
+	"x2sys_merge.c",
+	"x2sys_put.c",
+	"x2sys_report.c",
+	"x2sys_solve.c",
+	NULL
+};
+
+static int is_module (char *name, char *module[]) {
+	int k = 0;
+	while (modules[k]) {
+		if (strstr (name, module[k]))
+			return 1;
+		else k++;
+	}
+	return 0;
+}
+
 int main (int argc, char **argv) {
 	int k, f, w, s, n, is_static, n_funcs = 0, comment = 0, brief = 0, ext = 0;
 	size_t L;
 	char line[512] = {""};
-	char word[6][64], type[2] = {'E', 'S'}, *p;
+	char word[6][64], type[3] = {'S', 'D', 'L'}, *p;
 	struct FUNCTION F[NFUNCS];
 	FILE *fp;
 
@@ -144,6 +296,8 @@ int main (int argc, char **argv) {
 				if ((p = strstr (line, F[f].name)) && strlen (p) > L && (p[L] == '(' || p[L] == ' ')) {	/* Found a call to this function */
 					F[f].in[k] = 1;
 					F[f].n_calls++ ;
+					if (is_module (argv[k], modules)) F[f].dev = 1;	/* Called in a module */
+					if (strstr (argv[k], "gmt_")) F[f].lib = 1;	/* Called in a library function */
 				}
 			}
 		}
@@ -157,7 +311,8 @@ int main (int argc, char **argv) {
 	/* Report */
 	printf ("NFILES  FUNCTION                                    NCALLS TYPE DECLARED-IN\n");
 	for (f = 0; f < n_funcs; f++) {
-		printf ("%4d\t%-40s\t%4d\t%c\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[F[f].local], F[f].file);
+		k = (F[f].local) ? 0 : ((F[f].dev) ? 1 : 2);
+		printf ("%4d\t%-40s\t%4d\t%c\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file);
 		if (brief) continue;
 		for (k = 1; k < argc; k++)	/* For each input file */
 			if (F[f].in[k] && strcmp (argv[k], F[f].file)) printf ("\t\t%s\n", argv[k]);
