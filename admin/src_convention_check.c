@@ -324,9 +324,13 @@ int main (int argc, char **argv) {
 		else if (F[f].dev && strncmp (F[f].name, "gmt_", 4U)) err = 1;
 		else if (F[f].lib && strncmp (F[f].name, "gmtlib_", 7U)) err = 2;
 		if (err == 3) {
-			p[L-2] = 0;
-			sprintf (message, "Name error, should be %s_*", p);
-			p[L-2] = '.';
+			if (F[f].n_files > 1)
+				strcpy (message, err_msg[err]);
+			else {
+				p[L-2] = 0;
+				sprintf (message, "Name error, should be %s_*", p);
+				p[L-2] = '.';
+			}
 		}
 		else
 			strcpy (message, err_msg[err]);
