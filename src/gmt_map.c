@@ -9684,13 +9684,15 @@ bool gmt_segment_BB_outside_map_BB (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT
 	/* Determine if the bounding box for this segment is completely outside the current map w/e/s/n region.
 	 * Note: If an oblique projection is selected then the gmt_wesn_search has updated the GMT->common.R.wesn
 	 * to be the bounding box of that oblique region. */
+
+	/* First check latitude or y-coordinates since they are straightforward to check */
 	if (S->min[GMT_Y] > GMT->common.R.wesn[YHI]) return true;	/* BB is above of our max region */
 	if (S->max[GMT_Y] < GMT->common.R.wesn[YLO]) return true;	/* BB is below of our max region */
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {
-			if ((S->min[GMT_X] > GMT->common.R.wesn[XHI]) && ((S->max[GMT_X] - 360.0) < GMT->common.R.wesn[XLO])) return true;	/* BB is to the right of our max region */
-			if ((S->max[GMT_X] < GMT->common.R.wesn[XLO]) && ((S->min[GMT_X] + 360.0) > GMT->common.R.wesn[XHI])) return true;	/* BB is to the left of our max region */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must take periodicity of longitudes into account when checking if we are outside */
+		if ((S->min[GMT_X] > GMT->common.R.wesn[XHI]) && ((S->max[GMT_X] - 360.0) < GMT->common.R.wesn[XLO])) return true;	/* BB is to the right of our max region */
+		if ((S->max[GMT_X] < GMT->common.R.wesn[XLO]) && ((S->min[GMT_X] + 360.0) > GMT->common.R.wesn[XHI])) return true;	/* BB is to the left of our max region */
 	}
-	else {
+	else {	/* Cartesian x is easy to check */
 		if (S->min[GMT_X] > GMT->common.R.wesn[XHI]) return true;	/* BB is to the right of our max region */
 		if (S->max[GMT_X] < GMT->common.R.wesn[XLO]) return true;	/* BB is to the left of our max region */
 
