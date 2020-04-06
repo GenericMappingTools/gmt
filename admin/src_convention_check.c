@@ -266,7 +266,8 @@ int main (int argc, char **argv) {
 			s = (word[w][0] == '*') ? 1 : 0;	/* Skip leading * if there is no space */
 			if (strchr (&word[w][s], '[')) continue;	/* Got some array */
 			L = strlen (word[w]);
-			if (L > 5 && strncmp (&word[w][s], "GMT_", 4U) == 0) continue;	/* Skip API functions */
+			if (L > 5 && strncmp (&word[w][s], "GMT_", 4U) == 0) continue;	/* Skip GMT API functions */
+			if (L > 5 && strncmp (&word[w][s], "PSL_", 4U) == 0) continue;	/* Skip PSL functions */
 			if (word[w][L-1] == '_') continue;	/* Skip FORTRAN wrappers */
 			if ((p = strchr (word[w], '('))) p[0] = '\0';	/* Change functionname(args) to functionname */
 			if (strcmp (&word[w][s], "main") == 0) continue;	/* Skip main functions in modules */
@@ -320,9 +321,15 @@ int main (int argc, char **argv) {
 		p = basename (F[f].file);
 		L = strlen (p);
 		k = (F[f].local) ? 0 : ((F[f].dev) ? 1 : 2);
-		if (F[f].local && strncmp (F[f].name, p, L-2)) err = 3;
-		else if (F[f].dev && strncmp (F[f].name, "gmt_", 4U)) err = 1;
-		else if (F[f].lib && strncmp (F[f].name, "gmtlib_", 7U)) err = 2;
+		if (F[f].local) {
+			if (strncmp (F[f].name, p, L-2)) err = 3;
+		}
+		else if (F[f].dev) {
+			if (strncmp (F[f].name, "gmt_", 4U)) err = 1;
+		}
+		else if (F[f].lib) {
+			if (strncmp (F[f].name, "gmtlib_", 7U)) err = 2;
+		}
 		if (err == 3) {
 			if (F[f].n_files > 1)
 				strcpy (message, err_msg[err]);
