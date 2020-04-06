@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
 
 #define NFILES 500
 #define NFUNCS 10000
@@ -196,10 +197,12 @@ static int is_module (char *name, char *module[]) {
 }
 
 int main (int argc, char **argv) {
-	int k, f, w, s, n, is_static, n_funcs = 0, comment = 0, brief = 0, ext = 0;
+	int k, f, w, s, n, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0;
+	int set_dev, set_lib;
 	size_t L;
 	char line[512] = {""};
-	char word[6][64], type[3] = {'S', 'D', 'L'}, *p;
+	char word[6][64], type[3] = {'S', 'D', 'L'}, *p, message[128] = {""};
+	char *err_msg[4] = {"", "Name error, should be gmt_*", "Name error, should be gmtlib_*", "Name error, should be file_*"};
 	struct FUNCTION F[NFUNCS];
 	FILE *fp;
 
@@ -286,6 +289,8 @@ int main (int argc, char **argv) {
 	/* Look for function calls */
 	for (k = 1; k < argc; k++) {	/* For each input file */
 		if ((fp = fopen (argv[k], "r")) == NULL) continue;
+		set_dev = is_module (argv[k], modules);	/* Called in a module */
+		set_lib = (strstr (argv[k], "gmt_") != NULL);	/* Called in a library file */
 		while (fgets (line, 512, fp)) {
 			if (line[0] == '/' || line[1] == '*') continue;	/* Comment */
 			if (strchr (" \t", line[0]) == NULL) continue;
@@ -296,8 +301,8 @@ int main (int argc, char **argv) {
 				if ((p = strstr (line, F[f].name)) && strlen (p) > L && (p[L] == '(' || p[L] == ' ')) {	/* Found a call to this function */
 					F[f].in[k] = 1;
 					F[f].n_calls++ ;
-					if (is_module (argv[k], modules)) F[f].dev = 1;	/* Called in a module */
-					if (strstr (argv[k], "gmt_")) F[f].lib = 1;	/* Called in a library function */
+					if (set_dev) F[f].dev = 1;	/* Called in a module */
+					if (set_lib) F[f].lib = 1;	/* Called in a library function */
 				}
 			}
 		}
@@ -311,8 +316,21 @@ int main (int argc, char **argv) {
 	/* Report */
 	printf ("NFILES  FUNCTION                                    NCALLS TYPE DECLARED-IN\n");
 	for (f = 0; f < n_funcs; f++) {
+		err = 0;
+		p = basename (F[f].file);
+		L = strlen (p);
 		k = (F[f].local) ? 0 : ((F[f].dev) ? 1 : 2);
-		printf ("%4d\t%-40s\t%4d\t%c\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file);
+		if (F[f].local && strncmp (F[f].name, p, L-2)) err = 3;
+		else if (F[f].dev && strncmp (F[f].name, "gmt_", 4U)) err = 1;
+		else if (F[f].lib && strncmp (F[f].name, "gmtlib_", 7U)) err = 2;
+		if (err == 3) {
+			p[L-2] = 0;
+			sprintf (message, "Name error, should be %s_*", p);
+			p[L-2] = '.';
+		}
+		else
+			strcpy (message, err_msg[err]);
+		printf ("%4d\t%-40s\t%4d\t%c\t%s\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, message);
 		if (brief) continue;
 		for (k = 1; k < argc; k++)	/* For each input file */
 			if (F[f].in[k] && strcmp (argv[k], F[f].file)) printf ("\t\t%s\n", argv[k]);
