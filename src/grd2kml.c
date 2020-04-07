@@ -44,7 +44,7 @@ struct GRD2KML_CTRL {
 	} In;
 	struct GRD2KML_A {	/* -A<size> */
 		bool active;
-		unsigned int size;
+		int size;
 	} A;
 	struct GRD2KML_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
 		bool active;
@@ -211,8 +211,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 			case 'A':	/* min fade sizes  [EXPERIMENTAL, to delay fade out] */
 				Ctrl->A.active = true;
 				Ctrl->A.size = atoi (opt->arg);
-				if (Ctrl->A.size <= 0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Must be positive!\n");
+				if (Ctrl->A.size < -1) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Must be positive or -1!\n");
 					n_errors++;
 				}
 				break;
@@ -391,13 +391,56 @@ GMT_LOCAL double get_factor (bool global, unsigned int level) {
 	return (f);
 }
 
+GMT_LOCAL void assess_tile_size (struct GMT_CTRL *GMT, bool global, unsigned int nx, unsigned int ny, unsigned int size) {
+	unsigned int nf_x, nf_y, kx, ky, nf, comm = 1, fx[32], fy[32];
+	bool done = false;
+	char string[GMT_LEN256] = {""}, one[GMT_LEN8] = {""};
+	gmt_M_unused (global);
+
+	nf_x = gmt_get_prime_factors (GMT, nx, fx);
+	nf_y = gmt_get_prime_factors (GMT, ny, fy);
+	for (kx = 0; kx < nf_x; kx++) { sprintf (one, " %d", fx[kx]), strcat (string, one); }
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "nx %d has factors%s\n", nx, string);
+	string[0] = '\0';	/* Reset string */
+	for (ky = 0; ky < nf_y; ky++) { sprintf (one, " %d", fy[ky]), strcat (string, one); }
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "ny %d has factors%s\n", ny, string);
+	string[0] = '\0';	/* Reset string */
+	kx = ky = nf = 0;
+	while (!done) {
+		if (fx[kx] == fy[ky]) {	/* Common factor for nx and ny */
+			sprintf (one, " %d", fx[kx]);
+			strcat (string, one);
+			comm *= fx[kx];
+			kx++; ky++;	nf++; /* Go to the next factors */
+		}
+		else if (fx[kx] < fy[ky])	/* Go to next, larger nx-factor */
+			kx++;
+		else if (fy[ky] < fx[kx])	/* Go to next, larger ny-factor */
+			ky++;
+		if (kx == nf_x || ky == nf_y) done = true;	/* Ran out */
+	}
+	if (nf == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No common factors found between n_columns and n_rows\n");
+		return;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "The largest common factor %d has factors%s\n", comm, string);
+	if (comm < size)
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your chosen -L tile size %d is larger than the largest common factor between columns and rows (%d)\n", size, comm);
+	else if (((comm / size) - irint (comm / size)) > GMT_CONV4_LIMIT) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your chosen -L tile size %d is not an integer fraction of the largest common factor between columns and rows (%d)\n", size, comm);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "The common factors are%s - pick a product that is close to %d\n", string, size);
+	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Your tile size selection of %d is a natural factor of both columns and rows\n", size);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 
 int GMT_grd2kml (void *V_API, int mode, void *args) {
-	int error = 0, kk, uniq, dpi;
+	int error = 0, kk, uniq, dpi, view;
 	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, global_lat, use_60_factoring;
 
 	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0;
@@ -450,6 +493,11 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid spacing must be the same in longitude and latitude!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
+
+	global_lon = gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI]);
+	global_lat = gmt_M_180_range (G->header->wesn[YLO], G->header->wesn[YHI]);
+
+	assess_tile_size (GMT, global_lon, G->header->n_columns, G->header->n_rows, Ctrl->L.size);
 
 	uniq = (int)getpid();	/* Unique number for temporary files  */
 
@@ -852,6 +900,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create file : %s\n", file);
 		Return (GMT_RUNTIME_ERROR);
 	}
+	view = (max_level == 0) ? -1 : Ctrl->A.size;
 	fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 	fprintf (fp, "    <Document>\n      <name>%s</name>\n", Ctrl->N.prefix);
 	fprintf (fp, "    <!-- Produced by the Generic Mapping Tools [www.generic-mapping-tools.org] -->\n");
@@ -873,7 +922,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	fprintf (fp, "            <east>%.14g</east>\n",   G->header->wesn[XHI]);
 	fprintf (fp, "            <west>%.14g</west>\n",   G->header->wesn[XLO]);
 	fprintf (fp, "          </LatLonAltBox>\n");
-	fprintf (fp, "          <Lod>\n            <minLodPixels>%d</minLodPixels>\n            <maxLodPixels>-1</maxLodPixels>\n          </Lod>\n", Ctrl->A.size);
+	fprintf (fp, "          <Lod>\n            <minLodPixels>%d</minLodPixels>\n            <maxLodPixels>-1</maxLodPixels>\n          </Lod>\n", view);
         fprintf (fp, "        </Region>\n");
 	set_dirpath (Ctrl->D.single, Ctrl->E.url, Ctrl->N.prefix, 0, 1, path);
 	fprintf (fp, "        <Link>\n          <href>%sR0C0.kml</href>\n", path);
@@ -901,6 +950,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			/* First this tile's kml and png */
+			view = (Q[k]->level == max_level) ? -1 : Ctrl->A.size;
 			fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 			set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
 			fprintf (fp, "    <Document>\n      <name>%sR%dC%d.kml</name>\n", path, Q[k]->row, Q[k]->col);
@@ -914,7 +964,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			fprintf (fp, "          <east>%.14g</east>\n",   Q[k]->wesn[XHI]);
 			fprintf (fp, "          <west>%.14g</west>\n",   Q[k]->wesn[XLO]);
 			fprintf (fp, "        </LatLonAltBox>\n");
-			fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>2048</maxLodPixels>\n        </Lod>\n", Ctrl->A.size);
+			fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>2048</maxLodPixels>\n        </Lod>\n", view);
 		        fprintf (fp, "      </Region>\n");
 			fprintf (fp, "      <GroundOverlay>\n        <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);
 			set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 0, path);
@@ -928,6 +978,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			/* Now add up to 4 quad links */
 			for (quad = 0; quad < 4; quad++) {
 				if (Q[k]->next[quad] == NULL) continue;
+				view = (Q[k]->next[quad]->level == max_level) ? -1 : Ctrl->A.size;
 
 				set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
 				fprintf (fp, "\n      <NetworkLink>\n        <name>%sR%dC%d.png</name>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
@@ -937,7 +988,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				fprintf (fp, "            <east>%.14g</east>\n",   Q[k]->next[quad]->wesn[XHI]);
 				fprintf (fp, "            <west>%.14g</west>\n",   Q[k]->next[quad]->wesn[XLO]);
 				fprintf (fp, "        </LatLonAltBox>\n");
-				fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>-1</maxLodPixels>\n        </Lod>\n", Ctrl->A.size);
+				fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>-1</maxLodPixels>\n        </Lod>\n", view);
 			        fprintf (fp, "        </Region>\n");
 				set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
 				fprintf (fp, "        <Link>\n          <href>%sR%dC%d.kml</href>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
