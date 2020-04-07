@@ -375,6 +375,22 @@ void set_dirpath (bool single, char *url, char *prefix, unsigned int level, int 
 	}
 }
 
+GMT_LOCAL double get_factor (bool global, unsigned int level) {
+	double f;
+	if (global) {	/* Worry about divisions into 60 */
+		switch (level) {
+			case 0: f = 1.0; break;
+			case 1: f = 2.0; break;
+			case 2: f = 5.0; break;
+			case 3: f = 10.0; break;
+			default: f = pow (2.0, level) - pow (2.0, level-4);;	/* 15, 30, 60, ... */
+		}
+	}
+	else	/* Regular power of 2 progression */
+		f = pow (2.0, level);
+	return (f);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -382,7 +398,7 @@ EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 
 int GMT_grd2kml (void *V_API, int mode, void *args) {
 	int error = 0, kk, uniq, dpi;
-	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false;
+	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, global_lat, use_60_factoring;
 
 	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0;
 
@@ -468,6 +484,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	mx = urint (ceil ((double)nx / (double)Ctrl->L.size)) * Ctrl->L.size;	/* Nearest image size in multiples of tile size */
 	my = urint (ceil ((double)ny / (double)Ctrl->L.size)) * Ctrl->L.size;
 	max_level = urint (ceil (log2 (MAX (mx, my) / (double)Ctrl->L.size)));	/* Number of levels in the quadtree */
+	use_60_factoring = true;	/* Instead of power of 2, 1,2,4,8, x etc we modify these so that 60/x are integers (x <= 60) */
 	if ((60.0 * G->header->inc[GMT_X] - irint (60.0 * G->header->inc[GMT_X])) < GMT_CONV4_LIMIT) {
 		/* Grid spacing is an integer multiple of 1 arc minute or higher, use ddd:mm format */
 		strcpy (GMT->current.setting.format_geo_out, "ddd:mm");
@@ -483,11 +500,14 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	else {	/* Cannot use 0.1 arcsecs, do full decimal resolution */
 		strcpy (GMT->current.setting.format_float_out, "%.16g");
 		strcpy (GMT->current.setting.format_geo_out, "D");
+		use_60_factoring = false;
 	}
 	gmtlib_geo_C_format (GMT);	/* Update the format settings */
 	dim = dpi * 0.0001 * Ctrl->L.size;	/* Constant tile map size in inches for a fixed dpi of 100 yields PNGS of the requested dimension in -L */
 
 	GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] > 0.0) ? ((G->header->wesn[XHI] > 180.0) ? GMT_IS_GIVEN_RANGE : GMT_IS_M180_TO_P180_RANGE) : GMT_IS_0_TO_P360_RANGE;
+	global_lon = gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI]);
+	global_lat = gmt_M_180_range (G->header->wesn[YLO], G->header->wesn[YHI]);
 
 	/* Create the container quadtree directory first */
 	if (gmt_mkdir (Ctrl->N.prefix))
@@ -522,14 +542,27 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 
 	Q = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_QUADTREE *);
-	factor = pow (2.0, max_level);	/* Max width of imaged pixels in multiples of original grid spacing for this level */
+	factor = get_factor (use_60_factoring, max_level);	/* Max width of imaged pixels in multiples of original grid spacing for this level */
+
 	/* Determine extended region required if using the largest multiple of original grid spacing */
 	inc[GMT_X] = factor * G->header->inc[GMT_X];
 	inc[GMT_Y] = factor * G->header->inc[GMT_Y];
-	ext_wesn[XLO] = floor (G->header->wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
-	ext_wesn[XHI] = MIN (ext_wesn[XLO]+360.0, ceil  (G->header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X]);
-	ext_wesn[YLO] = MAX (-90.0, floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y]);
-	ext_wesn[YHI] = MIN (+90.0, ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y]);
+	if (global_lon) {
+		ext_wesn[XLO] = G->header->wesn[XLO];
+		ext_wesn[XHI] = G->header->wesn[XHI];
+	}
+	else {
+		ext_wesn[XLO] = floor (G->header->wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
+		ext_wesn[XHI] = MIN (ext_wesn[XLO]+360.0, ceil  (G->header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X]);
+	}
+	if (global_lat) {
+		ext_wesn[YLO] = G->header->wesn[YLO];
+		ext_wesn[YHI] = G->header->wesn[YHI];
+	}
+	else {
+		ext_wesn[YLO] = MAX (-90.0, floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y]);
+		ext_wesn[YHI] = MIN (+90.0, ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y]);
+	}
 	if (ext_wesn[XLO] < G->header->wesn[XLO] || ext_wesn[XHI] > G->header->wesn[XHI] || ext_wesn[YLO] < G->header->wesn[YLO] || ext_wesn[YHI] > G->header->wesn[YHI]) {
 		/* Extend the original grid with NaNs so it is an exact multiple of largest grid stride at max level */
 		sprintf (DataGrid, "%s/grd2kml_extended_data_%6.6d.grd", API->tmp_dir, uniq);
@@ -620,7 +653,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	/* Loop over all the levels, starting at the top level (0) */
 	for (level = 0; level <= max_level; level++) {
-		factor = pow (2.0, max_level - level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
+		factor = get_factor (use_60_factoring, max_level - level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
 		inc[GMT_X] = factor * G->header->inc[GMT_X];
 		inc[GMT_Y] = factor * G->header->inc[GMT_Y];
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Factor = %g Dim = %d x %d -> %d x %d\n",
@@ -737,9 +770,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						sprintf (region, "%s/%s/%s/%s", W, E, S, N);
 						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Level %d: Mapped tile %s\n", level, region);
 						if (Ctrl->D.single)
-							sprintf (cmd, "%s -D%s -FL%dR%dC%d.png %s", ps_cmd, Ctrl->N.prefix, level, row, col, psfile);
+							sprintf (cmd, "%s -D%s -FL%dR%dC%d %s", ps_cmd, Ctrl->N.prefix, level, row, col, psfile);
 						else
-							sprintf (cmd, "%s -D%s -FR%dC%d.png %s", ps_cmd, level_dir, row, col, psfile);
+							sprintf (cmd, "%s -D%s -FR%dC%d %s", ps_cmd, level_dir, row, col, psfile);
 						if (GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to rasterize current PNG tile!\n");
 							gmt_M_free (GMT, Q);
