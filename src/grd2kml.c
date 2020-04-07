@@ -768,7 +768,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					else {	/* Made a meaningful plot, time to rip. */
 						/* Create the psconvert command to convert the PS to transparent PNG */
 						sprintf (region, "%s/%s/%s/%s", W, E, S, N);
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Level %d: Mapped tile %s\n", level, region);
+						GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Mapped tile %s\n", level, region);
 						if (Ctrl->D.single)
 							sprintf (cmd, "%s -D%s -FL%dR%dC%d %s", ps_cmd, Ctrl->N.prefix, level, row, col, psfile);
 						else
@@ -803,7 +803,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			wesn[YLO] = wesn[YHI];
 			strcpy (S, N);
 		}
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Summary Level %d: %d by %d = %d tiles, %d mapped, %d empty\n", level, row, col, row*col, row*col - n_skip, n_skip);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Summary Level %d: %d by %d = %d tiles, %d mapped, %d empty\n", level, row, col, row*col, row*col - n_skip, n_skip);
 		if (level < max_level) {	/* Delete the temporary filtered grid(s) */
 			gmt_remove_file (GMT, Zgrid);
 			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
@@ -823,7 +823,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	/* Process quadtree links */
 
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Processes quadtree links for %d tiles.\n", n);
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Processes quadtree links for %d tiles.\n", n);
 	Q = gmt_M_memory (GMT, Q, n, struct GMT_QUADTREE *);	/* Final size */
 	for (level = max_level; level > 0; level--) {
 		for (k = 0; k < n; k++) {
@@ -835,8 +835,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			quad = 2 * (Q[k]->row - 2 * row) + (Q[k]->col - 2 * col);
 			kk = find_quad_above (Q, n, row, col, level-1);	/* kk is the parent of k */
 			if (kk < 0) {	/* THis can happen when the lower-level tile grazes one above it but there really are no data involved */
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Tile %s: Unable to link tile for row = %d, col = %d at level %d to a parent (!?).  Probably empty - skipped.\n", Q[k]->tag, row, col, level);
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Tile %s: Region was %g/%g/%g/%g.\n", Q[k]->tag, Q[k]->wesn[XLO], Q[k]->wesn[XHI], Q[k]->wesn[YLO], Q[k]->wesn[YHI]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Tile %s: Unable to link tile for row = %d, col = %d at level %d to a parent (!?).  Probably empty - skipped.\n", Q[k]->tag, row, col, level);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Tile %s: Region was %g/%g/%g/%g.\n", Q[k]->tag, Q[k]->wesn[XLO], Q[k]->wesn[XHI], Q[k]->wesn[YLO], Q[k]->wesn[YHI]);
 				continue;
 			}
 			assert (quad < 4);	/* Sanity check */
@@ -952,7 +952,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Q[k]);		/* Free this tile information */
 	}
 	gmt_M_free (GMT, Q);
-	GMT_Report (API, GMT_MSG_WARNING, "Done: %d files written to directory %s\n", 2*n+1, Ctrl->N.prefix);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Done: %d files written to directory %s\n", 2*n+1, Ctrl->N.prefix);
 	if (tmp_cpt) gmt_remove_file (GMT, Ctrl->C.file);
 	Return (GMT_NOERROR);
 }
