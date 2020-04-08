@@ -7001,7 +7001,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		txt = strdup (&token[8]);
 		if (ename[0] != '\0')                   /* We know the ellipsoid name */
-			sprintf(t, "%s:%s", ename, txt);    /* Create a ellip:dx,dy,dz string */
+			sprintf(t, "%s:%s", ename, txt);    /* Create an ellip:dx,dy,dz string */
 		else                                    /* Need to pass a,1/f */
 			sprintf(t, "%12g,%.10f:%s",
 			        GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius,
@@ -7231,7 +7231,7 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 		if (gmt_M_is_geographic (GMT, GMT_IN))
 			sprintf (szProj4, "+proj=latlong");
 		else
-			sprintf (szProj4, "+xy");	/* Probably useless as a info, but put there something */
+			sprintf (szProj4, "+xy");	/* Probably useless as an info, but put there something */
 	}
 
 	if (strcmp(szProj4, "+xy")) {

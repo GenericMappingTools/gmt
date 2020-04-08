@@ -340,7 +340,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		return -1;
 	}
 
-	/* Jpeg2000 driver doesn't accept float arrays so we'll have to copy it into a int16 */
+	/* Jpeg2000 driver doesn't accept float arrays so we'll have to copy it into an int16 */
 	if (!strcasecmp(pszFormat,"JP2OpenJPEG")) {
 		if (prhs->orig_type == GMT_UCHAR)       typeCLASS_f = GDT_Byte;
 		else if (prhs->orig_type == GMT_USHORT) typeCLASS_f = GDT_UInt16;
