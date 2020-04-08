@@ -105,7 +105,9 @@ Optional Arguments
 
 **-L**\ *tilesize*
     Sets the fixed size of the image building blocks.  Must be an integer that
-    is radix 2.  Typical values are 256 or 512 [256].
+    is radix 2.  Typical values are 256 or 512 [256].  **Note**: For global
+    grids (here meaning 360-degree longitude range), we will compute an optimal
+    *tilesize* if **-L** is not specified.
 
 .. _-N:
 
@@ -154,11 +156,14 @@ Examples
 
 .. include:: explain_example.rst_
 
-To make a quadtree image representation of the large topography grid file ellice_basin.nc, using
-the default tile size, supply automatic shading based on the topography, and use the larger 512x512 tiles,
-supplying a suitable title, and using color masking for unmapped area, try
+To test a quadtree image representation of the coarse topography grid earth_relief06m, using
+the optimally determined tile size, auto color, and supplying a suitable title, try::
 
-   ::
+    gmt grd2kml @earth_relief_06m -NEarth6m -T"Earth Relief 6x6 arc minutes" -Cearth
+
+To make a quadtree image representation of the large topography grid file ellice_basin.nc,
+supplying automatic shading based on the topography, and using 512x512 tiles,
+supplying a suitable title, and using color masking for unmapped area, try::
 
     gmt grd2kml ellice_basin.nc -I+d -Nellice -L512 -Q -T"Ellice Basin Bathymetry"
 

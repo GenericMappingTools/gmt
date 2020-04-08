@@ -170,7 +170,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a single value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grid> instead, append +a<azim> [-45] and +n<method> [t1]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [256].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [256].  For global grids, we compute a size if -L is not given.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set title (document description) for the top-level KML.\n");
 	GMT_Option (API, "V");
@@ -388,15 +388,20 @@ GMT_LOCAL double get_factor (bool global, unsigned int level) {
 	return (f);
 }
 
-GMT_LOCAL void assess_tile_size (struct GMT_CTRL *GMT, bool global, unsigned int nx, unsigned int ny, unsigned int size) {
-	unsigned int nf_x, nf_y, kx, ky, nf, comm = 1, fx[32], fy[32];
+GMT_LOCAL void assert_tile_size (struct GMT_CTRL *GMT, bool global, struct GMT_GRID_HEADER *H, bool active, unsigned int *size) {
+	/* For global grids we may wish to adjust the size so that it better plays with the 360-degree range of the file.
+	 * We only change size if -L was not given */
+
+	unsigned int nx, ny, nf_x, nf_y, kx, ky, nf, comm = 1, fx[32], fy[32], f[32];
 	bool done = false;
 	char string[GMT_LEN256] = {""}, one[GMT_LEN8] = {""};
 	gmt_M_unused (global);
 
-	if (!global && fabs (log2 ((double)size) - irint (log2 ((double)size))) > GMT_CONV8_LIMIT) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -L: Should ideally be radix 2; your size %d is not\n", size);
+	if (!global && active && fabs (log2 ((double)(*size)) - irint (log2 ((double)(*size)))) > GMT_CONV8_LIMIT) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -L: Should ideally be radix 2; your size %d is not.\n", *size);
 	}
+	nx = H->n_columns;	ny = H->n_rows;
+	if (H->registration == GMT_GRID_NODE_REG) nx--, ny--;	/* To avoid prime numbers and other junk */
 	nf_x = gmt_get_prime_factors (GMT, nx, fx);
 	nf_y = gmt_get_prime_factors (GMT, ny, fy);
 	for (kx = 0; kx < nf_x; kx++) { sprintf (one, " %d", fx[kx]), strcat (string, one); }
@@ -408,9 +413,10 @@ GMT_LOCAL void assess_tile_size (struct GMT_CTRL *GMT, bool global, unsigned int
 	kx = ky = nf = 0;
 	while (!done) {
 		if (fx[kx] == fy[ky]) {	/* Common factor for nx and ny */
-			sprintf (one, " %d", fx[kx]);
+			f[nf] = fx[kx];
+			sprintf (one, " %d", f[nf]);
 			strcat (string, one);
-			comm *= fx[kx];
+			comm *= f[nf];
 			kx++; ky++;	nf++; /* Go to the next factors */
 		}
 		else if (fx[kx] < fy[ky])	/* Go to next, larger nx-factor */
@@ -424,14 +430,21 @@ GMT_LOCAL void assess_tile_size (struct GMT_CTRL *GMT, bool global, unsigned int
 		return;
 	}
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "The largest common factor %d has factors%s\n", comm, string);
-	if (comm < size)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your chosen -L tile size %d is larger than the largest common factor between columns and rows (%d)\n", size, comm);
-	else if (((comm / size) - irint (comm / size)) > GMT_CONV4_LIMIT) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your chosen -L tile size %d is not an integer fraction of the largest common factor between columns and rows (%d)\n", size, comm);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "The common factors are%s - pick a product that is close to %d\n", string, size);
+	if (comm < *size)
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your chosen -L tile size %d is larger than the largest common factor between columns and rows (%d)\n", *size, comm);
+	else if (fabs (((double)comm / (double)(*size)) - irint (comm / (*size))) > GMT_CONV4_LIMIT) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your chosen -L tile size %d is not an integer fraction of the largest common factor between columns and rows (%d)\n", *size, comm);
+		if (active)
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "The common factors are%s - pick a product that is close to %d\n", string, *size);
+		else {	/* Determine the largest suitable size */
+			*size = comm;	kx = 0;
+			while ((*size) > 1.5*512 && kx < nf) *size /= f[kx++];
+			if ((*size) <= 0) *size = comm;	/* Safety-valve */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Auto-computed a better tile size as %d\n", *size);
+		}
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Your tile size selection of %d is a natural factor of both columns and rows\n", size);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Your tile size selection of %d is a natural factor of both columns and rows\n", *size);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -454,6 +467,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	char W[GMT_LEN16] = {""}, E[GMT_LEN16] = {""}, S[GMT_LEN16] = {""}, N[GMT_LEN16] = {""}, file[PATH_MAX] = {""};
 	char DataGrid[PATH_MAX] = {""}, IntensGrid[PATH_MAX] = {""}, path[PATH_MAX] = {""}, im_arg[16] = {""};
 	char region[GMT_LEN128] = {""}, ps_cmd[GMT_LEN128] = {""}, cfile[GMT_VF_LEN] = {""}, K[4] = {""}, *cmd_args = NULL;
+	char filt_report[GMT_LEN128] = {""};
 
 	FILE *fp = NULL;
 	struct GMT_DATASET *C = NULL;
@@ -497,11 +511,11 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	global_lon = gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI]);
 	global_lat = gmt_M_180_range (G->header->wesn[YLO], G->header->wesn[YHI]);
 
-	assess_tile_size (GMT, global_lon, G->header->n_columns, G->header->n_rows, Ctrl->L.size);
+	assert_tile_size (GMT, global_lon, G->header, Ctrl->L.active, &Ctrl->L.size);
 
 	uniq = (int)getpid();	/* Unique number for temporary files  */
 
-	if (!Ctrl->C.active) {	/* If no cpt given then we must compute one from the grid and use throughout */
+	if (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)) {	/* If no cpt given or just a master then we must compute one from the full-size grid and use throughout */
 		unsigned int zmode = gmt_cpt_default (GMT, G->header);
 		char cfile[PATH_MAX] = {""};
 		struct GMT_PALETTE *P = NULL;
@@ -714,6 +728,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		}
 		if (level < max_level) {	/* Filter the data to match level resolution */
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Filtering down the grid(s)\n", level);
+			sprintf (filt_report, " [Gaussian filtered with -F%c%g -I%g]", Ctrl->F.filter, inc[GMT_X], inc[GMT_X]);
 			sprintf (Zgrid, "%s/grd2kml_Z_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
 			sprintf (cmd, "%s -D0 -F%c%.16g -I%.16g -G%s", DataGrid, Ctrl->F.filter, inc[GMT_X], inc[GMT_X], Zgrid);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Running grdfilter : %s\n", cmd);
@@ -734,6 +749,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* Use as is for the highest resolution */
+			sprintf (filt_report, " [Original grid used]");
 			strcpy (Zgrid, Ctrl->In.file);
 			if (Ctrl->I.active) strcpy (Igrid, Ctrl->I.file);
 		}
@@ -851,7 +867,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			wesn[YLO] = wesn[YHI];
 			strcpy (S, N);
 		}
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Summary Level %d: %d by %d = %d tiles, %d mapped, %d empty\n", level, row, col, row*col, row*col - n_skip, n_skip);
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Summary Level %d:%3d by%3d =%5d tiles,%5d mapped,%3d empty%s\n", level, row, col, row*col, row*col - n_skip, n_skip, filt_report);
 		if (level < max_level) {	/* Delete the temporary filtered grid(s) */
 			gmt_remove_file (GMT, Zgrid);
 			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
