@@ -62,7 +62,6 @@
 #	include <dlfcn.h>
 #endif
 
-EXTERN_MSC void gmt_str_toupper (char *string);
 EXTERN_MSC void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned way);
 
 #ifdef WIN32	/* Special for Windows */
@@ -1011,7 +1010,7 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
-	/* Do what we do in the main code for the -A (if used here) option but on a in-memory PS 'file' */
+	/* Do what we do in the main code for the -A (if used here) option but on an in-memory PS 'file' */
 	char      cmd[GMT_LEN512] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
 	int       fh, r, c_begin = 0;
 	size_t    n;
@@ -1167,7 +1166,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 /* ---------------------------------------------------------------------------------------------- */
 
 GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_params, double w, double h, char *out_file) {
-	/* Run the command that converts the PostScript into a raster format, but using a in-memory PS as source.
+	/* Run the command that converts the PostScript into a raster format, but using an in-memory PS as source.
 	   For that we use the popen function to run the GS command. The biggest problem, however, is that popen only
 	   access one pipe and we need two. One for the PS input and the other for the raster output. There are popen
 	   versions (popen2) that have that capacity, but not the one on Windows so we resort to a trick using both
@@ -1445,8 +1444,6 @@ GMT_LOCAL int get_extension_period (char *file) {
 	}
 	return (pos_ext);
 }
-
-EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
 GMT_LOCAL int make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) {
 	struct stat S;

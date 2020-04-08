@@ -518,7 +518,7 @@ Function AddToEnvVar
 
 FunctionEnd
 
-; RemoveFromEnvVar - Remove a given value from a environment var
+; RemoveFromEnvVar - Remove a given value from an environment var
 ;     Input: head of the stack
 
 Function un.RemoveFromEnvVar

@@ -131,7 +131,7 @@ Optional Arguments
 Examples
 --------
 
-To compute the free-air anomalies on a equidistant profile over a 2-D body that has been contoured
+To compute the free-air anomalies on an equidistant profile over a 2-D body that has been contoured
 and saved to body2d.txt, using 1700 kg/m^3 as a constant density contrast, with all distances in meters,
 try
 

@@ -281,7 +281,6 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdedit main code ----------------------------*/
 
 	if ((do_J = GMT->common.J.active)) {	/* Only gave -J to set the proj4 flag, so grid is already projected (i.e., Cartesian) */
-		EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
 		projstring = gmt_export2proj4 (GMT);	/* Convert the GMT -J<...> into a proj4 string */
  		if (strstr (projstring, "+proj=longlat") || strstr (projstring, "+proj=latlong")) {	/* These means we have a geographic grid */
 			gmt_set_geographic (GMT, GMT_IN);	/* Force Geographic */

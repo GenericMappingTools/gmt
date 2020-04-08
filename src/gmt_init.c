@@ -703,9 +703,9 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 #endif
 
 GMT_LOCAL int gmtinit_check_markers (struct GMT_CTRL *GMT) {
+	int error = GMT_NOERROR;
 	/* Make sure segment header markers and header markers are not the same */
 	strcpy (GMT->current.setting.io_head_marker_in, "#%\"\'");	/* Accept GMT or MATLAB header records or comments or quoted text */
-	int error = GMT_NOERROR;
 
 	if (strchr (GMT->current.setting.io_head_marker_in, GMT->current.setting.io_seg_marker[GMT_IN])) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot let %c be both a header record flag and multiple segment header flag for input data\n", GMT->current.setting.io_seg_marker[GMT_IN]);
@@ -17353,7 +17353,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	fgets (file, PATH_MAX, fp);	fclose (fp);	/* Recycle file to hold the -B arguments */
 	while (file[0] && gmt_strtok (file, B_delim, &pos, p)) {	/* Parse the -B options from last call */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "B item = %s\n", p);
-		if (p[0] == axis && strstr (p, "+l")) add_label = true;	/* User specified a axis label on that side */
+		if (p[0] == axis && strstr (p, "+l")) add_label = true;	/* User specified an axis label on that side */
 		if (strchr ("WESNwesn", p[0])) {	/* Gave a -B<axis> option */
 			axis_set = true;
 			if (strchr (p, side)) add_annot = true;

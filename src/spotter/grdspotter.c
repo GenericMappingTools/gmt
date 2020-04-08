@@ -656,7 +656,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		/* Store IDs in a int array instead */
+		/* Store IDs in an int array instead */
 		ID = gmt_M_memory (GMT, NULL, L->header->size, int);
 		for (ij = 0; ij < L->header->size; ij++) ID[ij] = irint ((double)L->data[ij]);
 		if (GH->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, L->data);	/* Just free the array since we use ID; Grid struct is destroyed at end */

@@ -159,8 +159,6 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	struct GMT_ARRAY T;
 };
 
-EXTERN_MSC unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg);
-
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct FILTER1D_CTRL *C;
 

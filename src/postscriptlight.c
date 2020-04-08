@@ -82,7 +82,7 @@
  * PSL_setlinejoin	   : Changes the line join setting
  * PSL_setlinewidth	   : Sets a new linewidth
  * PSL_setmiterlimit	   : Changes the miter limit setting for joins
- * PSL_setimage		   : Sets up a image pattern fill in PS
+ * PSL_setimage		   : Sets up an image pattern fill in PS
  * PSL_setorigin	   : Translates/rotates the coordinate system
  * PSL_setparagraph	   : Sets parameters used to typeset text paragraphs
  * PSL_settransparencymode : Set a new mode for how transparency is understoody
@@ -545,7 +545,7 @@ static void psl_dos_path_fix (char *dir) {
 		}
 	}
 
-	/* Replace ...:C:/... by ...;C:/... as that was a multi-path set by a e.g. bash shell (msys or cygwin) */
+	/* Replace ...:C:/... by ...;C:/... as that was a multi-path set by an e.g. bash shell (msys or cygwin) */
 	for (k = 4; k < n-2; k++) {
 		if ((dir[k-1] == ':' && dir[k+1] == ':' && dir[k+2] == '/' && isalpha ((int)dir[k])) )
 			dir[k-1] = ';';

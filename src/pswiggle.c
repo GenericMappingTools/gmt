@@ -43,8 +43,6 @@
 #define PSWIGGLE_POS	0
 #define PSWIGGLE_NEG	1
 
-EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
-
 struct PSWIGGLE_CTRL {
 	struct A {	/* -A[<azimuth>] */
 		bool active;

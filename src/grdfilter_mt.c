@@ -25,7 +25,7 @@
 */
 
 /*
-This is a experimental multi-threaded version that uses gthreads from GLIB an hence depends on that lib
+This is an experimental multi-threaded version that uses gthreads from GLIB an hence depends on that lib
 that on its turn depends on  linintl (gettext)
 
 To compile I patched src/CMakeList.txt by adding these two lines

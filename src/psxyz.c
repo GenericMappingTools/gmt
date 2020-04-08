@@ -119,8 +119,6 @@ struct PSXYZ_DATA {
 	struct GMT_CUSTOM_SYMBOL *custom;
 };
 
-EXTERN_MSC double gmt_half_map_width (struct GMT_CTRL *GMT, double y);
-
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXYZ_CTRL *C;
 
