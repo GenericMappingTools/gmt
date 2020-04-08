@@ -62,7 +62,6 @@
 #	include <dlfcn.h>
 #endif
 
-EXTERN_MSC void gmt_str_toupper (char *string);
 EXTERN_MSC void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned way);
 
 #ifdef WIN32	/* Special for Windows */
@@ -1445,8 +1444,6 @@ GMT_LOCAL int get_extension_period (char *file) {
 	}
 	return (pos_ext);
 }
-
-EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
 GMT_LOCAL int make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) {
 	struct stat S;

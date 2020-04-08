@@ -102,7 +102,6 @@ unsigned int MGD77_this_bit[MGD77_SET_COLS];
 
 EXTERN_MSC int64_t gmtlib_splitinteger (double value, int epsilon, double *doublepart);
 EXTERN_MSC bool gmtlib_is_gleap (int gyear);
-EXTERN_MSC void gmt_str_toupper (char *string);
 
 int MGD77_nc_status (struct GMT_CTRL *GMT, int status) {
 	/* This function checks the return status of a netcdf function and takes

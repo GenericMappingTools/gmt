@@ -36,8 +36,6 @@
 #define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
 #define SPLITXYZ_N_OUTPUT_CHOICES	5
 
-EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
-
 struct SPLITXYZ_CTRL {
 	struct SPLITXYZ_Out {	/* -> */
 		bool active;

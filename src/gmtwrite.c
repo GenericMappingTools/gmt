@@ -156,8 +156,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
-
 int GMT_gmtwrite (void *V_API, int mode, void *args) {
 	int error = 0;
 	struct GMTWRITE_CTRL *Ctrl = NULL;

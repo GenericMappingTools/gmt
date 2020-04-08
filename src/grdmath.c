@@ -44,11 +44,6 @@
 #define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-:RVabdefghinrs" GMT_OPT("F") GMT_ADD_x_OPT
 
-EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M);
-EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M);
-EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct GMT_MATH_MACRO **M);
-EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile);
-
 /* Some local macros to simplify coding */
 /*! Loop over all nodes including the pad */
 #define grdmath_row_padloop(C,G,row,ij) for (row = 0, ij = 0; (int)row < (int)G->header->my; row++)
