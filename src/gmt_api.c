@@ -4265,7 +4265,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 	}
 
 	switch (S_obj->method) {
-		case GMT_IS_FILE:	/* Name of a image file on disk */
+		case GMT_IS_FILE:	/* Name of an image file on disk */
 #ifdef HAVE_GDAL
 			if (image == NULL) {	/* Only allocate image struct when not already allocated */
 				if (mode & GMT_DATA_ONLY) return_null (API, GMT_NO_GRDHEADER);		/* For mode & GMT_DATA_ONLY grid must already be allocated */
@@ -4273,7 +4273,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 				new = true;
 			}
 			else
-				I_obj = image;	/* We are passing in a image already allocated */
+				I_obj = image;	/* We are passing in an image already allocated */
 			HH = gmt_get_H_hidden (I_obj->header);
 			I_obj->header->complex_mode = mode;		/* Pass on any bitflags */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
@@ -5142,7 +5142,7 @@ GMT_LOCAL void *gmtapi_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_famil
 			new_obj = gmtapi_import_grid (API, object_ID, mode, data);	/* Try to import a grid */
 			break;
 		case GMT_IS_IMAGE:
-			new_obj = gmtapi_import_image (API, object_ID, mode, data);	/* Try to import a image */
+			new_obj = gmtapi_import_image (API, object_ID, mode, data);	/* Try to import an image */
 			break;
 		case GMT_IS_MATRIX:
 			new_obj = gmtapi_import_matrix (API, object_ID, mode);		/* Try to import a matrix */

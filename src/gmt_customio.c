@@ -2091,7 +2091,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	to_GDALW->command = header->command;
 	to_GDALW->orig_type = HH->orig_datatype;
 
-	/* Lazy implementation of nodata value update as it doesn't check and apply on a eventual sub-region on output only */
+	/* Lazy implementation of nodata value update as it doesn't check and apply on an eventual sub-region on output only */
 	if (!isnan (header->nan_value)) {
 		for (ij = 0; ij < header->size; ij++)
 			if (isnan (grid[ij]))

@@ -922,7 +922,7 @@ bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word) {
 	if (strchr(word,'t')) return (false);		/* Got a t somewhere */
 	if (strchr(word,':')) return (false);		/* Got a : somewhere */
 	if (strchr(word,'c')) return (false);		/* Got a c somewhere */
-	if (strchr(word,'i')) return (false);		/* Got a i somewhere */
+	if (strchr(word,'i')) return (false);		/* Got an i somewhere */
 	if (strchr(word,'m')) return (false);		/* Got a m somewhere */
 	if (strchr(word,'p')) return (false);		/* Got a p somewhere */
 	for (i = k = 0; word[i]; i++) if (word[i] == '/') n_slashes++;	/* Count slashes */
@@ -7857,7 +7857,7 @@ char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict
 			if (strict && file == NULL) goto FOUND_NOTHING;
 		}
 	}
-	if (!file && fig) {	/* Not found a item file yet, so try one for this specific figure */
+	if (!file && fig) {	/* Not found an item file yet, so try one for this specific figure */
 		snprintf (path, PATH_MAX, "%s/gmt.%d.%s", GMT->parent->gwf_dir, fig, item);
 		if (!access (path, R_OK)) file = strdup (path);	/* Yes, found it */
 		if (strict && file == NULL) goto FOUND_NOTHING;

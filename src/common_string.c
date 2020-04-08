@@ -301,7 +301,7 @@ void gmt_dos_path_fix (char *dir) {
 		}
 	}
 
-	/* Replace ...:C:/... by ...;C:/... as that was a multi-path set by a e.g. bash shell (msys or cygwin) */
+	/* Replace ...:C:/... by ...;C:/... as that was a multi-path set by an e.g. bash shell (msys or cygwin) */
 	for (k = 4; k < n-2; k++) {
 		if ((dir[k-1] == ':' && dir[k+1] == ':' && dir[k+2] == '/' && isalpha ((int)dir[k])) )
 			dir[k-1] = ';';

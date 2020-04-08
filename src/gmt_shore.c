@@ -23,7 +23,7 @@
  * By default we use GSHHS_ANTARCTICA_ICE but users may select -A..+ag to pick the grounding line
  * [GSHHS_ANTARCTICA_GROUND] or even -A..+as to skip Antarctica entirely (to make it easier to plot
  * custom shorelines via psxy).
- * Because the grounding line polygons are always entirely inside a ice-shelf polygon, we have
+ * Because the grounding line polygons are always entirely inside an ice-shelf polygon, we have
  * given the grounding-line polygons a level of 6.  Of course, when these are used their levels are
  * reset to 1 and all the ice-shelf polygons are skipped.  The node corners of the underlying grid
  * are suitable for the ice-shelf line but if grounding line is selected a different array of node
