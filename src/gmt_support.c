@@ -7872,7 +7872,7 @@ char * gmt_get_current_item (struct GMT_CTRL *GMT, const char *item, bool strict
 		return (file);
 	}
 
-FOUND_NOTHING:	
+FOUND_NOTHING:
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No current %s file found\n", item);
 	return (NULL);
 }
@@ -8566,7 +8566,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	return (GMT_NOERROR);
 }
 
-void GMT_LOCAL gmtsupport_reset_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+GMT_LOCAL void gmtsupport_reset_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	/* Determine if CPT is continuous, B/W, or gray-scale */
 	unsigned int k;
 	gmt_M_unused (GMT);

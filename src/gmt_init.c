@@ -703,9 +703,9 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 #endif
 
 GMT_LOCAL int gmtinit_check_markers (struct GMT_CTRL *GMT) {
+	int error = GMT_NOERROR;
 	/* Make sure segment header markers and header markers are not the same */
 	strcpy (GMT->current.setting.io_head_marker_in, "#%\"\'");	/* Accept GMT or MATLAB header records or comments or quoted text */
-	int error = GMT_NOERROR;
 
 	if (strchr (GMT->current.setting.io_head_marker_in, GMT->current.setting.io_seg_marker[GMT_IN])) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot let %c be both a header record flag and multiple segment header flag for input data\n", GMT->current.setting.io_seg_marker[GMT_IN]);
