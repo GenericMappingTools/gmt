@@ -56,7 +56,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *LOD*
-    Sets the finale (minLodPixels)[https://developers.google.com/kml/documentation/kmlreference#minlodpixels]
+    Sets `minLodPixels <https://developers.google.com/kml/documentation/kmlreference#minlodpixels>`_
     for the final, high-resolution PNG views [128].
 
 .. _-C:
