@@ -17353,7 +17353,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	fgets (file, PATH_MAX, fp);	fclose (fp);	/* Recycle file to hold the -B arguments */
 	while (file[0] && gmt_strtok (file, B_delim, &pos, p)) {	/* Parse the -B options from last call */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "B item = %s\n", p);
-		if (p[0] == axis && strstr (p, "+l")) add_label = true;	/* User specified a axis label on that side */
+		if (p[0] == axis && strstr (p, "+l")) add_label = true;	/* User specified an axis label on that side */
 		if (strchr ("WESNwesn", p[0])) {	/* Gave a -B<axis> option */
 			axis_set = true;
 			if (strchr (p, side)) add_annot = true;

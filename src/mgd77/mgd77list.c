@@ -1479,7 +1479,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 						for (k_off = 1; k_off < D->H.n_records; k_off++) {
 							/* Often cruises have repeated points that will prevent gmt_intpol usage because dx = 0
-							   We will workaround it by adding a epsilon (.1 meter) to the repeated pt. However,
+							   We will workaround it by adding an epsilon (.1 meter) to the repeated pt. However,
 							   often the situation is further complicated because repeat points can come in large
 							   packs. For those cases we add an increasingly small offset. But when the number of
 							   repetitions are large, even this strategy fails and we get error from gmt_intpol */

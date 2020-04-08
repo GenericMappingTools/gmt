@@ -2285,7 +2285,7 @@ where ``data`` is a pointer to any of the four structures discussed previously.
     **GMT_WRITE_TABLE**
         Each table in the data set is written to individual files [1].
         You can either specify an output file name that *must* contain
-        one C-style format specifier for a int variable (e.g.,
+        one C-style format specifier for an int variable (e.g.,
         "New_Table_%06d.txt"), which will be replaced with the table
         number (a running number from 0) *or* you must assign to each
         table *i* a unique output file name via the

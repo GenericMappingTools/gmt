@@ -647,7 +647,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		}
 		if (j == Ctrl->E.levels-1) cdf_cpt[j].z = G[0]->header->z_max;
 	}
-	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make a equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
+	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make an equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
 		double start, range;
 
 		switch (Ctrl->S.kind) {

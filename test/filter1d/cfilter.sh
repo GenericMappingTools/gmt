@@ -42,7 +42,7 @@ EOF
 gmt psxy -R -J -O -T -K -Y-2.5i >> $ps
 cat tmp.eps >> $ps
 gmt filter1d -Ffmyfilt.txt noise.txt | gmt psxy -R-500/500/-300/300 -J -O -K -W2p,blue >> $ps
-# Create a operator filter
+# Create an operator filter
 cat << EOF > myfilt.txt
 -1
 -1
