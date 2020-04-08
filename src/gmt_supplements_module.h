@@ -74,15 +74,15 @@ EXTERN_MSC int GMT_x2sys_report (void *API, int mode, void *args);
 EXTERN_MSC int GMT_x2sys_solve (void *API, int mode, void *args);
 
 /* Pretty print all modules in the GMT supplements library and their purposes */
-EXTERN_MSC void gmt_supplements_module_show_all (void *API);
+EXTERN_MSC void gmtlib_supplements_module_show_all (void *API);
 /* List all modern modules in the GMT supplements library to stdout */
-EXTERN_MSC void gmt_supplements_module_list_all (void *API);
+EXTERN_MSC void gmtlib_supplements_module_list_all (void *API);
 /* List all classic modules in the GMT supplements library to stdout */
-EXTERN_MSC void gmt_supplements_module_classic_all (void *API);
+EXTERN_MSC void gmtlib_supplements_module_classic_all (void *API);
 /* Function called by GMT_Encode_Options so developers can get information about a module */
-EXTERN_MSC const char * gmt_supplements_module_keys (void *API, char *candidate);
+EXTERN_MSC const char * gmtlib_supplements_module_keys (void *API, char *candidate);
 /* Function returns name of group that module belongs to (core, spotter, etc.) */
-EXTERN_MSC const char * gmt_supplements_module_group (void *API, char *candidate);
+EXTERN_MSC const char * gmtlib_supplements_module_group (void *API, char *candidate);
 
 #ifdef __cplusplus
 }

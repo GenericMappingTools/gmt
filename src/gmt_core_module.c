@@ -271,7 +271,7 @@ GMT_LOCAL int skip_modern_module (const char *name) {
 }
 
 /* Pretty print all GMT core module names and their purposes for gmt --help */
-void gmt_core_module_show_all (void *V_API) {
+void gmtlib_core_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
 	char message[GMT_LEN256];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
@@ -293,7 +293,7 @@ void gmt_core_module_show_all (void *V_API) {
 }
 
 /* Produce single list on stdout of all GMT core module names for gmt --show-modules */
-void gmt_core_module_list_all (void *V_API) {
+void gmtlib_core_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	while (g_core_module[module_id].cname != NULL) {
@@ -304,7 +304,7 @@ void gmt_core_module_list_all (void *V_API) {
 }
 
 /* Produce single list on stdout of all GMT core module names for gmt --show-classic [i.e., classic mode names] */
-void gmt_core_module_classic_all (void *V_API) {
+void gmtlib_core_module_classic_all (void *V_API) {
 	unsigned int module_id = 0;
 	size_t n_modules = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
@@ -323,7 +323,7 @@ void gmt_core_module_classic_all (void *V_API) {
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
-const char *gmt_core_module_keys (void *API, char *candidate) {
+const char *gmtlib_core_module_keys (void *API, char *candidate) {
 	int module_id = 0;
 	gmt_M_unused(API);
 
@@ -337,7 +337,7 @@ const char *gmt_core_module_keys (void *API, char *candidate) {
 }
 
 /* Lookup module id by name, return group char name (for external API developers) */
-const char *gmt_core_module_group (void *API, char *candidate) {
+const char *gmtlib_core_module_group (void *API, char *candidate) {
 	int module_id = 0;
 	gmt_M_unused(API);
 
@@ -352,7 +352,7 @@ const char *gmt_core_module_group (void *API, char *candidate) {
 
 #ifndef BUILD_SHARED_LIBS
 /* Lookup static module id by name, return function pointer */
-void *gmt_core_module_lookup (void *API, const char *candidate) {
+void *gmtlib_core_module_lookup (void *API, const char *candidate) {
 	int module_id = 0;
 	size_t len = strlen (candidate);
 	gmt_M_unused(API);

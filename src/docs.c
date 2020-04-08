@@ -62,8 +62,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC const char *api_get_module_group (void *V_API, char *module);
-
 int GMT_docs (void *V_API, int mode, void *args) {
 	bool other_file = false, print_url = false, got_file = false, called = false, remote = false, direct_URL = false;
 	int error = 0, id;
@@ -228,7 +226,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				group = known_group[1];
 				other_file = true;
 			}
-			else if ((group = api_get_module_group (API, name)) == NULL) {
+			else if ((group = gmt_get_module_group (API, name)) == NULL) {
 				gmt_M_str_free (t);
 				Return (GMT_RUNTIME_ERROR);
 			}

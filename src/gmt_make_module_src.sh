@@ -128,15 +128,15 @@ gawk '{printf "EXTERN_MSC int GMT_%s (void *API, int mode, void *args);\n", $2;}
 cat << EOF >> ${FILE_GMT_MODULE_H}
 
 /* Pretty print all modules in the GMT ${L_TAG} library and their purposes */
-EXTERN_MSC void gmt_${L_TAG}_module_show_all (void *API);
+EXTERN_MSC void gmtlib_${L_TAG}_module_show_all (void *API);
 /* List all modern modules in the GMT ${L_TAG} library to stdout */
-EXTERN_MSC void gmt_${L_TAG}_module_list_all (void *API);
+EXTERN_MSC void gmtlib_${L_TAG}_module_list_all (void *API);
 /* List all classic modules in the GMT ${L_TAG} library to stdout */
-EXTERN_MSC void gmt_${L_TAG}_module_classic_all (void *API);
+EXTERN_MSC void gmtlib_${L_TAG}_module_classic_all (void *API);
 /* Function called by GMT_Encode_Options so developers can get information about a module */
-EXTERN_MSC const char * gmt_${L_TAG}_module_keys (void *API, char *candidate);
+EXTERN_MSC const char * gmtlib_${L_TAG}_module_keys (void *API, char *candidate);
 /* Function returns name of group that module belongs to (core, spotter, etc.) */
-EXTERN_MSC const char * gmt_${L_TAG}_module_group (void *API, char *candidate);
+EXTERN_MSC const char * gmtlib_${L_TAG}_module_group (void *API, char *candidate);
 
 #ifdef __cplusplus
 }
@@ -304,7 +304,7 @@ fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
 
 /* Pretty print all GMT ${L_TAG} module names and their purposes for gmt --help */
-void gmt_${L_TAG}_module_show_all (void *V_API) {
+void gmtlib_${L_TAG}_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
 	char message[GMT_LEN256];
 EOF
@@ -347,7 +347,7 @@ EOF
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
 /* Produce single list on stdout of all GMT ${L_TAG} module names for gmt --show-modules */
-void gmt_${L_TAG}_module_list_all (void *V_API) {
+void gmtlib_${L_TAG}_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
 EOF
 if [ "$U_TAG" = "CORE" ]; then
@@ -378,7 +378,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 }
 
 /* Produce single list on stdout of all GMT ${L_TAG} module names for gmt --show-classic [i.e., classic mode names] */
-void gmt_${L_TAG}_module_classic_all (void *V_API) {
+void gmtlib_${L_TAG}_module_classic_all (void *V_API) {
 	unsigned int module_id = 0;
 	size_t n_modules = 0;
 EOF
@@ -417,7 +417,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
-const char *gmt_${L_TAG}_module_keys (void *API, char *candidate) {
+const char *gmtlib_${L_TAG}_module_keys (void *API, char *candidate) {
 	int module_id = 0;
 	gmt_M_unused(API);
 
@@ -431,7 +431,7 @@ const char *gmt_${L_TAG}_module_keys (void *API, char *candidate) {
 }
 
 /* Lookup module id by name, return group char name (for external API developers) */
-const char *gmt_${L_TAG}_module_group (void *API, char *candidate) {
+const char *gmtlib_${L_TAG}_module_group (void *API, char *candidate) {
 	int module_id = 0;
 	gmt_M_unused(API);
 
@@ -450,7 +450,7 @@ if [ "$U_TAG" = "CORE" ]; then
 
 #ifndef BUILD_SHARED_LIBS
 /* Lookup static module id by name, return function pointer */
-void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
+void *gmtlib_${L_TAG}_module_lookup (void *API, const char *candidate) {
 	int module_id = 0;
 	size_t len = strlen (candidate);
 	gmt_M_unused(API);

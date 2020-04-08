@@ -63,7 +63,7 @@
  *	gmt_default_error
  *	gmt_check_region
  *	gmt_parse_R_option
- *	gmt_parse_index_range
+ *	gmtlib_parse_index_range
  *	gmt_parse_d_option
  *	gmt_parse_i_option
  *	gmt_parse_o_option
@@ -1381,7 +1381,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
-		if ((inc = gmt_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
+		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 		len = strlen (p);	/* Length of the string p */
 		ic = (int) p[len-1];	/* Last char in p is the potential code T, t, x, y, or f. */
 		switch (ic) {
@@ -1637,7 +1637,7 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 			single = true;
 			gmtinit_count_x_terms (p, &xstart, &xstop);
 		}
-		else if ((step = gmt_parse_index_range (GMT, this_range, &xstart, &xstop)) != 1) {
+		else if ((step = gmtlib_parse_index_range (GMT, this_range, &xstart, &xstop)) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Bad basis function order (%s)\n", option, this_range);
 			gmt_M_str_free (arg);
 			return -1;
@@ -1851,7 +1851,7 @@ GMT_LOCAL int gmtinit_parse_model2d (struct GMT_CTRL *GMT, char option, char *in
 			single = true;
 			gmtinit_count_xy_terms (&p[1], &xstart, &xstop, &ystart, &ystop);
 		}
-		else if ((step = gmt_parse_index_range (GMT, this_range, &xstart, &xstop)) != 1) {
+		else if ((step = gmtlib_parse_index_range (GMT, this_range, &xstart, &xstop)) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Bad basis function order (%s)\n", option, this_range);
 			return -1;
 		}
@@ -2365,7 +2365,7 @@ GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	/* Here we have user-supplied column information */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
 	while (!error && (gmt_strtok (item, ",", &pos, p))) {	/* While it is not empty, process it */
-		if ((inc = gmt_parse_index_range (GMT, p, &start, &stop)) == 0) return (true);
+		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (true);
 
 		/* Now set the code for these columns */
 		for (i = start; i <= stop; i += inc) tmp[i] = true;
@@ -3900,7 +3900,7 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 	return (error);
 }
 
-bool gmtinit_B_is_frame (struct GMT_CTRL *GMT, char *in) {
+bool gmtlib_B_is_frame (struct GMT_CTRL *GMT, char *in) {
 	gmt_M_unused (GMT);
 	if (strstr (in, "+b")) return true;	/* Found a +b so likely frame */
 	if (strstr (in, "+g")) return true;	/* Found a +g so likely frame */
@@ -3934,7 +3934,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 
 	if (strchr ("pxy", in[0])) return (-1);	/* -B[p[xy] is definitively not the frame settings (-Bz and -Bs are tricker; see below) */
 	if (strchr ("afg", in[0])) return (-1);	/* -Ba|f|g is definitively not the frame settings; looks like axes settings */
-	if (!gmtinit_B_is_frame (GMT, in)) return (-1);		/* No, nothing matched */
+	if (!gmtlib_B_is_frame (GMT, in)) return (-1);		/* No, nothing matched */
 
 	/* OK, here we are pretty sure this is a frame -B statement */
 
@@ -8309,7 +8309,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 }
 
 //*! . */
-int64_t gmt_parse_index_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t *stop) {
+int64_t gmtlib_parse_index_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t *stop) {
 	/* Parse p looking for range or columns or individual columns.
 	 * If neither then we just increment both start and stop. */
 	int64_t inc = 1, r = 0;
@@ -8531,7 +8531,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 			}
 		}
 		else {	/* Now process column range */
-			if ((inc = gmt_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
+			if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 			if (stop == INTMAX_MAX) {	/* Gave an open interval, e.g., 3: or 4- to mean "until last column" */
 				GMT->common.i.end = true;
 				stop = GMT_MAX_COLUMNS - 1;	/* Set to last column */
@@ -8709,7 +8709,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 			}
 		}
 		else {
-			if ((inc = gmt_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
+			if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 			if (stop == INTMAX_MAX) {	/* Gave an open-ended interval, e.g., 3: or 3- to mean "from 3 until last column" */
 				GMT->common.o.end = true;
 				stop = GMT_MAX_COLUMNS - 1;	/* Set to last column */
@@ -8746,7 +8746,7 @@ GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int direc
 			return (GMT_PARSE_ERROR);
 		}
 		/* We can process A or A: or A- or A/ or A:B or A-B or A/B or :B or -B or /B */
-		if ((R[n].inc = gmt_parse_index_range (GMT, p, &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
+		if ((R[n].inc = gmtlib_parse_index_range (GMT, p, &R[n].first, &R[n].last)) == 0) return (GMT_PARSE_ERROR);
 		R[n].first++;	/* Since the i/o machinery increments the current record number before we compare, we switch to 1 being the first row */
 		if (R[n].last != INTMAX_MAX) R[n].last++;	/* Same for last row unless infinite */
 		if ((++n) == GMT_MAX_RANGES) {

@@ -66,7 +66,7 @@
  * gmt_set_cols
  * gmt_access
  * gmt_get_ogr_id
- * gmtio_ascii_textinput
+ * gmtlib_ascii_textinput
  * gmt_is_a_blank_line
  * gmtio_bin_colselect
  * gmt_skip_output
@@ -3565,7 +3565,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 						GMT->current.io.record.text = NULL;
 					}
 					else if (n_cols_this_record == 0 && start_of_text) {	/* All text */
-						GMT->current.io.input = &gmtio_ascii_textinput;	/* Override and use ASCII text mode */
+						GMT->current.io.input = &gmtlib_ascii_textinput;	/* Override and use ASCII text mode */
 						strcpy (GMT->current.io.curr_trailing_text, line);
 						GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
 						GMT->current.io.record.data = NULL;
@@ -5112,11 +5112,11 @@ int gmt_get_ogr_id (struct GMT_OGR *G, char *name) {
 }
 
 /*! . */
-void * gmtio_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
+void * gmtlib_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 	bool more = true;
 	char line[GMT_BUFSIZ] = {""}, *p = NULL;
 
-	/* gmtio_ascii_textinput will read one text line and return it, setting
+	/* gmtlib_ascii_textinput will read one text line and return it, setting
 	 * header or segment flags in the process.
 	 */
 
@@ -7455,7 +7455,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 
 	if (ASCII && *geometry == GMT_IS_TEXT) {
 		psave = GMT->current.io.input;			/* Save the previous pointer since we need to change it back at the end */
-		GMT->current.io.input = &gmtio_ascii_textinput;	/* Override and use ASCII text mode */
+		GMT->current.io.input = &gmtlib_ascii_textinput;	/* Override and use ASCII text mode */
 		GMT->current.io.record_type[GMT_IN] = *data_type = GMT_READ_TEXT;
 	}
 
