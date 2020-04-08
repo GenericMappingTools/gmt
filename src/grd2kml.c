@@ -143,7 +143,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-A<LOD>] [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-Q] [-T<title>] [%s] [-W<contfile>|<pen>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -153,6 +153,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets file name prefix for image directory and KML file. If the directory\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   already exist we will overwrite the files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Sets final minLodPixels for the most detailed tiles [128]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb. Optionally, instead give name of a master cpt\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", GMT_DEFAULT_CPT_NAME);
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
@@ -229,7 +230,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 			case 'D':	/* Debug options - may fade away when happy with the performance */
 				Ctrl->D.active = true;
 				if (strstr (opt->arg, "+s")) Ctrl->D.single = true;	/* Write all files in a single directory instead of one directory per level */
-				if (strstr (opt->arg, "+d")) Ctrl->D.dump = true;	/* Dump quadtree information to stdou */
+				if (strstr (opt->arg, "+d")) Ctrl->D.dump = true;	/* Dump quadtree information to stdout */
 				break;
 			case 'E':	/* Remove URL for all contents but top driver kml */
 				Ctrl->E.active = true;
@@ -283,10 +284,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 			case 'L':	/* Tiles sizes */
 				Ctrl->L.active = true;
 				Ctrl->L.size = atoi (opt->arg);
-				if (Ctrl->L.size <= 0 || ((log2 ((double)Ctrl->L.size) - irint (log2 ((double)Ctrl->L.size))) > GMT_CONV8_LIMIT)) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -L: Must be radix 2!\n");
-					n_errors++;
-				}
 				break;
 			case 'M':	/* Magnify and/or interpolate [EXPERIMENTAL, to boost coarser grids] */
 				Ctrl->M.active = true;
@@ -397,6 +394,9 @@ GMT_LOCAL void assess_tile_size (struct GMT_CTRL *GMT, bool global, unsigned int
 	char string[GMT_LEN256] = {""}, one[GMT_LEN8] = {""};
 	gmt_M_unused (global);
 
+	if (!global && fabs (log2 ((double)size) - irint (log2 ((double)size))) > GMT_CONV8_LIMIT) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -L: Should ideally be radix 2; your size %d is not\n", size);
+	}
 	nf_x = gmt_get_prime_factors (GMT, nx, fx);
 	nf_y = gmt_get_prime_factors (GMT, ny, fy);
 	for (kx = 0; kx < nf_x; kx++) { sprintf (one, " %d", fx[kx]), strcat (string, one); }
@@ -755,7 +755,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				/* Must make sure we have a proper formatting of these longitudes so handle any east > 360 */
 				west = wesn[XLO];	east = wesn[XHI];
 				if (east > 360.0) west -= 360.0, east -= 360.0;	/* Keep within -180 to 180 range */
-				GMT->current.io.geo.range = (west < 0.0 && east > 0.0) ? ((east > 180.0) ? GMT_IS_GIVEN_RANGE : GMT_IS_M180_TO_P180_RANGE) : GMT_IS_0_TO_P360_RANGE;
+				GMT->current.io.geo.range = (west < 0.0 && east >= 0.0) ? ((east > 180.0) ? GMT_IS_GIVEN_RANGE : GMT_IS_M180_TO_P180_RANGE) : GMT_IS_0_TO_P360_RANGE;
 				gmt_ascii_format_one (GMT, W, west, GMT_IS_LON);
 				gmt_ascii_format_one (GMT, E, east, GMT_IS_LON);
 				/* Now we have the current tile region */
@@ -851,7 +851,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			wesn[YLO] = wesn[YHI];
 			strcpy (S, N);
 		}
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Summary Level %d: %d by %d = %d tiles, %d mapped, %d empty\n", level, row, col, row*col, row*col - n_skip, n_skip);
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Summary Level %d: %d by %d = %d tiles, %d mapped, %d empty\n", level, row, col, row*col, row*col - n_skip, n_skip);
 		if (level < max_level) {	/* Delete the temporary filtered grid(s) */
 			gmt_remove_file (GMT, Zgrid);
 			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
@@ -1003,7 +1003,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Q[k]);		/* Free this tile information */
 	}
 	gmt_M_free (GMT, Q);
-	GMT_Report (API, GMT_MSG_INFORMATION, "Done: %d files written to directory %s\n", 2*n+1, Ctrl->N.prefix);
+	GMT_Report (API, GMT_MSG_NOTICE, "Done: %d files written to directory %s\n", 2*n+1, Ctrl->N.prefix);
 	if (tmp_cpt) gmt_remove_file (GMT, Ctrl->C.file);
 	Return (GMT_NOERROR);
 }

@@ -13,6 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grd2kml** *grid*
+[ |-A|\ *LOD* ]
 [ |-C|\ *cpt* ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
@@ -51,6 +52,12 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-A:
+
+**-A**\ *LOD*
+    Sets the finale (minLodPixels)[https://developers.google.com/kml/documentation/kmlreference#minlodpixels]
+    for the final, high-resolution PNG views [128].
 
 .. _-C:
 
