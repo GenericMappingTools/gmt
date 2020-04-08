@@ -1,12 +1,19 @@
 /*
- * src_convention_check.c is used to check if we are following our own naming
+ * src_convention_check.c is used to analyze if we are following our own naming
  * convention for functions in the API (GMT_*), the core library (gmt_*),
  * the inter-file functions (gmtlib_*) or the in-file static function
- * (gmtfile_*).  We also try to determine how many files a function is called
- * in to look for candidate for static functions.
+ * (<gmtfile>_*).  We also try to determine in how many files a function is called
+ * in an effort to look for candidates for conversion to static functions.
+ *
  * Options:
- *			-e Only list the external funtions and skip static ones
+ *			-e Only list the external functions and skip static ones
  *			-f Only list functions and not where they are called
+ *			-o Write scan to stdout [/tmp/gmt/scan.txt]
+ *			-v Extra progress verbosity
+ *			-w Only report functions with a warning for possible wrong name
+ *
+ * Weaknesses: There are 3rd party files we probably should skip, and it is
+ * not yet clear what convention to use in supplements.
  *
  * Paul Wessel, April 2020
  */
@@ -20,21 +27,22 @@
 #define NFUNCS 10000
 
 struct FUNCTION {
-	char name[64];	/* Name of function */
-	char file[64];	/* Name if file it is declared in */
-	int api;		/* 1 if declared extern in gmt.h */
+	char name[64];			/* Name of function */
+	char file[64];			/* Name if file it is declared in */
+	int api;				/* 1 if declared extern in gmt.h */
 	int declared_dev;		/* 1 if declared extern in gmt_prototypes.h */
 	int declared_lib;		/* 1 if declared extern in gmt_internals.h */
-	int declared_local;		/* True if function declared static */
+	int declared_local;		/* 1 if function declared static */
 	int determined_dev;		/* 1 if called by a module */
 	int determined_lib;		/* 1 if called in gmt_*.c */
-	int determined_local;	/* True if function only appears in one file */
+	int determined_local;	/* 1 if function only appears in one file */
 	unsigned int n_files;	/* How many files referenced */
 	unsigned int n_calls;	/* How many times referenced */
-	char *in;
+	char *in;				/* Array to mark which files this functions appears in */
 };
 
 int find_function (struct FUNCTION *F, int N, char *name) {
+	/* Return 1 if function already found, else 0 */
 	int k;
 	for (k = 0; k < N; k++)
 		if (!strcmp (F[k].name, name)) return k;
@@ -42,6 +50,8 @@ int find_function (struct FUNCTION *F, int N, char *name) {
 }
 
 static int compare_n (const void *v1, const void *v2) {
+	/* Compare function for qsort to arrange functions based on how many files they
+	 * appear in and (if tied) how many times called */
 	const struct FUNCTION *F1 = v1, *F2 = v2;
 	if (F1->n_files < F2->n_files) return +1;
 	if (F1->n_calls > F2->n_files) return -1;
@@ -50,6 +60,7 @@ static int compare_n (const void *v1, const void *v2) {
 	return (0);
 }
 
+/* Include NULL-terminated arrays with function names */
 static char *modules[] = {
 #include "/tmp/gmt/modules.h"
 	NULL
@@ -71,6 +82,7 @@ static char *libint[] = {
 };
 
 static int is_recognized (char *name, char *list[]) {
+	/* Return 1 if name appears in the list, else 0 */
 	int k = 0;
 	while (list[k]) {
 		if (strstr (name, list[k]))
@@ -81,6 +93,7 @@ static int is_recognized (char *name, char *list[]) {
 }
 
 static void get_contraction (char *name, char *prefix) {
+	/* Remove underscores to build prefix, e.g., gmt_support -> gmtsupport */
 	unsigned k, j;
 	for (k = j = 0; name[k] != '.'; k++)
 		if (name[k] != '_') prefix[j++] = name[k];
@@ -106,14 +119,14 @@ int main (int argc, char **argv) {
 		fprintf (stderr, "	-w Only write lines with warnings of wrong naming]\n");
 		exit (1);
 	}
-	fprintf (stderr, "1. Scanning all codes for function declarations\n");
+	fprintf (stderr, "src_convention_check: 1. Scanning all codes for function declarations\n");
 	for (k = 1; k < argc; k++) {	/* For each input file */
-		if (strcmp (argv[k], "-f") == 0) {	/* Only list functions and not where called */
-			brief = 1;
-			continue;
-		}
 		if (strcmp (argv[k], "-e") == 0) {	/* Only list external functions and not static */
 			ext = 1;
+			continue;
+		}
+		if (strcmp (argv[k], "-f") == 0) {	/* Only list functions and not where called */
+			brief = 1;
 			continue;
 		}
 		if (strcmp (argv[k], "-o") == 0) {	/* Write to stdout */
@@ -128,8 +141,12 @@ int main (int argc, char **argv) {
 			warn_only = 1;
 			continue;
 		}
-		if ((fp = fopen (argv[k], "r")) == NULL) continue;
-		if (verbose) fprintf (stderr, "\tScanning %s\n", argv[k]);
+
+		if ((fp = fopen (argv[k], "r")) == NULL) {
+			fprintf (stderr, "src_convention_check: Unable to open %s for reading\n", (argv[k]));
+			continue;
+		}
+		if (verbose) fprintf (stderr, "\tsrc_convention_check: Scanning %s\n", argv[k]);
 		comment = 0;
 		while (fgets (line, 512, fp)) {
 			if (!comment && strstr (line, "/*") && strstr (line, "*/") == NULL)	/* Start of multi-line comment */
@@ -195,17 +212,17 @@ int main (int argc, char **argv) {
 				F[f].in = calloc (NFILES, 1U);
 			}
 			if (n_funcs == NFUNCS) {
-				fprintf (stderr, "Out of function space\n");
+				fprintf (stderr, "src_convention_check: Out of function space - increase NFUNCS and rebuild\n");
 				exit (-1);
 			}
 		}
 		fclose (fp);
 	}
 	/* Look for function calls */
-	fprintf (stderr, "2. Scanning all codes for function calls\n");
+	fprintf (stderr, "src_convention_check: 2. Scanning all codes for function calls\n");
 	for (k = 1; k < argc; k++) {	/* For each input file */
 		if ((fp = fopen (argv[k], "r")) == NULL) continue;
-		if (verbose) fprintf (stderr, "\tScanning %s\n", argv[k]);
+		if (verbose) fprintf (stderr, "\tsrc_convention_check: Scanning %s\n", argv[k]);
 		set_dev = is_recognized (argv[k], modules);	/* Called in a module */
 		set_lib = (strstr (argv[k], "gmt_") != NULL || strstr (argv[k], "common_") != NULL);	/* Called in a library file */
 		while (fgets (line, 512, fp)) {
@@ -230,17 +247,18 @@ int main (int argc, char **argv) {
 	}
 	qsort (F, n_funcs, sizeof (struct FUNCTION), compare_n);
 
-	fprintf (stderr, "Write the report\n");
+	fprintf (stderr, "src_convention_check: Write the report\n");
 	/* Report */
 	if (log) out = fopen ("/tmp/gmt/scan.txt", "w");
 	fprintf (out, "NFILES  FUNCTION                                    NCALLS TYPE DECLARED-IN\n");
 	for (f = 0; f < n_funcs; f++) {
 		err = 0;
 		p = basename (F[f].file);
-		L = strlen (p);
+		get_contraction (p, prefix);
+		L = strlen (prefix);
 		k = (F[f].declared_local) ? 0 : ((F[f].declared_dev) ? 1 : 2);
 		if (F[f].declared_local) {
-			if (strncmp (F[f].name, p, L-2)) err = 3;
+			if (strncmp (F[f].name, prefix, L)) err = 3;
 		}
 		else if (F[f].declared_dev) {
 			if (strncmp (F[f].name, "gmt_", 4U)) err = 1;
@@ -252,7 +270,6 @@ int main (int argc, char **argv) {
 			if (F[f].n_files > 1)
 				strcpy (message, err_msg[err]);
 			else {
-				get_contraction (p, prefix);
 				sprintf (message, "Name error, should be %s_*", prefix);
 			}
 		}
@@ -269,5 +286,8 @@ int main (int argc, char **argv) {
 		}
 		free ((void *)F[f].in);
 	}
-	if (log) fclose (out);
+	if (log) {
+		fclose (out);
+		fprintf (stderr, "src_convention_check: Report written to /tmp/gmt/scan.txt\n");
+	}
 }
