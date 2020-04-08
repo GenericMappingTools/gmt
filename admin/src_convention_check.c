@@ -88,7 +88,7 @@ static void get_contraction (char *name, char *prefix) {
 }
 
 int main (int argc, char **argv) {
-	int k, f, w, s, n, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1;
+	int k, f, w, s, n, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1, verbose = 0, warn_only = 0;
 	int set_dev, set_lib;
 	size_t L;
 	char line[512] = {""}, prefix[64] = {""};
@@ -102,9 +102,11 @@ int main (int argc, char **argv) {
 		fprintf (stderr, "	-e Only list external functions [all]\n");
 		fprintf (stderr, "	-f Only list function stats and not where called [full log]\n");
 		fprintf (stderr, "	-o Write main results to stdout [/tmp/gmt/gmt/scan.txt\n");
+		fprintf (stderr, "	-v Extra verbose output [minimal verbosity]\n");
+		fprintf (stderr, "	-w Only write lines with warnings of wrong naming]\n");
 		exit (1);
 	}
-	fprintf (stderr, "Scanning all codes for function declarations\n");
+	fprintf (stderr, "1. Scanning all codes for function declarations\n");
 	for (k = 1; k < argc; k++) {	/* For each input file */
 		if (strcmp (argv[k], "-f") == 0) {	/* Only list functions and not where called */
 			brief = 1;
@@ -118,7 +120,16 @@ int main (int argc, char **argv) {
 			log = 0;
 			continue;
 		}
+		if (strcmp (argv[k], "-v") == 0) {	/* Extra verbos */
+			verbose = 1;
+			continue;
+		}
+		if (strcmp (argv[k], "-w") == 0) {	/* Warnings only e*/
+			warn_only = 1;
+			continue;
+		}
 		if ((fp = fopen (argv[k], "r")) == NULL) continue;
+		if (verbose) fprintf (stderr, "\tScanning %s\n", argv[k]);
 		comment = 0;
 		while (fgets (line, 512, fp)) {
 			if (!comment && strstr (line, "/*") && strstr (line, "*/") == NULL)	/* Start of multi-line comment */
@@ -191,9 +202,10 @@ int main (int argc, char **argv) {
 		fclose (fp);
 	}
 	/* Look for function calls */
-	fprintf (stderr, "Scanning all codes for function calls\n");
+	fprintf (stderr, "2. Scanning all codes for function calls\n");
 	for (k = 1; k < argc; k++) {	/* For each input file */
 		if ((fp = fopen (argv[k], "r")) == NULL) continue;
+		if (verbose) fprintf (stderr, "\tScanning %s\n", argv[k]);
 		set_dev = is_recognized (argv[k], modules);	/* Called in a module */
 		set_lib = (strstr (argv[k], "gmt_") != NULL || strstr (argv[k], "common_") != NULL);	/* Called in a library file */
 		while (fgets (line, 512, fp)) {
@@ -246,10 +258,15 @@ int main (int argc, char **argv) {
 		}
 		else
 			strcpy (message, err_msg[err]);
-		fprintf (out, "%4d\t%-40s\t%4d\t%c\t%s\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, message);
-		if (brief) continue;
-		for (k = 1; k < argc; k++)	/* For each input file */
-			if (F[f].in[k] && strcmp (argv[k], F[f].file)) fprintf (out, "\t\t%s\n", argv[k]);
+		if (!warn_only || err) {
+			fprintf (out, "%4d\t%-40s\t%4d\t%c\t%s\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, message);
+			if (brief) {	/* Done with this, free memory */
+				free ((void *)F[f].in);
+				continue;
+			}
+			for (k = 1; k < argc; k++)	/* For each input file, report each incident */
+				if (F[f].in[k] && strcmp (argv[k], F[f].file)) fprintf (out, "\t\t%s\n", argv[k]);
+		}
 		free ((void *)F[f].in);
 	}
 	if (log) fclose (out);

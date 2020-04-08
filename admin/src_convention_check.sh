@@ -18,11 +18,11 @@ mkdir -p /tmp/gmt
 
 # Create include files based on current gmt status
 # Create the list of current API prototype (GMT_*) functions from gmt.h
-grep EXTERN_MSC src/gmt.h | awk -F'(' '{print $1}' | awk '{print $NF}' | grep -v '*' | awk '{printf "\t\"%s.c\",\n", $1}' > /tmp/gmt/api.h
+grep EXTERN_MSC src/gmt.h | awk -F'(' '{print $1}' | awk '{print $NF}' | tr '*' ' ' | awk '{printf "\t\"%s.c\",\n", $1}' > /tmp/gmt/api.h
 # Create the list of current prototype (gmt_*) functions from gmt_prototypess.h
-grep EXTERN_MSC src/gmt_prototypes.h | awk -F'(' '{print $1}' | awk '{print $NF}' | grep -v '*' | awk '{printf "\t\"%s.c\",\n", $1}' > /tmp/gmt/prototypes.h
+grep EXTERN_MSC src/gmt_prototypes.h | awk -F'(' '{print $1}' | awk '{print $NF}' | tr '*' ' ' | awk '{printf "\t\"%s.c\",\n", $1}' > /tmp/gmt/prototypes.h
 # Create the list of current prototype (gmtlib_*) functions from gmt_internals.h
-grep EXTERN_MSC src/gmt_internals.h | awk -F'(' '{print $1}' | awk '{print $NF}' | grep -v '*' | awk '{printf "\t\"%s.c\",\n", $1}' > /tmp/gmt/internals.h
+grep EXTERN_MSC src/gmt_internals.h | awk -F'(' '{print $1}' | awk '{print $NF}' | tr '*' ' ' | awk '{printf "\t\"%s.c\",\n", $1}' > /tmp/gmt/internals.h
 # Create list of module functions
 gmt --show-classic | awk '{printf "\t\"%s.c\",\n", $1}' > /tmp/gmt/modules.h
 gcc admin/src_convention_check.c -o /tmp/src_convention_check
