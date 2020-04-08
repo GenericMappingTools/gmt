@@ -162,7 +162,7 @@ int main (int argc, char **argv) {
 			if (!strncmp (line, "EXTERN", 6U)) continue;
 			if (!strncmp (line, "extern", 6U)) continue;
 			if (strstr (line, "typedef")) continue;
-			n = sscanf (line, "%s %s %s %s %s", word[0], word[1], word[2], word[3], word[4]);
+			n = sscanf (line, "%s %s %s %s %s %s", word[0], word[1], word[2], word[3], word[4], word[5]);
 			if (n < 2) continue;
 			w = is_static = 0;
 			if (!strcmp (word[w], "if") || !strcmp (word[w], "for") || !strcmp (word[w], "while") || !strcmp (word[w], "else")) continue;
