@@ -1195,6 +1195,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				for (col = 0; col < n_columns; col++) {	/* Compute rgb for each pixel along this scanline */
 					node = kk + actual_col[col];
 					index = gmt_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
+					if (index != (GMT_NAN - 3)) has_content = true;
 					if (index != (GMT_NAN - 3) && Ctrl->I.active) {	/* Need to deal with illumination */
 						if (intensity_mode & 1)	/* Intensity value comes from the grid */
 							gmt_illuminate (GMT, Intens_proj->data[node], rgb);
