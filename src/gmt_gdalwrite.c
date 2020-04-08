@@ -364,7 +364,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		   we assume that the decimal * 1000 is the number on the color matrix of the transparent color. And
 		   then we use it to set prhs->nan_value. In gmt_gdalwrite it will be used by GDALSetRasterNoDataValue.
 		*/
-		float dc = 0.0, nc;
+		float dc = 0.0, nc = 0.0;
 
 		nColors = prhs->C.n_colors;
 		if (nColors > 2000) {			/* If colormap is Mx4 or has encoded the alpha color */
