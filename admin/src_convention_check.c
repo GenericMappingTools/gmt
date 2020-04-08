@@ -22,9 +22,13 @@
 struct FUNCTION {
 	char name[64];	/* Name of function */
 	char file[64];	/* Name if file it is declared in */
-	int dev;		/* 1 if used in a module */
-	int lib;		/* 1 if used in gmt_*.c */
-	int local;		/* True if function declared static */
+	int api;		/* 1 if declared extern in gmt.h */
+	int declared_dev;		/* 1 if declared extern in gmt_prototypes.h */
+	int declared_lib;		/* 1 if declared extern in gmt_internals.h */
+	int declared_local;		/* True if function declared static */
+	int determined_dev;		/* 1 if called by a module */
+	int determined_lib;		/* 1 if called in gmt_*.c */
+	int determined_local;	/* True if function only appears in one file */
 	unsigned int n_files;	/* How many files referenced */
 	unsigned int n_calls;	/* How many times referenced */
 	char *in;
@@ -47,171 +51,60 @@ static int compare_n (const void *v1, const void *v2) {
 }
 
 static char *modules[] = {
-		"blockmean.c",
-	"blockmedian.c",
-	"blockmode.c",
-	"dimfilter.c",
-	"filter1d.c",
-	"fitcircle.c",
-	"gmt2kml.c",
-	"gmtconnect.c",
-	"gmtconvert.c",
-	"gmtdefaults.c",
-	"gmtget.c",
-	"gmtinfo.c",
-	"gmtlogo.c",
-	"gmtmath.c",
-	"gmtregress.c",
-	"gmtselect.c",
-	"gmtset.c",
-	"gmtsimplify.c",
-	"gmtspatial.c",
-	"gmtvector.c",
-	"gmtwhich.c",
-	"grd2cpt.c",
-	"grd2kml.c",
-	"grd2xyz.c",
-	"grdblend.c",
-	"grdclip.c",
-	"grdcontour.c",
-	"grdconvert.c",
-	"grdcut.c",
-	"grdedit.c",
-	"grdfft.c",
-	"grdfill.c",
-	"grdfilter.c",
-	"grdgdal.c",
-	"grdgradient.c",
-	"grdhisteq.c",
-	"grdimage.c",
-	"grdinfo.c",
-	"grdinterpolate.c",
-	"grdlandmask.c",
-	"grdmask.c",
-	"grdmath.c",
-	"grdpaste.c",
-	"grdproject.c",
-	"grdsample.c",
-	"grdtrack.c",
-	"grdtrend.c",
-	"grdvector.c",
-	"grdview.c",
-	"grdvolume.c",
-	"greenspline.c",
-	"kml2gmt.c",
-	"makecpt.c",
-	"mapproject.c",
-	"nearneighbor.c",
-	"project.c",
-	"psbasemap.c",
-	"psclip.c",
-	"pscoast.c",
-	"pscontour.c",
-	"psconvert.c",
-	"psevents.c",
-	"pshistogram.c",
-	"psimage.c",
-	"pslegend.c",
-	"psmask.c",
-	"psrose.c",
-	"psscale.c",
-	"pssolar.c",
-	"psternary.c",
-	"pstext.c",
-	"pswiggle.c",
-	"psxy.c",
-	"psxyz.c",
-	"sample1d.c",
-	"spectrum1d.c",
-	"sph2grd.c",
-	"sphdistance.c",
-	"sphinterpolate.c",
-	"sphtriangulate.c",
-	"splitxyz.c",
-	"surface.c",
-	"trend1d.c",
-	"trend2d.c",
-	"triangulate.c",
-	"xyz2grd.c",
-	"backtracker.c",
-	"earthtide.c",
-	"gmtflexure.c",
-	"gmtgravmag3d.c",
-	"gmtpmodeler.c",
-	"gpsgridder.c",
-	"gravfft.c",
-	"grdflexure.c",
-	"grdgravmag3d.c",
-	"grdpmodeler.c",
-	"grdredpol.c",
-	"grdrotater.c",
-	"grdseamount.c",
-	"grdspotter.c",
-	"gshhg.c",
-	"hotspotter.c",
-	"img2grd.c",
-	"mgd77convert.c",
-	"mgd77header.c",
-	"mgd77info.c",
-	"mgd77list.c",
-	"mgd77magref.c",
-	"mgd77manage.c",
-	"mgd77path.c",
-	"mgd77sniffer.c",
-	"mgd77track.c",
-	"originater.c",
-	"polespotter.c",
-	"pscoupe.c",
-	"psmeca.c",
-	"pspolar.c",
-	"pssac.c",
-	"pssegy.c",
-	"pssegyz.c",
-	"psvelo.c",
-	"rotconverter.c",
-	"rotsmoother.c",
-	"segy2grd.c",
-	"talwani2d.c",
-	"talwani3d.c",
-	"x2sys_binlist.c",
-	"x2sys_cross.c",
-	"x2sys_datalist.c",
-	"x2sys_get.c",
-	"x2sys_init.c",
-	"x2sys_list.c",
-	"x2sys_merge.c",
-	"x2sys_put.c",
-	"x2sys_report.c",
-	"x2sys_solve.c",
+#include "/tmp/gmt/modules.h"
 	NULL
 };
 
-static int is_module (char *name, char *module[]) {
+static char *API[] = {
+#include "/tmp/gmt/api.h"
+	NULL
+};
+
+static char *libdev[] = {
+#include "/tmp/gmt/prototypes.h"
+	NULL
+};
+
+static char *libint[] = {
+#include "/tmp/gmt/internals.h"
+	NULL
+};
+
+static int is_recognized (char *name, char *list[]) {
 	int k = 0;
-	while (modules[k]) {
-		if (strstr (name, module[k]))
+	while (list[k]) {
+		if (strstr (name, list[k]))
 			return 1;
 		else k++;
 	}
 	return 0;
 }
 
+static void get_contraction (char *name, char *prefix) {
+	unsigned k, j;
+	for (k = j = 0; name[k] != '.'; k++)
+		if (name[k] != '_') prefix[j++] = name[k];
+	prefix[j] = '\0';
+}
+
 int main (int argc, char **argv) {
-	int k, f, w, s, n, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0;
+	int k, f, w, s, n, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1;
 	int set_dev, set_lib;
 	size_t L;
-	char line[512] = {""};
+	char line[512] = {""}, prefix[64] = {""};
 	char word[6][64], type[3] = {'S', 'D', 'L'}, *p, message[128] = {""};
 	char *err_msg[4] = {"", "Name error, should be gmt_*", "Name error, should be gmtlib_*", "Name error, should be file_*"};
 	struct FUNCTION F[NFUNCS];
-	FILE *fp;
+	FILE *fp, *out = stdout;
 
 	if (argc == 1) {
-		fprintf (stderr, "usage: src_convention_check [-e] [-f] *.c > log\n");
+		fprintf (stderr, "usage: src_convention_check [-e] [-f] [-o] *.c > log\n");
 		fprintf (stderr, "	-e Only list external functions [all]\n");
 		fprintf (stderr, "	-f Only list function stats and not where called [full log]\n");
+		fprintf (stderr, "	-o Write main results to stdout [/tmp/gmt/gmt/scan.txt\n");
 		exit (1);
 	}
+	fprintf (stderr, "Scanning all codes for function declarations\n");
 	for (k = 1; k < argc; k++) {	/* For each input file */
 		if (strcmp (argv[k], "-f") == 0) {	/* Only list functions and not where called */
 			brief = 1;
@@ -219,6 +112,10 @@ int main (int argc, char **argv) {
 		}
 		if (strcmp (argv[k], "-e") == 0) {	/* Only list external functions and not static */
 			ext = 1;
+			continue;
+		}
+		if (strcmp (argv[k], "-o") == 0) {	/* Write to stdout */
+			log = 0;
 			continue;
 		}
 		if ((fp = fopen (argv[k], "r")) == NULL) continue;
@@ -277,7 +174,13 @@ int main (int argc, char **argv) {
 				f = n_funcs++;	/* Add one more */
 				strncpy (F[f].name, &word[w][s], 63);
 				strncpy (F[f].file, argv[k], 63);
-				F[f].local = is_static;
+				if (is_recognized (argv[k], API))
+					F[f].api = 1;
+				else if (is_recognized (argv[k], libdev))
+					F[f].declared_dev = 1;
+				else if (is_recognized (argv[k], libint))
+					F[f].declared_dev = 1;
+				F[f].declared_local = is_static;
 				F[f].in = calloc (NFILES, 1U);
 			}
 			if (n_funcs == NFUNCS) {
@@ -288,10 +191,11 @@ int main (int argc, char **argv) {
 		fclose (fp);
 	}
 	/* Look for function calls */
+	fprintf (stderr, "Scanning all codes for function calls\n");
 	for (k = 1; k < argc; k++) {	/* For each input file */
 		if ((fp = fopen (argv[k], "r")) == NULL) continue;
-		set_dev = is_module (argv[k], modules);	/* Called in a module */
-		set_lib = (strstr (argv[k], "gmt_") != NULL);	/* Called in a library file */
+		set_dev = is_recognized (argv[k], modules);	/* Called in a module */
+		set_lib = (strstr (argv[k], "gmt_") != NULL || strstr (argv[k], "common_") != NULL);	/* Called in a library file */
 		while (fgets (line, 512, fp)) {
 			if (line[0] == '/' || line[1] == '*') continue;	/* Comment */
 			if (strchr (" \t", line[0]) == NULL) continue;
@@ -302,8 +206,8 @@ int main (int argc, char **argv) {
 				if ((p = strstr (line, F[f].name)) && strlen (p) > L && (p[L] == '(' || p[L] == ' ')) {	/* Found a call to this function */
 					F[f].in[k] = 1;
 					F[f].n_calls++ ;
-					if (set_dev) F[f].dev = 1;	/* Called in a module */
-					if (set_lib) F[f].lib = 1;	/* Called in a library function */
+					if (set_dev) F[f].determined_dev = 1;	/* Called in a module */
+					if (set_lib) F[f].determined_lib = 1;	/* Called in a library function */
 				}
 			}
 		}
@@ -314,37 +218,39 @@ int main (int argc, char **argv) {
 	}
 	qsort (F, n_funcs, sizeof (struct FUNCTION), compare_n);
 
+	fprintf (stderr, "Write the report\n");
 	/* Report */
-	printf ("NFILES  FUNCTION                                    NCALLS TYPE DECLARED-IN\n");
+	if (log) out = fopen ("/tmp/gmt/scan.txt", "w");
+	fprintf (out, "NFILES  FUNCTION                                    NCALLS TYPE DECLARED-IN\n");
 	for (f = 0; f < n_funcs; f++) {
 		err = 0;
 		p = basename (F[f].file);
 		L = strlen (p);
-		k = (F[f].local) ? 0 : ((F[f].dev) ? 1 : 2);
-		if (F[f].local) {
+		k = (F[f].declared_local) ? 0 : ((F[f].declared_dev) ? 1 : 2);
+		if (F[f].declared_local) {
 			if (strncmp (F[f].name, p, L-2)) err = 3;
 		}
-		else if (F[f].dev) {
+		else if (F[f].declared_dev) {
 			if (strncmp (F[f].name, "gmt_", 4U)) err = 1;
 		}
-		else if (F[f].lib) {
+		else if (F[f].declared_lib) {
 			if (strncmp (F[f].name, "gmtlib_", 7U)) err = 2;
 		}
 		if (err == 3) {
 			if (F[f].n_files > 1)
 				strcpy (message, err_msg[err]);
 			else {
-				p[L-2] = 0;
-				sprintf (message, "Name error, should be %s_*", p);
-				p[L-2] = '.';
+				get_contraction (p, prefix);
+				sprintf (message, "Name error, should be %s_*", prefix);
 			}
 		}
 		else
 			strcpy (message, err_msg[err]);
-		printf ("%4d\t%-40s\t%4d\t%c\t%s\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, message);
+		fprintf (out, "%4d\t%-40s\t%4d\t%c\t%s\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, message);
 		if (brief) continue;
 		for (k = 1; k < argc; k++)	/* For each input file */
-			if (F[f].in[k] && strcmp (argv[k], F[f].file)) printf ("\t\t%s\n", argv[k]);
+			if (F[f].in[k] && strcmp (argv[k], F[f].file)) fprintf (out, "\t\t%s\n", argv[k]);
 		free ((void *)F[f].in);
 	}
+	if (log) fclose (out);
 }
