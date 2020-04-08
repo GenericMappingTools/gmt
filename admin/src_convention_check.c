@@ -119,6 +119,26 @@ int main (int argc, char **argv) {
 		fprintf (stderr, "	-w Only write lines with warnings of wrong naming]\n");
 		exit (1);
 	}
+
+	/* Check that prototypes all are called gmt_* and that internals are all called gmtlib_* */
+
+	fprintf (stderr, "src_convention_check: 0. Scanning include files for proper names\n");
+	k = 0;
+	while (API[k] != NULL) {
+		if (strncmp (API[k], "GMT_", 4U)) fprintf (stderr, "gmt.h: Wrongly named function %s\n", API[k]);
+		k++;
+	}
+	k = 0;
+	while (libdev[k] != NULL) {
+		if (strncmp (libdev[k], "gmt_", 4U)) fprintf (stderr, "gmt_prototypes.h: Wrongly named function %s\n", libdev[k]);
+		k++;
+	}
+	k = 0;
+	while (libint[k] != NULL) {
+		if (strncmp (libint[k], "gmtlib_", 4U)) fprintf (stderr, "gmt_internals.h: Wrongly named function %s\n", libint[k]);
+		k++;
+	}
+	
 	fprintf (stderr, "src_convention_check: 1. Scanning all codes for function declarations\n");
 	for (k = 1; k < argc; k++) {	/* For each input file */
 		if (strcmp (argv[k], "-e") == 0) {	/* Only list external functions and not static */
