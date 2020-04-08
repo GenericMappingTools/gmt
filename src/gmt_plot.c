@@ -2202,7 +2202,7 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 		}
 		else
 			do_grid = true;
-			
+
 		if (do_grid) {
 			/* Either pick current grid-cross size or use half the annotation size as backup */
 			L = 0.5 * fabs ((GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] > 0.0) ? GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] : 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
@@ -2240,7 +2240,7 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 		if (GMT->current.plot.r_theta_annot)	/* Restore the format */
 			strcpy (GMT->current.setting.format_float_map, format);
 	}
-	
+
 	if (GMT->current.map.frame.internal_annot == 2) {	/* Placement of longitude annotations along selected parallel */
 		dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER]);
 		do_minutes = (fabs (fmod (dx, 1.0)) > GMT_CONV4_LIMIT);
@@ -2265,7 +2265,7 @@ GMT_LOCAL void plot_consider_internal_annotations (struct GMT_CTRL *GMT, struct 
 		}
 		else
 			do_grid = true;
-			
+
 		if (do_grid) {
 			/* Either pick current grid-cross size or use half the annotation size as backup */
 			L = 0.5 * fabs ((GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] > 0.0) ? GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] : 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH);
@@ -5419,9 +5419,10 @@ GMT_LOCAL void plot_check_primary_secondary (struct GMT_CTRL *GMT) {
 	struct GMT_PLOT_AXIS_ITEM *P = NULL, *S = NULL;
 	static char *kind[3] = {"annotation", "tick", "grid-line"};
 	static char *axis[2][3] = { {"x", "y", "z"}, {"longitude", "latitude", "z"}};
-	unsigned int no, k, type = gmt_M_is_geographic (GMT, GMT_IN);;
+	unsigned int no, k, type;
 	double dP, dS;
 
+	type = gmt_M_is_geographic (GMT, GMT_IN);
 	for (no = 0; no <= GMT_Z; no++) {
 		A = &GMT->current.map.frame.axis[no];
 		if (A->type == GMT_TIME) continue;	/* We assume those are set correctly */
