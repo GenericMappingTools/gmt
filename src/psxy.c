@@ -124,8 +124,6 @@ enum Psxy_poltype {
 	PSXY_POL_ASYMM_DEV,
 	PSXY_POL_ASYMM_ENV};
 
-EXTERN_MSC double gmt_half_map_width (struct GMT_CTRL *GMT, double y);
-
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXY_CTRL *C;
 

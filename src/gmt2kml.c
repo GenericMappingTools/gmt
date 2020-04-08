@@ -36,9 +36,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>KOVabdefghiq" GMT_OPT("HMm")
 
-EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
-EXTERN_MSC void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb);
-
 #define POINT			0
 #define EVENT			1
 #define SPAN			2

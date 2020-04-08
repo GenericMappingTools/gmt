@@ -32,8 +32,6 @@
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipqstxy" GMT_OPT("Ec")
 
-EXTERN_MSC int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
-
 struct PSHISTOGRAM_CTRL {
 	struct Out {	/* -> */
 		bool active;
