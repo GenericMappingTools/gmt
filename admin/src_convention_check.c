@@ -286,7 +286,7 @@ int main (int argc, char **argv) {
 	fprintf (stderr, "src_convention_check: Write the report\n");
 	/* Report */
 	if (log) out = fopen ("/tmp/gmt/scan.txt", "w");
-	fprintf (out, "NFILES  FUNCTION                                    NCALLS TYPE DECLARED-IN\n");
+	fprintf (out, "NFILES  FUNCTION                                    NCALLS TYPE DECLARED-IN  LINE  MESSAGE\n");
 	for (f = 0; f < n_funcs; f++) {
 		err = 0;
 		p = basename (F[f].file);
