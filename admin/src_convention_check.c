@@ -237,14 +237,15 @@ int main (int argc, char **argv) {
 				f = n_funcs++;	/* Add one more */
 				strncpy (F[f].name, &word[w][s], 63);
 				strncpy (F[f].file, argv[k], 63);
-				if (is_recognized (argv[k], API))
+				if (is_recognized (F[f].name, API))
 					F[f].api = 1;
-				else if (is_recognized (argv[k], libdev))
+				else if (is_recognized (F[f].name, libdev))
 					F[f].declared_dev = 1;
-				else if (is_recognized (argv[k], libint))
-					F[f].declared_dev = 1;
+				else if (is_recognized (F[f].name, libint))
+					F[f].declared_lib = 1;
 				F[f].declared_local = is_static;
 				F[f].in = calloc (NFILES, 1U);
+				if (!strcmp (F[f].name, "gmt_show_name_and_purpose")) fprintf (stderr, "gmt_show_name_and_purpose: A = %d D = %d L = %d\n", F[f].api, F[f].declared_dev, F[f].declared_lib);
 			}
 			if (n_funcs == NFUNCS) {
 				fprintf (stderr, "src_convention_check: Out of function space - increase NFUNCS and rebuild\n");
