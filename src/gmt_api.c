@@ -30,14 +30,14 @@
  * There are 2 public functions used for GMT API session handling.
  * This part of the API helps the developer create and delete GMT sessions:
  *
- * GMT_Create_Session	  : Initialize a new GMT session
- * GMT_Destroy_Session	  : Destroy a GMT session
+ * GMT_Create_Session	   : Initialize a new GMT session
+ * GMT_Destroy_Session	   : Destroy a GMT session
  *
  * There is 2 public functions for common error reporting.
  * Errors will be reported to stderr or selected log file:
  *
- * GMT_Message		      : Report an message given a verbosity level
- * GMT_Report		      : Report an error given an error code
+ * GMT_Message		       : Report an message given a verbosity level
+ * GMT_Report		       : Report an error given an error code
  *
  * There are 31 further public functions used for GMT i/o activities:
  *
@@ -52,7 +52,7 @@
  * GMT_Get_Info            : Get meta-data from the object passed
  * GMT_Get_Record          : Get the next single data record from the source(s)
  * GMT_Get_Row             : Read one row from a grid
- * GMT_Get_Status          : Exmine current status of record-by-record i/o
+ * GMT_Get_Status          : Examine current status of record-by-record i/o
  * GMT_Get_Matrix          : Get user matrix from GMT_MATRIX array
  * GMT_Get_Vector          : Get user vector from GMT_VECTOR column
  * GMT_Put_Strings         : Get user strings from GMT_VECTOR or MATRIX container
@@ -73,7 +73,7 @@
  * GMT_Write_Data          : Place data set from program memory to selected destination
  * GMT_Encode_Options      : Used by external APIs to fill out options from implicit rules
 
- * The above 29 functions deal with registration of input sources (files,
+ * The above functions deal with registration of input sources (files,
  * streams, file handles, or memory locations) and output destinations
  * (same flavors as input), the setup of the i/o, and generic functions
  * to access the data either in one go (GMT_Get|Put_Data) or on a
@@ -82,42 +82,42 @@
  *
  * There are 6 functions that deal with options, defaults and arguments:
  *
- * GMT_Get_Common	      : Checks for and returns values for GMT common options
- * GMT_Get_Default	      : Return the value of a GMT parameter as a string
- * GMT_Get_Enum               : Return the integer constant of a GMT API enum.
- * GMT_Get_Values	      : Convert string to one or more coordinates or dimensions
- * GMT_Set_Default	      : Set a GMT parameter via a strings
- * GMT_Option		      : Display syntax for one or more GMT common options
+ * GMT_Get_Common          : Checks for and returns values for GMT common options
+ * GMT_Get_Default         : Return the value of a GMT parameter as a string
+ * GMT_Get_Enum            : Return the integer constant of a GMT API enum.
+ * GMT_Get_Values          : Convert string to one or more coordinates or dimensions
+ * GMT_Set_Default         : Set a GMT parameter via a strings
+ * GMT_Option              : Display syntax for one or more GMT common options
  *
  * One function handles the listing of modules and the calling of any GMT module:
  *
- * GMT_Call_Module		  : Call the specified GMT module
+ * GMT_Call_Module         : Call the specified GMT module
  *
  * Four functions are used to get grid index from row, col, and to obtain coordinates
  *
- * GMT_Get_Coord	      : Return array of coordinates for one dimension
- * GMT_Get_Index	      : Return 1-D grid index given row, col
- * GMT_Get_Pixel	      : Return 1-D image index given row, col, layer
- * GMT_Set_Columns            : Specify number of output columns for rec-by-rec writing
+ * GMT_Get_Coord           : Return array of coordinates for one dimension
+ * GMT_Get_Index           : Return 1-D grid index given row, col
+ * GMT_Get_Pixel           : Return 1-D image index given row, col, layer
+ * GMT_Set_Columns         : Specify number of output columns for rec-by-rec writing
  *
  * For FFT operations there are 8 additional API functions:
  *
- * GMT_FFT                    : Call the forward or inverse FFT
- * GMT_FFT_1D		      : Lower-level 1-D FFT call
- * GMT_FFT_2D		      : Lower-level 2-D FFT call
- * GMT_FFT_Create	      : Initialize the FFT machinery for given dimension
- * GMT_FFT_Destroy	      : Destroy FFT machinery
- * GMT_FFT_Option	      : Display the syntax of the GMT FFT option settings
- * GMT_FFT_Parse	      : Parse the GMT FFT option
- * GMT_FFT_Wavenumber         : Return selected wavenumber given its type
+ * GMT_FFT                 : Call the forward or inverse FFT
+ * GMT_FFT_1D              : Lower-level 1-D FFT call
+ * GMT_FFT_2D              : Lower-level 2-D FFT call
+ * GMT_FFT_Create          : Initialize the FFT machinery for given dimension
+ * GMT_FFT_Destroy         : Destroy FFT machinery
+ * GMT_FFT_Option          : Display the syntax of the GMT FFT option settings
+ * GMT_FFT_Parse           : Parse the GMT FFT option
+ * GMT_FFT_Wavenumber      : Return selected wavenumber given its type
  *
  * There are also 13 functions for argument and option parsing.  See gmt_parse.c for these.
  *
  * Finally, three low-level F77-callable functions for grid i/o are given:
  *
- * gmt_f77_readgrdinfo_   : Read the header of a GMT grid
- * gmt_f77_readgrd_       : Read a GMT grid from file
- * gmt_f77_writegrd_      : Write a GMT grid to file
+ * gmt_f77_readgrdinfo_    : Read the header of a GMT grid
+ * gmt_f77_readgrd_        : Read a GMT grid from file
+ * gmt_f77_writegrd_       : Write a GMT grid to file
  *
  * --------------------------------------------------------------------------------------------
  * Guru notes on memory management: Paul Wessel, June 2013.
