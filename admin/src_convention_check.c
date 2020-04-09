@@ -103,12 +103,23 @@ static void get_contraction (char *name, char *prefix) {
 	prefix[j] = '\0';
 }
 
+static void wipe_line (char *line) {
+	/* Blank out things in quotes to avoid having " so this func () is bad" be seen as a call */
+	int c, quote;
+	char *p = NULL;
+	for (c = quote = 0; c < strlen (line); c++) {
+		if (line[c] == '\"') { quote = !quote; continue; }
+		if (quote) line[c] = ' ';
+	}
+	if ((p = strstr (line, "/*"))) p[0] = '\0';	/* Chop of trailing comment */
+}
+
 int main (int argc, char **argv) {
-	int k, f, w, s, n, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1, verbose = 0, warn_only = 0;
-	int set_dev, set_lib;
+	int k, f, w, s, n, c, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1, verbose = 0, warn_only = 0;
+	int set_dev, set_lib, quote;
 	size_t L;
 	char line[512] = {""}, prefix[64] = {""};
-	char word[6][64], type[3] = {'S', 'D', 'L'}, *p, message[128] = {""};
+	char word[6][64], type[3] = {'S', 'D', 'L'}, *p, *q, message[128] = {""};
 	char *err_msg[4] = {"", "Name error, should be gmt_*", "Name error, should be gmtlib_*", "Name error, should be file_*"};
 	struct FUNCTION F[NFUNCS];
 	FILE *fp, *out = stdout;
@@ -185,6 +196,7 @@ int main (int argc, char **argv) {
 			if (!strncmp (line, "EXTERN", 6U)) continue;
 			if (!strncmp (line, "extern", 6U)) continue;
 			if (strstr (line, "typedef")) continue;
+			wipe_line (line);
 			n = sscanf (line, "%s %s %s %s %s %s", word[0], word[1], word[2], word[3], word[4], word[5]);
 			if (n < 2) continue;
 			w = is_static = 0;
@@ -214,25 +226,26 @@ int main (int argc, char **argv) {
 			s = (word[w][0] == '*') ? 1 : 0;	/* Skip leading * if there is no space */
 			if (strchr (&word[w][s], '[')) continue;	/* Got some array */
 			L = strlen (word[w]);
+			if (strncmp (&word[w][s], "parse", 5U) == 0 || strncmp (&word[w][s], "usage", 5U) == 0 || strncmp (&word[w][s], "New_Ctrl", 8U) == 0) continue;	/* Let these be named as is */
 			if (L > 5 && strncmp (&word[w][s], "GMT_", 4U) == 0) continue;	/* Skip GMT API functions */
 			if (L > 5 && strncmp (&word[w][s], "PSL_", 4U) == 0) continue;	/* Skip PSL functions */
 			if (word[w][L-1] == '_') continue;	/* Skip FORTRAN wrappers */
 			if ((p = strchr (word[w], '('))) p[0] = '\0';	/* Change functionname(args) to functionname */
 			if (strcmp (&word[w][s], "main") == 0) continue;	/* Skip main functions in modules */
-			if (strcmp (&word[w][s], "{") == 0)
-				p = NULL;
+			if (strlen (&word[w][s]) == 0) continue;
 			if ((f = find_function (F, n_funcs, &word[w][s])) == -1) {
 				f = n_funcs++;	/* Add one more */
 				strncpy (F[f].name, &word[w][s], 63);
 				strncpy (F[f].file, argv[k], 63);
-				if (is_recognized (argv[k], API))
+				if (is_recognized (F[f].name, API))
 					F[f].api = 1;
-				else if (is_recognized (argv[k], libdev))
+				else if (is_recognized (F[f].name, libdev))
 					F[f].declared_dev = 1;
-				else if (is_recognized (argv[k], libint))
-					F[f].declared_dev = 1;
+				else if (is_recognized (F[f].name, libint))
+					F[f].declared_lib = 1;
 				F[f].declared_local = is_static;
 				F[f].in = calloc (NFILES, 1U);
+				if (!strcmp (F[f].name, "gmt_show_name_and_purpose")) fprintf (stderr, "gmt_show_name_and_purpose: A = %d D = %d L = %d\n", F[f].api, F[f].declared_dev, F[f].declared_lib);
 			}
 			if (n_funcs == NFUNCS) {
 				fprintf (stderr, "src_convention_check: Out of function space - increase NFUNCS and rebuild\n");
@@ -251,11 +264,13 @@ int main (int argc, char **argv) {
 		while (fgets (line, 512, fp)) {
 			if (line[0] == '/' || line[1] == '*') continue;	/* Comment */
 			if (strchr (" \t", line[0]) == NULL) continue;
-			if (strchr (line, '[')) continue;	/* Got some array */
 			if (strchr (line, '(') == NULL) continue;	/* Not a function call */
+			wipe_line (line);
 			for (f = 0; f < n_funcs; f++) {
 				L = strlen (F[f].name);
-				if ((p = strstr (line, F[f].name)) && strlen (p) > L && (p[L] == '(' || p[L] == ' ')) {	/* Found a call to this function */
+				if ((p = strstr (line, F[f].name)) == NULL) continue;
+				q = p-1;	/* Previous char */
+				if (strlen (p) > (L+2) && (p[L] == '(' || (p[L] == ' ' && p[L+1] == '(')) && (q >= line && strchr (" \t", q[0]))) {	/* Found a call to this function */
 					F[f].in[k] = 1;
 					F[f].n_calls++ ;
 					if (set_dev) F[f].determined_dev = 1;	/* Called in a module */
