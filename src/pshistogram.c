@@ -149,7 +149,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int64_t get_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
+GMT_LOCAL int64_t pshistogram_get_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
 	/* Find the bin for this value of x.  If x falls outside our range then
 	 * we return -1 or n.  The left boundary array index == bin index. */
 	int64_t bin = last_bin;
@@ -160,7 +160,7 @@ GMT_LOCAL int64_t get_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
 	return bin;	/* Either a valid bin or F->T.n (which is 1 larger than n_boxes) */
 }
 
-GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, double *weights, uint64_t n) {
+GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, double *weights, uint64_t n) {
 
 	double w, b0, b1, count_sum;
 	uint64_t ibox, i;
@@ -173,7 +173,7 @@ GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, doub
 	/* First fill boxes with counts  */
 
 	for (i = 0; i < n; i++) {
-		sbox = get_bin (F->T, data[i], last_box);	/* Get the bin where this data point falls */
+		sbox = pshistogram_get_bin (F->T, data[i], last_box);	/* Get the bin where this data point falls */
 		if (sbox < 0) {	/* Extreme value left of first bin; check if -W was set */
 			if ((F->extremes & PSHISTOGRAM_LEFT) == 0) continue;	/* No, we skip this value */
 			sbox = 0;	/* Put in first bin instead */
@@ -247,7 +247,7 @@ GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, doub
 	return (0);
 }
 
-GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct D *D) {
+GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct D *D) {
 	int i, index, fmode = 0, label_justify;
 	uint64_t ibox;
 	char label[GMT_LEN64] = {""};
@@ -388,7 +388,7 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 	return (area);
 }
 
-GMT_LOCAL int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats) {
+GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats) {
 	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale  */
 
 	uint64_t i, j;
@@ -430,7 +430,7 @@ GMT_LOCAL int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, doubl
 	return (0);
 }
 
-GMT_LOCAL bool new_syntax (struct GMT_CTRL *GMT, char *L, char *T, char *W) {
+GMT_LOCAL bool pshistogram_new_syntax (struct GMT_CTRL *GMT, char *L, char *T, char *W) {
 	 /* If there is no -T then we know for sure it is old syntax (or bad arguments).
 	 * If there is a -T then -T<col> vs -T<width> cannot uniquely be told apart (e.g., -T2).
 	 * Thus, here we need to examine the other options.  If there is no -W then it means
@@ -653,7 +653,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 	 * Old syntax: -W<width>[+l|h|b] [-L<pen>] [-T<col>]
 	 * New syntax: -T<width> [-Ll|h|b] [-W<pen>]
 	 * See logic in get_syntax. */
-	if (new_syntax (GMT, l_arg, t_arg, w_arg)) {
+	if (pshistogram_new_syntax (GMT, l_arg, t_arg, w_arg)) {
 		/* Process -T<width> [-Lb|h|l] [-W<pen>] */
 		Ctrl->T.active = true;
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, 0);
@@ -875,11 +875,11 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		double *tmp = gmt_M_memory (GMT, NULL, n, double);
 		gmt_M_memcpy (tmp, data, n, double);
 		weights = gmt_M_memory (GMT, weights, n, double);
-		get_loc_scl (GMT, tmp, n, stats);
+		pshistogram_get_loc_scl (GMT, tmp, n, stats);
 		gmt_M_free (GMT, tmp);
 	}
 	else
-		get_loc_scl (GMT, data, n, stats);
+		pshistogram_get_loc_scl (GMT, data, n, stats);
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
@@ -921,7 +921,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (fill_boxes (GMT, &F, data, weights, n)) {
+	if (pshistogram_fill_boxes (GMT, &F, data, weights, n)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Fatal error during box fill.\n");
 		gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 		if (F.weights) gmt_M_free (GMT, weights);
@@ -1111,7 +1111,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (Ctrl->D.just == 0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->W.active, &Ctrl->W.pen, &Ctrl->G.fill, Ctrl->C.active, &Ctrl->D);
+	area = pshistogram_plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->W.active, &Ctrl->W.pen, &Ctrl->G.fill, Ctrl->C.active, &Ctrl->D);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Area under histogram is %g\n", area);
 
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
