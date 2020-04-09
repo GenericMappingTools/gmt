@@ -33,6 +33,7 @@ struct FUNCTION {
 	int declared_dev;		/* 1 if declared extern in gmt_prototypes.h */
 	int declared_lib;		/* 1 if declared extern in gmt_internals.h */
 	int declared_local;		/* 1 if function declared static */
+	int rec;
 	unsigned int n_files;	/* How many files referenced */
 	unsigned int n_calls;	/* How many times referenced */
 	char *in;				/* Array to mark which files this functions appears in */
@@ -113,7 +114,7 @@ static void wipe_line (char *line) {
 
 int main (int argc, char **argv) {
 	int k, f, w, s, n, c, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1, verbose = 0, warn_only = 0;
-	int set_dev, set_lib, quote;
+	int set_dev, set_lib, quote, rec;
 	size_t L;
 	char line[512] = {""}, prefix[64] = {""};
 	char word[6][64], type[3] = {'S', 'D', 'L'}, *p, *q, message[128] = {""};
@@ -179,8 +180,9 @@ int main (int argc, char **argv) {
 		}
 		if (verbose) fprintf (stderr, "\tsrc_convention_check: Scanning %s\n", argv[k]);
 		set_lib = (strstr (argv[k], "gmt_") != NULL || strstr (argv[k], "common_") != NULL);	/* Called in a library file */
-		comment = 0;
+		comment = rec = 0;
 		while (fgets (line, 512, fp)) {
+			rec++;
 			if (!comment && strstr (line, "/*") && strstr (line, "*/") == NULL)	/* Start of multi-line comment */
 				comment = 1;
 			else if (comment && strstr (line, "*/")) {	/* End of multi-line comment with this line */
@@ -242,8 +244,8 @@ int main (int argc, char **argv) {
 				else if (is_recognized (F[f].name, libint))
 					F[f].declared_lib = 1;
 				F[f].declared_local = is_static;
+				F[f].rec = rec;
 				F[f].in = calloc (NFILES, 1U);
-				if (!strcmp (F[f].name, "gmt_show_name_and_purpose")) fprintf (stderr, "gmt_show_name_and_purpose: A = %d D = %d L = %d\n", F[f].api, F[f].declared_dev, F[f].declared_lib);
 			}
 			if (n_funcs == NFUNCS) {
 				fprintf (stderr, "src_convention_check: Out of function space - increase NFUNCS and rebuild\n");
@@ -311,7 +313,7 @@ int main (int argc, char **argv) {
 			strcpy (message, err_msg[err]);
 		if (!F[f].declared_local && F[f].n_files <= 1) strcat (message, " [static candidate]");
 		if (!warn_only || err) {
-			fprintf (out, "%4d\t%-40s\t%4d\t%c\t%s\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, message);
+			fprintf (out, "%4d\t%-40s\t%4d\t%c\t%s\t%d\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, F[f].rec, message);
 			if (brief) {	/* Done with this, free memory */
 				free ((void *)F[f].in);
 				continue;
