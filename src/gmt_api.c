@@ -285,7 +285,7 @@ int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
 unsigned int gmtapi_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID);
 void gmtapi_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
-char *gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
+char * gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
 GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API);
 
 /* Series of one-line functions to assign val to a particular union member of array u at position row, rounding if integer output */
@@ -536,7 +536,7 @@ GMT_LOCAL inline void gmtapi_exit (struct GMTAPI_CTRL *API, int code) {
 }
 
 /*! gmtapi_return_address is a convenience function that, given type, calls the correct converter */
-GMT_LOCAL void *gmtapi_return_address (void *data, unsigned int type) {
+GMT_LOCAL void * gmtapi_return_address (void *data, unsigned int type) {
 	void *p = NULL;
 	switch (type) {
 		case GMT_IS_GRID:	p = gmtapi_get_grid_ptr (data);	break;
@@ -561,7 +561,7 @@ struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {
 }
 
 /*! gmtapi_alloc_object_array is a convenience function that, given type, allocates an array of pointers to the corresponding container */
-GMT_LOCAL void *gmtapi_alloc_object_array (struct GMTAPI_CTRL *API, unsigned int n_items, unsigned int type) {
+GMT_LOCAL void * gmtapi_alloc_object_array (struct GMTAPI_CTRL *API, unsigned int n_items, unsigned int type) {
 	void *p = NULL;
 	switch (type) {
 		case GMT_IS_GRID:	p = gmt_M_memory (API->GMT, NULL, n_items, struct GMT_GRID *);		break;
@@ -773,7 +773,7 @@ GMT_LOCAL char * gmtapi_get_ppid (struct GMTAPI_CTRL *API) {
 }
 
 /*! . */
-GMT_LOCAL char *gmtapi_lib_tag (char *name) {
+GMT_LOCAL char * gmtapi_lib_tag (char *name) {
 	/* Pull out the tag from a name like <tag>[.extension] */
 	char *extension = NULL, *pch = NULL, *tag = NULL;
 	if (!strchr (name, '.')) return NULL;	/* No file with extension given, probably just a directory due to user confusion */
@@ -1261,7 +1261,7 @@ GMT_LOCAL int gmtapi_key_to_family (void *API, char *key, int *family, int *geom
 	return ((key[K_DIR] == API_SECONDARY_OUTPUT || key[K_DIR] == API_PRIMARY_OUTPUT) ? GMT_OUT : GMT_IN);	/* Return the direction of the i/o */
 }
 
-GMT_LOCAL char *gmtapi_prepare_keys (struct GMTAPI_CTRL *API, const char *string) {
+GMT_LOCAL char * gmtapi_prepare_keys (struct GMTAPI_CTRL *API, const char *string) {
 	char *tmp = NULL, *c = NULL, *string_;
 	string_ = strdup(string);	/* Have to make a copy because "string" is const and the c[0] = '\0' make it crash on Win for non-debug builds */
 	if ((c = strchr (string_, '@'))) {	/* Split KEYS: classic@modern, must get the relevant half */
@@ -1502,7 +1502,7 @@ GMT_LOCAL unsigned int gmtapi_determine_dimension (struct GMTAPI_CTRL *API, char
 }
 
 /*! . */
-GMT_LOCAL void *gmtapi_retrieve_data (void *V_API, int object_ID) {
+GMT_LOCAL void * gmtapi_retrieve_data (void *V_API, int object_ID) {
 	/* Function to return pointer to the container for a registered data set.
 	 * Typically used when we wish a module to "write" its results to a memory
 	 * location that we wish to access from the calling program.  The procedure
@@ -2453,7 +2453,7 @@ GMT_LOCAL int gmtapi_get_object (struct GMTAPI_CTRL *API, int sfamily, void *ptr
 }
 
 /*! . */
-GMT_LOCAL void *gmtapi_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object, unsigned int family, unsigned int mode, double *wesn) {
+GMT_LOCAL void * gmtapi_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object, unsigned int family, unsigned int mode, double *wesn) {
 	/* Passes back the input object pointer after possibly performing some minor adjustments to metadata.
 	 * For grids and images we must worry about possible subset requests */
 	void *data = object->resource;
@@ -2930,7 +2930,7 @@ GMT_LOCAL int gmtapi_export_postscript (struct GMTAPI_CTRL *API, int object_ID, 
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL struct GMT_MATRIX *gmtapi_read_matrix (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
+GMT_LOCAL struct GMT_MATRIX * gmtapi_read_matrix (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
 	/* We read the MATRIX from fp [or stdin].
 	 * src_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * Notes: mode is not used yet.  We only do ascii file for now - later need to deal with -b, if needed.
@@ -3030,7 +3030,7 @@ GMT_LOCAL struct GMT_MATRIX *gmtapi_read_matrix (struct GMT_CTRL *GMT, void *sou
 }
 
 /*! . */
-GMT_LOCAL struct GMT_MATRIX *gmtapi_import_matrix (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
+GMT_LOCAL struct GMT_MATRIX * gmtapi_import_matrix (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
 	/* Does the actual work of loading in a GMT matrix. */
 	int item;
 	unsigned int kind;
@@ -3371,7 +3371,7 @@ GMT_LOCAL int gmtapi_export_vector (struct GMTAPI_CTRL *API, int object_ID, unsi
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL struct GMT_VECTOR *gmtapi_read_vector (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
+GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *source, unsigned int src_type, unsigned int mode) {
 	/* We read the VECTOR from fp [or stdin].
 	 * src_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * mode is not used yet.  We only do ascii file for now - later need to deal with -b
@@ -3553,7 +3553,7 @@ GMT_LOCAL void gmtapi_increment_d (struct GMT_DATASET *D_obj, uint64_t n_rows, u
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET *gmtapi_import_dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
+GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
 	/* Does the actual work of loading in the entire virtual data set (possibly via many sources)
 	 * If object_ID == GMT_NOTSET we get all registered input tables, otherwise we just get the one requested.
 	 * Note: Memory is allocated for the Dataset except for method GMT_IS_REFERENCE.
@@ -4217,7 +4217,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 }
 
 /*! . */
-GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
+GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
 	/* Handles the reading of a 2-D grid given in one of several ways.
 	 * Get the entire image:
  	 * 	mode = GMT_CONTAINER_AND_DATA reads both header and image;
@@ -4573,7 +4573,7 @@ GMT_LOCAL int gmtapi_export_image (struct GMTAPI_CTRL *API, int object_ID, unsig
 }
 
 /*! . */
-GMT_LOCAL struct GMT_GRID *gmtapi_import_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid) {
+GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid) {
 	/* Handles the reading of a 2-D grid given in one of several ways.
 	 * Get the entire grid:
  	 * 	mode = GMT_CONTAINER_AND_DATA reads both header and grid;
@@ -5113,7 +5113,7 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 }
 
 /*! . */
-GMT_LOCAL void *gmtapi_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, int object_ID, unsigned int mode, void *data) {
+GMT_LOCAL void * gmtapi_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, int object_ID, unsigned int mode, void *data) {
 
 	/* Function that will import the data object referred to by the object_ID (or all registered inputs if object_ID == GMT_NOTSET).
 	 * This is a wrapper functions for CPT, Dataset, Textset, Grid and Image imports; see the specific functions
@@ -5162,7 +5162,7 @@ GMT_LOCAL void *gmtapi_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_famil
 }
 
 /*! . */
-GMT_LOCAL void *gmtapi_get_data (void *V_API, int object_ID, unsigned int mode, void *data) {
+GMT_LOCAL void * gmtapi_get_data (void *V_API, int object_ID, unsigned int mode, void *data) {
 	/* Function to import registered data sources directly into program memory as a set (not record-by-record).
 	 * data is pointer to an existing grid container when we read a grid in two steps, otherwise use NULL.
 	 * ID is the registered resource from which to import.
@@ -5960,7 +5960,7 @@ unsigned int gmtapi_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family
 }
 
 /*! . */
-char *gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg) {
+char * gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg) {
 	size_t lim;
 	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 	static char buffer[GMT_BUFSIZ];
@@ -5999,7 +5999,7 @@ void gmtapi_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 
 /*! ===>  Create a new GMT Session */
 
-void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *)) {
+void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *)) {
 	/* Initializes the GMT API for a new session. This is typically called once in a program,
 	 * but programs that manage many threads might call it several times to create as many
 	 * sessions as needed. [Note: There is of yet no thread support built into the GMT API
@@ -6105,7 +6105,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 
 #ifdef FORTRAN_API
 /* Fortran binding [THESE MAY CHANGE ONCE WE ACTUALLY TRY TO USE THESE] */
-struct GMTAPI_CTRL *GMT_Create_Session_ (const char *tag, unsigned int *pad, unsigned int *mode, void *print, int len) {
+struct GMTAPI_CTRL * GMT_Create_Session_ (const char *tag, unsigned int *pad, unsigned int *mode, void *print, int len) {
 	/* Fortran version: We pass the hidden global GMT_FORTRAN structure */
 	return (GMT_Create_Session (tag, *pad, *mode, print));
 }
@@ -6982,7 +6982,7 @@ int GMT_Close_VirtualFile_ (unsigned int *family, char *string, int len) {
 }
 #endif
 
-void *GMT_Read_VirtualFile (void *V_API, const char *string) {
+void * GMT_Read_VirtualFile (void *V_API, const char *string) {
 	/* Given a VirtualFile name, retrieve the resulting object */
 	int object_ID;
 	void *object = NULL;
@@ -6996,7 +6996,7 @@ void *GMT_Read_VirtualFile (void *V_API, const char *string) {
 }
 
 #ifdef FORTRAN_API
-void *GMT_Read_VirtualFile_ (char *string, int len) {
+void * GMT_Read_VirtualFile_ (char *string, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Read_VirtualFile (GMT_FORTRAN, string));
 }
@@ -7017,7 +7017,7 @@ int GMT_Inquire_VirtualFile (void *V_API, const char *string) {
 }
 
 #ifdef FORTRAN_API
-int *GMT_Inquire_VirtualFile_ (char *string, int len) {
+int GMT_Inquire_VirtualFile_ (char *string, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Inquire_VirtualFile (GMT_FORTRAN, string));
 }
@@ -7070,7 +7070,7 @@ GMT_LOCAL bool gmtapi_is_passable (struct GMTAPI_DATA_OBJECT *S_obj, unsigned in
 }
 
 /*! . */
-void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], const char *infile, void *data) {
+void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], const char *infile, void *data) {
 	/* Function to read data files directly into program memory as a set (not record-by-record).
 	 * We can combine the <register resource - import resource > sequence in
 	 * one combined function.  See GMT_Register_IO for details on arguments.
@@ -7259,14 +7259,14 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 }
 
 #ifdef FORTRAN_API
-void *GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *input, void *data, int len) {
+void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *input, void *data, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Read_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, input, data));
 }
 #endif
 
 /*! . */
-void *GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data) {
+void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data) {
 	/* Function to read a group of data files directly into program memory givin an array of objects.
 	 * data is pointer to an existing array of grid container when we read a grid in two steps, otherwise use NULL.
 	 * *n_items = 0: sources is a character string with wildcard-specification for file names.
@@ -7311,14 +7311,14 @@ void *GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, uns
 }
 
 #ifdef FORTRAN_API
-void *GMT_Read_Group_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, void *sources, unsigned int *n_items, void *data) {
+void * GMT_Read_Group_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, void *sources, unsigned int *n_items, void *data) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Read_Group (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, sources, n_items, data));
 }
 #endif
 
 /*! . */
-void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, void *data) {
+void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, void *data) {
 	/* Create an duplicate container of the requested kind and optionally allocate space
 	 * or duplicate content.
 	 * The known families are GMT_IS_{DATASET,GRID,PALETTE,IMAGE,POSTSCRIPT}.
@@ -7410,7 +7410,7 @@ void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, v
 }
 
 #ifdef FORTRAN_API
-void *GMT_Duplicate_Data_ (unsigned int *family,  unsigned int *mode, void *data) {
+void * GMT_Duplicate_Data_ (unsigned int *family,  unsigned int *mode, void *data) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Duplicate_Data (GMT_FORTRAN, *family, *mode, data));
 }
@@ -7566,7 +7566,7 @@ int GMT_Set_Geometry_ (unsigned int *direction, unsigned int *geometry) {	/* For
 }
 #endif
 
-GMT_LOCAL void *gmtapi_get_record_fp_sub (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields, struct GMTAPI_DATA_OBJECT **S_obj) {
+GMT_LOCAL void * gmtapi_get_record_fp_sub (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields, struct GMTAPI_DATA_OBJECT **S_obj) {
 	/* Gets next data record from current open stream */
 	int status;
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
@@ -7729,7 +7729,7 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 	return record;
 }
 
-GMT_LOCAL struct GMT_RECORD *gmtapi_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD * gmtapi_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets next data record from current dataset */
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -7849,7 +7849,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 	}
 }
 
-void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
+void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	/* Retrieves the next data record from the virtual input source and
 	 * returns the number of columns found via *retval (unless retval == NULL).
 	 * If current record is a segment header then we return 0.
@@ -7889,7 +7889,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 }
 
 #ifdef FORTRAN_API
-void *GMT_Get_Record_ (unsigned int *mode, int *status) {	/* Fortran version: We pass the global GMT_FORTRAN structure */
+void * GMT_Get_Record_ (unsigned int *mode, int *status) {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Record (GMT_FORTRAN, *mode, status));
 }
 #endif
@@ -8759,7 +8759,7 @@ int GMT_Destroy_Group_ (void *object, unsigned int *n_items) {
 #endif
 
 /*! . */
-void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data) {
+void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data) {
 	/* Create an empty container of the requested kind and allocate space for content.
 	 * The known families are GMT_IS_{DATASET,GRID,PALETTE,IMAGE,POSTSCRIPT}, but we
 	 * also allow for creation of the containers for GMT_IS_{VECTOR,MATRIX}. Note
@@ -8980,7 +8980,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 }
 
 #ifdef FORTRAN_API
-void *GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned int *mode, uint64_t *dim, double *range, double *inc, unsigned int *registration, int *pad, void *container) {
+void * GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned int *mode, uint64_t *dim, double *range, double *inc, unsigned int *registration, int *pad, void *container) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Create_Data (GMT_FORTRAN, *family, *geometry, *mode, dim, range, inc, *registration, *pad, container));
 }
@@ -9189,7 +9189,7 @@ int GMT_Set_Index_ (void *h, char *code, int len) {
 #endif
 
 /*! . */
-double *GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void *container) {
+double * GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void *container) {
 	/* Return an array of coordinates for the nodes along the specified dimension.
 	 * For GMT_GRID and GMT_IMAGE, dim is either 0 (GMT_X) or 1 (GMT_Y) while for
 	 * GMT_MATRIX it may be 2 (GMT_Z), provided the matrix has more than 1 layer.
@@ -9239,7 +9239,7 @@ double *GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void 
 }
 
 #ifdef FORTRAN_API
-double *GMT_Get_Coord_ (unsigned int *family, unsigned int *dim, void *container) {
+double * GMT_Get_Coord_ (unsigned int *family, unsigned int *dim, void *container) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Coord (GMT_FORTRAN, *family, *dim, container));
 }
@@ -9366,7 +9366,7 @@ GMT_LOCAL void gmtapi_fft_Singleton_list (struct GMTAPI_CTRL *API) {
 }
 
 /*! . */
-void *GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *args) {
+void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *args) {
 	/* Parse the 1-D or 2-D FFT options such as -N in grdfft */
 	unsigned int n_errors = 0, pos = 0;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
@@ -9475,7 +9475,7 @@ void *GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *arg
 }
 
 #ifdef FORTRAN_API
-void *GMT_FFT_Parse_ (char *option, unsigned int *dim, char *args, int *length) {
+void * GMT_FFT_Parse_ (char *option, unsigned int *dim, char *args, int *length) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_Parse (GMT_FORTRAN, *option, *dim, args));
 }
@@ -9660,7 +9660,7 @@ GMT_LOCAL void gmtapi_fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 }
 
 /*! . */
-GMT_LOCAL struct GMT_FFT_WAVENUMBER *gmtapi_fft_init_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, unsigned int mode, void *v_info) {
+GMT_LOCAL struct GMT_FFT_WAVENUMBER * gmtapi_fft_init_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, unsigned int mode, void *v_info) {
 	/* Initialize grid dimensions for FFT machinery and set up wavenumbers */
 	unsigned int k, factors[32];
 	uint64_t node;
@@ -9803,7 +9803,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *gmtapi_fft_init_2d (struct GMTAPI_CTRL *API
 }
 
 /*! . */
-void *GMT_FFT_Create (void *V_API, void *X, unsigned int dim, unsigned int mode, void *v_info) {
+void * GMT_FFT_Create (void *V_API, void *X, unsigned int dim, unsigned int mode, void *v_info) {
 	/* Initialize 1-D or 2-D FFT machinery and set up wavenumbers */
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	if (dim == 1) return (gmtapi_fft_init_1d (V_API, X, mode, v_info));
@@ -9813,7 +9813,7 @@ void *GMT_FFT_Create (void *V_API, void *X, unsigned int dim, unsigned int mode,
 }
 
 #ifdef FORTRAN_API
-void *GMT_FFT_Create_ (void *X, unsigned int *dim, unsigned int *mode, void *v_info) {
+void * GMT_FFT_Create_ (void *X, unsigned int *dim, unsigned int *mode, void *v_info) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_Create (GMT_FORTRAN, X, *dim, *mode, v_info));
 }
@@ -9845,7 +9845,7 @@ GMT_LOCAL int gmtapi_fft_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int
 	return (status);
 }
 
-GMT_LOCAL char *gmtapi_fft_file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix) {
+GMT_LOCAL char * gmtapi_fft_file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix) {
 	static char file[PATH_MAX] = {""};
 	uint64_t i, j;
 	size_t len;
@@ -10086,7 +10086,7 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 /* Module Extension: Allow listing and calling modules by name */
 
 /*! . */
-GMT_LOCAL void *gmtapi_get_shared_module_func (struct GMTAPI_CTRL *API, const char *module, unsigned int lib_no) {
+GMT_LOCAL void * gmtapi_get_shared_module_func (struct GMTAPI_CTRL *API, const char *module, unsigned int lib_no) {
 	/* Function that returns a pointer to the function named module in specified shared library lib_no, or NULL if not found  */
 	void *p_func = NULL;       /* function pointer */
 	if (API->lib[lib_no].skip) return (NULL);	/* Tried to open this shared library before and it was not available */
@@ -10101,11 +10101,11 @@ GMT_LOCAL void *gmtapi_get_shared_module_func (struct GMTAPI_CTRL *API, const ch
 }
 
 #ifndef BUILD_SHARED_LIBS
-EXTERN_MSC void *gmt_core_module_lookup (struct GMTAPI_CTRL *API, const char *candidate);
+EXTERN_MSC void * gmtapi_core_module_lookup (struct GMTAPI_CTRL *API, const char *candidate);
 #endif
 
 /*! . */
-GMT_LOCAL void *gmtapi_get_module_func (struct GMTAPI_CTRL *API, const char *module, unsigned int lib_no) {
+GMT_LOCAL void * gmtapi_get_module_func (struct GMTAPI_CTRL *API, const char *module, unsigned int lib_no) {
 #ifndef BUILD_SHARED_LIBS
 	if (lib_no == 0)	/* Get core module */
 		return (gmtapi_core_module_lookup (API, module));
@@ -10390,7 +10390,7 @@ GMT_LOCAL bool gmtapi_operator_takes_dataset (struct GMT_OPTION *opt, int *geome
 #define api_not_required_io(key) ((key == API_PRIMARY_INPUT || key == API_SECONDARY_INPUT) ? API_SECONDARY_INPUT : API_SECONDARY_OUTPUT)	/* Returns the optional input or output flag */
 
 /*! . */
-struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, int n_in, struct GMT_OPTION **head, unsigned int *n) {
+struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, int n_in, struct GMT_OPTION **head, unsigned int *n) {
 	/* This function determines which input sources and output destinations are required given the module options.
 	 * It is only used to assist developers of external APIs, such as the MATLAB, Julia, Python, R, and others.
 	 * "Keys" referred to below is the unique combination given near the top of every module via the macro
@@ -11646,7 +11646,7 @@ int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size
 
 /* GMT_DATASET to GMT_* : */
 
-GMT_LOCAL void *gmtapi_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_DATASET *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void * gmtapi_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_DATASET *Out, unsigned int header, unsigned int mode) {
 	/* Convert a dataset to another dataset using current formatting and column type information.
 	 * If Out is not NULL then we assume it has exact same dimension as the dataset, but no headers/records allocated.
 	 * header controls what we do with headers.
@@ -11722,7 +11722,7 @@ GMT_LOCAL void *gmtapi_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATA
 	return Out;
 }
 
-GMT_LOCAL void *gmtapi_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void * gmtapi_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int mode) {
 	/* Convert a dataset to a matrix.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 * Header controls if segment headers are written as NaN recs
@@ -11774,7 +11774,7 @@ GMT_LOCAL void *gmtapi_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATAS
 	return Out;
 }
 
-GMT_LOCAL void *gmtapi_dataset2vector (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void * gmtapi_dataset2vector (struct GMTAPI_CTRL *API, struct GMT_DATASET *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int mode) {
 	/* Convert a dataset to vectors.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 * If mode > 0 then it is assumed to hold GMT_TYPE-1, else we assume the GMT default setting.
@@ -11817,7 +11817,7 @@ GMT_LOCAL void *gmtapi_dataset2vector (struct GMTAPI_CTRL *API, struct GMT_DATAS
 
 /* GMT_MATRIX to GMT_* : */
 
-GMT_LOCAL void *gmtapi_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_DATASET *Out, unsigned int header) {
+GMT_LOCAL void * gmtapi_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_DATASET *Out, unsigned int header) {
 	/* Convert a matrix to a dataset (one table with one segment).
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 * header controls what we do with headers.
@@ -11845,7 +11845,7 @@ GMT_LOCAL void *gmtapi_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRI
 	return Out;
 }
 
-GMT_LOCAL void *gmtapi_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void * gmtapi_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRIX *In, struct GMT_VECTOR *Out, unsigned int header, unsigned int mode) {
 	/* Convert a matrix to vectors.
 	 * If Out is not NULL then we assume it has enough rows to hold the vector rows.
 	 * header controls what we do with headers.
@@ -11886,7 +11886,7 @@ GMT_LOCAL void *gmtapi_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRIX
 
 /* GMT_VECTOR to GMT_* : */
 
-GMT_LOCAL void *gmtapi_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_DATASET *Out, unsigned int header) {
+GMT_LOCAL void * gmtapi_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_DATASET *Out, unsigned int header) {
 	/* Convert a vector to a dataset (one table with one segment).
 	 * header controls what we do with headers.
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
@@ -11913,7 +11913,7 @@ GMT_LOCAL void *gmtapi_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECTO
 	return Out;
 }
 
-GMT_LOCAL void *gmtapi_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int mode) {
+GMT_LOCAL void * gmtapi_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int mode) {
 	/* Convert a vector to a matrix.
 	 * If Out is not NULL then we assume it has enough rows to hold the rows.
 	 * header controls what we do with headers.
@@ -11960,7 +11960,7 @@ GMT_LOCAL void *gmtapi_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR
 #define GMT_TYPE_MODE	1
 #define GMT_FORMAT_MODE	1	/* Same as GMT_TYPE_MODE [not a typo] */
 
-void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]) {
+void * GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]) {
 	/* Convert between valid pairs of objects,  If Out == NULL then we allocate an output object,
 	 * otherwise we assume we are given adequate space already.  This is most likely restricted to a GMT_MATRIX.
 	 * flag is an array with two unsigned integers controlling various aspects of the conversion:
@@ -12058,13 +12058,13 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 }
 
 #ifdef FORTRAN_API
-void *GMT_Convert_Data_ (void *In, unsigned int *family_in, void *Out, unsigned int *family_out, unsigned int flag[]) {
+void * GMT_Convert_Data_ (void *In, unsigned int *family_in, void *Out, unsigned int *family_out, unsigned int flag[]) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Convert_Data (GMT_FORTRAN, In, *family_in, Out, *family_out, flag));
 }
 #endif
 
-void *GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64_t n_columns, char *header, void *S) {
+void * GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64_t n_columns, char *header, void *S) {
 	/* Allocate or reallocate a GMT_DATASEGMENT.
 	 * The n_columns may be 0 if no numerical data in the segment.
 	 * header, if not NULL or blank, sets the segment header.
@@ -12099,7 +12099,7 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64
 }
 
 #ifdef FORTRAN_API
-void *GMT_Alloc_Segment_ (unsigned int *family, uint64_t *n_rows, uint64_t *n_columns, char *header, void *S, int len) {
+void * GMT_Alloc_Segment_ (unsigned int *family, uint64_t *n_rows, uint64_t *n_columns, char *header, void *S, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Alloc_Segment (GMT_FORTRAN, *family, *n_rows, *n_columns, header, S));
 }
@@ -12365,7 +12365,7 @@ int GMT_Put_Vector_ (struct GMT_VECTOR *V, unsigned int *col, unsigned int *type
 }
 #endif
 
-void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
+void * GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
 	/* Returns a pointer to the specified column array. Users can consult
 	 * V->type[col] to know what data type is pointed to.  */
 	void *vector = NULL;
@@ -12433,7 +12433,7 @@ int GMT_Put_Matrix_ (struct GMT_MATRIX *M, unsigned int *type, int *pad, void *m
 }
 #endif
 
-void *GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
+void * GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
 	/* Returns a pointer to the matrix.  Users can consult
 	 * M->type to know what data type is pointed to.  */
 	void *matrix = NULL;
@@ -12740,7 +12740,7 @@ float GMT_Get_Version (void *API, unsigned int *major, unsigned int *minor, unsi
 	return major_loc + (float)minor_loc / 10;
 }
 
-void *GMT_Get_Ctrl (void *V_API) {
+void * GMT_Get_Ctrl (void *V_API) {
 	/* For external environments that need to get the GMT pointer for calling
 	 * lower-level GMT library functions that expects the GMT pointer */
 	struct GMTAPI_CTRL *API = NULL;
