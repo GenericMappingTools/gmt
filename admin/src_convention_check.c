@@ -60,7 +60,10 @@ static int compare_n (const void *v1, const void *v2) {
 	return (0);
 }
 
-/* Include NULL-terminated arrays with function names */
+/* Include NULL-terminated arrays with function names.
+ * These include files are created on the fly by src_convention_check.sh and then
+ * this code is compiled */
+
 static char *modules[] = {
 #include "/tmp/gmt/modules.h"
 	NULL
