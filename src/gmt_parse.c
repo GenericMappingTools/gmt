@@ -465,7 +465,7 @@ GMT_LOCAL void ensure_b_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *
 
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != 'B') continue;	/* Only look at -B options here */
-		if (gmtinit_B_is_frame (GMT, opt->arg)) continue;	/* Don't care about the frame setting here */
+		if (gmtlib_B_is_frame (GMT, opt->arg)) continue;	/* Don't care about the frame setting here */
 		if ((c = gmt_first_modifier (GMT, opt->arg, "aflLpsSu"))) {	/* Option has axis modifier(s) */
 			c[0] = '\0';	/* Temporary chop them off */
 			k = 0;	/* Start of option string, then advance past any leading [p|s][x|y|z] */

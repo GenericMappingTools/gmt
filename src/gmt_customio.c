@@ -975,7 +975,7 @@ int gmt_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, g
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	type = GMT->session.grdformat[header->type][1];
-	size = gmt_grd_data_size (GMT, header->type, &header->nan_value);
+	size = gmtlib_grd_data_size (GMT, header->type, &header->nan_value);
 	check = !isnan (header->nan_value);
 
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
@@ -1092,7 +1092,7 @@ int gmt_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	type = GMT->session.grdformat[header->type][1];
-	size = gmt_grd_data_size (GMT, header->type, &header->nan_value);
+	size = gmtlib_grd_data_size (GMT, header->type, &header->nan_value);
 	check = !isnan (header->nan_value);
 
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), HH->name);
@@ -1510,7 +1510,7 @@ int gmt_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	type = GMT->session.grdformat[header->type][1];
-	size = gmt_grd_data_size (GMT, header->type, &header->nan_value);
+	size = gmtlib_grd_data_size (GMT, header->type, &header->nan_value);
 
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), HH->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
@@ -1645,7 +1645,7 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	type = GMT->session.grdformat[header->type][1];
-	size = gmt_grd_data_size (GMT, header->type, &header->nan_value);
+	size = gmtlib_grd_data_size (GMT, header->type, &header->nan_value);
 
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), HH->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */

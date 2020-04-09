@@ -27,7 +27,7 @@
 #define THIS_MODULE_PURPOSE	"Manage the content of MGD77+ files"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-RVbjn"
+#define THIS_MODULE_OPTIONS "-RVbjn" GMT_OPT("Q")
 
 #define N_PAR		7
 #define COL_SCALE	0
@@ -58,8 +58,6 @@
 #define MODE_i		6
 #define MODE_n		7
 #define MODE_t		8
-
-EXTERN_MSC int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 
 struct MGD77MANAGE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -471,12 +469,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 				}
 				break;
 
-			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
-				if (gmt_M_compat_check (GMT, 4))
-					n_errors += gmtinit_backwards_SQ_parsing (GMT, 'Q', opt->arg);
-				else
-					n_errors += gmt_default_error (GMT, opt->option);
-				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;

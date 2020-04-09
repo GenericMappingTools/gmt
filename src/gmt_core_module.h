@@ -120,15 +120,15 @@ EXTERN_MSC int GMT_pswiggle (void *API, int mode, void *args);
 EXTERN_MSC int GMT_xyz2grd (void *API, int mode, void *args);
 
 /* Pretty print all modules in the GMT core library and their purposes */
-EXTERN_MSC void gmt_core_module_show_all (void *API);
+EXTERN_MSC void gmtlib_core_module_show_all (void *API);
 /* List all modern modules in the GMT core library to stdout */
-EXTERN_MSC void gmt_core_module_list_all (void *API);
+EXTERN_MSC void gmtlib_core_module_list_all (void *API);
 /* List all classic modules in the GMT core library to stdout */
-EXTERN_MSC void gmt_core_module_classic_all (void *API);
+EXTERN_MSC void gmtlib_core_module_classic_all (void *API);
 /* Function called by GMT_Encode_Options so developers can get information about a module */
-EXTERN_MSC const char * gmt_core_module_keys (void *API, char *candidate);
+EXTERN_MSC const char * gmtlib_core_module_keys (void *API, char *candidate);
 /* Function returns name of group that module belongs to (core, spotter, etc.) */
-EXTERN_MSC const char * gmt_core_module_group (void *API, char *candidate);
+EXTERN_MSC const char * gmtlib_core_module_group (void *API, char *candidate);
 
 #ifdef __cplusplus
 }

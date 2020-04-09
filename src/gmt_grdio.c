@@ -46,7 +46,7 @@
  *  gmt_grd_pad_status      :
  *  gmt_grd_info_syntax
  *  gmtlib_get_grdtype         :
- *  gmt_grd_data_size       :
+ *  gmtlib_grd_data_size       :
  *  gmt_grd_set_ij_inc      :
  *  gmt_grd_format_decoder  :
  *  gmt_grd_prep_io         :
@@ -1511,7 +1511,7 @@ int gmtlib_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *
 	return (err);
 }
 
-size_t gmt_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloat *nan_value) {
+size_t gmtlib_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloat *nan_value) {
 	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
 
 	switch (GMT->session.grdformat[format][1]) {

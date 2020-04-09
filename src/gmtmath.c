@@ -5808,7 +5808,7 @@ GMT_LOCAL void gmtmath_free_stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK
 	struct GMT_DATASET_HIDDEN *DH = NULL;
 	for (k = 0; k < GMTMATH_STACK_SIZE; k++) {
 		if (stack[k]->D) {	/* Must free unless being passed back out */
-			is_object = gmtlib_is_an_object (API->GMT, &stack[k]->D);
+			is_object = gmt_is_an_object (API->GMT, &stack[k]->D);
 			if (is_object && (error = GMT_Destroy_Data (API, &stack[k]->D)) == GMT_NOERROR)
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data freed stack item %d\n", k);
 			else if (!is_object || error == GMT_OBJECT_NOT_FOUND) {
