@@ -74,7 +74,7 @@ struct BINCROSS {
 	double x, y, d;
 };
 
-GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
+GMT_LOCAL int grdlandmask_comp_bincross (const void *p1, const void *p2) {
 	const struct BINCROSS *a = p1, *b = p2;
 
 	if (a->d < b->d) return (-1);
@@ -232,7 +232,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool inside (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *C, double x, double y) {
+GMT_LOCAL bool grdlandmask_inside (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *C, double x, double y) {
 	/* Return true if this point is inside the grid */
 	int row, col;
 	gmt_M_unused(GMT);
@@ -243,7 +243,7 @@ GMT_LOCAL bool inside (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *C, double x
 	return true;
 }
 
-GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *C, double x, double y, gmt_grdfloat f_level, int64_t *ij) {
+GMT_LOCAL void grdlandmask_assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *C, double x, double y, gmt_grdfloat f_level, int64_t *ij) {
 	/* Set node value and return node index if this point is inside the grid */
 	int row, col;
 	gmt_M_unused(GMT);
@@ -519,10 +519,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 							/* Add the start and stop coordinates to the xc/yc arrays so we can get mid-points of each interval */
 
 							nx = 0;
-							if (inside (GMT, C, last_row, last_col)) {	/* Previous point is inside, add it to our list with zero distance */
+							if (grdlandmask_inside (GMT, C, last_row, last_col)) {	/* Previous point is inside, add it to our list with zero distance */
 								X[nx].x = p[k].lon[pt-1];	X[nx].y = p[k].lat[pt-1];	X[nx++].d = 0.0;
 							}
-							if (inside (GMT, C, row, col)) {	/* This point is inside, add it to our list with max distance */
+							if (grdlandmask_inside (GMT, C, row, col)) {	/* This point is inside, add it to our list with max distance */
 								X[nx].x = p[k].lon[pt];	X[nx].y = p[k].lat[pt];	X[nx++].d = hypot (dx, p[k].lat[pt] - p[k].lat[pt-1]);
 							}
 
@@ -558,14 +558,14 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 							}
 
 							if (nx) {	/* Here we have intersections */
-								qsort (X, nx, sizeof (struct BINCROSS), comp_bincross);	/* Sort on distances along the line segment */
-								assign_node (GMT, Grid, C, X[0].x, X[0].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
+								qsort (X, nx, sizeof (struct BINCROSS), grdlandmask_comp_bincross);	/* Sort on distances along the line segment */
+								grdlandmask_assign_node (GMT, Grid, C, X[0].x, X[0].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
 								for (curr_x_pt = 1, prev_x_pt = 0; curr_x_pt < nx; curr_x_pt++, prev_x_pt++) {	/* Process the intervals, getting mid-points and using that to get bin */
-									assign_node (GMT, Grid, C, X[curr_x_pt].x, X[curr_x_pt].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
+									grdlandmask_assign_node (GMT, Grid, C, X[curr_x_pt].x, X[curr_x_pt].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
 									/* Add mid-point between the cuts */
 									xc = 0.5 * (X[curr_x_pt].x + X[prev_x_pt].x);
 									yc = 0.5 * (X[curr_x_pt].y + X[prev_x_pt].y);
-									assign_node (GMT, Grid, C, xc, yc, f_level, &ij);	/* Possibly assign f_level to nearest node */
+									grdlandmask_assign_node (GMT, Grid, C, xc, yc, f_level, &ij);	/* Possibly assign f_level to nearest node */
 								}
 							}
 						}

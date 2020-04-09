@@ -444,7 +444,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL unsigned int grdimage_clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Problem is that many global grids are reported with misleading -R or imprecise
 	 * -R or non-global -R yet nx * xinc = 360, etc.  We fix these here for GMT use. */
 	unsigned int flag = 0;
@@ -499,7 +499,7 @@ GMT_LOCAL unsigned int clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GR
 	return 1;
 }
 
-GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struct GMT_GRID_HEADER *g, bool projected, unsigned int mixed) {
+GMT_LOCAL void grdimage_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struct GMT_GRID_HEADER *g, bool projected, unsigned int mixed) {
 	/* Sets the projected extent of the grid given the map projection
 	 * The extreme x/y coordinates are returned in r, and dx/dy, and
 	 * n_columns/n_rows are set accordingly.  Not that some of these may change
@@ -559,7 +559,7 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	}
 }
 
-GMT_LOCAL int set_rgb_three_grids (struct GMT_GRID *Grid_proj[], uint64_t node, double *NaN_rgb, double *rgb) {
+GMT_LOCAL int grdimage_set_rgb_three_grids (struct GMT_GRID *Grid_proj[], uint64_t node, double *NaN_rgb, double *rgb) {
 	/* Got three grids with red, green, blue values */
 	int k;
 	for (k = 0; k < 3; k++) {
@@ -706,7 +706,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
-		mixed = clean_global_headers (GMT, I->header);
+		mixed = grdimage_clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
 		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
 			GMT_Report(API, GMT_MSG_WARNING, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
@@ -876,7 +876,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
 			Return (API->error);
 		}
-		mixed = clean_global_headers (GMT, Grid_orig[k]->header);
+		mixed = grdimage_clean_global_headers (GMT, Grid_orig[k]->header);
 	}
 
 
@@ -890,7 +890,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (!Ctrl->I.derive && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->I.file, Intens_orig) == NULL) {
 			Return (API->error);	/* Failed to read the intensity grid data */
 		}
-		mixed = clean_global_headers (GMT, Intens_orig->header);
+		mixed = grdimage_clean_global_headers (GMT, Intens_orig->header);
 		if (n_grids && (Intens_orig->header->n_columns != Grid_orig[0]->header->n_columns ||
 		                Intens_orig->header->n_rows != Grid_orig[0]->header->n_rows)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Dimensions of intensity grid do not match that of the data grid!\n");
@@ -932,7 +932,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) { /* Must project the input image instead */
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
-			GMT_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
+			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
 			gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
 			                Ctrl->In.file[0]);
 			if (Ctrl->A.active) /* Need to set background color to white for raster images */
@@ -949,7 +949,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if ((Grid_proj[k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig[k])) == NULL)
 				Return (API->error);	/* Just to get a header we can change */
 			/* Determine the dimensions of the projected grid */
-			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project, mixed);
+			grdimage_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project, mixed);
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if a dpi was specified, else keep as is */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig[k]->header->registration;
 			gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
@@ -995,7 +995,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				gmt_copy_gridheader (GMT, header_G[k], Grid_orig[k]->header);
 			}
 			Grid_proj[k] = Grid_orig[k];
-			GMT_set_proj_limits (GMT, Grid_proj[k]->header, tmp_header, need_to_project, mixed);
+			grdimage_set_proj_limits (GMT, Grid_proj[k]->header, tmp_header, need_to_project, mixed);
 		}
 		if (use_intensity_grid) {
 			if (mem_I) {
@@ -1013,7 +1013,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				gmt_copy_gridheader (GMT, header_D, I->header);
 			}
 			Img_proj = I;
-			GMT_set_proj_limits (GMT, Img_proj->header, tmp_header, need_to_project, mixed);
+			grdimage_set_proj_limits (GMT, Img_proj->header, tmp_header, need_to_project, mixed);
 		}
 		gmt_free_header (API->GMT, &tmp_header);
 	}
@@ -1240,7 +1240,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 						}
 					}
 					else	/* Got three grids with red, green, blue values */
-						index = set_rgb_three_grids (Grid_proj, node, NaN_rgb, rgb);
+						index = grdimage_set_rgb_three_grids (Grid_proj, node, NaN_rgb, rgb);
 
 					if (Ctrl->I.active && index != (GMT_NAN - 3)) {	/* Need to deal with illumination */
 						if (intensity_mode & 1) {	/* Intensity value comes from the grid */
