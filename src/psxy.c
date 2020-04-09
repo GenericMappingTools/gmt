@@ -567,7 +567,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct PSXY_CTRL *Ctrl, char *text) {
+GMT_LOCAL unsigned int psxy_old_W_parser (struct GMTAPI_CTRL *API, struct PSXY_CTRL *Ctrl, char *text) {
 	unsigned int j = 0, n_errors = 0;
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
@@ -810,7 +810,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 					}
 					else {
 						GMT_Report (API, GMT_MSG_ERROR, "Your -W syntax is obsolete; see program usage.\n");
-						n_errors += parse_old_W (API, Ctrl, opt->arg);
+						n_errors += psxy_old_W_parser (API, Ctrl, opt->arg);
 					}
 				}
 				else if (opt->arg[0]) {

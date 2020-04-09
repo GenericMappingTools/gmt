@@ -166,7 +166,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar) {
+GMT_LOCAL void pscoupe_rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar) {
 	/*
 	 * Change coordinates of axis from
 	 * north,east,down
@@ -199,7 +199,7 @@ GMT_LOCAL void rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar
 	}
 }
 
-GMT_LOCAL void rot_tensor (struct M_TENSOR mt, struct nodal_plane PREF, struct M_TENSOR *mtr) {
+GMT_LOCAL void pscoupe_rot_tensor (struct M_TENSOR mt, struct nodal_plane PREF, struct M_TENSOR *mtr) {
 	/*
 	 *
 	 * Change coordinates from
@@ -235,7 +235,7 @@ GMT_LOCAL void rot_tensor (struct M_TENSOR mt, struct nodal_plane PREF, struct M
 		sa*sd*mt.f[4] - c2a*cd*mt.f[5];
 }
 
-GMT_LOCAL void rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF, struct nodal_plane *PLANR) {
+GMT_LOCAL void pscoupe_rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF, struct nodal_plane *PLANR) {
 /*
    Calcule l'azimut, le pendage, le glissement relatifs d'un
    mecanisme par rapport a un plan de reference PREF
@@ -272,7 +272,7 @@ GMT_LOCAL void rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF
 	}
 }
 
-GMT_LOCAL void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
+GMT_LOCAL void pscoupe_rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
 /*
    Projection d'un mecanisme sur un plan donne PREF.
    C'est la demi-sphere derriere le plan qui est representee.
@@ -287,7 +287,7 @@ GMT_LOCAL void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
 		mecar->NP1.rake = meca_zero_360 (270. - meca.NP1.rake);
 	}
 	else
-		rot_nodal_plane (meca.NP1, PREF, &mecar->NP1);
+		pscoupe_rot_nodal_plane (meca.NP1, PREF, &mecar->NP1);
 
 	if (fabs (meca.NP2.str - PREF.str) < EPSIL && fabs (meca.NP2.dip - PREF.dip) < EPSIL) {
 		mecar->NP2.str = 0.;
@@ -295,7 +295,7 @@ GMT_LOCAL void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
 		mecar->NP2.rake = meca_zero_360 (270. - meca.NP2.rake);
 	}
 	else
-		rot_nodal_plane (meca.NP2, PREF, &mecar->NP2);
+		pscoupe_rot_nodal_plane (meca.NP2, PREF, &mecar->NP2);
 
 	if (cosd (mecar->NP2.dip) < EPSIL && fabs (mecar->NP1.rake - mecar->NP2.rake) < 90.0) {
 		mecar->NP1.str += 180.0;
@@ -309,7 +309,7 @@ GMT_LOCAL void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
 	mecar->moment.exponent = meca.moment.exponent;
 }
 
-GMT_LOCAL int gutm (double lon, double lat, double *xutm, double *yutm, int fuseau) {
+GMT_LOCAL int pscoupe_gutm (double lon, double lat, double *xutm, double *yutm, int fuseau) {
 	double ccc = 6400057.7, eprim = 0.08276528;
 	double alfe = 0.00507613, bete = 0.429451e-4;
 	double game = 0.1696e-6;
@@ -342,13 +342,13 @@ GMT_LOCAL int gutm (double lon, double lat, double *xutm, double *yutm, int fuse
 	return (fuseau);
 }
 
-GMT_LOCAL int dans_coupe (double lon, double lat, double depth, double xlonref, double ylatref, int fuseau, double str, double dip, double p_length, double p_width, double *distance, double *n_dep) {
+GMT_LOCAL int pscoupe_dans_coupe (double lon, double lat, double depth, double xlonref, double ylatref, int fuseau, double str, double dip, double p_length, double p_width, double *distance, double *n_dep) {
 /* if fuseau < 0, cartesian coordinates */
 
 	double xlon, ylat, largeur, sd, cd, ss, cs;
 
 	if (fuseau >= 0)
-		gutm (lon, lat, &xlon, &ylat, fuseau);
+		pscoupe_gutm (lon, lat, &xlon, &ylat, fuseau);
 	else {
 		xlon = lon;
 		ylat = lat;
@@ -368,7 +368,7 @@ GMT_LOCAL int dans_coupe (double lon, double lat, double depth, double xlonref, 
 #define COORD_RAD 1
 #define COORD_KM 2
 
-GMT_LOCAL void distaz (double lat1, double lon1, double lat2, double lon2, double *distkm, double *azdeg, int syscoord) {
+GMT_LOCAL void pscoupe_distaz (double lat1, double lon1, double lat2, double lon2, double *distkm, double *azdeg, int syscoord) {
  /*
   Coordinates in degrees  : syscoord = 0
   Coordinates in radians : syscoord = 1
@@ -537,7 +537,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				if (Ctrl->A.proj_type == 'a' || Ctrl->A.proj_type == 'c') {
 					sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
 						&lon1, &lat1, &lon2, &lat2, &Ctrl->A.PREF.dip, &Ctrl->A.p_width, &Ctrl->A.dmin, &Ctrl->A.dmax);
-					distaz (lat1, lon1, lat2, lon2, &Ctrl->A.p_length, &Ctrl->A.PREF.str, Ctrl->A.proj_type == 'a' ?  COORD_DEG : COORD_KM);
+					pscoupe_distaz (lat1, lon1, lat2, lon2, &Ctrl->A.p_length, &Ctrl->A.PREF.str, Ctrl->A.proj_type == 'a' ?  COORD_DEG : COORD_KM);
 					sprintf (Ctrl->A.newfile, "A%c%.1f_%.1f_%.1f_%.1f_%.0f_%.0f_%.0f_%.0f",
 						Ctrl->A.proj_type, lon1, lat1, lon2, lat2, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
 					sprintf (Ctrl->A.extfile, "A%c%.1f_%.1f_%.1f_%.1f_%.0f_%.0f_%.0f_%.0f_map",
@@ -553,7 +553,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				}
 				Ctrl->A.PREF.rake = 0.;
 				if (Ctrl->A.proj_type == 'a' || Ctrl->A.proj_type == 'b')
-					Ctrl->A.fuseau = gutm (lon1, lat1, &Ctrl->A.xlonref, &Ctrl->A.ylatref, 0);
+					Ctrl->A.fuseau = pscoupe_gutm (lon1, lat1, &Ctrl->A.xlonref, &Ctrl->A.ylatref, 0);
 				else {
 					Ctrl->A.fuseau = -1;
 					Ctrl->A.xlonref = lon1;
@@ -988,7 +988,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 		depth = in[2];
 
-		if (!dans_coupe (in[GMT_X], in[GMT_Y], depth, Ctrl->A.xlonref, Ctrl->A.ylatref, Ctrl->A.fuseau, Ctrl->A.PREF.str,
+		if (!pscoupe_dans_coupe (in[GMT_X], in[GMT_Y], depth, Ctrl->A.xlonref, Ctrl->A.ylatref, Ctrl->A.fuseau, Ctrl->A.PREF.str,
 			Ctrl->A.PREF.dip, Ctrl->A.p_length, Ctrl->A.p_width, &distance, &n_dep) && !Ctrl->N.active)
 			continue;
 
@@ -1022,7 +1022,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 			moment.mant     = in[9];
 			moment.exponent = irint (in[10]);
 			if (moment.exponent == 0) meca.magms = in[9];
-			rot_meca (meca, Ctrl->A.PREF, &mecar);
+			pscoupe_rot_meca (meca, Ctrl->A.PREF, &mecar);
 		}
 		else if (Ctrl->S.readmode == READ_AKI) {
 			meca.NP1.str    = in[3];
@@ -1032,7 +1032,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 			moment.mant     = meca.magms;
 			moment.exponent = 0;
 			meca_define_second_plane (meca.NP1, &meca.NP2);
-			rot_meca (meca, Ctrl->A.PREF, &mecar);
+			pscoupe_rot_meca (meca, Ctrl->A.PREF, &mecar);
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
 			meca.NP1.str = in[3];
@@ -1056,7 +1056,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 			else
 				meca.NP1.rake = meca_computed_rake2 (meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
 			meca.NP2.rake = meca_computed_rake2 (meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
-			rot_meca (meca, Ctrl->A.PREF, &mecar);
+			pscoupe_rot_meca (meca, Ctrl->A.PREF, &mecar);
 
 		}
 		else if (Ctrl->S.readmode == READ_AXIS) {
@@ -1088,9 +1088,9 @@ Definition of scalar moment.
 			N.val /= meca.moment.mant;
 			P.val /= meca.moment.mant;
 
-			rot_axis (T, Ctrl->A.PREF, &Tr);
-			rot_axis (N, Ctrl->A.PREF, &Nr);
-			rot_axis (P, Ctrl->A.PREF, &Pr);
+			pscoupe_rot_axis (T, Ctrl->A.PREF, &Tr);
+			pscoupe_rot_axis (N, Ctrl->A.PREF, &Nr);
+			pscoupe_rot_axis (P, Ctrl->A.PREF, &Pr);
 			Tr.val = T.val;
 			Nr.val = N.val;
 			Pr.val = P.val;
@@ -1115,7 +1115,7 @@ Definition of scalar moment.
 /* normalization by M0 */
 			for (i = 0; i <= 5; i++) mt.f[i] /= moment.mant;
 
-			rot_tensor (mt, Ctrl->A.PREF, &mtr);
+			pscoupe_rot_tensor (mt, Ctrl->A.PREF, &mtr);
 			meca_moment2axe (GMT, mtr, &T, &N, &P);
 
 			if (Ctrl->S.plotmode == PLOT_DC || Ctrl->T.active) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);

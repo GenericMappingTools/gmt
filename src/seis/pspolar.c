@@ -193,7 +193,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL unsigned int old_Q_parser (struct GMT_CTRL *GMT, char *arg, struct PSPOLAR_CTRL *Ctrl) {
+GMT_LOCAL unsigned int pspolar_old_Q_parser (struct GMT_CTRL *GMT, char *arg, struct PSPOLAR_CTRL *Ctrl) {
 	/* Deal with the old syntax: -Qs<half-size>/[V[<v_width/h_length/h_width/shape>]][G<r/g/b>][L] */
 	char *c = NULL, *text = strdup (arg);	/* Work on a copy */
 	unsigned int n_errors = 0;
@@ -349,7 +349,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						Ctrl->S2.size = gmt_M_to_inch (GMT, opt->arg);
 						if (p) p[0] = '/';	/* Restore the slash */
 						if (p && p[0] == '/' && (strchr (opt->arg, 'V') || strchr (opt->arg, 'G') || strchr (opt->arg, 'L')))	/* Clearly got the old syntax */
-							n_errors += old_Q_parser (GMT, &p[1], Ctrl);
+							n_errors += pspolar_old_Q_parser (GMT, &p[1], Ctrl);
 						else {	/* New syntax: -Qs[+v[<size>][+parameters]] */
 							char symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
 							if ((p = strstr (opt->arg, "+v"))) {	/* Got vector specification +v<size>[+<attributes>] */

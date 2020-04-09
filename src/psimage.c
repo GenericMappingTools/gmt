@@ -338,7 +338,7 @@ GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if 
 #define Return(code) {gmt_M_free (GMT, table); return (code);}
 
 #ifdef HAVE_GDAL
-GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b) {
+GMT_LOCAL int psimage_find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b) {
 	size_t i, j;
 	int idx;
 	bool trans = false;
@@ -494,7 +494,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 						for (n = 0; n < 3; n++) colormap[n+4*k] = gmt_M_u255(Ctrl->G.rgb[k][n]);	/* Do not override the A entry, just R/G/B */
 				}
 			}
-			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
+			if (!Ctrl->G.active) has_trans = psimage_find_unique_color (GMT, colormap, n, &r, &g, &b);
 
 			/* Expand 8-bit indexed image to 24-bit image */
 			I->data = gmt_M_memory (GMT, I->data, 3 * I->header->nm, unsigned char);
@@ -510,7 +510,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		}
 		else if (I->header->n_bands == 4) { /* RGBA image, with a color map */
 			uint64_t n4, j4;
-			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, I->data, I->header->nm, &r, &g, &b);
+			if (!Ctrl->G.active) has_trans = psimage_find_unique_color (GMT, I->data, I->header->nm, &r, &g, &b);
 			for (j4 = n4 = 0; j4 < 4 * I->header->nm; j4++) { /* Reduce image from 32- to 24-bit */
 				if (has_trans && I->data[j4+3] == 0)
 					I->data[n4++] = (unsigned char)r, I->data[n4++] = (unsigned char)g, I->data[n4++] = (unsigned char)b, j4 += 3;
@@ -662,7 +662,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 			if (header.depth == 0)
 				PSL_plotepsimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture, &header);
 			else if (header.depth == 1) {
-				/* Invert is opposite from what is expected. This is to match the behaviour of -Gp */
+				/* Invert is opposite from what is expected. This is to match the behavior of -Gp */
 				if (Ctrl->I.active)
 					PSL_plotbitimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,
 							header.width, header.height, Ctrl->G.rgb[PSIMG_FGD], Ctrl->G.rgb[PSIMG_BGD]);
