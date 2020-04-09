@@ -99,6 +99,7 @@ static void get_contraction (char *name, char *prefix) {
 	for (k = j = 0; name[k] != '.'; k++)
 		if (name[k] != '_') prefix[j++] = name[k];
 	prefix[j] = '\0';
+	if (!strcmp (prefix, "postscriptlight")) strcpy (prefix, "psl");	/* Accepted legacy shorthand */
 }
 
 static void wipe_line (char *line) {
