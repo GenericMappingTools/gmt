@@ -2453,14 +2453,14 @@ void gmt_grdio_init (struct GMT_CTRL *GMT) {
 }
 
 /* Comparator for qsort in gmt_grdformats_sorted() */
-GMT_LOCAL int customio_compare_grd_fmt_strings(const void* a, const void* b) {
+GMT_LOCAL int customio_compare_grd_fmt_strings (const void* a, const void* b) {
 	const char **ia = (const char **)a;
 	const char **ib = (const char **)b;
 	return strncmp(*ia, *ib, 2);
 }
 
 /* This function sorts the grid formats alphabetically by their type id */
-char **gmt_grdformats_sorted (struct GMT_CTRL *Ctrl) {
+char ** gmt_grdformats_sorted (struct GMT_CTRL *Ctrl) {
 	static char *formats_sorted[GMT_N_GRD_FORMATS];
 	static bool sorted = false;
 

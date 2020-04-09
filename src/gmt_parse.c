@@ -486,7 +486,7 @@ GMT_LOCAL void ensure_b_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *
 }
 
 /*! . */
-struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *in) {
+struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, const void *in) {
 	/* This function will loop over the n_args_in supplied command line arguments (in) and
 	 * then creates a linked list of GMT_OPTION structures for each program option.
 	 * These will in turn will be processed by the module-specific option parsers.
@@ -732,7 +732,7 @@ int GMT_Free_Option (void *V_API, struct GMT_OPTION **opt) {
 }
 
 /*! . */
-char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
+char ** GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
 	/* This function creates a character array with the command line options that
 	 * correspond to the linked options provided.  It is the inverse of GMT_Create_Options.
 	 * The number of array strings is returned via *argc.
@@ -888,7 +888,7 @@ int GMT_Destroy_Cmd (void *V_API, char **cmd) {
 }
 
 /*! Create an option structure given the option character and the optional argument arg */
-struct GMT_OPTION *GMT_Make_Option (void *V_API, char option, const char *arg) {
+struct GMT_OPTION * GMT_Make_Option (void *V_API, char option, const char *arg) {
 	struct GMT_OPTION *new_opt = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -964,7 +964,7 @@ int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 }
 
 /*! Append this entry to the end of the linked list */
-struct GMT_OPTION *GMT_Append_Option (void *V_API, struct GMT_OPTION *new_opt, struct GMT_OPTION *head) {
+struct GMT_OPTION * GMT_Append_Option (void *V_API, struct GMT_OPTION *new_opt, struct GMT_OPTION *head) {
 	struct GMT_OPTION *current = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */

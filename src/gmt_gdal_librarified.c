@@ -107,7 +107,7 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 }
 
 /* ------------------------------------------------------------------------------------------------------------ */
-GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
+GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc" "dd" */
 	/* Based on GMT_Create_Options() */
 	unsigned int pos = 0, k, n_args = 0;
