@@ -265,7 +265,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL char set_unit_and_mode (struct GMTAPI_CTRL *API, char *arg, unsigned int *mode) {
+GMT_LOCAL char mapproject_set_unit_and_mode (struct GMTAPI_CTRL *API, char *arg, unsigned int *mode) {
 	unsigned int k = 0;
 	*mode = GMT_GREATCIRCLE;	/* Default is great circle distances */
 	if (strchr ("-+", arg[0])) {
@@ -288,7 +288,7 @@ GMT_LOCAL char set_unit_and_mode (struct GMTAPI_CTRL *API, char *arg, unsigned i
 	return (arg[k]);
 }
 
-GMT_LOCAL unsigned int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
+GMT_LOCAL unsigned int mapproject_old_L_parser (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
 	/* [-L<table>[/[+|-]<unit>]][+] Note that [+|-] is now deprecated in GMT 6 (use -j instead) */
 	int k, slash;
 	gmt_M_unused(API);
@@ -323,7 +323,7 @@ GMT_LOCAL unsigned int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct M
 	return 0;
 }
 
-GMT_LOCAL bool is_old_G (struct GMT_CTRL *GMT, char *arg) {
+GMT_LOCAL bool mapproject_is_old_G_syntax (struct GMT_CTRL *GMT, char *arg) {
 	/* Return true if we find:  -G[<lon0/lat0>/][[+|-]unit][+|-]
 	 * Return false if we find: -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */
 	size_t len = strlen (arg);
@@ -346,7 +346,7 @@ GMT_LOCAL bool is_old_G (struct GMT_CTRL *GMT, char *arg) {
 	return false;
 }
 
-GMT_LOCAL unsigned int old_G_parse (struct GMT_CTRL *GMT, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
+GMT_LOCAL unsigned int mapproject_old_G_parser (struct GMT_CTRL *GMT, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
 	/* The [-|=] way to select spherical distance calculation mode is now deprecated in GMT 6 */
 	int n;
 	unsigned int n_slash, k, n_errors = 0;
@@ -392,15 +392,15 @@ GMT_LOCAL unsigned int old_G_parse (struct GMT_CTRL *GMT, char *arg, struct MAPP
 	}
 	else if (arg[last] == '+') {	/* Got -G[[+|-]units]+ */
 		Ctrl->G.mode = GMT_MP_PAIR_DIST | GMT_MP_INCR_DIST;
-		Ctrl->G.unit = set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
+		Ctrl->G.unit = mapproject_set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
 	}
 	else if (arg[last] == '-') {	/* Got -G[[+|-]units]- */
 		Ctrl->G.mode |= GMT_MP_INCR_DIST;
-		Ctrl->G.unit = set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
+		Ctrl->G.unit = mapproject_set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
 	}
 	else {				/* Got -G[[+|-]units] only */
 		Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
-		Ctrl->G.unit = set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
+		Ctrl->G.unit = mapproject_set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
 	}
 	if (Ctrl->G.unit == 'c') Ctrl->G.unit = 'X';	/* Internally, this is Cartesian data and distances */
 	if (Ctrl->G.mode == GMT_MP_VAR_POINT) Ctrl->G.mode |= GMT_MP_CUMUL_DIST;	/* Default */
@@ -504,8 +504,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'G':	/* Syntax. Old: -G[<lon0/lat0>][/[+|-]unit][+|-]  New: -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */
 				Ctrl->G.active = true;
-				if (is_old_G (GMT, opt->arg))
-					n_errors += old_G_parse (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
+				if (mapproject_is_old_G_syntax (GMT, opt->arg))
+					n_errors += mapproject_old_G_parser (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
 				else {	/* -G[<lon0/lat0>][+i][+a][+u[+|-]<unit>][+v] */
 					/* Note [+|-] is now deprecated in GMT 6; use -je instead */
 					/* Watch out for +u+<unit> where the + in front of unit indicates ellipsoidal calculations.  This unfortunate syntax
@@ -572,12 +572,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] */
 				Ctrl->L.active = true;
 				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
-					n_errors += old_L_parse (API, opt->arg, Ctrl);
+					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
 					if (gmt_validate_modifiers (GMT, opt->arg, 'L', "up")) n_errors++;
 					Ctrl->L.file = gmt_get_filename (opt->arg);
 					if (gmt_get_modifier (opt->arg, 'u', txt_a))
-						Ctrl->L.unit = set_unit_and_mode (API, txt_a, &Ctrl->L.sph);
+						Ctrl->L.unit = mapproject_set_unit_and_mode (API, txt_a, &Ctrl->L.sph);
 					if (gmt_get_modifier (opt->arg, 'p', txt_a))
 						Ctrl->L.mode = GMT_MP_GIVE_FRAC;
 				}
