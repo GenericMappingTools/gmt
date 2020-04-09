@@ -118,7 +118,7 @@ int main (int argc, char **argv) {
 	size_t L;
 	char line[512] = {""}, prefix[64] = {""};
 	char word[6][64], type[4] = {'S', 'D', 'L', 'A'}, *p, *q, message[128] = {""};
-	char *err_msg[4] = {"", "Change to gmt_*", "Change to gmtlib_*", "Change to <file>_*"};
+	char *err_msg[4] = {"", "Change to gmt_* ", "Change to gmtlib_* ", "Change to <file>_* "};
 	struct FUNCTION F[NFUNCS];
 	FILE *fp, *out = stdout;
 
@@ -308,12 +308,13 @@ int main (int argc, char **argv) {
 			if (F[f].n_files > 1)
 				strcpy (message, err_msg[err]);
 			else {
-				sprintf (message, "Change to %s_*", prefix);
+				sprintf (message, "Change to %s_* ", prefix);
 			}
 		}
 		else
 			strcpy (message, err_msg[err]);
-		if (!F[f].declared_local && F[f].n_files <= 1) strcat (message, " [static candidate]");
+		if (!F[f].declared_local && F[f].n_files <= 1)
+			strcat (message, "Static function candidate");
 		if (!warn_only || err) {
 			fprintf (out, "%5d   %-40s %4d  %c   %-32s %6d  %s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, F[f].rec, message);
 			if (brief) {	/* Done with this, free memory */
