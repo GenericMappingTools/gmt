@@ -263,7 +263,6 @@ int main (int argc, char **argv) {
 		while (fgets (line, 512, fp)) {
 			if (line[0] == '/' || line[1] == '*') continue;	/* Comment */
 			if (strchr (" \t", line[0]) == NULL) continue;
-			if (strchr (line, '[')) continue;	/* Got some array */
 			if (strchr (line, '(') == NULL) continue;	/* Not a function call */
 			wipe_line (line);
 			for (f = 0; f < n_funcs; f++) {
@@ -271,7 +270,6 @@ int main (int argc, char **argv) {
 				if ((p = strstr (line, F[f].name)) == NULL) continue;
 				q = p-1;	/* Previous char */
 				if (strlen (p) > (L+2) && (p[L] == '(' || (p[L] == ' ' && p[L+1] == '(')) && (q >= line && strchr (" \t", q[0]))) {	/* Found a call to this function */
-					if (strcmp (F[f].name, "median") == 0) fprintf (stderr, "%s: %s", argv[k], line);
 					F[f].in[k] = 1;
 					F[f].n_calls++ ;
 					if (set_dev) F[f].determined_dev = 1;	/* Called in a module */
