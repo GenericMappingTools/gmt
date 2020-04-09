@@ -601,7 +601,7 @@ GMT_LOCAL unsigned int movie_get_item_pen_fill (struct GMT_CTRL *GMT, struct MOV
 	return (n_errors);
 }
 
-GMT_LOCAL unsigned int parse_common_item_attributes (struct GMT_CTRL *GMT, char option, char *arg, struct MOVIE_ITEM *I) {
+GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT, char option, char *arg, struct MOVIE_ITEM *I) {
 	/* Initialize and parse the modifiers for item attributes for both labels and progress indicators */
 	unsigned int n_errors = 0;
 	char *c = NULL, *t = NULL, string[GMT_LEN128] = {""}, placement[4] = {""};
@@ -949,7 +949,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				}
 				I = &Ctrl->item[MOVIE_ITEM_IS_LABEL][T];	/* Shorthand for current label item */
 				I->kind = 'L';			/* This is a label item */
-				n_errors += parse_common_item_attributes (GMT, 'L', opt->arg, I);
+				n_errors += movie_parse_common_item_attributes (GMT, 'L', opt->arg, I);
 				Ctrl->n_items[MOVIE_ITEM_IS_LABEL]++;	/* One more label specified */
 				break;
 
@@ -985,7 +985,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				}
 				I = &Ctrl->item[MOVIE_ITEM_IS_PROG_INDICATOR][T];	/* Shorthand for the current progress indicator item */
 				I->kind = (opt->arg[0] && strchr ("abcdef", opt->arg[0])) ? opt->arg[0] : 'a';	/* This is a progress indicator item [Default to a] */
-				n_errors += parse_common_item_attributes (GMT, 'P', opt->arg, I);
+				n_errors += movie_parse_common_item_attributes (GMT, 'P', opt->arg, I);
 				if (gmt_get_modifier (opt->arg, 'G', I->fill2) && I->fill2[0]) {	/* Secondary fill */
 					if (gmt_getfill (GMT, I->fill2, &fill)) n_errors++;
 				}
