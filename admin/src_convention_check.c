@@ -115,7 +115,7 @@ static void wipe_line (char *line) {
 
 int main (int argc, char **argv) {
 	int k, f, w, s, n, c, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1, verbose = 0, warn_only = 0;
-	int set_dev, set_lib, quote, rec;
+	int set_dev, set_lib, rec;
 	size_t L;
 	char line[512] = {""}, prefix[64] = {""};
 	char word[6][64], type[4] = {'S', 'D', 'L', 'A'}, *p, *q, message[128] = {""};
@@ -227,7 +227,7 @@ int main (int argc, char **argv) {
 			s = (word[w][0] == '*') ? 1 : 0;	/* Skip leading * if there is no space */
 			if (strchr (&word[w][s], '[')) continue;	/* Got some array */
 			L = strlen (word[w]);
-			if (strncmp (&word[w][s], "parse", 5U) == 0 || strncmp (&word[w][s], "usage", 5U) == 0 || strncmp (&word[w][s], "New_Ctrl", 8U) == 0) continue;	/* Let these be named as is */
+			if (strcmp (&word[w][s], "parse") == 0 || strcmp (&word[w][s], "usage") == 0 || strcmp (&word[w][s], "New_Ctrl") == 0) continue;	/* Let these be named as is */
 			//if (L > 5 && strncmp (&word[w][s], "GMT_", 4U) == 0) continue;	/* Skip GMT API functions */
 			if (L > 5 && strncmp (&word[w][s], "PSL_", 4U) == 0) continue;	/* Skip PSL functions */
 			if (word[w][L-1] == '_') continue;	/* Skip FORTRAN wrappers */
