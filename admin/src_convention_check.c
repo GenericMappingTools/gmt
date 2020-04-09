@@ -33,9 +33,6 @@ struct FUNCTION {
 	int declared_dev;		/* 1 if declared extern in gmt_prototypes.h */
 	int declared_lib;		/* 1 if declared extern in gmt_internals.h */
 	int declared_local;		/* 1 if function declared static */
-	int determined_dev;		/* 1 if called by a module */
-	int determined_lib;		/* 1 if called in gmt_*.c */
-	int determined_local;	/* 1 if function only appears in one file */
 	unsigned int n_files;	/* How many files referenced */
 	unsigned int n_calls;	/* How many times referenced */
 	char *in;				/* Array to mark which files this functions appears in */
@@ -88,7 +85,7 @@ static int is_recognized (char *name, char *list[]) {
 	/* Return 1 if name appears in the list, else 0 */
 	int k = 0;
 	while (list[k]) {
-		if (strstr (name, list[k]))
+		if (!strcmp (name, list[k]))
 			return 1;
 		else k++;
 	}
@@ -181,6 +178,7 @@ int main (int argc, char **argv) {
 			continue;
 		}
 		if (verbose) fprintf (stderr, "\tsrc_convention_check: Scanning %s\n", argv[k]);
+		set_lib = (strstr (argv[k], "gmt_") != NULL || strstr (argv[k], "common_") != NULL);	/* Called in a library file */
 		comment = 0;
 		while (fgets (line, 512, fp)) {
 			if (!comment && strstr (line, "/*") && strstr (line, "*/") == NULL)	/* Start of multi-line comment */
@@ -263,7 +261,7 @@ int main (int argc, char **argv) {
 		set_lib = (strstr (argv[k], "gmt_") != NULL || strstr (argv[k], "common_") != NULL);	/* Called in a library file */
 		while (fgets (line, 512, fp)) {
 			if (line[0] == '/' || line[1] == '*') continue;	/* Comment */
-			if (strchr (" \t", line[0]) == NULL) continue;
+			if (strchr (" \t", line[0]) == NULL) continue;	/* Not a called function */
 			if (strchr (line, '(') == NULL) continue;	/* Not a function call */
 			wipe_line (line);
 			for (f = 0; f < n_funcs; f++) {
@@ -273,8 +271,6 @@ int main (int argc, char **argv) {
 				if (strlen (p) > (L+2) && (p[L] == '(' || (p[L] == ' ' && p[L+1] == '(')) && (q >= line && strchr (" \t", q[0]))) {	/* Found a call to this function */
 					F[f].in[k] = 1;
 					F[f].n_calls++ ;
-					if (set_dev) F[f].determined_dev = 1;	/* Called in a module */
-					if (set_lib) F[f].determined_lib = 1;	/* Called in a library function */
 				}
 			}
 		}
@@ -313,6 +309,7 @@ int main (int argc, char **argv) {
 		}
 		else
 			strcpy (message, err_msg[err]);
+		if (!F[f].declared_local && F[f].n_files <= 1) strcat (message, " [static candidate]");
 		if (!warn_only || err) {
 			fprintf (out, "%4d\t%-40s\t%4d\t%c\t%s\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, message);
 			if (brief) {	/* Done with this, free memory */
