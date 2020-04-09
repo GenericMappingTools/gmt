@@ -29,5 +29,5 @@ egrep '^EXTERN_MSC' src/gmt_internals.h | awk -F'(' '{print $1}' | awk '{print $
 gmt --show-classic | awk '{printf "\t\"%s\",\n", $1}' > /tmp/gmt/modules.h
 gcc admin/src_convention_check.c -o /tmp/src_convention_check
 
-find src -name '*.c' | egrep -v 'triangle.c|mergesort.c|test|example|demo|kiss|ssrfpack|stripack|s_rint|qsort.c' > /tmp/gmt/c_codes.lis
+find src -name '*.c' | egrep -v 'triangle.c|mergesort.c|test|example|demo|kiss|ssrfpack|stripack|s_rint|qsort.c|cm4_functions' > /tmp/gmt/c_codes.lis
 /tmp/src_convention_check $* `cat /tmp/gmt/c_codes.lis`

@@ -33,6 +33,7 @@ struct FUNCTION {
 	int declared_dev;		/* 1 if declared extern in gmt_prototypes.h */
 	int declared_lib;		/* 1 if declared extern in gmt_internals.h */
 	int declared_local;		/* 1 if function declared static */
+	int rec;
 	unsigned int n_files;	/* How many files referenced */
 	unsigned int n_calls;	/* How many times referenced */
 	char *in;				/* Array to mark which files this functions appears in */
@@ -98,6 +99,7 @@ static void get_contraction (char *name, char *prefix) {
 	for (k = j = 0; name[k] != '.'; k++)
 		if (name[k] != '_') prefix[j++] = name[k];
 	prefix[j] = '\0';
+	if (!strcmp (prefix, "postscriptlight")) strcpy (prefix, "psl");	/* Accepted legacy shorthand */
 }
 
 static void wipe_line (char *line) {
@@ -113,11 +115,11 @@ static void wipe_line (char *line) {
 
 int main (int argc, char **argv) {
 	int k, f, w, s, n, c, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1, verbose = 0, warn_only = 0;
-	int set_dev, set_lib, quote;
+	int set_dev, set_lib, rec;
 	size_t L;
 	char line[512] = {""}, prefix[64] = {""};
-	char word[6][64], type[3] = {'S', 'D', 'L'}, *p, *q, message[128] = {""};
-	char *err_msg[4] = {"", "Name error, should be gmt_*", "Name error, should be gmtlib_*", "Name error, should be file_*"};
+	char word[6][64], type[4] = {'S', 'D', 'L', 'A'}, *p, *q, message[128] = {""};
+	char *err_msg[4] = {"", "Change to gmt_* ", "Change to gmtlib_* ", "Change to <file>_* "};
 	struct FUNCTION F[NFUNCS];
 	FILE *fp, *out = stdout;
 
@@ -179,8 +181,9 @@ int main (int argc, char **argv) {
 		}
 		if (verbose) fprintf (stderr, "\tsrc_convention_check: Scanning %s\n", argv[k]);
 		set_lib = (strstr (argv[k], "gmt_") != NULL || strstr (argv[k], "common_") != NULL);	/* Called in a library file */
-		comment = 0;
+		comment = rec = 0;
 		while (fgets (line, 512, fp)) {
+			rec++;
 			if (!comment && strstr (line, "/*") && strstr (line, "*/") == NULL)	/* Start of multi-line comment */
 				comment = 1;
 			else if (comment && strstr (line, "*/")) {	/* End of multi-line comment with this line */
@@ -224,8 +227,8 @@ int main (int argc, char **argv) {
 			s = (word[w][0] == '*') ? 1 : 0;	/* Skip leading * if there is no space */
 			if (strchr (&word[w][s], '[')) continue;	/* Got some array */
 			L = strlen (word[w]);
-			if (strncmp (&word[w][s], "parse", 5U) == 0 || strncmp (&word[w][s], "usage", 5U) == 0 || strncmp (&word[w][s], "New_Ctrl", 8U) == 0) continue;	/* Let these be named as is */
-			if (L > 5 && strncmp (&word[w][s], "GMT_", 4U) == 0) continue;	/* Skip GMT API functions */
+			if (strcmp (&word[w][s], "parse") == 0 || strcmp (&word[w][s], "usage") == 0 || strcmp (&word[w][s], "New_Ctrl") == 0) continue;	/* Let these be named as is */
+			//if (L > 5 && strncmp (&word[w][s], "GMT_", 4U) == 0) continue;	/* Skip GMT API functions */
 			if (L > 5 && strncmp (&word[w][s], "PSL_", 4U) == 0) continue;	/* Skip PSL functions */
 			if (word[w][L-1] == '_') continue;	/* Skip FORTRAN wrappers */
 			if ((p = strchr (word[w], '('))) p[0] = '\0';	/* Change functionname(args) to functionname */
@@ -242,8 +245,8 @@ int main (int argc, char **argv) {
 				else if (is_recognized (F[f].name, libint))
 					F[f].declared_lib = 1;
 				F[f].declared_local = is_static;
+				F[f].rec = rec;
 				F[f].in = calloc (NFILES, 1U);
-				if (!strcmp (F[f].name, "gmt_show_name_and_purpose")) fprintf (stderr, "gmt_show_name_and_purpose: A = %d D = %d L = %d\n", F[f].api, F[f].declared_dev, F[f].declared_lib);
 			}
 			if (n_funcs == NFUNCS) {
 				fprintf (stderr, "src_convention_check: Out of function space - increase NFUNCS and rebuild\n");
@@ -284,13 +287,15 @@ int main (int argc, char **argv) {
 	fprintf (stderr, "src_convention_check: Write the report\n");
 	/* Report */
 	if (log) out = fopen ("/tmp/gmt/scan.txt", "w");
-	fprintf (out, "NFILES  FUNCTION                                    NCALLS TYPE DECLARED-IN\n");
+	fprintf (out, "LIBRARY CODES: A = GMT API, D = GMTDEV LIB, L = INTERNAL LIB, S = STATIC\n");
+	fprintf (out, "NFILES  FUNCTION                               NCALLS LIB  DECLARED-IN-FILE                   LINE  MESSAGE\n");
 	for (f = 0; f < n_funcs; f++) {
 		err = 0;
 		p = basename (F[f].file);
 		get_contraction (p, prefix);
 		L = strlen (prefix);
 		k = (F[f].declared_local) ? 0 : ((F[f].declared_dev) ? 1 : 2);
+		if (F[f].api) k = 3;
 		if (F[f].declared_local) {
 			if (strncmp (F[f].name, prefix, L)) err = 3;
 		}
@@ -304,14 +309,15 @@ int main (int argc, char **argv) {
 			if (F[f].n_files > 1)
 				strcpy (message, err_msg[err]);
 			else {
-				sprintf (message, "Name error, should be %s_*", prefix);
+				sprintf (message, "Change to %s_* ", prefix);
 			}
 		}
 		else
 			strcpy (message, err_msg[err]);
-		if (!F[f].declared_local && F[f].n_files <= 1) strcat (message, " [static candidate]");
+		if (!F[f].declared_local && F[f].n_files <= 1)
+			strcat (message, "Static function candidate");
 		if (!warn_only || err) {
-			fprintf (out, "%4d\t%-40s\t%4d\t%c\t%s\t%s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, message);
+			fprintf (out, "%5d   %-40s %4d  %c   %-32s %6d  %s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, F[f].rec, message);
 			if (brief) {	/* Done with this, free memory */
 				free ((void *)F[f].in);
 				continue;
