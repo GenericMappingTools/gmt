@@ -173,12 +173,12 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col) {
+GMT_LOCAL bool gmtmath_decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col) {
 	uint64_t i, start, stop;
 	unsigned int pos;
 	char p[GMT_BUFSIZ];
 
-	/* decode_columns is used to handle the parsing of -C<cols>.  */
+	/* gmtmath_decode_columns is used to handle the parsing of -C<cols>.  */
 
 	if (!txt[0]) {	/* Reset to default */
 		for (i = 0; i < n_col; i++) skip[i] = false;
@@ -6464,7 +6464,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (strchr (SPECIFIC_OPTIONS THIS_MODULE_OPTIONS GMT_OPT("F"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
 			no_C = false;
-			if (decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;
+			if (gmtmath_decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;
 			continue;
 		}
 		if (opt->option == GMT_OPT_OUTFILE) continue;	/* We do output after the loop */

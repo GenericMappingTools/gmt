@@ -134,7 +134,7 @@ struct GRDVIEW_POINT {
 	struct GRDVIEW_POINT *next_point;
 };
 
-GMT_LOCAL struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
+GMT_LOCAL struct GRDVIEW_CONT * grdview_get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
 	struct GRDVIEW_CONT *cont, *new_cont;
 
 	if (!binij[bin].first_cont) binij[bin].first_cont = gmt_M_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
@@ -151,7 +151,7 @@ GMT_LOCAL struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t b
 	return (new_cont);
 }
 
-GMT_LOCAL struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, double y) {
+GMT_LOCAL struct GRDVIEW_POINT * grdview_get_point (struct GMT_CTRL *GMT, double x, double y) {
 	struct GRDVIEW_POINT *point = gmt_M_memory (GMT, NULL, 1, struct GRDVIEW_POINT);
 	point->x = x;
 	point->y = y;
@@ -200,12 +200,12 @@ void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_p
 }
 #endif
 
-GMT_LOCAL double get_intensity (struct GMT_GRID *I, uint64_t k) {
+GMT_LOCAL double grdview_get_intensity (struct GMT_GRID *I, uint64_t k) {
 	/* Returns the average intensity for this tile */
 	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
 }
 
-GMT_LOCAL unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, int64_t bin, int bin_inc[]) {
+GMT_LOCAL unsigned int grdview_pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, int64_t bin, int bin_inc[]) {
 	/* Returns true of the ip,jp point is inside the polygon defined by the tile */
 	unsigned int i, what;
 	double x[6], y[6];
@@ -219,14 +219,14 @@ GMT_LOCAL unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *
 	return (what);
 }
 
-GMT_LOCAL int quick_idist (int x1, int y1, int x2, int y2) {
+GMT_LOCAL int grdview_quick_idist (int x1, int y1, int x2, int y2) {
 	/* Fast integer distance calculation */
 	if ((x2 -= x1) < 0) x2 = -x2;
 	if ((y2 -= y1) < 0) y2 = -y2;
 	return (x2 + y2 - (((x2 > y2) ? y2 : x2) >> 1));
 }
 
-GMT_LOCAL unsigned int get_side (double x, double y, double x_left, double y_bottom, double inc[], double inc2[]) {
+GMT_LOCAL unsigned int grdview_get_side (double x, double y, double x_left, double y_bottom, double inc[], double inc2[]) {
 	/* Figure out on what side this point sits on */
 
 	double del_x, del_y;
@@ -243,7 +243,7 @@ GMT_LOCAL unsigned int get_side (double x, double y, double x_left, double y_bot
 	return (side);
 }
 
-GMT_LOCAL void copy_points_fw (double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
+GMT_LOCAL void grdview_copy_points_fw (double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
 	unsigned int k;
 	for (k = 0; k < ncont; k++, (*n)++) {
 		x[*n] = xcont[k];
@@ -253,7 +253,7 @@ GMT_LOCAL void copy_points_fw (double x[], double y[], double z[], double v[], d
 	}
 }
 
-GMT_LOCAL void copy_points_bw (double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
+GMT_LOCAL void grdview_copy_points_bw (double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
 	unsigned int k, k2;
 	for (k2 = 0, k = ncont - 1; k2 < ncont; k2++, k--, (*n)++) {
 		x[*n] = xcont[k];
@@ -263,7 +263,7 @@ GMT_LOCAL void copy_points_bw (double x[], double y[], double z[], double v[], d
 	}
 }
 
-GMT_LOCAL double get_z_ave (double v[], double next_up, uint64_t n) {
+GMT_LOCAL double grdview_get_z_ave (double v[], double next_up, uint64_t n) {
 	uint64_t k;
 	double z_ave;
 
@@ -271,7 +271,7 @@ GMT_LOCAL double get_z_ave (double v[], double next_up, uint64_t n) {
 	return (z_ave / n);
 }
 
-GMT_LOCAL void add_node (double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], gmt_grdfloat topo[], gmt_grdfloat zgrd[], uint64_t ij) {
+GMT_LOCAL void grdview_add_node (double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], gmt_grdfloat topo[], gmt_grdfloat zgrd[], uint64_t ij) {
 	/* Adds a corner node to list of points and increments *k */
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
@@ -280,7 +280,7 @@ GMT_LOCAL void add_node (double x[], double y[], double z[], double v[], uint64_
 	(*k)++;
 }
 
-GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double *x, double *y, int n, double z, bool intens, bool monochrome, double intensity, int outline) {
+GMT_LOCAL void grdview_paint_it (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double *x, double *y, int n, double z, bool intens, bool monochrome, double intensity, int outline) {
 	int index;
 	double rgb[4];
 	struct GMT_FILL *f = NULL;
@@ -302,7 +302,7 @@ GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-GMT_LOCAL void set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int start[], int stop[], int inc[], unsigned int id[]) {
+GMT_LOCAL void grdview_set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int start[], int stop[], int inc[], unsigned int id[]) {
 	/* We want to loop over the grid from "back" to "front".  What is back and what is front depends on the
 	 * projection (-J) and view angles (-p).  We pick a point in the middle of the grid and the point above it
 	 * (i.e., north of it) and compute their projected coordinates, then calculate the angle from center to north.
@@ -1006,7 +1006,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	grdview_init_setup (GMT, Topo, Ctrl->N.active, Ctrl->N.level);	/* Find projected min/max in y-direction */
 #endif
 
-	set_loop_order (GMT, Z, start, stop, inc, id);
+	grdview_set_loop_order (GMT, Z, start, stop, inc, id);
 
 	gmt_grd_set_ij_inc (GMT, Z->header->n_columns, bin_inc);	/* Offsets for bin (no pad) indices */
 
@@ -1053,14 +1053,14 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					j_bin = irint (floor (((Z->header->wesn[YHI] - 0.5 * (y[pt-1] + y[pt])) / Z->header->inc[GMT_Y]))) + 1;
 					if (i_bin != i_bin_old || j_bin != j_bin_old) {	/* Entering new bin */
 						bin = j_bin * Z->header->n_columns + i_bin;
-						this_cont = get_cont_struct (GMT, bin, binij, cval);
+						this_cont = grdview_get_cont_struct (GMT, bin, binij, cval);
 						this_cont->value = cval;
-						this_cont->first_point = get_point (GMT, x[pt-1], y[pt-1]);
+						this_cont->first_point = grdview_get_point (GMT, x[pt-1], y[pt-1]);
 						this_point = this_cont->first_point;
 						i_bin_old = i_bin;
 						j_bin_old = j_bin;
 					}
-					this_point->next_point = get_point (GMT, x[pt], y[pt]);
+					this_point->next_point = grdview_get_point (GMT, x[pt], y[pt]);
 					this_point = this_point->next_point;
 				}
 				gmt_M_free (GMT, x);
@@ -1398,7 +1398,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					if (jp < 0 || jp >= ny_i) continue;
 					for (ip = min_i; ip <= max_i; ip++) {
 						if (ip < 0 || ip >= nx_i) continue;
-						if (!pixel_inside (GMT, ip, jp, ix, iy, bin, bin_inc)) continue;	/* Checks if actually inside the projected tile polygon */
+						if (!grdview_pixel_inside (GMT, ip, jp, ix, iy, bin, bin_inc)) continue;	/* Checks if actually inside the projected tile polygon */
 						/* These pixels are part of the current tile */
 						if (!Ctrl->Q.mask) {	/* Update clip mask */
 							if (jp > top_jp[ip]) top_jp[ip] = jp;
@@ -1425,7 +1425,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							/* We don't want to blend in the (typically) gray NaN colors with the others. */
 
 							good++;
-							dist = quick_idist (ip, jp, ix[node], iy[node]);
+							dist = grdview_quick_idist (ip, jp, ix[node], iy[node]);
 							if (dist == 0) {	/* Only need this node value */
 								done = true;
 								if (Ctrl->I.active) intval = (use_intensity_grid) ? Intens->data[d_node] : Ctrl->I.value;
@@ -1665,13 +1665,13 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					X_vert[0] = X_vert[3] = x_left;	X_vert[1] = X_vert[2] = x_right;
 					Y_vert[0] = Y_vert[1] = y_bottom;	Y_vert[2] = Y_vert[3] = y_top;
 					for (k = 0; k < 4; k++) gmt_geoz_to_xy (GMT, X_vert[k], Y_vert[k], 0.0, &xmesh[k], &ymesh[k]);
-					paint_it_grdview (GMT, PSL, P, xmesh, ymesh, 4, GMT->session.d_NaN, false, Ctrl->Q.monochrome, 0.0, Ctrl->Q.outline);
+					grdview_paint_it (GMT, PSL, P, xmesh, ymesh, 4, GMT->session.d_NaN, false, Ctrl->Q.monochrome, 0.0, Ctrl->Q.outline);
 					continue;
 				}
 
 				if (Ctrl->I.active) {
 					if (use_intensity_grid) {
-						this_intensity = get_intensity (Intens, ij);
+						this_intensity = grdview_get_intensity (Intens, ij);
 						if (gmt_M_is_dnan (this_intensity)) continue;
 					}
 					else
@@ -1710,9 +1710,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					if (saddle) {	/* Must deal with this separately */
 
 						this_point = this_cont->first_point;
-						entry_side = get_side (this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
+						entry_side = grdview_get_side (this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
 						while (this_point->next_point) this_point = this_point->next_point;	/* Go to end */
-						exit_side  = get_side (this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
+						exit_side  = grdview_get_side (this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
 
 
 						if (MIN (Z_vert[1], Z_vert[3]) > MAX (Z_vert[0], Z_vert[2])) {
@@ -1749,7 +1749,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 							low = corner[p];
 							n = 0;
-							add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
+							grdview_add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 							next_side = low;
 							way = 0;
 
@@ -1767,8 +1767,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 								}
 								ncont = k;
 
-								entry_side = get_side (xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
-								exit_side  = get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
+								entry_side = grdview_get_side (xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
+								exit_side  = grdview_get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
 								if (entry_side == bad_side[p][0] || entry_side == bad_side[p][1]) continue;
 								if (exit_side == bad_side[p][0] || exit_side == bad_side[p][1]) continue;
@@ -1777,26 +1777,26 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 								next_up = (this_cont->next_cont) ? this_cont->next_cont->value : DBL_MAX;
 
-								exit_side  = get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
+								exit_side  = grdview_get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
 								if (way == 0 || next_side == entry_side)	/* Just hook up */
-									copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+									grdview_copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								else if (next_side == exit_side)	/* Just hook up but reverse */
-									copy_points_bw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+									grdview_copy_points_bw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 
 								/* Compute the xy from the xyz triplets */
 
 								for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
-								z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : this_cont->value;
+								z_ave = (P->is_continuous) ? grdview_get_z_ave (v, next_up, n) : this_cont->value;
 
 								/* Now paint the polygon piece */
 
-								paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave-saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
+								grdview_paint_it (GMT, PSL, P, xx, yy, (int)n, z_ave-saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 								/* Reset the anchor points to previous contour */
 
 								n = 0;
-								copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+								grdview_copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								next_side = exit_side;
 								way = (Z_vert[low] < (gmt_grdfloat)this_cont->value) ? -1 : 1;
 							}
@@ -1811,18 +1811,18 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 								p1 = (next_side % 3) ? 2 : 0;
 								p2 = (next_side % 3) ? 0 : 2;
 							}
-							add_node (x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p1]);
-							add_node (x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p2]);
+							grdview_add_node (x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p1]);
+							grdview_add_node (x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p2]);
 
 							/* Compute the xy from the xyz triplets */
 
 							for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
 
-							z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : v[0];
+							z_ave = (P->is_continuous) ? grdview_get_z_ave (v, next_up, n) : v[0];
 
 							/* Now paint the polygon piece */
 
-							paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave+saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
+							grdview_paint_it (GMT, PSL, P, xx, yy, (int)n, z_ave+saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 						} /* End triangular piece */
 
@@ -1837,7 +1837,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 						/* Set this points as the start anchor */
 
 						n = 0;
-						add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
+						grdview_add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 						start_side = next_side = low;
 						way = 1;
 
@@ -1857,43 +1857,43 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							}
 							ncont = k;
 
-							entry_side = get_side (xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
-							exit_side  = get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
+							entry_side = grdview_get_side (xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
+							exit_side  = grdview_get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
 							while (!(next_side == entry_side || next_side == exit_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+								grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 							if (next_side == entry_side) {	/* Just hook up */
-								copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+								grdview_copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								next_side = exit_side;
 							}
 							else if (next_side == exit_side) {	/* Just hook up but reverse */
-								copy_points_bw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+								grdview_copy_points_bw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								next_side = entry_side;
 							}
 							/* Now we must complete the polygon if necessary */
 
 							while (!(start_side == next_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+								grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 
 							/* Compute the xy from the xyz triplets */
 
 							for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
-							z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : this_cont->value;
+							z_ave = (P->is_continuous) ? grdview_get_z_ave (v, next_up, n) : this_cont->value;
 
 							/* Now paint the polygon piece */
 
-							paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave-small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
+							grdview_paint_it (GMT, PSL, P, xx, yy, (int)n, z_ave-small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 							/* Reset the anchor points to previous contour */
 
 							n = 0;
-							copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+							grdview_copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 							next_side = exit_side;
 							start_side = entry_side;
 							way = (Z_vert[start_side] < (gmt_grdfloat)this_cont->value) ? -1 : 1;
@@ -1905,7 +1905,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 						while (!(start_side == next_side)) {	/* Must add intervening corner */
 							if (way == 1) next_side = (next_side +1) % 4;
-							add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+							grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 							if (way == -1) next_side = (next_side - 1 + 4) % 4;
 						}
 
@@ -1913,11 +1913,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 						for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
 
-						z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : v[0];
+						z_ave = (P->is_continuous) ? grdview_get_z_ave (v, next_up, n) : v[0];
 
 						/* Now paint the polygon piece */
 
-						paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
+						grdview_paint_it (GMT, PSL, P, xx, yy, (int)n, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 					} /* End non-saddle case */
 
@@ -1953,7 +1953,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					/* Now paint the polygon piece */
 
 					for (k = 0; k < 4; k++) gmt_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
-					paint_it_grdview (GMT, PSL, P, xmesh, ymesh, 4, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, Ctrl->Q.outline);
+					grdview_paint_it (GMT, PSL, P, xmesh, ymesh, 4, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, Ctrl->Q.outline);
 				}
 			}
 		}

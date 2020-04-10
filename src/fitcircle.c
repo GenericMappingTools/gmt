@@ -209,7 +209,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint64_t ndata, double *pole, int norm, double *work, double *circle_distance) {
+GMT_LOCAL double fitcircle_circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint64_t ndata, double *pole, int norm, double *work, double *circle_distance) {
 	/* Find the L(norm) misfit between a small circle through
 	   center with pole pole.  Return misfit in radians.  */
 
@@ -247,7 +247,7 @@ GMT_LOCAL double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *dat
 	return (norm == 1) ? misfit : sqrt (misfit);
 }
 
-GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint64_t ndata, double *center, double *gcpole, double *scpole, int norm, double *work, int mode, double slat) {
+GMT_LOCAL double fitcircle_get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint64_t ndata, double *center, double *gcpole, double *scpole, int norm, double *work, int mode, double slat) {
 	/* Find scpole, the pole to the best-fit small circle,
 	   by L(norm) iterative search along arc between center
 	   and +/- gcpole, the pole to the best fit great circle.  */
@@ -261,11 +261,11 @@ GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *
 
 	gmt_add3v (GMT, center, gcpole, temppole);
 	gmt_normalize3v (GMT, temppole);
-	trypos = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
+	trypos = fitcircle_circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 
 	gmt_sub3v (GMT, center, gcpole, temppole);
 	gmt_normalize3v (GMT, temppole);
-	tryneg = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
+	tryneg = fitcircle_circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 
 	if (tryneg < trypos) {
 		gmt_M_cpy3v (a, center);
@@ -282,21 +282,21 @@ GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *
 		sincosd (slat, &afactor, &bfactor);
 		for (i = 0; i < 3; i++) scpole[i] = (afactor * a[i] + bfactor * b[i]);
 		gmt_normalize3v (GMT, scpole);
-		(void)circle_misfit (GMT, data, ndata, scpole, norm, work, &circle_distance);
+		(void)fitcircle_circle_misfit (GMT, data, ndata, scpole, norm, work, &circle_distance);
 		return (90.0-slat);
 	}
 
 	/*  Try to bracket a minimum.  Move from b toward a in 1 degree steps */
 
-	afit = circle_misfit (GMT, data, ndata, a, norm, work, &circle_distance);
-	bfit = circle_misfit (GMT, data, ndata, b, norm, work, &circle_distance);
+	afit = fitcircle_circle_misfit (GMT, data, ndata, a, norm, work, &circle_distance);
+	bfit = fitcircle_circle_misfit (GMT, data, ndata, b, norm, work, &circle_distance);
 	j = 1;
 	do {
 		angle = (double)j;
 		sincosd (angle, &afactor, &bfactor);
 		for (i = 0; i < 3; i++) temppole[i] = (afactor * a[i] + bfactor * b[i]);
 		gmt_normalize3v (GMT, temppole);
-		fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
+		fit = fitcircle_circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 		j++;
 	} while (j < 90 && fit > bfit && fit > afit);
 
@@ -317,7 +317,7 @@ GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *
 		if (length_aold > length_bold) {	/* Section a_old  */
 			for (i = 0; i < 3; i++) temppole[i] = (0.38197*a[i] + 0.61803*oldpole[i]);
 			gmt_normalize3v (GMT, temppole);
-			fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
+			fit = fitcircle_circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 			if (fit < oldfit) {	/* Improvement.  b = oldpole, oldpole = temppole  */
 				gmt_M_cpy3v (b, oldpole);
 				gmt_M_cpy3v (oldpole, temppole);
@@ -329,7 +329,7 @@ GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *
 		else {	/* Section b_old  */
 			for (i = 0; i < 3; i++) temppole[i] = (0.38197*b[i] + 0.61803*oldpole[i]);
 			gmt_normalize3v (GMT, temppole);
-			fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
+			fit = fitcircle_circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 			if (fit < oldfit) {	/* Improvement.  a = oldpole, oldpole = temppole  */
 				gmt_M_cpy3v (a, oldpole);
 				gmt_M_cpy3v (oldpole, temppole);
@@ -530,7 +530,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		if (Ctrl->S.active) {	/* Determine small circle pole */
-			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 1, work, Ctrl->S.mode, Ctrl->S.lat);
+			rad = fitcircle_get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 1, work, Ctrl->S.mode, Ctrl->S.lat);
 			if (rad >= 0.0) {
 				gmt_cart_to_geo (GMT, &latsum, &lonsum, scpole, true);
 				if (greenwich && lonsum < 0.0) lonsum += 360.0;
@@ -617,7 +617,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, lambda);
 		gmt_M_free (GMT, a);
 		if (Ctrl->S.active) {	/* Want small circle pole */
-			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 2, work, Ctrl->S.mode, Ctrl->S.lat);
+			rad = fitcircle_get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 2, work, Ctrl->S.mode, Ctrl->S.lat);
 			if (rad >= 0.0) {
 				/* True when small circle fits better than great circle */
 				gmt_cart_to_geo (GMT, &latsum, &lonsum, scpole, true);

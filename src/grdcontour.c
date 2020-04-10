@@ -312,7 +312,7 @@ GMT_LOCAL unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg,
 	return (n_errors);
 }
 
-GMT_LOCAL unsigned int parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDCONTOUR_CTRL *Ctrl) {
+GMT_LOCAL unsigned int grdcontour_parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDCONTOUR_CTRL *Ctrl) {
 	/* Parse the -Z option: -Z[+s<scale>][+o<offset>][+p] */
 	unsigned int uerr = 0;
 	if (!txt || txt[0] == '\0') {
@@ -618,7 +618,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				break;
 			case 'Z':	/* For scaling or phase data */
 				Ctrl->Z.active = true;
-				n_errors += parse_Z_opt (GMT, opt->arg, Ctrl);
+				n_errors += grdcontour_parse_Z_opt (GMT, opt->arg, Ctrl);
 				break;
 
 			default:	/* Report bad options */
@@ -653,7 +653,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 
 /* Three sub functions used by GMT_grdcontour */
 
-GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
+GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
 	   We need to do several types of testing here:
@@ -874,7 +874,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	PSL_comment (PSL, "End Embellishment of innermost contours\n");
 }
 
-GMT_LOCAL void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid) {
+GMT_LOCAL void grdcontour_adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid) {
 	/* Modify orientation of contours to have top of annotation facing the local hill top */
 	int col, row;
 	uint64_t k, seg, ij;
@@ -953,7 +953,7 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 	return (closed);
 }
 
-GMT_LOCAL void embed_quotes (char *orig, char *dup) {
+GMT_LOCAL void grdcontour_embed_quotes (char *orig, char *dup) {
 	/* Add quotes around text strings with spaces in a -B option where the quotes have been lost.
 	 * Because the original quotes are gone there is no way to detect things like ...+t"Title with+u in it"
 	 * since now it is just +tTitle with+u in it and there is no way to distinguish the two possibilities
@@ -1068,7 +1068,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				case 'B':	/* Must worry about spaces*/
 					if (strchr (opt->arg, ' ') || strchr (opt->arg, '\t')) {	/* Must place all string arguments in quotes */
 						char dup_string[GMT_LEN128] = {""};
-						embed_quotes (opt->arg, dup_string);
+						grdcontour_embed_quotes (opt->arg, dup_string);
 						sprintf (string, " -%c%s", opt->option, dup_string);
 					}
 					strcat (cmd2, string); break;
@@ -1752,7 +1752,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
 		save = gmt_M_memory (GMT, save, n_save, struct SAVE);
 
-		grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.all, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
+		grdcontour_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.all, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
 		for (i = 0; i < n_save; i++) {
 			gmt_M_free (GMT, save[i].x);
 			gmt_M_free (GMT, save[i].y);
@@ -1762,7 +1762,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (make_plot) {
 		/* Must possibly adjust label angles so that label is readable when following contours */
-		if (Ctrl->contour.hill_label) adjust_hill_label (GMT, &Ctrl->contour, G);
+		if (Ctrl->contour.hill_label) grdcontour_adjust_hill_label (GMT, &Ctrl->contour, G);
 
 		gmt_contlabel_plot (GMT, &Ctrl->contour);
 

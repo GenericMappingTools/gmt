@@ -130,7 +130,7 @@ struct	TREND1D_DATA {
 	double	w;
 };
 
-GMT_LOCAL int trend1d_read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, unsigned int weighted_input, double **work) {
+GMT_LOCAL int trend1d_read_data (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, unsigned int weighted_input, double **work) {
 	uint64_t i;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	double *in = NULL;
@@ -243,7 +243,7 @@ GMT_LOCAL void trend1d_free_the_memory (struct GMT_CTRL *GMT, double *gtg, doubl
 	gmt_M_free (GMT, gtg);
 }
 
-GMT_LOCAL void trend1d_transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODEL *M, double xmin, double xmax) {
+GMT_LOCAL void trend1d_transform_x (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODEL *M, double xmin, double xmax) {
 	uint64_t i;
 	double offset, scale;
 
@@ -260,7 +260,7 @@ GMT_LOCAL void trend1d_transform_x_1d (struct TREND1D_DATA *data, uint64_t n_dat
 	}
 }
 
-GMT_LOCAL void trend1d_untrend1d_transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODEL *M, double xmin, double xmax) {
+GMT_LOCAL void trend1d_untrend1d_transform_x (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODEL *M, double xmin, double xmax) {
 	/* Undo transformation of x, if used */
 	uint64_t i;
 	double offset, scale;
@@ -272,7 +272,7 @@ GMT_LOCAL void trend1d_untrend1d_transform_x_1d (struct TREND1D_DATA *data, uint
 	for (i = 0; i < n_data; i++) data[i].x = (data[i].x * scale) + offset;
 }
 
-GMT_LOCAL double trend1d_get_chisq_1d (struct TREND1D_DATA *data, uint64_t n_data, unsigned int n_model) {
+GMT_LOCAL double trend1d_get_chisq (struct TREND1D_DATA *data, uint64_t n_data, unsigned int n_model) {
 	uint64_t i, nu;
 	double chi = 0.0;
 
@@ -287,7 +287,7 @@ GMT_LOCAL double trend1d_get_chisq_1d (struct TREND1D_DATA *data, uint64_t n_dat
 	return (chi);
 }
 
-GMT_LOCAL void trend1d_recompute_weights_1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, double *work, double *scale) {
+GMT_LOCAL void trend1d_recompute_weights (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, double *work, double *scale) {
 	uint64_t i;
 	double k, ksq, rr;
 
@@ -334,7 +334,7 @@ GMT_LOCAL double trend1d_polynomial (double x, unsigned int n) {
 	return (pow (x, (double)n));
 }
 
-GMT_LOCAL void trend1d_load_g_row_1d (double x, double t, int n, double *gr, struct GMT_MODEL *M) {
+GMT_LOCAL void trend1d_load_g_row (double x, double t, int n, double *gr, struct GMT_MODEL *M) {
 	/* x: Current data position, appropriately normalized.  */
 	/* Number of model parameters, and elements of gr[]  */
 	/* Elements of row of G matrix.  */
@@ -365,26 +365,26 @@ GMT_LOCAL void trend1d_load_g_row_1d (double x, double t, int n, double *gr, str
 	}
 }
 
-GMT_LOCAL void trend1d_calc_m_and_r_1d (struct TREND1D_DATA *data, uint64_t n_data, double *model, unsigned int n_model, struct GMT_MODEL *M, double *grow) {
+GMT_LOCAL void trend1d_calc_m_and_r (struct TREND1D_DATA *data, uint64_t n_data, double *model, unsigned int n_model, struct GMT_MODEL *M, double *grow) {
 	/* model[n_model] holds solved coefficients of m_type model.
 	  grow[n_model] is a vector for a row of G matrix.  */
 
 	uint64_t i;
 	unsigned int j;
 	for (i = 0; i < n_data; i++) {
-		trend1d_load_g_row_1d (data[i].x, data[i].t, n_model, grow, M);
+		trend1d_load_g_row (data[i].x, data[i].t, n_model, grow, M);
 		data[i].m = 0.0;
 		for (j = 0; j < n_model; j++) data[i].m += model[j]*grow[j];
 		data[i].r = data[i].y - data[i].m;
 	}
 }
 
-GMT_LOCAL void trend1d_move_model_a_to_b_1d (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b) {
+GMT_LOCAL void trend1d_move_model_a_to_b (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b) {
 	gmt_M_memcpy (model_b, model_a, n_model, double);
 	*chisq_b = *chisq_a;
 }
 
-GMT_LOCAL void trend1d_load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp, struct GMT_MODEL *M) {
+GMT_LOCAL void trend1d_load_gtg_and_gtd (struct TREND1D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp, struct GMT_MODEL *M) {
 
    	/* mp is row dimension of gtg  */
 
@@ -401,7 +401,7 @@ GMT_LOCAL void trend1d_load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t 
 
 	/* Sum over all data  */
 	for (i = 0; i < n_data; i++) {
-		trend1d_load_g_row_1d (data[i].x, data[i].t, n_model, grow, M);
+		trend1d_load_g_row (data[i].x, data[i].t, n_model, grow, M);
 		if (data[i].w != 1.0) {
 			wy = data[i].w * data[i].y;
 			for (j = 0; j < n_model; j++) {
@@ -418,7 +418,7 @@ GMT_LOCAL void trend1d_load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t 
 	}
 }
 
-GMT_LOCAL void trend1d_solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir) {
+GMT_LOCAL void trend1d_solve_system (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir) {
 	unsigned int i, j, k, rank = 0, nrots;
 	double c_test, temp_inverse_ij;
 
@@ -699,7 +699,7 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	trend1d_allocate_the_memory (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
-	if ((error = trend1d_read_data_trend1d (GMT, &data, &n_data, &xmin, &xmax, Ctrl->W.mode, &work)) != 0) {
+	if ((error = trend1d_read_data (GMT, &data, &n_data, &xmin, &xmax, Ctrl->W.mode, &work)) != 0) {
 		trend1d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
@@ -720,7 +720,7 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 	}
 	if (n_data < (uint64_t)Ctrl->N.M.n_terms) GMT_Report (API, GMT_MSG_ERROR, "Ill-posed problem; n_data < n_model_max.\n");
 
-	trend1d_transform_x_1d (data, n_data, &(Ctrl->N.M), xmin, xmax);	/* Set domain to [-1, 1] or [-pi, pi]  */
+	trend1d_transform_x (data, n_data, &(Ctrl->N.M), xmin, xmax);	/* Set domain to [-1, 1] or [-pi, pi]  */
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		sprintf (format,"Read %%" PRIu64 " data with X values from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
@@ -734,58 +734,58 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 		n_model = 1;
 
 		/* Fit first model  */
-		trend1d_load_gtg_and_gtd_1d (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
-		trend1d_solve_system_1d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-		trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-		c_chisq = trend1d_get_chisq_1d (data, n_data, n_model);
+		trend1d_load_gtg_and_gtd (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
+		trend1d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+		trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+		c_chisq = trend1d_get_chisq (data, n_data, n_model);
 		GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, 1.0);
 		if (Ctrl->N.M.robust) {
 			do {
-				trend1d_recompute_weights_1d (GMT, data, n_data, work, &scale);
-				trend1d_move_model_a_to_b_1d (c_model, w_model, n_model, &c_chisq, &w_chisq);
-				trend1d_load_gtg_and_gtd_1d (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
-				trend1d_solve_system_1d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-				trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-				c_chisq = trend1d_get_chisq_1d (data, n_data, n_model);
+				trend1d_recompute_weights (GMT, data, n_data, work, &scale);
+				trend1d_move_model_a_to_b (c_model, w_model, n_model, &c_chisq, &w_chisq);
+				trend1d_load_gtg_and_gtd (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
+				trend1d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+				trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+				c_chisq = trend1d_get_chisq (data, n_data, n_model);
 				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
 				GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */
 			if (w_chisq < c_chisq) {
-				trend1d_move_model_a_to_b_1d (w_model, c_model, n_model, &w_chisq, &c_chisq);
-				trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-				if (Ctrl->weighted_output && n_model == Ctrl->N.M.n_terms) trend1d_recompute_weights_1d (GMT, data, n_data, work, &scale);
+				trend1d_move_model_a_to_b (w_model, c_model, n_model, &w_chisq, &c_chisq);
+				trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+				if (Ctrl->weighted_output && n_model == Ctrl->N.M.n_terms) trend1d_recompute_weights (GMT, data, n_data, work, &scale);
 			}
 		}
 		/* First [robust] model has been found  */
 
 		significant = true;
 		while (n_model < Ctrl->N.M.n_terms && significant) {
-			trend1d_move_model_a_to_b_1d (c_model, o_model, n_model, &c_chisq, &o_chisq);
+			trend1d_move_model_a_to_b (c_model, o_model, n_model, &c_chisq, &o_chisq);
 			n_model++;
 
 			/* Fit next model  */
-			trend1d_load_gtg_and_gtd_1d (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
-			trend1d_solve_system_1d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-			trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-			c_chisq = trend1d_get_chisq_1d (data, n_data, n_model);
+			trend1d_load_gtg_and_gtd (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
+			trend1d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+			trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+			c_chisq = trend1d_get_chisq (data, n_data, n_model);
 			GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, 1.00);
 			if (Ctrl->N.M.robust) {
 				do {
-					trend1d_recompute_weights_1d (GMT, data, n_data, work, &scale);
-					trend1d_move_model_a_to_b_1d (c_model, w_model, n_model, &c_chisq, &w_chisq);
-					trend1d_load_gtg_and_gtd_1d (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
-					trend1d_solve_system_1d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-					trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-					c_chisq = trend1d_get_chisq_1d (data, n_data, n_model);
+					trend1d_recompute_weights (GMT, data, n_data, work, &scale);
+					trend1d_move_model_a_to_b (c_model, w_model, n_model, &c_chisq, &w_chisq);
+					trend1d_load_gtg_and_gtd (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
+					trend1d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+					trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+					c_chisq = trend1d_get_chisq (data, n_data, n_model);
 					significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
 					GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, prob);
 				} while (significant);
 				/* Go back to previous model only if w_chisq < c_chisq  */
 				if (w_chisq < c_chisq) {
-					trend1d_move_model_a_to_b_1d (w_model, c_model, n_model, &w_chisq, &c_chisq);
-					trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-					if (Ctrl->weighted_output && n_model == Ctrl->N.M.n_terms) trend1d_recompute_weights_1d (GMT, data, n_data, work, &scale);
+					trend1d_move_model_a_to_b (w_model, c_model, n_model, &w_chisq, &c_chisq);
+					trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+					if (Ctrl->weighted_output && n_model == Ctrl->N.M.n_terms) trend1d_recompute_weights (GMT, data, n_data, work, &scale);
 				}
 			}
 			/* Next [robust] model has been found  */
@@ -795,34 +795,34 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 		if (!(significant) ) {	/* Go back to previous [robust] model, stored in o_model  */
 			n_model--;
 			rank--;
-			trend1d_move_model_a_to_b_1d (o_model, c_model, n_model, &o_chisq, &c_chisq);
-			trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-			if (Ctrl->N.M.robust && Ctrl->weighted_output) trend1d_recompute_weights_1d (GMT, data, n_data, work, &scale);
+			trend1d_move_model_a_to_b (o_model, c_model, n_model, &o_chisq, &c_chisq);
+			trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+			if (Ctrl->N.M.robust && Ctrl->weighted_output) trend1d_recompute_weights (GMT, data, n_data, work, &scale);
 		}
 	}
 	else {
 		n_model = Ctrl->N.M.n_terms;
-		trend1d_load_gtg_and_gtd_1d (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
-		trend1d_solve_system_1d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-		trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-		c_chisq = trend1d_get_chisq_1d (data, n_data, n_model);
+		trend1d_load_gtg_and_gtd (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
+		trend1d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+		trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+		c_chisq = trend1d_get_chisq (data, n_data, n_model);
 		GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, 1.00);
 		if (Ctrl->N.M.robust) {
 			do {
-				trend1d_recompute_weights_1d (GMT, data, n_data, work, &scale);
-				trend1d_move_model_a_to_b_1d (c_model, w_model, n_model, &c_chisq, &w_chisq);
-				trend1d_load_gtg_and_gtd_1d (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
-				trend1d_solve_system_1d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-				trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-				c_chisq = trend1d_get_chisq_1d (data, n_data, n_model);
+				trend1d_recompute_weights (GMT, data, n_data, work, &scale);
+				trend1d_move_model_a_to_b (c_model, w_model, n_model, &c_chisq, &w_chisq);
+				trend1d_load_gtg_and_gtd (data, n_data, gtg, gtd, workb, n_model, np, &(Ctrl->N.M));
+				trend1d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+				trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+				c_chisq = trend1d_get_chisq (data, n_data, n_model);
 				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
 				GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */
 			if (w_chisq < c_chisq) {
-				trend1d_move_model_a_to_b_1d (w_model, c_model, n_model, &w_chisq, &c_chisq);
-				trend1d_calc_m_and_r_1d (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
-				if (Ctrl->weighted_output && n_model == Ctrl->N.M.n_terms) trend1d_recompute_weights_1d (GMT, data, n_data, work, &scale);
+				trend1d_move_model_a_to_b (w_model, c_model, n_model, &w_chisq, &c_chisq);
+				trend1d_calc_m_and_r (data, n_data, c_model, n_model, &(Ctrl->N.M), workb);
+				if (Ctrl->weighted_output && n_model == Ctrl->N.M.n_terms) trend1d_recompute_weights (GMT, data, n_data, work, &scale);
 			}
 		}
 	}
@@ -864,7 +864,7 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 		}
 	}
 
-	trend1d_untrend1d_transform_x_1d (data, n_data, &(Ctrl->N.M), xmin, xmax);
+	trend1d_untrend1d_transform_x (data, n_data, &(Ctrl->N.M), xmin, xmax);
 
 	i = (Ctrl->model_parameters) ? n_model : Ctrl->n_outputs;
 	if ((error = GMT_Set_Columns (API, GMT_OUT, i, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {

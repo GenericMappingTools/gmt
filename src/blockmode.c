@@ -291,7 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, double width, bool center, int mode_choice, bool is_integer, double z_min, double z_max) {
+GMT_LOCAL struct BIN_MODE_INFO * blockmode_bin_setup (struct GMT_CTRL *GMT, double width, bool center, int mode_choice, bool is_integer, double z_min, double z_max) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the
 	 * data array is already sorted on a[k]. We check if we find more
@@ -332,7 +332,7 @@ GMT_LOCAL struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, double width, b
 	return (B);
 }
 
-GMT_LOCAL double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B) {
+GMT_LOCAL double blockmode_bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the
 	 * data array is already sorted on a[k]. We check if we find more
@@ -383,7 +383,7 @@ GMT_LOCAL double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n,
 	return (value);
 }
 
-GMT_LOCAL uint64_t get_source (struct BLK_DATA *d, uint64_t i, uint64_t j, unsigned int emode) {
+GMT_LOCAL uint64_t blockmode_get_source (struct BLK_DATA *d, uint64_t i, uint64_t j, unsigned int emode) {
 	/* Return the source at the center or the lo/hi of the two in the middle */
 	uint64_t s = j - i + 1, mid = i + s/2, src;
 	if (s%2)	/* A single central point */
@@ -393,7 +393,7 @@ GMT_LOCAL uint64_t get_source (struct BLK_DATA *d, uint64_t i, uint64_t j, unsig
 	return src;
 }
 
-GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index) {
+GMT_LOCAL double blockmode_weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index) {
 	/* Looks for the "shortest 50%". This means that when the cumulative weight
 	   (y) is plotted against the value (x) then the line between (xi,yi) and
 	   (xj,yj) should be the steepest for any combination where (yj-yi) is 50%
@@ -458,12 +458,12 @@ GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int em
 			p_max = p;
 			mode = 0.5 * (d[i].a[k] + d[j].a[k]);
 			n_modes = 1;
-			if (index) src = get_source (d, i, j, emode);	/* Must find corresponding middle or low/high index */
+			if (index) src = blockmode_get_source (d, i, j, emode);	/* Must find corresponding middle or low/high index */
 		}
 		else if (doubleAlmostEqual (p, p_max)) {	/* Same peak as previous best mode, get average of these modes */
 			if (index) {	/* Cannot have multiple modes when we are requesting the source, go with high or low per emode setting */
 				if (emode & BLK_DO_INDEX_HI) {	/* OK, we are interested in the higher mode only */
-					src = get_source (d, i, j, emode);	/* Must find corresponding high index */
+					src = blockmode_get_source (d, i, j, emode);	/* Must find corresponding high index */
 					mode = 0.5 * (d[i].a[k] + d[j].a[k]);
 				}
 			}
@@ -730,7 +730,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	qsort (data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
 	if (Ctrl->D.active) {	/* Choose to compute unweighted modes by histogram binning */
-		B = bin_setup (GMT, Ctrl->D.width, Ctrl->D.center, Ctrl->D.mode, is_integer, z_min, z_max);
+		B = blockmode_bin_setup (GMT, Ctrl->D.width, Ctrl->D.center, Ctrl->D.mode, is_integer, z_min, z_max);
 		Ctrl->Q.active = true;	/* Cannot do modal positions */
 	}
 
@@ -775,9 +775,9 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		n_in_cell = first_in_new_cell - first_in_cell;
 		if (n_in_cell > 2) {	/* data are already sorted on z; get z mode  */
 			if (Ctrl->D.active)
-				out[GMT_Z] = bin_mode (GMT, &data[first_in_cell], n_in_cell, GMT_Z, B);
+				out[GMT_Z] = blockmode_bin_mode (GMT, &data[first_in_cell], n_in_cell, GMT_Z, B);
 			else
-				out[GMT_Z] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Z, src_id_ptr);
+				out[GMT_Z] = blockmode_weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Z, src_id_ptr);
 			if (Ctrl->Q.active) {
 				i_n_in_cell = 1.0 / n_in_cell;
 				out[GMT_X] *= i_n_in_cell;
@@ -785,15 +785,15 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			}
 			else if (mode_xy) {
 				qsort (&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
-				out[GMT_X] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_X, NULL);
+				out[GMT_X] = blockmode_weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_X, NULL);
 
 				qsort (&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
-				out[GMT_Y] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Y, NULL);
+				out[GMT_Y] = blockmode_weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Y, NULL);
 			}
 		}
 		else if (n_in_cell == 2) {
 			if (Ctrl->D.active) {
-				out[GMT_Z] = bin_mode (GMT, &data[first_in_cell], n_in_cell, GMT_Z, B);
+				out[GMT_Z] = blockmode_bin_mode (GMT, &data[first_in_cell], n_in_cell, GMT_Z, B);
 				if (Ctrl->Q.active) {
 					out[GMT_X] *= 0.5;
 					out[GMT_Y] *= 0.5;
