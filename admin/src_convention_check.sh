@@ -25,8 +25,14 @@ egrep '^EXTERN_MSC' src/gmt.h | awk -F'(' '{print $1}' | awk '{print $NF}' | tr 
 egrep '^EXTERN_MSC' src/gmt_prototypes.h | awk -F'(' '{print $1}' | awk '{print $NF}' | tr '*' ' ' | awk '{printf "\t\"%s\",\n", $1}' > /tmp/gmt/prototypes.h
 # 3. Create the list of current prototype (gmtlib_*) functions from gmt_internals.h
 egrep '^EXTERN_MSC' src/gmt_internals.h | awk -F'(' '{print $1}' | awk '{print $NF}' | tr '*' ' ' | awk '{printf "\t\"%s\",\n", $1}' > /tmp/gmt/internals.h
-# Create list of module functions
-gmt --show-classic | awk '{printf "\t\"%s\",\n", $1}' > /tmp/gmt/modules.h
+# Create list ofboth classic and modern mode module functions
+gmt --show-modules > /tmp/gmt/all_modules.lis
+gmt --show-classic >> /tmp/gmt/all_modules.lis
+echo "gmtread" >> /tmp/gmt/all_modules.lis
+echo "gmtwrite" >> /tmp/gmt/all_modules.lis
+egrep '^EXTERN_MSC' src/gmt_compat.c | awk -F'(' '{print $1}' | awk '{print substr($NF,5)}' >> /tmp/gmt/all_modules.lis
+
+sort -u /tmp/gmt/all_modules.lis | awk '{printf "\t\"%s\",\n", $1}' > /tmp/gmt/modules.h
 gcc admin/src_convention_check.c -o /tmp/src_convention_check
 
 find src -name '*.c' | egrep -v 'triangle.c|mergesort.c|test|example|demo|kiss|ssrfpack|stripack|s_rint|qsort.c|cm4_functions' > /tmp/gmt/c_codes.lis

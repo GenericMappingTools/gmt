@@ -201,7 +201,7 @@ int main (int argc, char **argv) {
 			n = sscanf (line, "%s %s %s %s %s %s", word[0], word[1], word[2], word[3], word[4], word[5]);
 			if (n < 2) continue;
 			w = is_static = 0;
-			if (!strcmp (word[w], "if") || !strcmp (word[w], "for") || !strcmp (word[w], "while") || !strcmp (word[w], "else")) continue;
+			if (!strcmp (word[w], "if") || !strcmp (word[w], "for") || !strcmp (word[w], "while") || !strcmp (word[w], "else") || !strcmp (word[w], "enum")) continue;
 			if (strchr (word[0], ':')) continue;	/* goto label */
 			if (strchr (word[0], '(')) continue;	/* function call */
 			if (!strcmp (word[w], "GMT_LOCAL") || !strcmp (word[w], "static")) {
@@ -244,6 +244,8 @@ int main (int argc, char **argv) {
 					F[f].declared_dev = 1;
 				else if (is_recognized (F[f].name, libint))
 					F[f].declared_lib = 1;
+				if (L > 5 && strncmp (F[f].name, "GMT_", 4U) == 0 && is_recognized (&F[f].name[4], modules))
+					F[f].api = 1;
 				F[f].declared_local = is_static;
 				F[f].rec = rec;
 				F[f].in = calloc (NFILES, 1U);
@@ -314,8 +316,10 @@ int main (int argc, char **argv) {
 		}
 		else
 			strcpy (message, err_msg[err]);
-		if (!F[f].declared_local && F[f].n_files <= 1)
+		if (!F[f].declared_local && F[f].n_files <= 1 && !F[f].api) {
 			strcat (message, "Static function candidate");
+			err = 3;
+		}
 		if (!warn_only || err) {
 			fprintf (out, "%5d   %-40s %4d  %c   %-32s %6d  %s\n", F[f].n_files, F[f].name, F[f].n_calls, type[k], F[f].file, F[f].rec, message);
 			if (brief) {	/* Done with this, free memory */
