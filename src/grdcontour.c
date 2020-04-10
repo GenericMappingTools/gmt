@@ -1360,65 +1360,58 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (za) gmt_M_free (GMT, za);
 		if (zc) gmt_M_free (GMT, zc);
 	}
-	else if (Ctrl->C.file) {	/* Read contour info from file with cval C|A [angle [pen]] records */
-		struct GMT_RECORD *In = NULL;
-		int got, in_ID;
-		char pen[GMT_LEN64] = {""};
-		double tmp;
+	else if (Ctrl->C.file) {	/* Read contour info from file with cval [angle] C|A [pen]] records */
+		/* The deprecated format was cval C|A [angle [pen]] */
+		bool got_angle;
+		char pen[GMT_LEN64] = {""}, txt[GMT_LEN64] = {""};
+		unsigned int seg, row;
+		int nc;
+		struct GMT_DATASET *C = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
 
-		n_contours = 0;
-		/* Must register Ctrl->C.file first since we are going to read rec-by-rec from all available source */
-		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, NULL, Ctrl->C.file)) == GMT_NOTSET) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while registering contour info file %s\n", Ctrl->C.file);
-			Return (GMT_RUNTIME_ERROR);
-		}
-
-		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_EXISTING, 0, options) != GMT_NOERROR) {
-			Return (API->error);	/* Establishes data input */
-		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while enabling contour info file %s\n", Ctrl->C.file);
+		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		do {	/* Keep returning records until we reach EOF */
-			if ((In = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
-					Return (GMT_RUNTIME_ERROR);
-				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
-					continue;
-				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
-					break;
-				assert (In->text != NULL);						/* Should never get here */
-			}
-			if (gmt_is_a_blank_line (In->text)) continue;	/* Nothing in this record */
-
-			/* Data record to process */
-
-			if (n_contours == n_alloc) {
-				n_alloc += 32;
-				cont = gmt_M_memory (GMT, cont, n_alloc, struct PSCONTOURGRD);
-			}
-			gmt_M_memset (&cont[n_contours], 1, struct PSCONTOURGRD);	/* Cause the pen structure needs to be empty */
-			got = sscanf (In->text, "%lf %c %lf %s", &cont[n_contours].val, &cont[n_contours].type, &tmp, pen);
-			if (cont[n_contours].type == '\0') cont[n_contours].type = 'C';
-			cont[n_contours].do_tick = (Ctrl->T.active && (cont[n_contours].type == 'C' || cont[n_contours].type == 'A')) ? 1 : 0;
-			cont[n_contours].angle = (got == 3) ? tmp : GMT->session.d_NaN;
-			if (got >= 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
-			if (got == 4) {	/* Also got a pen specification for this contour */
-				if (gmt_getpen (GMT, pen, &cont[n_contours].pen)) {	/* Bad pen syntax */
-					gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
-					Return (GMT_RUNTIME_ERROR);
+		n_contours = C->n_records;
+		got_angle = (S->n_columns == 2);
+		cont = gmt_M_memory (GMT, NULL, n_contours, struct PSCONTOURGRD);
+		for (seg = c = 0; seg < C->n_segments; seg++) {
+			S = C->table[0]->segment[seg];
+			for (row = 0; row < S->n_rows; row++, c++) {
+				cont[c].val = S->data[GMT_X][row];
+				cont[c].angle = GMT->session.d_NaN;	/* May be overridden below */
+				pen[0] = txt[0] = '\0';
+				nc = sscanf (S->text[row], "%c %s %s", &cont[c].type, txt, pen);
+				if (S->n_columns == 2) {	/* Both value and angle given as part of new syntax*/
+					cont[c].angle = S->data[GMT_Y][row];
+					if (nc == 2) strcpy (pen, txt);	/* Since trailing text here was <type> <pen> */
 				}
-				cont[n_contours].penset = true;
+				else if (nc == 3) {	/* Deprecated format with <type> <angle> <pen> */
+					cont[c].angle = atof (txt);
+					got_angle = true;
+				}
+				else if (nc == 2) {	/* Trailing text is either <type> <angle> or <type> <pen> */
+					if (gmt_is_pen (GMT, txt))	/* Definitively a pen */
+						strcpy (pen, txt);
+					else {	/* Could still be a pen if no unit appended */
+						cont[c].angle = atof (txt);
+						got_angle = true;
+						if (cont[c].angle < 1.0)
+							GMT_Report (API, GMT_MSG_WARNING, "Cannot tell if %s is a pen or angle; chose angle. Please use trailing c|i|p units on pens\n", txt);
+					}
+				}
+				/* else nc == 1 for record with only type information (no angle nor pen) */
+				if (pen[0]) {	/* Got a pen */
+					if (gmt_getpen (GMT, pen, &cont[c].pen)) {	/* Bad pen syntax */
+						gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
+						Return (GMT_RUNTIME_ERROR);
+					}
+					cont[c].penset = true;
+				}
+				cont[c].do_tick = (Ctrl->T.active && (cont[c].type == 'C' || cont[c].type == 'A')) ? 1 : 0;
+				if (got_angle) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
 			}
-
-			n_contours++;
-		} while (true);
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further grid data input */
-			Return (API->error);
 		}
-		cont = gmt_M_memory (GMT, cont, n_contours, struct PSCONTOURGRD);
 	}
 	else if (!gmt_M_is_dnan (Ctrl->C.single_cont) || !gmt_M_is_dnan (Ctrl->A.single_cont)) {	/* Plot one or two contours only  */
 		n_contours = 0;

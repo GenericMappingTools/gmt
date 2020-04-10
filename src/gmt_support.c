@@ -6514,6 +6514,18 @@ void gmt_init_pen (struct GMT_CTRL *GMT, struct GMT_PEN *pen, double width) {
 	pen->width = width;
 }
 
+bool gmt_is_pen (struct GMT_CTRL *GMT, char *line) {
+	/* Returns true if text is a pen specification. Note: false means it is only a number, which could be a dumb specification for a pen, e.g. 2 */
+	char *c = NULL;
+	unsigned int i, nc;
+	gmt_M_unused (GMT);
+	if ((c = strchr (line, '+')) && strchr ("cosv", c[1])) return (true);	/* Found valid pen modifiers */
+	for (i = nc = 0; line[i]; i++) if (line[i] == ',') nc++;	/* count commas */
+	if (nc > 0) return (true);	/* At least 1 comma means we got color and/or style so clearly a pen */
+	if (strchr (GMT_DIM_UNITS, line[strlen(line)-1])) return (true);	/* Clearly ends with a explicit measure unit, so a pen */
+	return (false);	/* Might still be, but here we just have a dumb number so who can tell */
+}
+
 /*! . */
 bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	int i, n;
