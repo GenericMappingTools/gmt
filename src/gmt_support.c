@@ -3271,14 +3271,14 @@ GMT_LOCAL unsigned int support_inonout_sub (struct GMT_CTRL *GMT, double x, doub
 	return (side);
 }
 
-#ifdef TRIANGLE_D
-
 int gmt_signum (double x) {
 	/* The standard sign function */
 	if (x < 0.0) return -1;
 	if (x > 0.0) return +1;
 	return 0;
 }
+
+#ifdef TRIANGLE_D
 
 /*
  * New gmt_delaunay interface routine that calls the triangulate function
