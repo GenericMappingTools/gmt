@@ -122,7 +122,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deal
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *gxar,
+GMT_LOCAL void grdgravmag3d_rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *gxar,
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double u,
 		double v, double alfa, double beta, double gama, struct REDPOL_CTRL *Ctrl) {
 
@@ -157,7 +157,7 @@ GMT_LOCAL void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi
 }
 
 
-GMT_LOCAL void rtp_filt_NOTcolinear (int i, int j, int n21, double *gxr, double *gxi, double *gxar,
+GMT_LOCAL void grdgravmag3d_rtp_filt_not_colinear (int i, int j, int n21, double *gxr, double *gxi, double *gxar,
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double *gxtr,
 		double *gxti, double *gxmr, double *gxmi, double *gxnr, double *gxni, double u, double v, double alfa,
 		double beta, double gama, double tau, double mu, double nu, struct REDPOL_CTRL *Ctrl) {
@@ -211,7 +211,7 @@ GMT_LOCAL void rtp_filt_NOTcolinear (int i, int j, int n21, double *gxr, double 
 	}
 }
 
-GMT_LOCAL void mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j_data_start, struct REDPOL_CTRL *Ctrl) {
+GMT_LOCAL void grdgravmag3d_mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j_data_start, struct REDPOL_CTRL *Ctrl) {
 	/* This routine mirrors or replicates the West and East borders j_data_start times
 	   and the South and North borders by i_data_start times.
 	   nc	is the total number of columns by which the grid is extended
@@ -258,7 +258,7 @@ GMT_LOCAL void mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j
 	}
 }
 
-GMT_LOCAL void tfpoeq(double *w, int m, int n, double *greel, double *gim,
+GMT_LOCAL void grdgravmag3d_tfpoeq(double *w, int m, int n, double *greel, double *gim,
 	    double *cosphi, double *sinphi, double *cospsi, double *sinpsi) {
     /* Initialized data */
 
@@ -368,11 +368,11 @@ L4:
 }
 
 
-GMT_LOCAL int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, double elong, double lat, double *out) {
+GMT_LOCAL int grdgravmag3d_igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, double elong, double lat, double *out) {
  /*     This is a synthesis routine for the 10th generation IGRF as agreed
   *     in December 2004 by IAGA Working Group V-MOD. It is valid 1900.0 to
   *     2010.0 inclusive. Values for dates from 1945.0 to 2000.0 inclusive are
-  *     definitve, otherwise they are non-definitive.
+  *     definitive, otherwise they are non-definitive.
   *   INPUT
   *     isv   = 0 if main-field values are required
   *     isv   = 1 if secular variation values are required
@@ -1262,7 +1262,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->M.pad_zero)		/* That is, if we want edges reflected or replicated */
-		mirror_edges (Gin->data, Ctrl->F.ncoef_col-1, m21-1, n21-1, Ctrl);
+		grdgravmag3d_mirror_edges (Gin->data, Ctrl->F.ncoef_col-1, m21-1, n21-1, Ctrl);
 
 	/* Section to deal with possible external grids with dip and dec for interpolation */
 
@@ -1362,7 +1362,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 				n21 = (Ctrl->F.ncoef_row+1) / 2;
 			}
 			/* Compute dec and dip at the central point of the moving window */
-			igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, slonm, slatm, out_igrf);
+			grdgravmag3d_igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, slonm, slatm, out_igrf);
 			if (!Ctrl->C.const_f) {
 				Ctrl->C.dec = out_igrf[5] * D2R;
 				Ctrl->C.dip = out_igrf[6] * D2R;
@@ -1398,11 +1398,11 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 					u = r * fi;		v = s * psi;
 
 					if (!(Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {
-						rtp_filt_colinear(i,j,n21,gxr,gxi,gxar,gxai,gxbr,gxbi,gxgr,gxgi,
+						grdgravmag3d_rtp_filt_colinear(i,j,n21,gxr,gxi,gxar,gxai,gxbr,gxbi,gxgr,gxgi,
 						                  u,v,alfa,beta,gama, Ctrl);
 					}
 					else {		/* Case more general. alfa, beta, gama, tau, mu e nu */
-						rtp_filt_NOTcolinear(i,j,n21,gxr,gxi,gxar,gxai,gxbr,gxbi,gxgr,gxgi,gxtr,gxti,
+						grdgravmag3d_rtp_filt_not_colinear(i,j,n21,gxr,gxi,gxar,gxai,gxbr,gxbi,gxgr,gxgi,gxtr,gxti,
 						                     gxmr,gxmi,gxnr,gxni,u,v,alfa,beta,gama,tau,mu,nu, Ctrl);
 					}
 				}
@@ -1413,18 +1413,18 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 			gxgr[ij_mn(Ctrl,m21-1,0)] = 0;	gxgi[ij_mn(Ctrl,m21-1,0)] = 0;
 
 			/* Compute iFT of the filter */
-			tfpoeq(fxr, Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxr,gxi,   cosphi,sinphi,cospsi,sinpsi);
-			tfpoeq(fxar,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxar,gxai, cosphi,sinphi,cospsi,sinpsi);
-			tfpoeq(fxbr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxbr,gxbi, cosphi,sinphi,cospsi,sinpsi);
-			tfpoeq(fxgr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxgr,gxgi, cosphi,sinphi,cospsi,sinpsi);
+			grdgravmag3d_tfpoeq(fxr, Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxr,gxi,   cosphi,sinphi,cospsi,sinpsi);
+			grdgravmag3d_tfpoeq(fxar,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxar,gxai, cosphi,sinphi,cospsi,sinpsi);
+			grdgravmag3d_tfpoeq(fxbr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxbr,gxbi, cosphi,sinphi,cospsi,sinpsi);
+			grdgravmag3d_tfpoeq(fxgr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxgr,gxgi, cosphi,sinphi,cospsi,sinpsi);
 
 			if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {
 				gxtr[ij_mn(Ctrl,m21-1,0)] = 0;	gxti[ij_mn(Ctrl,m21-1,0)] = 0;
 				gxmr[ij_mn(Ctrl,m21-1,0)] = 0;	gxmi[ij_mn(Ctrl,m21-1,0)] = 0;
 				gxnr[ij_mn(Ctrl,m21-1,0)] = 0;	gxni[ij_mn(Ctrl,m21-1,0)] = 0;
-				tfpoeq(fxtr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxtr,gxti, cosphi,sinphi,cospsi,sinpsi);
-				tfpoeq(fxmr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxmr,gxmi, cosphi,sinphi,cospsi,sinpsi);
-				tfpoeq(fxnr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxnr,gxni, cosphi,sinphi,cospsi,sinpsi);
+				grdgravmag3d_tfpoeq(fxtr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxtr,gxti, cosphi,sinphi,cospsi,sinpsi);
+				grdgravmag3d_tfpoeq(fxmr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxmr,gxmi, cosphi,sinphi,cospsi,sinpsi);
+				grdgravmag3d_tfpoeq(fxnr,Ctrl->F.ncoef_row, Ctrl->F.ncoef_col,gxnr,gxni, cosphi,sinphi,cospsi,sinpsi);
 			}
 
 			/* Convolve filter with input data that is inside current window (plus what filter width imposes) */
@@ -1434,7 +1434,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 					if (ftlon[col] < sloni || ftlon[col] > slonf) continue;	/* Current point outside WOI */
 					/* Compute dec and dip at current point */
 					if (!Ctrl->C.const_f) {		/* It means we need to get F (& M) vector parameters */
-						igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, ftlon[col], ftlat[row], out_igrf);
+						grdgravmag3d_igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, ftlon[col], ftlat[row], out_igrf);
 						Ctrl->C.dec = out_igrf[5] * D2R;
 						Ctrl->C.dip = out_igrf[6] * D2R;
 						if (Ctrl->E.dip_grd_only) {

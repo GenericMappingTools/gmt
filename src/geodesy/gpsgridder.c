@@ -340,7 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
  * coeff[GSP_RANGE_V]:	The largest |range| of the detrended v data
  */
 
-GMT_LOCAL void do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double *u, double *v, uint64_t n_uv, unsigned int mode, double *coeff) {
+GMT_LOCAL void gpsgridder_do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double *u, double *v, uint64_t n_uv, unsigned int mode, double *coeff) {
 	/* We always remove/restore the mean observation values.  mode is a combination of bitflags that affects what we do:
 	 * Bit GPS_TREND will also remove linear trend
 	 * Bit GPS_NORM will normalize residuals by full range
@@ -432,7 +432,7 @@ GMT_LOCAL void do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double
 		coeff[GSP_MEAN_V], coeff[GSP_SLP_VX], coeff[GSP_MEAN_X], coeff[GSP_SLP_VY], coeff[GSP_MEAN_Y], coeff[GSP_RANGE_V]);
 }
 
-GMT_LOCAL void undo_gps_normalization (double *X, unsigned int mode, double *coeff) {
+GMT_LOCAL void gpsgridder_undo_gps_normalization (double *X, unsigned int mode, double *coeff) {
  	/* Here, X holds x,y,u,v */
 	if (mode & GPS_NORM) {	/* Scale back up by residual data range (if we normalized by range) */
 		X[GMT_U] *= coeff[GSP_RANGE_U];
@@ -447,7 +447,7 @@ GMT_LOCAL void undo_gps_normalization (double *X, unsigned int mode, double *coe
 	}
 }
 
-GMT_LOCAL double get_gps_radius (struct GMT_CTRL *GMT, double *X0, double *X1) {
+GMT_LOCAL double gpsgridder_get_gps_radius (struct GMT_CTRL *GMT, double *X0, double *X1) {
 	double r;
 	/* Get distance between the two points: */
 	/* 2-D Cartesian or Flat Earth approximation in km */
@@ -455,7 +455,7 @@ GMT_LOCAL double get_gps_radius (struct GMT_CTRL *GMT, double *X0, double *X1) {
 	return (r);
 }
 
-GMT_LOCAL void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, double *dx, double *dy, bool geo) {
+GMT_LOCAL void gpsgridder_get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, double *dx, double *dy, bool geo) {
 	/* Get increments dx,dy between point 1 and 0, as measured from point 1.
 	 * Point X1 is the fixed point where we are evaluating the solution for all other points X0 */
 	if (geo) {	/* Do flat Earth approximation in km */
@@ -470,13 +470,13 @@ GMT_LOCAL void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, doubl
 	}
 }
 
-GMT_LOCAL void evaluate_greensfunctions (struct GMT_CTRL *GMT, double *X0, double *X1, double par[], bool geo, double G[]) {
+GMT_LOCAL void gpsgridder_evaluate_greensfunctions (struct GMT_CTRL *GMT, double *X0, double *X1, double par[], bool geo, double G[]) {
 	/* Evaluate the Green's functions q(x), p(x), and w(x), here placed in
 	 * G[GPS_FUNC_Q], G[GPS_FUNC_P], and G[GPS_FUNC_W].
 	 * Here, par[0] holds Poisson's ratio, par[1] holds delta_r^2 (to prevent singularity) */
 	double dx, dy, dx2, dy2, dr2, c1, c2, c2_dr2, dr2_fudge, dx2_fudge, dy2_fudge, dxdy_fudge;
 
-	get_gps_dxdy (GMT, X0, X1, &dx, &dy, geo);
+	gpsgridder_get_gps_dxdy (GMT, X0, X1, &dx, &dy, geo);
 
 	dx2 = dx * dx, dy2 = dy * dy;	/* Original squared offsets */
 	dr2 = dx2 + dy2;				/* Original radius squared */
@@ -500,7 +500,7 @@ GMT_LOCAL void evaluate_greensfunctions (struct GMT_CTRL *GMT, double *X0, doubl
 	G[GPS_FUNC_W]  = -c2_dr2 * dxdy_fudge;
 }
 
-GMT_LOCAL void dump_system (double *A, double *obs, uint64_t n_params, char *string) {
+GMT_LOCAL void gpsgridder_dump_system (double *A, double *obs, uint64_t n_params, char *string) {
 	/* Dump an A | b system to stderr for debugging */
 	uint64_t row, col, ij;
 	fprintf (stderr, "\n%s\n", string);
@@ -627,7 +627,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		/* Check for data duplicates by comparing this point to all previous points */
 		skip = false;
 		for (i = 0; !skip && i < n_uv; i++) {
-			r = get_gps_radius (GMT, X[i], X[n_uv]);
+			r = gpsgridder_get_gps_radius (GMT, X[i], X[n_uv]);
 			if (gmt_M_is_zero (r)) {	/* Duplicates will produce a zero point separation */
 				if (doubleAlmostEqualZero (in[GMT_U], u[i]) && doubleAlmostEqualZero (in[GMT_V], v[i])) {
 					GMT_Report (API, GMT_MSG_ERROR, "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
@@ -789,7 +789,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	/* Remove mean (or LS plane) from data (we will add these back later) */
 
-	do_gps_normalization (API, X, u, v, n_uv, normalize, norm);
+	gpsgridder_do_gps_normalization (API, X, u, v, n_uv, normalize, norm);
 
 	/* Set up linear system Ax = b to solve for f_x, f_y body forces */
 
@@ -809,7 +809,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			Guv_ij = Gu_ij + n_uv;		/* Index for Guv term in equation for u */
 			Gvu_ij = Gu_ij + off;		/* Index for Gvu term in equation for v */
 			Gv_ij  = Guv_ij + off;		/* Index for Gv term in equation for v */
-			evaluate_greensfunctions (GMT, X[col], X[row], par, geo, G);
+			gpsgridder_evaluate_greensfunctions (GMT, X[col], X[row], par, geo, G);
 			A[Gu_ij]  = G[GPS_FUNC_Q];
 			A[Gv_ij]  = G[GPS_FUNC_P];
 			A[Guv_ij] = A[Gvu_ij] = G[GPS_FUNC_W];
@@ -818,7 +818,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (&u[n_uv], v, n_uv, double);	/* Place v array at end of u array */
 	obs = u;					/* Hereafter, use obs to refer to the combined (u,v) array */
-	if (Ctrl->Z.active) dump_system (A, obs, n_params, "A Matrix row || u|v");	/* Dump the A | b system under debug */
+	if (Ctrl->Z.active) gpsgridder_dump_system (A, obs, n_params, "A Matrix row || u|v");	/* Dump the A | b system under debug */
 
 	if (Ctrl->E.active) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
 		A_orig = gmt_M_memory (GMT, NULL, n_params * n_params, double);
@@ -869,7 +869,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, u);
 		A = At;	obs = u = S;
-		if (Ctrl->Z.active) dump_system (A, obs, n_params, "Normal equation N row || r");
+		if (Ctrl->Z.active) gpsgridder_dump_system (A, obs, n_params, "Normal equation N row || r");
 	}
 	if (Ctrl->C.active) {		/* Solve using SVD decomposition */
 		int error;
@@ -1005,12 +1005,12 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 #if 0
 			here[GMT_U] = here[GMT_V] = 0.0;	/* Initialize before we sum up */
 			for (p = 0; p < n_uv; p++) {
-				evaluate_greensfunctions (GMT, X[p], here, par, geo, G);
+				gpsgridder_evaluate_greensfunctions (GMT, X[p], here, par, geo, G);
 				here[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
 				here[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 			}
 #endif
-			undo_gps_normalization (here, normalize, norm);
+			gpsgridder_undo_gps_normalization (here, normalize, norm);
 			dev_u = orig_u[j] - here[GMT_U];
 			dev_v = orig_v[j] - here[GMT_V];
 			pvar_sum += here[GMT_U] * here[GMT_U] + here[GMT_V] * here[GMT_V];
@@ -1117,11 +1117,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				out[GMT_Y] = T->segment[seg]->data[GMT_Y][row];
 				out[GMT_U] = out[GMT_V] = 0.0;	/* Initialize before adding up terms */
 				for (p = 0; p < n_uv; p++) {
-					evaluate_greensfunctions (GMT, X[p], out, par, geo, G);
+					gpsgridder_evaluate_greensfunctions (GMT, X[p], out, par, geo, G);
 					out[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
 					out[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 				}
-				undo_gps_normalization (out, normalize, norm);
+				gpsgridder_undo_gps_normalization (out, normalize, norm);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 			}
 		}
@@ -1160,11 +1160,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 						V[GMT_X] = xp[col];
 						/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
 						for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up all body forces */
-							evaluate_greensfunctions (GMT, X[p], V, par, geo, G);
+							gpsgridder_evaluate_greensfunctions (GMT, X[p], V, par, geo, G);
 							V[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
 							V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 						}
-						undo_gps_normalization (V, normalize, norm);
+						gpsgridder_undo_gps_normalization (V, normalize, norm);
 						Out[GMT_X]->data[ij] = (gmt_grdfloat)V[GMT_U];
 						Out[GMT_Y]->data[ij] = (gmt_grdfloat)V[GMT_V];
 					}
@@ -1204,11 +1204,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 					V[GMT_X] = xp[col];
 					/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
 					for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up terms */
-						evaluate_greensfunctions (GMT, X[p], V, par, geo, G);
+						gpsgridder_evaluate_greensfunctions (GMT, X[p], V, par, geo, G);
 						V[GMT_U] += (f_x[p] * G[GPS_FUNC_Q] + f_y[p] * G[GPS_FUNC_W]);
 						V[GMT_V] += (f_x[p] * G[GPS_FUNC_W] + f_y[p] * G[GPS_FUNC_P]);
 					}
-					undo_gps_normalization (V, normalize, norm);
+					gpsgridder_undo_gps_normalization (V, normalize, norm);
 					Out[GMT_X]->data[ij] = (gmt_grdfloat)V[GMT_U];
 					Out[GMT_Y]->data[ij] = (gmt_grdfloat)V[GMT_V];
 				}

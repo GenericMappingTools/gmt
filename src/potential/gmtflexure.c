@@ -50,9 +50,9 @@
  * thickness (-E) must be supplied. If no inputfiles are given, then the min/max
  * distance and increment must be given on the commandline using the -T option.
  * An arbitrary horizontal stress may be imposed with the -F option. If rho_infill
- * and rho_water is different, a variable restoring force scheme is used (flx1dk)
- * rather than the fixed k(x) solution (flx1d). If there is pre-existing deformation
- * we use another solution (flx1dw0).
+ * and rho_water is different, a variable restoring force scheme is used (gmtflexure_flx1dk)
+ * rather than the fixed k(x) solution (gmtflexure_flx1d). If there is pre-existing deformation
+ * we use another solution (gmtflexure_flx1dw0).
  * All profiles must have equidistant sampling!!
  *
  */
@@ -337,12 +337,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL double te_2_d (struct GMTFLEXURE_CTRL *Ctrl, double te) {
+GMT_LOCAL double gmtflexure_te_2_d (struct GMTFLEXURE_CTRL *Ctrl, double te) {
 	/* Convert elastic thickness to flexural rigidity */
 	return (Ctrl->C.E * pow (te, 3.0) / (12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)));
 }
 
-GMT_LOCAL int get_curvature (double flexure[], int n, double dist_increment, double curvature[]) {
+GMT_LOCAL int gmtflexure_get_curvature (double flexure[], int n, double dist_increment, double curvature[]) {
 	/* Calculate central second differences of flexure = curvature */
 	int i;
 
@@ -355,14 +355,14 @@ GMT_LOCAL int get_curvature (double flexure[], int n, double dist_increment, dou
 	return (1);
 }
 
-GMT_LOCAL int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b) {
+GMT_LOCAL int gmtflexure_lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b) {
 	/* A 5-diagonal matrix problem A*w = p solved using a LU-transformation */
 
 	int i, off3, off5;
 	double new_max, old_max, *l = NULL, *u = NULL, *z = NULL;
 
 	if (n < 4) {
-		fprintf (stderr, "lu_solver: n < 4!\n");
+		fprintf (stderr, "gmtflexure_lu_solver: n < 4!\n");
 		return (1);
 	}
 
@@ -452,7 +452,7 @@ GMT_LOCAL int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, doub
 	return (0);
 }
 
-/* flx1d will compute 1-D plate flexure for a variable rigidity case.
+/* gmtflexure_flx1d will compute 1-D plate flexure for a variable rigidity case.
  * The equation is
  *	d2/dx2 (D * d2/dx2 w(x)) + T * d2/dx2 w(x) + k(x) * w(x) = p (x)
  * Various boundary conditions may be imposed by setting the
@@ -465,7 +465,7 @@ GMT_LOCAL int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, doub
  *	3:	'free'. Moment = const, Force = const. Store M in w[i] and F in
  *		w[i+1], where i is 0/(n-2) for left/right edge.
  * The deflections are solved by forward/backward substitution to solve
- * the 5-diagonal matrix problem A*w = p using a LU-transformation (lu_solver)
+ * the 5-diagonal matrix problem A*w = p using a LU-transformation (gmtflexure_lu_solver)
  * The parameters passed are:
  *	w	: Name of array holding flexure (output)
  *	d	: Name of array holding rigidities (input)
@@ -484,7 +484,7 @@ GMT_LOCAL int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, doub
  *
  */
 
-GMT_LOCAL int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
+GMT_LOCAL int gmtflexure_flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
 	int i, row, off, ind, error;
 	double dx_4, c_1 = 0.0, c_2 = 0.0, stress2, restore, *work = NULL;
 
@@ -642,16 +642,16 @@ GMT_LOCAL int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
 
 	/* Solve for w */
 
-	error = lu_solver (GMT, work, n, w, p);
+	error = gmtflexure_lu_solver (GMT, work, n, w, p);
 	gmt_M_free (GMT, work);
 	if (error == 1) {
-		fprintf (stderr, "flx1d: error=1 returned from lu_solver!\n");
+		fprintf (stderr, "gmtflexure_flx1d: error=1 returned from gmtflexure_lu_solver!\n");
 		return (error);
 	}
 	return (0);
 }
 
-/* flx1dk will compute 1-D plate flexure for a variable rigidity case with
+/* gmtflexure_flx1dk will compute 1-D plate flexure for a variable rigidity case with
  * a restoring force that depends on the sign of the deflection.  After each
  * iteration, we recompute k(x) so that k(x) = G * (rho_m - rho_infill (or rho_load)) where
  * deflections are positive (i.e. down), whereas k(x) = G * (rho_m - rho_w)
@@ -670,7 +670,7 @@ GMT_LOCAL int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
  *	3:	'free'. Moment = const, Force = const. Store M in w[i] and F in
  *		w[i+1], where i is 0/(n-2) for left/right edge.
  * The deflections are solved by forward/backward substitution to solve
- * the 5-diagonal matrix problem A*w = p using a LU-transformation (lu_solver)
+ * the 5-diagonal matrix problem A*w = p using a LU-transformation (gmtflexure_lu_solver)
  * The parameters passed are:
  *	w	: Name of array holding flexure (output)
  *	d	: Name of array holding rigidities (input)
@@ -693,7 +693,7 @@ GMT_LOCAL int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
 
 #define LIMIT	0.01
 
-GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double stress, int bc_left, int bc_right) {
+GMT_LOCAL int gmtflexure_flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double stress, int bc_left, int bc_right) {
 	int i, error;
 	double restore_a, restore_b1, restore_b2, diff = 2 * LIMIT, dw, w0, w1, wn1, wn, max_dw;
 	double *w_old = NULL, *k = NULL, *load = NULL;
@@ -717,7 +717,7 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
 
 	gmt_M_memcpy (load, p, n, double);
 
-	if ((error = flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right))) {
+	if ((error = gmtflexure_flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right))) {
 		gmt_M_free (GMT, load);		gmt_M_free (GMT, k);
 		return (error);
 	}
@@ -740,7 +740,7 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
 		gmt_M_memset (w, n, double);
 		w[0] = w0;	w[1] = w1;	w[n-2] = wn1;	w[n-1] = wn;	/* Reset BC values */
 
-		error = flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right);
+		error = gmtflexure_flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right);
 
 		for (i = 0, diff = max_dw = 0.0; i < n; i++) {
 			dw = fabs (w[i] - w_old[i]);
@@ -758,7 +758,7 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
 	return (error);
 }
 
-/* flx1dw0 will compute 1-D plate flexure for a variable rigidity case with
+/* gmtflexure_flx1dw0 will compute 1-D plate flexure for a variable rigidity case with
  * a pre-existing deformation.  The equation is
  *
  *	d2/dx2 (D * d2/dx2 w(x)) + T * d2/dx2 [w(x) + w0(x)] + k(x) * w(x) = p (x)
@@ -773,7 +773,7 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
  *	3:	'free'. Moment = const, Force = const. Store M in w[i] and F in
  *		w[i+1], where i is 0/(n-2) for left/right edge.
  * The deflections are solved by forward/backward substitution to solve
- * the 5-diagonal matrix problem A*w = p using a LU-transformation (lu_solver)
+ * the 5-diagonal matrix problem A*w = p using a LU-transformation (gmtflexure_lu_solver)
  * The parameters passed are:
  *	w0	: Name of array holding pre-existing flexure (input)
  *	w	: Name of array holding flexure (output)
@@ -794,7 +794,7 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
  *
  */
 
-GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
+GMT_LOCAL int gmtflexure_flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
 	int i, row, off, ind, error;
 	double dx_4, c_1 = 0.0, c_2, stress2, restore, *work = NULL, *squeeze = NULL;
 
@@ -958,18 +958,18 @@ GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, d
 
 	/* Solve for w */
 
-	error = lu_solver (GMT, work, n, w, p);
+	error = gmtflexure_lu_solver (GMT, work, n, w, p);
 	gmt_M_free (GMT, work);
 	gmt_M_free (GMT, squeeze);
 	if (error == 1) {
-		fprintf (stderr, "flx1d: error=1 returned from lu_solver!\n");
+		fprintf (stderr, "gmtflexure_flx1dw0: error=1 returned from gmtflexure_lu_solver!\n");
 		return (error);
 	}
 	/* for (i = 0; i < n; i++) w[i] += w0[i]; */
 	return (0);
 }
 
-/* flxr will compute a cross-section of 3-D plate flexure for a variable rigidity
+/* gmtflexure_flxr will compute a cross-section of 3-D plate flexure for a variable rigidity
  * plate with an axially symmetric load applied. In this case we have no phi-
  * dependence, only radial, so a 1-D solution can be used;
  * The equation is
@@ -978,7 +978,7 @@ GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, d
  *
  * Finite difference equation taken from J. Bodine's Technical Report.
  * The deflections are solved by forward/backward substitution to solve
- * the 5-diagonal matrix problem A*w = p using a LU-transformation (lu_solver)
+ * the 5-diagonal matrix problem A*w = p using a LU-transformation (gmtflexure_lu_solver)
  * The parameters passed are:
  *	w	: Name of array holding flexure (output)
  *	d	: Name of array holding rigidities (input)
@@ -995,7 +995,7 @@ GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, d
  */
 
 #if 0
-GMT_LOCAL int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double restore) {
+GMT_LOCAL int gmtflexure_flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double restore) {
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
 
@@ -1064,16 +1064,16 @@ GMT_LOCAL int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n
 
 	/* Solve for w */
 	off = 5*n;
-	error = lu_solver (GMT, work, n, w, p);
+	error = gmtflexure_lu_solver (GMT, work, n, w, p);
 	gmt_M_free (GMT, work);
 	if (error == 1) {
-		fprintf(stderr, "flxr: error=1 returned from lu_solver!\n");
+		fprintf(stderr, "gmtflexure_flxr: error=1 returned from gmtflexure_lu_solver!\n");
 		return (error);
 	}
 	return (0);
 }
 
-GMT_LOCAL int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore) {
+GMT_LOCAL int gmtflexure_flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore) {
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
 
@@ -1141,16 +1141,16 @@ GMT_LOCAL int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
 
 	/* Solve for w */
 	off = 5*n;
-	error = lu_solver (GMT, work, n, w, p);
+	error = gmtflexure_lu_solver (GMT, work, n, w, p);
 	gmt_M_free (GMT, work);
 	if (error == 1) {
-		fprintf(stderr, "flxr2: error=1 returned from lu_solver!\n");
+		fprintf(stderr, "gmtflexure_flxr2: error=1 returned from gmtflexure_lu_solver!\n");
 		return (error);
 	}
 	return (0);
 }
 
-GMT_LOCAL int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx) {
+GMT_LOCAL int gmtflexure_flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx) {
 	int i, error, i_rx;
 	double restore_a, restore_b1, restore_b2, restore_b3, diff = 2 * LIMIT, dw, max_dw;
 	double *w_old = NULL, *k = NULL, *load = NULL;
@@ -1174,7 +1174,7 @@ GMT_LOCAL int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[],
 
 	memcpy ((void *)load, (void *)p, n * sizeof (double));
 
-	error = flxr2 (GMT, w, d, p, n, dx, k);
+	error = gmtflexure_flxr2 (GMT, w, d, p, n, dx, k);
 
 	while (!error && diff > LIMIT) {	/* Iterate as long as rms difference is > LIMIT. diff starts at 2*LIMIT. */
 
@@ -1202,7 +1202,7 @@ GMT_LOCAL int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[],
 		memcpy ((void *)p, (void *)load, n * sizeof (double));
 		memset ((void *)w, 0, n * sizeof (double));
 
-		error = flxr2 (GMT, w, d, p, n, dx, k);
+		error = gmtflexure_flxr2 (GMT, w, d, p, n, dx, k);
 
 		for (i = 0, diff = max_dw = 0.0; i < n; i++) {
 			dw = fabs (w[i] - w_old[i]);
@@ -1310,7 +1310,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				S = E->table[tbl]->segment[seg];	/* Current segment */
 				for (row = 0; row < S->n_rows; row++) {	/* Covert to pressure */
 					if (S->data[GMT_Y][row] < 1e10) /* Got elastic thickness, convert to rigidity */
-						S->data[GMT_Y][row] = te_2_d (Ctrl, scale * S->data[GMT_Y][row]);
+						S->data[GMT_Y][row] = gmtflexure_te_2_d (Ctrl, scale * S->data[GMT_Y][row]);
 					if (S->data[GMT_Y][row] < d_min) d_min = S->data[GMT_Y][row];
 					if (S->data[GMT_Y][row] > d_max) d_max = S->data[GMT_Y][row];
 				}
@@ -1347,7 +1347,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		}
 	}
 	if (!Ctrl->E.file) {	/* Got a constant Te in m instead */
-		double d = te_2_d (Ctrl, Ctrl->E.te);
+		double d = gmtflexure_te_2_d (Ctrl, Ctrl->E.te);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Constant rigidity: %g \n", d);
 		E = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, Q);
 		/* Overwrite 2nd column with constant d below */
@@ -1432,15 +1432,15 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			if (Ctrl->T.active) {	/* Plate has pre-existing deflection */
 				double *w0 = T->table[tbl]->segment[seg]->data[GMT_Y];
 				GMT_Report (API, GMT_MSG_INFORMATION, "Calculate flexure of pre-deformed surface\n");
-				error = flx1dw0 (GMT, deflection, w0, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
+				error = gmtflexure_flx1dw0 (GMT, deflection, w0, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 			else if (Ctrl->L.active) {
 				GMT_Report (API, GMT_MSG_INFORMATION, "Calculate flexure with variable restoring force\n");
-				error = flx1dk (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, Ctrl->D.rhom, Ctrl->D.rhol, Ctrl->D.rhoi, Ctrl->D.rhow, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
+				error = gmtflexure_flx1dk (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, Ctrl->D.rhom, Ctrl->D.rhol, Ctrl->D.rhoi, Ctrl->D.rhow, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 			else {	/* Constant restoring force */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Calculate flexure for constant restoring force\n");
-				error = flx1d (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
+				error = gmtflexure_flx1d (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 
 			if (error) {
@@ -1450,7 +1450,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 
 			if (Ctrl->S.active) {	/* Compute curvatures */
 				double *curvature = W->table[tbl]->segment[seg]->data[GMT_Z];
-				get_curvature (deflection, (int)S->n_rows, x_inc, curvature);
+				gmtflexure_get_curvature (deflection, (int)S->n_rows, x_inc, curvature);
 			}
 
 			/* Add in Moho depth, possibly convert back to km, and let z be positive up */

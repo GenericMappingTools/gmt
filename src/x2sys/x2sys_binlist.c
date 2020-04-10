@@ -140,7 +140,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int outside (double x, double y, struct X2SYS_BIX *B, int geo) {
+GMT_LOCAL int x2sysbinlist_outside (double x, double y, struct X2SYS_BIX *B, int geo) {
 	if (y < B->wesn[YLO] || y > B->wesn[YHI]) return (1);
 	if (geo) {	/* Geographic data with periodic longitudes */
 		while (x < B->wesn[XLO]) x += 360.0;
@@ -153,7 +153,7 @@ GMT_LOCAL int outside (double x, double y, struct X2SYS_BIX *B, int geo) {
 	return (0);	/* Inside */
 }
 
-GMT_LOCAL unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s) {
+GMT_LOCAL unsigned int x2sysbinlist_get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s) {
 	unsigned int i, bit, flag;
 	for (i = flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
 		if (gmt_M_is_dnan (data[i][j])) continue;	/* NaN, so no data here */
@@ -162,7 +162,7 @@ GMT_LOCAL unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_I
 	return (flag);
 }
 
-GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
+GMT_LOCAL int x2sysbinlist_comp_bincross (const void *p1, const void *p2) {
 	const struct BINCROSS *a = p1, *b = p2;
 
 	if (a->d < b->d) return (-1);
@@ -354,14 +354,14 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		last_not_set = true;
 		last_bin_col = last_bin_row = -1;
 		for (row = 0; row < p.n_rows; row++) {
-			if (outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
+			if (x2sysbinlist_outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
 			x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col,
 			                                          &this_bin_row, &B, &this_bin_index), "");
 
 			/* While this may be the same bin as the last bin, the data available may have changed so we keep
 			 * turning the data flags on again and again. */
 
-			B.binflag[this_bin_index] |= get_data_flag (data, row, s);
+			B.binflag[this_bin_index] |= x2sysbinlist_get_data_flag (data, row, s);
 
 			if (!Ctrl->D.active) continue;	/* Not worried about trackline lengths */
 
@@ -448,7 +448,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 				/* Here we have 1 or more intersections */
 
-				qsort (X, nx, sizeof (struct BINCROSS), comp_bincross);
+				qsort (X, nx, sizeof (struct BINCROSS), x2sysbinlist_comp_bincross);
 
 				for (curr_x_pt = 1, prev_x_pt = 0; curr_x_pt < nx; curr_x_pt++, prev_x_pt++) {	/* Process the intervals, getting mid-points and using that to get bin */
 					dx = X[curr_x_pt].x - X[prev_x_pt].x;

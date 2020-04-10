@@ -198,7 +198,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/* 
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int comp_hs (const void *p1, const void *p2) {
+GMT_LOCAL int originater_comp_hs (const void *p1, const void *p2) {
 	const struct HOTSPOT_ORIGINATOR *a = p1, *b = p2;
 
 	if (a->np_dist < b->np_dist) return (-1);
@@ -635,7 +635,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 			if (hot[spot].stage == 0) hot[spot].stage++;
 		}
 
-		if (n_hotspots > 1) qsort (hot, n_hotspots, sizeof (struct HOTSPOT_ORIGINATOR), comp_hs);
+		if (n_hotspots > 1) qsort (hot, n_hotspots, sizeof (struct HOTSPOT_ORIGINATOR), originater_comp_hs);
 
 		if (hot[0].np_dist < Ctrl->W.dist) {
 			if (Ctrl->L.mode == 1) {	/* Want time, dist, z output */
