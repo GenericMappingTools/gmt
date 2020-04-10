@@ -56,6 +56,14 @@ steps:
     cmake --build .
   displayName: Compile GMT
 
+# Cache the ${HOME}/.gmt directory, for docs and testing
+- task: Cache@2
+  inputs:
+    key: cachedata | 20200409
+    path: $(HOME)/.gmt
+    cacheHitVar: CACHE_CACHEDATA_RESTORED
+  displayName: Cache GMT remote data for testing
+
 - bash: |
     set -x -e
     cd build
@@ -83,14 +91,17 @@ steps:
     gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
   displayName: Check a few simple commands
 
-# Run the full tests
+# Download remote files, if not already cached
 - bash: |
     set -x -e
-    # Download cache files from remote server before testing, see see #939.
     $(gmt --show-sharedir)/tools/gmt_getremote.sh cache
-    # Download earth relief files used in testing
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
-    # run all jobs, and rerun failed jobs
+  displayName: Download remote data
+  condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
+
+# Run the full tests, and rerun failed tests
+- bash: |
+    set -x -e
     cd build
     ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests
