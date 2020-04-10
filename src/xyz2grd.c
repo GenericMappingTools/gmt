@@ -293,7 +293,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
+GMT_LOCAL void xyz2grd_protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (GMT_Find_Option (API, 'J', options) != NULL) {
 #ifdef HAVE_GDAL
 		struct GMT_OPTION *opt = GMT_Make_Option (API, 'f', "0f,1f");
@@ -339,7 +339,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	protect_J(API, options);	/* If -J is used, add a -f0f,1f option to avoid later parsing errors due to -R & -J conflicts */
+	xyz2grd_protect_J(API, options);	/* If -J is used, add a -f0f,1f option to avoid later parsing errors due to -R & -J conflicts */
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */

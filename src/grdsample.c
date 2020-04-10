@@ -68,7 +68,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void adjust_R (struct GMTAPI_CTRL *API, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_GRID *Gin, double *wesn) {
+GMT_LOCAL void grdsample_adjust_R (struct GMTAPI_CTRL *API, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_GRID *Gin, double *wesn) {
 	/* Check that the grid limis provided do not extend further than that of the to-be-resampled grid.
 	   If any of the WESN 'overflows', trim it to the maximum extent allowed by the sampling grid.
 	*/
@@ -283,7 +283,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		     wesn[XLO] < (Gin->header->wesn[XLO] - Gin->header->inc[GMT_X]) ||
 		     wesn[XHI] > (Gin->header->wesn[XHI] + Gin->header->inc[GMT_X])) && GMT->common.R.active[FSET]) {
 			/* If the limits were specified via -R<grid> adjust those limits to maximum allowed by resampling grid */
-			adjust_R (API, Ctrl, Gin, wesn);
+			grdsample_adjust_R (API, Ctrl, Gin, wesn);
 		}
 		else {
 			bool geo = gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]);

@@ -372,7 +372,7 @@ void set_dirpath (bool single, char *url, char *prefix, unsigned int level, int 
 	}
 }
 
-GMT_LOCAL double get_factor (bool global, unsigned int level) {
+GMT_LOCAL double grd2kml_get_factor (bool global, unsigned int level) {
 	double f;
 	if (global) {	/* Worry about divisions into 60 */
 		switch (level) {
@@ -388,7 +388,7 @@ GMT_LOCAL double get_factor (bool global, unsigned int level) {
 	return (f);
 }
 
-GMT_LOCAL void assert_tile_size (struct GMT_CTRL *GMT, bool global, struct GMT_GRID_HEADER *H, bool active, unsigned int *size) {
+GMT_LOCAL void grd2kml_assert_tile_size (struct GMT_CTRL *GMT, bool global, struct GMT_GRID_HEADER *H, bool active, unsigned int *size) {
 	/* For global grids we may wish to adjust the size so that it better plays with the 360-degree range of the file.
 	 * We only change size if -L was not given */
 
@@ -511,7 +511,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	global_lon = gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI]);
 	global_lat = gmt_M_180_range (G->header->wesn[YLO], G->header->wesn[YHI]);
 
-	assert_tile_size (GMT, global_lon, G->header, Ctrl->L.active, &Ctrl->L.size);
+	grd2kml_assert_tile_size (GMT, global_lon, G->header, Ctrl->L.active, &Ctrl->L.size);
 
 	uniq = (int)getpid();	/* Unique number for temporary files  */
 
@@ -604,7 +604,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 
 	Q = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_QUADTREE *);
-	factor = get_factor (use_60_factoring, max_level);	/* Max width of imaged pixels in multiples of original grid spacing for this level */
+	factor = grd2kml_get_factor (use_60_factoring, max_level);	/* Max width of imaged pixels in multiples of original grid spacing for this level */
 
 	/* Determine extended region required if using the largest multiple of original grid spacing */
 	inc[GMT_X] = factor * G->header->inc[GMT_X];
@@ -715,7 +715,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	/* Loop over all the levels, starting at the top level (0) */
 	for (level = 0; level <= max_level; level++) {
-		factor = get_factor (use_60_factoring, max_level - level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
+		factor = grd2kml_get_factor (use_60_factoring, max_level - level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
 		inc[GMT_X] = factor * G->header->inc[GMT_X];
 		inc[GMT_Y] = factor * G->header->inc[GMT_Y];
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Factor = %g Dim = %d x %d -> %d x %d\n",

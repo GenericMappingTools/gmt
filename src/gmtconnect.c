@@ -236,7 +236,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, double threshold, bool nn_check, double sdist) {
+GMT_LOCAL int gmtselect_found_a_near_segment (struct LINK *S, uint64_t id, int order, double threshold, bool nn_check, double sdist) {
 	/* Checks if OK to connect this segment to its nearest neighbor and returns true if OK */
 
 	if (S[S[id].nearest[order].id].used) return (false);		/* Segment has been conncted already */
@@ -246,7 +246,7 @@ GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, doub
 	return (false);							/* Failed the next nearest neighbor distance test */
 }
 
-GMT_LOCAL uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end) {
+GMT_LOCAL uint64_t gmtselect_copy_this_segment (struct GMT_DATASEGMENT *in, struct GMT_DATASEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end) {
 	uint64_t row_in, row_out, col;
 	int64_t inc;
 	bool done = false;
@@ -443,8 +443,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 						if (QT[CLOSED]->n_rows == SH->n_alloc) QT[CLOSED]->text = gmt_M_memory (GMT, QT[CLOSED]->text, (SH->n_alloc <<= 1), char *);
 					}
 				}
-				out_p = Copy_This_Segment (S, T[CLOSED][out_seg], 0, 0, np-1);	/* Duplicate input segment to output */
-				if (Ctrl->C.active && distance > 0.0) (void) Copy_This_Segment (S, T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon explicitly */
+				out_p = gmtselect_copy_this_segment (S, T[CLOSED][out_seg], 0, 0, np-1);	/* Duplicate input segment to output */
+				if (Ctrl->C.active && distance > 0.0) (void) gmtselect_copy_this_segment (S, T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon explicitly */
 				n_closed_orig++;	/* Number of originally closed polygons as found in input */
 				out_seg++;	/* Number of closed segments placed in T[CLOSED] so far */
 				n_closed++;	/* Number of closed polygons so far (which will grow when we connect below) */
@@ -453,7 +453,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				/* Allocate space for this segment */
 				smode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				T[OPEN][n_open] = GMT_Alloc_Segment (GMT->parent, smode, np, n_columns, S->header, NULL);
-				(void) Copy_This_Segment (S, T[OPEN][n_open], 0, 0, np-1);		/* Duplicate input to output */
+				(void) gmtselect_copy_this_segment (S, T[OPEN][n_open], 0, 0, np-1);		/* Duplicate input to output */
 				n_open++;	/* Number of open segments placed in T[OPEN] so far */
 			}
 			else { /* No -C was given: Here we have a segment that is not closed.  Store metadata about segment to LINK structure and copy end points; more work on linking takes place below */
@@ -708,7 +708,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		closed = false;			/* Growing line segment is not closed yet */
 		n_steps_pass_1 = 0;		/* Nothing appended yet to this single line segment */
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
-		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if its nearest segment at this end is close enough */
+		while (!done && gmtselect_found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* gmtselect_found_a_near_segment returns true if its nearest segment at this end is close enough */
 			id2 = segment[id].nearest[end_order].id;	/* ID of nearest segment at end end_order */
 			snprintf (text, GMT_LEN64, " -> %" PRIu64, segment[id2].orig_id);
 			b_len += strlen (text);
@@ -738,7 +738,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		if (!closed) {	/* Now search backwards from the starting line to see what may be hooked on by going in that direction */
 			id = start_id;	/* Back to the first line segment in the chain */
 			end_order = (first_end_order + 1) % 2;	/* Go the opposite way than what we did the first time above */
-			while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if its nearest segment at this end is close enough */
+			while (!done && gmtselect_found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* gmtselect_found_a_near_segment returns true if its nearest segment at this end is close enough */
 				id2 = segment[id].nearest[end_order].id;	/* ID of nearest segment at end end_order */
 				snprintf (text, GMT_LEN64, "%" PRIu64 " <- ", segment[id2].orig_id);
 				len = strlen (text);
@@ -815,7 +815,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 					n = np;
 				}
 				GMT_Report (API, GMT_MSG_DEBUG, "Forward Segment no %" PRIu64 " [Table %d Segment %" PRIu64 "]\n", segment[id].orig_id, G, L);
-				out_p = Copy_This_Segment (S, T[OPEN][out_seg], out_p, j, np-1);	/* Copy points, return array index where next point goes */
+				out_p = gmtselect_copy_this_segment (S, T[OPEN][out_seg], out_p, j, np-1);	/* Copy points, return array index where next point goes */
 				/* Remember the last point we copied as that is the end of the growing output line segment */
 				p_last_x = S->data[GMT_X][np-1];	/* End of the line since we went forward */
 				p_last_y = S->data[GMT_Y][np-1];
@@ -831,7 +831,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 					n = np;
 				}
 				GMT_Report (API, GMT_MSG_DEBUG, "Reverse Segment no %" PRIu64 " [Table %d Segment %" PRIu64 "]\n", segment[id].orig_id, G, L);
-				out_p = Copy_This_Segment (S, T[OPEN][out_seg], out_p, j, 0);	/* Copy points in reverse order, return array index where next point goes */
+				out_p = gmtselect_copy_this_segment (S, T[OPEN][out_seg], out_p, j, 0);	/* Copy points in reverse order, return array index where next point goes */
 				/* Remember the last point we copied as that is the end of the growing output line segment */
 				p_last_x = S->data[GMT_X][0];	/* Start of the line since we went backward */
 				p_last_y = S->data[GMT_Y][0];

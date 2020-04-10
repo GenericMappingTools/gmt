@@ -330,7 +330,7 @@ struct GMT_TILES {
 	double wesn[4];
 };
 
-GMT_LOCAL void report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w, double e, double s, double n, struct GRDINFO_CTRL *Ctrl) {
+GMT_LOCAL void grdinfo_report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w, double e, double s, double n, struct GRDINFO_CTRL *Ctrl) {
 	/* Find the tiles covering the present grid, if given */
 	bool use = true, num_report;
 	unsigned int nx, ny, i, j, js = 0, jn = 0, ie, iw;
@@ -402,7 +402,7 @@ L_use_it:			row = 0;	/* Get here by goto and use is still true */
 	gmt_M_free (GMT, Out);
 }
 
-GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned int which, char *text) {
+GMT_LOCAL void grdinfo_smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned int which, char *text) {
 	char tmptxt[GMT_LEN64] = {""};
 	if (gmt_M_is_geographic (GMT, GMT_IN) && ((which == 2 && inc[GMT_X] < 1.0 && inc[GMT_Y] < 1.0) || (which != 2 && inc[which] < 1.0))) {	/* See if we can report smart increments */
 		unsigned int col, s, k, int_inc[2], use_unit[2], kind;
@@ -743,7 +743,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_INCREMENTS) {
 			sprintf (record, "-I");
-			smart_increments (GMT, G->header->inc, 2, text);	strcat (record, text);
+			grdinfo_smart_increments (GMT, G->header->inc, 2, text);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_BOUNDBOX) {
@@ -912,7 +912,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);
 				strcat (record, " x_max: ");
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);
-				strcat (record, " x_inc: ");	smart_increments (GMT, G->header->inc, GMT_X, text);	strcat (record, text);
+				strcat (record, " x_inc: ");	grdinfo_smart_increments (GMT, G->header->inc, GMT_X, text);	strcat (record, text);
 				strcat (record, " name: ");
 				if ((c = strstr (G->header->x_units, " [degrees"))) {	/* Strip off [degrees ...] from the name of the longitude variable */
 					c[0] = '\0'; strcat (record, G->header->x_units); if (c) c[0] = ' ';
@@ -925,7 +925,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
 				strcat (record, " y_max: ");
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-				strcat (record, " y_inc: ");	smart_increments (GMT, G->header->inc, GMT_Y, text);	strcat (record, text);
+				strcat (record, " y_inc: ");	grdinfo_smart_increments (GMT, G->header->inc, GMT_Y, text);	strcat (record, text);
 				strcat (record, " name: ");
 				if ((c = strstr (G->header->y_units, " [degrees"))) {	/* Strip off [degrees ...] from the name of the latitude variable */
 					c[0] = '\0'; strcat (record, G->header->y_units); if (c) c[0] = ' ';
@@ -1056,7 +1056,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 		}
 		if (Ctrl->D.active)
-			report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
+			grdinfo_report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
 		else if (num_report) {	/* External interface, return as data with no leading text */
 			/* w e s n z0 z1 */
 			out[XLO] = global_xmin;		out[XHI] = global_xmax;
@@ -1141,7 +1141,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 		}
 		if (Ctrl->D.active)
-			report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
+			grdinfo_report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
 		else {
 			sprintf (record, "-R");
 			gmt_ascii_format_col (GMT, text, global_xmin, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
