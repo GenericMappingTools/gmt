@@ -185,7 +185,7 @@ GMT_LOCAL void trend2d_write_output_trend (struct GMT_CTRL *GMT, struct TREND2D_
 	}
 }
 
-GMT_LOCAL void free_the_memory (struct GMT_CTRL *GMT, double *gtg, double *v, double *gtd, double *lambda, double *workb, double *workz, double *c_model, double *o_model, double *w_model, struct TREND2D_DATA *data, double *work) {
+GMT_LOCAL void trend2d_free_the_memory (struct GMT_CTRL *GMT, double *gtg, double *v, double *gtd, double *lambda, double *workb, double *workz, double *c_model, double *o_model, double *w_model, struct TREND2D_DATA *data, double *work) {
 	gmt_M_free (GMT, work);
 	gmt_M_free (GMT, data);
 	gmt_M_free (GMT, w_model);
@@ -579,44 +579,44 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 	trend2d_allocate_the_memory (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
 
 	if ((error = GMT_Set_Columns (API, GMT_IN, 3 + Ctrl->W.active, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	i = (Ctrl->F.report) ? np : Ctrl->n_outputs;
 	if ((error = GMT_Set_Columns (API, GMT_OUT, i, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 	if ((error = trend2d_read_data (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.mode, &work)) != 0) {
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 
 	if (xmin == xmax || ymin == ymax) {
 		GMT_Report (API, GMT_MSG_ERROR, "Maximum and minimum input values are the same.\n");
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_data == 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "Could not read any data.\n");
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_data < (uint64_t)Ctrl->N.value) {
@@ -758,7 +758,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+	trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 
 	Return (GMT_NOERROR);
 }

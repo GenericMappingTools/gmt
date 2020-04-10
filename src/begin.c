@@ -90,7 +90,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-char *get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, int *error) {
+GMT_LOCAL char * begin_get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, int *error) {
 	/* Extract session arguments (including optional graphics format) from options:
 	 * gmt begin [<sessionname>] [<formats>] [<psconvertopts>] [-V<arg>]  */
 	char buffer[GMT_LEN256] = {""};
@@ -147,7 +147,7 @@ int GMT_begin (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the begin main code ----------------------------*/
 
-	arg = get_session_name_and_format (API, options, &error);
+	arg = begin_get_session_name_and_format (API, options, &error);
 	if (error) {
 		if (arg) gmt_M_str_free (arg);
 		Return (error);

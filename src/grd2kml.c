@@ -337,7 +337,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-int find_quad_above (struct GMT_QUADTREE **Q, unsigned int n, unsigned int row, unsigned int col, unsigned int level) {
+GMT_LOCAL int grd2kml_find_quad_above (struct GMT_QUADTREE **Q, unsigned int n, unsigned int row, unsigned int col, unsigned int level) {
 	/* Finds the quad entry that matches the row, col, level args */
 	unsigned int k;
 	for (k = 0; k < n; k++) {
@@ -349,7 +349,7 @@ int find_quad_above (struct GMT_QUADTREE **Q, unsigned int n, unsigned int row, 
 	return -1;	/* Very bad */
 }
 
-void set_dirpath (bool single, char *url, char *prefix, unsigned int level, int dir, char *string) {
+GMT_LOCAL void grd2kml_set_dirpath (bool single, char *url, char *prefix, unsigned int level, int dir, char *string) {
 	if (single) {	/* Write everything into the prefix dir */
 		if (url && level == 0)	/* Set the leading URL for zero-level first kml */
 			sprintf (string, "%s/%s/L%d", url, prefix, level);
@@ -897,7 +897,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			row = Q[k]->row / 2;	col = Q[k]->col / 2;
 			/* The quad is given by comparing the high and low values of row, col */
 			quad = 2 * (Q[k]->row - 2 * row) + (Q[k]->col - 2 * col);
-			kk = find_quad_above (Q, n, row, col, level-1);	/* kk is the parent of k */
+			kk = grd2kml_find_quad_above (Q, n, row, col, level-1);	/* kk is the parent of k */
 			if (kk < 0) {	/* THis can happen when the lower-level tile grazes one above it but there really are no data involved */
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Tile %s: Unable to link tile for row = %d, col = %d at level %d to a parent (!?).  Probably empty - skipped.\n", Q[k]->tag, row, col, level);
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Tile %s: Region was %g/%g/%g/%g.\n", Q[k]->tag, Q[k]->wesn[XLO], Q[k]->wesn[XHI], Q[k]->wesn[YLO], Q[k]->wesn[YHI]);
@@ -930,7 +930,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
         fprintf (fp, "        <ListStyle id=\"hideChildren\">          <listItemType>checkHideChildren</listItemType>\n        </ListStyle>\n");
         fprintf (fp, "      </Style>\n");
 
-	set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, 0, 1, path);
+	grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, 0, 1, path);
 	fprintf (fp, "      <NetworkLink>\n        <name>%sR0C0.png</name>\n", path);
 	fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
 	fprintf (fp, "            <north>%.14g</north>\n", G->header->wesn[YHI]);
@@ -940,7 +940,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	fprintf (fp, "          </LatLonAltBox>\n");
 	fprintf (fp, "          <Lod>\n            <minLodPixels>%d</minLodPixels>\n            <maxLodPixels>-1</maxLodPixels>\n          </Lod>\n", view);
         fprintf (fp, "        </Region>\n");
-	set_dirpath (Ctrl->D.single, Ctrl->E.url, Ctrl->N.prefix, 0, 1, path);
+	grd2kml_set_dirpath (Ctrl->D.single, Ctrl->E.url, Ctrl->N.prefix, 0, 1, path);
 	fprintf (fp, "        <Link>\n          <href>%sR0C0.kml</href>\n", path);
 	fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode>\n          <viewFormat/>\n");
 	fprintf (fp, "        </Link>\n      </NetworkLink>\n");
@@ -968,7 +968,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			/* First this tile's kml and png */
 			view = (Q[k]->level == max_level) ? -1 : Ctrl->A.size;
 			fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
-			set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
+			grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
 			fprintf (fp, "    <Document>\n      <name>%sR%dC%d.kml</name>\n", path, Q[k]->row, Q[k]->col);
 			fprintf (fp, "      <description></description>\n\n");
 		        fprintf (fp, "      <Style>\n");
@@ -983,7 +983,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>2048</maxLodPixels>\n        </Lod>\n", view);
 		        fprintf (fp, "      </Region>\n");
 			fprintf (fp, "      <GroundOverlay>\n        <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);
-			set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 0, path);
+			grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 0, path);
 			fprintf (fp, "        <Icon>\n          <href>%sR%dC%d.png</href>\n        </Icon>\n", path, Q[k]->row, Q[k]->col);
 		        fprintf (fp, "        <LatLonBox>\n");
 			fprintf (fp, "           <north>%.14g</north>\n", Q[k]->wesn[YHI]);
@@ -996,7 +996,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				if (Q[k]->next[quad] == NULL) continue;
 				view = (Q[k]->next[quad]->level == max_level) ? -1 : Ctrl->A.size;
 
-				set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
+				grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
 				fprintf (fp, "\n      <NetworkLink>\n        <name>%sR%dC%d.png</name>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
 			        fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
 				fprintf (fp, "            <north>%.14g</north>\n", Q[k]->next[quad]->wesn[YHI]);
@@ -1006,7 +1006,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				fprintf (fp, "        </LatLonAltBox>\n");
 				fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>-1</maxLodPixels>\n        </Lod>\n", view);
 			        fprintf (fp, "        </Region>\n");
-				set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
+				grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
 				fprintf (fp, "        <Link>\n          <href>%sR%dC%d.kml</href>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
 				fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode><viewFormat/>\n");
 				fprintf (fp, "        </Link>\n      </NetworkLink>\n");

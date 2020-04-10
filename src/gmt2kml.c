@@ -605,7 +605,7 @@ GMT_LOCAL int gmt2kml_check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *
 	return (false);
 }
 
-GMT_LOCAL void gmt2gmt2kml_print_altmode (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, bool extrude, bool tessellate, int altmode, int ntabs) {
+GMT_LOCAL void gmt2kml_print_altmode (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, bool extrude, bool tessellate, int altmode, int ntabs) {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
 	if (extrude) gmt2kml_print (API, Out, ntabs, "<extrude>1</extrude>");
 	if (tessellate) gmt2kml_print (API, Out, ntabs, "<tessellate>1</tessellate>");
@@ -727,7 +727,7 @@ GMT_LOCAL void gmt2kml_free (struct GMT_CTRL *GMT, struct KML ** kml) {
 	gmt_M_free (GMT, *kml);
 }
 
-void KML_plot_object (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *x, double *y, uint64_t np, int type, int process_id, int alt_mode, int N, double z_level) {
+GMT_LOCAL void gmt2kml_plot_object (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *x, double *y, uint64_t np, int type, int process_id, int alt_mode, int N, double z_level) {
 	/* Wiggles: Plots a self-contained polygon or line, depending on type, using
 	 * the current fill/line styles */
 	static char *name[2] = {"Wiggle Anomaly", "Positive Anomaly"};
@@ -738,7 +738,7 @@ void KML_plot_object (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *x
 	gmt2kml_print (API, Out, N, "<name>%s</name>", name[type-LINE]);
 	gmt2kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, 0); /* It is always style 0 */
 	gmt2kml_print (API, Out, N++, "<%s>", feature[type]);
-	gmt2gmt2kml_print_altmode (API, Out, false, true, alt_mode, N);
+	gmt2kml_print_altmode (API, Out, false, true, alt_mode, N);
 	if (type == POLYGON) {
 		gmt2kml_print (API, Out, N++, "<outerBoundaryIs>");
 		gmt2kml_print (API, Out, N++, "<LinearRing>");
@@ -810,10 +810,10 @@ GMT_LOCAL void gmt2kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out
 	}
 
 	if (fill) /* First shade wiggles */
-		KML_plot_object (GMT->parent, Out, kml->flon, kml->flat, kml->n_out, POLYGON, process_id, amode, N, altitude);
+		gmt2kml_plot_object (GMT->parent, Out, kml->flon, kml->flat, kml->n_out, POLYGON, process_id, amode, N, altitude);
 
 	if (outline) /* Then draw wiggle outline */
-		KML_plot_object (GMT->parent, Out, kml->flon, kml->flat, np, LINE, process_id, amode, N, altitude);
+		gmt2kml_plot_object (GMT->parent, Out, kml->flon, kml->flat, np, LINE, process_id, amode, N, altitude);
 }
 
 /* Must free allocated memory before returning */
@@ -1119,7 +1119,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					gmt2kml_print (API, Out, N, "<description>%s</description>", description);
 				gmt2kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make style ID  >= 0 */
 				gmt2kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
-				gmt2gmt2kml_print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
+				gmt2kml_print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
 				if (Ctrl->F.mode == POLYGON) {
 					gmt2kml_print (API, Out, N++, "<outerBoundaryIs>");
 					gmt2kml_print (API, Out, N++, "<LinearRing>");
@@ -1264,7 +1264,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						}
 						gmt2kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make index a positive integer */
 						gmt2kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
-						gmt2gmt2kml_print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
+						gmt2kml_print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
 						gmt2kml_print (API, Out, N, "<coordinates>");
 						gmt2kml_ascii_output_three (API, Out, out, N);
 						gmt2kml_print (API, Out, N, "</coordinates>");

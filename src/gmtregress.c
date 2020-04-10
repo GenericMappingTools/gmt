@@ -635,7 +635,7 @@ GMT_LOCAL double gmtregress_demeaning (struct GMT_CTRL *GMT, double *X, double *
 	return (S);	/* Returning the weight sum */
 }
 
-GMT_LOCAL double LSy_gmtregress_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
+GMT_LOCAL double gmtregress_LSy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
 	/* Basic LS y-regression on x, only uses w[GMT_Y] weights if not NULL */
 	uint64_t k;
 	double *Q = gmt_M_memory (GMT, NULL, n, double), *W = gmt_M_memory (GMT, NULL, n, double);
@@ -678,7 +678,7 @@ GMT_LOCAL double LSy_gmtregress_regress1D (struct GMT_CTRL *GMT, double *x, doub
 	return (scale);
 }
 
-GMT_LOCAL double LSxy_gmtregress_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *par) {
+GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *par) {
 	/* Basic LS xy orthogonal regression, with no data errors. See York [1966] */
 	uint64_t k;
 	unsigned int p;
@@ -725,7 +725,7 @@ GMT_LOCAL double LSxy_gmtregress_regress1D_basic (struct GMT_CTRL *GMT, double *
 	return (scale);
 }
 
-GMT_LOCAL double LSRMA_gmtregress_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
+GMT_LOCAL double gmtregress_LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
 	/* Basic LS RMA orthogonal regression with no weights [Reference?] */
 	uint64_t k;
 	double sx, sy, scale;
@@ -861,7 +861,7 @@ GMT_LOCAL double gmtregress_regress1D (struct GMT_CTRL *GMT, double *x, double *
 
 #define GMTREGRESS_MAX_YORK_ITERATIONS	1000	/* Gotta have a stopper in case of bad data? */
 
-GMT_LOCAL double LSxy_gmtregress_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par) {
+GMT_LOCAL double gmtregress_LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par) {
 	/* Solution to general LS orthogonal regression with weights, per York et al. [2004] */
 	uint64_t i;
 	unsigned int n_iter = 0;
@@ -878,7 +878,7 @@ GMT_LOCAL double LSxy_gmtregress_regress1D_york (struct GMT_CTRL *GMT, double *X
 	alpha = gmt_M_memory (GMT, NULL, n, double);
 	beta  = gmt_M_memory (GMT, NULL, n, double);
 	/* Step 1: Get initial slope from basic LS y on x with no weights (and ignore scale on return) */
-	(void)LSy_gmtregress_regress1D (GMT, X, Y, NULL, n, par);
+	(void)gmtregress_LSy_regress1D (GMT, X, Y, NULL, n, par);
 	b = par[GMTREGRESS_SLOPE];	/* This is our initial slope value */
 	gmt_M_memset (par, GMTREGRESS_NPAR, double);	/* Reset all regression parameters */
 	/* Step 2: Weights w(X_i) and w(Y_i) are already set in the main program */
@@ -930,17 +930,17 @@ GMT_LOCAL double LSxy_gmtregress_regress1D_york (struct GMT_CTRL *GMT, double *X
 	return (scale);
 }
 
-GMT_LOCAL double LSxy_gmtregress_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
-	/* Front to calling LSxy_gmtregress_regress1D_york or LSxy_gmtregress_regress1D_basic, depending on weights */
+GMT_LOCAL double gmtregress_LSxy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
+	/* Front to calling gmtregress_LSxy_regress1D_york or gmtregress_LSxy_regress1D_basic, depending on weights */
 	double scale;
 	if (w && w[GMT_X] && w[GMT_Y])	/* Have weights in x and y [and possibly correlation coefficients as well] */
-		scale = LSxy_gmtregress_regress1D_york (GMT, x, y, w, n, par);
+		scale = gmtregress_LSxy_regress1D_york (GMT, x, y, w, n, par);
 	else	/* Simpler case with no weights */
-		scale = LSxy_gmtregress_regress1D_basic (GMT, x, y, n, par);
+		scale = gmtregress_LSxy_regress1D_basic (GMT, x, y, n, par);
 	return (scale);
 }
 
-GMT_LOCAL double *gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int in_norm, double *par, unsigned int mode) {
+GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int in_norm, double *par, unsigned int mode) {
 	/* Solves for the best regression of (x_in, y_in) given the current settings.
 	 * mode is only 1 when called to do RLS after the initial LMS regression returns. */
 
@@ -975,7 +975,7 @@ GMT_LOCAL double *gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in, 
 					scale = gmtregress_regress1D (GMT, x, y, ww, n, regression, norm, par);
 					break;
 				case GMTREGRESS_NORM_L2:	/* L2 regression y on x has an analytic solution */
-					scale = LSy_gmtregress_regress1D (GMT, x, y, ww, n, par);
+					scale = gmtregress_LSy_regress1D (GMT, x, y, ww, n, par);
 					break;
 			}
 			break;
@@ -986,7 +986,7 @@ GMT_LOCAL double *gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in, 
 					scale = gmtregress_regress1D (GMT, x, y, ww, n, regression, norm, par);
 					break;
 				case GMTREGRESS_NORM_L2:	/* L2 orthogonal regression has an analytic (iterative if weighted) solution */
-					LSxy_gmtregress_regress1D (GMT, x, y, ww, n, par);
+					gmtregress_LSxy_regress1D (GMT, x, y, ww, n, par);
 					break;
 			}
 			break;
@@ -997,7 +997,7 @@ GMT_LOCAL double *gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in, 
 					scale = gmtregress_regress1D (GMT, x, y, ww, n, regression, norm, par);
 					break;
 				case GMTREGRESS_NORM_L2:	/* L2 RMA regression has analytic solution */
-					scale = LSRMA_gmtregress_regress1D (GMT, x, y, ww, n, par);
+					scale = gmtregress_LSRMA_regress1D (GMT, x, y, ww, n, par);
 					break;
 			}
 			break;

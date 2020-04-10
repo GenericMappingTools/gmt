@@ -213,7 +213,7 @@ struct THREAD_STRUCT {
 	struct GRDFILTER_BIN_MODE_INFO *B;
 };
 
-GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t);
+GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t);
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFILTER_CTRL *C;
@@ -240,8 +240,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* D
 
 #ifdef HAVE_GLIB_GTHREAD
 /* -----------------------------------------------------------------------------------*/
-GMT_LOCAL void *thread_function (void *args) {
-	threaded_function ((struct THREAD_STRUCT *)args);
+GMT_LOCAL void *grdfilter_thread_function (void *args) {
+	grdfilter_threaded_function ((struct THREAD_STRUCT *)args);
 	return NULL;
 }
 #endif
@@ -370,7 +370,7 @@ GMT_LOCAL double grdfilter_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_O
 	return (value);
 }
 
-void reset_F_parameters (struct FILTER_INFO *F, double width, double par[]) {
+GMT_LOCAL void grdfilter_reset_F_parameters (struct FILTER_INFO *F, double width, double par[]) {
 	/* Parameters computed from width and other settings */
 	double x_width, y_width;
 
@@ -423,7 +423,7 @@ GMT_LOCAL void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, d
 	double x, y, yc, y0, r, ry = 0.0, inv_x_half_width = 0.0, inv_y_half_width = 0.0;
 
 	if (variable) {	/* Update since filterwidth has changed */
-		reset_F_parameters (F, F->W[node], par);
+		grdfilter_reset_F_parameters (F, F->W[node], par);
 	}
 
 	yc = y0 = output_lat - y_off;		/* Input latitude of central point input grid (i,j) = (0,0) */
@@ -1283,7 +1283,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 		if (GMT->common.x.n_threads == 1) {		/* Independently of WITH_THREADS, if only one don't call the threading machine */
    			threadArg[i].r_stop = Gout->header->n_rows;
-			threaded_function (&threadArg[0]);
+			grdfilter_threaded_function (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
 		}
 #ifndef HAVE_GLIB_GTHREAD
@@ -1291,7 +1291,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Gout->header->n_rows) / GMT->common.x.n_threads);
    		if (i == GMT->common.x.n_threads - 1) threadArg[i].r_stop = Gout->header->n_rows;	/* Make sure last row is not left behind */
-		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
+		threads[i] = g_thread_new(NULL, grdfilter_thread_function, (void*)&(threadArg[i]));
 	}
 
 	if (GMT->common.x.n_threads > 1) {		/* Otherwise g_thread_new was never called aand so no need to "join" */
@@ -1394,7 +1394,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 }
 
 /* ----------------------------------------------------------------------------------------------------- */
-GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
+GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 
 	bool visit_check = false, go_on;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out, n_span;
