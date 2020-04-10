@@ -1001,7 +1001,7 @@ GMT_LOCAL void gmtplot_rounded_framecorners (struct GMT_CTRL *GMT, struct PSL_CT
 
 #if 0
 /* Nov-11-2014 PW: For reference until we know there are no side effects with the new one below */
-GMT_LOCAL void gmtgmtplot_wesn_map_boundary_old (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
+GMT_LOCAL void gmtplot_wesn_map_boundary_old (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	uint64_t i, np = 0;
 	double *xx = NULL, *yy = NULL;
 
@@ -1541,7 +1541,7 @@ GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	}
 }
 
-GMT_LOCAL void gmtgmtplot_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, char *label, double west, double east, bool annot, unsigned int level, unsigned int form) {
+GMT_LOCAL void gmtplot_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, char *label, double west, double east, bool annot, unsigned int level, unsigned int form) {
 	unsigned int i, nc;
 	struct GMT_XINGS *xings = NULL;
 
@@ -1551,7 +1551,7 @@ GMT_LOCAL void gmtgmtplot_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	if (nc) gmt_M_free (GMT, xings);
 }
 
-GMT_LOCAL void gmtgmtplot_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, char *label, double south, double north, bool annot, unsigned int level, unsigned int form) {
+GMT_LOCAL void gmtplot_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, char *label, double south, double north, bool annot, unsigned int level, unsigned int form) {
 	unsigned int i, k, nc;
 	struct GMT_XINGS *xings = NULL;
 	bool flip = (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_LON && gmt_M_type (GMT, GMT_IN, GMT_Y) != GMT_IS_LAT && GMT->current.proj.scale[GMT_Y] < 0.0);
@@ -1975,7 +1975,7 @@ GMT_LOCAL bool gmtplot_skip_polar_apex_annotation (struct GMT_CTRL *GMT, unsigne
 	return false;	/* OK to place the label */
 }
 
-GMT_LOCAL void gmtgmtplot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
+GMT_LOCAL void gmtplot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
 	unsigned int i, nx = 0, ny = 0;
 	bool do_x, do_y;
 	double dx, dy, *val = NULL, len, shift = 0.0;
@@ -2042,7 +2042,7 @@ GMT_LOCAL void gmtgmtplot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	GMT->current.map.on_border_is_outside = false;	/* Reset back to default */
 }
 
-GMT_LOCAL void gmtgmtplot_map_tickmarks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
+GMT_LOCAL void gmtplot_map_tickmarks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	/* Tickmarks at annotation interval has already been done except when annotations were not desired */
 
 	if (!(gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection_GMT == GMT_POLAR)) return;	/* Tickmarks already done by linear axis */
@@ -2050,11 +2050,11 @@ GMT_LOCAL void gmtgmtplot_map_tickmarks (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	PSL_comment (PSL, "Map tickmarks\n");
 
 	gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
-	gmtgmtplot_map_tickitem (GMT, PSL, w, e, s, n, GMT_ANNOT_UPPER);
+	gmtplot_map_tickitem (GMT, PSL, w, e, s, n, GMT_ANNOT_UPPER);
 	if (!(GMT->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
-		gmtgmtplot_map_tickitem (GMT, PSL, w, e, s, n, GMT_TICK_UPPER);
+		gmtplot_map_tickitem (GMT, PSL, w, e, s, n, GMT_TICK_UPPER);
 		gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
-		gmtgmtplot_map_tickitem (GMT, PSL, w, e, s, n, GMT_TICK_LOWER);
+		gmtplot_map_tickitem (GMT, PSL, w, e, s, n, GMT_TICK_LOWER);
 	}
 
 	PSL_setdash (PSL, NULL, 0);
@@ -2430,7 +2430,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 					gmtlib_get_annot_label (GMT, val[i], label, do_minutes, do_seconds, !trim, 0, is_world_save);
 				gmtplot_label_trim (label, trim);
 				shift = gmtplot_shift_gridline (GMT, val[i], GMT_X);
-				gmtgmtplot_map_symbol_ns (GMT, PSL, val[i]+shift, label, s, n, annot, k, form);
+				gmtplot_map_symbol_ns (GMT, PSL, val[i]+shift, label, s, n, annot, k, form);
 			}
 			if (nx) gmt_M_free (GMT, val);
 			if (label_c) {
@@ -2504,7 +2504,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 					gmtlib_get_annot_label (GMT, tval[i], label, do_minutes, do_seconds, !trim, lonlat, is_world_save);
 				gmtplot_label_trim (label, trim);
 				shift = gmtplot_shift_gridline (GMT, val[i], GMT_Y);
-				gmtgmtplot_map_symbol_ew (GMT, PSL, val[i]+shift, label, w, e, annot, k, form);
+				gmtplot_map_symbol_ew (GMT, PSL, val[i]+shift, label, w, e, annot, k, form);
 			}
 			if (ny) gmt_M_free (GMT, val);
 			if (label_c) {
@@ -3058,7 +3058,7 @@ enum plot_operand {
 	RIGHT_OPERAND2 = 2
 };
 
-GMT_LOCAL bool gmtgmtplot_custum_failed_bool_test_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text) {
+GMT_LOCAL bool gmtplot_custum_failed_bool_test_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text) {
 	unsigned int k;
 	bool result;
 	char *arg[2];
@@ -3070,7 +3070,7 @@ GMT_LOCAL bool gmtgmtplot_custum_failed_bool_test_string (struct GMT_CTRL *GMT, 
 			case GMT_CONST_STRING:	/* Constant text comparison */
 				arg[k] = s->string;	break;
 			default:	/* Should not get here */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized text variable type (%d) passed to gmtgmtplot_custum_failed_bool_test_string\n", s->var[k]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized text variable type (%d) passed to gmtplot_custum_failed_bool_test_string\n", s->var[k]);
 				return true;		break;
 		}
 	}
@@ -3107,7 +3107,7 @@ GMT_LOCAL bool gmtplot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT
 	/* Determine if we have text comparisons to deal with, if so, call the string version of this function */
 
 	for (k = 0; k < 2; k++)
-		if (s->var[k] == GMT_VAR_STRING) return (gmtgmtplot_custum_failed_bool_test_string (GMT, s, size, text));
+		if (s->var[k] == GMT_VAR_STRING) return (gmtplot_custum_failed_bool_test_string (GMT, s, size, text));
 
 	/* Here we have numerical comparisons only */
 
@@ -3903,7 +3903,7 @@ GMT_LOCAL bool gmtplot_at_pole (double *lat, uint64_t n) {
 	return (lat[0] == lat[n-1] && fabs (lat[0]) == 90.0);
 }
 
-GMT_LOCAL uint64_t gmtgmtplot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, bool add_pole, bool first, const char *comment) {
+GMT_LOCAL uint64_t gmtplot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, bool add_pole, bool first, const char *comment) {
 	/* Handles the laying down of polygons suitable for filling only; outlines are done separately later.
 	 * Polar caps need special treatment in that we must add a detour to the pole.
 	 * That detour will not be drawn, only used for fill. However, due to the insanity that is called GIS,
@@ -5482,7 +5482,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	gmtplot_map_gridcross (GMT, PSL, w, e, s, n);
 	gmtplot_map_gridticks (GMT, PSL, w, e, s, n);
 
-	gmtgmtplot_map_tickmarks (GMT, PSL, w, e, s, n);
+	gmtplot_map_tickmarks (GMT, PSL, w, e, s, n);
 
 	gmtplot_map_boundary (GMT, PSL, w, e, s, n);	/* This sets frame.side[] = true|false so must come before map_annotate */
 
@@ -8321,10 +8321,10 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 	/* Here we must lay down the perimeter and then the holes.  */
 
 	if (PSL->internal.comments) snprintf (comment, GMT_LEN64, "%s polygon for %s\n", type[add_pole], use[PSL->current.outline]);
-	used = gmtgmtplot_geo_polygon_segment (GMT, S, add_pole, true, comment);	/* First lay down perimeter */
+	used = gmtplot_geo_polygon_segment (GMT, S, add_pole, true, comment);	/* First lay down perimeter */
 	for (S2 = gmt_get_next_S (S); S2; S2 = gmt_get_next_S (S2)) {	/* Process all holes [none processed if there aren't any holes] */
 		if (PSL->internal.comments) snprintf (comment, GMT_LEN64, "Hole polygon for %s\n", use[PSL->current.outline]);
-		used += gmtgmtplot_geo_polygon_segment (GMT, S2, false, false, comment);	/* Add this hole to the path */
+		used += gmtplot_geo_polygon_segment (GMT, S2, false, false, comment);	/* Add this hole to the path */
 	}
 	if (used) {
 		PSL_comment (PSL, "Reset FO and fill the path\n");
