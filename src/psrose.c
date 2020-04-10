@@ -139,8 +139,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deal
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL double Critical_Resultant (double alpha, int n) {
-	/* Return critial resultant for given alpha and sample size.
+GMT_LOCAL double psrose_critical_resultant (double alpha, int n) {
+	/* Return critical resultant for given alpha and sample size.
 	 * Based on Rayleigh test for uniformity as approximated by Zaar [1999]
 	 * and reported by Berens [2009] in CircStat (MATLAB).  Valid for
 	 * n >= 10 and for first 3 decimals (gets better with n). */
@@ -646,7 +646,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (mean_theta < 0.0) mean_theta += 360.0;
 	mean_vector = hypot (xr, yr) / n;
 	mean_resultant = mean_radius = hypot (xr, yr) / total;
-	critical_resultant = Critical_Resultant (Ctrl->Q.value, (int)n);
+	critical_resultant = psrose_critical_resultant (Ctrl->Q.value, (int)n);
 	significant = (mean_resultant > critical_resultant);
 	if (!Ctrl->S.normalize) mean_radius *= max_radius;
 

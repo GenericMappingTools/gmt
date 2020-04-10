@@ -98,7 +98,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void parse_date_tz(char *date_tz, char **date, int *TZ) {
+GMT_LOCAL void pssolar_parse_date_tz(char *date_tz, char **date, int *TZ) {
 	unsigned int pos = 0;
 	char *p;
 
@@ -195,7 +195,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 					                                     "Expected -I[<lon>/<lat>]\n");
 					}
 					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
-						parse_date_tz(pch, &date, &TZ);
+						pssolar_parse_date_tz(pch, &date, &TZ);
 						Ctrl->I.TZ = TZ;
 						if (date) {
 							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
@@ -215,7 +215,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				Ctrl->T.active = true;
 				gmt_M_memset (Ctrl->T.radius, 4, double);	/* Reset to nothing before parsing */
 				if ((pch = strchr (opt->arg, '+')) != NULL) {	/* Have one or two extra options */
-					parse_date_tz (pch, &date, &TZ);
+					pssolar_parse_date_tz (pch, &date, &TZ);
 					Ctrl->T.TZ = TZ;
 					if (date) {
 						gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
@@ -285,8 +285,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
-	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/solar_params.m  */
+GMT_LOCAL int pssolar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
+	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/pssolar_params.m  */
 	/* http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html */
 	/* Compute the day-night terminator and the civil, nautical and astronomical twilights
 	   as well as several other solar parameters such sunrise, sunset, Sun position, etc... */
@@ -448,7 +448,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	Sun = gmt_M_memory (GMT, NULL, 1, struct SUN_PARAMS);
 
 	if (Ctrl->I.active) {
-		solar_params (Ctrl, Sun);
+		pssolar_params (Ctrl, Sun);
 
 		if (Ctrl->C.active) {			/* Output all members of the Sun struct as a vector of doubles */
 			double out[10];
@@ -552,7 +552,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		for (n = 0; n < 4; n++) {				/* Loop over the number of requested terminators */
 			if (Ctrl->T.radius[n] == 0) continue;		/* This terminator was not requested */
 			Ctrl->T.which = n;
-			solar_params (Ctrl, Sun);
+			pssolar_params (Ctrl, Sun);
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			sprintf (record, "%s terminator", terms[n]);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
@@ -582,7 +582,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		for (n = 0; n < 4; n++) {	/* Loop over the number of requested terminators */
 			if (Ctrl->T.radius[n] == 0) continue;	/* This terminator was not requested */
 			Ctrl->T.which = n;
-			solar_params (Ctrl, Sun);
+			pssolar_params (Ctrl, Sun);
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			if (Ctrl->G.clip) {	/* Set up a clip path */
 				bool must_free = true;
