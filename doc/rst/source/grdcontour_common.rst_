@@ -51,13 +51,15 @@ Optional Arguments
         annotated. By default all contours are labeled; use **-An** to
         disable all annotations.
 
-    (2) If *contours* is a file but not a CPT, it is expected to
-        contain contour levels in column 1 and a C(ontour) OR A(nnotate) in
-        col 2. The levels marked C (or c) are contoured, the levels marked A
-        (or a) are contoured and annotated. Optionally, a third column may
-        be present and contain the fixed annotation angle for this contour
-        level. If so, an optional fourth column may be present and hold a
-	contour-specific pen.
+    (2) If *contours* is a file but not a CPT, it is expected to contain
+        one record per contour, with information given in the order
+        *contour-level* [*angle*] **C**\|\ **c**\|\ **A**\|\ **a** [*pen*],
+        where items in brackets are optional.  The levels marked **C** (or **c**)
+        are contoured, while the levels marked **A** (or **a**) are both contoured
+        and annotated. If the annotation angle is present we will plot the label
+        at that fixed angle [aligned with the contour].  Finally, a contour-
+        specific pen may be present and will override the pen set by **-W**
+        for this contour level only.
 
     (3) If *contours* is a string with comma-separated values it is interpreted
         as those specific contours only.  To indicate a single specific contour
@@ -69,8 +71,8 @@ Optional Arguments
 
     (5) Otherwise, *contours* is interpreted as a constant contour interval.
 
-    If a file is given and **-T** is set, then only contours marked with
-    upper case C or A will have tick-marks. In all cases the contour
+    If a file is given and **-T** is set, then only inner-most contours marked with
+    upper case **C** or **A** will have tick-marks. In all cases the contour
     values have the same units as the grid.  Finally, if neither **-C**
     nor **-A** are set then we auto-compute suitable contour and annotation
     intervals from the data range, yielding approximately 10-20 contours.

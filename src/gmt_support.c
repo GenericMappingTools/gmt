@@ -6514,7 +6514,7 @@ void gmt_init_pen (struct GMT_CTRL *GMT, struct GMT_PEN *pen, double width) {
 	pen->width = width;
 }
 
-bool gmt_is_pen (struct GMT_CTRL *GMT, char *line) {
+GMT_LOCAL bool gmtsupport_is_pen (struct GMT_CTRL *GMT, char *line) {
 	/* Returns true if text is a pen specification. Note: false means it is only a number, which could be a dumb specification for a pen, e.g. 2 */
 	char *c = NULL;
 	unsigned int i, nc;
@@ -6523,6 +6523,7 @@ bool gmt_is_pen (struct GMT_CTRL *GMT, char *line) {
 	for (i = nc = 0; line[i]; i++) if (line[i] == ',') nc++;	/* count commas */
 	if (nc > 0) return (true);	/* At least 1 comma means we got color and/or style so clearly a pen */
 	if (strchr (GMT_DIM_UNITS, line[strlen(line)-1])) return (true);	/* Clearly ends with a explicit measure unit, so a pen */
+	if (isalpha (line[0])) return true;	/* A name probably, like faint */
 	return (false);	/* Might still be, but here we just have a dumb number so who can tell */
 }
 
@@ -16539,6 +16540,79 @@ void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, 
 		wesn[XHI] = ceil  ((wesn[XHI] + adjust * inc[XHI]) / inc[XHI]) * inc[XHI];
 		wesn[YHI] = ceil  ((wesn[YHI] + adjust * inc[YHI]) / inc[YHI]) * inc[YHI];
 	}
+}
+
+struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, char *file, bool inner_tics, unsigned int *type, unsigned int *n_contours) {
+	/* Read contour info from file with cval [angle] C|A|c|a [pen]] records.
+	 * The deprecated format was cval C|A|c|a [angle [pen]].
+	 * If fix-angle annotations are specified we must pass out the type flag as well.
+	 */
+	bool got_angle;
+	char pen[GMT_LEN64] = {""}, txt[GMT_LEN64] = {""};
+	unsigned int seg, row, c;
+	int nc;
+	struct GMT_DATASET *C = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_CONTOUR_INFO * cont = NULL;
+
+	if ((C = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, file, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read contour information file %s - aborting\n", file);
+		return (NULL);
+	}
+	if (C->n_records == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No records found in contour information file %s - aborting\n", file);
+		return (NULL);
+	}
+
+	got_angle = (C->n_columns == 2);	/* We either know now (because we got two numerical columns), or we may find out later */
+	cont = gmt_M_memory (GMT, NULL, C->n_records, struct GMT_CONTOUR_INFO);
+	for (seg = c = 0; seg < C->n_segments; seg++) {
+		S = C->table[0]->segment[seg];
+		for (row = 0; row < S->n_rows; row++, c++) {
+			cont[c].val = S->data[GMT_X][row];
+			cont[c].angle = GMT->session.d_NaN;	/* May be overridden below */
+			pen[0] = txt[0] = '\0';
+			nc = sscanf (S->text[row], "%c %s %s", &cont[c].type, txt, pen);
+			if (strchr ("AaCc", cont[c].type) == NULL) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Not a recognized contour type: %c\n", cont[c].type);
+				return (NULL);
+			}
+			if (S->n_columns == 2) {	/* Both value and angle given as part of new syntax */
+				cont[c].angle = S->data[GMT_Y][row];
+				if (nc == 2) strcpy (pen, txt);	/* Since trailing text here was <type> <pen> */
+			}
+			else if (nc == 3) {	/* Deprecated format with <type> <angle> <pen> */
+				cont[c].angle = atof (txt);
+				got_angle = true;
+			}
+			else if (nc == 2) {	/* Trailing text is either <type> <angle> or <type> <pen> */
+				if (gmtsupport_is_pen (GMT, txt))	/* Definitively a pen */
+					strcpy (pen, txt);
+				else {	/* Could still be a pen if no unit appended */
+					cont[c].angle = atof (txt);
+					got_angle = true;
+					if (cont[c].angle > 0.0 && cont[c].angle < 5.0)
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cannot tell if %s is a pen or angle; chose angle. Please use trailing c|i|p units for all pens\n", txt);
+				}
+			}
+			/* else nc == 1 for record with only type information (no angle nor pen) */
+			if (pen[0]) {	/* Got a pen */
+				if (gmt_getpen (GMT, pen, &cont[c].pen)) {	/* Bad pen syntax */
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse %s as a proper pen specification - aborting\n", pen);
+					gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
+					return (NULL);
+				}
+				cont[c].penset = true;
+			}
+			cont[c].do_tick = (inner_tics && (cont[c].type == 'C' || cont[c].type == 'A')) ? 1 : 0;
+			if (got_angle) *type = 2;	/* Must set this directly if angles are provided */
+		}
+	}
+
+	/* Return information structure array back to the calling environment */
+
+	*n_contours = C->n_records;
+	return (cont);
 }
 
 #if 0	/* Probably not needed after all */
