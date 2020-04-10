@@ -9663,10 +9663,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("MAP_GRID_CROSS_SIZE_PRIMARY");
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE:
-			dval = gmt_M_to_inch (GMT, value);
-			ival = (value[0] == '-') ? GMT_CROSS_ASYMM : ((value[0] == '+') ? GMT_CROSS_SYMM : GMT_CROSS_NORMAL);
-			GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
-			GMT->current.setting.map_grid_cross_type[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_type[GMT_SECONDARY] = ival;
+			error = gmtlib_setparameter (GMT, "MAP_GRID_CROSS_SIZE_PRIMARY", value, core) +
+			        gmtlib_setparameter (GMT, "MAP_GRID_CROSS_SIZE_SECONDARY", value, core);
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
 			dval = gmt_M_to_inch (GMT, value);
