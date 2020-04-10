@@ -84,7 +84,7 @@
  *	gmtmap_rect_clip :		Clip to rectangular region\n
  *	gmtmap_rect_crossing :		Find crossing between line and rect region\n
  *	gmtmap_rect_outside :		Determine if point is outside rect region\n
- *	gmtgmtmap_rect_outside2 :	Determine if point is outside rect region (azimuthal proj only)\n
+ *	gmtmap_rect_outside2 :		Determine if point is outside rect region (azimuthal proj only)\n
  *	gmtmap_rect_overlap :		Determine overlap between rect regions\n
  *	gmtmap_right_boundary :		Return x value of right map boundary\n
  *	gmtmap_xy_search :		Find xy map boundary\n
@@ -771,7 +771,7 @@ GMT_LOCAL bool gmtmap_rect_outside (struct GMT_CTRL *GMT, double lon, double lat
 }
 
 /*! . */
-GMT_LOCAL bool gmtgmtmap_rect_outside2 (struct GMT_CTRL *GMT, double lon, double lat) {
+GMT_LOCAL bool gmtmap_rect_outside2 (struct GMT_CTRL *GMT, double lon, double lat) {
 	/* For Azimuthal proj with rect borders since gmtmap_rect_outside may fail for antipodal points */
 	if (gmtmap_radial_outside (GMT, lon, lat)) return (true);	/* Point > 90 degrees away */
 	return (gmtmap_rect_outside (GMT, lon, lat));	/* Must check if inside box */
@@ -1183,7 +1183,7 @@ GMT_LOCAL int gmtmap_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double 
 	return (0);
 }
 
-GMT_LOCAL int gmtgmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
+GMT_LOCAL int gmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
 	/* true if x- or y-distance between points exceeds 1/2 map width at this y value or map height */
 	double dx, dy, map_half_width, map_half_height;
 
@@ -1402,7 +1402,7 @@ GMT_LOCAL uint64_t gmtmap_move_to_rect (struct GMT_CTRL *GMT, double *x_edge, do
 		n = 1;
 	}
 
-	if (GMT->current.map.outside == gmtgmtmap_rect_outside2) {	/* Need special check because this outside2 test is screwed up... */
+	if (GMT->current.map.outside == gmtmap_rect_outside2) {	/* Need special check because this outside2 test is screwed up... */
 		if (x_edge[j] < GMT->current.proj.rect[XLO]) {
 			x_edge[j] = GMT->current.proj.rect[XLO];
 			GMT->current.map.this_x_status = -2;
@@ -1429,7 +1429,7 @@ GMT_LOCAL uint64_t gmtmap_move_to_rect (struct GMT_CTRL *GMT, double *x_edge, do
 }
 
 /*! . */
-GMT_LOCAL uint64_t gmtgmtmap_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double **x, double **y, uint64_t *total_nx) {
+GMT_LOCAL uint64_t gmtmap_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double **x, double **y, uint64_t *total_nx) {
 	uint64_t i, j = 0;
 	unsigned int nx, k, sides[4];
 	double xlon[4], xlat[4], xc[4], yc[4];
@@ -2490,7 +2490,7 @@ GMT_LOCAL double gmtmap_az_backaz_cartesian (struct GMT_CTRL *GMT, double lonE, 
 }
 
 /*! . */
-GMT_LOCAL double gmtgmtmap_az_backaz_cartesian_proj (struct GMT_CTRL *GMT, double lonE, double latE, double lonS, double latS, bool baz) {
+GMT_LOCAL double gmtmap_az_backaz_cartesian_proj (struct GMT_CTRL *GMT, double lonE, double latE, double lonS, double latS, bool baz) {
 	/* Calculate azimuths or backazimuths.  Cartesian case.
 	 * First point is considered "Event" and second "Station".
 	 * Azimuth is direction from Station to Event.
@@ -3001,7 +3001,7 @@ GMT_LOCAL bool gmtmap_init_cyleq (struct GMT_CTRL *GMT) {
  *	TRANSFORMATION ROUTINES FOR CYLINDRICAL EQUIDISTANT PROJECTION (GMT_CYL_EQDIST)
  */
 
-GMT_LOCAL bool gmtgmtmap_init_cyleqdist (struct GMT_CTRL *GMT) {
+GMT_LOCAL bool gmtmap_init_cyleqdist (struct GMT_CTRL *GMT) {
 	double xmin, xmax, ymin, ymax;
 
 	gmtmap_set_spherical (GMT, true);	/* Force spherical for now */
@@ -3191,7 +3191,7 @@ GMT_LOCAL bool gmtmap_init_stereo (struct GMT_CTRL *GMT) {
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 
-		GMT->current.map.outside = &gmtgmtmap_rect_outside2;
+		GMT->current.map.outside = &gmtmap_rect_outside2;
 		GMT->current.map.crossing = &gmtmap_rect_crossing;
 		GMT->current.map.overlap = &gmtmap_rect_overlap;
 		GMT->current.map.clip = &gmtmap_rect_clip;
@@ -3871,7 +3871,7 @@ GMT_LOCAL bool gmtmap_init_lambeq (struct GMT_CTRL *GMT) {
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 
-		GMT->current.map.outside = &gmtgmtmap_rect_outside2;
+		GMT->current.map.outside = &gmtmap_rect_outside2;
 		GMT->current.map.crossing = &gmtmap_rect_crossing;
 		GMT->current.map.overlap = &gmtmap_rect_overlap;
 		GMT->current.map.clip = &gmtmap_rect_clip;
@@ -3965,7 +3965,7 @@ GMT_LOCAL bool gmtmap_init_ortho (struct GMT_CTRL *GMT) {
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 
-		GMT->current.map.outside = &gmtgmtmap_rect_outside2;
+		GMT->current.map.outside = &gmtmap_rect_outside2;
 		GMT->current.map.crossing = &gmtmap_rect_crossing;
 		GMT->current.map.overlap = &gmtmap_rect_overlap;
 		GMT->current.map.clip = &gmtmap_rect_clip;
@@ -4097,7 +4097,7 @@ GMT_LOCAL bool gmtmap_init_genper (struct GMT_CTRL *GMT) {
 		GMT->common.R.oblique = false;
 		GMT->current.proj.windowed = true;
 		if (GMT->current.proj.g_debug > 0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "using windowed region\n");
-		GMT->current.map.outside = &gmtgmtmap_rect_outside2;
+		GMT->current.map.outside = &gmtmap_rect_outside2;
 		GMT->current.map.crossing = &gmtmap_rect_crossing;
 		GMT->current.map.overlap = &gmtmap_rect_overlap;
 #if 0
@@ -4106,7 +4106,7 @@ GMT_LOCAL bool gmtmap_init_genper (struct GMT_CTRL *GMT) {
 		GMT->current.map.left_edge = &gmtmap_left_rect;
 		GMT->current.map.right_edge = &gmtmap_right_rect;
 #endif
-		GMT->current.map.clip = &gmtgmtmap_rect_clip_old;
+		GMT->current.map.clip = &gmtmap_rect_clip_old;
 		GMT->current.map.left_edge = &gmtmap_left_genper;
 		GMT->current.map.right_edge = &gmtmap_right_genper;
 		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
@@ -4191,7 +4191,7 @@ GMT_LOCAL bool gmtmap_init_gnomonic (struct GMT_CTRL *GMT) {
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 
-		GMT->current.map.outside = &gmtgmtmap_rect_outside2;
+		GMT->current.map.outside = &gmtmap_rect_outside2;
 		GMT->current.map.crossing = &gmtmap_rect_crossing;
 		GMT->current.map.overlap = &gmtmap_rect_overlap;
 		GMT->current.map.clip = &gmtmap_rect_clip;
@@ -4275,7 +4275,7 @@ GMT_LOCAL bool gmtmap_init_azeqdist (struct GMT_CTRL *GMT) {
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 
-		GMT->current.map.outside = &gmtgmtmap_rect_outside2;
+		GMT->current.map.outside = &gmtmap_rect_outside2;
 		GMT->current.map.crossing = &gmtmap_rect_crossing;
 		GMT->current.map.overlap = &gmtmap_rect_overlap;
 		GMT->current.map.clip = &gmtmap_rect_clip;
@@ -5025,7 +5025,7 @@ GMT_LOCAL bool gmtmap_init_polyconic (struct GMT_CTRL *GMT) {
 		case GMT_CYL_EQ:        search = gmtmap_init_cyleq (GMT); break;       /* Cylindrical Equal-Area */
 		case GMT_CYL_STEREO:    search = gmtmap_init_cylstereo (GMT); break;   /* Cylindrical Stereographic */
 		case GMT_MILLER:        search = gmtmap_init_miller (GMT); break;      /* Miller Cylindrical */
-		case GMT_CYL_EQDIST:    search = gmtgmtmap_init_cyleqdist (GMT); break;   /* Cylindrical Equidistant */
+		case GMT_CYL_EQDIST:    search = gmtmap_init_cyleqdist (GMT); break;   /* Cylindrical Equidistant */
 		case GMT_ROBINSON:      search = gmtmap_init_robinson (GMT); break;    /* Robinson */
 		case GMT_SINUSOIDAL:    search = gmtmap_init_sinusoidal (GMT); break;  /* Sinusoidal Equal-Area */
 		case GMT_CASSINI:       search = gmtmap_init_cassini (GMT); break;     /* Cassini cylindrical */
@@ -6333,12 +6333,12 @@ GMT_LOCAL void gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsig
 			break;
 		case GMT_CARTESIAN_DIST_PROJ:	/* Cartesian distance after projecting 2-D lon,lat data */
 			GMT->current.map.dist[type].func = &gmtlib_cartesian_dist_proj;
-			GMT->current.map.azimuth_func = &gmtgmtmap_az_backaz_cartesian_proj;
+			GMT->current.map.azimuth_func = &gmtmap_az_backaz_cartesian_proj;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST_PROJ2:	/* Cartesian distance after projecting 2-D lon,lat data, use r^2 instead of hypot  */
 			GMT->current.map.dist[type].func = &gmtmap_cartesian_dist_proj2;
-			GMT->current.map.azimuth_func = &gmtgmtmap_az_backaz_cartesian_proj;
+			GMT->current.map.azimuth_func = &gmtmap_az_backaz_cartesian_proj;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_FLATEARTH:	/* 2-D lon, lat data, but scale to Cartesian flat earth in meter */
@@ -7360,7 +7360,7 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	xin = *xx;	yin = *yy;
 	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
 	for (n_seg = 0, i = 1; i < *nn; i++) {
-		if ((l_or_r = gmtgmtmap_jump_xy (GMT, xin[i], yin[i], xin[i-1], yin[i-1]))) {
+		if ((l_or_r = gmtmap_jump_xy (GMT, xin[i], yin[i], xin[i-1], yin[i-1]))) {
 			if (n_seg == n_alloc) {
 				pos = gmt_M_malloc (GMT, pos, n_seg, &n_alloc, uint64_t);
 				n_alloc = n_seg;
@@ -9310,7 +9310,7 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 			break;
 
 		case GMT_CYL_EQDIST:	/* Cylindrical Equidistant */
-			search = gmtgmtmap_init_cyleqdist (GMT);
+			search = gmtmap_init_cyleqdist (GMT);
 			break;
 
 		case GMT_ROBINSON:		/* Robinson */
