@@ -167,7 +167,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int compare_x (const void *point_1, const void *point_2) {
+GMT_LOCAL int gmtselect_compare_x (const void *point_1, const void *point_2) {
 	const struct GMTSELECT_DATA *p1 = point_1, *p2 = point_2;
 
 	if (p1->x < p2->x) return (-1);
@@ -247,7 +247,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
+GMT_LOCAL int gmtselect_old_C_parser (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
 	int j;
 	bool fix = false;
 	/* Parse older versions of the -C syntax */
@@ -281,7 +281,7 @@ GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 	return 0;
 }
 
-GMT_LOCAL int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
+GMT_LOCAL int gmtselect_old_L_parser (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
 	int j, k = 0;
 	if (!gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
 		GMT_Report (API, GMT_MSG_ERROR, "Option -L: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
@@ -340,7 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 			case 'C':	/* Near a point test  Syntax -C<pfile>+d<distance>  */
 				Ctrl->C.active = true;
 				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
-					n_errors += old_C_parse (API, opt->arg, Ctrl);
+					n_errors += gmtselect_old_C_parser (API, opt->arg, Ctrl);
 					break;
 				}
 				/* Here we perform new syntax parsing */
@@ -403,7 +403,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 			case 'L':	/* Near a line test -L<lfile>+d%s[+p]] */
 				Ctrl->L.active = true;
 				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
-					n_errors += old_L_parse (API, opt->arg, Ctrl);
+					n_errors += gmtselect_old_L_parser (API, opt->arg, Ctrl);
 					break;
 				}
 				/* Here we perform new syntax parsing */
@@ -683,7 +683,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 
 			/* Sort on x to speed up inside testing */
-			qsort (data, point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
+			qsort (data, point->n_records, sizeof (struct GMTSELECT_DATA), gmtselect_compare_x);
 
 			for (seg = k = 0; seg < point->n_segments; seg++) {	/* Put back the new order */
 				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {

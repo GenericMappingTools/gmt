@@ -111,7 +111,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 #define N_NOT_SUPPORTED	7
 #endif
 
-GMT_LOCAL int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file) {
+GMT_LOCAL int grdblend_found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file) {
 	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
 	unsigned int i, type;
 #ifdef HAVE_GDAL
@@ -134,7 +134,7 @@ GMT_LOCAL int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HE
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
+GMT_LOCAL void grdblend_decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	unsigned int i, pos, error = 0;
 	char text[GMT_BUFSIZ];
 
@@ -150,7 +150,7 @@ GMT_LOCAL void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	}
 }
 
-GMT_LOCAL bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL bool grdblend_out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h) {
 	/* Look for phase shifts in w/e/s/n between the two grids */
 	unsigned int way, side;
 	double a;
@@ -165,7 +165,7 @@ GMT_LOCAL bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *
 	return false;
 }
 
-GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GRID_HEADER *h, unsigned int mode) {
+GMT_LOCAL bool grdblend_overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GRID_HEADER *h, unsigned int mode) {
 	double w, e, shift = 720.0;
 	char *type[2] = {"grid", "inner grid"};
 
@@ -191,7 +191,7 @@ GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, str
 	return false;
 }
 
-GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode) {
+GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode) {
 	int type, status, not_supported = 0;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
 	bool srtm_job = false, common_inc = true, common_reg = true;
@@ -306,7 +306,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			return (-1);
 		}
 
-		if ((not_supported = found_unsupported_format (GMT, B[n].G->header, B[n].file)) == GMT_GRDIO_UNKNOWN_FORMAT) {
+		if ((not_supported = grdblend_found_unsupported_format (GMT, B[n].G->header, B[n].file)) == GMT_GRDIO_UNKNOWN_FORMAT) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal snafu - please report the problem on the GMT issues page\n");
 			return (-1);
 		}
@@ -315,7 +315,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		if (!strcmp (L[n].region, "-"))
 			gmt_M_memcpy (B[n].wesn, B[n].G->header->wesn, 4, double);	/* Set inner = outer region */
 		else
-			decode_R (GMT, &L[n].region[2], B[n].wesn);			/* Must decode the -R string */
+			grdblend_decode_R (GMT, &L[n].region[2], B[n].wesn);			/* Must decode the -R string */
 		if (h == NULL) {	/* Was not given -R, determine it from the input grids */
 			if (B[n].G->header->wesn[YLO] < wesn[YLO]) wesn[YLO] = B[n].G->header->wesn[YLO];
 			if (B[n].G->header->wesn[YHI] > wesn[YHI]) wesn[YHI] = B[n].G->header->wesn[YHI];
@@ -362,8 +362,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			continue;
 		}
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
-			if (overlap_check (GMT, &B[n], h, 0)) continue;	/* Check header for -+360 issues and overlap */
-			if (overlap_check (GMT, &B[n], h, 1)) continue;	/* Check inner region for -+360 issues and overlap */
+			if (grdblend_overlap_check (GMT, &B[n], h, 0)) continue;	/* Check header for -+360 issues and overlap */
+			if (grdblend_overlap_check (GMT, &B[n], h, 1)) continue;	/* Check inner region for -+360 issues and overlap */
 		}
 		else if (h->wesn[XLO] > B[n].wesn[XHI] || h->wesn[XHI] < B[n].wesn[XLO] || h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
@@ -388,7 +388,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 				B[n].file, B[n].G->header->inc[GMT_X], B[n].G->header->inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
 			do_sample |= 1;
 		}
-		if (out_of_phase (B[n].G->header, h)) {	/* Set explicit -R for resampling that is multiple of desired increments AND inside both original grid and desired grid */
+		if (grdblend_out_of_phase (B[n].G->header, h)) {	/* Set explicit -R for resampling that is multiple of desired increments AND inside both original grid and desired grid */
 			double wesn[4];	/* Make sure wesn is equal to or larger than B[n].G->header->wesn so all points are included */
 			unsigned int k;
 			k = (unsigned int)rint ((MAX (h->wesn[XLO], B[n].G->header->wesn[XLO]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
@@ -453,7 +453,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 				return (-1);
 			}
-			if (overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdconvert changed the region */
+			if (grdblend_overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdconvert changed the region */
 		}
 		if (B[n].weight < 0.0) {	/* Negative weight means invert sense of taper */
 			B[n].weight = fabs (B[n].weight);
@@ -514,7 +514,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	return (n_files);
 }
 
-GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, unsigned int n_blend, double half) {
+GMT_LOCAL int grdblend_sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, unsigned int n_blend, double half) {
 	unsigned int k;
 	int G_row;
 	uint64_t node;
@@ -801,13 +801,13 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		delayed = false;	/* Was able to create the grid from command line options */
 	}
 
-	status = init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &h_region, &blend, &zmode);
+	status = grdblend_init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &h_region, &blend, &zmode);
 
 	if (Ctrl->In.n <= 1 && GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
 
-	if (status < 0) Return (GMT_RUNTIME_ERROR);	/* Something went wrong in init_blend_job */
+	if (status < 0) Return (GMT_RUNTIME_ERROR);	/* Something went wrong in grdblend_init_blend_job */
 	n_blend = status;
 	if (!Ctrl->W.active && n_blend == 1) {
 		GMT_Report (API, GMT_MSG_WARNING, "Only 1 grid found; no blending will take place\n");
@@ -829,7 +829,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grids\n");
 
 	/* Formats other than netcdf (both v3 and new) and native binary must be reformatted at the end */
-	reformat = found_unsupported_format (GMT, Grid->header, Ctrl->G.file);
+	reformat = grdblend_found_unsupported_format (GMT, Grid->header, Ctrl->G.file);
 	type = GMT->session.grdformat[Grid->header->type][0];
 	if (Ctrl->Q.active && (reformat || (type == 'c' || type == 'n'))) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Not supported for grid format %s\n", GMT->session.grdformat[Grid->header->type]);
@@ -893,7 +893,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 
 		gmt_M_memset (z, Grid->header->n_columns, gmt_grdfloat);	/* Start from scratch */
 
-		sync_input_rows (GMT, row, blend, n_blend, Grid->header->xy_off);	/* Wind each input file to current record and read each of the overlapping rows */
+		grdblend_sync_input_rows (GMT, row, blend, n_blend, Grid->header->xy_off);	/* Wind each input file to current record and read each of the overlapping rows */
 
 		for (col = 0; col < Grid->header->n_columns; col++) {	/* For each output node on the current row */
 

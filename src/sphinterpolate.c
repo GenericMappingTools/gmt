@@ -74,7 +74,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *C) {
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg) {
+GMT_LOCAL int sphinterpolate_get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg) {
 	int m;
 	char txt_a[32], txt_b[32], txt_c[32];
 	m = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
@@ -166,14 +166,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 						Ctrl->Q.mode = 2;
 						if (opt->arg[1]) {	/* Gave optional n/m/dgmx */
 							k = (opt->arg[1] == '/') ? 2 : 1;	/* Gave optional /n/m/dgmx */
-							if ((m = get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qg<N>[/<M>[/<U>]]")) < 0) n_errors++;
+							if ((m = sphinterpolate_get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qg<N>[/<M>[/<U>]]")) < 0) n_errors++;
 						}
 						break;
 					case 's':	case '3':	/* Smoothing s (3 is old mode) */
 						Ctrl->Q.mode = 3;
 						if (opt->arg[1]) {	/* Gave optional e/sm/niter */
 							k = (opt->arg[1] == '/') ? 2 : 1;	/* Gave optional /e/sm/niter */
-							if ((m = get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qs<E>[/<U>[/<niter>]]")) < 0) n_errors++;
+							if ((m = sphinterpolate_get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qs<E>[/<U>[/<niter>]]")) < 0) n_errors++;
 						}
 						break;
 					default:

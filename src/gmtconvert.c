@@ -414,7 +414,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
+GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
 	uint64_t col;
 	/* Loop over all columns and compare the two records, if differ then return false.
 	 * If passes all columns then they are the same and we return true. */
@@ -643,7 +643,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				n_in_rows++;
 				if (Ctrl->Z.active && (n_in_rows < Ctrl->Z.first || n_in_rows > Ctrl->Z.last)) continue;	/* Skip if outside limited record range */
 				if (!Ctrl->E.active) {
-					if (Ctrl->T.active[1] && row && is_duplicate_row (S, row)) continue;	/* Skip duplicate records */
+					if (Ctrl->T.active[1] && row && gmtconvert_is_duplicate_row (S, row)) continue;	/* Skip duplicate records */
 				}
 				else if (Ctrl->E.mode < 0) {	/* Only pass first or last or both of them, skipping all others */
 					if (row > 0 && row < last_row) continue;		/* Always skip the middle of the segment */

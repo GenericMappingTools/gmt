@@ -213,7 +213,7 @@ struct THREAD_STRUCT {
 	struct GRDFILTER_BIN_MODE_INFO *B;
 };
 
-GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t);
+GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t);
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFILTER_CTRL *C;
@@ -240,8 +240,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* D
 
 #ifdef HAVE_GLIB_GTHREAD
 /* -----------------------------------------------------------------------------------*/
-GMT_LOCAL void *thread_function (void *args) {
-	threaded_function ((struct THREAD_STRUCT *)args);
+GMT_LOCAL void *grdfilter_thread_function (void *args) {
+	grdfilter_threaded_function ((struct THREAD_STRUCT *)args);
 	return NULL;
 }
 #endif
@@ -270,7 +270,7 @@ GMT_LOCAL struct GRDFILTER_BIN_MODE_INFO *grdfilter_bin_setup (struct GMT_CTRL *
 	return (B);
 }
 
-GMT_LOCAL double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B) {
+GMT_LOCAL double grdfilter_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning unweighted data with the specified width. We check if we find more
 	 * than one mode and return the chosen one as per the settings. */
@@ -320,7 +320,7 @@ GMT_LOCAL double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, stru
 	return (value);
 }
 
-GMT_LOCAL double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B) {
+GMT_LOCAL double grdfilter_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning weighted data with the specified width. We check if we find more
 	 * than one mode and return the chosen one as per the settings. */
@@ -370,7 +370,7 @@ GMT_LOCAL double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVA
 	return (value);
 }
 
-void reset_F_parameters (struct FILTER_INFO *F, double width, double par[]) {
+GMT_LOCAL void grdfilter_reset_F_parameters (struct FILTER_INFO *F, double width, double par[]) {
 	/* Parameters computed from width and other settings */
 	double x_width, y_width;
 
@@ -423,7 +423,7 @@ GMT_LOCAL void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, d
 	double x, y, yc, y0, r, ry = 0.0, inv_x_half_width = 0.0, inv_y_half_width = 0.0;
 
 	if (variable) {	/* Update since filterwidth has changed */
-		reset_F_parameters (F, F->W[node], par);
+		grdfilter_reset_F_parameters (F, F->W[node], par);
 	}
 
 	yc = y0 = output_lat - y_off;		/* Input latitude of central point input grid (i,j) = (0,0) */
@@ -656,7 +656,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL double get_filter_width (struct GMTAPI_CTRL *API, struct GRDFILTER_CTRL *Ctrl, char *text) {
+GMT_LOCAL double grdfilter_get_filter_width (struct GMTAPI_CTRL *API, struct GRDFILTER_CTRL *Ctrl, char *text) {
 	/* Most filter setups expact a constant filter width, but some may pass a grid.  if so
 	   then we must read the grid and find the largest filter and return that value. */
 	double width = 0.0;
@@ -783,7 +783,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 							}
 							c[0] = '\0';	/* Hide modifiers */
 						}
-						Ctrl->F.width = get_filter_width (API, Ctrl, &txt[1]);
+						Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, &txt[1]);
 						if (c) c[0] = '+';	/* Restore modifiers */
 					}
 					else if (strchr (txt, '/')) {	/* Gave xwidth/ywidth for rectangular Cartesian filtering */
@@ -793,7 +793,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 						Ctrl->F.rect = true;
 					}
 					else
-						Ctrl->F.width = get_filter_width (API, Ctrl, &txt[1]);
+						Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, &txt[1]);
 					if ((p = strstr (txt, "+h"))) Ctrl->F.highpass = true;
 					if (Ctrl->F.width < 0.0) {	/* Old-style specification for high-pass filtering */
 						if (gmt_M_compat_check (GMT, 5)) {
@@ -1283,7 +1283,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 		if (GMT->common.x.n_threads == 1) {		/* Independently of WITH_THREADS, if only one don't call the threading machine */
    			threadArg[i].r_stop = Gout->header->n_rows;
-			threaded_function (&threadArg[0]);
+			grdfilter_threaded_function (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
 		}
 #ifndef HAVE_GLIB_GTHREAD
@@ -1291,7 +1291,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Gout->header->n_rows) / GMT->common.x.n_threads);
    		if (i == GMT->common.x.n_threads - 1) threadArg[i].r_stop = Gout->header->n_rows;	/* Make sure last row is not left behind */
-		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
+		threads[i] = g_thread_new(NULL, grdfilter_thread_function, (void*)&(threadArg[i]));
 	}
 
 	if (GMT->common.x.n_threads > 1) {		/* Otherwise g_thread_new was never called aand so no need to "join" */
@@ -1394,7 +1394,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 }
 
 /* ----------------------------------------------------------------------------------------------------- */
-GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
+GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 
 	bool visit_check = false, go_on;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out, n_span;
@@ -1568,7 +1568,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 							gmt_mode (GMT, work_array, n_in_median, n_span, true, Ctrl->F.mode, &GMT_n_multiples, &this_estimate);
 							break;
 						case GRDFILTER_HIST:	/* Histogram peak */
-							this_estimate = GMT_histmode (GMT, work_array, n_in_median, B);
+							this_estimate = grdfilter_histmode (GMT, work_array, n_in_median, B);
 							break;
 						case GRDFILTER_MIN:	/* Lowest of all values */
 							this_estimate = gmt_extreme (GMT, work_array, n_in_median, DBL_MAX, 0, -1);
@@ -1589,7 +1589,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 							this_estimate = gmt_mode_weighted (GMT, work_data, n_in_median);
 							break;
 						case GRDFILTER_HIST_SPH: /* Weighted histogram Mode */
-							this_estimate = GMT_histmode_weighted (GMT, work_data, n_in_median, B);
+							this_estimate = grdfilter_histmode_weighted (GMT, work_data, n_in_median, B);
 							break;
 					}
 					Gout->data[ij_out] = (gmt_grdfloat)this_estimate;	/* Truncate to gmt_grdfloat */

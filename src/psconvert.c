@@ -214,7 +214,7 @@ struct PS2RASTER_CTRL {
 	GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C);
 #else
 	/* Abstraction to get popen to do bidirectional read/write */
-struct popen2 * gmt_popen2 (const char *cmdline) {
+GMT_LOCAL struct popen2 * psconvert_popen2 (const char *cmdline) {
 	struct popen2 *F = NULL;
 	/* Must implement a bidirectional popen instead */
 	pid_t p;
@@ -249,7 +249,7 @@ struct popen2 * gmt_popen2 (const char *cmdline) {
 #include <sys/wait.h>
 #endif
 
-void gmt_pclose2 (struct popen2 **Faddr, int dir) {
+GMT_LOCAL void psconvert_pclose2 (struct popen2 **Faddr, int dir) {
 	struct popen2 *F = *Faddr;
 	F->n_closed++;
 	close (F->fd[dir]);	/* Close this pipe */
@@ -955,7 +955,7 @@ GMT_LOCAL int64_t psconvert_file_line_reader (struct GMT_CTRL *GMT, char **L, si
 	return out;			/* Return number of characters in L. The next call to the routine will return EOF. */
 }
 
-void file_rewind (FILE *fp, uint64_t *notused) {	/* Rewinds to start of file */
+GMT_LOCAL void psconvert_file_rewind (FILE *fp, uint64_t *notused) {	/* Rewinds to start of file */
 	if (notused == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
 	rewind (fp);
 }
@@ -1044,7 +1044,7 @@ GMT_LOCAL int psconvert_pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTR
 		return GMT_RUNTIME_ERROR;
 	}
 #else
-	if ((H = gmt_popen2 (cmd)) == NULL) {	/* Failed popen-job, exit */
+	if ((H = psconvert_popen2 (cmd)) == NULL) {	/* Failed popen-job, exit */
 		GMT_Report(API, GMT_MSG_ERROR, "Cannot execute Ghostscript command.\n");
 		return GMT_RUNTIME_ERROR;
 	}
@@ -1065,7 +1065,7 @@ GMT_LOCAL int psconvert_pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTR
 #else
  	write (H->fd[1], PS->data, PS->n_bytes);
 	/* Now closed for writing */
-	gmt_pclose2 (&H, 1);
+	psconvert_pclose2 (&H, 1);
 	fh = H->fd[0];	/* File handle for reading */
 #endif
 
@@ -1082,7 +1082,7 @@ GMT_LOCAL int psconvert_pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTR
 	}
 #else
 	/* Now closed for reading */
- 	gmt_pclose2 (&H, 0);
+ 	psconvert_pclose2 (&H, 0);
 #endif
 
 	sscanf (buf, "%s %lf %lf %lf %lf", t, &x0, &y0, &x1, &y1);
@@ -1218,7 +1218,7 @@ GMT_LOCAL int psconvert_pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CT
 			return GMT_RUNTIME_ERROR;
 		}
 #else
-		if ((H = gmt_popen2 (cmd)) == NULL) {	/* Failed popen-job, exit */
+		if ((H = psconvert_popen2 (cmd)) == NULL) {	/* Failed popen-job, exit */
 			GMT_Report(API, GMT_MSG_ERROR, "Cannot execute Ghostscript command.\n");
 			return GMT_RUNTIME_ERROR;
 		}
@@ -1258,7 +1258,7 @@ GMT_LOCAL int psconvert_pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CT
 	else {	/* On non-Windows and want a raster back */
  		write (H->fd[1], PS->data, PS->n_bytes);
 		/* Now closed for writing */
-		gmt_pclose2 (&H, 1);
+		psconvert_pclose2 (&H, 1);
 		fh = H->fd[0];	/* File handle for reading */
 	}
 #endif
@@ -1325,7 +1325,7 @@ GMT_LOCAL int psconvert_pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CT
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to close read end of pipe.\n");
 #else
 	/* Now closed for reading */
- 	gmt_pclose2 (&H, 0);
+ 	psconvert_pclose2 (&H, 0);
 #endif
 
 	I->type = GMT_CHAR;
@@ -2038,7 +2038,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		/*         Rewind the input file and start copying and replacing      */
 		/* ****************************************************************** */
 
-		file_rewind (fp, &pos);
+		psconvert_file_rewind (fp, &pos);
 
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;

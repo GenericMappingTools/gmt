@@ -97,7 +97,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	} T;
 };
 
-GMT_LOCAL int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col) {
+GMT_LOCAL int gmtinfo_strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col) {
 	/* Alternative to GMT_ascii_output_col that strips off leading blanks first */
 
 	int k;
@@ -668,19 +668,19 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					sprintf (record, "-R%g/%g/", wesn[XLO], wesn[XHI]);
 				else {
 					sprintf (record, "-R");
-					i = strip_blanks_and_output (GMT, buffer, wesn[XLO], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
-					i = strip_blanks_and_output (GMT, buffer, wesn[XHI], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+					i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XLO], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+					i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XHI], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
 				}
-				i = strip_blanks_and_output (GMT, buffer, wesn[YLO], GMT_Y);	strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, wesn[YHI], GMT_Y);	strcat (record, &buffer[i]);
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[YLO], GMT_Y);	strcat (record, &buffer[i]);	strcat (record, "/");
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[YHI], GMT_Y);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->T.active) {	/* Return -T string */
 				wesn[XLO]  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
 				wesn[XHI]  = ceil  (xyzmax[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
 				sprintf (record, "-T");
-				i = strip_blanks_and_output (GMT, buffer, wesn[XLO], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, wesn[XHI], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XLO], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XHI], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
 				gmt_M_memcpy (Out->data, dchosen, ncol, double);

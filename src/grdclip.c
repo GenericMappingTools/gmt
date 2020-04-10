@@ -113,7 +113,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int compare_classes (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int grdclip_compare_classes (const void *point_1v, const void *point_2v) {
 	/*  Needed to sort classes on low value. */
 	const struct GRDCLIP_RECLASSIFY *point_1 = point_1v, *point_2 = point_2v;
 
@@ -263,7 +263,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 		unsigned int k;
 		Ctrl->S.class = gmt_M_memory (GMT, Ctrl->S.class, n_class, struct GRDCLIP_RECLASSIFY);
 		Ctrl->S.n_class = n_class;
-		qsort (Ctrl->S.class, Ctrl->S.n_class, sizeof (struct GRDCLIP_RECLASSIFY), compare_classes);
+		qsort (Ctrl->S.class, Ctrl->S.n_class, sizeof (struct GRDCLIP_RECLASSIFY), grdclip_compare_classes);
 		for (k = 1; k < Ctrl->S.n_class; k++) {
 			if (Ctrl->S.class[k].low < Ctrl->S.class[k-1].high) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -Si: Reclassification case %d overlaps with case %d\n", k, k-1);

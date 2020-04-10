@@ -186,7 +186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_grdfloat value) {
+GMT_LOCAL int grdfill_do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_grdfloat value) {
 	/* Algorithm 1: Replace NaNs with a constant value */
 	uint64_t node;
 
@@ -201,7 +201,7 @@ GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_gr
 }
 
 #if 1
-GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
+GMT_LOCAL int grdfill_do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
 	/* Algorithm 2: Replace NaNs with a spline */
 	char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
 	unsigned int row, col, row_hole, col_hole, mode, d_limit[4], n_constraints;
@@ -302,7 +302,7 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 }
 #endif
 
-GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row, unsigned int col, int64_t *step, char *ID, unsigned int limit[]) {
+GMT_LOCAL unsigned int grdfill_trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row, unsigned int col, int64_t *step, char *ID, unsigned int limit[]) {
 	/* Determine all the direct neighbor nodes in the W/E/S/N directions that are also NaN, recursively.
 	 * This is a limited form of Moore neighborhood called Von Neumann neighborhood since we only do the
 	 * four cardinal directions and ignore the diagonals.  Ignoring the diagonal means two holes that
@@ -324,14 +324,14 @@ GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsign
 			if (next_row < limit[YLO]) limit[YLO] = next_row;
 			else if (next_row > limit[YHI]) limit[YHI] = next_row;
 			/* Recursively trace this nodes next neighbors as well */
-			n_nodes = n_nodes + 1 + trace_the_hole (G, ij, next_row, next_rcol, step, ID, limit);
+			n_nodes = n_nodes + 1 + grdfill_trace_the_hole (G, ij, next_row, next_rcol, step, ID, limit);
 		}
 	}
 	return (n_nodes);
 }
 
-GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, int64_t *js, int64_t *xs, int64_t *ys) {
-	/* function to find the nearest point based on previous search, smallest distance ourside a radius */
+GMT_LOCAL int64_t grdfill_find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, int64_t *js, int64_t *xs, int64_t *ys) {
+	/* function to find the nearest point based on previous search, smallest distance outside a radius */
 	int64_t ct = 0, nx, ny, nx1, ii, k = 0, rr, nx1_2, ny_2;
 
 	rr = INTMAX_MAX;	/* Ensure we reset this the first time */
@@ -402,7 +402,7 @@ GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, 
 	return (ct);
 }
 
-GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct GMT_GRID *Out, int64_t radius) {
+GMT_LOCAL void grdfill_nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct GMT_GRID *Out, int64_t radius) {
 	uint64_t ij, node;
 	int64_t nx = In->header->n_columns, ny = In->header->n_rows;
  	int64_t i, j, flag, ct, k, recx = 1, recy = 1, cs = 0, rr;
@@ -442,7 +442,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 					rr = 0;
 
 				while (flag == 0 && rr <= rad2) {
-					ct = find_nearest (i, j, &rr, is, js, xs, ys);
+					ct = grdfill_find_nearest (i, j, &rr, is, js, xs, ys);
 					cs++;
 					for (k = 0; k < ct; k++) {
 						if (is[k] >= 0 && is[k] < ny && js[k] >=0 && js[k] < nx) {
@@ -533,7 +533,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate input grid!\n");
 			Return (API->error);
 		}
-		nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
+		grdfill_nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
 
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to write output grid!\n");
@@ -590,7 +590,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			ID[node] = 1;	/* Flag this node as part of a hole */
 			++hole_number;	/* Increase the current hole number */
 			/* Trace all the contiguous neighbors, updating the bounding box as we go along */
-			n_nodes = 1 + trace_the_hole (Grid, node, row, col, off, ID, limit);
+			n_nodes = 1 + grdfill_trace_the_hole (Grid, node, row, col, off, ID, limit);
 			wesn[XLO] = gmt_M_grd_col_to_x (GMT, limit[XLO], Grid->header) - 0.5 * Grid->header->inc[GMT_X];
 			wesn[XHI] = gmt_M_grd_col_to_x (GMT, limit[XHI], Grid->header) + 0.5 * Grid->header->inc[GMT_X];
 			wesn[YLO] = gmt_M_grd_row_to_y (GMT, limit[YHI], Grid->header) - 0.5 * Grid->header->inc[GMT_Y];
@@ -618,10 +618,10 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			else {
 				switch (Ctrl->A.mode) {
 					case ALG_CONSTANT:	/* Fill in using a constant value */
-						error = do_constant_fill (Grid, limit, (gmt_grdfloat)Ctrl->A.value);
+						error = grdfill_do_constant_fill (Grid, limit, (gmt_grdfloat)Ctrl->A.value);
 						break;
 					case ALG_SPLINE:	/* Fill in using a spline */
-						error = do_splinefill (API, Grid, wesn, limit, n_nodes, Ctrl->A.value);
+						error = grdfill_do_splinefill (API, Grid, wesn, limit, n_nodes, Ctrl->A.value);
 						break;
 				}
 				if (error) {

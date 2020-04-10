@@ -239,7 +239,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_CTRL *Ctrl, unsigned int ng) {
+GMT_LOCAL int grdtrack_process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_CTRL *Ctrl, unsigned int ng) {
 	/* Handle processing of a single file argument.  Return 1 if successful, 0 if error */
 	int j;
 	unsigned int n_errors = 0;
@@ -387,7 +387,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					/* Process all the grids listed in this text table */
 					while (fgets (file, PATH_MAX, fp)) {
 						if (file[0] == '#') continue;	/* Skip all headers */
-						if (process_one (GMT, file, Ctrl, ng) == 0)
+						if (grdtrack_process_one (GMT, file, Ctrl, ng) == 0)
 							n_errors++;
 						else
 							ng++;
@@ -399,7 +399,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					fclose (fp);
 				}
 				else {	/* Got a single grid */
-					if (process_one (GMT, opt->arg, Ctrl, ng) == 0)
+					if (grdtrack_process_one (GMT, opt->arg, Ctrl, ng) == 0)
 						n_errors++;
 					else
 						ng++;
@@ -509,7 +509,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, unsigned int mode, double x_in, double y_in, double value[]) {
+GMT_LOCAL int grdtrack_sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, unsigned int mode, double x_in, double y_in, double value[]) {
 	/* Mode = 0: Cartesian, 1 = geographic, 2 = img mercmator */
 	unsigned int g, n_in, n_set;
 	double x, y, x0 = 0.0, y0 = 0.0;
@@ -554,9 +554,9 @@ GMT_LOCAL int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, 
 	return (n_set);
 }
 
-/* The following two scanners are used below in the gmt_grdspiral_search */
+/* The following two scanners are used below in the grdtrack_grd_spiral_search */
 
-GMT_LOCAL unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t l_col, int64_t r_col, struct GMT_ZSEARCH *S) {
+GMT_LOCAL unsigned int grdtrack_scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t l_col, int64_t r_col, struct GMT_ZSEARCH *S) {
 	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is returned, 0 if all NaN */
 	unsigned int ret_code = 0;
 	int64_t col, node;
@@ -580,7 +580,7 @@ GMT_LOCAL unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t 
 	return (ret_code);
 }
 
-GMT_LOCAL unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t t_row, int64_t b_row, struct GMT_ZSEARCH *S) {
+GMT_LOCAL unsigned int grdtrack_scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t t_row, int64_t b_row, struct GMT_ZSEARCH *S) {
 	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN or beyond max radius*/
 	unsigned int ret_code = 0;
 	int64_t row, node;
@@ -604,7 +604,7 @@ GMT_LOCAL unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t 
 	return (ret_code);
 }
 
-/* gmt_grdspiral_search is used when the nearest node to the given point
+/* grdtrack_grd_spiral_search is used when the nearest node to the given point
  * is NaN and no interpolation is possible.  With -T we will determine
  * the nearest node that is not NaN AND within a specific radius (if not
  * given then no limiting radius is used).
@@ -621,7 +621,7 @@ GMT_LOCAL unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t 
  * The -T is experimental: Contact P. Wessel for issues.
  */
 
-GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZSEARCH *S, double x, double y) {
+GMT_LOCAL unsigned int grdtrack_grd_spiral_search (struct GMT_CTRL *GMT, struct GMT_ZSEARCH *S, double x, double y) {
 	unsigned int T, B, L, R;
 	int64_t t_row, b_row, l_col, r_col, step = 0, col0, row0;
 	bool done = false, found = false;
@@ -645,10 +645,10 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 		 *    a) max_radius in this frame > radius and we just return NaN
 		 *    b) If no radius limit we continue to go until we exceed grid borders
 		 * 2) Found non-NaN node and return the one closest to (row0,col0). */
-		T = scan_grd_row (GMT, t_row, l_col, r_col, S);	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
-		B = scan_grd_row (GMT, b_row, l_col, r_col, S);	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
-		L = scan_grd_col (GMT, l_col, t_row, b_row, S);	/* Look along this col, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
-		R = scan_grd_col (GMT, r_col, t_row, b_row, S);	/* Look along this col, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
+		T = grdtrack_scan_grd_row (GMT, t_row, l_col, r_col, S);	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
+		B = grdtrack_scan_grd_row (GMT, b_row, l_col, r_col, S);	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
+		L = grdtrack_scan_grd_col (GMT, l_col, t_row, b_row, S);	/* Look along this col, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
+		R = grdtrack_scan_grd_col (GMT, r_col, t_row, b_row, S);	/* Look along this col, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
 		done = ((T + B + L + R) == 8U);	/* Now completely outside grid on all sides */
 		found = (T == 1 || B == 1 || L == 1 || R == 1);	/* Found a non-NaN and its distance from node */
 	} while (!done && !found);
@@ -661,9 +661,9 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 			d_col = lrint (ceil (S->max_radius / dx));
 		else	/* Must search the entire row */
 			d_col = S->C->G->header->n_columns;	/* This is obviously too large but will get truncated later */
-		l_col = col0 - d_col;	/* Go to both sides, scan_grd_row will truncate to 0,n_columns-1 anyway */
+		l_col = col0 - d_col;	/* Go to both sides, grdtrack_scan_grd_row will truncate to 0,n_columns-1 anyway */
 		r_col = col0 + d_col;
-		C = scan_grd_row (GMT, row0, l_col, r_col, S);	/* C is nonzero if we found a non-NaN node */
+		C = grdtrack_scan_grd_row (GMT, row0, l_col, r_col, S);	/* C is nonzero if we found a non-NaN node */
 		if (C) return (1);	/* Did pick up a closer node along this row */
 	}
 	return (found) ? 1 : 0;
@@ -834,7 +834,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 					S = T->segment[seg];
 					for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
-						status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
+						status = grdtrack_sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
 						if (status < 0) some_outside = true;
 						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->data[col][row] = value[k];
 					}
@@ -871,7 +871,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 				S = T->segment[seg];
 				for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
-					status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
+					status = grdtrack_sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
 					for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->data[col][row] = value[k];
 					if (status < 0)
 						some_outside = true;
@@ -1101,7 +1101,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Sout = Dout->table[0]->segment[seg];	/* Shorthand */
 			for (col = 0; col < Din->n_columns; col++) gmt_M_memcpy (Sout->data[col], Sin->data[col], Sin->n_rows, double);
 			for (row = 0; row < Sin->n_rows; row++) {	/* For each row  */
-				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, Sin->data[GMT_X][row], Sin->data[GMT_Y][row], value);
+				status = grdtrack_sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, Sin->data[GMT_X][row], Sin->data[GMT_Y][row], value);
 				if (status < 0) some_outside = true;
 				for (col = Din->n_columns, k = 0; k < Ctrl->G.n_grids; k++, col++) Sout->data[col][row] = value[k];
 				n_points++;
@@ -1198,14 +1198,14 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 			n_read++;
 
-			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);
+			status = grdtrack_sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);
 			if (status == -1) {	/* Point is outside the region of all grids */
 				some_outside = true;
 				if (!Ctrl->N.active) continue;
 			}
 			else if (Ctrl->T.active) {
 				if (status == 0) {	/* Found a NaN; need to search for nearest non-NaN node */
-					if (gmt_grdspiral_search (GMT, Ctrl->T.S, in[GMT_X], in[GMT_Y])) {	/* Did find a valid node */
+					if (grdtrack_grd_spiral_search (GMT, Ctrl->T.S, in[GMT_X], in[GMT_Y])) {	/* Did find a valid node */
 						uint64_t ij = gmt_M_ijp (GC[0].G->header, Ctrl->T.S->row, Ctrl->T.S->col);
 						value[0] = GC[0].G->data[ij];
 						if (Ctrl->T.mode == 1) {	/* Replace input coordinate with node coordinate */

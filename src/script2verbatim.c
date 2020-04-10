@@ -144,7 +144,7 @@
 	 return newstr;
 }
 
-int is_comment (char *line) {
+static int script2verbatim_is_comment (char *line) {
 	/* return 1 if line is a comment line, 0 otherwise */
 	size_t n = strspn (line, " #");  /* span ' ' and '#' */
 	while (n > 0) {
@@ -193,7 +193,7 @@ int main (int argc, char *argv[]) {
 			fclose (fp_out);
 			return EXIT_FAILURE;
 		}
-		if (strip_comments && is_comment(line)) continue;
+		if (strip_comments && script2verbatim_is_comment(line)) continue;
 		if (ps2pdf)
 			fputs (gmt_strrep(line, " -ps ", " -pdf "), fp_out);
 		else

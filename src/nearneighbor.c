@@ -93,7 +93,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) {	/
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n) {
+GMT_LOCAL struct NEARNEIGHBOR_NODE *nearneighbor_add_new_node (struct GMT_CTRL *GMT, unsigned int n) {
 	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
 	struct NEARNEIGHBOR_NODE *new_node = gmt_M_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
 	new_node->distance = gmt_M_memory (GMT, NULL, n, gmt_grdfloat);
@@ -103,17 +103,17 @@ GMT_LOCAL struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned
 	return (new_node);
 }
 
-GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, unsigned int n_sector, unsigned int sector, double distance, uint64_t id) {
+GMT_LOCAL void nearneighbor_assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, unsigned int n_sector, unsigned int sector, double distance, uint64_t id) {
 	/* Allocates node space if not already used and updates the value if closer to node than the current value */
 
-	if (!(*node)) *node = add_new_node (GMT, n_sector);
+	if (!(*node)) *node = nearneighbor_add_new_node (GMT, n_sector);
 	if ((*node)->datum[sector] == -1 || (*node)->distance[sector] > distance) {
 		(*node)->distance[sector] = (gmt_grdfloat)distance;
 		(*node)->datum[sector] = id;
 	}
 }
 
-GMT_LOCAL void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node) {
+GMT_LOCAL void nearneighbor_free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node) {
 	/* Frees allocated node space */
 
 	if (!node) return;	/* Nothing to do */
@@ -455,7 +455,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				/* OK, this point should constrain this node.  Calculate which sector and assign the value */
 
 				sector = urint (floor (((d_atan2 (dy, dx) + M_PI) * factor))) % Ctrl->N.sectors;
-				assign_node (GMT, &grid_node[kk], Ctrl->N.sectors, sector, distance, n);
+				nearneighbor_assign_node (GMT, &grid_node[kk], Ctrl->N.sectors, sector, distance, n);
 
 				/* With periodic, gridline-registered grids there are duplicate rows and/or columns
 				   so we may have to assign the point to more than one node.  The next section deals
@@ -464,15 +464,15 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 				if (replicate_x) {	/* Must check if we have to replicate a column */
 					if (colu == 0) 	/* Must replicate left to right column */
-						assign_node (GMT, &grid_node[kk+x_wrap], Ctrl->N.sectors, sector, distance, n);
+						nearneighbor_assign_node (GMT, &grid_node[kk+x_wrap], Ctrl->N.sectors, sector, distance, n);
 					else if (colu == HH->nxp)	/* Must replicate right to left column */
-						assign_node (GMT, &grid_node[kk-x_wrap], Ctrl->N.sectors, sector, distance, n);
+						nearneighbor_assign_node (GMT, &grid_node[kk-x_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
 					if (rowu == 0)	/* Must replicate top to bottom row */
-						assign_node (GMT, &grid_node[kk+y_wrap], Ctrl->N.sectors, sector, distance, n);
+						nearneighbor_assign_node (GMT, &grid_node[kk+y_wrap], Ctrl->N.sectors, sector, distance, n);
 					else if (rowu == HH->nyp)	/* Must replicate bottom to top row */
-						assign_node (GMT, &grid_node[kk-y_wrap], Ctrl->N.sectors, sector, distance, n);
+						nearneighbor_assign_node (GMT, &grid_node[kk-y_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 			}
 		}
@@ -520,7 +520,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			if (n_filled < Ctrl->N.min_sectors) { 	/* Not minimum set of neighbors in all sectors, set to empty and goto next node */
 				n_almost++;
 				Grid->data[ij] = (gmt_grdfloat)Ctrl->E.value;
-				free_node (GMT, grid_node[ij0]);
+				nearneighbor_free_node (GMT, grid_node[ij0]);
 				ij0++;
 				continue;
 			}
@@ -539,7 +539,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				}
 			}
 			Grid->data[ij] = (gmt_grdfloat)(grd_sum / weight_sum);
-			free_node (GMT, grid_node[ij0]);
+			nearneighbor_free_node (GMT, grid_node[ij0]);
 			ij0++;
 		}
 		if ((row % 128) == 0) GMT_Report (API, GMT_MSG_INFORMATION, "Gridded row %10ld\r", row);

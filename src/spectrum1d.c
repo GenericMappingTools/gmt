@@ -97,7 +97,7 @@ struct SPECTRUM1D_INFO {	/* Control structure for spectrum1d */
 	} *spec;
 };
 
-GMT_LOCAL void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
+GMT_LOCAL void spectrum1d_alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
 	C->n_spec = C->window/2;	/* This means we skip zero frequency; data are detrended  */
 	C->window_2 = 2 * C->window;		/* This is for complex array stuff  */
 
@@ -105,7 +105,7 @@ GMT_LOCAL void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
 	C->datac = gmt_M_memory (GMT, NULL, C->window_2, gmt_grdfloat);
 }
 
-GMT_LOCAL void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode) {
+GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode) {
 	/* If leave_trend is true we do not remove best-fitting LS trend.  Otherwise
 	 * we do, modulated by mode: 0: remove trend, 1: remove mean, 2: remove mid-value.
 	 * In all cases we apply the Hanning windowing */
@@ -178,7 +178,7 @@ GMT_LOCAL void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend,
 	}
 }
 
-GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode) {
+GMT_LOCAL int spectrum1d_compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode) {
 	int n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
 	double xreal, ximag, yreal, yimag, xpower, ypower, co_spec, quad_spec;
@@ -214,7 +214,7 @@ GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, 
 			}
 		}
 
-		detrend_and_hanning (C, leave_trend, mode);
+		spectrum1d_detrend_and_hanning (C, leave_trend, mode);
 
 		if (GMT_FFT_1D (GMT->parent, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX))
 			return GMT_RUNTIME_ERROR;
@@ -287,7 +287,7 @@ GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, 
 	return 0;
 }
 
-GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, char *namestem) {
+GMT_LOCAL int spectrum1d_write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, char *namestem) {
 	/* Writes separate hardwired files for each output type.  Does NOT use GMT_Put_* functions */
 	int i, j;
 	double delta_f, eps_pow, out[3], *f_or_w = NULL;
@@ -446,7 +446,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 	return (0);
 }
 
-GMT_LOCAL void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, double *out[]) {
+GMT_LOCAL void spectrum1d_assign_output (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, double *out[]) {
 	/* Fills out the 2-D table array given */
 	int i, j, k;
 	double delta_f, eps_pow, tmp, *f_or_w;
@@ -509,7 +509,7 @@ GMT_LOCAL void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D
 	gmt_M_free (GMT, f_or_w);
 }
 
-GMT_LOCAL void free_space_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
+GMT_LOCAL void spectrum1d_free_space (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
 	gmt_M_free (GMT, C->spec);
 	gmt_M_free (GMT, C->datac);
 }
@@ -742,7 +742,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 		Return (GMT_DIM_TOO_SMALL);
 	}
 
-	alloc_arrays (GMT, &C);
+	spectrum1d_alloc_arrays (GMT, &C);
 
 	if (!Ctrl->T.active) {	/* Write single data file with 17 columns to stdout (or specified name) */
 		uint64_t dim[GMT_DIM_SIZE];
@@ -764,24 +764,24 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " data points.\n", S->n_rows);
 
 			y = (C.y_given) ? S->data[GMT_Y] : NULL;
-			if (compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
+			if (spectrum1d_compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
 
 			if (!Ctrl->T.active) {
 				unsigned smode = (Tout->segment[seg]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				Sout = Tout->segment[seg] = GMT_Alloc_Segment (GMT->parent, smode, C.n_spec, Tout->n_columns, NULL, Tout->segment[seg]);
-				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->data);
+				spectrum1d_assign_output (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->data);
 				Sout->n_rows = C.n_spec;
 			}
 			if (Ctrl->N.mode == 0) {	/* Write separate tables */
-				if (write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))
+				if (spectrum1d_write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))
 					Return (GMT_RUNTIME_ERROR);
 			}
 		}
 	}
 
-	free_space_spectrum1d (GMT, &C);
+	spectrum1d_free_space (GMT, &C);
 
 	if (!Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 		Return (API->error);

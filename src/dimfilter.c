@@ -465,7 +465,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h, double y_0, int fast) {
+GMT_LOCAL void dimfilter_set_weight_matrix (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h, double y_0, int fast) {
 /* Last two gives offset between output node and 'origin' input node for this window (0,0 for integral grids) */
 /* true when input/output grids are offset by integer values in dx/dy */
 
@@ -744,7 +744,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		else
 			effort_level = 3;
 
-		if (effort_level == 1) set_weight_matrix_dim (&F, Gout->header, 0.0, shift);	/* Only need this once */
+		if (effort_level == 1) dimfilter_set_weight_matrix (&F, Gout->header, 0.0, shift);	/* Only need this once */
 
 		if (Ctrl->C.active) {	/* Use fixed-width diagonal corridors instead of bow-ties */
 			n_sectors_2 = Ctrl->N.n_sectors / 2;
@@ -780,11 +780,11 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing output line %d\r", row_out);
 			y_out = gmt_M_grd_row_to_y (GMT, row_out, Gout->header);
 			j_origin = (int)gmt_M_grd_y_to_row (GMT, y_out, Gin->header);
-			if (effort_level == 2) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
+			if (effort_level == 2) dimfilter_set_weight_matrix (&F, Gout->header, y_out, shift);
 
 			for (col_out = 0; col_out < Gout->header->n_columns; col_out++) {
 
-				if (effort_level == 3) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
+				if (effort_level == 3) dimfilter_set_weight_matrix (&F, Gout->header, y_out, shift);
 				gmt_M_memset (n_in_median, Ctrl->N.n_sectors, unsigned int);
 				gmt_M_memset (value, Ctrl->N.n_sectors, double);
 				gmt_M_memset (wt_sum, Ctrl->N.n_sectors, double);

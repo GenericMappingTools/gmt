@@ -82,7 +82,7 @@ struct SPHDISTANCE_CTRL {
 	} Q;
 };
 
-GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P) {
+GMT_LOCAL void sphdistance_prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P) {
 	/* Set the min/max extent of this polygon and determine if it
 	 * is a polar cap; if so set the required metadata flags */
 	uint64_t row;
@@ -534,7 +534,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		P->n_rows = n_new;
-		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
+		sphdistance_prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)gmt_M_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
 		north_row = (int)gmt_M_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);

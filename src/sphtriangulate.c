@@ -76,7 +76,7 @@ struct SPHTRIANGULATE_CTRL {
 };
 
 /* Must be int due to qsort requirement */
-GMT_LOCAL int sph_compare_arc (const void *p1, const void *p2) {
+GMT_LOCAL int sphtriangulate_compare_arc (const void *p1, const void *p2) {
 	const struct STRPACK_ARC *a = p1, *b = p2;
 	if (a->begin < b->begin) return (-1);
 	if (a->begin > b->begin) return (1);
@@ -85,7 +85,7 @@ GMT_LOCAL int sph_compare_arc (const void *p1, const void *p2) {
 	return (0);
 }
 
-GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, uint64_t get_arcs, unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[]) {
+GMT_LOCAL int sphtriangulate_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, uint64_t get_arcs, unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[]) {
 	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	uint64_t i, ij;
 	bool do_authalic;
@@ -167,7 +167,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 				gmt_M_uint64_swap (arc[kk].begin, arc[kk].end);
 
 		/* Sort and eliminate duplicate arcs */
-		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), sph_compare_arc);
+		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), sphtriangulate_compare_arc);
 		for (i = 1, j = 0; i < n_arcs; i++) {
 			if (arc[i].begin != arc[j].begin || arc[i].end != arc[j].end) j++;
 			arc[j] = arc[i];
@@ -202,7 +202,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, double *lat, struct STRIPACK_VORONOI *V, bool get_arcs, unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[]) {
+GMT_LOCAL int sphtriangulate_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, double *lat, struct STRIPACK_VORONOI *V, bool get_arcs, unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[]) {
 	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
 	bool do_authalic;
 	unsigned int geometry;
@@ -336,7 +336,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			gmt_M_uint64_swap (arc[k].begin, arc[k].end);
 
 		/* Sort and exclude duplicates */
-		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), sph_compare_arc);
+		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), sphtriangulate_compare_arc);
 		for (i = 1, j = 0; i < n_arcs; i++) {
 			if (arc[i].begin != arc[j].begin || arc[i].end != arc[j].end) j++;
 			arc[j] = arc[i];
@@ -376,7 +376,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL char *unit_name (char unit, int arc) {
+GMT_LOCAL char *sphtriangulate_unit_name (char unit, int arc) {
 	/* Get unit names for length or area */
 	char *name;
 	switch (unit) {
@@ -661,20 +661,20 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 	GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
 	if (Ctrl->Q.mode == VORONOI) {	/* Selected Voronoi polygons */
-		stripack_voronoi_output (GMT, n, lon, lat, &T.V, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
+		sphtriangulate_voronoi_output (GMT, n, lon, lat, &T.V, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
 		gmt_M_free (GMT, T.V.lon);	gmt_M_free (GMT, T.V.lat);
 		gmt_M_free (GMT, T.V.lend);	gmt_M_free (GMT, T.V.listc);
 		gmt_M_free (GMT, T.V.lptr);
 	}
 	else {	/* Selected Delaunay triangles */
-		stripack_delaunay_output (GMT, lon, lat, &T.D, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
+		sphtriangulate_delaunay_output (GMT, lon, lat, &T.D, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
 	}
 
 	Dout[0]->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);	/* One header record only */
 	sprintf (header, "sphtriangulate %s output via STRPACK", tmode[Ctrl->Q.mode]);
 	if (Ctrl->A.active) {
 		strcat (header, (Ctrl->T.active) ? ".  Arc lengths in " : ".  Areas in ");
-		strncat (header, unit_name (Ctrl->L.unit, Ctrl->T.active), GMT_BUFSIZ-1);
+		strncat (header, sphtriangulate_unit_name (Ctrl->L.unit, Ctrl->T.active), GMT_BUFSIZ-1);
 	}
 	strcat (header, ".");
 	Dout[0]->table[0]->n_headers = 1;
