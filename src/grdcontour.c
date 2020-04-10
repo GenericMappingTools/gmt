@@ -135,14 +135,6 @@ struct SAVE {
 	char label[GMT_LEN64];
 };
 
-struct PSCONTOURGRD {
-	double val;
-	double angle;
-	bool do_tick, penset;
-	char type;
-	struct GMT_PEN pen;
-};
-
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCONTOUR_CTRL *C;
 
@@ -207,10 +199,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of four ways:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. Comma-separated contours (for single contour append comma to be seen as list).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      [and optionally an individual annotation angle in col 3 and optionally a pen in col 4].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   3. File with contour levels, types, and optional fixed annotation angle and/or pen:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        <contlevel> [<angle>] C|c|A|a [<pen>].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      A|a for annotated contours, C|c for plain contours. If -T is used,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      only inner-most contours with upper case C or A will be ticked\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   4. Name of a CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is used, only contours with upper case C or A is ticked\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [CPT contours are set to C unless the CPT flags are set;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -A to force all to become A].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If neither -A nor -C are set then we auto-select the intervals.\n");
@@ -1008,7 +1001,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_CLOCK_IO Clock;
 	struct GMT_DATE_IO Date;
-	struct PSCONTOURGRD *cont = NULL;
+	struct GMT_CONTOUR_INFO *cont = NULL;
 	struct SAVE *save = NULL;
 	struct GMT_GRID *G = NULL, *G_orig = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -1306,7 +1299,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (Ctrl->C.cpt) {	/* Got a CPT */
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		n_contours = P->n_colors + 1;	/* Since n_colors refer to slices */
-		cont = gmt_M_memory (GMT, NULL, n_contours, struct PSCONTOURGRD);
+		cont = gmt_M_memory (GMT, NULL, n_contours, struct GMT_CONTOUR_INFO);
 		for (i = c = 0; i < P->n_colors; i++) {
 			if (P->data[i].skip) continue;
 			cont[c].val = P->data[i].z_low;
@@ -1344,7 +1337,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		n_contours = na + nc;
-		cont = gmt_M_memory (GMT, NULL, n_contours, struct PSCONTOURGRD);
+		cont = gmt_M_memory (GMT, NULL, n_contours, struct GMT_CONTOUR_INFO);
 		for (c = 0; c < (int)nc; c++) {
 			cont[c].type = 'C';
 			cont[c].val = zc[c];
@@ -1360,69 +1353,12 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if (za) gmt_M_free (GMT, za);
 		if (zc) gmt_M_free (GMT, zc);
 	}
-	else if (Ctrl->C.file) {	/* Read contour info from file with cval C|A [angle [pen]] records */
-		struct GMT_RECORD *In = NULL;
-		int got, in_ID;
-		char pen[GMT_LEN64] = {""};
-		double tmp;
-
-		n_contours = 0;
-		/* Must register Ctrl->C.file first since we are going to read rec-by-rec from all available source */
-		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, NULL, Ctrl->C.file)) == GMT_NOTSET) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while registering contour info file %s\n", Ctrl->C.file);
-			Return (GMT_RUNTIME_ERROR);
-		}
-
-		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_EXISTING, 0, options) != GMT_NOERROR) {
-			Return (API->error);	/* Establishes data input */
-		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while enabling contour info file %s\n", Ctrl->C.file);
-			Return (API->error);
-		}
-		do {	/* Keep returning records until we reach EOF */
-			if ((In = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
-					Return (GMT_RUNTIME_ERROR);
-				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
-					continue;
-				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
-					break;
-				assert (In->text != NULL);						/* Should never get here */
-			}
-			if (gmt_is_a_blank_line (In->text)) continue;	/* Nothing in this record */
-
-			/* Data record to process */
-
-			if (n_contours == n_alloc) {
-				n_alloc += 32;
-				cont = gmt_M_memory (GMT, cont, n_alloc, struct PSCONTOURGRD);
-			}
-			gmt_M_memset (&cont[n_contours], 1, struct PSCONTOURGRD);	/* Cause the pen structure needs to be empty */
-			got = sscanf (In->text, "%lf %c %lf %s", &cont[n_contours].val, &cont[n_contours].type, &tmp, pen);
-			if (cont[n_contours].type == '\0') cont[n_contours].type = 'C';
-			cont[n_contours].do_tick = (Ctrl->T.active && (cont[n_contours].type == 'C' || cont[n_contours].type == 'A')) ? 1 : 0;
-			cont[n_contours].angle = (got == 3) ? tmp : GMT->session.d_NaN;
-			if (got >= 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
-			if (got == 4) {	/* Also got a pen specification for this contour */
-				if (gmt_getpen (GMT, pen, &cont[n_contours].pen)) {	/* Bad pen syntax */
-					gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
-					Return (GMT_RUNTIME_ERROR);
-				}
-				cont[n_contours].penset = true;
-			}
-
-			n_contours++;
-		} while (true);
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further grid data input */
-			Return (API->error);
-		}
-		cont = gmt_M_memory (GMT, cont, n_contours, struct PSCONTOURGRD);
+	else if (Ctrl->C.file) {	/* Read contour info from file with cval [angle] C|A [pen]] records */
+		if ((cont = gmt_get_contours_from_table (GMT, Ctrl->C.file, Ctrl->T.active, &Ctrl->contour.angle_type, &n_contours)) == NULL) Return (GMT_RUNTIME_ERROR);
 	}
 	else if (!gmt_M_is_dnan (Ctrl->C.single_cont) || !gmt_M_is_dnan (Ctrl->A.single_cont)) {	/* Plot one or two contours only  */
 		n_contours = 0;
-		cont = gmt_M_memory (GMT, cont, 2, struct PSCONTOURGRD);
+		cont = gmt_M_memory (GMT, cont, 2, struct GMT_CONTOUR_INFO);
 		if (!gmt_M_is_dnan (Ctrl->C.single_cont)) {
 			cont[n_contours].type = 'C';
 			cont[n_contours++].val = Ctrl->C.single_cont;
@@ -1448,9 +1384,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		for (c = irint (min/Ctrl->C.interval), n_contours = 0; c <= irint (max/Ctrl->C.interval); c++, n_contours++) {
 			if (n_contours == n_alloc) {
 				n_alloc += 32;
-				cont = gmt_M_memory (GMT, cont, n_alloc, struct PSCONTOURGRD);
+				cont = gmt_M_memory (GMT, cont, n_alloc, struct GMT_CONTOUR_INFO);
 			}
-			gmt_M_memset (&cont[n_contours], 1, struct PSCONTOURGRD);	/* Cause the pen structure needs to be empty */
+			gmt_M_memset (&cont[n_contours], 1, struct GMT_CONTOUR_INFO);	/* Cause the pen structure needs to be empty */
 			cont[n_contours].val = c * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[n_contours].val - aval) > noise) aval += Ctrl->A.interval;
 			if (Ctrl->A.mode)	/* No labels */
@@ -1494,7 +1430,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		small = z_range * 1.0e-6;	/* Our gmt_grdfloat noise threshold */
 	else
 		small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our gmt_grdfloat noise threshold */
-	cont = gmt_M_memory (GMT, cont, n_contours, struct PSCONTOURGRD);
+	cont = gmt_M_memory (GMT, cont, n_contours, struct GMT_CONTOUR_INFO);
 
 	if (Ctrl->L.mode) {	/* Set negative or positive range only */
 		switch (Ctrl->L.mode) {
