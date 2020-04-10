@@ -3273,7 +3273,8 @@ GMT_LOCAL unsigned int support_inonout_sub (struct GMT_CTRL *GMT, double x, doub
 
 #ifdef TRIANGLE_D
 
-GMT_LOCAL int signum (double x) {
+int gmt_signum (double x) {
+	/* The standard sign function */
 	if (x < 0.0) return -1;
 	if (x > 0.0) return +1;
 	return 0;
@@ -3728,10 +3729,10 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 						/* Here we found an edge candidate, but we don't know if it leads to a convex angle */
 						cross_product = dx[i2] * dy[j2] - dx[j2] * dy[i2];	/* This should be negative for right turns */
 						if (first_turn) {	/* First pair of edges defines the desired sign of all the subsequent cross-products */
-							expected_sign = prev_sign * next_sign * signum (cross_product);	/* sign may flip if any edge was reversed */
+							expected_sign = prev_sign * next_sign * gmt_signum (cross_product);	/* sign may flip if any edge was reversed */
 							first_turn = false;
 						}
-						else if ((prev_sign * next_sign * signum (cross_product)) != expected_sign)	/* Not making a convex polygon */
+						else if ((prev_sign * next_sign * gmt_signum (cross_product)) != expected_sign)	/* Not making a convex polygon */
 							continue;
 
 						/* Here we are going in a convex direction, so we add this new edge to the polygon */
