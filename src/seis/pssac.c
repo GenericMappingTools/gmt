@@ -6,7 +6,7 @@
  *  it under the terms of the GNU Lesser General Public License as published by
  *  the Free Software Foundation; version 3 or any later version.
  *
- *  This program is distrdeibuted in the hope that it will be useful,
+ *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Lesser General Public License for more details.
@@ -408,13 +408,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LOCAL double linear_interpolate_x (double x0, double y0, double x1, double y1, double y) {
+GMT_LOCAL double pssac_linear_interpolate_x (double x0, double y0, double x1, double y1, double y) {
 	if (doubleAlmostEqualZero(y0, y1)) return x0;
 	return (x1-x0)/(y1-y0)*(y-y0) + x0;
 }
 
 #if 0 /* Not used yet */
-GMT_LOCAL double linear_interpolate_y (double x0, double y0, double x1, double y1, double x) {
+GMT_LOCAL double pssac_linear_interpolate_y (double x0, double y0, double x1, double y1, double x) {
 	if (x<x0 || x>x1) return y1;  // no extrapolation
 	if (doubleAlmostEqualZero(x0, x1)) return y0;
 	return (y1-y0)/(x1-x0)*(x-x0) + y0;
@@ -424,7 +424,7 @@ GMT_LOCAL double linear_interpolate_y (double x0, double y0, double x1, double y
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL void paint_phase(struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct PSL_CTRL *PSL, double *x, double *y, int n, double zero, double t0, double t1, int mode) {
+GMT_LOCAL void pssac_paint_phase(struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct PSL_CTRL *PSL, double *x, double *y, int n, double zero, double t0, double t1, int mode) {
 	/* mode=0: paint positive phase */
 	/* mode=1: paint negative phase */
 	int i, ii;
@@ -450,7 +450,7 @@ GMT_LOCAL void paint_phase(struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct
 			if (i == 0)
 				xx[ii] = x[i];
 			else
-				xx[ii] = linear_interpolate_x(x[i-1], y[i-1], x[i], y[i], yy[ii]);
+				xx[ii] = pssac_linear_interpolate_x(x[i-1], y[i-1], x[i], y[i], yy[ii]);
 			ii++;
 
 			while((i < n) && (x[i] <= t1) && ((mode == 0 && y[i] >= zero) || (mode == 1 && y[i] <= zero))) {
@@ -465,7 +465,7 @@ GMT_LOCAL void paint_phase(struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct
 			if (i == n || x[i] > t1)
 				xx[ii] = x[i-1];
 			else
-				xx[ii] = linear_interpolate_x(x[i], y[i], x[i-1], y[i-1], yy[ii]);
+				xx[ii] = pssac_linear_interpolate_x(x[i], y[i], x[i-1], y[i-1], yy[ii]);
 			ii++;
 
 			if (Ctrl->Q.active) {
@@ -494,7 +494,7 @@ GMT_LOCAL void paint_phase(struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct
 	gmt_M_free (GMT, yy);
 }
 
-GMT_LOCAL void integral (double *y, double delta, int n) {
+GMT_LOCAL void pssac_integral (double *y, double delta, int n) {
 	int i;
 
 	y[0] = (y[0] + y[1]) * delta / 2.0;
@@ -502,7 +502,7 @@ GMT_LOCAL void integral (double *y, double delta, int n) {
 		y[i] = y[i-1] + (y[i] + y[i+1]) * delta / 2.0;
 }
 
-GMT_LOCAL void rmean (double *y, int n) {
+GMT_LOCAL void pssac_rmean (double *y, int n) {
 	int i;
 	double depmen = 0.0;
 	for (i = 0; i < n; i++) depmen += y[i];
@@ -511,12 +511,12 @@ GMT_LOCAL void rmean (double *y, int n) {
 	for (i = 0; i < n; i++) y[i] -= depmen;
 }
 
-GMT_LOCAL void sqr (double *y, int n) {
+GMT_LOCAL void pssac_sqr (double *y, int n) {
 	int i;
 	for (i = 0; i < n; i++) y[i] *= y[i];
 }
 
-GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct SAC_LIST **list) {
+GMT_LOCAL int pssac_init_list (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct SAC_LIST **list) {
 	unsigned int n = 0;
 	int nr;
 	char path[PATH_MAX] = {""};	/* Full path to sac file */
@@ -660,7 +660,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 			Return (API->error);
 		}
 	}
-	n_files = init_sac_list (GMT, Ctrl->In.file, Ctrl->In.n, &L);
+	n_files = pssac_init_list (GMT, Ctrl->In.file, Ctrl->In.n, &L);
 
 	if (read_from_ascii && GMT_End_IO (API, GMT_IN, 0) != GMT_OK) { /* Disables further data input */
 		Return (API->error);
@@ -736,9 +736,9 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		/* -F: data preprocess */
 		for (i = 0; Ctrl->F.keys[i] != '\0'; i++) {
 			switch (Ctrl->F.keys[i]) {
-				case 'i': integral(y, hd.delta, hd.npts); hd.npts--; break;
-				case 'q':   sqr(y, hd.npts); break;
-				case 'r': rmean(y, hd.npts); break;
+				case 'i': pssac_integral(y, hd.delta, hd.npts); hd.npts--; break;
+				case 'q':   pssac_sqr(y, hd.npts); break;
+				case 'r': pssac_rmean(y, hd.npts); break;
 				default: break;
 			}
 		}
@@ -893,7 +893,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 				}
 				GMT_Report (API, GMT_MSG_INFORMATION, "=> %s: Painting traces: zero=%g t0=%g t1=%g\n",
 				                                  L[n].file, zero, Ctrl->G.t0[i], Ctrl->G.t1[i]);
-				paint_phase(GMT, Ctrl, PSL, x, y, hd.npts, zero, Ctrl->G.t0[i], Ctrl->G.t1[i], i);
+				pssac_paint_phase(GMT, Ctrl, PSL, x, y, hd.npts, zero, Ctrl->G.t0[i], Ctrl->G.t1[i], i);
 			}
 		}
 

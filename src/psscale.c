@@ -19,7 +19,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  *
- * Brief synopsis: psscale draws a grayscale or colorscale either vertically
+ * Brief synopsis: psscale draws a grayscale or color bar either vertically
  * or horizontally, optionally with illumination.
  *
  */
@@ -163,7 +163,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-B Set scale annotation interval and label. Use y-label to set unit label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no annotation interval is set it is taken from the CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. If not set, stdin is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. If not set, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default all color changes are annotated (but see -B).  To use a subset,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   add an extra column to the CPT with a L, U, or B\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to annotate Lower, Upper, or Both color segment boundaries.\n");
@@ -558,7 +558,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n) {
+GMT_LOCAL double psscale_get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n) {
 	unsigned int i = 0;
 	double tmp;
 
@@ -568,7 +568,7 @@ GMT_LOCAL double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned
 	return (P->data[i].z_low + (x - tmp + width[i]) * (P->data[i].z_high - P->data[i].z_low) / width[i]);
 }
 
-GMT_LOCAL void fix_format (char *unit, char *format) {
+GMT_LOCAL void psscale_fix_format (char *unit, char *format) {
 	unsigned int i, j;
 	char text[GMT_LEN64] = {""}, new_format[GMT_BUFSIZ] = {""};
 
@@ -592,7 +592,7 @@ GMT_LOCAL void fix_format (char *unit, char *format) {
 	}
 }
 
-GMT_LOCAL void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
+GMT_LOCAL void psscale_plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	double vdim[PSL_MAX_DIMS], s = width / 0.1, p_width;
 	struct GMT_SYMBOL S;
 	struct GMT_FILL black;
@@ -619,14 +619,14 @@ GMT_LOCAL void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double widt
 
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height)
 
-GMT_LOCAL bool letter_hangs_down (char *text) {
+GMT_LOCAL bool psscale_letter_hangs_down (char *text) {
 	/* Returns true if text contains one of the 4 lower-case letters that hangs down below the baseline */
 	size_t k;
 	for (k = 0; k < strlen (text); k++) if (strchr ("jpqy", text[k])) return true;
 	return false;
 }
 
-GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
+GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0;
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify;
 	int this_just, p_val, center = 0;
@@ -729,7 +729,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 	if (ndec == 0) {	/* Not -B and no decimals are needed */
 		strncpy (format, GMT->current.setting.format_float_map, GMT_LEN256-1);
-		fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
+		psscale_fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
 	}
 
 	len = GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];	/* +ve means draw on the outside of bar */
@@ -791,7 +791,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		/* Load bar image */
 
 		for (i = 0; i < nx; i++) {
-			z = (resample) ? get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->data[i].z_low;
+			z = (resample) ? psscale_get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->data[i].z_low;
 			index = gmt_get_rgb_from_z (GMT, P, z, rrggbb);
 			skip = gmt_M_skip_cptslice (P, index);	/* Don't what intensity shading if slice is to be skipped */
 			ii = (reverse) ? nx - i - 1 : i;
@@ -839,7 +839,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			/* If a label then add space for offset and label height */
 			if (GMT->current.map.frame.axis[GMT_X].label[0]) {
 				label_off = 1.0;	/* 1-letter height */
-				if (!(flip & PSSCALE_FLIP_LABEL) && letter_hangs_down (GMT->current.map.frame.axis[GMT_X].label))
+				if (!(flip & PSSCALE_FLIP_LABEL) && psscale_letter_hangs_down (GMT->current.map.frame.axis[GMT_X].label))
 					label_off += 0.3;	/* Add 30% hang below baseline */
 				label_off *= GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;	/* Scale to inches */
 				label_off += MAX (0.0, GMT->current.setting.map_label_offset);	/* Add offset */
@@ -1191,7 +1191,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place in center */
 				x0 = 0.5 * (xleft + xright);
-			plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
+			psscale_plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
 		}
 	}
 	else {	/* Vertical scale */
@@ -1479,7 +1479,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place at center */
 				x0 = 0.5 * (xleft + xright);
-			plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
+			psscale_plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
 		}
 		PSL_setorigin (PSL, -width, 0.0, -90.0, PSL_INV);
 	}
@@ -1697,7 +1697,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar reference x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 
-	gmt_draw_colorbar (GMT, Ctrl, P, z_width);
+	psscale_draw_colorbar (GMT, Ctrl, P, z_width);
 
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 	gmt_plane_perspective (GMT, -1, 0.0);

@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: pstext will read (x, y[, z][, font, angle, justify], text) from input
- * and plot the textstrings at (x,y) on a map using the font attributes
+ * and plot the text strings at (x,y) on a map using the font attributes
  * and justification selected by the user.  Alternatively (with -M), read
  * one or more text paragraphs to be typeset.
  *
@@ -154,7 +154,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deal
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T) {
+GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T) {
 	double offset[2];
 
 	gmt_M_memcpy (PSL->current.rgb[PSL_IS_FILL], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
@@ -199,7 +199,7 @@ GMT_LOCAL void output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 	}
 }
 
-GMT_LOCAL void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C) {
+GMT_LOCAL void pstext_load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C) {
 	gmt_M_memset (T, 1, struct PSTEXT_INFO);
 	if (C->C.mode != 'o' && C->C.dx == 0.0 && C->C.dy == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot have non-rectangular text box if clearance (-C) is zero.\n");
@@ -229,9 +229,9 @@ GMT_LOCAL void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO 
 	T->block_justify = C->F.justify;
 }
 
-GMT_LOCAL int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode) {
+GMT_LOCAL int pstext_get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode) {
 	/* Try to determine if input is the old GMT4-style format.
-	 * mode = 0 means normal textrec, mode = 1 means paragraph mode.
+	 * mode = 0 means normal text records, mode = 1 means paragraph mode.
 	 * Return 4 if GMT 4, 5 if GMT 5, -1 if nothing can be done */
 
 	int n, k;
@@ -655,7 +655,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void add_xy_via_justify (struct GMT_CTRL *GMT, int justify) {
+GMT_LOCAL void pstext_add_xy_via_justify (struct GMT_CTRL *GMT, int justify) {
 	/* If -F+c, compute the missing x,y and place in current input record */
 	int ix, iy;
 
@@ -664,7 +664,7 @@ GMT_LOCAL void add_xy_via_justify (struct GMT_CTRL *GMT, int justify) {
 	GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 }
 
-GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[]) {
+GMT_LOCAL int pstext_validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[]) {
 	/* Paragraph mode: Parse x,y [and z], check for validity, and return the rest of the text in buffer */
 	int ix, iy, nscan = 0;
 	unsigned int pos = 0;
@@ -814,7 +814,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
-	load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
+	pstext_load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 	tcol = 2 + Ctrl->Z.active;
 
 	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread + GMT->common.t.variable;	/* Normal number of columns to read, plus any text. This includes x,y */
@@ -839,7 +839,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		clip_set = true;
 	}
 
-	if (Ctrl->F.nread && tolower (Ctrl->F.read[0]) == 'a') a_col = 1;	/* Must include the a col among the numericals */
+	if (Ctrl->F.nread && tolower (Ctrl->F.read[0]) == 'a') a_col = 1;	/* Must include the a col among the numerics */
 	/* Find start column of plottable text in the trailing text string */
 	text_col = Ctrl->F.nread - a_col;
 
@@ -859,7 +859,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		gmtlib_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 		if (Ctrl->Q.active) gmt_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 		use_text = pstext_get_label (GMT, Ctrl, in_txt);	/* In case there are words */
-		add_xy_via_justify (GMT, Ctrl->F.R_justify);
+		pstext_add_xy_via_justify (GMT, Ctrl->F.R_justify);
 		plot_x = GMT->current.io.curr_rec[ix]; plot_y = GMT->current.io.curr_rec[iy];
 		xx[0] = plot_x;	yy[0] = plot_y;
 
@@ -923,7 +923,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	in = GMT->current.io.curr_rec;	/* Since text gets parsed and stored in this record */
 	if (Ctrl->F.read_font)
-		GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS_PSTEXT;		/* Characters that may separate columns in ascii records */
+		GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS_PSTEXT;		/* Characters that may separate columns in ASCII records */
 	if (Ctrl->M.active) {	/* There are no coordinates, just text lines */
 		rec_mode = GMT_READ_TEXT;
 		geometry = GMT_IS_TEXT;
@@ -999,20 +999,20 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				if (line[0] == '\0') continue;	/* Can happen if reading from API memory */
 				skip_text_records = false;
 				if (n_processed) {	/* Must output what we got */
-					output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);
+					pstext_output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);
 					n_processed = length = 0;
 					paragraph[0] = 0;	/* Empty existing text */
 					n_paragraphs++;
 				}
 
-				if (line && (nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
+				if (line && (nscan = pstext_validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
 
-				if (Ctrl->F.R_justify) add_xy_via_justify (GMT, Ctrl->F.R_justify);
+				if (Ctrl->F.R_justify) pstext_add_xy_via_justify (GMT, Ctrl->F.R_justify);
 
 				pos = 0;
 
 				if (gmt_M_compat_check (GMT, 4)) {
-					if (input_format_version == GMT_NOTSET) input_format_version = get_input_format_version (GMT, line, 1);
+					if (input_format_version == GMT_NOTSET) input_format_version = pstext_get_input_format_version (GMT, line, 1);
 				}
 				if (input_format_version == 4) {	/* Old-style GMT 4 records */
 					nscan += sscanf (buffer, "%s %lf %s %s %s %s %s\n", this_size, &T.paragraph_angle, this_font, just_key, txt_a, txt_b, pjust_key);
@@ -1138,11 +1138,11 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				line = cp_line;
 			}
 
-			if (Ctrl->F.R_justify) add_xy_via_justify (GMT, Ctrl->F.R_justify);
+			if (Ctrl->F.R_justify) pstext_add_xy_via_justify (GMT, Ctrl->F.R_justify);
 			pos = 0;	nscan = 3;
 
 			if (gmt_M_compat_check (GMT, 4)) {
-				if (input_format_version == GMT_NOTSET) input_format_version = get_input_format_version (GMT, line, 0);
+				if (input_format_version == GMT_NOTSET) input_format_version = pstext_get_input_format_version (GMT, line, 0);
 			}
 			if (input_format_version == 4) {	/* Old-style GMT 4 records */
 				nscan--; /* Since we have already counted "text" */
@@ -1328,7 +1328,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {
 		if (n_processed) {	/* Must output the last paragraph */
-			output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);
+			pstext_output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);
 			n_paragraphs++;
 		}
 	 	gmt_M_free (GMT, paragraph);

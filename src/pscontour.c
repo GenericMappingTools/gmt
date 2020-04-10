@@ -174,7 +174,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, unsigned int n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, unsigned int **v, unsigned int **cindex) {
+GMT_LOCAL int pscontour_get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, unsigned int n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, unsigned int **v, unsigned int **cindex) {
 	/* This routine finds all the contour crossings for this triangle.  Each contour consists of
 	 * linesegments made up of two points, with coordinates xc, yc, and contour level zc.
 	 */
@@ -268,7 +268,7 @@ GMT_LOCAL int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P,
 	return (nx);
 }
 
-GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double x[], double y[], int n, double z) {
+GMT_LOCAL void pscontour_paint_it (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double x[], double y[], int n, double z) {
 	int index;
 	double rgb[4];
 	struct GMT_FILL *f = NULL;
@@ -289,7 +289,7 @@ GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
+GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones.
 
@@ -1346,7 +1346,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		xx[1] = x[ind[k]];	yy[1] = y[ind[k]];	zz[1] = z[ind[k++]];
 		xx[2] = x[ind[k]];	yy[2] = y[ind[k]];	zz[2] = z[ind[k]];
 
-		nx = get_triangle_crossings (GMT, cont, n_contours, x, y, z, &ind[ij], small, &xc, &yc, &zc, &vert, &cind);
+		nx = pscontour_get_triangle_crossings (GMT, cont, n_contours, x, y, z, &ind[ij], small, &xc, &yc, &zc, &vert, &cind);
 
 		if (Ctrl->I.active) {	/* Must color the triangle slices according to CPT */
 
@@ -1358,7 +1358,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					zzz += zz[k];
 					kzz++;
 				}
-				if (kzz) paint_it_pscontour (GMT, PSL, P, xx, yy, 3, zzz / kzz);
+				if (kzz) pscontour_paint_it (GMT, PSL, P, xx, yy, 3, zzz / kzz);
 			}
 			else {	/* Must paint all those slices separately */
 
@@ -1391,7 +1391,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					}
 					m = 4;
 				}
-				paint_it_pscontour (GMT, PSL, P, xout, yout, m, 0.5 * (zz[low] + zc[1]));	/* z is contour value */
+				pscontour_paint_it (GMT, PSL, P, xout, yout, m, 0.5 * (zz[low] + zc[1]));	/* z is contour value */
 
 				/* Then loop over contours and paint the part between contours */
 
@@ -1429,7 +1429,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 						xout[m] = xc[k2];	yout[m] = yc[k2];	m++;
 						xout[m] = xc[k3];	yout[m] = yc[k3];	m++;
 					}
-					paint_it_pscontour (GMT, PSL, P, xout, yout, m, 0.5 * (zc[k2]+zc[k2-2]));
+					pscontour_paint_it (GMT, PSL, P, xout, yout, m, 0.5 * (zc[k2]+zc[k2-2]));
 				}
 
 				/* Add the last piece between last contour and high node */
@@ -1455,7 +1455,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					}
 					m = 4;
 				}
-				paint_it_pscontour (GMT, PSL, P, xout, yout, m, 0.5 * (zz[high] + zc[k2]));	/* z is contour value */
+				pscontour_paint_it (GMT, PSL, P, xout, yout, m, 0.5 * (zz[high] + zc[k2]));	/* z is contour value */
 			}
 		}
 
@@ -1705,11 +1705,11 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				Return (error);
 			}
 		}
-		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contoursand plot/save L|H labels */
+		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
 			size_t kk;
 			save = gmt_M_malloc (GMT, save, 0, &n_save, struct SAVE);
 
-			sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.all, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
+			pscontour_sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.all, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
 			for (kk = 0; kk < n_save; kk++) {
 				gmt_M_free (GMT, save[kk].x);
 				gmt_M_free (GMT, save[kk].y);
