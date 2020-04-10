@@ -328,7 +328,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical disc "seamounts" (more like plateaus).
 	 * Here, f is not used; ignore compiler warning. */
 
@@ -341,7 +341,7 @@ GMT_LOCAL void disc_area_volume_height (double a, double b, double h, double hc,
 	*V = *A * (*z);
 }
 
-GMT_LOCAL void para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical parabolic seamounts. */
 	double e, r2, rc2;
 
@@ -353,7 +353,7 @@ GMT_LOCAL void para_area_volume_height (double a, double b, double h, double hc,
 	*z = (*V) / (*A);
 }
 
-GMT_LOCAL void cone_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_cone_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical conical seamounts */
 
 	double e, r2;
@@ -365,7 +365,7 @@ GMT_LOCAL void cone_area_volume_height (double a, double b, double h, double hc,
 	*z = (*V) / (*A);
 }
 
-GMT_LOCAL void gaussian_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_gaussian_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical Gaussian seamounts */
 
 	bool circular = doubleAlmostEqual (a, b);
@@ -387,7 +387,7 @@ GMT_LOCAL void gaussian_area_volume_height (double a, double b, double h, double
 	*z = (*V) / (*A);
 }
 
-GMT_LOCAL double cone_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_cone_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
@@ -398,7 +398,7 @@ GMT_LOCAL double cone_solver (double in[], double f, double v, bool elliptical) 
 	return (phi);
 }
 
-GMT_LOCAL double para_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_para_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
@@ -409,7 +409,7 @@ GMT_LOCAL double para_solver (double in[], double f, double v, bool elliptical) 
 	return (phi);
 }
 
-GMT_LOCAL double gauss_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_gauss_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	int n = 0;
 	double A, B, V0, phi, phi0, r02, h0;
@@ -427,7 +427,7 @@ GMT_LOCAL double gauss_solver (double in[], double f, double v, bool elliptical)
 	return (phi);
 }
 
-GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in) {
+GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in) {
 	uint64_t col;
 	double s_scale;
 	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], s_unit;
@@ -522,18 +522,18 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	switch (Ctrl->C.mode) {
-		case SHAPE_CONE:  shape_func = cone_area_volume_height;
-				  phi_solver = cone_solver; break;
-		case SHAPE_DISC:  shape_func = disc_area_volume_height;
+		case SHAPE_CONE:  shape_func = grdseamount_cone_area_volume_height;
+				  phi_solver = grdseamount_cone_solver; break;
+		case SHAPE_DISC:  shape_func = grdseamount_disc_area_volume_height;
 				  phi_solver = NULL; break;
-		case SHAPE_PARA:  shape_func = para_area_volume_height;
-		  		  phi_solver = para_solver; break;
-		case SHAPE_GAUS:  shape_func = gaussian_area_volume_height;
-		  		  phi_solver = gauss_solver; break;
+		case SHAPE_PARA:  shape_func = grdseamount_para_area_volume_height;
+		  		  phi_solver = grdseamount_para_solver; break;
+		case SHAPE_GAUS:  shape_func = grdseamount_gaussian_area_volume_height;
+		  		  phi_solver = grdseamount_gauss_solver; break;
 		default:
 			GMT_Report (API, GMT_MSG_WARNING, "Shape not set - defaulting to Gaussian\n");
-			shape_func = gaussian_area_volume_height;
-			phi_solver = gauss_solver;
+			shape_func = grdseamount_gaussian_area_volume_height;
+			phi_solver = grdseamount_gauss_solver;
 			break;
 	}
 
@@ -606,7 +606,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
-				if (parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
+				if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
 				for (col = 0; col < n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
 				if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 					a = in[3];		/* Semi-major axis */
@@ -683,7 +683,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
-					if (parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
+					if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
 
 					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
 					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */

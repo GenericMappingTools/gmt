@@ -235,7 +235,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int compare_ages (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int rotsmoother_compare_ages (const void *point_1v, const void *point_2v) {
 	struct AGEROT *point_1, *point_2;
 
 	point_1 = (struct AGEROT *)point_1v;
@@ -383,7 +383,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 	/* Sort the entire dataset on increasing ages */
 
-	qsort (D, n_read, sizeof (struct AGEROT), compare_ages);
+	qsort (D, n_read, sizeof (struct AGEROT), rotsmoother_compare_ages);
 
 	if (GMT->common.h.add_colnames) {	/* Create meaningful column header */
 		static char *short_header = "lon\tlat\ttime\tangle";

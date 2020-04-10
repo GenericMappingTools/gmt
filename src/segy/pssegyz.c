@@ -327,7 +327,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL double segyz_rms (float *data, int n_samp) {
+GMT_LOCAL double pssegyz_rms (float *data, int n_samp) {
 	/* function to return rms amplitude of n_samp values from the array data */
 	int ix;
 	double sumsq = 0.0;
@@ -338,7 +338,7 @@ GMT_LOCAL double segyz_rms (float *data, int n_samp) {
 	return (sumsq);
 }
 
-GMT_LOCAL int segyz_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny) {
+GMT_LOCAL int pssegyz_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny) {
 	/* ix iy is pixel to paint */
 	static unsigned char bmask[8]={128, 64, 32, 16, 8, 4, 2, 1};
 	int byte, quot, rem;
@@ -353,7 +353,7 @@ GMT_LOCAL int segyz_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int
 	return (0);
 }
 
-GMT_LOCAL void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current sample with all options to bitmap */ {
+GMT_LOCAL void pssegyz_wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current sample with all options to bitmap */ {
 	int px0, px1, py0, py1, ix, iy;
 	double xp0, xp1, yp0, yp1, slope;
 
@@ -371,13 +371,13 @@ GMT_LOCAL void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0
 		if (px0 < px1) {
 			for (ix = px0; ix <= px1; ix++) {
 				iy = py0 + irint (slope * (float) (ix - px0));
-				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				pssegyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (ix = px1; ix <= px0; ix++) {
 				iy = py0 + irint (slope * (float) (ix - px0));
-				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				pssegyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 
 		}
@@ -386,19 +386,19 @@ GMT_LOCAL void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0
 		if (py0 < py1) {
 			for (iy = py0; iy <= py1; iy++) {
 				ix = px0 + irint (((float) (iy - py0)) / slope);
-				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				pssegyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (iy = py1; iy <= py0; iy++) {
 				ix = px0 + irint (((float) (iy - py0)) / slope);
-				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				pssegyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 	}
 }
 
-GMT_LOCAL void shade_quad (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y_edge, double slope1, double slope0, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
+GMT_LOCAL void pssegyz_shade_quad (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y_edge, double slope1, double slope0, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
 	/* shade a quadrilateral with two sides parallel to x axis, one side at y=y0 with ends at x0 and x1,
 	   with lines with gradients slope0 and slope1 respectively */
 
@@ -413,9 +413,9 @@ GMT_LOCAL void shade_quad (struct GMT_CTRL *GMT, double x0, double y0, double x1
 			ix1 = irint ((x0-GMT->current.proj.z_project.xmin + (((double)iy / dpi) + GMT->current.proj.z_project.ymin - y0) * slope0) * dpi);
 			ix2 = irint ((x1-GMT->current.proj.z_project.xmin + (((double)iy / dpi) + GMT->current.proj.z_project.ymin - y0) * slope1) * dpi);
 			if (ix1 < ix2) {
-				for (ix = ix1; ix < ix2; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
+				for (ix = ix1; ix < ix2; ix++) pssegyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			} else {
-				for (ix = ix2; ix < ix1; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
+				for (ix = ix2; ix < ix1; ix++) pssegyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 	} else {
@@ -423,22 +423,22 @@ GMT_LOCAL void shade_quad (struct GMT_CTRL *GMT, double x0, double y0, double x1
 			ix1 = irint ((x0 - GMT->current.proj.z_project.xmin + (((double)iy / dpi) +  GMT->current.proj.z_project.ymin - y0) * slope0) * dpi);
 			ix2 = irint ((x1 - GMT->current.proj.z_project.xmin + (((double)iy / dpi) +GMT->current.proj.z_project.ymin - y0) * slope1) * dpi);
 			if (ix1 < ix2) {
-				for (ix = ix1; ix < ix2; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
+				for (ix = ix1; ix < ix2; ix++) pssegyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			} else {
-				for (ix = ix2; ix < ix1; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
+				for (ix = ix2; ix < ix1; ix++) pssegyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 	}
 }
 
-GMT_LOCAL void shade_tri (struct GMT_CTRL *GMT, double apex_x, double apex_y, double edge_y, double slope, double slope0, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
+GMT_LOCAL void pssegyz_shade_tri (struct GMT_CTRL *GMT, double apex_x, double apex_y, double edge_y, double slope, double slope0, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
 	/* shade a triangle specified by apex coordinates, y coordinate of an edge (parallel to x-axis)
 	   and slopes of the two other sides */
 
 	int papex_y, pedge_y, iy, ix, x1, x2;
 
 #ifdef DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "in shade_tri apex_x %f apex_y %f edge_y %f slope %f slope0 %f\n",apex_x, apex_y, edge_y, slope, slope0);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "in pssegyz_shade_tri apex_x %f apex_y %f edge_y %f slope %f slope0 %f\n",apex_x, apex_y, edge_y, slope, slope0);
 #endif
 
 	if (apex_y == edge_y) return;
@@ -454,9 +454,9 @@ GMT_LOCAL void shade_tri (struct GMT_CTRL *GMT, double apex_x, double apex_y, do
 #endif
 			/* locations in pixels of two x positions for this scan line */
 			if (x1 < x2) {
-				for (ix = x1; ix < x2; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
+				for (ix = x1; ix < x2; ix++) pssegyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			} else {
-				for (ix = x2; ix < x1; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
+				for (ix = x2; ix < x1; ix++) pssegyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 	} else {
@@ -467,17 +467,17 @@ GMT_LOCAL void shade_tri (struct GMT_CTRL *GMT, double apex_x, double apex_y, do
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "apex_y>edge_y iy %d x1 %d x2 %d\n",iy,x1,x2);
 #endif
 			if (x1 < x2) {
-				for (ix = x1; ix < x2; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
+				for (ix = x1; ix < x2; ix++) pssegyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			}
 			else {
-				for (ix = x2; ix < x1; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
+				for (ix = x2; ix < x1; ix++) pssegyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 	}
 }
 
 #define NPTS 4 /* 4 points for the general case here */
-GMT_LOCAL void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, int negative, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
+GMT_LOCAL void pssegyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, int negative, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
 	/* apply current samples with all options to bitmap */
 	int ix, iy;
 	double xp[NPTS], yp[NPTS], interp, slope01, slope02, slope12, slope13, slope23, slope03;
@@ -522,37 +522,37 @@ GMT_LOCAL void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, flo
 	slope23 = (xp[3] - xp[2]) / (yp[3] - yp[2]);
 	slope03 = (xp[3] - xp[0]) / (yp[3] - yp[0]);
 	if ((yp[0] != yp[1]) && (yp[2] != yp[3])) {	/* simple case: tri-quad-tri */
-		shade_tri (GMT, xp[0], yp[0], yp[1], slope01, slope02, dpi, bitmap, bm_nx, bm_ny);
-		shade_quad (GMT, xp[1], yp[1],xp[0]+slope02*(yp[1]-yp[0]), yp[2], slope02, slope13, dpi, bitmap, bm_nx, bm_ny);
-		shade_tri (GMT, xp[3], yp[3], yp[2], slope13, slope23, dpi, bitmap, bm_nx, bm_ny);
+		pssegyz_shade_tri (GMT, xp[0], yp[0], yp[1], slope01, slope02, dpi, bitmap, bm_nx, bm_ny);
+		pssegyz_shade_quad (GMT, xp[1], yp[1],xp[0]+slope02*(yp[1]-yp[0]), yp[2], slope02, slope13, dpi, bitmap, bm_nx, bm_ny);
+		pssegyz_shade_tri (GMT, xp[3], yp[3], yp[2], slope13, slope23, dpi, bitmap, bm_nx, bm_ny);
 	}
 	if ((yp[0] == yp[1]) && (yp[2] != yp[3])) {
 		if (xp[0] == xp[1]) { /* two triangles based on yp[1],yp[2]. yp[3] */
-			shade_tri (GMT, xp[1], yp[1], yp[2], slope12, slope13, dpi, bitmap, bm_nx, bm_ny);
-			shade_tri (GMT, xp[3], yp[3], yp[2], slope23, slope13, dpi, bitmap, bm_nx, bm_ny);
+			pssegyz_shade_tri (GMT, xp[1], yp[1], yp[2], slope12, slope13, dpi, bitmap, bm_nx, bm_ny);
+			pssegyz_shade_tri (GMT, xp[3], yp[3], yp[2], slope23, slope13, dpi, bitmap, bm_nx, bm_ny);
 		} else { /* quad based on first 3 points, then tri */
 			slope0 = (((xp[0]<xp[1]) && (xp[3]<xp[2])) || ((xp[0]>xp[1])&&(xp[3]>xp[2])))*slope03 + (((xp[0]<xp[1])&&(xp[2]<xp[3])) || ((xp[0]>xp[1])&&(xp[2]>xp[3])))*slope02;
 			slope1 = (((xp[1]<xp[0]) && (xp[3]<xp[2])) || ((xp[1]>xp[0]) && (xp[3]>xp[2])))*slope13 + (((xp[1]<xp[0])&&(xp[2]<xp[3])) || ((xp[1]>xp[0])&&(xp[2]>xp[3])))*slope12;
 			slope3 = (((xp[1]<xp[0]) && (xp[3]<xp[2])) || ((xp[1]>xp[0]) && (xp[3]>xp[2])))*slope13 + (((xp[0]<xp[1])&&(xp[3]<xp[2])) || ((xp[0]>xp[1])&&(xp[3]>xp[2])))*slope03;
-			shade_quad (GMT, xp[0], yp[0], xp[1], yp[2], slope0, slope1, dpi, bitmap, bm_nx, bm_ny);
-			shade_tri (GMT, xp[3], yp[3], yp[2], slope23, slope3, dpi, bitmap, bm_nx, bm_ny);
+			pssegyz_shade_quad (GMT, xp[0], yp[0], xp[1], yp[2], slope0, slope1, dpi, bitmap, bm_nx, bm_ny);
+			pssegyz_shade_tri (GMT, xp[3], yp[3], yp[2], slope23, slope3, dpi, bitmap, bm_nx, bm_ny);
 		}
 	}
 	if ((yp[0] != yp[1]) && (yp[2] == yp[3])) {
 		if (xp[2] == xp[3]) {/* two triangles based on yp[0],yp[1]. yp[2] */
-		shade_tri (GMT, xp[0], yp[0], yp[1], slope01, slope02, dpi, bitmap, bm_nx, bm_ny);
-		shade_tri (GMT, xp[2], yp[2], yp[1], slope12, slope02, dpi, bitmap, bm_nx, bm_ny);
+		pssegyz_shade_tri (GMT, xp[0], yp[0], yp[1], slope01, slope02, dpi, bitmap, bm_nx, bm_ny);
+		pssegyz_shade_tri (GMT, xp[2], yp[2], yp[1], slope12, slope02, dpi, bitmap, bm_nx, bm_ny);
 		} else { /* triangle based on yp[0], yp[1], then quad based on last 3 points */
 			slope0 = (((xp[0]<xp[1]) && (xp[3]<xp[2])) || ((xp[0]>xp[1]) && (xp[3]>xp[2])))*slope03 + (((xp[0]<xp[1])&&(xp[2]<xp[3])) || ((xp[0]>xp[1])&&(xp[2]>xp[3])))*slope02;
-			shade_tri (GMT, xp[0], yp[0], yp[1], slope01, slope0, dpi, bitmap, bm_nx, bm_ny);
+			pssegyz_shade_tri (GMT, xp[0], yp[0], yp[1], slope01, slope0, dpi, bitmap, bm_nx, bm_ny);
 			slope2 = (((xp[0]<xp[1]) && (xp[2]<xp[3])) || ((xp[0]>xp[1]) && (xp[2]>xp[3])))*slope02 + (((xp[0]<xp[1]) && (xp[3]<xp[2])) || ((xp[0]>xp[1]) && (xp[3]>xp[2])))*slope12;
 			slope3 = (((xp[0]<xp[1]) && (xp[3]<xp[2])) || ((xp[0]>xp[1]) && (xp[3]>xp[2])))*slope03 + (((xp[0]<xp[1]) && (xp[2]<xp[3])) || ((xp[0]>xp[1]) && (xp[2]>xp[3])))*slope13;
-			shade_quad (GMT, xp[2], yp[2], xp[3], yp[1], slope2, slope3, dpi, bitmap, bm_nx, bm_ny);
+			pssegyz_shade_quad (GMT, xp[2], yp[2], xp[3], yp[1], slope2, slope3, dpi, bitmap, bm_nx, bm_ny);
 		}
 	}
 }
 
-GMT_LOCAL void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, double y0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int  bm_nx, int bm_ny) {
+GMT_LOCAL void pssegyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, double y0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int  bm_nx, int bm_ny) {
 	/* shell function to loop over all samples in the current trace, determine plot options
 	 * and call the appropriate bitmap routine */
 
@@ -565,10 +565,10 @@ GMT_LOCAL void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, d
 #ifdef DEBUG
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x0, %f\t y0, %f\t,z1, %f\t data[iz], %f\t iz, %d\n", x0, y0, z1, data[iz], iz);
 #endif
-			if (plot_wig) wig_bmap (GMT, x0, y0, data[iz-1],data[iz], z0, z1, dev_x, dev_y, dpi, bitmap, bm_nx, bm_ny);	/* plotting wiggle */
+			if (plot_wig) pssegyz_wig_bmap (GMT, x0, y0, data[iz-1],data[iz], z0, z1, dev_x, dev_y, dpi, bitmap, bm_nx, bm_ny);	/* plotting wiggle */
 			if (do_fill) {	/* plotting VA -- check data points first */
 				paint_wiggle = ((!negative && ((data[iz-1] >= 0.0) || (data[iz] >= 0.0))) || (negative && ((data[iz-1] <= 0.0) || (data[iz] <= 0.0))));
-				if (paint_wiggle) segyz_shade_bmap (GMT, x0, y0, data[iz-1], data[iz], z0, z1, negative, dev_x, dev_y, dpi, bitmap, bm_nx, bm_ny);
+				if (paint_wiggle) pssegyz_shade_bmap (GMT, x0, y0, data[iz-1], data[iz], z0, z1, negative, dev_x, dev_y, dpi, bitmap, bm_nx, bm_ny);
 			}
 			z0 = z1;
 		}
@@ -818,7 +818,7 @@ use a few of these*/
 		}
 
 		if (Ctrl->N.active || Ctrl->Z.active) {
-			scale= (float) segyz_rms (data, n_samp);
+			scale= (float) pssegyz_rms (data, n_samp);
 			GMT_Report (API, GMT_MSG_INFORMATION, "rms value is %f\n", scale);
 		}
 		for (iz = 0; iz < n_samp; iz++) { /* scale bias and clip each sample in the trace */
@@ -827,7 +827,7 @@ use a few of these*/
 			if (Ctrl->C.active && (fabs (data[iz]) > Ctrl->C.value)) data[iz] = (float)(Ctrl->C.value*data[iz] / fabs (data[iz])); /* apply bias and then clip */
 		}
 
-		if (!Ctrl->Z.active || scale) segyz_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, y0, n_samp, Ctrl->F.active, Ctrl->I.active, Ctrl->W.active, toffset, Ctrl->D.value[GMT_X], Ctrl->D.value[GMT_Y], Ctrl->Q.value[I_ID], bitmap, bm_nx, bm_ny);
+		if (!Ctrl->Z.active || scale) pssegyz_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, y0, n_samp, Ctrl->F.active, Ctrl->I.active, Ctrl->W.active, toffset, Ctrl->D.value[GMT_X], Ctrl->D.value[GMT_Y], Ctrl->Q.value[I_ID], bitmap, bm_nx, bm_ny);
 		gmt_M_str_free (data);
 		gmt_M_str_free (header);
 		ix++;

@@ -239,14 +239,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 /*
- * grav_2_5D returns the gravitational attraction from a 2 1/2 - D
+ * talwani2d_grav_2_5D returns the gravitational attraction from a 2 1/2 - D
  * body, i.e. a 2D body with finite length in the strike direction.
  * The routine is based on the paper
  * Rasmussen & Pedersen, 1979, End corrections in potential field
  * modelling, Geophys. Prosp.
  */
 
-GMT_LOCAL double integralI1 (double xa, double xb, double za, double zb, double y) {
+GMT_LOCAL double talwani2d_integralI1 (double xa, double xb, double za, double zb, double y) {
 	/* This function performs the integral I1 (i,Y) from
 	 * Rasmussen & Pedersen's paper
 	 */
@@ -276,7 +276,7 @@ GMT_LOCAL double integralI1 (double xa, double xb, double za, double zb, double 
 	return (part1 + part2 + part3);
 }
 
-GMT_LOCAL double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho, double ymin, double ymax) {
+GMT_LOCAL double talwani2d_grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho, double ymin, double ymax) {
 /*  x0;		X-coordinate of observation point */
 /*  z0;		Z-coordinate of observation point */
 /*  x[];	Array of xpositions */
@@ -305,9 +305,9 @@ GMT_LOCAL double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsign
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Observation point coincides with a body vertex!\n");
 			return GMT->session.d_NaN;
 		}
-		part_1 = integralI1 (xx0, xx1, zz0, zz1, ymin);
+		part_1 = talwani2d_integralI1 (xx0, xx1, zz0, zz1, ymin);
 		if (ymin > 0.0) part_1 = -part_1;
-		part_2 = integralI1 (xx0, xx1, zz0, zz1, ymax);
+		part_2 = talwani2d_integralI1 (xx0, xx1, zz0, zz1, ymax);
 		if (ymax < 0.0) part_2 = -part_2;
 		sum += (part_1 + part_2);
 		xx0 = xx1;
@@ -317,7 +317,7 @@ GMT_LOCAL double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsign
 	return (sum);
 }
 
-GMT_LOCAL double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho) {
+GMT_LOCAL double talwani2d_get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho) {
 	/*  x0;		X-coordinate of observation point */
 	/*  z0;		Z-coordinate of observation point */
 	/*  x[];	Array of xpositions */
@@ -357,7 +357,7 @@ GMT_LOCAL double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsig
 	return (sum);
 }
 
-GMT_LOCAL double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned int n, double x0, double z0, double rho) {
+GMT_LOCAL double talwani2d_get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned int n, double x0, double z0, double rho) {
 	/* From Kim & Wessel, 2016 */
 	int i1, i2;
 	double sum = 0.0, x1, z1, x2, z2, r1sq, r2sq;
@@ -398,7 +398,7 @@ GMT_LOCAL double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned
 	return (sum);
 }
 
-GMT_LOCAL double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsigned int n, double y0, double z0, double rho, double G0) {
+GMT_LOCAL double talwani2d_get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsigned int n, double y0, double z0, double rho, double G0) {
 	/* Based on Chaptman, 1979, Techniques for interpretation of geoid anomalies, JGR, 84 (B8), 3793-3801.
 	 *  y0;		Y-coordinate of observation point, in m
 	 *  z0;		Z-coordinate of observation point, in m
@@ -486,7 +486,7 @@ GMT_LOCAL double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsi
 	return (N);
 }
 
-GMT_LOCAL double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struct BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax, double G0) {
+GMT_LOCAL double talwani2d_get_one_output (struct GMT_CTRL *GMT, double x_obs, double z_obs, struct BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax, double G0) {
 	/* Evaluate output at a single observation point (x,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
@@ -496,13 +496,13 @@ GMT_LOCAL double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_
 		area = gmt_pol_area (body[k].x, body[k].z, body[k].n);
 		v = 0.0;
 		if (mode == TALWANI2D_FAA) /* FAA */
-			v += get_grav2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+			v += talwani2d_get_grav2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
 		else if (mode == TALWANI2D_FAA2) /* FAA 2.5D */
-			v += grav_2_5D (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho, ymin, ymax);
+			v += talwani2d_grav_2_5D (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho, ymin, ymax);
 		else if (mode == TALWANI2D_VGG) /* VGG */
-			v += get_vgg2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
+			v += talwani2d_get_vgg2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
 		else /* GEOID*/
-			v += get_geoid2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho, G0);
+			v += talwani2d_get_geoid2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho, G0);
 		if (area < 0.0) v = -v;	/* Polygon went counter-clockwise */
 		v_sum += v;
 	}
@@ -718,7 +718,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 #endif
 			for (srow = 0; srow < (int)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
 				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->data[GMT_Y][srow] : Ctrl->Z.level;
-				answer = get_one_output2D (GMT, S->data[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax, G0);
+				answer = talwani2d_get_one_output (GMT, S->data[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax, G0);
 				S->data[GMT_Y][srow] = answer;
 				if (answer < min_answer) min_answer = answer;
 				if (answer > max_answer) max_answer = answer;

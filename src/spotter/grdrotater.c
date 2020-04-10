@@ -308,7 +308,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL struct GMT_DATASET * grdrotater_get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Return a single polygon that encloses this geographic grid exactly.
 	 * It is used in the case when no particular clip polygon has been given.
 	 * Note that the path is the same for pixel or grid-registered grids.
@@ -393,7 +393,7 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	return (D);
 }
 
-GMT_LOCAL bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon, double lat) {
+GMT_LOCAL bool grdrotater_skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon, double lat) {
 	/* Returns true if the selected point is outside the polygon */
 	uint64_t seg;
 	unsigned int inside = 0;
@@ -490,7 +490,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "No grid give so cannot determine grid outline path\n");
 			Return (API->error);
 		}
-		if ((D = get_grid_path (GMT, G->header)) == NULL) Return (API->error);
+		if ((D = grdrotater_get_grid_path (GMT, G->header)) == NULL) Return (API->error);
 		pol = D->table[0];	/* Since we know it is a single file */
 	}
 	if (pol) {
@@ -637,7 +637,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 		gmt_M_grd_loop (GMT, G_rot, row, col, ij_rot) {
 			G_rot->data[ij_rot] = GMT->session.f_NaN;
-			if (not_global && skip_if_outside (GMT, polr, grd_x[col], grd_y[row])) continue;	/* Outside rotated polygon */
+			if (not_global && grdrotater_skip_if_outside (GMT, polr, grd_x[col], grd_y[row])) continue;	/* Outside rotated polygon */
 
 			/* Here we are inside; get the coordinates and rotate back to original grid coordinates */
 
@@ -669,7 +669,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 						if (col >= G_rot->header->n_columns) continue;
 						ij_rot = gmt_M_ijp (G_rot->header, row, col);
 						if (!gmt_M_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
-						if (not_global && skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside input polygon */
+						if (not_global && grdrotater_skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside input polygon */
 						gmt_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, true);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 						gmt_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 						gmt_cart_to_geo (GMT, &xx, &yy, P_original, true);	/* Recover degree lon lat representation */

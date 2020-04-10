@@ -51,7 +51,6 @@
  * These routines are local to x2sys and used by the above routines:
  *
  * x2sys_set_home	: Initializes X2SYS paths
- * x2sys_record_length	: Returns the record length of current file
  *
  *------------------------------------------------------------------
  * Author:	Paul Wessel
@@ -185,7 +184,7 @@ GMT_LOCAL void mggpath_free (struct GMT_CTRL *GMT) {
 	n_mgg_paths = 0;
 }
 
-GMT_LOCAL int get_first_year (struct GMT_CTRL *GMT, double t) {
+GMT_LOCAL int x2sys_get_first_year (struct GMT_CTRL *GMT, double t) {
 	/* obtain yyyy/mm/dd and return year */
 	int64_t rd;
 	double s;
@@ -193,6 +192,44 @@ GMT_LOCAL int get_first_year (struct GMT_CTRL *GMT, double t) {
 	gmt_dt2rdc (GMT, t, &rd, &s);
 	gmt_gcal_from_rd (GMT, rd, &CAL);
 	return (CAL.year);
+}
+
+GMT_LOCAL const char *x2sys_strerror (struct GMT_CTRL *GMT, int err) {
+/* Returns the error string for a given error code "err"
+   Passes "err" on to nc_strerror if the error code is not one we defined */
+	gmt_M_unused(GMT);
+	switch (err) {
+		case X2SYS_FCLOSE_ERR:
+			return "Error from fclose";
+		case X2SYS_BAD_DEF:
+			return "Cannot find format definition file in either current or X2SYS_HOME directories";
+		case X2SYS_BAD_COL:
+			return "Unrecognized string";
+		case X2SYS_TAG_NOT_SET:
+			return "TAG has not been set";
+		case X2SYS_BAD_ARG:
+			return "Unrecognized argument";
+		case X2SYS_CONFLICTING_ARGS:
+			return "Conflicting arguments";
+		case X2SYS_BIX_BAD_ROW:
+			return "Bad row index";
+		case X2SYS_BIX_BAD_COL:
+			return "Bad col index";
+		case X2SYS_BIX_BAD_INDEX:
+			return "Bad bin index";
+		default:	/* default passes through to GMT error */
+			return GMT_strerror(err);
+	}
+}
+
+GMT_LOCAL int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
+	if (err == X2SYS_NOERROR) return (err);
+	/* When error code is non-zero: print error message and pass error code on */
+	if (file && file[0])
+		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+	else
+		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+	return (err);
 }
 
 void x2sys_set_home (struct GMT_CTRL *GMT) {
@@ -256,7 +293,7 @@ int x2sys_fclose (struct GMT_CTRL *GMT, char *fname, FILE *fp) {
 	return (X2SYS_NOERROR);
 }
 
-void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s) {
+GMT_LOCAL void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s) {
 	unsigned int i;
 	char line[GMT_BUFSIZ] = {""};
 
@@ -425,34 +462,6 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
 	MGD77_end (GMT, &M);
 }
 
-unsigned int x2sys_record_length (struct GMT_CTRL *GMT, struct X2SYS_INFO *s) {
-	unsigned int i, rec_length = 0;
-	gmt_M_unused(GMT);
-
-	for (i = 0; i < s->n_fields; i++) {
-		switch (s->info[i].intype) {
-			case 'c':
-			case 'u':
-				rec_length += 1;
-				break;
-			case 'h':
-				rec_length += 2;
-				break;
-			case 'i':
-			case 'f':
-				rec_length += 4;
-				break;
-			case 'l':
-				rec_length += (unsigned int)sizeof (long);
-				break;
-			case 'd':
-				rec_length += 8;
-				break;
-		}
-	}
-	return (rec_length);
-}
-
 unsigned int x2sys_n_data_cols (struct GMT_CTRL *GMT, struct X2SYS_INFO *s) {
 	unsigned int i, n = 0;
 	int is;
@@ -536,7 +545,7 @@ double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n) {
  * array called data[] with each data value in it.
  */
 
-int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G) {
+GMT_LOCAL int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G) {
 	bool error = false;
 	unsigned int j, k, i, pos;
 	int is;
@@ -859,7 +868,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 		gmt_lon_range_adjust (s->geodetic, &dvals[MGD77_LONGITUDE]);
 		for (i = 0; i < s->n_out_columns; i++)
 			z[i][j] = dvals[col[i]];
-		if (p->year == 0 && !gmt_M_is_dnan (dvals[0])) p->year = get_first_year (GMT, dvals[0]);
+		if (p->year == 0 && !gmt_M_is_dnan (dvals[0])) p->year = x2sys_get_first_year (GMT, dvals[0]);
 		j++;
 		if (j == n_alloc) {
 			n_alloc <<= 1;
@@ -1637,44 +1646,6 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 	return(1);	/* Schwinehund! */
 }
 
-const char *x2sys_strerror (struct GMT_CTRL *GMT, int err) {
-/* Returns the error string for a given error code "err"
-   Passes "err" on to nc_strerror if the error code is not one we defined */
-	gmt_M_unused(GMT);
-	switch (err) {
-		case X2SYS_FCLOSE_ERR:
-			return "Error from fclose";
-		case X2SYS_BAD_DEF:
-			return "Cannot find format definition file in either current or X2SYS_HOME directories";
-		case X2SYS_BAD_COL:
-			return "Unrecognized string";
-		case X2SYS_TAG_NOT_SET:
-			return "TAG has not been set";
-		case X2SYS_BAD_ARG:
-			return "Unrecognized argument";
-		case X2SYS_CONFLICTING_ARGS:
-			return "Conflicting arguments";
-		case X2SYS_BIX_BAD_ROW:
-			return "Bad row index";
-		case X2SYS_BIX_BAD_COL:
-			return "Bad col index";
-		case X2SYS_BIX_BAD_INDEX:
-			return "Bad bin index";
-		default:	/* default passes through to GMT error */
-			return GMT_strerror(err);
-	}
-}
-
-int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
-	if (err == X2SYS_NOERROR) return (err);
-	/* When error code is non-zero: print error message and pass error code on */
-	if (file && file[0])
-		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
-	else
-		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
-	return (err);
-}
-
 int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return X2SYS_NOERROR;
 	/* When error code is non-zero: print error message and exit */
@@ -2025,7 +1996,7 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 }
 
 /* A very similar function (and with the same name -- but the '2') is also defined in MGD77list_func.c */
-GMT_LOCAL unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
+GMT_LOCAL unsigned int x2sys_separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
 	/* Used in x2sys_get_corrtable */
 	unsigned int i, j, k, n_aux;
 	int this_aux;
@@ -2077,7 +2048,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 		for (i = 0; i < n_cols; i++) col_name[i] = strdup (S->info[S->out_order[i]].name);
 	}
 	n_items = MGD77_Scan_Corrtable (GMT, ctable, trk_name, (unsigned int)ntracks, n_cols, col_name, &item_names, 0);
-	if (aux && (n_aux = separate_aux_columns2 (GMT, n_items, item_names, aux, auxlist)) != 0) {	/* Determine which auxiliary columns are requested (if any) */
+	if (aux && (n_aux = x2sys_separate_aux_columns2 (GMT, n_items, item_names, aux, auxlist)) != 0) {	/* Determine which auxiliary columns are requested (if any) */
 		aux_name = gmt_M_memory (GMT, NULL, n_aux, char *);
 		for (i = 0; i < n_aux; i++) aux_name[i] = strdup (auxlist[aux[i].type].name);
 	}

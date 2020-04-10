@@ -238,33 +238,33 @@ int n;
 EXTERN_MSC void gmtlib_load_rot_matrix (double w, double R[3][3], double E[]);
 EXTERN_MSC void gmtlib_init_rot_matrix (double R[3][3], double E[]);
 
-GMT_LOCAL void get_cross_normalized (struct GMT_CTRL *GMT, double P1[], double P2[], double G[]) {
+GMT_LOCAL void polespotter_get_cross_normalized (struct GMT_CTRL *GMT, double P1[], double P2[], double G[]) {
 	gmt_cross3v (GMT, P1, P2, G);	/* G is the pole of the great circle that passes through P1 & P2 */
 	gmt_normalize3v (GMT, G);	/* But we need to normalize it */
 }
 
-GMT_LOCAL void get_great_circle_pole (struct GMT_CTRL *GMT, double P1[], double P2[], unsigned int type, double M[], double G[]) {
+GMT_LOCAL void polespotter_get_great_circle_pole (struct GMT_CTRL *GMT, double P1[], double P2[], unsigned int type, double M[], double G[]) {
 	/* Input is P1 and P2, the two cartesian points defining a small great circle segment.
 	 * Output is M (the mid point of the segment) and G, the great circle defining the bisector (FZ) or segment itself (AH) */
 	unsigned int k;
 	for (k = 0; k < 3; k++) M[k] = 0.5 * (P1[k] + P2[k]);	/* Mid-point M */
 	gmt_normalize3v (GMT, M);	/* To get a unit length vector M */
-	get_cross_normalized (GMT, P1, P2, G);	/* G is the pole of the great circle that passes through P1 & P2 */
+	polespotter_get_cross_normalized (GMT, P1, P2, G);	/* G is the pole of the great circle that passes through P1 & P2 */
 	if (type == POLESPOTTER_FZ) {	/* Must get the bisector pole instead, so cross it with M */
 		double B[3];	/* Temp vector */
-		get_cross_normalized (GMT, M, G, B);	/* This gives the normalied bisector pole instead */
+		polespotter_get_cross_normalized (GMT, M, G, B);	/* This gives the normalied bisector pole instead */
 		gmt_M_memcpy (G, B, 3, double);		/* Put bisector pole into G which is what we return */
 	}
 }
 
-GMT_LOCAL double get_angle_between_trends (struct GMT_CTRL *GMT, double P1[], double P2[], unsigned int type, double X[]) {
+GMT_LOCAL double polespotter_get_angle_between_trends (struct GMT_CTRL *GMT, double P1[], double P2[], unsigned int type, double X[]) {
 	/* P1 and P2 are two points on a FZ or AH.  Midpoint of P1 and P2 is M.  X is a trial pole.
 	 * If type = FZ: Find difference in orientations between bisector to P1-P2 and great circle from X through M.
 	 * If type = AH: Find difference in orientations between great circle through P1-P2 and great circle from X through M.
 	 */
 	double M[3], G[3], B[3], cos_del_angle, del_angle;
-	get_great_circle_pole (GMT, P1, P2, type, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) as well as mid-point M */
-	get_cross_normalized (GMT, M, X, B);			/* B is pole for great circle through selected pole and M */
+	polespotter_get_great_circle_pole (GMT, P1, P2, type, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) as well as mid-point M */
+	polespotter_get_cross_normalized (GMT, M, X, B);			/* B is pole for great circle through selected pole and M */
 	cos_del_angle = gmt_dot3v (GMT, G, B);			/* Cos of angle between great circles is our other weight */
 	del_angle = fabs (d_acos (cos_del_angle));		/* Get |angle| between the two great circles */
 	if (del_angle > M_PI_2) del_angle = M_PI - del_angle;	/* Since angles are actually orientation differences */
@@ -378,7 +378,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 						if (Ctrl->G.active) gmt_M_memset (layer, Grid->header->size, gmt_grdfloat);
 						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * seg_weight;	/* Weighted length of this segment */
-						get_great_circle_pole (GMT, P1, P2, d, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) */
+						polespotter_get_great_circle_pole (GMT, P1, P2, d, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) */
 						if (Ctrl->S.dump_crossings) {	/* Keep track of great circles to each line */
 							gmt_M_memcpy (&GG[4*ng], G, 3, double);
 							GG[4*ng+3] = L;
@@ -439,7 +439,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 			S = C->table[0]->segment[0];	/* Only have a single segment here*/
 			for (g1 = k = 0; g1 < ng; g1++) {
 				for (g2 = g1+1; g2 < ng; g2++) {	/* Get circle intersections (2) */
-					get_cross_normalized (GMT, &GG[4*g1], &GG[4*g2], X);	/* X is great circle intersection */
+					polespotter_get_cross_normalized (GMT, &GG[4*g1], &GG[4*g2], X);	/* X is great circle intersection */
 					gmt_cart_to_geo (GMT, &S->data[GMT_Y][k], &S->data[GMT_X][k], X, true);		/* Get lon/lat of this point along crossing profile */
 					S->data[GMT_Y][k] = gmt_lat_swap (GMT, S->data[GMT_Y][k], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
 					S->data[GMT_Z][k] = S->data[GMT_Z][k+1] = hypot (GG[4*g1+3], GG[4*g2+3]);	/* Combined length in quadrature */
@@ -495,7 +495,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 					for (row = 1; row < S->n_rows; row++) {
 						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM;	/* Length of this segment */
-						del_angle =  get_angle_between_trends (GMT, P1, P2, d, X);
+						del_angle =  polespotter_get_angle_between_trends (GMT, P1, P2, d, X);
 						this_chi2 = pow (del_angle * seg_weight, 2.0);	/* The chi2 increment from the P1-P2 line */
 						gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */
 						if (Ctrl->S.midpoint) {	/* Report for this mid-point */
@@ -576,7 +576,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 							for (row = 1; row < S->n_rows; row++) {
 								gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 								L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM;	/* Length of this segment */
-								del_angle =  get_angle_between_trends (GMT, P1, P2, d, X);
+								del_angle =  polespotter_get_angle_between_trends (GMT, P1, P2, d, X);
 								chi2 = L * pow (del_angle * seg_weight, 2.0);	/* The weighted chi2 increment from this line */
 								Grid->data[node] += (gmt_grdfloat)chi2;		/* Add to total chi2 misfit for this pole */
 								gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */

@@ -85,7 +85,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *C) {	/* D
 	if (!C) return;
 	for (unsigned int k = 0; k < N_COMPS; k++)
 		if (C->G.file[k]) gmt_M_str_free (C->G.file[k]);
-	gmt_free_array (GMT, &(C->T.T));
+	gmt_free_array (GMT, & (C->T.T));
 	gmt_M_free (GMT, C);
 }
 
@@ -95,17 +95,17 @@ struct {
 
 #define mjdoff_1 mjdoff_
 
-GMT_LOCAL double d_mod(const double x, const double y) {
+GMT_LOCAL double earthtide_d_mod (const double x, const double y) {
 	double quotient;
-	if ((quotient = x / y) >= 0)
-		quotient = floor(quotient);
+	if ( (quotient = x / y) >= 0)
+		quotient = floor (quotient);
 	else
-		quotient = -floor(-quotient);
+		quotient = -floor (-quotient);
 	return (x - y * quotient );
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL double getutcmtai(double tsec, bool *leapflag) {
+GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 
 	int mjd0t;
 	double ttsec, tai_utc = 0;
@@ -113,7 +113,7 @@ GMT_LOCAL double getutcmtai(double tsec, bool *leapflag) {
 	/*  get utc - tai (s) */
 	/*  "Julian Date Converter" */
 	/*  http://aa.usno.navy.mil/data/docs/JulianDate.php */
-	/*  parameter(MJDUPPER=58299)    !*** upper limit, leap second table, 2018jun30 */
+	/*  parameter (MJDUPPER=58299)    !*** upper limit, leap second table, 2018jun30 */
 	/* upper limit, leap second table, */
 	/* lower limit, leap second table, */
 	/* leap second table limit flag */
@@ -239,7 +239,7 @@ GMT_LOCAL double getutcmtai(double tsec, bool *leapflag) {
 /* ** new supplemental time functions ************************************ */
 /* *********************************************************************** */
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL double tai2tt(double ttai) {
+GMT_LOCAL double earthtide_tai2tt (double ttai) {
 	/*  convert tai (sec) to terrestrial time (sec) */
 	/*  http://tycho.usno.navy.mil/systime.html */
 	return ttai + 32.184;
@@ -247,57 +247,57 @@ GMT_LOCAL double tai2tt(double ttai) {
 
 /* ----------------------------------------------------------------------- */
 #if 0
-GMT_LOCAL double gps2tai(double tgps) {
+GMT_LOCAL double earthtide_gps2tai (double tgps) {
 	/*  convert gps time (sec) to tai (sec) */
 	/*  http://leapsecond.com/java/gpsclock.htm */
 	/*  http://tycho.usno.navy.mil/leapsec.html */
 	return tgps + 19;
 }
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL double gps2ttt(double tgps) {
+GMT_LOCAL double earthtide_gps2ttt (double tgps) {
 	double ttai;
 
 	/* convert gps time (sec) to terrestrial time (sec) */
-	ttai = gps2tai(tgps);
-	return tai2tt(ttai);
+	ttai = earthtide_gps2tai (tgps);
+	return earthtide_tai2tt (ttai);
 }
 #endif
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL double utc2tai(double tutc, bool *leapflag) {
+GMT_LOCAL double earthtide_utc2tai (double tutc, bool *leapflag) {
 	/* convert utc (sec) to tai (sec) */
-	return tutc - getutcmtai(tutc, leapflag);
+	return tutc - earthtide_getutcmtai (tutc, leapflag);
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL double utc2ttt(double tutc, bool *leapflag) {
+GMT_LOCAL double earthtide_utc2ttt (double tutc, bool *leapflag) {
 	double ttai;
 
 	/* convert utc (sec) to terrestrial time (sec) */
-	ttai = utc2tai(tutc, leapflag);
-	return tai2tt(ttai);
+	ttai = earthtide_utc2tai (tutc, leapflag);
+	return earthtide_tai2tt (ttai);
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void sprod(double *x, double *y, double *scal, double *r1, double *r2) {
+GMT_LOCAL void earthtide_sprod (double *x, double *y, double *scal, double *r1, double *r2) {
 	/*  computation of the scalar-product of two vectors and their norms */
-	/*  input:   x(i),i=1,2,3  -- components of vector x */
-	/*           y(i),i=1,2,3  -- components of vector y */
+	/*  input:   x (i),i=1,2,3  -- components of vector x */
+	/*           y (i),i=1,2,3  -- components of vector y */
 	/*  output:  scal          -- scalar product of x and y */
 	/*           r1,r2         -- lengths of the two vectors x and y */
 
-	*r1 = sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
-	*r2 = sqrt(y[0] * y[0] + y[1] * y[1] + y[2] * y[2]);
+	*r1 = sqrt (x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
+	*r2 = sqrt (y[0] * y[0] + y[1] * y[1] + y[2] * y[2]);
 	*scal =    x[0] * y[0] + x[1] * y[1] + x[2] * y[2];
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL double enorm8(double *a) {
+GMT_LOCAL double earthtide_enorm8 (double *a) {
 	/* compute euclidean norm of a vector (of length 3) */
-	return sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+	return sqrt (a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL  void st1idiu(double *xsta, double *xsun, double *xmon, double fac2sun, double fac2mon, double *xcorsta) {
+GMT_LOCAL void earthtide_st1idiu (double *xsta, double *xsun, double *xmon, double fac2sun, double fac2mon, double *xcorsta) {
 	/* this subroutine gives the out-of-phase corrections induced by */
 	/* mantle inelasticity in the diurnal band */
 	/*  input: xsta,xsun,xmon,fac2sun,fac2mon */
@@ -307,14 +307,14 @@ GMT_LOCAL  void st1idiu(double *xsta, double *xsun, double *xmon, double fac2sun
 	double de, dn, dr, rsta, rmon, rsun, cosla, demon, sinla, dnmon, desun, drmon, dnsun, drsun;
 	double cosphi, sinphi, cos2phi, inv_rsun2, inv_rmon2;
 
-	rsta = enorm8(&xsta[0]);
+	rsta = earthtide_enorm8 (&xsta[0]);
 	sinphi = xsta[2] / rsta;
-	cosphi = sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
+	cosphi = sqrt (xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
 	cos2phi = cosphi * cosphi - sinphi * sinphi;
 	sinla = xsta[1] / cosphi / rsta;
 	cosla = xsta[0] / cosphi / rsta;
-	rmon = enorm8(&xmon[0]);
-	rsun = enorm8(&xsun[0]);
+	rmon = earthtide_enorm8 (&xmon[0]);
+	rsun = earthtide_enorm8 (&xsun[0]);
 	inv_rsun2 = 1 / (rsun * rsun);
 	inv_rmon2 = 1 / (rmon * rmon);
 	drsun = dhi * -3 * sinphi  * cosphi  * fac2sun * xsun[2]  * (xsun[0] * sinla - xsun[1] * cosla) * inv_rsun2;
@@ -332,7 +332,7 @@ GMT_LOCAL  void st1idiu(double *xsta, double *xsun, double *xmon, double fac2sun
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void st1isem(double *xsta, double *xsun, double *xmon, double fac2sun, double fac2mon, double *xcorsta) {
+GMT_LOCAL void earthtide_st1isem (double *xsta, double *xsun, double *xmon, double fac2sun, double fac2mon, double *xcorsta) {
 	/* this subroutine gives the out-of-phase corrections induced by */
 	/* mantle inelasticity in the diurnal band */
 	/*  input: xsta,xsun,xmon,fac2sun,fac2mon */
@@ -343,16 +343,16 @@ GMT_LOCAL void st1isem(double *xsta, double *xsun, double *xmon, double fac2sun,
 	double costwola, sintwola, de, dn, dr, rsta, rmon, rsun, cosla, demon, sinla, dnmon, desun, drmon, dnsun, drsun;
 	double cosphi, sinphi, cosphi2, inv_rsun2, inv_rmon2, dif_xsun2, dif_xmon2, t;
 
-	rsta = enorm8(&xsta[0]);
+	rsta = earthtide_enorm8 (&xsta[0]);
 	sinphi = xsta[2] / rsta;
-	cosphi = sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
+	cosphi = sqrt (xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
 	cosphi2 = cosphi * cosphi;
 	sinla = xsta[1] / cosphi / rsta;
 	cosla = xsta[0] / cosphi / rsta;
 	costwola = cosla * cosla - sinla * sinla;
 	sintwola = cosla * 2 * sinla;
-	rmon = enorm8(&xmon[0]);
-	rsun = enorm8(&xsun[0]);
+	rmon = earthtide_enorm8 (&xmon[0]);
+	rsun = earthtide_enorm8 (&xsun[0]);
 	inv_rsun2 = 1 / (rsun * rsun);
 	inv_rmon2 = 1 / (rmon * rmon);
 	dif_xsun2 = xsun[0] * xsun[0] - xsun[1] * xsun[1];
@@ -375,9 +375,9 @@ GMT_LOCAL void st1isem(double *xsta, double *xsun, double *xmon, double fac2sun,
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void st1l1(double *xsta, double *xsun, double *xmon, double fac2sun, double fac2mon, double *xcorsta) {
+GMT_LOCAL void earthtide_st1l1 (double *xsta, double *xsun, double *xmon, double fac2sun, double fac2mon, double *xcorsta) {
 	/* this subroutine gives the corrections induced by the latitude dependence */
-	/* given by l^(1) in mahtews et al (1991) */
+	/* given by l^ (1) in mahtews et al (1991) */
 	/*  input: xsta,xsun,xmon,fac3sun,fac3mon */
 	/* output: xcorsta */
 
@@ -386,13 +386,13 @@ GMT_LOCAL void st1l1(double *xsta, double *xsun, double *xmon, double fac2sun, d
 	double costwola, sintwola, l1, de, dn, rsta, rmon, rsun, cosla, demon, sinla, dnmon, desun, dnsun;
 	double cosphi, sinphi, cosphi2, sinphi2, inv_rsun2, inv_rmon2, dif_xsun2, dif_xmon2, t;
 
-	rsta = enorm8(&xsta[0]);
+	rsta = earthtide_enorm8 (&xsta[0]);
 	sinphi = xsta[2] / rsta;
-	cosphi = sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
+	cosphi = sqrt (xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
 	sinla = xsta[1] / cosphi / rsta;
 	cosla = xsta[0] / cosphi / rsta;
-	rmon = enorm8(&xmon[0]);
-	rsun = enorm8(&xsun[0]);
+	rmon = earthtide_enorm8 (&xmon[0]);
+	rsun = earthtide_enorm8 (&xsun[0]);
 	/* ** for the diurnal band */
 	l1 = l1d;
 	sinphi2 = sinphi * sinphi;
@@ -429,7 +429,7 @@ GMT_LOCAL void st1l1(double *xsta, double *xsun, double *xmon, double fac2sun, d
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
+GMT_LOCAL void earthtide_step2diu (double *xsta, double fhr, double t, double *xcorsta) {
 	/* last change:  vd   17 may 00   1:20 pm */
 	/* these are the subroutines for the step2 of the tidal corrections. */
 	/* they are called to account for the frequency dependence */
@@ -460,7 +460,7 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 	/* ** has minor differences from that of dehanttideinel.f (2000apr17 14:10) */
 	/* ** D.M. edited to strictly follow published table 7.5a (2006aug08 13:46) */
 	/* ** cf. table 7.5a of IERS conventions 2003 (TN.32, pg.82) */
-	/* ** columns are s,h,p,N',ps, dR(ip),dR(op),dT(ip),dT(op) */
+	/* ** columns are s,h,p,N',ps, dR (ip),dR (op),dT (ip),dT (op) */
 	/* ** units of mm */
 	/* ****----------------------------------------------------------------------- */
 	/* ***** -2., 0., 1., 0., 0.,-0.08,-0.05, 0.01,-0.02,      !*** original entry */
@@ -503,29 +503,29 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 	zns = t * 1934.13626197 + 234.95544499 - t * .00207561111 * t - t3 * 2.13944e-6 + t2 * 1.65e-8;
 	ps = t * 1.71945766667 + 282.93734098 + t * 4.5688889e-4 * t - t3 * 1.778e-8 - t2 * 3.34e-9;
 	/* ** reduce angles to between 0 and 360 */
-	s = d_mod(s, 360.);
-	tau = d_mod(tau, 360.);
-	h = d_mod(h, 360.);
-	p = d_mod(p, 360.);
-	zns = d_mod(zns, 360.);
-	ps = d_mod(ps, 360.);
-	rsta = sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1] + xsta[2] * xsta[2]);
+	s = earthtide_d_mod (s, 360.);
+	tau = earthtide_d_mod (tau, 360.);
+	h = earthtide_d_mod (h, 360.);
+	p = earthtide_d_mod (p, 360.);
+	zns = earthtide_d_mod (zns, 360.);
+	ps = earthtide_d_mod (ps, 360.);
+	rsta = sqrt (xsta[0] * xsta[0] + xsta[1] * xsta[1] + xsta[2] * xsta[2]);
 	sinphi = xsta[2] / rsta;
-	cosphi = sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
+	cosphi = sqrt (xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
 	sinphi2 = sinphi * sinphi;
 	cosphi2 = cosphi * cosphi;
 	cosla = xsta[0] / cosphi / rsta;
 	sinla = xsta[1] / cosphi / rsta;
-	zla = atan2(xsta[1], xsta[0]);
+	zla = atan2 (xsta[1], xsta[0]);
 	for (i = 0; i < 3; i++) xcorsta[i] = 0;
 
 	for (j = 1; j <= 31; j++) {
 		thetaf = (tau + datdi[j * 9 - 9] * s + datdi[j * 9 - 8] * h + datdi[j * 9 - 7] * p + datdi[j * 9 - 6] * zns + datdi[j * 9 - 5] * ps) * D2R + zla;
-		sin_tf = sin(thetaf);		cos_tf = cos(thetaf);
+		sin_tf = sin (thetaf);		cos_tf = cos (thetaf);
 		dr     = datdi[j * 9 - 4] * 2 * sinphi * cosphi * sin_tf + datdi[j * 9 - 3] * 2 * sinphi * cosphi * cos_tf;
 		dn     = datdi[j * 9 - 2] * (cosphi2 - sinphi2) * sin_tf + datdi[j * 9 - 1] * (cosphi2 - sinphi2) * cos_tf;
 		/* following correction by V.Dehant to match eq.16b, p.81, 2003 Conventions */
-		/* de=datdi(8,j)*sinphi*cos(thetaf+zla)+ */
+		/* de=datdi (8,j)*sinphi*cos (thetaf+zla)+ */
 		de = datdi[j * 9 - 2] * sinphi * cos_tf - datdi[j * 9 - 1] * sinphi * sin_tf;
 		xcorsta[0] += (dr * cosla * cosphi - de * sinla - dn * sinphi * cosla);
 		xcorsta[1] += (dr * sinla * cosphi + de * cosla - dn * sinphi * sinla);
@@ -536,10 +536,10 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void step2lon(double *xsta, double t, double *xcorsta) {
+GMT_LOCAL void earthtide_step2lon (double *xsta, double t, double *xcorsta) {
 	/* cf. table 7.5b of IERS conventions 2003 (TN.32, pg.82) */
-	/* columns are s,h,p,N',ps, dR(ip),dT(ip),dR(op),dT(op) */
-	/* IERS cols.= s,h,p,N',ps, dR(ip),dR(op),dT(ip),dT(op) */
+	/* columns are s,h,p,N',ps, dR (ip),dT (ip),dR (op),dT (op) */
+	/* IERS cols.= s,h,p,N',ps, dR (ip),dR (op),dT (ip),dT (op) */
 	/* units of mm */
 
 	static double datdi[45]	/* was [9][5] */ = { 0.,0.,0.,1.,0.,.47,.23,
@@ -559,26 +559,26 @@ GMT_LOCAL void step2lon(double *xsta, double t, double *xcorsta) {
 	p   = t * 4069.01363525 + 83.35324312  - t2 * .01032172222 - t3 * 1.24991e-5 + t4 * 5.263e-8;
 	zns = t * 1934.13626197 + 234.95544499 - t2 * .00207561111 - t3 * 2.13944e-6 + t4 * 1.65e-8;
 	ps = t * 1.71945766667 + 282.93734098  + t2 * 4.5688889e-4 - t3 * 1.778e-8   - t4 * 3.34e-9;
-	rsta = sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1] + xsta[2] * xsta[2]);
+	rsta = sqrt (xsta[0] * xsta[0] + xsta[1] * xsta[1] + xsta[2] * xsta[2]);
 	sinphi = xsta[2] / rsta;
-	cosphi = sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
+	cosphi = sqrt (xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
 	cosla = xsta[0] / cosphi / rsta;
 	sinla = xsta[1] / cosphi / rsta;
 	/* ** reduce angles to between 0 and 360 */
-	s = d_mod(s, 360.);
-	/* **** tau=dmod(tau,360.d0)       !*** tau not used here--09jul28 */
-	h = d_mod(h, 360.);
-	p = d_mod(p, 360.);
-	zns = d_mod(zns, 360.);
-	ps = d_mod(ps, 360.);
+	s = earthtide_d_mod (s, 360.);
+	/* **** tau=dmod (tau,360.d0)       !*** tau not used here--09jul28 */
+	h = earthtide_d_mod (h, 360.);
+	p = earthtide_d_mod (p, 360.);
+	zns = earthtide_d_mod (zns, 360.);
+	ps = earthtide_d_mod (ps, 360.);
 	for (i = 0; i < 3; i++) xcorsta[i] /= 1e3;
 
 	/* **             1 2 3 4   5   6      7      8      9 */
-	/* ** columns are s,h,p,N',ps, dR(ip),dT(ip),dR(op),dT(op) */
+	/* ** columns are s,h,p,N',ps, dR (ip),dT (ip),dR (op),dT (op) */
 	for (j = 1; j <= 5; j++) {
 		thetaf = (datdi[j * 9 - 9] * s + datdi[j * 9 - 8] * h + datdi[j * 9 - 7] * p + datdi[j * 9 - 6] * zns + datdi[j * 9 - 5] * ps) * D2R;
-		dr = datdi[j * 9 - 4] * (sinphi * sinphi * 3 - 1) / 2. * cos(thetaf) + datdi[j * 9 - 2] * (sinphi * sinphi * 3 - 1) / 2. * sin(thetaf);
-		dn = datdi[j * 9 - 3] * (cosphi * sinphi * 2) * cos(thetaf) + datdi[j * 9 - 1] * (cosphi * sinphi * 2) * sin(thetaf);
+		dr = datdi[j * 9 - 4] * (sinphi * sinphi * 3 - 1) / 2. * cos (thetaf) + datdi[j * 9 - 2] * (sinphi * sinphi * 3 - 1) / 2. * sin (thetaf);
+		dn = datdi[j * 9 - 3] * (cosphi * sinphi * 2) * cos (thetaf) + datdi[j * 9 - 1] * (cosphi * sinphi * 2) * sin (thetaf);
 		de = 0.;
 		xcorsta[0] += dr * cosla * cosphi - de * sinla - dn * sinphi * cosla;
 		xcorsta[1] += dr * sinla * cosphi + de * cosla - dn * sinphi * sinla;
@@ -588,26 +588,26 @@ GMT_LOCAL void step2lon(double *xsta, double t, double *xcorsta) {
 }
 
 /* ------------------------------------------------------------------------------- */
-GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *xmon, double *dxtide, bool *leapflag) {
+GMT_LOCAL void earthtide_detide (double *xsta, int mjd, double fmjd, double *xsun, double *xmon, double *dxtide, bool *leapflag) {
 	/* Computation of tidal corrections of station displacements caused
 	 * by lunar and solar gravitational attraction.  UTC version.
 	 * step 1 (here general degree 2 and 3 corrections +
-	 *         call st1idiu + call st1isem + call st1l1)
-	 *   + step 2 (call step2diu + call step2lon + call step2idiu)
+	 *         call earthtide_st1idiu + call earthtide_st1isem + call earthtide_st1l1)
+	 *   + step 2 (call earthtide_step2diu + call earthtide_step2lon + call step2idiu)
 	 * It has been decided that the step 3 un-correction for permanent tide
 	 * would *not* be applied in order to avoid jump in the reference frame
 	 * (this step 3 must added in order to get the mean tide station position
 	 * and to be conformed with the iag resolution.)
 	 * inputs:
-	 *   xsta(i),i=1,2,3   -- geocentric position of the station (ITRF/ECEF)
-	 *   xsun(i),i=1,2,3   -- geoc. position of the sun (ECEF)
-	 *   xmon(i),i=1,2,3   -- geoc. position of the moon (ECEF)
+	 *   xsta (i),i=1,2,3   -- geocentric position of the station (ITRF/ECEF)
+	 *   xsun (i),i=1,2,3   -- geoc. position of the sun (ECEF)
+	 *   xmon (i),i=1,2,3   -- geoc. position of the moon (ECEF)
 	 *   mjd,fmjd          -- modified julian day (and fraction) (in GPS time)
 	 * ***old calling sequence*****************************************************
 	 *   dmjd               -- time in mean julian date (including day fraction)
 	 *   fhr=hr+zmin/60.+sec/3600.   -- hr in the day
 	 * outputs:
-	 *   dxtide(i),i=1,2,3           -- displacement vector (ITRF)
+	 *   dxtide (i),i=1,2,3           -- displacement vector (ITRF)
 	 *   flag              -- leap second table limit flag, false:flag not raised
 	 * Author iers 1996 :  V. Dehant, S. Mathews and J. Gipson
 	 *    (test between two subroutines)
@@ -639,24 +639,24 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	/* internal support for new calling sequence */
 	/* first, convert UTC time into TT time (and, bring leapflag into variable) */
 	tsecutc = fmjd * 86400.;			/* UTC time (sec of day) */
-	tsectt = utc2ttt(tsecutc, leapflag);			/* TT  time (sec of day) */
+	tsectt = earthtide_utc2ttt (tsecutc, leapflag);			/* TT  time (sec of day) */
 	fmjdtt = tsectt / 86400.;			/* TT  time (fract. day) */
 	dmjdtt = mjd + fmjdtt;
 	/*  commented line was live code in dehanttideinelMJD.f */
 	/*  changed on the suggestion of Dr. Don Kim, UNB -- 09mar21 */
 	/*  Julian date for 2000 January 1 00:00:00.0 UT is  JD 2451544.5 */
 	/*  MJD         for 2000 January 1 00:00:00.0 UT is MJD   51544.0 */
-	/*  t=(dmjdtt-51545.d0)/36525.d0                !*** days to centuries, TT */
+	/*  t= (dmjdtt-51545.d0)/36525.d0                !*** days to centuries, TT */
 	/*  float MJD in TT */
 	t = (dmjdtt - 51544.) / 36525.;			/* days to centuries, TT */
 	fhr = (dmjdtt - (int) dmjdtt) * 24.;	/* hours in the day, TT */
 	/* ** scalar product of station vector with sun/moon vector */
-	sprod(&xsta[0], &xsun[0], &scs, &rsta, &rsun);
-	sprod(&xsta[0], &xmon[0], &scm, &rsta, &rmon);
+	earthtide_sprod (&xsta[0], &xsun[0], &scs, &rsta, &rsun);
+	earthtide_sprod (&xsta[0], &xmon[0], &scm, &rsta, &rmon);
 	scsun = scs / rsta / rsun;
 	scmon = scm / rsta / rmon;
 	/* ** computation of new h2 and l2 */
-	cosphi = sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
+	cosphi = sqrt (xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
 	t2 = (1. - cosphi * 1.5 * cosphi);
 	h2 = h20 - t2 * 6e-4;
 	l2 = l20 + t2 * 2e-4;
@@ -694,19 +694,19 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	}
 	xcorsta[0] = xcorsta[1] = xcorsta[2] = 0;
 	/* ** corrections for the out-of-phase part of love numbers */
-	/* **     (part h_2^(0)i and l_2^(0)i ) */
+	/* **     (part h_2^ (0)i and l_2^ (0)i ) */
 	/* ** first, for the diurnal band */
-	st1idiu(&xsta[0], &xsun[0], &xmon[0], fac2sun, fac2mon, xcorsta);
+	earthtide_st1idiu (&xsta[0], &xsun[0], &xmon[0], fac2sun, fac2mon, xcorsta);
 	dxtide[0] += xcorsta[0];
 	dxtide[1] += xcorsta[1];
 	dxtide[2] += xcorsta[2];
 	/* ** second, for the semi-diurnal band */
-	st1isem(&xsta[0], &xsun[0], &xmon[0], fac2sun, fac2mon, xcorsta);
+	earthtide_st1isem (&xsta[0], &xsun[0], &xmon[0], fac2sun, fac2mon, xcorsta);
 	dxtide[0] += xcorsta[0];
 	dxtide[1] += xcorsta[1];
 	dxtide[2] += xcorsta[2];
-	/* ** corrections for the latitude dependence of love numbers (part l^(1) ) */
-	st1l1(&xsta[0], &xsun[0], &xmon[0], fac2sun, fac2mon, xcorsta);
+	/* ** corrections for the latitude dependence of love numbers (part l^ (1) ) */
+	earthtide_st1l1 (&xsta[0], &xsun[0], &xmon[0], fac2sun, fac2mon, xcorsta);
 	dxtide[0] += xcorsta[0];
 	dxtide[1] += xcorsta[1];
 	dxtide[2] += xcorsta[2];
@@ -714,17 +714,17 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	/* ** corrections for the diurnal band: */
 	/* **  first, we need to know the date converted in julian centuries */
 	/* **  this is now handled at top of code   (also convert to TT time system) */
-	/* **** t=(dmjd-51545.)/36525. */
-	/* **** fhr=dmjd-int(dmjd)             !*** this is/was a buggy line (day vs. hr) */
+	/* **** t= (dmjd-51545.)/36525. */
+	/* **** fhr=dmjd-int (dmjd)             !*** this is/was a buggy line (day vs. hr) */
 	/* **  second, the diurnal band corrections, */
 	/* **   (in-phase and out-of-phase frequency dependence): */
-	step2diu(&xsta[0], fhr, t, xcorsta);
+	earthtide_step2diu (&xsta[0], fhr, t, xcorsta);
 	dxtide[0] += xcorsta[0];
 	dxtide[1] += xcorsta[1];
 	dxtide[2] += xcorsta[2];
 	/* **  corrections for the long-period band, */
 	/* **   (in-phase and out-of-phase frequency dependence): */
-	step2lon(&xsta[0], t, xcorsta);
+	earthtide_step2lon (&xsta[0], t, xcorsta);
 	dxtide[0] += xcorsta[0];
 	dxtide[1] += xcorsta[1];
 	dxtide[2] += xcorsta[2];
@@ -740,22 +740,22 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	 * -----------------------------------------------------------------------
 	 * ** uncorrect for the permanent tide  (only if you want mean tide system)
 	 * **   pi=3.141592654
-	 * **   sinphi=xsta(3)/rsta
-	 * **   cosphi=dsqrt(xsta(1)**2+xsta(2)**2)/rsta
-	 * **   cosla=xsta(1)/cosphi/rsta
-	 * **   sinla=xsta(2)/cosphi/rsta
-	 * **   dr=-dsqrt(5./4./pi)*h2*0.31460*(3./2.*sinphi**2-0.5)
-	 * **   dn=-dsqrt(5./4./pi)*l2*0.31460*3.*cosphi*sinphi
-	 * **   dxtide(1)=dxtide(1)-dr*cosla*cosphi+dn*cosla*sinphi
-	 * **   dxtide(2)=dxtide(2)-dr*sinla*cosphi+dn*sinla*sinphi
-	 * **   dxtide(3)=dxtide(3)-dr*sinphi      -dn*cosphi
+	 * **   sinphi=xsta (3)/rsta
+	 * **   cosphi=dsqrt (xsta (1)**2+xsta (2)**2)/rsta
+	 * **   cosla=xsta (1)/cosphi/rsta
+	 * **   sinla=xsta (2)/cosphi/rsta
+	 * **   dr=-dsqrt (5./4./pi)*h2*0.31460* (3./2.*sinphi**2-0.5)
+	 * **   dn=-dsqrt (5./4./pi)*l2*0.31460*3.*cosphi*sinphi
+	 * **   dxtide (1)=dxtide (1)-dr*cosla*cosphi+dn*cosla*sinphi
+	 * **   dxtide (2)=dxtide (2)-dr*sinla*cosphi+dn*sinla*sinphi
+	 * **   dxtide (3)=dxtide (3)-dr*sinphi      -dn*cosphi
 	 */
 }
 
 /* ******************************************************************************* */
-GMT_LOCAL void getghar(int mjd, double fmjd, double *ghar) {
+GMT_LOCAL void earthtide_getghar (int mjd, double fmjd, double *ghar) {
 	/* convert mjd/fmjd in UTC time to Greenwich hour angle (in radians)
-	 * "satellite orbits: models, methods, applications" montenbruck & gill(2000)
+	 * "satellite orbits: models, methods, applications" montenbruck & gill (2000)
 	 * section 2.3.1, pg. 33
 	 * need UTC to get sidereal time  ("astronomy on the personal computer", 4th ed)
 	 *                               (pg.43, montenbruck & pfleger, springer, 2005)
@@ -772,7 +772,7 @@ GMT_LOCAL void getghar(int mjd, double fmjd, double *ghar) {
 	ghad = (mjd - 51544 + (fmjdutc - 0.5)) * 360.9856473662862 + 280.46061837504;	/* days since J2000 */
 
 	/* normalize to 0-360 and convert to radians */
-	i = (int)(ghad / 360.);
+	i = (int) (ghad / 360.);
 	*ghar = (ghad - i * 360.) * D2R;
 
 	while (*ghar > TWO_PI)
@@ -783,50 +783,50 @@ GMT_LOCAL void getghar(int mjd, double fmjd, double *ghar) {
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void rge(double lat, double lon, double *u, double *v, double *w, double x, double y, double z) {
+GMT_LOCAL void earthtide_rge (double lat, double lon, double *u, double *v, double *w, double x, double y, double z) {
 	/* given a rectangular cartesian system (x,y,z) */
 	/* compute a geodetic h cartesian sys   (u,v,w) */
 	static double cb, cl, sb, sl;
 
-	sincos(lat, &sb, &cb);
-	sincos(lon, &sl, &cl);
+	sincos (lat, &sb, &cb);
+	sincos (lon, &sl, &cl);
 	*u = -sb * cl * x - sb * sl * y + cb * z;
 	*v = -sl * x + cl * y;
 	*w = cb * cl * x + cb * sl * y + sb * z;
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void rot1(double theta, double x, double y, double z, double *u, double *v, double *w) {
+GMT_LOCAL void earthtide_rot1 (double theta, double x, double y, double z, double *u, double *v, double *w) {
 	/* ** rotate coordinate axes about 1 axis by angle of theta radians */
 	/* ** x,y,z transformed into u,v,w */
 	static double c, s;
 
-	sincos(theta, &s, &c);
+	sincos (theta, &s, &c);
 	*u = x;
 	*v = c * y + s * z;
 	*w = c * z - s * y;
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void rot3(double theta, double x, double y, double z, double *u, double *v, double *w) {
+GMT_LOCAL void earthtide_rot3 (double theta, double x, double y, double z, double *u, double *v, double *w) {
 	/* rotate coordinate axes about 3 axis by angle of theta radians */
 	/* x,y,z transformed into u,v,w */
 	static double c, s;
 
-	sincos(theta, &s, &c);
+	sincos (theta, &s, &c);
 	*u = c * x + s * y;
 	*v = c * y - s * x;
 	*w = z;
 }
 
 /* ------------------------------------------------------------------------------- */
-GMT_LOCAL void moonxyz(int mjd, double fmjd, double *rm, bool *leapflag) {
+GMT_LOCAL void earthtide_moonxyz (int mjd, double fmjd, double *rm, bool *leapflag) {
 	/* get low-precision, geocentric coordinates for moon (ECEF)
 	 * UTC Version
 	 * input:  mjd/fmjd, is Modified Julian Date (and fractional) in UTC time
 	 * output: rm, is geocentric lunar position vector [m] in ECEF
 	 *		   lflag  -- leap second table limit flag,  false:flag not raised
-	 * 1."satellite orbits: models, methods, applications" montenbruck & gill(2000)
+	 * 1."satellite orbits: models, methods, applications" montenbruck & gill (2000)
 	 * section 3.3.2, pg. 72-73
 	 * 2."astronomy on the personal computer, 4th ed." montenbruck & pfleger (2005)
 	 * section 3.2, pg. 38-39  routine MiniMoon
@@ -837,7 +837,7 @@ GMT_LOCAL void moonxyz(int mjd, double fmjd, double *rm, bool *leapflag) {
 
 	/* ** use TT for lunar ephemerides */
 	tsecutc = fmjd * 86400;	        		/* UTC time (sec of day) */
-	tsectt  = utc2ttt(tsecutc, leapflag);	/* TT  time (sec ofday)  */
+	tsectt  = earthtide_utc2ttt (tsecutc, leapflag);	/* TT  time (sec ofday)  */
 	fmjdtt  = tsectt / 86400.;				/* TT  time (fract. day) */
 
 	/* julian centuries since 1.5 january 2000 (J2000) */
@@ -858,27 +858,27 @@ GMT_LOCAL void moonxyz(int mjd, double fmjd, double *rm, bool *leapflag) {
 	d__ = t * 445267.11135 + 297.85027;
 	d2  = 2 * d__;
 	/* ** longitude w.r.t. equinox and ecliptic of year 2000 */
-	selond = el0 + sin(el * D2R) * 22640.0/3600. + sin((el + el) * D2R) * 769./3600. -
-			 sin((el - d2) * D2R) * 4586.0/3600. + sin(d2 * D2R) * 2370.0/3600. -
-			 sin(elp * D2R) * 668.0/3600. - sin((f + f) * D2R) * 412.0/3600. -
-			 sin((el + el - d2) * D2R) * 212.0/3600. - sin((el + elp - d2) * D2R) * 206.0/3600. +
-			 sin((el + d2) * D2R) * 192.0/3600. - sin((elp - d2) * D2R) * 165.0/3600. +
-			 sin((el - elp) * D2R) * 148.0/3600. - sin(d__ * D2R) * 125.0/3600. -
-			 sin((el + elp) * D2R) * 110.0/3600. - sin((f + f - d2) * D2R) * 55.0/3600.;
+	selond = el0 + sin (el * D2R) * 22640.0/3600. + sin ( (el + el) * D2R) * 769./3600. -
+			 sin ( (el - d2) * D2R) * 4586.0/3600. + sin (d2 * D2R) * 2370.0/3600. -
+			 sin (elp * D2R) * 668.0/3600. - sin ( (f + f) * D2R) * 412.0/3600. -
+			 sin ( (el + el - d2) * D2R) * 212.0/3600. - sin ( (el + elp - d2) * D2R) * 206.0/3600. +
+			 sin ( (el + d2) * D2R) * 192.0/3600. - sin ( (elp - d2) * D2R) * 165.0/3600. +
+			 sin ( (el - elp) * D2R) * 148.0/3600. - sin (d__ * D2R) * 125.0/3600. -
+			 sin ( (el + elp) * D2R) * 110.0/3600. - sin ( (f + f - d2) * D2R) * 55.0/3600.;
 	/* latitude w.r.t. equinox and ecliptic of year 2000 */
 	/*  eq 3.48, p.72 */
-	q = sin((f + f) * D2R) * 412.0/3600. + sin(elp * D2R) * 541.0/3600.;
+	q = sin ( (f + f) * D2R) * 412.0/3600. + sin (elp * D2R) * 541.0/3600.;
 	/*  temporary ter */
-	selatd = sin((f + selond - el0 + q) * D2R) * 18520.0/3600. -
-			 sin((f - d2) * D2R) * 526.0/3600. + sin((el + f - d2) * D2R) * 44.0/3600. -
-			 sin((-el + f - d2) * D2R) * 31.0/3600. - sin((-el - el + f) * D2R) * 25.0/3600. -
-			 sin((elp + f - d2) * D2R) * 23.0/3600. + sin((-el + f) * D2R) * 21.0/3600. +
-			 sin((-elp + f - d2) * D2R) * 11.0/3600.;
+	selatd = sin ( (f + selond - el0 + q) * D2R) * 18520.0/3600. -
+			 sin ( (f - d2) * D2R) * 526.0/3600. + sin ( (el + f - d2) * D2R) * 44.0/3600. -
+			 sin ( (-el + f - d2) * D2R) * 31.0/3600. - sin ( (-el - el + f) * D2R) * 25.0/3600. -
+			 sin ( (elp + f - d2) * D2R) * 23.0/3600. + sin ( (-el + f) * D2R) * 21.0/3600. +
+			 sin ( (-elp + f - d2) * D2R) * 11.0/3600.;
 	/* distance from Earth center to Moon (m) */
 	/*  eq 3.49, p.72 */
-	rse = 3.85e8 - cos(el * D2R) * 2.0905e7 - cos((d2 - el) * D2R) * 3.699e6 - cos(d2 * D2R) * 2.956e6
-		- cos((el + el) * D2R) * 5.7e5 + cos((el + el - d2) * D2R) * 2.46e5 - cos((elp - d2) * D2R) *
-		2.05e5 - cos((el + d2) * D2R) * 1.71e5 - cos((el + elp - d2) * D2R) * 1.52e5;
+	rse = 3.85e8 - cos (el * D2R) * 2.0905e7 - cos ( (d2 - el) * D2R) * 3.699e6 - cos (d2 * D2R) * 2.956e6
+		- cos ( (el + el) * D2R) * 5.7e5 + cos ( (el + el - d2) * D2R) * 2.46e5 - cos ( (elp - d2) * D2R) *
+		2.05e5 - cos ( (el + d2) * D2R) * 1.71e5 - cos ( (el + elp - d2) * D2R) * 1.52e5;
 	/* convert spherical ecliptic coordinates to equatorial cartesian */
 	/* precession of equinox wrt. J2000   (p.71) */
 	/*  eq 3.50, p.72 */
@@ -888,24 +888,24 @@ GMT_LOCAL void moonxyz(int mjd, double fmjd, double *rm, bool *leapflag) {
 	selatd *= D2R;
 	selond *= D2R;
 	oblir = 23.43929111 * D2R;			/* obliquity of the J2000 eclipti */
-	cselat = cos(selatd);
-	t1 = rse * cos(selond) * cselat;		/* meters          !*** eq. 3.51, */
-	t2 = rse * sin(selond) * cselat;		/* meters          !*** eq. 3.51, */
-	t3 = rse * sin(selatd);					/* meters          !*** eq. 3.51, */
-	rot1(-oblir, t1, t2, t3, &rm1, &rm2, &rm3);
+	cselat = cos (selatd);
+	t1 = rse * cos (selond) * cselat;		/* meters          !*** eq. 3.51, */
+	t2 = rse * sin (selond) * cselat;		/* meters          !*** eq. 3.51, */
+	t3 = rse * sin (selatd);					/* meters          !*** eq. 3.51, */
+	earthtide_rot1 (-oblir, t1, t2, t3, &rm1, &rm2, &rm3);
 	/* convert position vector of moon to ECEF  (ignore polar motion/LOD) */
 	/*  eq. 3.51, */
-	getghar(mjd, fmjd, &ghar);						/* sec 2.3.1, */
-	rot3(ghar, rm1, rm2, rm3, &rm[0], &rm[1], &rm[2]); /* eq. 2.89, */
+	earthtide_getghar (mjd, fmjd, &ghar);						/* sec 2.3.1, */
+	earthtide_rot3 (ghar, rm1, rm2, rm3, &rm[0], &rm[1], &rm[2]); /* eq. 2.89, */
 }
 
 /* ******************************************************************************* */
-GMT_LOCAL void sunxyz(int mjd, double fmjd, double *rs, bool *leapflag) {
+GMT_LOCAL void earthtide_sunxyz (int mjd, double fmjd, double *rs, bool *leapflag) {
 	/* get low-precision, geocentric coordinates for sun (ECEF)
 	 * input, mjd/fmjd, is Modified Julian Date (and fractional) in UTC time
 	 * output, rs, is geocentric solar position vector [m] in ECEF
 	 *      	  lflag  -- leap second table limit flag,  false:flag not raised
-	 * 1."satellite orbits: models, methods, applications" montenbruck & gill(2000)
+	 * 1."satellite orbits: models, methods, applications" montenbruck & gill (2000)
 	 * section 3.3.2, pg. 70-71
 	 * 2."astronomy on the personal computer, 4th ed." montenbruck & pfleger (2005)
 	 * section 3.2, pg. 39  routine MiniSun
@@ -920,7 +920,7 @@ GMT_LOCAL void sunxyz(int mjd, double fmjd, double *rs, bool *leapflag) {
 	/*  use TT for solar ephemerides */
 	/*  RAAN + arg.peri.  (deg.) */
 	tsecutc = fmjd * 86400.;			/* UTC time (sec of */
-	tsectt = utc2ttt(tsecutc, leapflag);/* TT  time (sec of */
+	tsectt = earthtide_utc2ttt (tsecutc, leapflag);/* TT  time (sec of */
 	fmjdtt = tsectt / 86400.;
 	/* julian centuries since 1.5 january 2000 (J2000) */
 	/*   (note: also low precision use of mjd --> tjd) */
@@ -932,34 +932,34 @@ GMT_LOCAL void sunxyz(int mjd, double fmjd, double *rs, bool *leapflag) {
 	em2 = em + em;
 	/* ** series expansions in mean anomaly, em   (eq. 3.43, p.71) */
 	/* *** radians */
-	r__ = (149.619 - cos(em) * 2.499 - cos(em2) * 0.021) * 1e9; /* *** m. */
-	slond = opod + emdeg + (sin(em) * 6892 + sin(em2) * 72) / 3600.;	/* precession of equinox wrt. J2000   (p.71) */
+	r__ = (149.619 - cos (em) * 2.499 - cos (em2) * 0.021) * 1e9; /* *** m. */
+	slond = opod + emdeg + (sin (em) * 6892 + sin (em2) * 72) / 3600.;	/* precession of equinox wrt. J2000   (p.71) */
 	slond += t * 1.3972;
 	/* position vector of sun (mean equinox & ecliptic of J2000) (EME2000, ICRF) */
 	/*                        (plus long. advance due to precession -- eq. above) */
 	slon = slond * D2R;
-	sslon = sin(slon);
-	rs1 = r__ * cos(slon);				/* meters  !*** eq. 3.46, */
-	rs2 = r__ * sslon * cos(obe);		/* meters  !*** eq. 3.46, */
-	rs3 = r__ * sslon * sin(obe);
+	sslon = sin (slon);
+	rs1 = r__ * cos (slon);				/* meters  !*** eq. 3.46, */
+	rs2 = r__ * sslon * cos (obe);		/* meters  !*** eq. 3.46, */
+	rs3 = r__ * sslon * sin (obe);
 	/* ** convert position vector of sun to ECEF  (ignore polar motion/LOD) */
 	/* meters             !*** eq. 3.46, */
-	getghar(mjd, fmjd, &ghar);			/* sec 2.3.1, */
-	rot3(ghar, rs1, rs2, rs3, &rs[0], &rs[1], &rs[2]);		/* eq. 2.89, */
+	earthtide_getghar (mjd, fmjd, &ghar);			/* sec 2.3.1, */
+	earthtide_rot3 (ghar, rs1, rs2, rs3, &rs[0], &rs[1], &rs[2]);		/* eq. 2.89, */
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void geoxyz(double lat, double lon, double eht, double *x, double *y, double *z) {
+GMT_LOCAL void earthtide_geoxyz (double lat, double lon, double eht, double *x, double *y, double *z) {
 	/* convert geodetic lat, long, ellip ht. to x,y,z */
 	double w, w2, en, cla, sla, t;
 
-	sincos(lat, &sla, &cla);
+	sincos (lat, &sla, &cla);
 	w2 = 1. - ECC2 * sla * sla;
-	w = sqrt(w2);
+	w = sqrt (w2);
 	en = EARTH_RAD / w;
 	t = (en + eht) * cla;
-	*x = t * cos(lon);
-	*y = t * sin(lon);
+	*x = t * cos (lon);
+	*y = t * sin (lon);
 	*z = (en * (1. - ECC2) + eht) * sla;
 }
 
@@ -967,9 +967,9 @@ GMT_LOCAL void geoxyz(double lat, double lon, double eht, double *x, double *y, 
 /* *********************************************************************** */
 /* ** time conversion **************************************************** */
 /* *********************************************************************** */
-GMT_LOCAL void setjd0(int iyr, int imo, int idy) {
+GMT_LOCAL void earthtide_setjd0 (int iyr, int imo, int idy) {
 	/* set the integer part of a modified julian date as epoch, mjd0
-	   the modified julian day is derived from civil time as in civmjd()
+	   the modified julian day is derived from civil time as in earthtide_civmjd ()
 	   allows single number expression of time in seconds w.r.t. mjd0 */
 	static int m, y, it1, it2, mjd;
 
@@ -981,14 +981,14 @@ GMT_LOCAL void setjd0(int iyr, int imo, int idy) {
 		m = imo;
 	}
 	it1 = (int) (y * 365.25);
-	it2 = (int) ((m + 1) * 30.6001);
+	it2 = (int) ( (m + 1) * 30.6001);
 	mjd = it1 + it2 + idy - 679019;
 	/* ** now set the epoch for future time computations */
 	mjdoff_1.mjd0 = mjd;
 }
 
 /* *********************************************************************** */
-GMT_LOCAL void civmjd(int iyr, int imo, int idy, int ihr, int imn, double sec, int *mjd, double *fmjd) {
+GMT_LOCAL void earthtide_civmjd (int iyr, int imo, int idy, int ihr, int imn, double sec, int *mjd, double *fmjd) {
 	/* convert civil date to modified julian date */
 	/* imo in range 1-12, idy in range 1-31 */
 	/* only valid in range mar-1900 through feb-2100     (leap year protocols) */
@@ -1005,12 +1005,12 @@ GMT_LOCAL void civmjd(int iyr, int imo, int idy, int ihr, int imn, double sec, i
 		m = imo;
 	}
 	it1 = (int) (y * 365.25);
-	it2 = (int) ((m + 1) * 30.6001);
+	it2 = (int) ( (m + 1) * 30.6001);
 	*mjd = it1 + it2 + idy - 679019;
 	*fmjd = (ihr * 3600 + imn * 60 + sec) / 86400.;
 }
 
-GMT_LOCAL void mjdciv(int mjd, double fmjd, int *iyr, int *imo, int *idy, int *ihr, int *imn, double *sec) {
+GMT_LOCAL void earthtide_mjdciv (int mjd, double fmjd, int *iyr, int *imo, int *idy, int *ihr, int *imn, double *sec) {
 	/* convert modified julian date to civil date */
 	/* imo in range 1-12, idy in range 1-31 */
 	/* only valid in range mar-1900 through feb-2100 */
@@ -1020,18 +1020,18 @@ GMT_LOCAL void mjdciv(int mjd, double fmjd, int *iyr, int *imo, int *idy, int *i
 	static double rjd, tmp;
 
 	rjd = mjd + fmjd + 2400000.5;
-	ia = (int)(rjd + .5);
+	ia = (int) (rjd + .5);
 	ib = ia + 1537;
-	ic = (int)((ib - 122.1) / 365.25);
-	id = (int)(ic * 365.25);
-	ie = (int)((ib - id) / 30.6001);
+	ic = (int) ( (ib - 122.1) / 365.25);
+	id = (int) (ic * 365.25);
+	ie = (int) ( (ib - id) / 30.6001);
 	/* the fractional part of a julian day is fractional mjd + 0.5
 	   therefore, fractional part of julian day + 0.5 is fractional mjd */
-	it1  = (int)(ie * 30.6001);
-	*idy = (int)(ib - id - it1 +fmjd);
-	it2  = (int)(ie / 14.);
+	it1  = (int) (ie * 30.6001);
+	*idy = (int) (ib - id - it1 +fmjd);
+	it2  = (int) (ie / 14.);
 	*imo = ie - 1 - it2 * 12;
-	it3  = (int)((*imo + 7) / 10.);
+	it3  = (int) ( (*imo + 7) / 10.);
 	*iyr = ic - 4715 - it3;
 	tmp  = fmjd * 24.;
 	*ihr = (int)tmp;
@@ -1041,7 +1041,7 @@ GMT_LOCAL void mjdciv(int mjd, double fmjd, int *iyr, int *imo, int *idy, int *i
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
-GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct GMT_ARRAY T) {
+GMT_LOCAL void earthtide_sun_moon_track (struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct GMT_ARRAY T) {
 	/* Get the Sun & Moon position at times starting time */
 	bool leapflag = false;
 	uint64_t k;
@@ -1056,8 +1056,8 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 	gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_LON);
 	gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LAT);
 
-	if(T.count){
-		tdel2 = (T.max-T.min) / ((T.inc - 1) * 24 * 3600);
+	if (T.count){
+		tdel2 = (T.max-T.min) / ( (T.inc - 1) * 24 * 3600);
 	}
 	else {
 		if (T.unit == 'm')
@@ -1079,13 +1079,13 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
-	civmjd(year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
-	mjdciv(mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
-	setjd0(year, month, day);
+	earthtide_civmjd (year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
+	earthtide_mjdciv (mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
+	earthtide_setjd0 (year, month, day);
 	for (k = 0; k < T.n; k++) {
-		sunxyz(mjd, fmjd, rsun, &leapflag);      /* mjd/fmjd in UTC */
-		moonxyz(mjd, fmjd, rmoon, &leapflag);
-		mjdciv(mjd, fmjd + 1.1574074074074074e-8, &year, &month, &day, &hour, &min, &Cal->sec);
+		earthtide_sunxyz (mjd, fmjd, rsun, &leapflag);      /* mjd/fmjd in UTC */
+		earthtide_moonxyz (mjd, fmjd, rmoon, &leapflag);
+		earthtide_mjdciv (mjd, fmjd + 1.1574074074074074e-8, &year, &month, &day, &hour, &min, &Cal->sec);
 		//out[0] = hour * 3600 + min * 60;
 		out[0] = T.array[k];
 		gmt_ECEF_inverse (GMT, rsun, convd);
@@ -1093,14 +1093,14 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 		gmt_ECEF_inverse (GMT, rmoon, convd);
 		out[4] = convd[0];	out[5] = convd[1];	out[6] = convd[2];
 		fmjd += tdel2;
-		fmjd = (int)(round(fmjd * 86400)) / 86400.0;		/* force 1 sec. granularity */
+		fmjd = (int) (round (fmjd * 86400)) / 86400.0;		/* force 1 sec. granularity */
 		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);	/* Write this to output */
 	}
 	gmt_M_free (GMT, Out);
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_GCAL *Cal, struct GMT_GRID **Grid) {
+GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_GCAL *Cal, struct GMT_GRID **Grid) {
 	bool leapflag;
 	int k, mjd, year, month, day, hour, min;
 	uint32_t row, col, n_columns = 0, n_rows = 0;
@@ -1117,21 +1117,21 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 		e_inc = 1;
 	}
 	else
-		grd_e = (float *)malloc(1 * sizeof(float));
+		grd_e = (float *)malloc (1 * sizeof (float));
 
 	if (Ctrl->G.do_north) {
 		grd_n = Grid[Y_COMP]->data;
 		n_inc = 1;
 	}
 	else
-		grd_n = (float *)malloc(1 * sizeof(float));
+		grd_n = (float *)malloc (1 * sizeof (float));
 
 	if (Ctrl->G.do_up) {
 		grd_u = Grid[Z_COMP]->data;
 		u_inc = 1;
 	}
 	else
-		grd_u = (float *)malloc(1 * sizeof(float));
+		grd_u = (float *)malloc (1 * sizeof (float));
 
 	/* Get header params. Since all three have the same dims we stop when we find the first grid required */
 	for (k = 0; k < N_COMPS; k++) {
@@ -1145,14 +1145,14 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
 	leapflag = false;                       /* false means flag not raised */
-	civmjd(year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
-	mjdciv(mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
-	setjd0(year, month, day);
-	sunxyz(mjd, fmjd, rsun, &leapflag);
-	moonxyz(mjd, fmjd, rmoon, &leapflag);
+	earthtide_civmjd (year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
+	earthtide_mjdciv (mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
+	earthtide_setjd0 (year, month, day);
+	earthtide_sunxyz (mjd, fmjd, rsun, &leapflag);
+	earthtide_moonxyz (mjd, fmjd, rmoon, &leapflag);
 
 	/* Generate a vector of longitudes in radians and put them in the [0 360] interval */
-	lons = (double *)malloc(n_columns * sizeof(double));
+	lons = (double *)malloc (n_columns * sizeof (double));
 	for (col = 0; col < n_columns; col++) {
 		lons[col] = west + col * x_inc;
 		if (lons[col] < 0) lons[col] += 360;
@@ -1162,10 +1162,10 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 	for (row = n_rows; row > 0; row--) {
 		lat = (south + (row - 1) * y_inc) * D2R;
 		for (col = 0; col < n_columns; col++) {
-			geoxyz(lat, lons[col], 0, &xsta[0], &xsta[1], &xsta[2]);
-			detide(xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
+			earthtide_geoxyz (lat, lons[col], 0, &xsta[0], &xsta[1], &xsta[2]);
+			earthtide_detide (xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 			/* determine local geodetic horizon components (topocentric) */
-			rge(lat, lons[col], &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
+			earthtide_rge (lat, lons[col], &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
 			grd_n[ij_n] = (float)vt;
 			grd_e[ij_e] = (float)ut;
 			grd_u[ij_u] = (float)wt;
@@ -1178,14 +1178,14 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 
 	/* Free these that were never used anyway */
-	if (!Ctrl->G.do_north) free(grd_n);
-	if (!Ctrl->G.do_east) free(grd_e);
-	if (!Ctrl->G.do_up) free(grd_u);
-	free(lons);
+	if (!Ctrl->G.do_north) free (grd_n);
+	if (!Ctrl->G.do_east) free (grd_e);
+	if (!Ctrl->G.do_up) free (grd_u);
+	free (lons);
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
-GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, double lat, struct GMT_ARRAY T) {
+GMT_LOCAL void earthtide_solid_ts (struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, double lat, struct GMT_ARRAY T) {
 	/* iyr	year    [1901-2099] */
 	/* imo	month number [1-12] */
 	/* idy	day          [1-31] */
@@ -1204,12 +1204,12 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 
 	lat *= D2R;
 	lon *= D2R;
-	geoxyz(lat, lon, 0, &xsta[0], &xsta[1], &xsta[2]);
+	earthtide_geoxyz (lat, lon, 0, &xsta[0], &xsta[1], &xsta[2]);
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
-	if(T.count){
-		tdel2 = (T.max-T.min) / ((T.inc - 1) * 24 * 3600);
+	if (T.count){
+		tdel2 = (T.max-T.min) / ( (T.inc - 1) * 24 * 3600);
 	}
 	else {
 		if (T.unit == 'm')
@@ -1232,25 +1232,25 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 	/* here comes the sun  (and the moon)  (go, tide!) */
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
-	civmjd(year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
-	mjdciv(mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
-	setjd0(year, month, day);
+	earthtide_civmjd (year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
+	earthtide_mjdciv (mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
+	earthtide_setjd0 (year, month, day);
 	for (k = 0; k < T.n; k++) {
 		leapflag = false;                       /* false means flag not raised */
-		sunxyz(mjd, fmjd, rsun, &leapflag);      /* mjd/fmjd in UTC */
-		moonxyz(mjd, fmjd, rmoon, &leapflag);
-		detide(xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
+		earthtide_sunxyz (mjd, fmjd, rsun, &leapflag);      /* mjd/fmjd in UTC */
+		earthtide_moonxyz (mjd, fmjd, rmoon, &leapflag);
+		earthtide_detide (xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 		/* determine local geodetic horizon components (topocentric) */
-		rge(lat, lon, &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
+		earthtide_rge (lat, lon, &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
 		d__2 = Cal->sec - 0.001;
-		mjdciv(mjd, fmjd + 1.1574074074074074e-8, &year, &month, &day, &hour, &min, &d__2);
+		earthtide_mjdciv (mjd, fmjd + 1.1574074074074074e-8, &year, &month, &day, &hour, &min, &d__2);
 		//out[0] = hour * 3600 + min * 60 + Cal->sec;
 		out[0] = T.array[k];
 		out[1] = ut;
 		out[2] = vt;
 		out[3] = wt;
 		fmjd += tdel2;
-		fmjd = (int)(round(fmjd * 86400)) / 86400.0;	/* force 1 sec. granularity */
+		fmjd = (int) (round (fmjd * 86400)) / 86400.0;	/* force 1 sec. granularity */
 		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);	/* Write this to output */
 	}
 
@@ -1270,14 +1270,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file(s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file (s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If more than one component is set via -C then <outgrid> must contain %%s to format component code.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	if (API->external)
 		GMT_Message (API, GMT_TIME_NONE, "\t-C List of comma-separated components to be written as grids. Choose from\n");
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t-C List of comma-separated components to be written as grids (requires -G). Choose from\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x|e, y|n, z|v. [Default is v(ertical) only].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   x|e, y|n, z|v. [Default is v (ertical) only].\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L <lon/lat> Geographical coordinate where to compute the time-series.\n");
 	GMT_Option (API, "R");
@@ -1320,7 +1320,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 			case 'C':	/* Requires -G and selects which components should be written as grids */
 				Ctrl->C.active = true;
-				while ((gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->C.n_selected < N_COMPS) {
+				while ( (gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->C.n_selected < N_COMPS) {
 					switch (p[0]) {
 						case 'x': case 'e':		Ctrl->C.selected[X_COMP] = Ctrl->G.do_east = true;	break;
 						case 'y': case 'n':		Ctrl->C.selected[Y_COMP] = Ctrl->G.do_north = true;	break;
@@ -1342,7 +1342,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
-				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
+				else if ( (Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file[Ctrl->G.n++] = strdup (opt->arg);
 				else
 					n_errors++;
@@ -1381,7 +1381,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 					n_errors++;
 					break;
 				}
-				n_errors += gmt_parse_array(GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR, 0);
+				n_errors += gmt_parse_array (GMT, 'T', opt->arg, & (Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR, 0);
 
 				break;
 			default:	/* Report bad options */
@@ -1417,7 +1417,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.inc[GMT_X] <= 0 || GMT->common.R.inc[GMT_Y] <= 0),
-	                                   "Option -I: Absent or no positive increment(s)\n");
+	                                   "Option -I: Absent or no positive increment (s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !Ctrl->G.active && !Ctrl->S.active,
 	                                   "Must specify -S, -G or -L options\n");
 	if (!GMT->parent->external)
@@ -1444,14 +1444,14 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
+	if ( (error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ( (GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
+	if ( (error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the earthtide main code ----------------------------*/
 
@@ -1480,13 +1480,13 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		for (k = 0; k < N_COMPS; k++) {
 			if (!Ctrl->C.selected[k]) continue;
 			/* Create the empty grid and allocate space */
-			if ((Grid[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
+			if ( (Grid[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
 			                             GMT->common.R.registration, 0, NULL)) == NULL)
 				Return (API->error);
 
 		}
 
-		solid_grd (GMT, Ctrl, &cal_start, Grid);	/* Evaluate the chosen component(s) on the grids */
+		earthtide_solid_grd (GMT, Ctrl, &cal_start, Grid);	/* Evaluate the chosen component (s) on the grids */
 
 		/* Now write the one to three grids */
 		for (k = kk = 0; k < N_COMPS; k++) {
@@ -1512,10 +1512,10 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			gmt_ECEF_init (GMT, &Ctrl->S.datum);
 			n_out = 7;
 		}
-		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) /* Get the array built or read */
+		if (gmt_create_array (GMT, 'T', & (Ctrl->T.T), NULL, NULL)) /* Get the array built or read */
 			Return (GMT_RUNTIME_ERROR);
 
-		if (!Ctrl->T.T.count && (strchr("dhms", Ctrl->T.T.unit) == NULL)){
+		if (!Ctrl->T.T.count && (strchr ("dhms", Ctrl->T.T.unit) == NULL)){
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Must specify valid interval unit (d|h|m|s)\n");
 			return GMT_PARSE_ERROR;
 		}
@@ -1524,7 +1524,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			Ctrl->T.T.n = 1;
 
 		/* Specify output expected columns */
-		if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+		if ( (error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 			Return (error);
 
 		/* Specify that output are points in a dataset */
@@ -1540,9 +1540,9 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
 
 		if (Ctrl->S.active)
-			sun_moon_track (GMT, &cal_start, Ctrl->T.T);
+			earthtide_sun_moon_track (GMT, &cal_start, Ctrl->T.T);
 		else
-			solid_ts (GMT, &cal_start, Ctrl->L.x, Ctrl->L.y, Ctrl->T.T);
+			earthtide_solid_ts (GMT, &cal_start, Ctrl->L.x, Ctrl->L.y, Ctrl->T.T);
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 			Return (API->error);

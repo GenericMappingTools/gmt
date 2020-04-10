@@ -186,7 +186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
+GMT_LOCAL int x2sysget_find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
 	/* Return track id # for this leg */
 	unsigned int i;
 
@@ -283,7 +283,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 				gmt_chop (line);	/* Get rid of [CR]LF */
 				if (line[0] == '#' || line[0] == '\0') continue;
 				if ((p = strchr (line, '.')) != NULL) line[(size_t)(p-line)] = '\0';	/* Remove extension */
-				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
+				k = x2sysget_find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
 					GMT_Report (API, GMT_MSG_WARNING, "Leg %s not in the data base\n", line);
 					continue;

@@ -391,7 +391,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int64_t get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, unsigned int n_stages, double d_km, unsigned int step, unsigned int flag, double wesn[], double **flow) {
+GMT_LOCAL int64_t grdspotter_get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, unsigned int n_stages, double d_km, unsigned int step, unsigned int flag, double wesn[], double **flow) {
 	int64_t n_track, m, kx, ky, np, first, last;
 	double *c = NULL, *f = NULL;
 
@@ -445,7 +445,7 @@ GMT_LOCAL int64_t get_flowline (struct GMT_CTRL *GMT, double xx, double yy, doub
 	return (np);
 }
 
-GMT_LOCAL bool set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, uint64_t node, double upper_age, bool truncate) {
+GMT_LOCAL bool grdspotter_set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, uint64_t node, double upper_age, bool truncate) {
 	/* Returns the age of this node based on either a given seafloor age grid
 	 * or the upper age, truncated if necessary */
 
@@ -465,7 +465,7 @@ GMT_LOCAL bool set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A,
 	return (true);	/* We are returning a useful age */
 }
 
-GMT_LOCAL void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, gmt_grdfloat *data) {
+GMT_LOCAL void grdspotter_normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, gmt_grdfloat *data) {
 	/* Determines the grid's min/max z-values and normalizes the grid
 	 * so that zmax is 100% */
 	unsigned int row, col;
@@ -717,14 +717,14 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		/* STEP 1: Determine if z exceeds threshold and if so assign age */
 		if (gmt_M_is_fnan (Z->data[ij]) || Z->data[ij] < Ctrl->Z.min || Z->data[ij] > Ctrl->Z.max) continue;	/* Skip node since it is NaN or outside the Ctrl->Z.min < z < Ctrl->Z.max range */
 		if (Ctrl->Q.mode && !ID_info[ID[ij]].ok) continue;				/* Skip because of wrong ID */
-		if (!set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;	/* Skip if age is given and we are outside range */
+		if (!grdspotter_set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;	/* Skip if age is given and we are outside range */
 		/* STEP 2: Calculate this node's flowline */
 		if (Ctrl->Q.mode && ID_info[ID[ij]].check_region) /* Set up a box-limited flowline sampling */
 			gmt_M_memcpy (this_wesn, ID_info[ID[ij]].wesn, 4, double);
 		else
 			gmt_M_memcpy (this_wesn, wesn, 4, double);
 
-		np = get_flowline (GMT, x_smt[col], y_smt[row], t_smt, p, n_stages, sampling_int_in_km, k_step, forth_flag, this_wesn, &c);
+		np = grdspotter_get_flowline (GMT, x_smt[col], y_smt[row], t_smt, p, n_stages, sampling_int_in_km, k_step, forth_flag, this_wesn, &c);
 		if (np == 0) continue;	/* No flowline inside this wesn */
 
 		/* STEP 3: Convolve this flowline with node shape and add to CVA grid */
@@ -805,7 +805,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Normalize CVS grid to percentages of max CVA\n");
-		normalize_grid (GMT, G, G->data);
+		grdspotter_normalize_grid (GMT, G, G->data);
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Write CVA grid %s\n", Ctrl->G.file);
@@ -860,7 +860,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			/* Time to write out this z-slice grid */
 			if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Normalize CVS grid to percentages of max CVA\n");
-				normalize_grid (GMT, G, CVA_inc);
+				grdspotter_normalize_grid (GMT, G, CVA_inc);
 			}
 			snprintf (G->header->remark, GMT_GRID_REMARK_LEN160, "CVA for z-range %g - %g only", z0, z1);
 			sprintf (file, format, layer);
@@ -920,13 +920,13 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 				/* STEP 1: Determine if z exceeds threshold and if so assign age */
 				if (gmt_M_is_fnan (Z->data[ij]) || Z->data[ij] < Ctrl->Z.min || Z->data[ij] > Ctrl->Z.max) continue;	/* Skip node since it is NaN or outside the Ctrl->Z.min < z < Ctrl->Z.max range */
 				if (Ctrl->Q.mode && !ID_info[ID[ij]].ok) continue;				/* Skip because of wrong ID */
-				if (!set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;	/* Skip as age is outside our range */
+				if (!grdspotter_set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;	/* Skip as age is outside our range */
 				/* STEP 2: Calculate this node's flowline */
 				if (Ctrl->Q.mode && ID_info[ID[ij]].check_region) /* Set up a box-limited flowline sampling */
 					gmt_M_memcpy (this_wesn, ID_info[ID[ij]].wesn, 4, double);
 				else
 					gmt_M_memcpy (this_wesn, wesn, 4, double);
-				np = get_flowline (GMT, x_smt[col], y_smt[row], t_smt, p, n_stages, sampling_int_in_km, k_step, forth_flag, this_wesn, &c);
+				np = grdspotter_get_flowline (GMT, x_smt[col], y_smt[row], t_smt, p, n_stages, sampling_int_in_km, k_step, forth_flag, this_wesn, &c);
 				if (np == 0) continue;	/* No flowline inside this wesn */
 		 		n_nodes++;
 				/* Fresh start for this flowline convolution */
