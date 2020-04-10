@@ -133,6 +133,11 @@ int main (int argc, char **argv) {
 		exit (1);
 	}
 
+	if (argc >= NFILES) {
+		fprintf (stderr, "src_convention_check: Out of file space - increase NFILES and rebuild\n");
+		exit (-1);		
+	}
+	
 	/* Check that prototypes all are called gmt_* and that internals are all called gmtlib_* */
 
 	fprintf (stderr, "src_convention_check: 0. Scanning include files for proper names\n");
