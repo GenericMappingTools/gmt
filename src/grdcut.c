@@ -222,7 +222,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int mode, unsigned int *side, bool *all) {
+GMT_LOCAL unsigned int grdcut_count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int mode, unsigned int *side, bool *all) {
 	/* Loop around current perimeter and count # of nans, return sum and pass back which side had most nans */
 	unsigned int col, row, sum = 0, k, dim[4] = {0, 0, 0, 0};
 	uint64_t node;
@@ -258,7 +258,7 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 	return ((row0 == row1 && col0 == col1) ? 0 : sum);	/* Return 0 if we run out of grid, else the sum */
 }
 
-GMT_LOCAL int set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], double inc[]) {
+GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], double inc[]) {
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Default is to take the -R as given */
 	if (GMT->common.R.oblique == false || GMT->current.proj.projection == GMT_NO_PROJ) return GMT_NOERROR;	/* Nothing else to do */
 
@@ -355,7 +355,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		row1 = G->header->n_rows - 1;	col1 = G->header->n_columns - 1;
 		if (Ctrl->Z.mode == NAN_IS_SKIPPED) {	/* Must scan in from outside to the inside, one side at the time, remove side with most Nans */
-			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);	/* Initial border count */
+			sum = grdcut_count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);	/* Initial border count */
 			while (sum) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
 				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
 					col0++;
@@ -373,7 +373,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 					row0++;
 					GMT_Report (API, GMT_MSG_INFORMATION, "Stip off top row\n");
 				}
-				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);
+				sum = grdcut_count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);
 			}
 			if (col0 == col1 || row0 == row1) {
 				GMT_Report (API, GMT_MSG_ERROR, "The sub-region implied by -Z+n is empty!\n");
@@ -381,7 +381,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->Z.mode == NAN_IS_FRAME) {	/* Must scan in from outside to the inside, one side at the time, remove sides with all Nans */
-			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);	/* Initial border count */
+			sum = grdcut_count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);	/* Initial border count */
 			while (all) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
 				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
 					col0++;
@@ -399,7 +399,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 					row0++;
 					GMT_Report (API, GMT_MSG_INFORMATION, "Stip off top row\n");
 				}
-				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);
+				sum = grdcut_count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);
 			}
 			if (col0 == col1 || row0 == row1) {
 				GMT_Report (API, GMT_MSG_ERROR, "The sub-region implied by -Z+N is empty!\n");
@@ -558,7 +558,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
-		if (set_rectangular_subregion (GMT, wesn_new, G->header->inc)) {
+		if (grdcut_set_rectangular_subregion (GMT, wesn_new, G->header->inc)) {
 			Return (API->error);	/* Get header only */
 		}
 	}

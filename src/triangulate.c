@@ -100,7 +100,7 @@ enum curve_enum {	/* Indices for coeff array for normalization */
 	GMT_U = GMT_H
 };
 
-GMT_LOCAL int compare_edge (const void *p1, const void *p2) {
+GMT_LOCAL int triangulate_compare_edge (const void *p1, const void *p2) {
 	const struct TRIANGULATE_EDGE *a = p1, *b = p2;
 
 	if (a->begin < b->begin) return (-1);
@@ -833,7 +833,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				for (i = 0; i < n_edge; i++)
 					if (edge[i].begin > edge[i].end) gmt_M_int_swap (edge[i].begin, edge[i].end);
 
-				qsort (edge, n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
+				qsort (edge, n_edge, sizeof (struct TRIANGULATE_EDGE), triangulate_compare_edge);
 				for (i = 1, j = 0; i < n_edge; i++) {
 					if (edge[i].begin != edge[j].begin || edge[i].end != edge[j].end) j++;
 					edge[j] = edge[i];

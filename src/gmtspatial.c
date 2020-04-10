@@ -184,14 +184,14 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/* 
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int geo) {
+GMT_LOCAL unsigned int gmtspatial_area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int geo) {
 	double size = gmt_centroid_area (GMT, x, y, n, geo, out);
  	out[GMT_Z] = fabs (size);
 	return ((size < 0.0) ? POL_IS_CCW : POL_IS_CW);
 }
 
 #if 0
-GMT_LOCAL unsigned int area_size_old (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int geo) {
+GMT_LOCAL unsigned int gmtspatial_gmtspatial_area_size_old (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int geo) {
 	uint64_t i;
 	double wesn[4], xx, yy, size, ix, iy;
 	double *xp = NULL, *yp = NULL;
@@ -247,7 +247,7 @@ GMT_LOCAL unsigned int area_size_old (struct GMT_CTRL *GMT, double x[], double y
 }
 #endif
 
-GMT_LOCAL void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out) {
+GMT_LOCAL void gmtspatial_length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out) {
 	uint64_t i;
 	double length = 0.0, mid, f, *s = NULL;
 
@@ -270,7 +270,7 @@ GMT_LOCAL void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64
 	gmt_M_free (GMT, s);
 }
 
-GMT_LOCAL int comp_pairs (const void *a, const void *b) {
+GMT_LOCAL int gmtspatial_comp_pairs (const void *a, const void *b) {
 	const struct PAIR *xa = a, *xb = b;
 	/* Sort on node value */
 	if (xa->node < xb->node) return (-1);
@@ -278,7 +278,7 @@ GMT_LOCAL int comp_pairs (const void *a, const void *b) {
 	return (0);
 }
 
-GMT_LOCAL void write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint64_t p) {
+GMT_LOCAL void gmtspatial_write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint64_t p) {
 	uint64_t c;
 	double out[GMT_MAX_COLUMNS];
 	struct GMT_RECORD Out;
@@ -287,7 +287,7 @@ GMT_LOCAL void write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint6
 	GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, &Out);
 }
 
-GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L) {
+GMT_LOCAL int gmtspatial_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L) {
 	/* Given single line segment S and a dataset of many line segments in D, determine the closest neighbor
 	 * to S in D (call it S'), and if "really close" it might be a duplicate or slight revision to S.
 	 * There might be several features S' in D close to S so we return how many near or exact matches we
@@ -600,7 +600,7 @@ struct NN_INFO {
 	int64_t orig_rec;	/* Rec # of this point */
 };
 
-GMT_LOCAL int compare_nn_points (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int gmtspatial_compare_nn_points (const void *point_1v, const void *point_2v) {
 	/*  Routine for qsort to sort NN data structure on distance.
 		*/
 	const struct NN_DIST *point_1 = point_1v, *point_2 = point_2v;
@@ -612,7 +612,7 @@ GMT_LOCAL int compare_nn_points (const void *point_1v, const void *point_2v) {
 	return (0);
 }
 
-GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint64_t *n_points) {
+GMT_LOCAL struct NN_DIST *gmtspatial_NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint64_t *n_points) {
 	/* Return array of NN results sorted on smallest distances */
 	int64_t k, k2, np;
 	double *distance = gmt_M_memory (GMT, NULL, *n_points, double);
@@ -648,7 +648,7 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 	gmt_M_free (GMT, distance);
 
 	/* Prefer mergesort since qsort is not stable for equalities */
-	mergesort (P, np, sizeof (struct NN_DIST), compare_nn_points);	/* Sort on small to large distances */
+	mergesort (P, np, sizeof (struct NN_DIST), gmtspatial_compare_nn_points);	/* Sort on small to large distances */
 
 	for (k = np; k > 0 && gmt_M_is_dnan (P[k-1].distance); k--);	/* Skip the NaN distances that were placed at end */
 	*n_points = k;	/* Update point count */
@@ -663,7 +663,7 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 	return (P);
 }
 
-GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points) {
+GMT_LOCAL struct NN_DIST *gmtspatial_NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points) {
 	/* Return array of NN results sorted on smallest distances */
 	uint64_t tbl, seg, row, col, n_cols;
 	int64_t k, np = 0;	/* Must be signed due to Win OpenMP retardedness */
@@ -708,7 +708,7 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 	gmt_M_free (GMT, distance);
 
 	/* Prefer mergesort since qsort is not stable for equalities */
-	mergesort (P, np, sizeof (struct NN_DIST), compare_nn_points);
+	mergesort (P, np, sizeof (struct NN_DIST), gmtspatial_compare_nn_points);
 
 	*n_points = (uint64_t)np;
 #ifdef DEBUG
@@ -721,7 +721,7 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 	return (P);
 }
 
-GMT_LOCAL int compare_nn_info (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int gmtspatial_compare_nn_info (const void *point_1v, const void *point_2v) {
 	/*  Routine for qsort to sort NN rec numbers structure on original record order.
 		*/
 	const struct NN_INFO *point_1 = point_1v, *point_2 = point_2v;
@@ -731,7 +731,7 @@ GMT_LOCAL int compare_nn_info (const void *point_1v, const void *point_2v) {
 	return (0);
 }
 
-GMT_LOCAL struct NN_INFO *NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, struct NN_DIST *NN_dist, uint64_t n_points) {
+GMT_LOCAL struct NN_INFO *gmtspatial_NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, struct NN_DIST *NN_dist, uint64_t n_points) {
 	/* Return revised array of NN ID lookups via sorting on neighbor IDs */
 	uint64_t k;
 	struct NN_INFO *info = (I) ? I : gmt_M_memory (GMT, NULL, n_points, struct NN_INFO);
@@ -741,7 +741,7 @@ GMT_LOCAL struct NN_INFO *NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO 
 	}
 
 	/* Prefer mergesort since qsort is not stable for equalities */
-	mergesort (info, n_points, sizeof (struct NN_INFO), compare_nn_info);
+	mergesort (info, n_points, sizeof (struct NN_INFO), gmtspatial_compare_nn_info);
 
 	/* Now, I[k].sort_rec will take the original record # k and return the corresponding record in the sorted array */
 	return (info);
@@ -1186,8 +1186,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		gmt_init_distaz (GMT, Ctrl->A.unit, Ctrl->A.smode, GMT_MAP_DIST);	/* Set the unit and distance calculation we requested */
 
-		NN_dist = NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */
-		NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return array of NN ID record look-ups */
+		NN_dist = gmtspatial_NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */
+		NN_info = gmtspatial_NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return array of NN ID record look-ups */
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {	/* All data now in NN_dist so free original dataset */
 			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);
 			Return (API->error);
@@ -1238,12 +1238,12 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					}
 					NN_dist[a].data[GMT_W] = 0.5 * w;	/* Replace with the average weight */
 					NN_dist[a].ID = -int64_abs (NN_dist[a].ID);	/* Negative means it was averaged with other points */
-					NN_dist[b].distance = GMT->session.d_NaN;	/* Flag this point as used.  NNA_update_dist will sort it and place all NaNs at the end */
+					NN_dist[b].distance = GMT->session.d_NaN;	/* Flag this point as used.  gmtspatial_NNA_update_dist will sort it and place all NaNs at the end */
 					n_pairs++;
 				}
 				GMT_Report (API, GMT_MSG_INFORMATION, "NNA Found %" PRIu64 " points, %" PRIu64 " pairs were too close and were replaced by their weighted average\n", n_points, n_pairs);
-				NN_dist = NNA_update_dist (GMT, NN_dist, &n_points);		/* Return recomputed array of NN NN_dist sorted on smallest distances */
-				NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return resorted array of NN ID lookups */
+				NN_dist = gmtspatial_NNA_update_dist (GMT, NN_dist, &n_points);		/* Return recomputed array of NN NN_dist sorted on smallest distances */
+				NN_info = gmtspatial_NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return resorted array of NN ID lookups */
 				n = 0;
 				while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;	/* Any more pairs with distances less than the threshold? */
 			}
@@ -1302,7 +1302,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				S->data[GMT_X][1] = S->data[GMT_X][2] = GMT->common.R.wesn[XHI];
 				S->data[GMT_Y][0] = S->data[GMT_Y][1] = S->data[GMT_Y][4] = GMT->common.R.wesn[YLO];
 				S->data[GMT_Y][2] = S->data[GMT_Y][3] = GMT->common.R.wesn[YHI];
-				(void)area_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, info, geo);
+				(void)gmtspatial_area_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, info, geo);
 				gmt_free_segment (GMT, &S);
 				d_expect = 0.5 * sqrt (info[GMT_Z]/n_points);
 				R_index = d_bar / d_expect;
@@ -1353,7 +1353,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					}
 					if (gap) {	/* Distance exceed threshold, start new segment */
 						first = true;
-						if (prev_OK) write_record (GMT, S->data, S->n_columns, row-1);
+						if (prev_OK) gmtspatial_write_record (GMT, S->data, S->n_columns, row-1);
 						prev_OK = false;
 					}
 					else {
@@ -1361,12 +1361,12 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							strncpy (GMT->current.io.segment_header, S->header, GMT_BUFSIZ-1);
 							GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 						}
-						write_record (GMT, S->data, S->n_columns, row-1);
+						gmtspatial_write_record (GMT, S->data, S->n_columns, row-1);
 						first = false;
 						prev_OK = true;
 					}
 				}
-				if (!gap) write_record (GMT, S->data, S->n_columns, row-1);
+				if (!gap) gmtspatial_write_record (GMT, S->data, S->n_columns, row-1);
 			}
 
 		}
@@ -1444,9 +1444,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						break;
 				}
 				if (poly)	/* Polygon */
-					handedness = area_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, out, geo);
+					handedness = gmtspatial_area_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, out, geo);
 				else	/* Line */
-					length_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, out);
+					gmtspatial_length_size (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, out);
 				/* Must determine if this segment passes our dimension test */
 				if (Ctrl->Q.area && (out[GMT_Z] < Ctrl->Q.limit[0] || out[GMT_Z] > Ctrl->Q.limit[1])) {
 					GMT_Report (API, GMT_MSG_INFORMATION, "Input segment %s %g is outside the chosen range %g to %s\n", type[poly], out[GMT_Z], Ctrl->Q.limit[0], upper);
@@ -1601,7 +1601,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								yy = gmt_M_memory (GMT, NULL, nx, double);
 								kk = gmt_M_memory (GMT, NULL, nx, double);
 								for (px = 0; px < nx; px++) pair[px].node = XC.xnode[1][px], pair[px].pos = px;
-								qsort (pair, nx, sizeof (struct PAIR), comp_pairs);
+								qsort (pair, nx, sizeof (struct PAIR), gmtspatial_comp_pairs);
 								for (px = 0; px < nx; px++) {
 									xx[px] = XC.x[pair[px].pos];
 									yy[px] = XC.y[pair[px].pos];
@@ -1779,13 +1779,13 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (same_feature) {	/* We must exclude this segment from the comparison otherwise we end up finding itself as a duplicate */
 					S2->n_rows = S1->n_rows;
 					for (col = 0; col < S1->n_columns; col++) S2->data[col] = S1->data[col];
-					S1->n_rows = 0;	/* This means it will be skipped by is_duplicate */
+					S1->n_rows = 0;	/* This means it will be skipped by gmtspatial_is_duplicate */
 				}
 				else
 					S2 = S1;
 				poly_S2 = (gmt_polygon_is_open (GMT, S2->data[GMT_X], S2->data[GMT_Y], S2->n_rows)) ? 1 : 0;
 				for (tbl2 = 0; tbl2 < C->n_tables; tbl2++) gmt_M_memset (Info[tbl2], C->table[tbl2]->n_segments, struct DUP_INFO);
-				n_dup = is_duplicate (GMT, S2, C, &(Ctrl->D.I), Info);	/* Returns -3, -2, -1, 0, +1, +2, or +3 */
+				n_dup = gmtspatial_is_duplicate (GMT, S2, C, &(Ctrl->D.I), Info);	/* Returns -3, -2, -1, 0, +1, +2, or +3 */
 				if (same_feature) {
 					S1->n_rows = S2->n_rows;	/* Reset the count */
 					if (Ctrl->D.I.table < tbl || (Ctrl->D.I.table == tbl && Ctrl->D.I.segment < seg)) n_dup = 0;	/* To avoid reporting the same pair twice */
@@ -2116,14 +2116,14 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				/* Duplicate this polygon as next output polygon perimeter */
 				T1->segment[seg_out++] = gmt_duplicate_segment (GMT, S1);
 				/* Get perimeter handedness */
-				P_handedness = area_size (GMT, S1->data[GMT_X], S1->data[GMT_Y], S1->n_rows, out, geo);
+				P_handedness = gmtspatial_area_size (GMT, S1->data[GMT_X], S1->data[GMT_Y], S1->n_rows, out, geo);
 				for (k2 = 0; k2 < D->n_segments; k2++) {	/* Loop over all polygons */
 					if (k2 == k1 || inside[k2] != (k1+1)) continue;	/* Not a hole inside this perimeter */
 					tbl2 = K[k2].tbl;	seg2 = K[k2].seg;	/* Get the (tbl,seg) indices for the hole */
 					/* Duplicate this polygon as next output polygon hole */
 					T1->segment[seg_out++] = S2 = gmt_duplicate_segment (GMT, D->table[tbl2]->segment[seg2]);
 					/* Get hole handedness */
-					H_handedness = area_size (GMT, S2->data[GMT_X], S2->data[GMT_Y], S2->n_rows, out, geo);
+					H_handedness = gmtspatial_area_size (GMT, S2->data[GMT_X], S2->data[GMT_Y], S2->n_rows, out, geo);
 					/* If same handedness then reverse order of polygon */
 					if (H_handedness == P_handedness) {
 						uint64_t row_f, row_l, col;
