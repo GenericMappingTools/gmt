@@ -18,19 +18,19 @@
  *
  * Paul Wessel, University of Hawaii
  * July 20, 2010
- * Version 1.2 for GMT 5
+ * Version 1.3 for GMT 6
  *
  * The user-callable functions in this library are:
  *
- * spotter_init			: Load stage poles from file
- * spotter_backtrack		: Trace track from seamount to hotspot
- * spotter_forthtrack		: Trace track from hotspot to seamount
- * spotter_total_to_stages	: Convert finite rotations to stage poles
- * spotter_stages_to_total	: Convert stage poles to finite rotations
- * spotter_add_rotations	: Add to plate motion models together.
- * spotter_conf_ellipse		: Calculate confidence ellipse for rotated point
+ * spotter_init             : Load stage poles from file
+ * spotter_backtrack        : Trace track from seamount to hotspot
+ * spotter_forthtrack       : Trace track from hotspot to seamount
+ * spotter_total_to_stages  : Convert finite rotations to stage poles
+ * spotter_stages_to_total  : Convert stage poles to finite rotations
+ * spotter_add_rotations    : Add to plate motion models together.
+ * spotter_conf_ellipse     : Calculate confidence ellipse for rotated point
  *
- * programs must first call spotter_init() which reads a file of
+ * Programs must first call spotter_init() which reads a file of
  * backward stage poles.  Given the right flag it can convert these
  * to forward stage poles.
  *
@@ -596,7 +596,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 	/* Extend oldest stage pole back to t_max Ma */
 
 	if ((*t_max) > 0.0 && e[0].t_start < (*t_max)) {
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "libspotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "spotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
 
 		e[0].t_start = (*t_max);
 		e[0].duration = e[0].t_start - e[0].t_stop;
