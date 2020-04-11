@@ -59,7 +59,7 @@
  * over and is useless.  In those cases we should make sure we delete
  * the incomplete file before killing ourselves.  Below is the implementation
  * for Linux/macOS that handles these cases.  The actual CURL calls
- * are bracketed by turn_on_ctrl_C_check and turn_off_ctrl_C_check which
+ * are bracketed by gmtremote_turn_on_ctrl_C_check and gmtremote_turn_off_ctrl_C_check which
  * temporarily activates or deactivates our signal action on Ctrl-C.
  * P. Wessel, June 30, 2019.
  */
@@ -75,8 +75,8 @@ static char *all_grid_files[GMT_N_DATASETS]= {
 #include <gmt_datasets.h>
 };
 
-GMT_LOCAL void delete_file_then_exit (int sig_no)
-{	/* If we catch a CTRL-C during CURL download we must assume file is corrupted and remove it before exiting */
+GMT_LOCAL void gmtremote_delete_file_then_exit (int sig_no) {
+	/* If we catch a CTRL-C during CURL download we must assume file is corrupted and remove it before exiting */
 	gmt_M_unused (sig_no);
 #ifdef GMT_CATCH_CTRL_C
 #ifdef DEBUG
@@ -88,18 +88,18 @@ GMT_LOCAL void delete_file_then_exit (int sig_no)
 #endif
 }
 
-GMT_LOCAL void turn_on_ctrl_C_check (char *file) {
+GMT_LOCAL void gmtremote_turn_on_ctrl_C_check (char *file) {
 #ifdef GMT_CATCH_CTRL_C
 	file_to_delete_if_ctrl_C = file;			/* File to delete if CTRL-C is caught */
 	gmt_M_memset (&cleanup_action, 1, struct sigaction);	/* Initialize the structure to NULL */
-	cleanup_action.sa_handler = &delete_file_then_exit;	/* Set function we should call if CTRL-C is caught */
+	cleanup_action.sa_handler = &gmtremote_delete_file_then_exit;	/* Set function we should call if CTRL-C is caught */
 	sigaction(SIGINT, &cleanup_action, &default_action);	/* Activate the alternative signal checking */
 #else
 	gmt_M_unused (file);
 #endif
 }
 
-GMT_LOCAL void turn_off_ctrl_C_check () {
+GMT_LOCAL void gmtremote_turn_off_ctrl_C_check () {
 #ifdef GMT_CATCH_CTRL_C
 	file_to_delete_if_ctrl_C = NULL;		/* Remove trace of any file name */
 	sigaction (SIGINT, &default_action, NULL);	/* Reset default signal action */
@@ -111,8 +111,7 @@ struct FtpFile {	/* Needed for argument to libcurl */
 	FILE *fp;
 };
 
-GMT_LOCAL size_t throw_away(void *ptr, size_t size, size_t nmemb, void *data)
-{
+GMT_LOCAL size_t gmtremote_throw_away(void *ptr, size_t size, size_t nmemb, void *data) {
 	(void)ptr;
 	(void)data;
 	/* we are not interested in the headers itself,
@@ -120,7 +119,7 @@ GMT_LOCAL size_t throw_away(void *ptr, size_t size, size_t nmemb, void *data)
 	return (size_t)(size * nmemb);
 }
 
-GMT_LOCAL size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void *stream) {
+GMT_LOCAL size_t gmtremote_fwrite_callback (void *buffer, size_t size, size_t nmemb, void *stream) {
 	struct FtpFile *out = (struct FtpFile *)stream;
 	if (out == NULL) return 0;	/* This cannot happen but Coverity fusses */
 	if (!out->fp) { /* open file for writing */
@@ -131,7 +130,7 @@ GMT_LOCAL size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void 
 	return fwrite (buffer, size, nmemb, out->fp);
 }
 
-GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, char *file) {
+GMT_LOCAL int gmtremote_give_data_attribution (struct GMT_CTRL *GMT, char *file) {
 	/* Print attribution when the @earth_relief_xxx.grd file is downloaded for the first time */
 	char tag[4] = {""};
 	int k, match = -1, len = (int)strlen(file);
@@ -151,7 +150,7 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, char *file) {
 	return (match == -1);	/* Not found */
 }
 
-GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit) {
+GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit) {
 	CURL *curl = NULL;
 	CURLcode res;
 	double filesize = 0.0;
@@ -171,7 +170,7 @@ GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit
 		/* Tell libcurl to follow 30x redirects */
 		curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1L);
 		/* No header output: TODO 14.1 http-style HEAD output for ftp */
-		curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, throw_away);
+		curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, gmtremote_throw_away);
 		curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
 
 		res = curl_easy_perform (curl);
@@ -199,7 +198,7 @@ GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit
 
 #define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
 
-GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig) {
+GMT_LOCAL int gmtremote_hash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig) {
 	int curl_err = 0;
 	long time_spent;
 	CURL *Curl = NULL;
@@ -232,7 +231,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 	}
 	urlfile.filename = file;	/* Set pointer to local filename */
 	/* Define our callback to get called when there's data to be written */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, fwrite_callback)) {
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, gmtremote_fwrite_callback)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
 		return 1;
 	}
@@ -242,7 +241,7 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 		return 1;
 	}
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading file %s ...\n", url);
-	turn_on_ctrl_C_check (file);
+	gmtremote_turn_on_ctrl_C_check (file);
 	begin = time (NULL);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		end = time (NULL);
@@ -270,11 +269,11 @@ GMT_LOCAL int gmthash_get_url (struct GMT_CTRL *GMT, char *url, char *file, char
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
-	turn_off_ctrl_C_check ();
+	gmtremote_turn_off_ctrl_C_check ();
 	return 0;
 }
 
-GMT_LOCAL struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
+GMT_LOCAL struct GMT_DATA_HASH *gmtremote_hash_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	/* Read contents of the hash file into an array of structs */
 	int k;
 	FILE *fp = NULL;
@@ -307,7 +306,7 @@ GMT_LOCAL struct GMT_DATA_HASH * hash_load (struct GMT_CTRL *GMT, char *file, in
 	return (L);
 };
 
-GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT) {
 	/* This function is called every time we are about to access a @remotefile.
 	 * First we check that we have gmt_hash_server.txt in the server directory.
 	 * If we don't then we download it and return since no old file to compare to.
@@ -339,7 +338,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 		}
 		snprintf (url, PATH_MAX, "%s/gmt_hash_server.txt", GMT->session.DATASERVER);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
-		if (gmthash_get_url (GMT, url, hashpath, NULL)) {
+		if (gmtremote_hash_get_url (GMT, url, hashpath, NULL)) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
 			if (!access (hashpath, F_OK)) gmt_remove_file (GMT, hashpath);	/* Remove hash file just in case it got corrupted or zero size */
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;		/* Temporarily turn off auto download in this session only */
@@ -378,7 +377,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 		strcpy (old_hashpath, hashpath);	/* Duplicate path name */
 		strcat (old_hashpath, ".old");		/* Append .old to the copied path */
 		snprintf (url, PATH_MAX, "%s/gmt_hash_server.txt", GMT->session.DATASERVER);	/* Set remote path to new hash file */
-		if (gmthash_get_url (GMT, url, new_hashpath, hashpath)) {	/* Get the new hash file from server */
+		if (gmtremote_hash_get_url (GMT, url, new_hashpath, hashpath)) {	/* Get the new hash file from server */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", url);
 			if (!access (new_hashpath, F_OK)) gmt_remove_file (GMT, new_hashpath);	/* Remove hash file just in case it got corrupted or zero size */
 			return 1;	/* Unable to update the file (no Internet?) - skip the tests */
@@ -395,12 +394,12 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", new_hashpath, hashpath);
 			return 1;
 		}
-		if ((N = hash_load (GMT, hashpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
+		if ((N = gmtremote_hash_load (GMT, hashpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
 			gmt_remove_file (GMT, hashpath);		/* Remove corrupted hash file */
 			return 1;
 		}
 
-		O = hash_load (GMT, old_hashpath, &nO);	/* Read in the old array of hash structs */
+		O = gmtremote_hash_load (GMT, old_hashpath, &nO);	/* Read in the old array of hash structs */
 		for (o = 0; o < nO; o++) {	/* Loop over items in old file */
 			if (gmt_getdatapath (GMT, O[o].name, url, R_OK) == NULL) continue;	/* Don't have this file downloaded yet */
 			/* Here the file was found locally and the full path is in the url */
@@ -443,7 +442,7 @@ GMT_LOCAL int hash_refresh (struct GMT_CTRL *GMT) {
 	return 0;
 }
 
-GMT_LOCAL bool is_not_a_valid_grid (char *file, char *all_grid_files[], int N) {
+GMT_LOCAL bool gmtremote_is_not_a_valid_grid (char *file, char *all_grid_files[], int N) {
 	/* Determine if file is among the valid datasets */
 	for (int k = 0; k < N; k++) {
 		if (!strncmp (all_grid_files[k], file, strlen (all_grid_files[k]))) return false;
@@ -485,7 +484,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	strcpy (file, file_name);
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
 	if (gmt_M_file_is_remotedata (file)) {	/* A remote @earth_relief_xxm|s grid */
-		if (is_not_a_valid_grid (&file[1], all_grid_files, GMT_N_DATASETS)) {
+		if (gmtremote_is_not_a_valid_grid (&file[1], all_grid_files, GMT_N_DATASETS)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid file %s is not a recognized remote grid\n", file);
 			gmt_M_free (GMT, file);
 			return 1;
@@ -518,7 +517,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		return (pos);
 	}
 
-	if (hash_refresh (GMT)) {	/* Watch out for changes on the server once a day */
+	if (gmtremote_hash_refresh (GMT)) {	/* Watch out for changes on the server once a day */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to obtain remote file %s\n", file);
 		gmt_M_free (GMT, file);
 		return 1;
@@ -578,7 +577,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			strncpy (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN], GMT_SRTM_EXTENSION_REMOTE, GMT_SRTM_EXTENSION_REMOTE_LEN);	/* Switch extension for download */
 	}
 
-	if ((fsize = skip_large_files (GMT, url, GMT->current.setting.url_size_limit))) {
+	if ((fsize = gmtremote_skip_large_files (GMT, url, GMT->current.setting.url_size_limit))) {
 		char *S = strdup (gmt_memory_use (fsize, 3));
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_SERVER_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
 		gmt_M_free (GMT, file);
@@ -646,7 +645,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	urlfile.filename = local_path;	/* Set pointer to local filename */
 	/* Define our callback to get called when there's data to be written */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, fwrite_callback)) {
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, gmtremote_fwrite_callback)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
 		gmt_M_free (GMT, file);
 		if (is_srtm) gmt_M_str_free (srtm_local);
@@ -659,10 +658,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		if (is_srtm) gmt_M_str_free (srtm_local);
 		return 0;
 	}
-	if (kind == GMT_DATA_FILE) give_data_attribution (GMT, file);
+	if (kind == GMT_DATA_FILE) gmtremote_give_data_attribution (GMT, file);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading file %s ...\n", url);
-	turn_on_ctrl_C_check (local_path);
+	gmtremote_turn_on_ctrl_C_check (local_path);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
@@ -680,7 +679,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
-	turn_off_ctrl_C_check ();
+	gmtremote_turn_off_ctrl_C_check ();
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in local filename */
 		c = strchr (file_name, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
@@ -923,7 +922,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	return (strdup (file));
 }
 
-struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, char *file) {
+struct GMT_GRID *gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, char *file) {
 	/* Get here if file is a =srtm?.xxxxxx file.  Need to do:
 	 * Set up a grdblend command and return the assembled grid
 	 */
@@ -934,7 +933,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	tag[1] = res;
-	give_data_attribution (API->GMT, tag);
+	gmtremote_give_data_attribution (API->GMT, tag);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co- to override using negative earth_relief_15s values */
