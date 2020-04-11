@@ -68,7 +68,7 @@ static char *GMT_DCW_continents[GMT_DCW_N_CONTINENTS] = {"Africa", "Antarctica",
 
 /* Local functions only visible inside this file */
 
-GMT_LOCAL bool dcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *path) {
+GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *path) {
 	bool found = false;
 
 	/* This is the order of checking:
@@ -97,7 +97,7 @@ GMT_LOCAL bool dcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, cha
 	return (found);
 }
 
-GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, unsigned int dim[]) {
+GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, unsigned int dim[]) {
 	/* Open and read list of countries and states and return via two struct and one char arrays plus dimensions in dim */
 	size_t n_alloc = 300;
 	unsigned int k, n;
@@ -107,7 +107,7 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 	struct GMT_DCW_STATE *State = NULL;
 	struct GMT_DCW_COUNTRY_STATE *Country_State = NULL;
 
-	if (!dcw_get_path (GMT, "dcw-countries", ".txt", path)) return -1;
+	if (!gmtdcw_get_path (GMT, "dcw-countries", ".txt", path)) return -1;
 
 	/* Get countries first */
 	if ((fp = fopen (path, "r")) == NULL) {
@@ -130,7 +130,7 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 	Country = gmt_M_memory (GMT, Country, k, struct GMT_DCW_COUNTRY);
 
 	/* Get states */
-	if (!dcw_get_path (GMT, "dcw-states", ".txt", path)) {
+	if (!gmtdcw_get_path (GMT, "dcw-states", ".txt", path)) {
 		gmt_M_free (GMT, Country);
 		return -1;
 	}
@@ -174,14 +174,14 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 	return 0;
 }
 
-GMT_LOCAL int dcw_comp_countries (const void *p1, const void *p2) {
+GMT_LOCAL int gmtdcw_comp_countries (const void *p1, const void *p2) {
 	/* Used to sort countries alphabetically */
 	struct GMT_DCW_COUNTRY *A = (struct GMT_DCW_COUNTRY *)p1;
 	struct GMT_DCW_COUNTRY *B = (struct GMT_DCW_COUNTRY *)p2;
 	return (strcmp (A->code, B->code));
 }
 
-GMT_LOCAL int dcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int n) {
+GMT_LOCAL int gmtdcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int n) {
 	/* Basic binary search for country with given code and an alphabetically sorted list */
 	int low = 0, high = n, mid, last = -1, way;
 
@@ -197,7 +197,7 @@ GMT_LOCAL int dcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int n)
 	return (low);
 }
 
-GMT_LOCAL int dcw_find_state (char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns) {
+GMT_LOCAL int gmtdcw_find_state (char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns) {
 	/* Return state id given country and state codes using a linear search */
 	int i;
 
@@ -205,7 +205,7 @@ GMT_LOCAL int dcw_find_state (char *scode, char *ccode, struct GMT_DCW_STATE *sl
 	return (-1);
 }
 
-GMT_LOCAL bool gmt_dcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STATE *st_country, unsigned int n) {
+GMT_LOCAL bool gmtdcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STATE *st_country, unsigned int n) {
 	/* Return true if this country has interior state boundaries */
 	unsigned int i;
 	for (i = 0; i < n; i++) if (!strcmp (code, st_country[i].country)) return (true);
@@ -259,13 +259,13 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		wesn[YLO] = +9999.0;	wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
 	}
 
-	if (dcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies))	/* Something went wrong */
+	if (gmtdcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies))	/* Something went wrong */
 		return NULL;
 
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 
-	qsort ((void *)GMT_DCW_country, (size_t)GMT_DCW_COUNTRIES, sizeof (struct GMT_DCW_COUNTRY), dcw_comp_countries);	/* Sort on country code */
+	qsort ((void *)GMT_DCW_country, (size_t)GMT_DCW_COUNTRIES, sizeof (struct GMT_DCW_COUNTRY), gmtdcw_comp_countries);	/* Sort on country code */
 
 	n_alloc = n_bodies[0] + n_bodies[1];	/* Presumably max items considered */
 	order = gmt_M_memory (GMT, NULL, n_alloc, unsigned int);
@@ -303,7 +303,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		return NULL;
 	}
 
-	if (!dcw_get_path (GMT, "dcw-gmt", ".nc", path)) {
+	if (!gmtdcw_get_path (GMT, "dcw-gmt", ".nc", path)) {
 		gmt_M_free (GMT, order);
 		return NULL;
 	}
@@ -373,14 +373,14 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			code[2] = '\0';
 			want_state = true;
 		}
-		ks = dcw_find_country (code, GMT_DCW_country, GMT_DCW_COUNTRIES);
+		ks = gmtdcw_find_country (code, GMT_DCW_country, GMT_DCW_COUNTRIES);
 		if (ks == -1) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No country code matching %s (skipped)\n", code);
 			continue;
 		}
 		k = ks;
 		if (want_state) {
-			if ((item = dcw_find_state (state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
+			if ((item = gmtdcw_find_state (state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Country %s does not have states (skipped)\n", code);
 				continue;
 			}
@@ -553,7 +553,7 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode) {
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	struct GMT_DCW_COUNTRY_STATE *GMT_DCW_country_with_state = NULL;
 	if ((list_mode & GMT_DCW_LIST) == 0) return 0;
-	if (dcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, &GMT_DCW_country_with_state, n_bodies)) return 0;	/* Something went wrong */
+	if (gmtdcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, &GMT_DCW_country_with_state, n_bodies)) return 0;	/* Something went wrong */
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 	GMT_DCW_N_COUNTRIES_WITH_STATES = n_bodies[2];
@@ -562,7 +562,7 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode) {
 		if (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent) )
 			printf ("%s [%s]:\n", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
 		printf ("  %s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
-		if ((list_mode & 2) && gmt_dcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_state, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
+		if ((list_mode & 2) && gmtdcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_state, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
 			for (j = 0; j < GMT_DCW_STATES; j++) {
 				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) printf ("\t\t%s.%s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_state[j].code, GMT_DCW_state[j].name);
 			}
