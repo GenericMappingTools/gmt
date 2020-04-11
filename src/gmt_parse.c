@@ -72,12 +72,12 @@ EXTERN_MSC int gmtapi_report_error	(void *C, int error);	/* Lives in gmt_api.c *
 #define return_error(API,err)     { gmtapi_report_error(API,err); return (err);}
 #define return_value(API,err,val) { gmtapi_report_error(API,err); return (val);}
 
-static inline struct GMTAPI_CTRL * parse_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
+static inline struct GMTAPI_CTRL *gmtparse_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
 
 /* Local functions */
 
 /*! . */
-GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
+GMT_LOCAL int gmtparse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	/* Determines if the -B option indicates old GMT4-style switches and flags
 	 * or if it follows the GMT 5 specification.  This is only called when
 	 * compatibility mode has been selected; otherwise we only check GMT 5
@@ -155,29 +155,29 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
 	if (!custom && n_slashes) gmt4++;		/* Presumably / to separate axis in GMT4 style */
 	if (colon_text) gmt4++;				/* Gave title, suffix, prefix in GMT4 style */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: GMT4 = %d vs. GMT = %d\n", gmt4, gmt5);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtparse_B_arg_inspector: GMT4 = %d vs. GMT = %d\n", gmt4, gmt5);
 	if (gmt5 && !gmt4) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Detected GMT >=5 style elements in -B option\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtparse_B_arg_inspector: Detected GMT >=5 style elements in -B option\n");
 		return (5);
 	}
 	else if (gmt4 && !gmt5) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Detected GMT 4 style elements in -B option\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtparse_B_arg_inspector: Detected GMT 4 style elements in -B option\n");
 		return (4);
 	}
 	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "parse_B_arg_inspector: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
-		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_ERROR, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
-		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_ERROR, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtparse_B_arg_inspector: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
+		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtparse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
+		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtparse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
 		return (-1);
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Assume new GMT style format in -B option\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtparse_B_arg_inspector: Assume new GMT style format in -B option\n");
 		return (9);
 	}
 }
 
 /*! . */
-GMT_LOCAL int parse_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+GMT_LOCAL int gmtparse_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* Determine how many -B options were given and if it is clear we are
 	 * dealing with GMT4 or GMT5 syntax just by looking at this information.
 	 * We also examine each argument for clues to version compatibility.
@@ -194,7 +194,7 @@ GMT_LOCAL int parse_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 		n_B++;					/* Count how many (max 2 in GMT4 if -Bp|s given) */
 		k = (opt->arg[0] == 'p' || opt->arg[0] == 's') ? 1 : 0;	/* Step over any p|s designation */
 		if (k == 1) n4_expected++;		/* Count how many -Bp or -Bs were given */
-		verdict = parse_B_arg_inspector (GMT, opt->arg);	/* Check this argument, return 5, 4, 1 (undetermined) or 0 (mixing) */
+		verdict = gmtparse_B_arg_inspector (GMT, opt->arg);	/* Check this argument, return 5, 4, 1 (undetermined) or 0 (mixing) */
 		if (verdict == 4) gmt4++;
 		if (verdict == 5) gmt5++;
 		if (verdict == -1) gmt4++, gmt5++;	/* This is bad and will lead to a syntax error */
@@ -207,14 +207,14 @@ GMT_LOCAL int parse_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	return (-1);				/* Error: Cannot be both */
 }
 
-GMT_LOCAL unsigned int count_slashes (char *txt) {
+GMT_LOCAL unsigned int gmtparse_count_slashes (char *txt) {
 	unsigned int i, n;
 	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
 	return (n);
 }
 
 /*! . */
-GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+GMT_LOCAL unsigned int gmtparse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<n_columns>/<ny> we need access
 	 * to grid increments dx/dy, usually given via a -I option.  Hence, we here
 	 * make sure that if such a -R option is given we first process -I */
@@ -222,7 +222,7 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	struct GMT_OPTION *opt = NULL;
 	bool got_extended_R = false;
 	for (opt = options; opt; opt = opt->next) {
-		if (opt->option == 'R' && count_slashes (opt->arg) == 3 && strchr ("LCRlcr", opt->arg[0]) && strchr ("TMBtmb", opt->arg[1]))
+		if (opt->option == 'R' && gmtparse_count_slashes (opt->arg) == 3 && strchr ("LCRlcr", opt->arg[0]) && strchr ("TMBtmb", opt->arg[1]))
 			got_extended_R = true;
 	}
 	if (!got_extended_R) return 0;	/* No such situation */
@@ -244,7 +244,7 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 #define Return { GMT_Report (GMT->parent, GMT_MSG_ERROR, "Found no history for option -%s\n", str); return (-1); }
 
 /*! . */
-GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+GMT_LOCAL int gmtparse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* Go through the given arguments and look for shorthands,
 	 * i.e., -B, -J, -R, -X, -x, -Y, -c, -p. given without arguments.
 	 * If found, see if we have a matching command line history and then
@@ -409,7 +409,7 @@ int GMT_List_Args (void *V_API, struct GMT_OPTION *head) {
 	 */
 
 	struct GMT_OPTION *opt = NULL;
-	struct GMTAPI_CTRL *API = parse_get_api_ptr (V_API);
+	struct GMTAPI_CTRL *API = gmtparse_get_api_ptr (V_API);
 
 	if (head == NULL) return_error (API, GMT_OPTION_LIST_NULL);
 
@@ -434,7 +434,7 @@ int GMT_List_Args (void *V_API, struct GMT_OPTION *head) {
 #endif
 
 /*! . */
-GMT_LOCAL struct GMT_OPTION *fix_gdal_files (struct GMT_OPTION *opt) {
+GMT_LOCAL struct GMT_OPTION *gmtparse_fix_gdal_files (struct GMT_OPTION *opt) {
 	char *pch = NULL;
 	if (((pch = strstr (opt->arg, "+b")) != NULL) && !strstr(opt->arg, "=gd")) {
 		/* Here we deal with the case that the filename has embedded a band request for gdalread, as in img.tif+b1
@@ -455,7 +455,7 @@ GMT_LOCAL struct GMT_OPTION *fix_gdal_files (struct GMT_OPTION *opt) {
 }
 
 /*! */
-GMT_LOCAL void ensure_b_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+GMT_LOCAL void gmtparse_ensure_b_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	bool do_sort = false;
 	char *c = NULL;
 	unsigned int k, n_B = 0, this_priority, priority[12]; /* Worst case is -Bpx, -Bsx, ... */
@@ -486,7 +486,7 @@ GMT_LOCAL void ensure_b_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *
 }
 
 /*! . */
-struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, const void *in) {
+struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *in) {
 	/* This function will loop over the n_args_in supplied command line arguments (in) and
 	 * then creates a linked list of GMT_OPTION structures for each program option.
 	 * These will in turn will be processed by the module-specific option parsers.
@@ -512,7 +512,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, const void *
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
 	if (in == NULL && n_args_in > 1) return_null (V_API, GMT_ARGV_LIST_NULL);	/* Gave no argument pointer but said we had at least 1 */
 	if (in == NULL) return (NULL);	/* Gave no argument pointer so a null struct is returned */
-	API = parse_get_api_ptr (V_API);	/* Convert V_API to a GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Convert V_API to a GMTAPI_CTRL pointer */
 	if (n_args_in < 0) {	/* Already was given a linked list.  Duplicate and return the copy */
 		struct GMT_OPTION *head_in = (struct GMT_OPTION *)in;
 		while (head_in) {
@@ -583,7 +583,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, const void *
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Options: Adding input file: %s\n", flist[f]);
 				if ((new_opt = GMT_Make_Option (API, GMT_OPT_INFILE, flist[f])) == NULL)
 					return_null (API, error);	/* Create the new option structure given the args, or return the error */
-				new_opt = fix_gdal_files (new_opt);
+				new_opt = gmtparse_fix_gdal_files (new_opt);
 				head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 			}
 			gmtlib_free_list (API->GMT, flist, n_files);
@@ -642,7 +642,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, const void *
 				return_null (API, error);	/* Create the new option structure given the args, or return the error */
 
 		if (option == GMT_OPT_INFILE)	/* A special check on infiles to see if they refer to GDAL implicitly */
-			new_opt = fix_gdal_files (new_opt);
+			new_opt = gmtparse_fix_gdal_files (new_opt);
 
 		head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 	}
@@ -680,7 +680,7 @@ int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
-	API = parse_get_api_ptr (V_API);	/* Cast to GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast to GMTAPI_CTRL pointer */
 
 	current = *head;
 	if (current && current->option < 0) {
@@ -700,14 +700,14 @@ int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 }
 
 /*! . */
-struct GMT_OPTION * GMT_Duplicate_Options (void *V_API, struct GMT_OPTION *head) {
+struct GMT_OPTION *GMT_Duplicate_Options (void *V_API, struct GMT_OPTION *head) {
 	/* Create an identical copy of the linked list of options pointed to by head */
 	struct GMT_OPTION *opt = NULL, *new_opt = NULL, *new_head = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (head == NULL)  return_null (V_API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
-	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if ((new_opt = GMT_Make_Option (API, opt->option, opt->arg)) == NULL)
@@ -724,7 +724,7 @@ int GMT_Free_Option (void *V_API, struct GMT_OPTION **opt) {
 	/* Free the memory pointed to by *opt */
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (*opt == NULL)  return_error (V_API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
-	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 	gmt_M_str_free ((*opt)->arg);	/* The option had a text argument allocated by strdup, so free it first */
 	gmt_M_free (API->GMT, *opt);	/* Then free the structure which was allocated by gmt_M_memory */
 	*opt = NULL;
@@ -747,7 +747,7 @@ char ** GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (head == NULL)  return_null (V_API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
-	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 
 	*argc = 0;	/* Start off with no arguments */
 	for (opt = head; opt; opt = opt->next)	/* Loop over all options in the linked list */
@@ -799,7 +799,7 @@ int GMT_Destroy_Args (void *V_API, int argc, char **args[]) {
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
 	if (argc == 0 || !args) return_error (V_API, GMT_ARGV_LIST_NULL);	/* We were given no args to destroy, so there! */
 	if (argc < 0) return_error (V_API, GMT_COUNTER_IS_NEGATIVE);		/* We were given a negative count! */
-	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 	/* Just deallocate the space taken by the list of arguments */
 	while (argc--) gmt_M_free (API->GMT, (*args)[argc]);
 	gmt_M_free (API->GMT, *args);	/* Free the array itself */
@@ -807,7 +807,7 @@ int GMT_Destroy_Args (void *V_API, int argc, char **args[]) {
 }
 
 /*! . */
-char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
+char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 	/* This function creates a single character string with the command line options that
 	 * correspond to the linked options provided.
 	 */
@@ -821,7 +821,7 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (head == NULL) return_null (V_API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
-	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 
 	G = API->GMT;	/* GMT control structure */
 	txt = gmt_M_memory (G, NULL, n_alloc, char);
@@ -882,18 +882,18 @@ int GMT_Destroy_Cmd (void *V_API, char **cmd) {
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (*cmd == NULL) return_error (V_API, GMT_ARG_IS_NULL);	/* No command was given */
-	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 	gmt_M_free (API->GMT, *cmd);	/* Free the command string */
 	return (GMT_OK);		/* No error encountered */
 }
 
 /*! Create an option structure given the option character and the optional argument arg */
-struct GMT_OPTION * GMT_Make_Option (void *V_API, char option, const char *arg) {
+struct GMT_OPTION *GMT_Make_Option (void *V_API, char option, const char *arg) {
 	struct GMT_OPTION *new_opt = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
-	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 
 	/* Here we have a program-specific option or a file name.  In either case we create a new option structure */
 
@@ -912,7 +912,7 @@ struct GMT_OPTION * GMT_Make_Option (void *V_API, char option, const char *arg) 
 }
 
 /*! Search the list for the selected option and return the pointer to the item.  Only the first occurrence will be found. */
-struct GMT_OPTION * GMT_Find_Option (void *V_API, char option, struct GMT_OPTION *head) {
+struct GMT_OPTION *GMT_Find_Option (void *V_API, char option, struct GMT_OPTION *head) {
 
 	struct GMT_OPTION *current = NULL;
 
@@ -964,7 +964,7 @@ int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 }
 
 /*! Append this entry to the end of the linked list */
-struct GMT_OPTION * GMT_Append_Option (void *V_API, struct GMT_OPTION *new_opt, struct GMT_OPTION *head) {
+struct GMT_OPTION *GMT_Append_Option (void *V_API, struct GMT_OPTION *new_opt, struct GMT_OPTION *head) {
 	struct GMT_OPTION *current = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
@@ -1000,7 +1000,7 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current, struct GMT_OPTIO
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (!current) return_error (V_API, GMT_OPTION_IS_NULL);		/* No option was passed */
-	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 
 	/* Remove the current option and bypass via the next/prev pointers in the linked list */
 	if (current->next) current->next->previous = current->previous;
@@ -1034,14 +1034,14 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	/* Check if there are short-hand commands present (e.g., -J with no arguments); if so complete these to full options
 	 * by consulting the current GMT history machinery.  If not possible then we have an error to report */
 
-	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
-	if (parse_complete_options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
+	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+	if (gmtparse_complete_options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
 
-	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = parse_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
+	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmtparse_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
 
-	ensure_b_options_order (API->GMT, options);	/* Avoid parsing axes labels etc before axis increments since we may auto-set increments in the former */
+	gmtparse_ensure_b_options_order (API->GMT, options);	/* Avoid parsing axes labels etc before axis increments since we may auto-set increments in the former */
 
-	n_errors = parse_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
+	n_errors = gmtparse_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
 
 	/* First parse the common options in the order they appear in GMT_CRITICAL_OPT_ORDER */
 	for (i = 0; i < s_length; i++) {	/* These are the GMT options that must be parsed in this particular order, if present */
