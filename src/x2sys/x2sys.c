@@ -124,7 +124,7 @@ static unsigned int n_x2sys_paths = 0;	/* Number of these directories */
 static char *mgg_path[10];  /* Max 10 directories for now */
 static int n_mgg_paths = 0; /* Number of these directories */
 
-GMT_LOCAL int mggpath_func (char *leg_path, char *leg) {
+GMT_LOCAL int x2sys_mggpath_func (char *leg_path, char *leg) {
 	int id;
 	char geo_path[PATH_MAX] = {""};
 
@@ -148,11 +148,11 @@ GMT_LOCAL int mggpath_func (char *leg_path, char *leg) {
 	return(1);
 }
 
-/* mggpath_init reads the GMT_SHAREDIR/mgg/gmtfile_paths or ~/.gmt/gmtfile_paths file and gets all
+/* x2sys_mggpath_init reads the GMT_SHAREDIR/mgg/gmtfile_paths or ~/.gmt/gmtfile_paths file and gets all
  * the gmtfile directories.
  */
 
-GMT_LOCAL void mggpath_init (struct GMT_CTRL *GMT) {
+GMT_LOCAL void x2sys_mggpath_init (struct GMT_CTRL *GMT) {
 	char line[PATH_MAX] = {""};
 	FILE *fp = NULL;
 
@@ -177,7 +177,7 @@ GMT_LOCAL void mggpath_init (struct GMT_CTRL *GMT) {
 	fclose (fp);
 }
 
-GMT_LOCAL void mggpath_free (struct GMT_CTRL *GMT) {
+GMT_LOCAL void x2sys_mggpath_free (struct GMT_CTRL *GMT) {
 	int k;
 	for (k = 0; k < n_mgg_paths; k++)
 		gmt_M_free (GMT, mgg_path[k]);
@@ -457,7 +457,7 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
 	gmt_M_str_free (X->TAG);	/* free since allocated by strdup */
 	x2sys_free_info (GMT, X);
 	for (id = 0; id < n_x2sys_paths; id++) gmt_M_free (GMT, x2sys_datadir[id]);
-	mggpath_free (GMT);
+	x2sys_mggpath_free (GMT);
 
 	MGD77_end (GMT, &M);
 }
@@ -743,12 +743,12 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	else {
 		char name[82] = {""};
 		if (!(s->flags & 1)) {	/* Must init gmt file paths */
-			mggpath_init (GMT);
+			x2sys_mggpath_init (GMT);
 			s->flags |= 1;
 		}
 		strncpy (name, &file[first], 81U);
 		if (strstr (&file[first], ".gmt")) name[strlen(&file[first])-4] = 0;	/* Name includes .gmt suffix, remove it */
-	  	if (mggpath_func (path, name)) return (GMT_GRDIO_FILE_NOT_FOUND);
+	  	if (x2sys_mggpath_func (path, name)) return (GMT_GRDIO_FILE_NOT_FOUND);
 
 	}
 	strcpy (s->path, path);
