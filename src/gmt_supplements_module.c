@@ -40,7 +40,7 @@ struct Gmt_moduleinfo {
 	const char *keys;             /* Program option info for external APIs */
 };
 
-static int sort_on_classic (const void *vA, const void *vB) {
+static int gmtsupplementsmodule_sort_on_classic (const void *vA, const void *vB) {
 	const struct Gmt_moduleinfo *A = vA, *B = vB;
 	if (A == NULL) return +1;	/* Get the NULL entry to the end */
 	if (B == NULL) return -1;	/* Get the NULL entry to the end */
@@ -140,7 +140,7 @@ void gmtlib_supplements_module_classic_all (void *V_API) {
 		++n_modules;
 
 	/* Sort array on classic names since original array is sorted on modern names */
-	qsort (g_supplements_module, n_modules, sizeof (struct Gmt_moduleinfo), sort_on_classic);
+	qsort (g_supplements_module, n_modules, sizeof (struct Gmt_moduleinfo), gmtsupplementsmodule_sort_on_classic);
 
 	while (g_supplements_module[module_id].cname != NULL) {
 		printf ("%s\n", g_supplements_module[module_id].cname);

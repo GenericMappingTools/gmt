@@ -205,12 +205,12 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, GDALRasterBandH hBand, void *data, int n_rows, int n_cols) {
+GMT_LOCAL int gmtgdalwrite_write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, GDALRasterBandH hBand, void *data, int n_rows, int n_cols) {
 	int error = 0, i, j;
 	float *t = (float *)data;
 	uint64_t k, n, nm = (uint64_t)n_rows * n_cols;
 	/* In gmt_gdal_write_grd we made the pointer to point to the beginning of the non-padded zone, so to make it
-	   coherent we retriet pad[0]. However, nothing of this is taking into account a -R subregion so all of this
+	   coherent we retrieve pad[0]. However, nothing of this is taking into account a -R subregion so all of this
 	   (and not only this case) will probably fail for that case.
 	*/
 	t -= prhs->pad[0];
@@ -558,7 +558,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				if (!strcasecmp(pszFormat,"JP2OpenJPEG")) {			/* JP2 driver doesn't accept floats, so we must make a copy */
-					if ((gdal_err = write_jp2 (GMT, prhs, hBand, data, n_rows, n_cols)) != CE_None)
+					if ((gdal_err = gmtgdalwrite_write_jp2 (GMT, prhs, hBand, data, n_rows, n_cols)) != CE_None)
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 				}
 				else {

@@ -80,7 +80,7 @@
 
 /* Local functions */
 
-GMT_LOCAL unsigned int bcr_reject (struct GMT_GRID_HEADER *h, double *xx, double *yy) {
+GMT_LOCAL unsigned int gmtbcr_reject (struct GMT_GRID_HEADER *h, double *xx, double *yy) {
 
 	/* First check that xx,yy are not Nan - if so return NaN */
 
@@ -115,7 +115,7 @@ GMT_LOCAL unsigned int bcr_reject (struct GMT_GRID_HEADER *h, double *xx, double
 	return (0);	/* Good to use */
 }
 
-GMT_LOCAL uint64_t bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, double wx[], double wy[]) {
+GMT_LOCAL uint64_t gmtbcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, double wx[], double wy[]) {
 	int col, row;
 	uint64_t ij;
 	double x, y, wp, wq, w, xi, yj;
@@ -246,7 +246,7 @@ double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, 
 
 	/* Determine nearest node ij and set weights wx, wy */
 
-	ij = bcr_prep (G->header, xx, yy, wx, wy);
+	ij = gmtbcr_prep (G->header, xx, yy, wx, wy);
 
 	retval = wsum = 0.0;
 	for (j = 0; j < HH->bcr_n; j++) {
@@ -283,11 +283,11 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
-	if (bcr_reject (G->header, &xx, &yy)) return (GMT->session.d_NaN);	/* NaNs or outside */
+	if (gmtbcr_reject (G->header, &xx, &yy)) return (GMT->session.d_NaN);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx, wy */
 
-	ij = bcr_prep (G->header, xx, yy, wx, wy);
+	ij = gmtbcr_prep (G->header, xx, yy, wx, wy);
 
 	retval = wsum = 0.0;
 	for (j = 0; j < HH->bcr_n; j++) {
@@ -326,11 +326,11 @@ int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, do
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
-	if (bcr_reject (G->header, &xx, &yy)) return (1);	/* NaNs or outside */
+	if (gmtbcr_reject (G->header, &xx, &yy)) return (1);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx wy */
 
-	ij = bcr_prep (G->header, xx, yy, wx, wy);
+	ij = gmtbcr_prep (G->header, xx, yy, wx, wy);
 
 	gmt_M_memset (retval, 4, double);
 	wsum = 0.0;

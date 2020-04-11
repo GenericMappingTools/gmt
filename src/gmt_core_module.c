@@ -43,7 +43,7 @@ struct Gmt_moduleinfo {
 #endif
 };
 
-static int sort_on_classic (const void *vA, const void *vB) {
+static int gmtcoremodule_sort_on_classic (const void *vA, const void *vB) {
 	const struct Gmt_moduleinfo *A = vA, *B = vB;
 	if (A == NULL) return +1;	/* Get the NULL entry to the end */
 	if (B == NULL) return -1;	/* Get the NULL entry to the end */
@@ -251,14 +251,14 @@ static struct Gmt_moduleinfo g_core_module[] = {
 };
 
 /* Function to exclude some special core modules from being reported by gmt --help|show-modules */
-GMT_LOCAL int skip_this_module (const char *name) {
+GMT_LOCAL int gmtcoremodule_skip_this_module (const char *name) {
 	if (!strncmp (name, "gmtread", 7U)) return 1;	/* Skip the gmtread module */
 	if (!strncmp (name, "gmtwrite", 8U)) return 1;	/* Skip the gmtwrite module */
 	return 0;	/* Display this one */
 }
 
 /* Function to exclude modern mode modules from being reported by gmt --show-classic */
-GMT_LOCAL int skip_modern_module (const char *name) {
+GMT_LOCAL int gmtcoremodule_skip_modern_module (const char *name) {
 	if (!strncmp (name, "subplot", 7U)) return 1;	/* Skip the subplot module */
 	if (!strncmp (name, "figure", 6U)) return 1;	/* Skip the figure module */
 	if (!strncmp (name, "begin", 5U)) return 1;		/* Skip the begin module */
@@ -283,7 +283,7 @@ void gmtlib_core_module_show_all (void *V_API) {
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
-		if (API->external || !skip_this_module (g_core_module[module_id].cname)) {
+		if (API->external || !gmtcoremodule_skip_this_module (g_core_module[module_id].cname)) {
 			snprintf (message, GMT_LEN256, "%-16s %s\n",
 				g_core_module[module_id].mname, g_core_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
@@ -297,7 +297,7 @@ void gmtlib_core_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	while (g_core_module[module_id].cname != NULL) {
-		if (API->external || !skip_this_module (g_core_module[module_id].cname))
+		if (API->external || !gmtcoremodule_skip_this_module (g_core_module[module_id].cname))
 			printf ("%s\n", g_core_module[module_id].mname);
 		++module_id;
 	}
@@ -313,10 +313,10 @@ void gmtlib_core_module_classic_all (void *V_API) {
 		++n_modules;
 
 	/* Sort array on classic names since original array is sorted on modern names */
-	qsort (g_core_module, n_modules, sizeof (struct Gmt_moduleinfo), sort_on_classic);
+	qsort (g_core_module, n_modules, sizeof (struct Gmt_moduleinfo), gmtcoremodule_sort_on_classic);
 
 	while (g_core_module[module_id].cname != NULL) {
-		if (API->external || !(skip_this_module (g_core_module[module_id].cname) || skip_modern_module (g_core_module[module_id].cname)))
+		if (API->external || !(gmtcoremodule_skip_this_module (g_core_module[module_id].cname) || gmtcoremodule_skip_modern_module (g_core_module[module_id].cname)))
 			printf ("%s\n", g_core_module[module_id].cname);
 		++module_id;
 	}
