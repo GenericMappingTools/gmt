@@ -396,7 +396,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 # source codes for testing API
 if (DO_API_TESTS)
 	set (GMT_DEMOS_SRCS testpsl.c testgmtshell.c testgmtio.c testgrdio.c
-		testapiconv.c example1.c testapi_matrix.c testapi_matrix_plot.c testapi_vector.c test_JL.c testapi_mixmatrix.c
+		testapiconv.c test_example1.c testapi_matrix.c testapi_matrix_plot.c testapi_vector.c test_JL.c testapi_mixmatrix.c
 		test_walter.c testapi_usergrid.c testapi_userdataset.c testapi_uservectors.c)
 endif (DO_API_TESTS)
 

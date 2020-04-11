@@ -1,4 +1,5 @@
 #include "gmt.h"
+/* Demonstrate how to use the API to read a table and grid it with greenspline, then write a grid file */
 int main () {
     void *API;                        /* The API control structure */
     struct GMT_DATASET *D = NULL;     /* Structure to hold input dataset */
