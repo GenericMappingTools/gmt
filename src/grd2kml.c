@@ -456,7 +456,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	int error = 0, kk, uniq, dpi, view;
 	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, global_lat, use_60_factoring;
 
-	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0;
+	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0, n_tiles = 0;
 
 	uint64_t node;
 
@@ -545,8 +545,12 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	nx = G->header->n_columns;	ny = G->header->n_rows;			/* Dimensions of original grid */
 	mx = urint (ceil ((double)nx / (double)Ctrl->L.size)) * Ctrl->L.size;	/* Nearest image size in multiples of tile size */
 	my = urint (ceil ((double)ny / (double)Ctrl->L.size)) * Ctrl->L.size;
-	max_level = urint (ceil (log2 (MAX (mx, my) / (double)Ctrl->L.size)));	/* Number of levels in the quadtree */
+	//max_level = urint (ceil (log2 (MAX (mx, my) / (double)Ctrl->L.size)));	/* Number of levels in the quadtree */
+	max_level = urint (ceil (log2 (MIN (mx, my) / (double)Ctrl->L.size)));	/* Number of levels in the quadtree */
 	use_60_factoring = true;	/* Instead of power of 2, 1,2,4,8, x etc we modify these so that 60/x are integers (x <= 60) */
+	factor = grd2kml_get_factor (use_60_factoring, max_level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
+	if ((factor * Ctrl->L.size * G->header->inc[GMT_Y]) > 360.0) max_level--;
+
 	if ((60.0 * G->header->inc[GMT_X] - irint (60.0 * G->header->inc[GMT_X])) < GMT_CONV4_LIMIT) {
 		/* Grid spacing is an integer multiple of 1 arc minute or higher, use ddd:mm format */
 		strcpy (GMT->current.setting.format_geo_out, "ddd:mm");
@@ -760,14 +764,18 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_LAT);
 
 		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
-			wesn[YHI] = MIN (90.0, wesn[YLO] + factor * Ctrl->L.size * G->header->inc[GMT_Y]);	/* Top row may extend beyond grid and be transparent */
+            double step_y = factor * Ctrl->L.size * G->header->inc[GMT_Y];
+			if (global_lat && step_y > 180.0) step_y = 180.0;
+			wesn[YHI] = MIN (90.0, wesn[YLO] + step_y);	/* Top row may extend beyond grid and be transparent */
 			gmt_ascii_format_one (GMT, N, wesn[YHI], GMT_IS_LAT);
 			/* Loop over all columns at this level */
 			col = 0;
 			wesn[XLO] = ext_wesn[XLO];
 			while (wesn[XLO] < (G->header->wesn[XHI]-G->header->inc[GMT_X])) {
 				uint64_t trow, tcol;
-				wesn[XHI] = MIN (ext_wesn[XLO]+360.0, wesn[XLO] + factor * Ctrl->L.size * G->header->inc[GMT_X]);	/* So right column may extend beyond grid and be transparent */
+                double step_x = factor * Ctrl->L.size * G->header->inc[GMT_X];
+				if (global_lon && step_x > 180.0) step_x = 180.0;
+				wesn[XHI] = MIN (ext_wesn[XLO]+360.0, wesn[XLO] + step_x);	/* So right column may extend beyond grid and be transparent */
 				/* Must make sure we have a proper formatting of these longitudes so handle any east > 360 */
 				west = wesn[XLO];	east = wesn[XHI];
 				if (east > 360.0) west -= 360.0, east -= 360.0;	/* Keep within -180 to 180 range */
@@ -873,6 +881,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
 		}
 	}
+	n_tiles = n;
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found %d tiles that passed the no-NaN test but gave a blank image (?)\n", n_bummer);
 
@@ -966,7 +975,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			/* First this tile's kml and png */
-			view = (Q[k]->level == max_level) ? -1 : Ctrl->A.size;
+			//view = (Q[k]->level == max_level) ? -1 : Ctrl->A.size;
+			view = Ctrl->A.size;
 			fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 			grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
 			fprintf (fp, "    <Document>\n      <name>%sR%dC%d.kml</name>\n", path, Q[k]->row, Q[k]->col);
@@ -994,7 +1004,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			/* Now add up to 4 quad links */
 			for (quad = 0; quad < 4; quad++) {
 				if (Q[k]->next[quad] == NULL) continue;
-				view = (Q[k]->next[quad]->level == max_level) ? -1 : Ctrl->A.size;
+				//view = (Q[k]->next[quad]->level == max_level) ? -1 : Ctrl->A.size;
+				view = Ctrl->A.size;
 
 				grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
 				fprintf (fp, "\n      <NetworkLink>\n        <name>%sR%dC%d.png</name>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
@@ -1006,10 +1017,12 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				fprintf (fp, "        </LatLonAltBox>\n");
 				fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>-1</maxLodPixels>\n        </Lod>\n", view);
 			        fprintf (fp, "        </Region>\n");
-				grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
-				fprintf (fp, "        <Link>\n          <href>%sR%dC%d.kml</href>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
-				fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode><viewFormat/>\n");
-				fprintf (fp, "        </Link>\n      </NetworkLink>\n");
+			    if (Q[k]->next[quad]->level < max_level) {
+					grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
+					fprintf (fp, "        <Link>\n          <href>%sR%dC%d.kml</href>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
+					fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode><viewFormat/>\n");
+					fprintf (fp, "        </Link>\n      </NetworkLink>\n");
+				}
 			}
 			fprintf (fp, "    </Document>\n  </kml>\n");
 			fclose (fp);
@@ -1019,7 +1032,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Q[k]);		/* Free this tile information */
 	}
 	gmt_M_free (GMT, Q);
-	GMT_Report (API, GMT_MSG_NOTICE, "Done: %d files written to directory %s\n", 2*n+1, Ctrl->N.prefix);
+	GMT_Report (API, GMT_MSG_NOTICE, "Done: %d tiles written to directory %s\n", n_tiles, Ctrl->N.prefix);
 	if (tmp_cpt) gmt_remove_file (GMT, Ctrl->C.file);
 	Return (GMT_NOERROR);
 }
