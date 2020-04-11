@@ -43,7 +43,7 @@ static struct Gmt_moduleinfo g_mbsystem_module[] = {
 };
 
 /* Pretty print all GMT mbsystem module names and their purposes for gmt --help */
-void gmt_mbsystem_module_show_all (void *V_API) {
+void gmtlib_mbsystem_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
 	char message[256] = {""};
 	GMT_Message (V_API, GMT_TIME_NONE, "\n===  mbsystem modules accessible from gmt  ===\n");
@@ -62,7 +62,7 @@ void gmt_mbsystem_module_show_all (void *V_API) {
 }
 
 /* Produce single list on stdout of all GMT mbsystem module names for gmt --show-modules */
-void gmt_mbsystem_module_list_all (void *API) {
+void gmtlib_mbsystem_module_list_all (void *API) {
 	unsigned int module_id = 0;
 	gmt_M_unused(API);
 	while (g_mbsystem_module[module_id].name != NULL) {
@@ -72,7 +72,7 @@ void gmt_mbsystem_module_list_all (void *API) {
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
-const char *gmt_mbsystem_module_keys (void *API, char *candidate) {
+const char *gmtlib_mbsystem_module_keys (void *API, char *candidate) {
 	int module_id = 0;
 	gmt_M_unused(API);
 
@@ -86,7 +86,7 @@ const char *gmt_mbsystem_module_keys (void *API, char *candidate) {
 }
 
 /* Lookup module id by name, return group char name (for external API developers) */
-const char *gmt_mbsystem_module_group (void *API, char *candidate) {
+const char *gmtlib_mbsystem_module_group (void *API, char *candidate) {
 	int module_id = 0;
 	gmt_M_unused(API);
 
