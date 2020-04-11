@@ -390,7 +390,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 }
 
 /* Determine if spherical triangle is oriented clockwise or counter-clockwise */
-GMT_LOCAL int orientation (struct GMT_CTRL *GMT, double A[], double B[], double C[]) {
+GMT_LOCAL int gmtsph_orientation (struct GMT_CTRL *GMT, double A[], double B[], double C[]) {
 	double X[3];
 	gmt_cross3v (GMT, A, B, X);
 	return (gmt_dot3v (GMT, X, C) < 0.0 ? -1 : +1);
@@ -413,7 +413,7 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 		gmt_geo_to_cart (GMT, clat, lon[1], P0, true);	/* get x/y/z for 2nd point*/
 		clat = gmt_lat_swap (GMT, lat[2], GMT_LATSWAP_G2O);	/* Get geocentric latitude */
 		gmt_geo_to_cart (GMT, clat, lon[2], P1, true);	/* get x/y/z for 3rd point*/
-		sgn = orientation (GMT, N, P0, P1);
+		sgn = gmtsph_orientation (GMT, N, P0, P1);
 		pol_area = areas_ (N, P0, P1);	/* Absolute area of this spherical triangle N-P0-P1 */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
 			kind = (sgn == -1) ? 0 : 1;
@@ -444,7 +444,7 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 		clat = gmt_lat_swap (GMT, lat[p], GMT_LATSWAP_G2O);	/* Get geocentric latitude */
 		gmt_geo_to_cart (GMT, clat, lon[p], P1, true);	/* Get x/y/z for next point P1 */
 		tri_area = areas_ (N, P0, P1);	/* Absolute area of this spherical triangle N-P0-P1 */
-		sgn = orientation (GMT, N, P0, P1);	/* Sign of this area */
+		sgn = gmtsph_orientation (GMT, N, P0, P1);	/* Sign of this area */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {
 			kind = (sgn == -1) ? 0 : 1;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical triangle %.4lg/%.4lg via %.4lg/%.4lg to %.4lg/%.4lg : Unit area %7.5lg oriented %3s\n", center[0], center[1], lon[p-1], lat[p-1], lon[p], lat[p], tri_area, way[kind]);

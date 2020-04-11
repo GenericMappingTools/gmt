@@ -718,7 +718,7 @@ GMT_LOCAL int gmtinit_check_markers (struct GMT_CTRL *GMT) {
 	return (error);
 }
 
-GMT_LOCAL int get_psl_encoding (const char *encoding) {
+GMT_LOCAL int gmtinit_get_psl_encoding (const char *encoding) {
 	/* Return the specified encoding ID */
 	int k = 0, match = 0;
 	while (PSL_ISO_name[k] && (match = strcmp (encoding, PSL_ISO_name[k])) != 0) k++;
@@ -1572,7 +1572,7 @@ GMT_LOCAL char *gmtinit_old_trendsyntax (struct GMT_CTRL *GMT, char option, char
 	return arg;
 }
 
-GMT_LOCAL int compare_terms (const void *term_1v, const void *term_2v) {
+GMT_LOCAL int gmtinit_compare_terms (const void *term_1v, const void *term_2v) {
 	const struct GMT_MODEL_TERM *term_1 = term_1v, *term_2 = term_2v;
 	/* Ensure polynomial terms are listed before Fourier terms */
 	if (term_1->kind  < term_2->kind)  return (-1);
@@ -1702,7 +1702,7 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 
 	/* Sort so Trig/Fourier terms are last in the list */
 
-	qsort (M->term, n_model, sizeof (struct GMT_MODEL_TERM), compare_terms);
+	qsort (M->term, n_model, sizeof (struct GMT_MODEL_TERM), gmtinit_compare_terms);
 
 	/* Make sure there are no duplicates */
 
@@ -2973,7 +2973,7 @@ GMT_LOCAL void gmtinit_free_plot_array (struct GMT_CTRL *GMT) {
 	GMT->current.plot.n = GMT->current.plot.n_alloc = 0;
 }
 
-GMT_LOCAL void trim_off_any_slash_at_end (char *dir) {
+GMT_LOCAL void gmtinit_trim_off_any_slash_at_end (char *dir) {
 	size_t L = strlen (dir);	/* Get length of dir */
 	if (L && (dir[L-1] == '/' || dir[L-1] == '\\')) dir[L-1] = '\0', L--;	/* Remove a trailing slash */
 	if (L) L--;	/* L is now at last character in dir */
@@ -3030,7 +3030,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 
 	gmt_dos_path_fix (GMT->session.SHAREDIR);
-	trim_off_any_slash_at_end (GMT->session.SHAREDIR);
+	gmtinit_trim_off_any_slash_at_end (GMT->session.SHAREDIR);
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT->session.SHAREDIR = %s\n", GMT->session.SHAREDIR);
 
 	/* Determine HOMEDIR (user home directory) */
@@ -3052,7 +3052,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->session.HOMEDIR) {	/* Mostly to keep Coverity happy */
 		gmt_dos_path_fix (GMT->session.HOMEDIR);
-		trim_off_any_slash_at_end (GMT->session.HOMEDIR);
+		gmtinit_trim_off_any_slash_at_end (GMT->session.HOMEDIR);
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT->session.HOMEDIR = %s\n", GMT->session.HOMEDIR);
 	}
 
@@ -3067,7 +3067,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->session.USERDIR) {
 		gmt_dos_path_fix (GMT->session.USERDIR);
-		trim_off_any_slash_at_end (GMT->session.USERDIR);
+		gmtinit_trim_off_any_slash_at_end (GMT->session.USERDIR);
 	}
 	if (GMT->session.USERDIR != NULL) {
 		err = stat (GMT->session.USERDIR, &S);	/* Stat the userdir path (which may not exist) */
@@ -3087,7 +3087,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->session.CACHEDIR) {
 		gmt_dos_path_fix (GMT->session.CACHEDIR);
-		trim_off_any_slash_at_end (GMT->session.CACHEDIR);
+		gmtinit_trim_off_any_slash_at_end (GMT->session.CACHEDIR);
 	}
 	if (GMT->session.CACHEDIR != NULL) {
 		err = stat (GMT->session.CACHEDIR, &S);	/* Stat the cachedir path (which may not exist) */
@@ -3111,7 +3111,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (API->session_dir) {
 		gmt_dos_path_fix (API->session_dir);
-		trim_off_any_slash_at_end (API->session_dir);
+		gmtinit_trim_off_any_slash_at_end (API->session_dir);
 	}
 	if (API->session_dir != NULL) {
 		err = stat (API->session_dir, &S);	/* Stat the session path (which may not exist) */
@@ -3146,7 +3146,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	else
 		GMT->session.DATASERVER = strdup (GMT_DATA_SERVER);	/* SOEST default */
 	if (GMT->session.DATASERVER)
-		trim_off_any_slash_at_end (GMT->session.DATASERVER);
+		gmtinit_trim_off_any_slash_at_end (GMT->session.DATASERVER);
 
 	/* Determine GMT_DATADIR (data directories) */
 
@@ -3189,7 +3189,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		else {
 			GMT->session.TMPDIR = gmt_strdup_noquote (this_c);
 			gmt_dos_path_fix (GMT->session.TMPDIR);
-			trim_off_any_slash_at_end (GMT->session.TMPDIR);
+			gmtinit_trim_off_any_slash_at_end (GMT->session.TMPDIR);
 		}
 	}
 	return GMT_OK;
@@ -5446,7 +5446,7 @@ GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
 	struct GMT_ENCODING *enc = &GMT->current.setting.ps_encoding;
 
 	snprintf (symbol, GMT_LEN256, "PSL_%s", enc->name);	/* Prepend the PSL_ prefix */
-	if ((k = get_psl_encoding (symbol)) == -1) {
+	if ((k = gmtinit_get_psl_encoding (symbol)) == -1) {
 		GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_RUNTIME_ERROR;
 	}
 
@@ -6389,7 +6389,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
  * Remaining cases for additional options: A,H,L,M,N,T,W,e,m,q,u,v,w
  */
 
-GMT_LOCAL void explain_R_geo (struct GMT_CTRL *GMT) {
+GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 	gmt_message (GMT, "\t-R Specify the min/max coordinates of your data region in user units.\n");
 	gmt_message (GMT, "\t   Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds].\n");
 	gmt_message (GMT, "\t   Use -R<xmin/xmax/ymin/ymax>+u<unit> for regions given in projected coordinates.\n");
@@ -6777,12 +6777,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'G':	/* Geographic Region option */
 
-			explain_R_geo (GMT);
+			gmtinit_explain_R_geo (GMT);
 			break;
 
 		case 'R':	/* Generic [Default] Region option */
 
-			explain_R_geo (GMT);
+			gmtinit_explain_R_geo (GMT);
 			gmt_message (GMT, "\t   Or use -R<code><x0>/<y0>/<n_columns>/<n_rows> for origin and grid dimensions, where\n");
 			gmt_message (GMT, "\t     <code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right)\n");
 			gmt_message (GMT, "\t     and grid spacing must be specified via -I<dx>[/<dy>] (also see -r).\n");
@@ -12367,7 +12367,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy) {
+GMT_LOCAL struct GMT_CTRL *gmtinit_begin_module_sub (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy) {
 	/* All GMT modules (i.e. GMT_psxy, GMT_blockmean, ...) must call gmt_init_module
 	 * as their first call and call gmt_end_module as their last call.  This
 	 * allows us to capture the GMT control structure so we can reset all
@@ -12462,7 +12462,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 
 /* Subplot functions */
 
-GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col, double gap[], char *tag, unsigned int *first) {
+GMT_LOCAL int gmtinit_get_current_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col, double gap[], char *tag, unsigned int *first) {
 	/* Gets the current subplot panel, returns 1 if found and 0 otherwise.
 	 * If gap == NULL that means that not finding a panel file is OK since it may be the first; we are just trying to get row,col. */
 	char file[PATH_MAX] = {""};
@@ -12474,7 +12474,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, int *row, int
 			*row = *col = INT_MAX;
 			return GMT_NOERROR;
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: No current panel selected so not in subplot mode\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_current_panel: No current panel selected so not in subplot mode\n");
 		API->error = GMT_NOERROR;
 		return GMT_RUNTIME_ERROR;	/* It is an "error" in the sense we don't have a panel situation */
 	}
@@ -12504,7 +12504,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, int *row, int
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
-	GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: Current panel is (%d, %d)\n", *row, *col);
+	GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_current_panel: Current panel is (%d, %d)\n", *row, *col);
 	return GMT_NOERROR;
 }
 
@@ -12555,7 +12555,7 @@ int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, int *row, int *col) {
 	fclose (fp);
 
 	/* If the panel file does not exist we initialize to row = col = 0 */
-	if (*col != INT_MAX && get_current_panel (API, fig, row, col, NULL, NULL, NULL)) {	/* Not good */
+	if (*col != INT_MAX && gmtinit_get_current_panel (API, fig, row, col, NULL, NULL, NULL)) {	/* Not good */
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
@@ -12639,7 +12639,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	FILE *fp = NULL;
 
 	API->error = GMT_RUNTIME_ERROR;
-	if (get_current_panel (API, fig, &row, &col, gap, tmp, &first))	/* No panel or there was an error */
+	if (gmtinit_get_current_panel (API, fig, &row, &col, gap, tmp, &first))	/* No panel or there was an error */
 		return NULL;
 
 	/* Now read subplot information file */
@@ -12727,7 +12727,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 }
 
 /*! Determine if the current module is a PostScript-producing module that will be writing PostScript */
-GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION **in_options) {
+GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION **in_options) {
 	struct GMT_OPTION *opt = NULL, *options = NULL;
 
 	if (keys == NULL || in_options == NULL) return false;	/* Definitively classic code, possibly MB system */
@@ -12820,7 +12820,7 @@ GMT_LOCAL void gmtinit_round_wesn (double wesn[], bool geo) {	/* Use data range 
 	}
 }
 
-GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[]) {
+GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[]) {
 	/* Determines the data region by examining the input data.  This could be a grid or datasets.  The
 	 * latter may be one or many files, or none, meaning we must capture stdin.  If we do, then we must
 	 * add that temporary file to the module's options, otherwise we cannot read the data a 2nd time.
@@ -12863,40 +12863,40 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 				int fd = 0;
 #endif
 
-				GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_region_from_data: Must save stdin to a temporary file.\n");
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Must save stdin to a temporary file.\n");
 				if (API->tmp_dir)			/* Have a recognized temp directory */
 					snprintf (tmpfile, PATH_MAX, "%s/", API->tmp_dir);
 				strcat (tmpfile, "gmt_saved_stdin.XXXXXX");	/* The XXXXXX will be replaced by mktemp */
 #ifdef _WIN32
 				if ((file = mktemp (tmpfile)) == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_region_from_data: Could not create temporary file name.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not create temporary file name.\n");
 					return GMT_RUNTIME_ERROR;
 				}
 				if ((fp = fopen (file, API->GMT->current.io.w_mode)) == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_region_from_data: Could not open temporary file %s.\n", file);
+					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not open temporary file %s.\n", file);
 					return GMT_RUNTIME_ERROR;
 				}
 #else
 				if ((fd = mkstemp (tmpfile)) == -1) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_region_from_data: Could not create and open temporary file %s.\n", tmpfile);
+					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not create and open temporary file %s.\n", tmpfile);
 					return GMT_RUNTIME_ERROR;
 				}
 				file = tmpfile;
 				if ((fp = fdopen (fd, API->GMT->current.io.w_mode)) == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_region_from_data: Could not fdopen temporary file %s.\n", file);
+					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not fdopen temporary file %s.\n", file);
 					return GMT_RUNTIME_ERROR;
 				}
 #endif
 				/* Dump stdin to that temp file */
-				GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_region_from_data: Send stdin to %s.\n", file);
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Send stdin to %s.\n", file);
 				if ((content = malloc (GMT_BUFSIZ)) == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_region_from_data: Unable to allocate %d bytes for buffer.\n", GMT_BUFSIZ);
+					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Unable to allocate %d bytes for buffer.\n", GMT_BUFSIZ);
 				    fclose (fp);
 					return GMT_RUNTIME_ERROR;
 				}
 				while ((n_read = fread (content, 1, GMT_BUFSIZ, API->GMT->session.std[GMT_IN]))) {
 			        if (fwrite (content, 1, n_read, fp) != n_read) {
-						GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_region_from_data: fwrite failure.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: fwrite failure.\n");
 						free (content);
 				    	fclose (fp);
 						return GMT_RUNTIME_ERROR;
@@ -12908,7 +12908,7 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 					return API->error;	/* Failure to make new option or append to list */
 				if ((tmp = GMT_Make_Option (API, GMT_OPT_INFILE, file)) == NULL || (*options = GMT_Append_Option (API, tmp, *options)) == NULL)
 					return API->error;	/* Failure to append option to calling module option list */
-				GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_region_from_data: Replace stdin input with -<%s.\n", file);
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Replace stdin input with -<%s.\n", file);
 			}
 
 			/* Here we have all the input options OR a single tempfile input option.  Now look for special modifiers and add those too */
@@ -12980,7 +12980,7 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 			}
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_DEBUG, "gmtlib_get_region_from_data: Family %d not supported", family);
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Family %d not supported", family);
 			return GMT_NOT_A_VALID_FAMILY;
 			break;
 	}
@@ -12999,7 +12999,7 @@ GMT_LOCAL int gmtinit_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const ch
 	gmt_M_unused(args);
 
 	/* Here we know the module is using a grid to get -R implicitly */
-	if ((err = gmtlib_get_region_from_data (API, GMT_IS_GRID, exact, options, wesn)))
+	if ((err = gmtinit_get_region_from_data (API, GMT_IS_GRID, exact, options, wesn)))
 		return err;
 
 	snprintf (region, GMT_LEN256, "%.16g/%.16g/%.16g/%.16g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
@@ -13024,7 +13024,7 @@ GMT_LOCAL int gmtinit_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, cons
 	gmt_M_unused(args);
 
 	/* Here we know the module is using a grid to get -R implicitly */
-	if ((err = gmtlib_get_region_from_data (API, GMT_IS_DATASET, exact, options, wesn)))
+	if ((err = gmtinit_get_region_from_data (API, GMT_IS_DATASET, exact, options, wesn)))
 		return err;
 	snprintf (region, GMT_LEN256, "%.16g/%.16g/%.16g/%.16g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	if ((opt = GMT_Make_Option (API, 'R', region)) == NULL)
@@ -13053,7 +13053,7 @@ GMT_LOCAL int gmtinit_determine_R_option_from_data (struct GMTAPI_CTRL *API, con
 }
 
 /*! Search the list for the -J? option (? != 'z|Z) and return the pointer to the item. */
-GMT_LOCAL struct GMT_OPTION * gmt_find_J_option (void *V_API, struct GMT_OPTION *head) {
+GMT_LOCAL struct GMT_OPTION * gmtinit_find_J_option (void *V_API, struct GMT_OPTION *head) {
 	struct GMT_OPTION *current = NULL, *ptr = NULL;
 	gmt_M_unused(V_API);
 
@@ -13066,7 +13066,7 @@ GMT_LOCAL struct GMT_OPTION * gmt_find_J_option (void *V_API, struct GMT_OPTION 
 	return (ptr);	/* NULL if not found */
 }
 
-GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char r_code[]) {
+GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char r_code[]) {
 	/* Separate out any region-specific parts from one or more -E arguments and
 	 * pass those separately to a new -R instead (if -R not given).
 	 * Return code is bitflags:
@@ -13112,7 +13112,7 @@ GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct G
 	return (answer);
 }
 
-GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *options, const char *module) {
+GMT_LOCAL bool gmtinit_is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *options, const char *module) {
 	/* Determine of -R<args> imply geographic or Cartesian domain */
 	struct GMT_OPTION *opt = NULL;
 	unsigned int n_slashes;
@@ -13165,7 +13165,7 @@ GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	return false;	/* Default to Cartesian */
 }
 
-GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION **options) {
+GMT_LOCAL int gmtinit_set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION **options) {
 	/* Determine if user is attempting a modern mode one-liner plot */
 	unsigned int pos;
 	int error, k;
@@ -13195,14 +13195,14 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 				snprintf (session, GMT_LEN128, "%s %s", opt->next->arg, figure);
 			/* Remove the one-liner options before the parser chokes on them */
 			if (GMT_Delete_Option (API, opt->next, options) || GMT_Delete_Option (API, opt, options)) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove -ext <prefix> options in set_modern_mode_if_oneliner.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove -ext <prefix> options in gmtinit_set_modern_mode_if_oneliner.\n");
 				return GMT_NOTSET;
 			}
-			API->GMT->hidden.func_level++;	/* Must do this here since it has not yet been increased by gmt_begin_module_sub ! */
+			API->GMT->hidden.func_level++;	/* Must do this here since it has not yet been increased by gmtinit_begin_module_sub ! */
 			gmt_reset_history (API->GMT);	/* A one-liner should have no history */
 
 			if ((error = GMT_Call_Module (API, "begin", GMT_MODULE_CMD, session))) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to call module begin from set_modern_mode_if_oneliner.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to call module begin from gmtinit_set_modern_mode_if_oneliner.\n");
 				return GMT_NOTSET;
 			}
 			API->GMT->current.setting.run_mode = GMT_MODERN;
@@ -13264,7 +13264,7 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt_J, struct GMT_SUBPLOT *P, struct GMT_INSET *I, bool is_psrose) {
+GMT_LOCAL bool gmtinit_build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt_J, struct GMT_SUBPLOT *P, struct GMT_INSET *I, bool is_psrose) {
 	/* Look for Cartesian -Jx|X[-]?[d|l|p<pow>][/[-]?[d|l|p<pow>]] which needs one or two ?-marks to be replaced with dummy Cartesian scales.
 	 * Otherwise, -J<code>? or -J<code><arg>/<arg>/.../? which needs only one ?-mark to be replaced with dummy map scale. */
 
@@ -13343,7 +13343,7 @@ GMT_LOCAL bool build_new_J_option (struct GMTAPI_CTRL *API, struct GMT_OPTION *o
  * an empty file called gmt.B.<fig>.<row>.<col> after applying -B, and once that file
  * exist we do not apply -B again. */
 
-GMT_LOCAL void panel_B_set (struct GMTAPI_CTRL *API, int fig, int row, int col) {
+GMT_LOCAL void gmtinit_panel_B_set (struct GMTAPI_CTRL *API, int fig, int row, int col) {
 	/* Mark that -B options have been applied for this subplot panel */
 	char Bfile[PATH_MAX] = {""};
 	FILE *fp = NULL;
@@ -13351,7 +13351,7 @@ GMT_LOCAL void panel_B_set (struct GMTAPI_CTRL *API, int fig, int row, int col) 
 	if ((fp = fopen (Bfile, "w"))) fclose (fp);
 }
 
-GMT_LOCAL bool panel_B_get (struct GMTAPI_CTRL *API, int fig, int row, int col) {
+GMT_LOCAL bool gmtinit_panel_B_get (struct GMTAPI_CTRL *API, int fig, int row, int col) {
 	/* Determine if -B options have been applied to this panel before */
 	char Bfile[PATH_MAX] = {""};
 	sprintf (Bfile, "%s/gmt.B.%d.%d.%d", API->gwf_dir, fig, row, col);
@@ -13364,7 +13364,7 @@ GMT_LOCAL bool panel_B_get (struct GMTAPI_CTRL *API, int fig, int row, int col) 
 
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
-	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
+	/* For modern runmode only - otherwise we simply call gmtinit_begin_module_sub.
 	 * We must consult the required string.  It may contain options that we need to set implicitly.
 	 * Possible letters in the required string are:
 	 *	R  The -R option is required for this program and if missing we will hunt for the last region in the history.
@@ -13419,7 +13419,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		bool add_R = true;
 		unsigned int E_flags;
 		GMT_Report (API, GMT_MSG_DEBUG, "Given -E, determine if -R is needed for pscoast.\n");
-		E_flags = strip_R_from_E_in_pscoast (GMT, *options, r_code);
+		E_flags = gmtinit_strip_R_from_E_in_pscoast (GMT, *options, r_code);
 		if (GMT->current.setting.run_mode == GMT_MODERN && !(E_flags & 1)) {	/* Just country codes and plot settings, no region specs */
 			int id = gmt_get_option_id (0, "R");		/* The -RP history item */
 			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, explore if there is a grid or plot region already.\n");
@@ -13474,9 +13474,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
-	is_PS = is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
+	is_PS = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 	if (is_PS) {
-		if (set_modern_mode_if_oneliner (API, options))	/* Look out for modern -png mymap and similar specs */
+		if (gmtinit_set_modern_mode_if_oneliner (API, options))	/* Look out for modern -png mymap and similar specs */
 			return NULL;
 	}
 
@@ -13502,7 +13502,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		GMT->current.ps.initialize = false;	/* Start from scratch */
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
-		opt_J = gmt_find_J_option (API, *options);
+		opt_J = gmtinit_find_J_option (API, *options);
 		if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
 			if ((opt = GMT_Find_Option (API, 'O', *options))) {
@@ -13615,7 +13615,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			if (strncmp (mod_name, "inset", 5U) && GMT->current.plot.inset.active && got_J) {	/* Map inset and gave -J */
-				if (build_new_J_option (API, opt_J, NULL, &GMT->current.plot.inset, is_psrose))	/* Found ?-mark(s) and replaced them */
+				if (gmtinit_build_new_J_option (API, opt_J, NULL, &GMT->current.plot.inset, is_psrose))	/* Found ?-mark(s) and replaced them */
 					GMT->current.plot.panel.no_scaling = 0;
 				else
 					GMT->current.plot.panel.no_scaling = 1;
@@ -13628,8 +13628,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			bool frame_set = false, x_set = false, y_set = false, B_set;
 			char *c = NULL;
 			int row = 0, col = 0;
-			get_current_panel (API, fig, &row, &col, NULL, NULL, NULL);
-			B_set = panel_B_get (API, fig, row, col);
+			gmtinit_get_current_panel (API, fig, &row, &col, NULL, NULL, NULL);
+			B_set = gmtinit_panel_B_get (API, fig, row, col);
 			if (exceptionb == 0 && P->first == 1 && !B_set) {
 				/* Examine all -B settings and add/merge the panel settings */
 				for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
@@ -13712,7 +13712,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 					GMT_Report (API, GMT_MSG_DEBUG, "Subplot-checker added -By axis option with arg %s\n", arg);
 				}
-				panel_B_set (API, fig, row, col);
+				gmtinit_panel_B_set (API, fig, row, col);
 			}
 			if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* Top-level function called by subplot needs to handle positioning and possibly set -J */
 				/* Set -X -Y for absolute positioning */
@@ -13722,7 +13722,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				snprintf (arg, GMT_LEN256, "a%gi", P->origin[GMT_Y] + P->y);
 				if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-				if (build_new_J_option (API, opt_J, P, NULL, is_psrose))	/* Found ?-mark(s) and replaced them */
+				if (gmtinit_build_new_J_option (API, opt_J, P, NULL, is_psrose))	/* Found ?-mark(s) and replaced them */
 					GMT->current.plot.panel.no_scaling = 0;
 				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* Do not auto-scale but use the given dimensions */
 					GMT->current.plot.panel.no_scaling = 1;
@@ -13763,7 +13763,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 			if (got_J == false) {	/* No history, apply default projection, but watch out for subplots */
 				static char *arg[2] = {"X15c", "Q15c+"};
-				unsigned int geo = is_region_geographic (GMT, *options, mod_name);
+				unsigned int geo = gmtinit_is_region_geographic (GMT, *options, mod_name);
 				if (P && (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1))	/* Nonstandard Cartesian axes directions */
 					snprintf (scl, GMT_LEN64, "X%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
 				else	/* Just append dummy width */
@@ -13797,7 +13797,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
 		bool ocean;
 		if (gmtlib_file_is_srtmrequest (API, opt->arg, &srtm_res, &ocean)) {
-			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmt_begin_module_sub has not been reached yet */
+			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
 			char *list = NULL;
 			double sgn, res[4] = {0.0, 1.0/3600.0, 0.0, 3.0/3600.0};	/* Only access 1 or 3 here */
 			struct GMT_OPTION *opt_J = GMT_Find_Option (API, 'J', *options);
@@ -13846,7 +13846,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	}
 	/* Here we can call the rest of the initialization */
 
-	return (gmt_begin_module_sub (API, lib_name, mod_name, Ccopy));
+	return (gmtinit_begin_module_sub (API, lib_name, mod_name, Ccopy));
 }
 
 /*! Backwards compatible gmt_begin_module function for external modules built with GMT 5.3 or earlier */
@@ -15284,7 +15284,7 @@ unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item
 }
 
 #ifdef HAVE_GDAL
-GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
+GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	/* Deal with proj.4 or EPSGs passed in -J option */
 	char  *item_t1 = NULL, *item_t2 = NULL, wktext[32] = {""}, *pch;
 	bool   do_free = false;
@@ -15533,13 +15533,13 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 				if (!two) {		/* A single CRS */
 					sprintf(source, "+proj=latlong +datum=WGS84");
-					error = parse_proj4 (GMT, item, dest);
+					error = gmtinit_parse_proj4 (GMT, item, dest);
 				}
 				else {
 					size_t len, k = 3;
 					len = strlen(pch);
 					pch[0] = '\0';
-					error  = parse_proj4 (GMT, item, source);
+					error  = gmtinit_parse_proj4 (GMT, item, source);
 					if (pch[3] == ' ' || pch[3] == '\t')
 						while (pch[k] && isspace(pch[k])) k++;
 					if (k == len) {
@@ -15547,7 +15547,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 						error = 1;
 						break;
 					}
-					error += parse_proj4 (GMT, &pch[k], dest);
+					error += gmtinit_parse_proj4 (GMT, &pch[k], dest);
 				}
 				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, source, dest);
 				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, dest, source);
@@ -16201,7 +16201,7 @@ unsigned int gmtlib_get_pos_of_filename (const char *url) {
 	return (unsigned int)pos;
 }
 
-GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file, unsigned int kind) {
+GMT_LOCAL bool gmtinit_check_if_we_must_download (struct GMT_CTRL *GMT, const char *file, unsigned int kind) {
 	/* Returns false if file already present unless if it is a remote file */
 	unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
 	if (pos == 1) return true;  /* Must always check since file on server might have changed and should be refreshed first */
@@ -16237,7 +16237,7 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsign
 #ifdef DEBUG
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s: Type is %s\n", file, fkind[*kind]);
 #endif
-	return (check_if_we_must_download (GMT, file, *kind));
+	return (gmtinit_check_if_we_must_download (GMT, file, *kind));
 }
 
 /*! . */
@@ -16383,7 +16383,7 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 	return error;
 }
 
-GMT_LOCAL FILE *open_figure_file (struct GMTAPI_CTRL *API, unsigned int mode, int *err) {
+GMT_LOCAL FILE *gmtinit_open_figure_file (struct GMTAPI_CTRL *API, unsigned int mode, int *err) {
 	char line[PATH_MAX] = {""}, *opt[2] = {"r", "a"};
 	FILE *fp = NULL;
 	snprintf (line, PATH_MAX, "%s/gmt.figures", API->gwf_dir);	/* Path to gmt.figures */
@@ -16411,7 +16411,7 @@ int gmt_get_graphics_id (struct GMT_CTRL *GMT, const char *format) {
 }
 
 /*! . */
-GMT_LOCAL void get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT_LEN256], char formats[GMT_LEN256]) {
+GMT_LOCAL void gmtinit_get_session_name_format (struct GMTAPI_CTRL *API, char prefix[GMT_LEN256], char formats[GMT_LEN256]) {
 	/* Read the session name [and graphics format] from file GMT_SESSION_FILE */
 	int n;
 	char file[PATH_MAX] = {""};
@@ -16455,13 +16455,13 @@ GMT_LOCAL int gmtinit_read_figures (struct GMT_CTRL *GMT, unsigned int mode, str
 	struct GMT_FIGURE *fig = NULL;
 	FILE *fp = NULL;
 
-	if ((fp = open_figure_file (GMT->parent, 0, &err)) == NULL && mode < 2) {	/* No such file, nothing to do */
+	if ((fp = gmtinit_open_figure_file (GMT->parent, 0, &err)) == NULL && mode < 2) {	/* No such file, nothing to do */
 		return 0;
 	}
 	/* Here the file gmt.figures may exists and we must read in the entries */
 	if (mode > 0) fig = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_FIGURE);
 	if (mode == 2) {	/* Insert default session figure */
-		get_session_name_format (GMT->parent, fig[0].prefix, fig[0].formats);
+		gmtinit_get_session_name_format (GMT->parent, fig[0].prefix, fig[0].formats);
 		fig[0].ID = 0;	k = 1;
 	}
 	while (fp && fgets (line, PATH_MAX, fp)) {
@@ -16515,7 +16515,7 @@ bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT) {
 	return (PS);
 }
 
-GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
+GMT_LOCAL int gmtinit_put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	/* Write the session name to file GMT_SESSION_FILE unless default. */
 	FILE *fp = NULL;
 	char file[PATH_MAX] = {""}, *c = NULL;
@@ -16550,7 +16550,7 @@ GMT_LOCAL int put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fmt[], int gcode[]) {
+GMT_LOCAL int gmtinit_get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fmt[], int gcode[]) {
 	/* Count up how many graphics formats were selected and what their codes were.
 	 * We know the arguments are all valid formats since checked by figure or begin */
 	int k, n = 0;
@@ -16565,7 +16565,7 @@ GMT_LOCAL int get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fm
 	return (n);
 }
 
-GMT_LOCAL bool check_if_autosize (struct GMTAPI_CTRL *API, int ID) {
+GMT_LOCAL bool gmtinit_check_if_autosize (struct GMTAPI_CTRL *API, int ID) {
 	/* Check if the BoundingBox line in the half-baked PostScript file has max dimension (32767x32767)
 	 * which we used to enforce automatic cropping to actual size [and possible extra margins] */
 	char file[PATH_MAX] = {""};
@@ -16582,7 +16582,7 @@ GMT_LOCAL bool check_if_autosize (struct GMTAPI_CTRL *API, int ID) {
 	return false;
 }
 
-GMT_LOCAL bool A_was_given (char *text) {
+GMT_LOCAL bool gmtinit_A_was_given (char *text) {
 	/* Determine if A is one of the arguments */
 	size_t k = 1;
 	if (!text || !text[0]) return false;	/* No args means -A was not given */
@@ -16594,7 +16594,7 @@ GMT_LOCAL bool A_was_given (char *text) {
 	return false;
 }
 
-GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
+GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	/* Loop over all registered figures and their selected formats and
 	 * convert the hidden PostScript figures to selected graphics.
 	 * If show is not NULL then we display them via gmt docs */
@@ -16626,7 +16626,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
 		/* Go through the format list and build array for -T arguments */
-		nf = get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode);
+		nf = gmtinit_get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode);
 		if (n_orig && k) {	/* Specified one or more figs via gmt figure so must switch to the current figure and update the history */
 			if ((error = GMT_Call_Module (API, "figure", GMT_MODULE_CMD, fig[k].prefix))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to switch to figure%s\n", fig[k].prefix);
@@ -16670,7 +16670,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
 			dir[0] = '\0';	/* No directory via D<dir> convert option */
-			auto_size = check_if_autosize (API, fig[k].ID);	/* Determine if the PostScript file has auto size enabled */
+			auto_size = gmtinit_check_if_autosize (API, fig[k].ID);	/* Determine if the PostScript file has auto size enabled */
 			if (fig[k].options[0]) {	/* Append figure-specific psconvert settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
@@ -16681,7 +16681,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
-				if (not_PS && auto_size && !A_was_given (fig[k].options))	/* Must always add -A if not PostScript unless when media size is given, unless crop is off via +n */
+				if (not_PS && auto_size && !gmtinit_A_was_given (fig[k].options))	/* Must always add -A if not PostScript unless when media size is given, unless crop is off via +n */
 					strcat (cmd, " -A");
 			}
 			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
@@ -16694,7 +16694,7 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API, char *show) {
 						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
-				if (not_PS && auto_size && !A_was_given (API->GMT->current.setting.ps_convert))	/* Must always add -A if not PostScript unless when media size is given */
+				if (not_PS && auto_size && !gmtinit_A_was_given (API->GMT->current.setting.ps_convert))	/* Must always add -A if not PostScript unless when media size is given */
 					strcat (cmd, " -A");
 			}
 			else if (not_PS && auto_size) /* No specific settings but must always add -A if not PostScript unless when media size is given */
@@ -16785,7 +16785,7 @@ void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, 
 	if ((*subplot) & GMT_SUBPLOT_ACTIVE) {	/* subplot is active */
 		if (((*subplot) & GMT_PANEL_NOTSET) == 0) {
 			int row, col;
-			if (get_current_panel (API, *fig, &row, &col, NULL, NULL, NULL) == 0)	/* panel set */
+			if (gmtinit_get_current_panel (API, *fig, &row, &col, NULL, NULL, NULL) == 0)	/* panel set */
 				sprintf (panel, "%u-%u", row, col);
 		}
 	}
@@ -16860,7 +16860,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 		this_k = n_figs + 1;	/* This is the ID number of the new figure we are adding */
 		if (n == 1) /* Only got a prefix so must set the default pdf format */
 			strncpy (formats, gmt_session_format[API->GMT->current.setting.graphics_format], GMT_LEN64-1);
-		if ((fp = open_figure_file (API, 1, &err)) == NULL)	/* Failure to open existing or create new file */
+		if ((fp = gmtinit_open_figure_file (API, 1, &err)) == NULL)	/* Failure to open existing or create new file */
 			return GMT_ERROR_ON_FOPEN;
 		/* Append the new entry */
 		fprintf (fp, "%d\t%s\t%s", this_k, prefix, formats);
@@ -16943,7 +16943,7 @@ int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL void set_legend_filename (struct GMTAPI_CTRL *API, char *file) {
+GMT_LOCAL void gmtinit_set_legend_filename (struct GMTAPI_CTRL *API, char *file) {
 	char panel[GMT_LEN16] = {""};
 	int fig, subplot, inset;
 
@@ -16967,7 +16967,7 @@ GMT_LOCAL void set_legend_filename (struct GMTAPI_CTRL *API, char *file) {
 
 int gmt_legend_file (struct GMTAPI_CTRL *API, char *file) {
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return 0;	/* Only available in modern mode */
-	set_legend_filename (API, file);
+	gmtinit_set_legend_filename (API, file);
 	if (access (file, R_OK) == 0)
 		return true;
 	else {	/* No such file, wipe filename */
@@ -16976,7 +16976,7 @@ int gmt_legend_file (struct GMTAPI_CTRL *API, char *file) {
 	}
 }
 
-GMT_LOCAL void draw_legend_line (struct GMTAPI_CTRL *API, FILE *fp, struct GMT_LEGEND_ITEM *item, unsigned int code) {
+GMT_LOCAL void gmtinit_draw_legend_line (struct GMTAPI_CTRL *API, FILE *fp, struct GMT_LEGEND_ITEM *item, unsigned int code) {
 	if (item->draw & code) {	/* Want to draw a line */
 		char *type = "DV";
 		code--;	/* Make 1 and 2 become 0 and 1 for index use */
@@ -17014,7 +17014,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* Only available in modern mode */
 	if (item == NULL) return;	/* Nothing given */
 
-	set_legend_filename (API, file);	/* Get the legend filename given current scope */
+	gmtinit_set_legend_filename (API, file);	/* Get the legend filename given current scope */
 
 	/* OK, do we append or create? */
 
@@ -17064,7 +17064,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		fprintf (fp, "G %s\n", item->gap);
 	/* Horizontal lines are normally drawn before the symbol placement */
 	if ((item->draw & GMT_LEGEND_DRAW_D) && ((item->draw & GMT_LEGEND_DRAW_V) == 0 || item->pen[GMT_LEGEND_PEN_V][0] == '\0'))
-		draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_D);	/* Draw horizontal line, if requested, before symbol */
+		gmtinit_draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_D);	/* Draw horizontal line, if requested, before symbol */
 	if (item->subheader[0]) {	/* Want to place a line header first */
 		if (item->font[0])	/* Use the given font */
 			fprintf (fp, "L %s %c %s\n", item->font, item->code, item->subheader);
@@ -17074,7 +17074,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	if (item->ncols > 0)	/* Specified a different number of columns */
 		fprintf (fp, "N %d\n", item->ncols);
 	if (((item->draw & GMT_LEGEND_DRAW_V) && item->pen[GMT_LEGEND_PEN_V][0] == '\0'))	/* Initialize the vertical line setting */
-		draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_V);
+		gmtinit_draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_V);
 	/* Get the symbol size */
 	if (item->size > 0.0)	/* Hard-wired symbol size given */
 		size = item->size;
@@ -17098,8 +17098,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	}
 
 	if (item->draw & GMT_LEGEND_DRAW_V && item->pen[GMT_LEGEND_PEN_V][0]) {	/* Must end with horizontal, then vertical line */
-		draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_D);		/* Draw horizontal line, if requested, after last symbol */
-		draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_V);
+		gmtinit_draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_D);		/* Draw horizontal line, if requested, after last symbol */
+		gmtinit_draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_V);
 	}
 	fclose (fp);
 }
@@ -17198,7 +17198,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			snprintf (dir, PATH_MAX, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
-			error = put_session_name (API, text);		/* Store session name, possibly setting psconvert options */
+			error = gmtinit_put_session_name (API, text);		/* Store session name, possibly setting psconvert options */
 			gmt_putdefaults (API->GMT, dir);		/* Write current GMT defaults to this sessions gmt.conf file in the workflow directory */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
@@ -17217,8 +17217,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			if (!access (file, R_OK))	/* subplot end was never called */
 				GMT_Report (API, GMT_MSG_WARNING, "subplot was never completed - plot items in last panel may be missing\n");
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session ID = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[3]);
-			if ((error = process_figures (API, text)))
-				GMT_Report (API, GMT_MSG_ERROR, "process_figures returned error %d\n", error);
+			if ((error = gmtinit_process_figures (API, text)))
+				GMT_Report (API, GMT_MSG_ERROR, "gmtinit_process_figures returned error %d\n", error);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Destroying the current workflow directory %s\n", API->gwf_dir);
 			if (gmt_remove_dir (API, dir, false))
 				GMT_Report (API, GMT_MSG_WARNING, "Unable to remove directory %s [permissions?]\n", dir);
