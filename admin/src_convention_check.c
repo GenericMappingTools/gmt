@@ -114,7 +114,7 @@ static void wipe_line (char *line) {
 }
 
 int main (int argc, char **argv) {
-	int k, f, w, s, n, c, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1, verbose = 0, warn_only = 0;
+	int k, f, w, s, n, c, t, is_static, err, n_funcs = 0, comment = 0, brief = 0, ext = 0, log = 1, verbose = 0, warn_only = 0;
 	int set_dev, set_lib, rec;
 	size_t L;
 	char line[512] = {""}, prefix[64] = {""};
@@ -269,16 +269,20 @@ int main (int argc, char **argv) {
 		if (verbose) fprintf (stderr, "\tsrc_convention_check: Scanning %s\n", argv[k]);
 		set_dev = is_recognized (argv[k], modules);	/* Called in a module */
 		set_lib = (strstr (argv[k], "gmt_") != NULL || strstr (argv[k], "common_") != NULL);	/* Called in a library file */
+		rec = 0;
 		while (fgets (line, 512, fp)) {
+			rec++;
 			if (line[0] == '/' || line[1] == '*') continue;	/* Comment */
 			if (strchr (" \t", line[0]) == NULL) continue;	/* Not a called function */
 			if (strchr (line, '(') == NULL) continue;	/* Not a function call */
 			wipe_line (line);
+			t = 0;
+			while (strchr ("\t", line[t])) t++; /* Wind past leading white space */
 			for (f = 0; f < n_funcs; f++) {
 				L = strlen (F[f].name);
-				if ((p = strstr (line, F[f].name)) == NULL) continue;
-				q = p-1;	/* Previous char */
-				if (strlen (p) > (L+2) && (p[L] == '(' || (p[L] == ' ' && p[L+1] == '(')) && (q >= line && strchr (" \t", q[0]))) {	/* Found a call to this function */
+				if ((p = strstr (&line[t], F[f].name)) == NULL) continue;
+				q = p-1;	/* Previous char (which we know exists, so q[0] below is valid */
+				if (strlen (p) > (L+2) && (p[L] == '(' || (p[L] == ' ' && p[L+1] == '(')) && strchr (" \t(", q[0])) {	/* Found a call to this function */
 					F[f].in[k] = 1;
 					F[f].n_calls++ ;
 				}
