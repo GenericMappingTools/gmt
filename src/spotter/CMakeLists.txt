@@ -29,7 +29,7 @@ set (SUPPL_NAME spotter)
 set (SUPPL_HEADERS spotter.h)
 set (SUPPL_PROGS_SRCS backtracker.c gmtpmodeler.c grdpmodeler.c grdrotater.c polespotter.c
 	grdspotter.c hotspotter.c originater.c rotconverter.c rotsmoother.c)
-set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} libspotter.c)
+set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} spotter.c)
 set (SUPPL_EXAMPLE_FILES README.spotter)
 
 if (UNIX)

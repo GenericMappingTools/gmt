@@ -14,7 +14,7 @@
  *   Contact info: www.soest.hawaii.edu/wessel
  *--------------------------------------------------------------------*/
 /*
- * SPOTTER.H: Include file for programs that link with libspotter.a.
+ * SPOTTER.H: Include file for programs that link with spotter.a.
  *
  * Author:	Paul Wessel, SOEST, Univ. of Hawaii, Honolulu, HI, USA
  * Date:	19-JUL-2010
@@ -24,7 +24,7 @@
 
 /*!
  * \file spotter.h
- * \brief Include file for programs that link with libspotter.
+ * \brief Include file for programs that link with spotter.
  */
 
 #define EQ_RAD 6371.0087714
@@ -86,7 +86,7 @@ struct SPOTTER_ROT {	/* Holds -E information */
 	double lon, lat, w, age;	/* Single finite rotation, if given */
 };
 
-/* ANSI-C Function prototypes (see libspotter.c for details): */
+/* ANSI-C Function prototypes (see spotter.c for details): */
 
 EXTERN_MSC void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e);
 EXTERN_MSC unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct SPOTTER_ROT *R);

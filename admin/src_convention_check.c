@@ -274,15 +274,15 @@ int main (int argc, char **argv) {
 			rec++;
 			if (line[0] == '/' || line[1] == '*') continue;	/* Comment */
 			if (strchr (" \t", line[0]) == NULL) continue;	/* Not a called function */
-			if (strchr (line, '(') == NULL) continue;	/* Not a function call */
 			wipe_line (line);
+			if (strchr (line, '(') == NULL) continue;	/* Not a function call */
 			t = 0;
 			while (strchr ("\t", line[t])) t++; /* Wind past leading white space */
 			for (f = 0; f < n_funcs; f++) {
 				L = strlen (F[f].name);
 				if ((p = strstr (&line[t], F[f].name)) == NULL) continue;
 				q = p-1;	/* Previous char (which we know exists, so q[0] below is valid */
-				if (strlen (p) > (L+2) && (p[L] == '(' || (p[L] == ' ' && p[L+1] == '(')) && strchr (" \t(", q[0])) {	/* Found a call to this function */
+				if (strlen (p) > (L+2) && (p[L] == '(' || (p[L] == ' ' && p[L+1] == '(')) && strchr (" \t()", q[0])) {	/* Found a call to this function */
 					F[f].in[k] = 1;
 					F[f].n_calls++ ;
 				}
