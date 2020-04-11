@@ -1739,7 +1739,7 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
  *		gmt_gdal_write_grd_info, gmt_gdal_read_grd, gmt_gdal_write_grd
  *-----------------------------------------------------------*/
 
-static inline void free_from_gdalread (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
+static inline void gmtcustomio_free_from_gdalread (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
 	int i;
 	gmt_M_free (GMT, from_gdalread->ColorMap);
 	for (i = 0; i < from_gdalread->RasterCount; i++)
@@ -1772,7 +1772,7 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	if (gmt_gdalread (GMT, HH->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading file (metadata) with gdalread.\n");
 		gmt_M_free (GMT, to_gdalread);
-		free_from_gdalread (GMT, from_gdalread);
+		gmtcustomio_free_from_gdalread (GMT, from_gdalread);
 		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
@@ -1824,7 +1824,7 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		header->ProjRefWKT   = strdup (from_gdalread->ProjRefWKT);
 
 	gmt_M_free (GMT, to_gdalread);
-	free_from_gdalread (GMT, from_gdalread);
+	gmtcustomio_free_from_gdalread (GMT, from_gdalread);
 	gmt_M_free (GMT, from_gdalread);
 
 	return (GMT_NOERROR);
@@ -1978,7 +1978,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR data type not supported with gdalread in gmt_customio.\n");
 			gmt_M_free (GMT, to_gdalread);
-			free_from_gdalread (GMT, from_gdalread);
+			gmtcustomio_free_from_gdalread (GMT, from_gdalread);
 			gmt_M_free (GMT, from_gdalread);
 			return (GMT_GRDIO_OPEN_FAILED);
 		}
@@ -2027,7 +2027,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		gmt_M_free (GMT, from_gdalread->Int32.data);
 
 	gmt_M_free (GMT, to_gdalread);
-	free_from_gdalread (GMT, from_gdalread);
+	gmtcustomio_free_from_gdalread (GMT, from_gdalread);
 	gmt_M_free (GMT, from_gdalread);
 
 	return (GMT_NOERROR);

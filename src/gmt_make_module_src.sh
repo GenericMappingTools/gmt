@@ -217,7 +217,7 @@ fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
 };
 
-static int sort_on_classic (const void *vA, const void *vB) {
+static int gmt${LIB}module_sort_on_classic (const void *vA, const void *vB) {
 	const struct Gmt_moduleinfo *A = vA, *B = vB;
 	if (A == NULL) return +1;	/* Get the NULL entry to the end */
 	if (B == NULL) return -1;	/* Get the NULL entry to the end */
@@ -281,14 +281,14 @@ if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 
 /* Function to exclude some special core modules from being reported by gmt --help|show-modules */
-GMT_LOCAL int skip_this_module (const char *name) {
+GMT_LOCAL int gmt${LIB}module_skip_this_module (const char *name) {
 	if (!strncmp (name, "gmtread", 7U)) return 1;	/* Skip the gmtread module */
 	if (!strncmp (name, "gmtwrite", 8U)) return 1;	/* Skip the gmtwrite module */
 	return 0;	/* Display this one */
 }
 
 /* Function to exclude modern mode modules from being reported by gmt --show-classic */
-GMT_LOCAL int skip_modern_module (const char *name) {
+GMT_LOCAL int gmt${LIB}module_skip_modern_module (const char *name) {
 	if (!strncmp (name, "subplot", 7U)) return 1;	/* Skip the subplot module */
 	if (!strncmp (name, "figure", 6U)) return 1;	/* Skip the figure module */
 	if (!strncmp (name, "begin", 5U)) return 1;		/* Skip the begin module */
@@ -325,7 +325,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].cname)) {
+		if (API->external || !gmt${LIB}module_skip_this_module (g_${L_TAG}_module[module_id].cname)) {
 			snprintf (message, GMT_LEN256, "%-16s %s\n",
 				g_${L_TAG}_module[module_id].mname, g_${L_TAG}_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
@@ -364,7 +364,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->external || !skip_this_module (g_${L_TAG}_module[module_id].cname))
+		if (API->external || !gmt${LIB}module_skip_this_module (g_${L_TAG}_module[module_id].cname))
 			printf ("%s\n", g_${L_TAG}_module[module_id].mname);
 EOF
 else
@@ -397,13 +397,13 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 		++n_modules;
 
 	/* Sort array on classic names since original array is sorted on modern names */
-	qsort (g_${L_TAG}_module, n_modules, sizeof (struct Gmt_moduleinfo), sort_on_classic);
+	qsort (g_${L_TAG}_module, n_modules, sizeof (struct Gmt_moduleinfo), gmt${LIB}module_sort_on_classic);
 
 	while (g_${L_TAG}_module[module_id].cname != NULL) {
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		if (API->external || !(skip_this_module (g_${L_TAG}_module[module_id].cname) || skip_modern_module (g_${L_TAG}_module[module_id].cname)))
+		if (API->external || !(gmt${LIB}module_skip_this_module (g_${L_TAG}_module[module_id].cname) || gmt${LIB}module_skip_modern_module (g_${L_TAG}_module[module_id].cname)))
 			printf ("%s\n", g_${L_TAG}_module[module_id].cname);
 EOF
 else
