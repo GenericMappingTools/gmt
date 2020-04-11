@@ -117,10 +117,10 @@ void spotter_matrix_to_pole (struct GMT_CTRL *GMT, double T[3][3], double *plon,
 }
 
 #if 0	/* Currently unused */
-GMT_LOCAL void make_rot0_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double R[3][3], double E[]) {
+GMT_LOCAL void spotter_make_rot0_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double R[3][3], double E[]) {
 	/* Based on Cox and Hart, 1986 */
 	/* This starts setting up the matrix without knowing the angle of rotation
-	 * Call set_rot_angle with R, E, and omega to complete the matrix
+	 * Call spotter_set_rot_angle with R, E, and omega to complete the matrix
 	 * lonp, latp	Euler pole in degrees
 	 *
 	 *	R		the 3x3 rotation matrix without terms depending on omega
@@ -142,7 +142,7 @@ GMT_LOCAL void make_rot0_matrix (struct GMT_CTRL *GMT, double lonp, double latp,
 }
 #endif
 
-GMT_LOCAL void reverse_rotation_order (struct EULER *p, unsigned int n) {
+GMT_LOCAL void spotter_reverse_rotation_order (struct EULER *p, unsigned int n) {
 	/* Simply reverses the array from 1:n to n:1 */
 	unsigned int i, j;
 	struct EULER p_tmp;
@@ -157,7 +157,7 @@ GMT_LOCAL void reverse_rotation_order (struct EULER *p, unsigned int n) {
 	}
 }
 
-GMT_LOCAL void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], unsigned int n, unsigned int stages, bool convert) {
+GMT_LOCAL void spotter_xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], unsigned int n, unsigned int stages, bool convert) {
 	/* Reload the EULER structure from the lon, lat, w arrays.
 	 * stages is true if we are loading stage rotations (false is finite poles).
 	 * convert is true if we must change angles to rates or vice versa */
@@ -177,14 +177,14 @@ GMT_LOCAL void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[],
 	}
 }
 
-GMT_LOCAL void set_I_matrix (double R[3][3]) {
+GMT_LOCAL void spotter_set_I_matrix (double R[3][3]) {
 	/* Simply sets R to I, the identity matrix */
 
 	gmt_M_memset (R, 9, double);
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
 
-GMT_LOCAL bool must_do_track (int sideA[], int sideB[]) {
+GMT_LOCAL bool spotter_must_do_track (int sideA[], int sideB[]) {
 	int dx, dy;
 	/* First check if any of the two points are inside the box */
 	if (sideA[0] == 0 && sideA[1] == 0) return (true);
@@ -197,7 +197,7 @@ GMT_LOCAL bool must_do_track (int sideA[], int sideB[]) {
 	return (false);
 }
 
-GMT_LOCAL void set_inout_sides (double x, double y, double wesn[], int sideXY[2]) {
+GMT_LOCAL void spotter_set_inout_sides (double x, double y, double wesn[], int sideXY[2]) {
 	/* Given the rectangular region in wesn, return -1, 0, +1 for
 	 * x and y if the point is left/below (-1) in (0), or right/above (+1).
 	 *
@@ -237,7 +237,7 @@ void spotter_covar_to_record (struct GMT_CTRL *GMT, struct EULER *e, double K[])
 	for (k = 1; k < 7; k++) K[k] *= (e->k_hat / e->g);
 }
 
-GMT_LOCAL void record_to_covar (struct EULER *e, double K[]) {
+GMT_LOCAL void spotter_record_to_covar (struct EULER *e, double K[]) {
 	/* Translates the 9 values read from plate motion file [k_hat a b c d e f g df]
 	 * into the Euler covariance matrix */
 
@@ -304,7 +304,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *GMT, struct EULER p[], unsigned
 	elat = gmt_M_memory (GMT, NULL, n, double);
 	ew   = gmt_M_memory (GMT, NULL, n, double);
 
-	set_I_matrix (R_young);		/* The first time, R_young is simply I */
+	spotter_set_I_matrix (R_young);		/* The first time, R_young is simply I */
 
 	/* First forward stage pole is the youngest total reconstruction pole */
 
@@ -322,7 +322,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *GMT, struct EULER p[], unsigned
 
 	/* Repopulate the EULER structure given the rotation parameters */
 
-	xyw_to_struct_euler (p, elon, elat, ew, n, true, stage_rates);
+	spotter_xyw_to_struct_euler (p, elon, elat, ew, n, true, stage_rates);
 
 	gmt_M_free (GMT, elon);
 	gmt_M_free (GMT, elat);
@@ -330,7 +330,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *GMT, struct EULER p[], unsigned
 
 	/* Flip order since stages go from oldest to youngest */
 
-	reverse_rotation_order (p, n);	/* Flip order since stages go from oldest to youngest */
+	spotter_reverse_rotation_order (p, n);	/* Flip order since stages go from oldest to youngest */
 }
 
 bool spotter_GPlates_pair (char *file) {
@@ -526,7 +526,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 			}
 			if (nf > 5) { /* [K = covars] is stored as [k_hat a b c d e f g df] */
 				if (K[8] == 0.0) K[8] = 10000.0;	/* No d.f. given */
-				record_to_covar (&e[i], K);
+				spotter_record_to_covar (&e[i], K);
 			}
 			if (total_in && invert) e[i].omega = -e[i].omega;	/* Want the inverse rotation; easy to do if total reconstruction rotations */
 		}
@@ -726,7 +726,7 @@ unsigned int spotter_backtrack (struct GMT_CTRL *GMT, double xp[], double yp[], 
 
 		t = tp[i];
 
-		if (box_check) set_inout_sides (xp[i], yp[i], wesn, sideB);
+		if (box_check) spotter_set_inout_sides (xp[i], yp[i], wesn, sideB);
 		while (t > t_zero) {	/* As long as we're not back at zero age */
 			if (box_check) sideA[0] = sideB[0], sideA[1] = sideB[1];
 
@@ -762,8 +762,8 @@ unsigned int spotter_backtrack (struct GMT_CTRL *GMT, double xp[], double yp[], 
 			if (next_x >= TWO_PI) next_x -= TWO_PI;
 
 			if (box_check) {	/* See if this segment _might_ involve the box in any way; if so do the track sampling */
-				set_inout_sides (next_x, next_y, wesn, sideB);
-				go = must_do_track (sideA, sideB);
+				spotter_set_inout_sides (next_x, next_y, wesn, sideB);
+				go = spotter_must_do_track (sideA, sideB);
 			}
 			if (path) {
 				if (!bend) {
@@ -907,7 +907,7 @@ unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[],
 
 		t = t_zero;
 
-		if (box_check) set_inout_sides (xp[i], yp[i], wesn, sideB);
+		if (box_check) spotter_set_inout_sides (xp[i], yp[i], wesn, sideB);
 		while (t < tp[i]) {	/* As long as we're not back at zero age */
 			if (box_check) sideA[0] = sideB[0], sideA[1] = sideB[1];
 			stage = ns - 1;
@@ -943,8 +943,8 @@ unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[],
 			if (next_x >= TWO_PI) next_x -= TWO_PI;
 
 			if (box_check) {	/* See if this segment _might_ involve the box in any way; if so do the track sampling */
-				set_inout_sides (next_x, next_y, wesn, sideB);
-				go = must_do_track (sideA, sideB);
+				spotter_set_inout_sides (next_x, next_y, wesn, sideB);
+				go = spotter_must_do_track (sideA, sideB);
 			}
 			if (path) {
 				if (!bend) {
@@ -1052,7 +1052,7 @@ void spotter_total_to_stages (struct GMT_CTRL *GMT, struct EULER p[], unsigned i
 	elat = gmt_M_memory (GMT, NULL, n, double);
 	ew   = gmt_M_memory (GMT, NULL, n, double);
 
-	set_I_matrix (R_young);		/* The first time, R_young is simply I */
+	spotter_set_I_matrix (R_young);		/* The first time, R_young is simply I */
 
 	t_old = 0.0;
 	for (i = 0; i < n; i++) {
@@ -1068,13 +1068,13 @@ void spotter_total_to_stages (struct GMT_CTRL *GMT, struct EULER p[], unsigned i
 
 	/* Repopulate the EULER structure given the rotation parameters */
 
-	xyw_to_struct_euler (p, elon, elat, ew, n, true, stage_rates);
+	spotter_xyw_to_struct_euler (p, elon, elat, ew, n, true, stage_rates);
 
 	gmt_M_free (GMT, elon);
 	gmt_M_free (GMT, elat);
 	gmt_M_free (GMT, ew);
 
-	reverse_rotation_order (p, n);	/* Flip order since stages go from oldest to youngest */
+	spotter_reverse_rotation_order (p, n);	/* Flip order since stages go from oldest to youngest */
 }
 
 void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[], unsigned int n, bool finite_rates, bool stage_rates) {
@@ -1091,13 +1091,13 @@ void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[], unsigned i
 
 	/* Expects stage pole models to have oldest poles first, so we must flip order */
 
-	reverse_rotation_order (p, n);	/* Expects stage pole models to have oldest poles first, so we must flip order */
+	spotter_reverse_rotation_order (p, n);	/* Expects stage pole models to have oldest poles first, so we must flip order */
 
 	elon = gmt_M_memory (GMT, NULL, n, double);
 	elat = gmt_M_memory (GMT, NULL, n, double);
 	ew   = gmt_M_memory (GMT, NULL, n, double);
 
-	set_I_matrix (R_old);		/* The first time, R_old is simply I */
+	spotter_set_I_matrix (R_old);		/* The first time, R_old is simply I */
 
 	for (stage = 0; stage < n; stage++) {
 		if (stage_rates) p[stage].omega *= p[stage].duration;					/* Convert opening rate to opening angle */
@@ -1110,7 +1110,7 @@ void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[], unsigned i
 
 	/* Repopulate the EULER structure given the rotation parameters */
 
-	xyw_to_struct_euler (p, elon, elat, ew, n, false, finite_rates);
+	spotter_xyw_to_struct_euler (p, elon, elat, ew, n, false, finite_rates);
 
 	gmt_M_free (GMT, elon);
 	gmt_M_free (GMT, elat);
@@ -1282,7 +1282,7 @@ double spotter_t2w (struct GMT_CTRL *GMT, struct EULER a[], unsigned int n, doub
 }
 
 #if 0	/* Seems to be unused */
-void set_rot_angle (double w, double R[3][3], double E[])
+void spotter_set_rot_angle (double w, double R[3][3], double E[])
 {	/* Sets R using R(no_omega) and the given rotation angle w in radians */
 	double sin_w, cos_w, c, E_x, E_y, E_z;
 
@@ -1833,7 +1833,7 @@ void spotter_tangentplane (struct GMT_CTRL *GMT, double lon, double lat, double 
 	spotter_matrix_mult (GMT, Rlat, Rlon, R);			/* R converts between (x,y,z) and( tx, ty, tz) coordinates in tangent plane */
 }
 
-GMT_LOCAL bool on_the_ellipse (double xyz[3], double L[3], double c) {
+GMT_LOCAL bool spotter_on_the_ellipse (double xyz[3], double L[3], double c) {
 	unsigned int i;
 	double sum;
 	sum = c * c;
@@ -1843,7 +1843,7 @@ GMT_LOCAL bool on_the_ellipse (double xyz[3], double L[3], double c) {
 
 void spotter_ellipsoid_normal (struct GMT_CTRL *GMT, double X[3], double L[3], double c, double N[3]) {
 	/* Compute normal vector N at given point X ON the ellipse */
-	if (!on_the_ellipse (X, L, c)) {
+	if (!spotter_on_the_ellipse (X, L, c)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Point X is not on the ellipsoid in ellipsoid_normal!");
 		return;
 	}
