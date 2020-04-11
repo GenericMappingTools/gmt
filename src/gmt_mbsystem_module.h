@@ -27,11 +27,11 @@ EXTERN_MSC int GMT_mbgrdtiff (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mbswath (void *API, int mode, void *args);
 
 /* Pretty print all modules in the GMT mbsystem library and their purposes */
-EXTERN_MSC void gmt_mbsystem_module_show_all (void *API);
+EXTERN_MSC void gmtlib_mbsystem_module_show_all (void *API);
 /* List all modules in the GMT mbsystem library to stdout */
-EXTERN_MSC void gmt_mbsystem_module_list_all (void *API);
+EXTERN_MSC void gmtlib_mbsystem_module_list_all (void *API);
 /* Function called by GMT_Encode_Options so developers can get information about a module */
-EXTERN_MSC const char * gmt_mbsystem_module_info (void *API, char *candidate);
+EXTERN_MSC const char * gmtlib_mbsystem_module_info (void *API, char *candidate);
 
 #ifdef __cplusplus
 }
