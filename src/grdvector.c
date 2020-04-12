@@ -476,7 +476,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			Ctrl->S.factor *= (GMT->current.proj.KM_PR_DEG / GMT_DEG2SEC_F);
 			break;
 		case 'e':
-			Ctrl->S.factor /= METERS_IN_A_KM;
+			Ctrl->S.factor *= (1 / METERS_IN_A_KM);	/* 1 is "meters in a meter" ... */
 			break;
 		case 'f':
 			Ctrl->S.factor *= (METERS_IN_A_FOOT / METERS_IN_A_KM);
@@ -485,10 +485,10 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			/* Already in km */
 			break;
 		case 'M':
-			Ctrl->S.factor /= (METERS_IN_A_MILE / METERS_IN_A_KM);
+			Ctrl->S.factor *= (METERS_IN_A_MILE / METERS_IN_A_KM);
 			break;
 		case 'n':
-			Ctrl->S.factor /= (METERS_IN_A_NAUTICAL_MILE / METERS_IN_A_KM);
+			Ctrl->S.factor *= (METERS_IN_A_NAUTICAL_MILE / METERS_IN_A_KM);
 			break;
 		case 'u':
 			Ctrl->S.factor *= (METERS_IN_A_SURVEY_FOOT / METERS_IN_A_KM);
