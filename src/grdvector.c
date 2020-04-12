@@ -62,9 +62,10 @@ struct GRDVECTOR_CTRL {
 		bool active;
 		struct GMT_SYMBOL S;
 	} Q;
-	struct S {	/* -S[l]<scale> */
+	struct S {	/* -S[l|i]<length|scale>[<unit>] */
 		bool active;
 		bool constant;
+		bool invert;
 		char unit;
 		double factor;
 	} S;
@@ -108,7 +109,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <gridx> <gridy> %s %s [-A] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] %s[-N] %s%s[-Q<params>] [-S[i|l]<scale>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] %s[-N] %s%s[-Q<params>] [-S[i|l]<length|scale>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [-W<pen>] [%s]\n\t[%s] [-Z] %s[%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
@@ -133,17 +134,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Modify vector attributes [Default gives stick-plot].\n");
 	gmt_vector_syntax (API->GMT, 15);
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set scale for vector lengths in data units per plot distance unit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit  [1%s].\n",
-		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend l to instead set a fixed length (in given unit) for all vectors.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   These vectors are straight and their plot lengths are independent of the projection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors you may alternatively give data units per distance unit\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   by appending any of the units in %s to the scale.\n", GMT_DIM_UNITS);
-	GMT_Message (API, GMT_TIME_NONE, "\t   These are geovectors and their plot lengths depend on the projection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e., in %s/<unit> or km/<unit>\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Set lengths for vectors in <data-units> per length unit (e.g., 10 nTesla/yr per cm).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append %s to indicate cm, inch, or point as the desired plot length unit [%s].\n",
+		GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   These Cartesian vectors are straight and plot lengths are independent of projection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors you may alternatively give <data-units> per map distance unit\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   by appending any of the distance units in %s to the length.\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   These geovectors may curve and plot lengths may depend on the projection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, e.g., in %s or km per <data-unit>.\n",
 	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Vi to see the min, max, and mean vector length.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend l to instead set a fixed length (in given unit) for all vectors.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -V to see the min, max, and mean vector length of plotted vectors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes.", 0);
@@ -272,23 +273,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 					}
 				}
 				break;
-			case 'S':	/* Scale */
+			case 'S':	/* Scale -S[l|i]<length|scale>[<unit>] */
 				Ctrl->S.active = true;
-				len = strlen (opt->arg) - 1;
-				j = (opt->arg[0] == 'i') ? 1 : 0;
+				len = strlen (opt->arg) - 1;	/* Location of expected unit */
+				j = (opt->arg[0] == 'i') ? 1 : 0;	/* j = 1 if -Si was selected */
 				if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS, (int)opt->arg[len]))	/* Recognized plot length or map distance unit character */
 					Ctrl->S.unit = opt->arg[len];
-				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit means trouble */
-					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unrecognized unit %c\n", opt->arg[len]);
+				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit at the end means trouble */
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unrecognized length unit %c\n", opt->arg[len]);
 					n_errors++;
 				}
-				if (opt->arg[0] == 'l' || opt->arg[0] == 'L') {
+				if (opt->arg[0] == 'l') {	/* Want a fixed length for all vectors (ignore magnitudes) */
 					Ctrl->S.constant = true;
 					Ctrl->S.factor = atof (&opt->arg[1]);
 				}
-				else
+				else	/* Get the length or scale */
 					Ctrl->S.factor = atof (&opt->arg[j]);
-				if (j == 1) Ctrl->S.factor = 1.0 / Ctrl->S.factor;	/* Got the inverse value */
+				if (j == 1) Ctrl->S.invert = true;
 				break;
 			case 'T':	/* Rescale Cartesian angles */
 				Ctrl->T.active = true;
@@ -340,7 +341,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	uint64_t ij;
 
 	double tmp, x, y, plot_x, plot_y, x_off, y_off, f, headpen_width = 0.0;
-	double x2, y2, wesn[4], value, vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
+	double x2, y2, wesn[4], value, vec_data_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
 	struct GMT_PALETTE *P = NULL;
@@ -424,25 +425,31 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->C.active) {
-		double v_min, v_max;
+		double v_data_min, v_data_max;
 		if (Ctrl->A.active) {	/* Polar grid, just use min/max of radius grid */
-			v_min = Grid[0]->header->z_min;
-			v_max = Grid[0]->header->z_max;
+			v_data_min = Grid[0]->header->z_min;
+			v_data_max = Grid[0]->header->z_max;
 		}
 		else {	/* Find min/max vector lengths from the components */
-			v_min = DBL_MAX;	v_max = 0.0;
+			v_data_min = DBL_MAX;	v_data_max = 0.0;
 			gmt_M_grd_loop (GMT, Grid[GMT_X], row, col, ij) {
-				vec_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
-				if (vec_length < v_min) v_min = vec_length;
-				if (vec_length > v_max) v_max = vec_length;
+				vec_data_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
+				if (vec_data_length < v_data_min) v_data_min = vec_data_length;
+				if (vec_data_length > v_data_max) v_data_max = vec_data_length;
 			}
 		}
-		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_min, v_max, Ctrl->C.dz, GMT_DEFAULT_CPT)) == NULL) {
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_data_min, v_data_max, Ctrl->C.dz, GMT_DEFAULT_CPT)) == NULL) {
 			Return (API->error);
 		}
 	}
 
 	Geographic = (gmt_M_is_geographic (GMT, GMT_IN));	/* Will be overridden if c|i|p units for scaling is selected */
+
+	if (!Ctrl->S.invert) {
+		double was = Ctrl->S.factor;
+		Ctrl->S.factor = 1.0 / Ctrl->S.factor;	/* Turn length into a scale */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Vector scale of %g <data-unit>/%c converts to %g %c/<data-unit>.\n", was, Ctrl->S.unit, Ctrl->S.factor, Ctrl->S.unit);
+	}
 
 	switch (Ctrl->S.unit) {	/* Adjust for possible unit selection */
 		/* First three choices will give straight vectors scaled from user length to plot lengths */
@@ -469,7 +476,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			Ctrl->S.factor *= (GMT->current.proj.KM_PR_DEG / GMT_DEG2SEC_F);
 			break;
 		case 'e':
-			Ctrl->S.factor /= METERS_IN_A_KM;
+			Ctrl->S.factor *= (1 / METERS_IN_A_KM);	/* 1 is "meters in a meter" ... */
 			break;
 		case 'f':
 			Ctrl->S.factor *= (METERS_IN_A_FOOT / METERS_IN_A_KM);
@@ -478,10 +485,10 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			/* Already in km */
 			break;
 		case 'M':
-			Ctrl->S.factor /= (METERS_IN_A_MILE / METERS_IN_A_KM);
+			Ctrl->S.factor *= (METERS_IN_A_MILE / METERS_IN_A_KM);
 			break;
 		case 'n':
-			Ctrl->S.factor /= (METERS_IN_A_NAUTICAL_MILE / METERS_IN_A_KM);
+			Ctrl->S.factor *= (METERS_IN_A_NAUTICAL_MILE / METERS_IN_A_KM);
 			break;
 		case 'u':
 			Ctrl->S.factor *= (METERS_IN_A_SURVEY_FOOT / METERS_IN_A_KM);
@@ -492,7 +499,6 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			break;
 	}
 
-	if (!Ctrl->S.constant) Ctrl->S.factor = 1.0 / Ctrl->S.factor;
 	if (Geographic) {	/* Now that we know this we make sure -T is disabled if given */
 		if (Ctrl->T.active) {	/* This is a mistake */
 			Ctrl->T.active = false;
@@ -567,7 +573,8 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report min/max/mean scaled vector length */
-		double v_min = DBL_MAX, v_max = -DBL_MAX, v_mean = 0.0;
+		double v_scaled_min = DBL_MAX, v_scaled_max = -DBL_MAX, v_scaled_mean = 0.0;
+		double v_data_min = DBL_MAX, v_data_max = -DBL_MAX, v_data_mean = 0.0;
 		uint64_t v_n = 0;
 		char v_unit[GMT_LEN8] = {""};
 
@@ -584,36 +591,48 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				}
 
 				if (Ctrl->A.active) {	/* Got r,theta grids */
-					vec_length = Grid[0]->data[ij];
-					if (vec_length == 0.0) continue;	/* No length = no plotting */
-					if (vec_length < 0.0)	/* Interpret negative lengths to mean pointing in opposite direction 180-degrees off */
-						vec_length = -vec_length;
+					vec_data_length = Grid[0]->data[ij];
+					if (vec_data_length == 0.0) continue;	/* No length = no plotting */
+					if (vec_data_length < 0.0)	/* Interpret negative lengths to mean pointing in opposite direction 180-degrees off */
+						vec_data_length = -vec_data_length;
 				}
 				else {	/* Cartesian component grids: Convert to polar form of radius, theta */
-					vec_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
-					if (vec_length == 0.0) continue;	/* No length = no plotting */
+					vec_data_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
+					if (vec_data_length == 0.0) continue;	/* No length = no plotting */
 				}
-				scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
+				scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_data_length * Ctrl->S.factor;
 				/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */
-				if (scaled_vec_length < v_min) v_min = scaled_vec_length;
-				if (scaled_vec_length > v_max) v_max = scaled_vec_length;
-				v_mean += scaled_vec_length;
+				if (vec_data_length < v_data_min) v_data_min = vec_data_length;
+				if (vec_data_length > v_data_max) v_data_max = vec_data_length;
+				v_data_mean += vec_data_length;
+				if (scaled_vec_length < v_scaled_min) v_scaled_min = scaled_vec_length;
+				if (scaled_vec_length > v_scaled_max) v_scaled_max = scaled_vec_length;
+				v_scaled_mean += scaled_vec_length;
 				v_n++;
 			}
 		}
-		if (v_n) v_mean /= v_n;
-		if (Geographic)
+		if (v_n) {	/* Compute the means */
+			v_data_mean /= v_n;
+			v_scaled_mean /= v_n;
+		}
+		if (Geographic)	/* Since regardless of unit chosen, we end up with a length in km */
 			sprintf (v_unit, "km");
 		else {	/* Report length in selected unit and scale results to match */
 			strcpy (v_unit, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-			v_min *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
-			v_max *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
-			v_mean *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+			v_scaled_min  *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+			v_scaled_max  *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+			v_scaled_mean *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 		}
 
-		GMT_Report (API, GMT_MSG_INFORMATION, "Minimum length of scaled vector in %s  : %g\n", v_unit, v_min);
-		GMT_Report (API, GMT_MSG_INFORMATION, "Maximum length of scaled vector in %s  : %g\n", v_unit, v_max);
-		GMT_Report (API, GMT_MSG_INFORMATION, "Mean length of the scaled vector in %s : %g\n", v_unit, v_mean);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Minimum length of data vector (user unit)  : %g\n", v_data_min);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Maximum length of data vector (user unit)  : %g\n", v_data_max);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Mean length of the data vector (user unit) : %g\n", v_data_mean);
+
+		if (!Ctrl->S.constant) {	/* No point reporting the mean of n identical vectors */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Minimum length of scaled vector in %4s    : %g\n", v_unit, v_scaled_min);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Maximum length of scaled vector in %4s    : %g\n", v_unit, v_scaled_max);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Mean length of the scaled vector in %4s   : %g\n", v_unit, v_scaled_mean);
+		}
 	}
 
 	PSL_command (GMT->PSL, "V\n");
@@ -630,21 +649,21 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			}
 
 			if (Ctrl->A.active) {	/* Got r,theta grids */
-				vec_length = Grid[0]->data[ij];
-				if (vec_length == 0.0) continue;	/* No length = no plotting */
+				vec_data_length = Grid[0]->data[ij];
+				if (vec_data_length == 0.0) continue;	/* No length = no plotting */
 				vec_azim   = Grid[1]->data[ij];
-				value = vec_length;
-				if (vec_length < 0.0) {	/* Interpret negative lengths to mean pointing in opposite direction 180-degrees off */
-					vec_length = -vec_length;
+				value = vec_data_length;
+				if (vec_data_length < 0.0) {	/* Interpret negative lengths to mean pointing in opposite direction 180-degrees off */
+					vec_data_length = -vec_data_length;
 					vec_azim += 180.0;
 				}
 				if (!Ctrl->Z.active) vec_azim = 90.0 - vec_azim;	/* Convert theta to azimuth */
 			}
 			else {	/* Cartesian component grids: Convert to polar form of radius, theta */
-				vec_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
-				if (vec_length == 0.0) continue;	/* No length = no plotting */
+				vec_data_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
+				if (vec_data_length == 0.0) continue;	/* No length = no plotting */
 				vec_azim = 90.0 - atan2d (Grid[GMT_Y]->data[ij], Grid[GMT_X]->data[ij]);	/* Convert dy,dx to azimuth */
-				value = vec_length;
+				value = vec_data_length;
 			}
 
 			if (Ctrl->C.active) {	/* Get color based on the vector length */
@@ -668,7 +687,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				gmt_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, true, &Ctrl->G.fill);
 			}
 
-			scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
+			scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_data_length * Ctrl->S.factor;
 			/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */
 
 			if (Geographic) {	/* Draw great-circle geo-vectors */

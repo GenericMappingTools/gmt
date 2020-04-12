@@ -290,7 +290,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	unsigned char *outByte = NULL, *img = NULL, *tmpByte;
 	float *ptr;
 
-	if (prhs->driver) pszFormat = prhs->driver;
+	if (prhs->driver) pszFormat = prhs->driver;		/* Otherwise use the default GTiff format */
 	adfGeoTransform[0] =  prhs->ULx;
 	adfGeoTransform[3] =  prhs->ULy;
 	adfGeoTransform[1] =  prhs->x_inc;
@@ -571,26 +571,27 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 		/* Compute and set image statistics (if possible) */
 		GDALComputeRasterStatistics(hBand, 0, NULL, NULL, NULL, NULL, NULL, NULL);
-
 	}
 
-	hOutDS = GDALCreateCopy(hDriverOut, fname, hDstDS, bStrict, papszOptions, pfnProgress, NULL);
-	if (hOutDS != NULL) GDALClose(hOutDS);
+	if (prhs->H.active)		/* Then save the GDAL dataset pointer to be used by caller */
+		prhs->H.hSrcDS = hDstDS;
+	else {
+		hOutDS = GDALCreateCopy(hDriverOut, fname, hDstDS, bStrict, papszOptions, pfnProgress, NULL);
+		if (hOutDS != NULL) GDALClose(hOutDS);
+		GDALClose(hDstDS);
+	}
 
-	CPLFree(pszSRS_WKT);
-	GDALClose(hDstDS);
-	GDALDestroyDriverManager();
-	gmt_M_free(GMT, outByte);
-	if (papszOptions != NULL) CSLDestroy (papszOptions);
-
-	if (gmt_strlcmp(pszFormat,"netCDF")) {
-		/* Change some attributes written by GDAL (not finished) */
-		int ncid;
-		int err;
+	if (!prhs->H.active && gmt_strlcmp(pszFormat,"netCDF")) { /* Change some attributes written by GDAL (not finished) */
+		int ncid, err;
 		gmt_M_err_trap (nc_open (fname, NC_WRITE, &ncid));
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(prhs->command), prhs->command));
 		gmt_M_err_trap (nc_close (ncid));
 	}
+
+	gmt_M_free(GMT, outByte);
+	if (pszSRS_WKT != NULL) CPLFree(pszSRS_WKT);
+	if (papszOptions != NULL) CSLDestroy (papszOptions);
+	GDALDestroyDriverManager();
 
 	return (GMT_NOERROR);
 }

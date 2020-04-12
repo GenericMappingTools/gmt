@@ -61,6 +61,10 @@ struct GMT_GDALWRITE_CTRL {
 		char *ProjRefWKT;               /* To store a referencing system string in WKT format */
 		int   ProjRefEPSG;              /* To store a referencing system EPSG code */
 	} P;
+	struct  GW_H {             /* To store the GDAL dataset handle */
+		bool  active;
+		GDALDatasetH *hSrcDS;
+	} H;
 };
 
 /*! Structure to control which options are transmitted to gmt_gdalread */
