@@ -119,7 +119,6 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct GRD2KML_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->A.size = 128;
 	C->F.filter = 'g';
 	C->I.method  = strdup ("t1");	/* Default normalization for shading when -I is used */
 	C->M.magnify = 1;
@@ -935,99 +934,102 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		fprintf (fp, "      <description>%s</description>\n\n", Ctrl->T.title);
 	else
 		fprintf (fp, "      <description>GMT image quadtree representation of %s</description>\n\n", Ctrl->In.file);
-        fprintf (fp, "      <Style>\n");
-        fprintf (fp, "        <ListStyle id=\"hideChildren\">          <listItemType>checkHideChildren</listItemType>\n        </ListStyle>\n");
-        fprintf (fp, "      </Style>\n");
+	fprintf (fp, "      <Style>\n");
+	fprintf (fp, "        <ListStyle id=\"hideChildren\">          <listItemType>checkHideChildren</listItemType>\n        </ListStyle>\n");
+	fprintf (fp, "      </Style>\n");
 
 	grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, 0, 1, path);
-	fprintf (fp, "      <NetworkLink>\n        <name>%sR0C0.png</name>\n", path);
-	fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
-	fprintf (fp, "            <north>%.14g</north>\n", G->header->wesn[YHI]);
-	fprintf (fp, "            <south>%.14g</south>\n", G->header->wesn[YLO]);
-	fprintf (fp, "            <east>%.14g</east>\n",   G->header->wesn[XHI]);
-	fprintf (fp, "            <west>%.14g</west>\n",   G->header->wesn[XLO]);
-	fprintf (fp, "          </LatLonAltBox>\n");
-	fprintf (fp, "          <Lod>\n            <minLodPixels>%d</minLodPixels>\n            <maxLodPixels>-1</maxLodPixels>\n          </Lod>\n", view);
-        fprintf (fp, "        </Region>\n");
-	grd2kml_set_dirpath (Ctrl->D.single, Ctrl->E.url, Ctrl->N.prefix, 0, 1, path);
-	fprintf (fp, "        <Link>\n          <href>%sR0C0.kml</href>\n", path);
-	fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode>\n          <viewFormat/>\n");
-	fprintf (fp, "        </Link>\n      </NetworkLink>\n");
+	for (k = 0; k < ((global_lon) ? 2 : 1); k++) {
+		fprintf (fp, "      <NetworkLink>\n        <name>%sR0C%d.png</name>\n", path, k);
+		fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
+		fprintf (fp, "            <north>%.14g</north>\n", G->header->wesn[YHI]);
+		fprintf (fp, "            <south>%.14g</south>\n", G->header->wesn[YLO]);
+		fprintf (fp, "            <east>%.14g</east>\n",   G->header->wesn[XHI]);
+		fprintf (fp, "            <west>%.14g</west>\n",   G->header->wesn[XLO]);
+		fprintf (fp, "          </LatLonAltBox>\n");
+		fprintf (fp, "          <Lod>\n            <minLodPixels>%d</minLodPixels>\n            <maxLodPixels>-1</maxLodPixels>\n          </Lod>\n", view);
+		fprintf (fp, "        </Region>\n");
+		grd2kml_set_dirpath (Ctrl->D.single, Ctrl->E.url, Ctrl->N.prefix, 0, 1, path);
+		fprintf (fp, "        <Link>\n          <href>%sR0C%d.kml</href>\n", path, k);
+		fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode>\n          <viewFormat/>\n");
+		fprintf (fp, "        </Link>\n      </NetworkLink>\n");
+	}
 	fprintf (fp, "    </Document>\n  </kml>\n");
 	fclose (fp);
 
 	/* Then create all the other KML files in the quadtree with their links down the tree */
 
+	if (Ctrl->A.size == 0) Ctrl->A.size = Ctrl->L.size;
 	for (k = 0; k < n; k++) {
-		if (Q[k]->q) {	/* Only examine tiles with children */
-			if (Ctrl->D.dump) {
-				printf ("%s [%s]:\t", Q[k]->tag, Q[k]->region);
-				for (quad = 0; quad < 4; quad++)
-					if (Q[k]->next[quad]) printf (" %c=%s", 'A'+quad, Q[k]->next[quad]->tag);
-				printf ("\n");
-			}
-			if (Ctrl->D.single)
-				sprintf (file, "%s/L%dR%dC%d.kml", Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
-			else
-				sprintf (file, "%s/%d/R%dC%d.kml", Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
-			if ((fp = fopen (file, "w")) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to create file : %s\n", file);
-				Return (GMT_RUNTIME_ERROR);
-			}
-			/* First this tile's kml and png */
-			//view = (Q[k]->level == max_level) ? -1 : Ctrl->A.size;
-			view = Ctrl->A.size;
-			fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
-			grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
-			fprintf (fp, "    <Document>\n      <name>%sR%dC%d.kml</name>\n", path, Q[k]->row, Q[k]->col);
-			fprintf (fp, "      <description></description>\n\n");
-		        fprintf (fp, "      <Style>\n");
-		        fprintf (fp, "        <ListStyle id=\"hideChildren\">          <listItemType>checkHideChildren</listItemType>\n        </ListStyle>\n");
-		        fprintf (fp, "      </Style>\n");
-		        fprintf (fp, "      <Region>\n        <LatLonAltBox>\n");
-			fprintf (fp, "          <north>%.14g</north>\n", Q[k]->wesn[YHI]);
-			fprintf (fp, "          <south>%.14g</south>\n", Q[k]->wesn[YLO]);
-			fprintf (fp, "          <east>%.14g</east>\n",   Q[k]->wesn[XHI]);
-			fprintf (fp, "          <west>%.14g</west>\n",   Q[k]->wesn[XLO]);
-			fprintf (fp, "        </LatLonAltBox>\n");
-			fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>2048</maxLodPixels>\n        </Lod>\n", view);
-		        fprintf (fp, "      </Region>\n");
-			fprintf (fp, "      <GroundOverlay>\n        <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);
-			grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 0, path);
-			fprintf (fp, "        <Icon>\n          <href>%sR%dC%d.png</href>\n        </Icon>\n", path, Q[k]->row, Q[k]->col);
-		        fprintf (fp, "        <LatLonBox>\n");
-			fprintf (fp, "           <north>%.14g</north>\n", Q[k]->wesn[YHI]);
-			fprintf (fp, "           <south>%.14g</south>\n", Q[k]->wesn[YLO]);
-			fprintf (fp, "           <east>%.14g</east>\n",   Q[k]->wesn[XHI]);
-			fprintf (fp, "           <west>%.14g</west>\n",   Q[k]->wesn[XLO]);
-			fprintf (fp, "        </LatLonBox>\n      </GroundOverlay>\n");
-			/* Now add up to 4 quad links */
+		if (Ctrl->D.dump) {
+			printf ("%s [%s]:\t", Q[k]->tag, Q[k]->region);
 			for (quad = 0; quad < 4; quad++) {
 				if (Q[k]->next[quad] == NULL) continue;
-				//view = (Q[k]->next[quad]->level == max_level) ? -1 : Ctrl->A.size;
-				view = Ctrl->A.size;
-
-				grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
-				fprintf (fp, "\n      <NetworkLink>\n        <name>%sR%dC%d.png</name>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
-			        fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
-				fprintf (fp, "            <north>%.14g</north>\n", Q[k]->next[quad]->wesn[YHI]);
-				fprintf (fp, "            <south>%.14g</south>\n", Q[k]->next[quad]->wesn[YLO]);
-				fprintf (fp, "            <east>%.14g</east>\n",   Q[k]->next[quad]->wesn[XHI]);
-				fprintf (fp, "            <west>%.14g</west>\n",   Q[k]->next[quad]->wesn[XLO]);
-				fprintf (fp, "        </LatLonAltBox>\n");
-				fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>-1</maxLodPixels>\n        </Lod>\n", view);
-			        fprintf (fp, "        </Region>\n");
-			    if (Q[k]->next[quad]->level < max_level) {
-					grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
-					fprintf (fp, "        <Link>\n          <href>%sR%dC%d.kml</href>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
-					fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode><viewFormat/>\n");
-					fprintf (fp, "        </Link>\n      </NetworkLink>\n");
-				}
+				view = (Q[k]->next[quad]->level == max_level) ? -1 : Ctrl->A.size;
+				printf (" %c=%s [%d/%d]", 'A'+quad, Q[k]->next[quad]->tag, Ctrl->A.size, view);
 			}
-			fprintf (fp, "    </Document>\n  </kml>\n");
-			fclose (fp);
-
+			printf ("\n");
 		}
+		if (Ctrl->D.single)
+			sprintf (file, "%s/L%dR%dC%d.kml", Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
+		else
+			sprintf (file, "%s/%d/R%dC%d.kml", Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
+		if ((fp = fopen (file, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to create file : %s\n", file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		/* First this tile's kml and png */
+		//view = (Q[k]->level == max_level) ? -1 : Ctrl->A.size;
+		view = Ctrl->A.size;
+		fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
+		grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
+		fprintf (fp, "    <Document>\n      <name>%sR%dC%d.kml</name>\n", path, Q[k]->row, Q[k]->col);
+		fprintf (fp, "      <description></description>\n\n");
+		fprintf (fp, "      <Style>\n");
+		fprintf (fp, "        <ListStyle id=\"hideChildren\">          <listItemType>checkHideChildren</listItemType>\n        </ListStyle>\n");
+		fprintf (fp, "      </Style>\n");
+		fprintf (fp, "      <Region>\n        <LatLonAltBox>\n");
+		fprintf (fp, "          <north>%.14g</north>\n", Q[k]->wesn[YHI]);
+		fprintf (fp, "          <south>%.14g</south>\n", Q[k]->wesn[YLO]);
+		fprintf (fp, "          <east>%.14g</east>\n",   Q[k]->wesn[XHI]);
+		fprintf (fp, "          <west>%.14g</west>\n",   Q[k]->wesn[XLO]);
+		fprintf (fp, "        </LatLonAltBox>\n");
+		//fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>2048</maxLodPixels>\n        </Lod>\n", view);
+		fprintf (fp, "      </Region>\n");
+		fprintf (fp, "      <GroundOverlay>\n        <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);
+		grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 0, path);
+		fprintf (fp, "        <Icon>\n          <href>%sR%dC%d.png</href>\n        </Icon>\n", path, Q[k]->row, Q[k]->col);
+		fprintf (fp, "        <LatLonBox>\n");
+		fprintf (fp, "           <north>%.14g</north>\n", Q[k]->wesn[YHI]);
+		fprintf (fp, "           <south>%.14g</south>\n", Q[k]->wesn[YLO]);
+		fprintf (fp, "           <east>%.14g</east>\n",   Q[k]->wesn[XHI]);
+		fprintf (fp, "           <west>%.14g</west>\n",   Q[k]->wesn[XLO]);
+		fprintf (fp, "        </LatLonBox>\n      </GroundOverlay>\n");
+		/* Now add up to 4 quad links */
+		for (quad = 0; quad < 4; quad++) {
+			if (Q[k]->next[quad] == NULL) continue;
+			view = (Q[k]->next[quad]->level == max_level) ? -1 : Ctrl->A.size;
+
+			grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
+			fprintf (fp, "\n      <NetworkLink>\n        <name>%s</name>\n", Q[k]->next[quad]->tag);
+			fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
+			fprintf (fp, "            <north>%.14g</north>\n", Q[k]->next[quad]->wesn[YHI]);
+			fprintf (fp, "            <south>%.14g</south>\n", Q[k]->next[quad]->wesn[YLO]);
+			fprintf (fp, "            <east>%.14g</east>\n",   Q[k]->next[quad]->wesn[XHI]);
+			fprintf (fp, "            <west>%.14g</west>\n",   Q[k]->next[quad]->wesn[XLO]);
+			fprintf (fp, "        </LatLonAltBox>\n");
+			fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>%d</maxLodPixels>\n        </Lod>\n", Ctrl->A.size, view);
+			fprintf (fp, "        </Region>\n");
+			if (Q[k]->next[quad]->level < max_level) {
+				grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
+				fprintf (fp, "        <Link>\n          <href>%sR%dC%d.kml</href>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
+				fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode><viewFormat/>\n");
+				fprintf (fp, "        </Link>\n      </NetworkLink>\n");
+			}
+		}
+		fprintf (fp, "    </Document>\n  </kml>\n");
+		fclose (fp);
+
 		gmt_M_str_free (Q[k]->region);	/* Free this tile region */
 		gmt_M_free (GMT, Q[k]);		/* Free this tile information */
 	}
