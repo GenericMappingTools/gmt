@@ -84,9 +84,9 @@ Optional Arguments
     *plot* dimensions.  These are geo-vectors that follow great circle paths and their
     lengths may be affected by the map projection and their coordinates.  Finally, use
     **-Si** if it is simpler to give the reciprocal scale in plot length or distance units
-    per data unit.  To report the minimum, maximum, and mean plot vector lengths of those
-    plotted, use **-V**.  Alternatively, use **-Sl**\ *length* to set a fixed plot length
-    for all vectors. 
+    per data unit.  To report the minimum, maximum, and mean data and plot vector lengths
+    of all vectors plotted, use **-V**.  Alternatively, use **-Sl**\ *length* to set a fixed
+    plot length for all vectors.
 
 .. _-T:
 
