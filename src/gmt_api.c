@@ -4492,7 +4492,7 @@ GMT_LOCAL int gmtapi_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 	snprintf (dim, GMT_LEN32, "%d %d\n255\n", I->header->n_rows, I->header->n_columns);
 	fwrite (dim, sizeof (char), strlen (dim), fp);	/* Write dimensions and max color value + linefeeds */
 	/* Now dump the image in scaneline order, with each pixel as (R, G, B) */
-	if (strncmp (I->header->mem_layout, "TRP", 3U)) /* Easy street! */
+	if (!strncmp (I->header->mem_layout, "TRP", 3U)) /* Easy street! */
 		fwrite (I->data, sizeof(char), I->header->nm * I->header->n_bands, fp);
 #if 0
 	else
