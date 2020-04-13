@@ -320,6 +320,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 					            "Option -D is deprecated; images are detected automatically\n");
 				Ctrl->D.active = true;
 				Ctrl->D.mode = (opt->arg[0] == 'r');
+				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
+					Ctrl->In.file[n_files++] = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 #endif
 			case 'E':	/* Sets dpi */
