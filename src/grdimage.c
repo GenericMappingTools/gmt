@@ -1120,14 +1120,14 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		else
 #endif
 			gmt_strncpy (mem_layout, "TRPa", 4);					/* Don't let it be empty (may it screw?) */
-		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* Set grdimage's image memory layout */
 
 		if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {
 			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
 			Return(API->error);	/* Well, no luck with that allocation */
 		}
 
-		GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset to previous mem layout */
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset to previous memory layout */
 
 		HH = gmt_get_H_hidden (Out->header);
 		if ((pch = strstr(Ctrl->Out.file, "+c")) != NULL) {			/* Check if we have +c<options> */
