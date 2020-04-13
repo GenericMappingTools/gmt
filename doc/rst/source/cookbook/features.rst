@@ -263,7 +263,7 @@ listing, see the :doc:`/gmt.conf` man pages.
 We suggest that you go through all the available parameters at least
 once so that you know what is available to change via one of the
 described mechanisms.  The gmt.conf file can be cleared by running
-**gmt clear conf**.
+**gmt clear settings**.
 
 Command line arguments
 ----------------------

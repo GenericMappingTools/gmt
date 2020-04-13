@@ -393,7 +393,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			}
 		}
 		if (dc == 0.0)
-			prhs->nan_value = 0.5;		/* Just a non-integer to prevent settng a transp color in gmt_gdalwrite(). */
+			prhs->nan_value = 0.5;		/* Just a non-integer to prevent setting a transp color in gmt_gdalwrite(). */
 		else
 			prhs->nan_value = rint(dc * 1000) - 1;	/* This will be the alpha color as set in gmt_gdalwrite() */
 	}
