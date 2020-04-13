@@ -262,6 +262,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 					GMT_Report (API, GMT_MSG_ERROR, "Option -A: No output name provided\n");
 					n_errors++;
 				}
+				else if (gmt_M_file_is_memory (opt->arg)) {
+					Ctrl->A.file = strdup (opt->arg);
+					Ctrl->A.way = 1;	/* Building image directly, use TRPa layout, no call to GDAL */
+				}
 				else if (!strcmp (gmt_get_ext (opt->arg), "ppm")) {	/* Want a ppm image which we can do without GDAL */
 					Ctrl->A.file = strdup (opt->arg);
 					Ctrl->A.way = 1;	/* Building image directly, use TRP layout, no call to GDAL, writing a PPM file */
