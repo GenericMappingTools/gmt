@@ -451,6 +451,10 @@ GMT_LOCAL void grd2kml_assert_tile_size (struct GMT_CTRL *GMT, bool global, stru
 
 EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 
+#ifdef DEBUG
+char *CPT[8] = {"geo", "earth", "terra", "etopo1", "globe", "relief", "sealand", "world"};
+#endif
+
 int GMT_grd2kml (void *V_API, int mode, void *args) {
 	int error = 0, kk, uniq, dpi, view;
 	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, global_lat, use_60_factoring;
@@ -812,7 +816,11 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						sprintf (cmd, "%s -I%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s%s -Ve --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, Igrid, dim, W, E, S, N, im_arg, K, dim, dim, psfile);
 					else
 						sprintf (cmd, "%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s%s -Ve --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, dim, W, E, S, N, im_arg, K, dim, dim, psfile);
+#ifdef DEBUG
+					if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, CPT[level]); }
+#else
 					if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file); }
+#endif
 					error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 					if (error == GMT_NOERROR && Ctrl->W.active) {	/* Overlay contours */
 						sprintf (cmd, "%s -JX%3.2lfid -R%s/%s/%s/%s -O -C%s -Ve ->>%s", z_data, dim, W, E, S, N, cfile, psfile);
@@ -940,7 +948,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, 0, 1, path);
 	for (k = 0; k < ((global_lon) ? 2 : 1); k++) {
-		fprintf (fp, "      <NetworkLink>\n        <name>%sR0C%d.png</name>\n", path, k);
+		fprintf (fp, "      <NetworkLink>\n        <name>%sR0C%d</name>\n", path, k);
 		fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
 		fprintf (fp, "            <north>%.14g</north>\n", G->header->wesn[YHI]);
 		fprintf (fp, "            <south>%.14g</south>\n", G->header->wesn[YLO]);
@@ -983,7 +991,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		view = Ctrl->A.size;
 		fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 		grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
-		fprintf (fp, "    <Document>\n      <name>%sR%dC%d.kml</name>\n", path, Q[k]->row, Q[k]->col);
+		fprintf (fp, "    <Document>\n      <name>%ss.</name>\n", path, Q[k]->tag);
 		fprintf (fp, "      <description></description>\n\n");
 		fprintf (fp, "      <Style>\n");
 		fprintf (fp, "        <ListStyle id=\"hideChildren\">          <listItemType>checkHideChildren</listItemType>\n        </ListStyle>\n");
