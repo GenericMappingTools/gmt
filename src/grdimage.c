@@ -1326,7 +1326,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		for (kk = 0, P->is_bw = true; P->is_bw && kk < header_work->nm; kk++)
 			if (!(bitimage_8[kk] == 0 || bitimage_8[kk] == 255)) P->is_bw = false;
 
-	if (P && P->is_bw && !Ctrl->A.active) {	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits */
+	if (P && P->is_bw && !Ctrl->A.active) {	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits, unless we are returning the image (8 or 24 bit only allowed) */
 		int nx8, shift, b_or_w, nx_pixels;
 		uint64_t imsize, k8;
 		unsigned char *bit = NULL;
