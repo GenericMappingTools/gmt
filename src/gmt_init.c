@@ -15308,7 +15308,7 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 		else
 			item_t1 = item;
 
-		snprintf(GMT->common.J.proj4string, GMT_LEN256, "%s", item);		/* Copy the proj.4 string */
+		snprintf(GMT->common.J.proj4string, GMT_LEN256, "%s", item_t1);		/* Copy the proj.4 string */
 	}
 	else if (!strncmp(item, "EPSG:", 5) || !strncmp(item, "epsg:", 5))
 		item_t1 = &item[5];		/* Drop the EPSG: part because gmt_impotproj4 is not expecting it */
