@@ -410,7 +410,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 		hSRS_2 = OSRNewSpatialReference(NULL);
 
-		if (prhs->P.ProjRefWKT != NULL) {
+		if (prhs->P.ProjRefWKT != NULL && prhs->P.ProjRefWKT[0]) {
 			projWKT = prhs->P.ProjRefWKT;
 		}
 		else if (OSRImportFromProj4(hSRS_2, prhs->P.ProjRefPROJ4) == CE_None) {

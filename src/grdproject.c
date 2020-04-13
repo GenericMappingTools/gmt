@@ -411,7 +411,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if ((Geo = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Rect)) == NULL) Return (API->error);	/* Just to get a header we can change */
+		if ((Geo = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Rect)) == NULL)
+			Return (API->error);	/* Just to get a header we can change */
 		HH = gmt_get_H_hidden (Geo->header);	/* Get the hidden info structure */
 
 		if (gmt_M_is_azimuthal(GMT) && GMT->current.proj.polar) {	/* Watch out for polar cap grids */
@@ -584,12 +585,17 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 
-		if (GMT->common.J.proj4string[0])
-			Rect->header->ProjRefPROJ4 = strdup (GMT->common.J.proj4string);
+		if (GMT->common.J.proj4string[0]) {
+			Rect->header->ProjRefPROJ4 = strdup(GMT->common.J.proj4string);
+			if (Rect->header->ProjRefWKT)				/* Make sure previous Ref System info is wipped out (WKT has precedence over proj4) */
+				Rect->header->ProjRefWKT[0] = '\0';
+		}
 		else if (GMT->common.J.WKTstring[0])
 			Rect->header->ProjRefWKT = strdup (GMT->common.J.WKTstring);
-		else
-			Rect->header->ProjRefPROJ4 = gmt_export2proj4 (GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
+		else {
+			Rect->header->ProjRefPROJ4 = gmt_export2proj4(GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
+			if (Rect->header->ProjRefWKT) Rect->header->ProjRefWKT[0] = '\0';
+		}
 
 		/* rect xy values are here in GMT projected units chosen by user */
 
