@@ -64,6 +64,7 @@ struct GRDIMAGE_CTRL {
 	struct GRDIMG_A {	/* -A to write a raster file or return image to API */
 		bool active;
 		bool return_image;
+		unsigned int way;
 		char *file;
 	} A;
 	struct GRDIMG_E {	/* -Ei|<dpi> */
@@ -255,13 +256,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 						n_errors++;
 					}
 					Ctrl->A.return_image = true;
+					Ctrl->A.way = 1;	/* Building image directly, use TRPa layout, no call to GDAL */
 				}
 				else if ((n = strlen (opt->arg)) == 0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -A: No output name provided\n");
 					n_errors++;
 				}
+				else if (gmt_M_file_is_memory (opt->arg)) {
+					Ctrl->A.file = strdup (opt->arg);
+					Ctrl->A.way = 1;	/* Building image directly, use TRPa layout, no call to GDAL */
+				}
 				else if (!strcmp (gmt_get_ext (opt->arg), "ppm")) {	/* Want a ppm image which we can do without GDAL */
 					Ctrl->A.file = strdup (opt->arg);
+					Ctrl->A.way = 1;	/* Building image directly, use TRP layout, no call to GDAL, writing a PPM file */
 				}
 #ifdef HAVE_GDAL
 				else {	/* Must give file and GDAL driver and this requires GDAL support */
@@ -1117,14 +1124,14 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		else
 #endif
 			gmt_strncpy (mem_layout, "TRPa", 4);					/* Don't let it be empty (may it screw?) */
-		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* This is the grdimage's mem layout */
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* Set grdimage's image memory layout */
 
 		if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {
 			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
 			Return(API->error);	/* Well, no luck with that allocation */
 		}
 
-		GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset previous mem layout */
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset to previous memory layout */
 
 		HH = gmt_get_H_hidden (Out->header);
 		if ((pch = strstr(Ctrl->Out.file, "+c")) != NULL) {			/* Check if we have +c<options> */
@@ -1323,7 +1330,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		for (kk = 0, P->is_bw = true; P->is_bw && kk < header_work->nm; kk++)
 			if (!(bitimage_8[kk] == 0 || bitimage_8[kk] == 255)) P->is_bw = false;
 
-	if (P && P->is_bw && !Ctrl->A.active) {	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits */
+	if (P && P->is_bw && !Ctrl->A.active) {	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits, unless we are returning the image (8 or 24 bit only allowed) */
 		int nx8, shift, b_or_w, nx_pixels;
 		uint64_t imsize, k8;
 		unsigned char *bit = NULL;
@@ -1368,7 +1375,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 	else if ((P && gray_only) || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit grayscale image */
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 8-bit grayshade image %s\n", way[Ctrl->A.return_image]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 8-bit grayshade image %s\n", way[Ctrl->A.way]);
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 				Return (API->error);
 		}
@@ -1388,7 +1395,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 24-bit color image %s\n", way[Ctrl->A.return_image]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 24-bit color image %s\n", way[Ctrl->A.way]);
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 				Return (API->error);
 		}

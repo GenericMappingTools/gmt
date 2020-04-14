@@ -890,7 +890,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
 			int id[1], dim[1];
 
-			if (header->ProjRefWKT == NULL) {				/* Must convert from proj4 string to WKT */
+			if (header->ProjRefWKT == NULL || !header->ProjRefWKT[0]) {				/* Must convert from proj4 string to WKT */
 				OGRSpatialReferenceH hSRS = OSRNewSpatialReference(NULL);
 
 				if (header->ProjRefPROJ4 && (!strncmp(header->ProjRefPROJ4, "+unavailable", 4) || strlen(header->ProjRefPROJ4) <= 5)) {	/* Silently jump out of here */
