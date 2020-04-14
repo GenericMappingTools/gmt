@@ -680,10 +680,10 @@ if (BUILD_SUPPLEMENTS)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR}/${_dir})
 	endforeach (_dir)
 
-	# supplement extra (non-GMT) library files
+	# supplement extra (non-GMT) library files, if any
 	get_subdir_var_files (GMT_SUPPL_LIB_SRCS SUPPL_LIB_SRCS ${GMT_SUPPL_DIRS})
 
-	# supplement extra (non-GMT) include files
+	# supplement extra (non-GMT) include files, if any
 	get_subdir_var (GMT_EXTRA_INCLUDES SUPPL_EXTRA_INCLUDES ${GMT_SUPPL_DIRS})
 	include_directories (${GMT_EXTRA_INCLUDES})
 
