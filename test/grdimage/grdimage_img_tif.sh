@@ -10,7 +10,7 @@ gmt grdproject lixo.grd -J+proj=utm+zone=32 -Glixo_utm.tiff=gd:GTiff
 
 gmt grdimage lixo_utm.grd  -JX8c -I+d -Ba -BWSen -P -K > $ps
 echo 10 40 | gmt mapproject -J+proj=utm+zone=32 | gmt psxy -JX8c -Rlixo_utm.grd -Sc1c -Gwhite -O -K >> $ps
-gmt grdimage lixo_utm.tiff -JX8c -I+d -Ba -BwSen -X8.5c -O -K >> gimg_tif.ps
+gmt grdimage lixo_utm.tiff -JX8c -I+d -Ba -BwSen -X8.5c -O -K >> $ps
 echo 10 40 | gmt mapproject -J+proj=utm+zone=32 | gmt psxy -JX8c -Rlixo_utm.tiff -Sc1c -Gwhite -O -K >> $ps
 
 gmt grdimage lixo_utm.grd -I+d -Agrdimg.tiff
