@@ -5081,11 +5081,14 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (gmt_M_file_is_memory (filename)) return (0);	/* Memory location always exists */
 	if (gmt_M_file_is_cache (filename))			/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
-	file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
-	sscanf (&filename[first], "%[^=?]", file);	/* Exclude netcdf 3-D grid extensions to make sure we get a valid file name */
-	if (file[0] == '\0')
-		return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
-
+	if (strstr (filename, "/=srtm"))	/* Special list with SRTM tiles, use as is */
+		strncpy (file, filename, PATH_MAX-1);
+	else {
+		file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
+		sscanf (&filename[first], "%[^=?]", file);	/* Exclude netcdf 3-D grid extensions to make sure we get a valid file name */
+		if (file[0] == '\0')
+			return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
+	}
 	if ((c = gmtlib_file_unitscale (file))) c[0] = '\0';	/* Chop off any x/u unit specification */
 	else if ((c = strchr (file, '+')) && strchr ("hons", c[1])) c[0] = '\0';	/* Chop off any +h hinge setting or any z-scaling specification */
 	if (mode == W_OK)
