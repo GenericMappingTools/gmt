@@ -724,6 +724,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
+	if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
+	if (Ctrl->Z.mode & 2) polygon = true;
 	default_pen = current_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
