@@ -194,7 +194,8 @@
 # List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes
 # that link against the full gmt libs (not just the API; for building codes
 # that only need the GMT API, see the gmt-custom project).
-#set (EXTRA_BUILD_DIRS apidemo)
+# These supplemental modules end up in supplements.so like the GMT supplements.
+#set (EXTRA_BUILD_DIRS newsuppl1 newsuppl2 ...)
 
 # List extra new supplemental modules for testing without adding them to the module list
 #set (EXTRA_MODULES_SUPPL newsuppl1.c newsuppl2.c)

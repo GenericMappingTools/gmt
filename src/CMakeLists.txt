@@ -680,8 +680,15 @@ if (BUILD_SUPPLEMENTS)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR}/${_dir})
 	endforeach (_dir)
 
-	# supplement library files
+	# supplement extra (non-GMT) library files, if any
 	get_subdir_var_files (GMT_SUPPL_LIB_SRCS SUPPL_LIB_SRCS ${GMT_SUPPL_DIRS})
+
+	# supplement extra (non-GMT) include files, if any
+	get_subdir_var (GMT_EXTRA_INCLUDES SUPPL_EXTRA_INCLUDES ${GMT_SUPPL_DIRS})
+	include_directories (${GMT_EXTRA_INCLUDES})
+
+	# supplement extra library files
+	get_subdir_var (GMT_EXTRA_LIBRARIES SUPPL_EXTRA_LIBS ${GMT_SUPPL_DIRS})
 
 	# libgmtsuppl
 	if (WIN32)
@@ -703,7 +710,8 @@ if (BUILD_SUPPLEMENTS)
 	# No SOVERSION & VERSION for a MODULE, only for SHARED libs
 	target_link_libraries (supplib
 		gmtlib
-		pslib)
+		pslib
+		${GMT_EXTRA_LIBRARIES})
 
 	# Include any extra files that are listed in EXTRA_MODULES_SUPPL defined in ConfigUserAdvanced.cmake
 	# This include(s) will add new modules to the official GMT supplements
