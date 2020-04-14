@@ -1929,6 +1929,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
+		if (Ctrl->Z.mode & 2) polygon = true;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from first header */
 				gmt_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
