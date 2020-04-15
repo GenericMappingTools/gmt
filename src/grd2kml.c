@@ -617,6 +617,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	/* Determine extended region required if using the largest multiple of original grid spacing */
 	inc[GMT_X] = factor * G->header->inc[GMT_X];
 	inc[GMT_Y] = factor * G->header->inc[GMT_Y];
+#if 0
 	if (global_lon) {
 		ext_wesn[XLO] = G->header->wesn[XLO];
 		ext_wesn[XHI] = G->header->wesn[XHI];
@@ -633,6 +634,11 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		ext_wesn[YLO] = MAX (-90.0, floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y]);
 		ext_wesn[YHI] = MIN (+90.0, ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y]);
 	}
+#endif
+	ext_wesn[YLO] = floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y];
+	ext_wesn[YHI] = ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
+	ext_wesn[XLO] = floor (G->header->wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
+	ext_wesn[XHI] = ceil  (G->header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
 	if (ext_wesn[XLO] < G->header->wesn[XLO] || ext_wesn[XHI] > G->header->wesn[XHI] || ext_wesn[YLO] < G->header->wesn[YLO] || ext_wesn[YHI] > G->header->wesn[YHI]) {
 		/* Extend the original grid with NaNs so it is an exact multiple of largest grid stride at max level */
 		sprintf (DataGrid, "%s/grd2kml_extended_data_%6.6d.grd", API->tmp_dir, uniq);
@@ -828,9 +834,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						else
 							sprintf (pngfile, "%s/R%dC%d.png", level_dir, row, col);
 						if (Ctrl->I.active)	/* Must pass two grids */
-							sprintf (cmd, "%s -I%s -JX%3.2lfi -W -R%s/%s/%s/%s%s -Ve -A%s -fc", z_data, Igrid, dim, W, E, S, N, im_arg, pngfile);
+							sprintf (cmd, "%s -I%s -JX%3.2lfi -W -R%s/%s/%s/%s%s -Ve -A%s -Q", z_data, Igrid, dim, W, E, S, N, im_arg, pngfile);
 						else
-							sprintf (cmd, "%s -JX%3.2lfi -W -R%s/%s/%s/%s%s -Ve -A%s -fc", z_data, dim, W, E, S, N, im_arg, pngfile);
+							sprintf (cmd, "%s -JX%3.2lfi -W -R%s/%s/%s/%s%s -Ve -A%s -Q", z_data, dim, W, E, S, N, im_arg, pngfile);
 						if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file); }
 						error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 						if (!(error == GMT_NOERROR || error == GMT_IMAGE_NO_DATA)) {
