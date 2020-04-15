@@ -12957,10 +12957,14 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 			if (GMT_Close_VirtualFile (API, virt_file) != GMT_NOERROR)
 				return (API->error);
 			/* Get the four values from the first and only output record */
-			wesn[XLO] = Out->table[0]->segment[0]->data[0][0];
-			wesn[XHI] = Out->table[0]->segment[0]->data[1][0];
-			wesn[YLO] = Out->table[0]->segment[0]->data[2][0];
-			wesn[YHI] = Out->table[0]->segment[0]->data[3][0];
+			if (Out->n_columns >= 2) {
+				wesn[XLO] = Out->table[0]->segment[0]->data[0][0];
+				wesn[XHI] = Out->table[0]->segment[0]->data[1][0];
+			}
+			if (Out->n_columns >= 4) {
+				wesn[YLO] = Out->table[0]->segment[0]->data[2][0];
+				wesn[YHI] = Out->table[0]->segment[0]->data[3][0];
+			}
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK)
 				return (API->error);
 			geo = gmt_M_is_geographic (API->GMT, GMT_IN);
