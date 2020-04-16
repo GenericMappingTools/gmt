@@ -306,6 +306,26 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL double dimfilter_get_filter_width (struct GMT_CTRL *GMT, char *text) {
+	/* Most filter setups expect a constant filter width, but some may pass a grid.  if so
+	   then we must read the grid and find the largest filter and return that value. */
+	double width = 0.0, scl = 1.0;
+	size_t L = strlen (text);
+	char c = 0;
+	gmt_M_unused (GMT);
+
+	if (L && strchr ("ms", text[L-1])) {	/* Appended m or s for arc units */
+		L--;
+		if (text[L] == 'm') scl = GMT_MIN2DEG;		/* Got width in arc minutes */
+		else scl = GMT_SEC2DEG;	/* Got width in arc seconds */
+		c = text[L];
+		text[L] = '\0';	/* Chop off unit */
+	}
+	width = atof (text) * scl;
+	if (c) text[L] = c;	/* Restore m|s */
+	return (width);
+}
+
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to dimfilter and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -376,7 +396,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 						n_errors++;
 						break;
 				}
-				Ctrl->F.width = atof (&opt->arg[1]);
+				Ctrl->F.width = dimfilter_get_filter_width (GMT, &opt->arg[1]);
 				set++;
 				break;
 			case 'G':

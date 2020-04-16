@@ -657,12 +657,24 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 GMT_LOCAL double grdfilter_get_filter_width (struct GMTAPI_CTRL *API, struct GRDFILTER_CTRL *Ctrl, char *text) {
-	/* Most filter setups expact a constant filter width, but some may pass a grid.  if so
+	/* Most filter setups expect a constant filter width, but some may pass a grid.  if so
 	   then we must read the grid and find the largest filter and return that value. */
 	double width = 0.0;
 
-	if (gmt_access (API->GMT, text, R_OK))	/* Not a readable file */
-		width = atof (text);
+	if (gmt_access (API->GMT, text, R_OK)) {	/* Not a readable file */
+		size_t L = strlen (text);
+		double scl = 1.0;
+		char c = 0;
+		if (L && strchr ("ms", text[L-1])) {	/* Appended m or s for arc units */
+			L--;
+			if (text[L] == 'm') scl = GMT_MIN2DEG;		/* Got width in arc minutes */
+			else scl = GMT_SEC2DEG;	/* Got width in arc seconds */
+			c = text[L];
+			text[L] = '\0';	/* Chop off unit */
+		}
+		width = atof (text) * scl;
+		if (c) text[L] = c;	/* Restore m|s */
+	}
 	else {	/* Must read the grid */
 		unsigned int row, col;
 		uint64_t node;
@@ -734,24 +746,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 				if (strchr (GRDFILTER_FILTERS, opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.active = true;
 					Ctrl->F.filter = opt->arg[0];
-					strncpy (txt, opt->arg, GMT_LEN256-1);	/* Work on a copy */
-					if (Ctrl->F.filter == 'm') {
-						if ((p = strchr (txt, 'q'))) {	/* Requested another quantile */
-							*(--p) = 0;	/* Chop off the +q modifier */
-							Ctrl->F.quantile = atof (p+2);
+					strncpy (txt, opt->arg, GMT_LEN256-1);	/* Work on a copy so we don't have to worry about chopping off modifiers*/
+					if ((p = strstr (txt, "+h"))) Ctrl->F.highpass = true;
+					if (Ctrl->F.filter == 'm') {	/* Median filter (or quartile filter) */
+						if ((p = strstr (txt, "+q"))) {	/* Requested another quantile */
+							Ctrl->F.quantile = atof (&p[2]);
+							p[0] = '\0';	/* Chop off the +q modifier */
 						}
 					}
-					if (Ctrl->F.filter == 'f' || Ctrl->F.filter == 'o') {
+					else if (Ctrl->F.filter == 'f' || Ctrl->F.filter == 'o') {	/* Custom filter or operator */
 						if (gmt_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN, GMT_IS_GRID))
 							Ctrl->F.file = strdup (&opt->arg[1]);
 						else {
-								GMT_Report (API, GMT_MSG_ERROR, "Option -F%c: Cannot access filter weight grid %s\n",
-								            Ctrl->F.filter, &opt->arg[1]);
-								n_errors++;
-							}
+							GMT_Report (API, GMT_MSG_ERROR, "Option -F%c: Cannot access filter weight or operator grid %s\n",
+								Ctrl->F.filter, &opt->arg[1]);
+							n_errors++;
+						}
 						Ctrl->F.width = 1.0;	/* To avoid error checking below */
 						Ctrl->F.custom = true;
-						Ctrl->F.operator = (Ctrl->F.filter == 'o');	/* Means weightsum is zero so no normalization, please */
+						Ctrl->F.operator = (Ctrl->F.filter == 'o');	/* Means weight sum is zero so no normalization, please */
 					}
 					else if (Ctrl->F.filter == 'h') {	/* Histogram-based mode filter */
 						if ((c = strchr (txt, '+'))) {	/* Gave modifiers */
@@ -765,7 +778,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 							n_errors++;
 						}
 						else {	/* Ok to parse the strings */
-							Ctrl->F.width = atof (a);
+							Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, a);
 							Ctrl->F.bin   = atof (b);
 						}
 						if (c) c[0] = '+';	/* Restore modifiers */
@@ -788,13 +801,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 					}
 					else if (strchr (txt, '/')) {	/* Gave xwidth/ywidth for rectangular Cartesian filtering */
 						sscanf (&txt[1], "%[^/]/%s", a, b);
-						Ctrl->F.width = atof (a);
-						Ctrl->F.width2 = atof (b);
+						Ctrl->F.width  = grdfilter_get_filter_width (API, Ctrl, a);
+						Ctrl->F.width2 = grdfilter_get_filter_width (API, Ctrl, b);
 						Ctrl->F.rect = true;
 					}
 					else
 						Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, &txt[1]);
-					if ((p = strstr (txt, "+h"))) Ctrl->F.highpass = true;
 					if (Ctrl->F.width < 0.0) {	/* Old-style specification for high-pass filtering */
 						if (gmt_M_compat_check (GMT, 5)) {
 							GMT_Report (API, GMT_MSG_COMPAT,
@@ -806,14 +818,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 							n_errors++;
 						}
 					}
-					Ctrl->F.width = fabs (Ctrl->F.width);
-					if (Ctrl->F.filter == 'h' || Ctrl->F.filter == 'p') {	/* Check for some further info in case of mode filtering */
+					Ctrl->F.width = fabs (Ctrl->F.width);	/* Just to make sure it is a positive quantity */
+					if (Ctrl->F.filter == 'h' || Ctrl->F.filter == 'p') {	/* Check for some further deprecated flags in case of mode filtering */
 						cc = opt->arg[strlen(txt)-1];
 						if (cc == '-' || cc == '+') {
 							GMT_Report (API, GMT_MSG_COMPAT,
 							            "Appending + or - for mode filtering is deprecated; use +l or +u instead.\n", opt->arg);
-							if (cc == '-') Ctrl->F.mode = -1;
-							if (cc == '+') Ctrl->F.mode = +1;
+							if (cc == '-') Ctrl->F.mode = GRDFILTER_MODE_KIND_LOW;
+							if (cc == '+') Ctrl->F.mode = GRDFILTER_MODE_KIND_HIGH;
 						}
 					}
 				}
