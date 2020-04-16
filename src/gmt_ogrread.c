@@ -171,7 +171,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 				y = gmt_M_memory (GMT, y, nPtsBase+nExtra, double);
 				if (is3D) z = gmt_M_memory (GMT, z, np+nExtra, double);
 
-				pi = gmt_M_memory(GMT, NULL, nRings * 2, int);
+				pi = gmt_M_memory(GMT, NULL, nRings * 2, int);	/* nRings because we store begin/end indexes of main poly too */
 				pi[0] = 0;
 				for (k = 1; k < nRings; k++) {				/* Loop over islands (interior rings) */
 					hRingIsland = OGR_G_GetGeometryRef(hGeom, k);
@@ -194,6 +194,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 					pi[nRings + k] = pi[k+1] - 2;
 
 				pi[2*nRings - 1] = c - 1;			/* Last element was not assigned in the loop above */
+				out[indStruct].n_islands = nRings - 1;
 				out[indStruct].islands = pi;
 				out[indStruct].np = nPtsBase+nExtra;
 			}

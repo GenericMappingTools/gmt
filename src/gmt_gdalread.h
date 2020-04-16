@@ -210,12 +210,13 @@ struct OGR_FEATURES {
 	int     is3D;       /* True when geometries have a z component */
 	unsigned int np;    /* Number of data points in this feature */
 	int     att_number; /* Feature's number of attributes */
+	int     n_islands;	/* Number of islands of a polygon (0 for non-polygon geometries) */
 	char   *name, *wkt, *proj4;
 	char   *type;	    /* Geometry type. E.g. Point, Polygon or LineString */
 	char  **att_names;	/* Names of the attributes of a Feature */
 	char  **att_values;	/* Values of the attributes of a Feature as strings */
 	int    *att_types;
-	int    *islands;
+	int    *islands;	/* Indexes of start&end of main polygon plus its interior rings (i.e. n_islands+1) */
 	double  BoundingBox[6];
 	double *BBgeom;     /* Not currently assigned (would be the BoundingBox of each individual geometry) */
 	double *x, *y, *z;
