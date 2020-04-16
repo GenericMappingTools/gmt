@@ -642,6 +642,8 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	}
 
 	head = GMT_Create_Options (API, mode, args);	/* Get option list */
+	if ((opt = GMT_Find_Option (API, 'V', head)))	/* Remove -V here so that we can run gmt plot -? -Vd and still get modern mode usage plus debug info */
+		GMT_Delete_Option (API, opt, &head);
 
 	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, module);
 
