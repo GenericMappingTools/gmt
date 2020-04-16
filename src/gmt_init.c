@@ -17419,10 +17419,12 @@ int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsig
 	int code = GMT_NOERROR;	/* Default is no usage message was requested and we move on to parsing the arguments */
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Under modern mode we always require an option like -? or -^ to call usage */
 		if (options) {	/* Modern mode will only print the usage if one of the usage-options are given (but see exception for one-liners) */
-			if (options->option == GMT_OPT_USAGE)	/* Return the usage message */
+			if (options->option == GMT_OPT_USAGE)	/* -? Return the usage message */
 				code = GMT_OPT_USAGE;
-			if (options->option == GMT_OPT_SYNOPSIS)	/* Return the synopsis message */
+			else if (options->option == GMT_OPT_SYNOPSIS)	/* -^ or - Return the synopsis message */
 				code = GMT_SYNOPSIS;
+			else if (options->option == '+' && !options->arg[0])	/* -+ Return the extended synopsis message */
+				code = GMT_OPT_USAGE, API->GMT->common.synopsis.extended = true;
 		}
 		else if (API->usage)	/* One-liner modern mode with no args must give usage */
 			code = GMT_OPT_USAGE;

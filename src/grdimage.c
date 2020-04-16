@@ -480,28 +480,28 @@ GMT_LOCAL unsigned int grdimage_clean_global_headers (struct GMT_CTRL *GMT, stru
 	if ((flag & 1)  && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
 		h->inc[GMT_X] = 360.0 / (h->n_columns - 1);	/* Get exact increment */
 		h->wesn[XHI] = h->wesn[XLO] + 360.0;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected geographic global gridline-registered grid with sloppy longitude bounds.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected geographic global gridline-registered grid with sloppy longitude bounds.\n");
 	}
 	if ((flag & 2)  && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
 		h->inc[GMT_X] = 360.0 / h->n_columns;	/* Get exact increment */
 		h->wesn[XHI] = h->wesn[XLO] + h->inc[GMT_X] * (h->n_columns - 1);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy longitude bounds.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy longitude bounds.\n");
 	}
 	if ((flag & 4) && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
 		h->inc[GMT_Y] = 180.0 / (h->n_rows - 1);	/* Get exact increment */
 		h->wesn[YLO] = -90.0;
 		h->wesn[YHI] = 90.0;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected geographic global gridline-registered grid with gridline latitude bounds.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected geographic global gridline-registered grid with gridline latitude bounds.\n");
 	}
 	if ((flag & 8) && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
 		h->inc[GMT_Y] = 180.0 / h->n_rows;	/* Get exact increment */
 		h->wesn[YLO] = -90.0 + 0.5 * h->inc[GMT_Y];
 		h->wesn[YHI] = h->wesn[YLO] +  h->inc[GMT_Y] * (h->n_rows - 1);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy latitude bounds.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy latitude bounds.\n");
 	}
 	if (flag) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Old region: %g/%g/%g/%g with incs %g/%g\n", wasR[XLO], wasR[XHI], wasR[YLO], wasR[YHI], wasI[GMT_X], wasI[GMT_Y]);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "New region: %g/%g/%g/%g with incs %g/%g\n", h->wesn[XLO], h->wesn[XHI], h->wesn[YLO], h->wesn[YHI], h->inc[GMT_X], h->inc[GMT_Y]);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Old region: %g/%g/%g/%g with incs %g/%g\n", wasR[XLO], wasR[XHI], wasR[YLO], wasR[YHI], wasI[GMT_X], wasI[GMT_Y]);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "New region: %g/%g/%g/%g with incs %g/%g\n", h->wesn[XLO], h->wesn[XHI], h->wesn[YLO], h->wesn[YHI], h->inc[GMT_X], h->inc[GMT_Y]);
 	}
 	return 1;
 }
@@ -656,7 +656,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 #else
 			if (setenv ("GDAL_PAM_ENABLED", "NO", 0))
 #endif
-				GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing our auxiliary files\n");
+				GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 		}
 	}
 
@@ -1098,7 +1098,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	NaN_rgb = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];
 	if (Ctrl->Q.active) {	/* Want colormask via NaN entries */
 		if (gray_only) {
-			GMT_Report (API, GMT_MSG_WARNING, "Your image is grayscale only but -Q requires 24-bit; image will be expanded to 24-bit.\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Your image is grayscale only but -Q requires 24-bit; image will be expanded to 24-bit.\n");
 			gray_only = false;
 			NaN_rgb = red;	/* Arbitrarily pick red as the NaN color since the entire image is gray only */
 			gmt_M_memcpy (P->bfn[GMT_NAN].rgb, red, 4, double);
