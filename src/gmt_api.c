@@ -654,7 +654,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 			return;
 		}
 		if (head->next == NULL) {	/* Gave a single argument */
-			if (head->option == GMT_OPT_USAGE || head->option == GMT_OPT_SYNOPSIS) modern = 1;
+			if (head->option == GMT_OPT_USAGE || head->option == GMT_OPT_SYNOPSIS || (head->option == '+' && !head->arg[0])) modern = 1;
 			if (modern) usage = true;
 		}
 	}
