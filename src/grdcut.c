@@ -563,6 +563,22 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 	}
 
+	/* Basic sanity checking that the requested region has at least some overlap with the actual region */
+
+	if (wesn_new[YLO] >= G->header->wesn[YHI] || wesn_new[YHI] <= G->header->wesn[YLO]) {
+			GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely below or above the current grid region\n");
+			Return (GMT_RUNTIME_ERROR);
+
+	}
+	if (wesn_new[XLO] >= G->header->wesn[XHI] || wesn_new[XHI] <= G->header->wesn[XLO]) {
+		bool bail = true;
+		if (gmt_M_is_geographic (GMT, GMT_IN) && !((wesn_new[XLO] - 360.0) <= G->header->wesn[XLO] || (wesn_new[XHI] + 360.0) >= G->header->wesn[XHI])) bail = false;
+		if (bail) {
+			GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely to the left or to the right the current grid region\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+
 	gmt_M_memcpy (wesn_requested, wesn_new, 4, double);
 	if (wesn_new[YLO] < G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO], outside[YLO] = true;
 	if (wesn_new[YHI] > G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI], outside[YHI] = true;
