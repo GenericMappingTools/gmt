@@ -658,17 +658,17 @@ endif (BUILD_DEVELOPER)
 
 
 ##
-##	Settings for GMT supplemental library
+##	Settings for GMT and non-GMT supplemental libraries
 ##
 if (BUILD_SUPPLEMENTS)
 	if (UNIX)
 		set (CMAKE_SHARED_MODULE_SUFFIX .so)
 	endif (UNIX)
-	# Needed in supplib, + supplements themselves
+	# Needed in supplement libraries
 	set (GMT_SUPPL_SRCS gmt_modern.c gmt_supplements_module.h gmt_supplements_module.c)
 
-	# supplement directories (only those, which are to be included in gmtlib)
-	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in git.
+	# supplement directories to be built as supplement libraries
+	# EXTRA_BUILD_DIRS are directories for non-GMT supplements.
 	# See cmake/ConfigUserAdvancedTemplate.cmake for setting this parameter.
 	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${EXTRA_BUILD_DIRS})
 
@@ -676,42 +676,98 @@ if (BUILD_SUPPLEMENTS)
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		# include CMake settings in supplement directories
 		add_subdirectory (${_dir})
+
 		# include supplement directories
 		include_directories (${CMAKE_CURRENT_BINARY_DIR}/${_dir})
+
+		# supplement extra (non-GMT) include files, if any
+		get_subdir_var (_suppl_extra_includes SUPPL_EXTRA_INCLUDES ${_dir})
+		include_directories (${_suppl_extra_includes})
+
+		# get supplement library name ["supplements" if undefined]
+		get_subdir_var (_suppl_lib_name SUPPL_LIB_NAME ${_dir})
+		if (NOT _suppl_lib_name)
+			set (_suppl_lib_name "supplements")
+		endif (NOT _suppl_lib_name)
+		list (APPEND GMT_SUPPL_LIBRARIES ${_suppl_lib_name})
+
+		# supplement (both GMT and non-GMT) source files for each supplement library
+		get_subdir_var_files (_suppl_lib_srcs SUPPL_LIB_SRCS ${_dir})
+		list (APPEND SUPPL_${_suppl_lib_name}_LIB_SRCS ${_suppl_lib_srcs})
+
+		# supplement extra libraries for each supplement library
+		get_subdir_var (_suppl_extra_libraries SUPPL_EXTRA_LIBS ${_dir})
+		list (APPEND SUPPL_${_suppl_lib_name}_EXTRA_LIBRARIES ${_suppl_extra_libraries})
 	endforeach (_dir)
 
-	# supplement extra (non-GMT) library files, if any
-	get_subdir_var_files (GMT_SUPPL_LIB_SRCS SUPPL_LIB_SRCS ${GMT_SUPPL_DIRS})
+	# remove duplicate supplement library names, so multiple supplement packages can be built into one single library
+	list (REMOVE_DUPLICATES GMT_SUPPL_LIBRARIES)
 
-	# supplement extra (non-GMT) include files, if any
-	get_subdir_var (GMT_EXTRA_INCLUDES SUPPL_EXTRA_INCLUDES ${GMT_SUPPL_DIRS})
-	include_directories (${GMT_EXTRA_INCLUDES})
+	# loop over all supplement libraries
+	foreach (_suppl_lib_name ${GMT_SUPPL_LIBRARIES})
+		if (WIN32)
+			add_library (${_suppl_lib_name}
+				${GMT_GEN_HDRS}
+				${GMT_SUPPL_SRCS}
+				${SUPPL_${_suppl_lib_name}_LIB_SRCS})
+		else (WIN32)
+			add_library (${_suppl_lib_name} MODULE
+				${GMT_GEN_HDRS}
+				${GMT_SUPPL_SRCS}
+				${SUPPL_${_suppl_lib_name}_LIB_SRCS})
+		endif (WIN32)
 
-	# supplement extra library files
-	get_subdir_var (GMT_EXTRA_LIBRARIES SUPPL_EXTRA_LIBS ${GMT_SUPPL_DIRS})
+		add_dependencies (${_suppl_lib_name} gen_gmt_headers) # make supplib after gen_gmt_headers
+		add_dependencies (${_suppl_lib_name} pslib) # make supplib after pslib
+		add_dependencies (${_suppl_lib_name} gmtlib) # make supplib after pslib
 
-	# libgmtsuppl
-	if (WIN32)
-		add_library (supplib
-			${GMT_GEN_HDRS}
-			${GMT_SUPPL_SRCS}
-			${GMT_SUPPL_LIB_SRCS})
-	else (WIN32)
-		add_library (supplib MODULE
-			${GMT_GEN_HDRS}
-			${GMT_SUPPL_SRCS}
-			${GMT_SUPPL_LIB_SRCS})
-	endif (WIN32)
+		# No SOVERSION & VERSION for a MODULE, only for SHARED libs
+		target_link_libraries (${_suppl_lib_name}
+			gmtlib
+			pslib
+			${SUPPL_${_suppl_lib_name}_EXTRA_LIBRARIES})
 
-	add_dependencies (supplib gen_gmt_headers) # make supplib after gen_gmt_headers
-	add_dependencies (supplib pslib) # make supplib after pslib
-	add_dependencies (supplib gmtlib) # make supplib after pslib
+		if (HAVE_DLADDR AND HAVE_LIBDL)
+			# link the dynamic linking loader library
+			target_link_libraries (${_suppl_lib_name} dl)
+		endif (HAVE_DLADDR AND HAVE_LIBDL)
 
-	# No SOVERSION & VERSION for a MODULE, only for SHARED libs
-	target_link_libraries (supplib
-		gmtlib
-		pslib
-		${GMT_EXTRA_LIBRARIES})
+		if (HAVE_M_LIBRARY)
+			# link the math library
+			target_link_libraries (${_suppl_lib_name} m)
+		endif (HAVE_M_LIBRARY)
+
+		set_target_properties (${_suppl_lib_name}
+			PROPERTIES
+			OUTPUT_NAME ${_suppl_lib_name}
+			RUNTIME_OUTPUT_NAME ${_suppl_lib_name}
+			LIBRARY_OUTPUT_DIRECTORY plugins
+			RUNTIME_OUTPUT_DIRECTORY plugins
+			PREFIX ""
+			LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
+			DEFINE_SYMBOL "LIBRARY_EXPORTS")
+
+		if (WIN32 AND SUPP_DLL_RENAME)
+			set_target_properties (${_suppl_lib_name} PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
+		endif (WIN32 AND SUPP_DLL_RENAME)
+
+		# Testing
+		add_dependencies (check ${_suppl_lib_name})
+
+		# Debugging symbols
+		if (WIN32)
+			create_debug_sym (${GMT_BINDIR}/gmt_plugins ${_suppl_lib_name})
+		else (WIN32)
+			create_debug_sym (${GMT_LIBDIR}/gmt${GMT_INSTALL_NAME_SUFFIX}/plugins ${_suppl_lib_name})
+		endif (WIN32)
+
+		# install target
+		install (TARGETS ${_suppl_lib_name}
+			LIBRARY DESTINATION ${GMT_LIBDIR}/gmt${GMT_INSTALL_NAME_SUFFIX}/plugins # UNIX
+			COMPONENT Runtime
+			RUNTIME DESTINATION ${GMT_BINDIR}/gmt_plugins # Windows
+			COMPONENT Runtime)
+	endforeach (_suppl_lib_name ${GMT_SUPPL_LIBRARIES})
 
 	# Include any extra files that are listed in EXTRA_MODULES_SUPPL defined in ConfigUserAdvanced.cmake
 	# This include(s) will add new modules to the official GMT supplements
@@ -720,47 +776,6 @@ if (BUILD_SUPPLEMENTS)
 			include (${_f})
 		endforeach(_f)
 	endif (EXTRA_MODULES_SUPPL)
-
-	if (HAVE_DLADDR AND HAVE_LIBDL)
-		# link the dynamic linking loader library
-		target_link_libraries (supplib dl)
-	endif (HAVE_DLADDR AND HAVE_LIBDL)
-
-	if (HAVE_M_LIBRARY)
-		# link the math library
-		target_link_libraries (supplib m)
-	endif (HAVE_M_LIBRARY)
-
-	set_target_properties (supplib
-		PROPERTIES
-		OUTPUT_NAME supplements
-		RUNTIME_OUTPUT_NAME supplements
-		LIBRARY_OUTPUT_DIRECTORY plugins
-		RUNTIME_OUTPUT_DIRECTORY plugins
-		PREFIX ""
-		LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
-		DEFINE_SYMBOL "LIBRARY_EXPORTS")
-
-	if (WIN32 AND SUPP_DLL_RENAME)
-		set_target_properties (supplib PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
-	endif (WIN32 AND SUPP_DLL_RENAME)
-
-	# Testing
-	add_dependencies (check supplib)
-
-	# Debugging symbols
-	if (WIN32)
-		create_debug_sym (${GMT_BINDIR}/gmt_plugins supplib)
-	else (WIN32)
-		create_debug_sym (${GMT_LIBDIR}/gmt${GMT_INSTALL_NAME_SUFFIX}/plugins supplib)
-	endif (WIN32)
-
-	# install target
-	install (TARGETS supplib
-		LIBRARY DESTINATION ${GMT_LIBDIR}/gmt${GMT_INSTALL_NAME_SUFFIX}/plugins # UNIX
-		COMPONENT Runtime
-		RUNTIME DESTINATION ${GMT_BINDIR}/gmt_plugins # Windows
-		COMPONENT Runtime)
 
 	# install more
 	foreach (_dir ${GMT_SUPPL_DIRS})

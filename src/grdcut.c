@@ -312,7 +312,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;
-	bool outside[4] = {false, false, false, false}, all;
+	bool outside[4] = {false, false, false, false}, all, bail = false;
 
 	char *name[2][4] = {{"left", "right", "bottom", "top"}, {"west", "east", "south", "north"}};
 
@@ -561,6 +561,27 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		if (grdcut_set_rectangular_subregion (GMT, wesn_new, G->header->inc)) {
 			Return (API->error);	/* Get header only */
 		}
+	}
+
+	/* Basic sanity checking that the requested region has at least some overlap with the actual region */
+
+	if (wesn_new[YLO] >= G->header->wesn[YHI] || wesn_new[YHI] <= G->header->wesn[YLO]) {	/* y-check is simple */
+		GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely below or above the current grid region\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Geographic data required more trickery */
+		double we[2] = {wesn_new[XLO], wesn_new[XHI]};
+		while (we[XHI] > G->header->wesn[XLO]) we[XLO] -= 360.0, we[XHI] -= 360.0;	/* Wind past on the left */
+		we[XLO] += 360.0, we[XHI] += 360.0;	/* Now we either overlap or we are past on the right */
+		if (we[XLO] >= G->header->wesn[XHI])
+			bail = true;	/* Outside original w/e extent */
+	}
+	else if (wesn_new[XLO] >= G->header->wesn[XHI] || wesn_new[XHI] <= G->header->wesn[XLO])	/* Cartesian x-check is simple */
+		bail = true;
+
+	if (bail) {
+		GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely to the left or to the right of the current grid region\n");
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	gmt_M_memcpy (wesn_requested, wesn_new, 4, double);
