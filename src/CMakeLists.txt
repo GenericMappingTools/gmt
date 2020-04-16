@@ -770,14 +770,6 @@ if (BUILD_SUPPLEMENTS)
 			COMPONENT Runtime)
 	endforeach (_suppl_lib_name ${GMT_SUPPL_LIBRARIES})
 
-	# Include any extra files that are listed in EXTRA_MODULES_SUPPL defined in ConfigUserAdvanced.cmake
-	# This include(s) will add new modules to the official GMT supplements
-	if (EXTRA_MODULES_SUPPL)
-		foreach (_f ${EXTRA_MODULES_SUPPL})
-			include (${_f})
-		endforeach(_f)
-	endif (EXTRA_MODULES_SUPPL)
-
 	# install more
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		# get variables from subdirectory
@@ -809,14 +801,6 @@ if (BUILD_SUPPLEMENTS)
 		endif (BUILD_DEVELOPER)
 	endforeach (_dir)
 endif (BUILD_SUPPLEMENTS)
-
-# Include any extra files that are listed in EXTRA_INCLUDE_NEWSUPPL defined in ConfigUserAdvanced.cmake
-# This include(s) will create new pluggins
-if (EXTRA_INCLUDE_NEWSUPPL)
-	foreach (_f ${EXTRA_INCLUDE_NEWSUPPL})
-		include (${_f})
-	endforeach(_f)
-endif (EXTRA_INCLUDE_NEWSUPPL)
 
 
 ##

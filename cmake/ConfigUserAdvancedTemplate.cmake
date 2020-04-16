@@ -197,9 +197,6 @@
 # These supplemental modules end up in supplements.so like the GMT supplements.
 #set (EXTRA_BUILD_DIRS newsuppl1 newsuppl2 ...)
 
-# List extra new supplemental modules for testing without adding them to the module list
-#set (EXTRA_MODULES_SUPPL newsuppl1.c newsuppl2.c)
-
 # Directory in which to install the release sources per default
 # [${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION}]:
 #set (GMT_RELEASE_PREFIX "release-src-prefix")
