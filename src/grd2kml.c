@@ -461,7 +461,7 @@ char *CPT[8] = {"geo", "earth", "terra", "etopo1", "globe", "relief", "sealand",
 
 int GMT_grd2kml (void *V_API, int mode, void *args) {
 	int error = 0, kk, uniq, dpi, i_dir, dir, minLodPixels, maxLodPixels;
-	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, global_lat, use_60_factoring, write_image_directly = true, found_one;
+	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, use_60_factoring, write_image_directly = true;
 
 	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0, n_tiles = 0;
 
@@ -507,17 +507,16 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	//if (!gmt_M_is_geographic (GMT, GMT_IN)) {
-	//	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid must be geographic (lon, lat)\n");
-	//	Return (GMT_RUNTIME_ERROR);
-	//}
+	if (!gmt_M_is_geographic (GMT, GMT_IN)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid must be geographic (lon, lat)\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
 	if (!gmt_M_grd_equal_xy_inc (GMT, G)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid spacing must be the same in longitude and latitude!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	global_lon = gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI]);
-	global_lat = gmt_M_180_range (G->header->wesn[YLO], G->header->wesn[YHI]);
 
 	grd2kml_assert_tile_size (GMT, global_lon, G->header, Ctrl->L.active, &Ctrl->L.size);
 
@@ -534,7 +533,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->M.interpolate)	/* Want interpolation and no colormasking in effect means we can let psconvert do it */
 		sprintf (im_arg, " -Ei");
-	nx = G->header->n_columns;	ny = (global_lon) ? nx : G->header->n_rows;			/* Dimensions of original grid */
+	nx = G->header->n_columns;	ny = (global_lon) ? nx : G->header->n_rows;	/* Dimensions of original grid, possibly made square for global grids */
 	mx = urint (ceil ((double)nx / (double)Ctrl->L.size)) * Ctrl->L.size;	/* Nearest image size in multiples of tile size */
 	my = urint (ceil ((double)ny / (double)Ctrl->L.size)) * Ctrl->L.size;
 	max_level = urint (ceil (log2 (MAX (mx, my) / (double)Ctrl->L.size)));	/* Number of levels in the quadtree */
@@ -604,11 +603,11 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	ext_wesn[XLO] = floor (G->header->wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
 	ext_wesn[XHI] = ceil  (G->header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
-	if (global_lon) {	/* Make it a square 360x360 grid */
+	if (global_lon) {	/* Make it a square 360x360 grid so the quadtree splitting works */
 		ext_wesn[YLO] = -180.0;
 		ext_wesn[YHI] = +180.0;
 	}
-	else {
+	else {	/* Presumably a smaller region and we do not need to worry as much */
 		ext_wesn[YLO] = floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y];
 		ext_wesn[YHI] = ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
 	}
@@ -621,7 +620,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, Q);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		z_extend = true;	/* We made a temp file we need to zap */
+		z_extend = true;	/* We made a temp file we need to zap later */
 		if (Ctrl->I.active) {	/* Also extend the intensity grid */
 			sprintf (IntensGrid, "%s/grd2kml_extended_intens_%6.6d.grd", API->tmp_dir, uniq);
 			sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -N -G%s", Ctrl->I.file, ext_wesn[XLO], ext_wesn[XHI], ext_wesn[YLO], ext_wesn[YHI], IntensGrid);
@@ -630,16 +629,16 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, Q);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			i_extend = true;	/* We made a temp file we need to zap */
+			i_extend = true;	/* We made a temp file we need to zap later */
 		}
 	}
-	else {	/* No need to extend, use as is */
+	else {	/* No need to extend, use the input files as is */
 		strcpy (DataGrid, Ctrl->In.file);
 		if (Ctrl->I.active)
 			strcpy (IntensGrid, Ctrl->I.file);
 	}
 
-	if (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)) {	/* If no cpt given or just a master then we must compute one from the full-size grid and use throughout */
+	if (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)) {	/* If no cpt given or just a master then we must compute a scaled one from the full-size grid and use it throughout */
 		unsigned int zmode = gmt_cpt_default (GMT, G->header);
 		char cfile[PATH_MAX] = {""};
 		struct GMT_PALETTE *P = NULL;
@@ -774,7 +773,6 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_FLOAT);
         step_y = factor * Ctrl->L.size * G->header->inc[GMT_Y];
         step_x = factor * Ctrl->L.size * G->header->inc[GMT_X];
-        found_one = false;
 
 		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
 			wesn[YHI] = wesn[YLO] + step_y;	/* Top row may extend beyond grid and be transparent */
@@ -810,7 +808,6 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						use_tile = !gmt_M_is_fnan (T->data[node]);
 					}
 				}
-				//if (found_one) use_tile = false;
 				if (use_tile) {	/* Found data inside this tile, make plot and rasterize */
 					char z_data[GMT_VF_LEN] = {""}, psfile[PATH_MAX] = {""};
 					/* Open the grid subset as a virtual file we can pass to grdimage */
@@ -839,7 +836,6 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 							gmt_M_free (GMT, Q);
 							Return (API->error);
 						}
-						found_one = true;
 					}
 					else {
 						/* Build the grdimage command to make the PostScript plot */
@@ -931,7 +927,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found %d tiles that passed the no-NaN test but gave a blank image (?)\n", n_bummer);
 
-	/* Clean up any temporary grids */
+	/* Clean up any temporary files */
 
 	if (z_extend && !access (DataGrid, F_OK))
 		gmt_remove_file (GMT, DataGrid);
@@ -939,6 +935,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_remove_file (GMT, IntensGrid);
 	if (Ctrl->I.derive)
 		gmt_remove_file (GMT, Ctrl->I.file);
+	if (tmp_cpt)
+		gmt_remove_file (GMT, Ctrl->C.file);
 
 	/* Process quadtree links */
 
@@ -1115,6 +1113,6 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, Q);
 	GMT_Report (API, GMT_MSG_NOTICE, "Done: %d tiles written to directory %s\n", n_tiles, Ctrl->N.prefix);
-	if (tmp_cpt) gmt_remove_file (GMT, Ctrl->C.file);
+
 	Return (GMT_NOERROR);
 }
