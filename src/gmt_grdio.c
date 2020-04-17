@@ -1891,6 +1891,22 @@ int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HE
 	return (int)uerr;
 }
 
+void gmt_grd_set_cartesian (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int direction) {
+	/* When we need to turn a geographic grid into a Cartesian grid type.
+	 * direction is 0 for input, 1 for output, and 2 for both */
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+	if (direction == GMT_IO) {	/* Set Cartesian for both directions */
+		gmt_set_cartesian (GMT, GMT_IN);
+		gmt_set_cartesian (GMT, GMT_OUT);
+	}
+	else
+		gmt_set_cartesian (GMT, direction);
+	/* Reset the units from degree_longitude/latitude to plain x/y */
+	strcpy (h->x_units, "x");
+	strcpy (h->y_units, "y");
+	HH->grdtype = GMT_GRID_CARTESIAN;	/* Set hidden type to Cartesian */
+}
+
 void gmt_grd_info_syntax (struct GMT_CTRL *GMT, char option) {
 	/* Display the option for setting grid metadata in grdedit etc. */
 	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t-%c Append grid header information as one string composed of one or\n", option);

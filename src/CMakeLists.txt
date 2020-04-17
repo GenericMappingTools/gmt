@@ -747,9 +747,10 @@ if (BUILD_SUPPLEMENTS)
 			LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
 			DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
-		if (WIN32 AND SUPP_DLL_RENAME)
+		# Rename supplements.dll to SUPP_DLL_RENAME
+		if (WIN32 AND ${_suppl_lib_name} STREQUAL "supplements" AND SUPP_DLL_RENAME)
 			set_target_properties (${_suppl_lib_name} PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
-		endif (WIN32 AND SUPP_DLL_RENAME)
+		endif (WIN32 AND ${_suppl_lib_name} STREQUAL "supplements" AND SUPP_DLL_RENAME)
 
 		# Testing
 		add_dependencies (check ${_suppl_lib_name})

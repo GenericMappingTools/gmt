@@ -312,7 +312,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;
-	bool outside[4] = {false, false, false, false}, all, bail = false;
+	bool outside[4] = {false, false, false, false}, all, bail = false, geo_to_cart = false;
 
 	char *name[2][4] = {{"left", "right", "bottom", "top"}, {"west", "east", "south", "north"}};
 
@@ -575,6 +575,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		we[XLO] += 360.0, we[XHI] += 360.0;	/* Now we either overlap or we are past on the right */
 		if (we[XLO] >= G->header->wesn[XHI])
 			bail = true;	/* Outside original w/e extent */
+		if (wesn_new[YLO] < -90.0 || wesn_new[YHI] > 90.0) {
+			gmt_grd_set_cartesian (GMT, G->header, 2);
+			geo_to_cart = true;
+		}
 	}
 	else if (wesn_new[XLO] >= G->header->wesn[XHI] || wesn_new[XHI] <= G->header->wesn[XLO])	/* Cartesian x-check is simple */
 		bail = true;
@@ -583,7 +587,6 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely to the left or to the right of the current grid region\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-
 	gmt_M_memcpy (wesn_requested, wesn_new, 4, double);
 	if (wesn_new[YLO] < G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO], outside[YLO] = true;
 	if (wesn_new[YHI] > G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI], outside[YHI] = true;
@@ -716,6 +719,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO],
 		            wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->n_columns, G->header->n_rows);
 	}
+	if (geo_to_cart) GMT_Report (API, GMT_MSG_WARNING, "Expanded grid region implies the grid is no longer geographic\n");
 
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
 		unsigned int row, col;
