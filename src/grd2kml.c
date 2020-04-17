@@ -371,19 +371,10 @@ GMT_LOCAL void grd2kml_set_dirpath (bool single, char *url, char *prefix, unsign
 	}
 }
 
-GMT_LOCAL double grd2kml_get_factor (bool global, unsigned int level) {
+GMT_LOCAL double grd2kml_get_factor (unsigned int level) {
 	double f;
-	if (global) {	/* Worry about divisions into 60 */
-		switch (level) {
-			case 0: f = 1.0; break;
-			case 1: f = 2.0; break;
-			case 2: f = 5.0; break;
-			case 3: f = 10.0; break;
-			default: f = pow (2.0, level) - pow (2.0, level-4);;	/* 15, 30, 60, ... */
-		}
-	}
-	else	/* Regular power of 2 progression */
-		f = pow (2.0, level);
+	/* Regular power of 2 progression */
+	f = pow (2.0, level);
 	return (f);
 }
 
@@ -450,6 +441,42 @@ GMT_LOCAL void grd2kml_assert_tile_size (struct GMT_CTRL *GMT, bool global, stru
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%s tile size selection of %d is a natural factor of both columns and rows\n", msg[active], *size);
 }
 
+int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter, struct GMT_GRID_HEADER *h, double inc, char *DataGrid, char *Zgrid, char *filt_report) {
+	char s_int[GMT_LEN32] = {""}, fwidth[GMT_LEN32] = {""};
+	char cmd[GMT_LEN256] = {""};
+	int error;
+	double f;
+	/* We will filter the grid to make a coarser version that exactly matches the Ctrl->L.size expectations.
+	 * Note: If the desired increment is smaller than the actual, we must sample the grid instead */
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Low-pass-filtering the grid(s)\n", level);
+	f = (h->registration == GMT_GRID_NODE_REG) ? M_SQRT2 : 1.0;
+	sprintf (fwidth, "%.16g", f * inc);
+	sprintf (s_int, "%.16g", inc);
+	if (inc <h->inc[GMT_X]) {	/* Resample instead of filter */
+		sprintf (filt_report, " [Resampled with -I%s]", s_int);
+		sprintf (cmd, "%s -I%s -rp -G%s", DataGrid, s_int, Zgrid);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Running grdsample : %s\n", cmd);
+		if ((error = GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd)) != GMT_NOERROR)
+			return (GMT_RUNTIME_ERROR);
+	}
+	else {
+		unsigned int k;
+		char *kind[4] = {"Boxcar", "Cosine-taper", "Gaussian", "Median"};
+		switch (filter) {
+			case 'b':	k = 0; break;
+			case 'c':	k = 1; break;
+			case 'g':	k = 2; break;
+			case 'm':	k = 3; break;
+		}
+		sprintf (filt_report, " [%s filtered with -F%c%s -I%s]", kind[k], filter, fwidth, s_int);
+		sprintf (cmd, "%s -D0 -F%c%s -I%s -rp -G%s", DataGrid, filter, fwidth, s_int, Zgrid);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Running grdfilter : %s\n", cmd);
+		if ((error = GMT_Call_Module (GMT->parent, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR)
+			return (GMT_RUNTIME_ERROR);
+	}
+	return (GMT_NOERROR);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -461,20 +488,20 @@ char *CPT[8] = {"geo", "earth", "terra", "etopo1", "globe", "relief", "sealand",
 
 int GMT_grd2kml (void *V_API, int mode, void *args) {
 	int error = 0, kk, uniq, dpi, i_dir, dir, minLodPixels, maxLodPixels;
-	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, use_60_factoring, write_image_directly = true;
+	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, write_image_directly = true, found_one;
 
 	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0, n_tiles = 0;
 
 	uint64_t node;
 
-	double factor, dim, west, east, step, wesn[4], ext_wesn[4], inc[2];
+	double factor, dim, west, east, step, wesn[4], ext_wesn[4], inc;
 
 
 	char cmd[GMT_BUFSIZ] = {""}, level_dir[PATH_MAX] = {""}, Zgrid[PATH_MAX] = {""}, Igrid[PATH_MAX] = {""};
 	char W[GMT_LEN16] = {""}, E[GMT_LEN16] = {""}, S[GMT_LEN16] = {""}, N[GMT_LEN16] = {""}, file[PATH_MAX] = {""};
 	char DataGrid[PATH_MAX] = {""}, IntensGrid[PATH_MAX] = {""}, path[PATH_MAX] = {""}, im_arg[16] = {""};
 	char region[GMT_LEN128] = {""}, ps_cmd[GMT_LEN128] = {""}, cfile[GMT_VF_LEN] = {""}, K[4] = {""};
-	char filt_report[GMT_LEN128] = {""}, box[GMT_LEN16] = {""};
+	char filt_report[GMT_LEN128] = {""}, box[GMT_LEN32] = {""};
 	static char *kml_xmlns = "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">";
 
 	FILE *fp = NULL;
@@ -537,10 +564,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	mx = urint (ceil ((double)nx / (double)Ctrl->L.size)) * Ctrl->L.size;	/* Nearest image size in multiples of tile size */
 	my = urint (ceil ((double)ny / (double)Ctrl->L.size)) * Ctrl->L.size;
 	max_level = urint (ceil (log2 (MAX (mx, my) / (double)Ctrl->L.size)));	/* Number of levels in the quadtree */
-	use_60_factoring = true;	/* Instead of power of 2, 1,2,4,8, x etc we modify these so that 60/x are integers (x <= 60) */
-	factor = grd2kml_get_factor (use_60_factoring, max_level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
-	step = factor * Ctrl->L.size * G->header->inc[GMT_X];	/* Same for lon and lat */
-	if (step > 360.0) max_level--;
+	factor = grd2kml_get_factor (max_level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
 
 	if ((60.0 * G->header->inc[GMT_X] - irint (60.0 * G->header->inc[GMT_X])) < GMT_CONV4_LIMIT) {
 		/* Grid spacing is an integer multiple of 1 arc minute or higher, use ddd:mm format */
@@ -557,7 +581,6 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	else {	/* Cannot use 0.1 arc-secs, do full decimal resolution */
 		strcpy (GMT->current.setting.format_float_out, "%.16g");
 		strcpy (GMT->current.setting.format_geo_out, "D");
-		use_60_factoring = false;
 	}
 	gmtlib_geo_C_format (GMT);	/* Update the format settings */
 	dim = dpi * 0.0001 * Ctrl->L.size;	/* Constant tile map size in inches for a fixed dpi of 100 yields PNGS of the requested dimension in -L */
@@ -597,21 +620,22 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 
 	Q = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_QUADTREE *);
-	factor = grd2kml_get_factor (use_60_factoring, max_level);	/* Max width of imaged pixels in multiples of original grid spacing for this level */
+	factor = grd2kml_get_factor (max_level);	/* Max width of imaged pixels in multiples of original grid spacing for this level */
 
 	/* Determine extended region required if using the largest multiple of original grid spacing */
-	inc[GMT_X] = factor * G->header->inc[GMT_X];
-	inc[GMT_Y] = factor * G->header->inc[GMT_Y];
+	inc = factor * G->header->inc[GMT_X];
 
-	ext_wesn[XLO] = floor (G->header->wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
-	ext_wesn[XHI] = ceil  (G->header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
 	if (global_lon) {	/* Make it a square 360x360 grid so the quadtree splitting works */
+		ext_wesn[XLO] = G->header->wesn[XLO];
+		ext_wesn[XHI] = G->header->wesn[XHI];
 		ext_wesn[YLO] = -180.0;
 		ext_wesn[YHI] = +180.0;
 	}
 	else {	/* Presumably a smaller region and we do not need to worry as much */
-		ext_wesn[YLO] = floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y];
-		ext_wesn[YHI] = ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
+		ext_wesn[XLO] = floor (G->header->wesn[XLO] / inc + GMT_CONV6_LIMIT) * inc;
+		ext_wesn[XHI] = ceil  (G->header->wesn[XHI] / inc - GMT_CONV6_LIMIT) * inc;
+		ext_wesn[YLO] = floor (G->header->wesn[YLO] / inc + GMT_CONV6_LIMIT) * inc;
+		ext_wesn[YHI] = ceil  (G->header->wesn[YHI] / inc - GMT_CONV6_LIMIT) * inc;
 	}
 	if (ext_wesn[XLO] < G->header->wesn[XLO] || ext_wesn[XHI] > G->header->wesn[XHI] || ext_wesn[YLO] < G->header->wesn[YLO] || ext_wesn[YHI] > G->header->wesn[YHI]) {
 		/* Extend the original grid with NaNs so it is an exact multiple of largest grid stride at max level */
@@ -633,7 +657,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			}
 			i_extend = true;	/* We made a temp file we need to zap later */
 		}
-		gmt_grd_set_cartesian (GMT, G->header, 2);	/* In here we must treat the extended grid as Cartesian */
+		if (ext_wesn[YLO] < -90.0 ||  ext_wesn[YHI] > 90.0) gmt_grd_set_cartesian (GMT, G->header, 2);	/* We must treat the extended grid as Cartesian */
 	}
 	else {	/* No need to extend, use the input files as is */
 		strcpy (DataGrid, Ctrl->In.file);
@@ -721,11 +745,12 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Extended grid size is by %d by %d, tile size is %d x %d\n", ny, nx, Ctrl->L.size, Ctrl->L.size);
 
+    step = MAX (ext_wesn[XHI] - ext_wesn[XLO], ext_wesn[YHI] - ext_wesn[YLO]);
+	inc = step / Ctrl->L.size;
 	/* Loop over all the levels, starting at the top level (0) */
 	for (level = 0; level <= max_level; level++) {
-		factor = grd2kml_get_factor (use_60_factoring, max_level - level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
-		inc[GMT_X] = factor * G->header->inc[GMT_X];
-		inc[GMT_Y] = factor * G->header->inc[GMT_Y];
+		found_one = false;
+		factor = grd2kml_get_factor (max_level - level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Factor = %g Dim = %d x %d -> %d x %d\n",
 			level, factor, irint (factor * Ctrl->L.size), irint (factor * Ctrl->L.size), Ctrl->L.size, Ctrl->L.size);
 		/* Create the level directory */
@@ -734,30 +759,16 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			if (gmt_mkdir (level_dir))
 				GMT_Report (API, GMT_MSG_INFORMATION, "Level directory %s already exist - overwriting files\n", level_dir);
 		}
-		if (level < max_level) {	/* Filter the data to match level resolution */
-			char s_int[GMT_LEN32] = {""};
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Low-pass-filtering the grid(s)\n", level);
-			if (inc[GMT_X] < GMT_MIN2DEG && (GMT_DEG2SEC_F * inc[GMT_X] - irint (GMT_DEG2SEC_F * inc[GMT_X])) < GMT_CONV4_LIMIT)
-				sprintf (s_int, "%ds", irint (GMT_DEG2SEC_F * inc[GMT_X]));
-			else if (inc[GMT_X] < 1.0 && (GMT_DEG2MIN_F * inc[GMT_X] - irint (GMT_DEG2MIN_F * inc[GMT_X])) < GMT_CONV4_LIMIT)
-				sprintf (s_int, "%dm", irint (GMT_DEG2MIN_F * inc[GMT_X]));
-			else
-				sprintf (s_int, "%.16g", inc[GMT_X]);
-
-			sprintf (filt_report, " [Gaussian filtered with -F%c%s -I%s]", Ctrl->F.filter, s_int, s_int);
+		if (level < max_level || !doubleAlmostEqual (G->header->inc[GMT_X], inc) || G->header->registration == GMT_GRID_NODE_REG) {	/* Filter the data to match level resolution */
 			sprintf (Zgrid, "%s/grd2kml_Z_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
-			sprintf (cmd, "%s -D0 -F%c%s -I%.16g -G%s", DataGrid, Ctrl->F.filter, s_int, inc[GMT_X], Zgrid);
-			GMT_Report (API, GMT_MSG_INFORMATION, "Running grdfilter : %s\n", cmd);
-			if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
+			if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, G->header, inc, DataGrid, Zgrid, filt_report)) {
 				gmt_M_free (GMT, Q);
 				if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (Ctrl->I.active) {	/* Also filter the intensity grid */
 				sprintf (Igrid, "%s/grd2kml_I_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
-				sprintf (cmd, "%s -D0 -F%c%s -I%s -G%s", IntensGrid, Ctrl->F.filter, s_int, s_int, Igrid);
-				GMT_Report (API, GMT_MSG_INFORMATION, "Running grdfilter : %s\n", cmd);
-				if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
+				if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, G->header, inc, IntensGrid, Igrid, filt_report)) {
 					gmt_M_free (GMT, Q);
 					if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
 					Return (GMT_RUNTIME_ERROR);
@@ -774,7 +785,6 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		row = col = n_skip = 0;
 		wesn[YLO] = ext_wesn[YLO];
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_FLOAT);
-        step = factor * Ctrl->L.size * G->header->inc[GMT_X];	/* Same for lon and lat */
 
 		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
 			wesn[YHI] = wesn[YLO] + step;	/* Top row may extend beyond grid and be transparent */
@@ -810,6 +820,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						use_tile = !gmt_M_is_fnan (T->data[node]);
 					}
 				}
+				if (found_one) use_tile = false;
 				if (use_tile) {	/* Found data inside this tile, make plot and rasterize */
 					char z_data[GMT_VF_LEN] = {""}, psfile[PATH_MAX] = {""};
 					/* Open the grid subset as a virtual file we can pass to grdimage */
@@ -838,6 +849,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 							gmt_M_free (GMT, Q);
 							Return (API->error);
 						}
+				//found_one = true;
 					}
 					else {
 						/* Build the grdimage command to make the PostScript plot */
@@ -846,11 +858,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 							sprintf (cmd, "%s -I%s -JX%3.2lfi -X0 -Y0 -W -R%s/%s/%s/%s%s%s -Ve -fc --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, Igrid, dim, W, E, S, N, im_arg, K, dim, dim, psfile);
 						else
 							sprintf (cmd, "%s -JX%3.2lfi -X0 -Y0 -W -R%s/%s/%s/%s%s%s -Ve -fc --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, dim, W, E, S, N, im_arg, K, dim, dim, psfile);
-//#ifdef DEBUG
-//						if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, CPT[level]); }
-//#else
 						if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file); }
-//#endif
 						error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 						if (error == GMT_NOERROR && Ctrl->W.active) {	/* Overlay contours */
 							sprintf (cmd, "%s -JX%3.2lfid -R%s/%s/%s/%s -O -C%s -Ve -fc ->>%s", z_data, dim, W, E, S, N, cfile, psfile);
@@ -924,6 +932,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			gmt_remove_file (GMT, Zgrid);
 			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
 		}
+		inc /= 2;
+		step /= 2;
 	}
 	n_tiles = n;
 
