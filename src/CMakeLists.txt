@@ -668,9 +668,9 @@ if (BUILD_SUPPLEMENTS)
 	set (GMT_SUPPL_SRCS gmt_modern.c gmt_supplements_module.h gmt_supplements_module.c)
 
 	# supplement directories to be built as supplement libraries
-	# EXTRA_BUILD_DIRS are directories for non-GMT supplements.
-	# See cmake/ConfigUserAdvancedTemplate.cmake for setting this parameter.
-	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${EXTRA_BUILD_DIRS})
+	# SUPPL_EXTRA_DIRS are directories for custom supplements.
+	# See cmake/ConfigUserAdvancedTemplate.cmake for details.
+	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${SUPPL_EXTRA_DIRS})
 
 	# process supplement directories
 	foreach (_dir ${GMT_SUPPL_DIRS})
