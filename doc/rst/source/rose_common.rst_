@@ -7,7 +7,7 @@ Description
 and plot a windrose diagram.  Add **-i**\ 0 if your file only has azimuth values.
 Optionally (with **-A**), polar histograms may be drawn (sector diagram
 or rose diagram). Options include full circle and half circle plots. The
-outline of the windrose is drawn with the same color as **MAP\_DEFAULT\_PEN**.
+outline of the windrose is drawn with the same color as :term:`MAP_DEFAULT_PEN`.
 
 Required Arguments
 ------------------
