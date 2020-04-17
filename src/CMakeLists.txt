@@ -698,6 +698,9 @@ if (BUILD_SUPPLEMENTS)
 		# supplement extra libraries for each supplement library
 		get_subdir_var (_suppl_extra_libraries SUPPL_EXTRA_LIBS ${_dir})
 		list (APPEND SUPPL_${_suppl_lib_name}_EXTRA_LIBRARIES ${_suppl_extra_libraries})
+
+		# rename the supplement dll [Windows only]
+		get_subdir_var (SUPPL_${_suppl_lib_name}_DLL_RENAME SUPPL_DLL_RENAME ${_dir})
 	endforeach (_dir)
 
 	# remove duplicate supplement library names, so multiple supplement packages can be built into one single library
@@ -751,6 +754,11 @@ if (BUILD_SUPPLEMENTS)
 		if (WIN32 AND ${_suppl_lib_name} STREQUAL "supplements" AND SUPP_DLL_RENAME)
 			set_target_properties (${_suppl_lib_name} PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
 		endif (WIN32 AND ${_suppl_lib_name} STREQUAL "supplements" AND SUPP_DLL_RENAME)
+
+		# Rename non-GMT supplement DLLs
+		if (WIN32 AND SUPPL_${_suppl_lib_name}_DLL_RENAME)
+			set_target_properties (${_suppl_lib_name} PROPERTIES RUNTIME_OUTPUT_NAME ${SUPPL_${_suppl_lib_name}_DLL_RENAME})
+		endif (WIN32 AND SUPPL_${_suppl_lib_name}_DLL_RENAME)
 
 		# Testing
 		add_dependencies (check ${_suppl_lib_name})
