@@ -467,7 +467,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	uint64_t node;
 
-	double factor, dim, west, east, step_y, step_x, wesn[4], ext_wesn[4], inc[2];
+	double factor, dim, west, east, step, wesn[4], ext_wesn[4], inc[2];
 
 
 	char cmd[GMT_BUFSIZ] = {""}, level_dir[PATH_MAX] = {""}, Zgrid[PATH_MAX] = {""}, Igrid[PATH_MAX] = {""};
@@ -539,6 +539,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	max_level = urint (ceil (log2 (MAX (mx, my) / (double)Ctrl->L.size)));	/* Number of levels in the quadtree */
 	use_60_factoring = true;	/* Instead of power of 2, 1,2,4,8, x etc we modify these so that 60/x are integers (x <= 60) */
 	factor = grd2kml_get_factor (use_60_factoring, max_level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
+	step = factor * Ctrl->L.size * G->header->inc[GMT_X];	/* Same for lon and lat */
+	if (step > 360.0) max_level--;
 
 	if ((60.0 * G->header->inc[GMT_X] - irint (60.0 * G->header->inc[GMT_X])) < GMT_CONV4_LIMIT) {
 		/* Grid spacing is an integer multiple of 1 arc minute or higher, use ddd:mm format */
@@ -631,6 +633,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			}
 			i_extend = true;	/* We made a temp file we need to zap later */
 		}
+		gmt_grd_set_cartesian (GMT, G->header, 2);	/* In here we must treat the extended grid as Cartesian */
 	}
 	else {	/* No need to extend, use the input files as is */
 		strcpy (DataGrid, Ctrl->In.file);
@@ -771,11 +774,10 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		row = col = n_skip = 0;
 		wesn[YLO] = ext_wesn[YLO];
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_FLOAT);
-        step_y = factor * Ctrl->L.size * G->header->inc[GMT_Y];
-        step_x = factor * Ctrl->L.size * G->header->inc[GMT_X];
+        step = factor * Ctrl->L.size * G->header->inc[GMT_X];	/* Same for lon and lat */
 
 		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
-			wesn[YHI] = wesn[YLO] + step_y;	/* Top row may extend beyond grid and be transparent */
+			wesn[YHI] = wesn[YLO] + step;	/* Top row may extend beyond grid and be transparent */
 			gmt_ascii_format_one (GMT, N, wesn[YHI], GMT_IS_FLOAT);	/* GMT_IS_FLOAT and not GMT_IS_LAT since we may exceed 90 */
 			if (wesn[YHI] <= -90.0 || wesn[YLO] >= 90.0) {	/* Tile not on Earth */
 				row++;	/* Onwards to next row */
@@ -789,7 +791,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			wesn[XLO] = ext_wesn[XLO];
 			while (wesn[XLO] < (G->header->wesn[XHI]-G->header->inc[GMT_X])) {
 				uint64_t trow, tcol;
-				wesn[XHI] = wesn[XLO] + step_x;	/* So right column may extend beyond grid and be transparent */
+				wesn[XHI] = wesn[XLO] + step;	/* So right column may extend beyond grid and be transparent */
 				/* Must make sure we have a proper formatting of these longitudes so handle any east > 360 */
 				west = wesn[XLO];	east = wesn[XHI];
 				gmt_ascii_format_one (GMT, W, west, GMT_IS_FLOAT);
@@ -913,10 +915,10 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			wesn[YLO] = wesn[YHI];
 			strcpy (S, N);
 		}
-		if (step_x > 1)
-			sprintf (box, "%g x %g d", step_x, step_y);
+		if (step > 1)
+			sprintf (box, "%g x %g d", step, step);
 		else
-			sprintf (box, "%g x %g m", 60*step_x, 60*step_y);
+			sprintf (box, "%g x %g m", 60*step, 60*step);
 		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Summary Level %d: %12s %3d by%3d =%5d tiles,%5d mapped,%3d empty%s\n", level, box, row, col, row*col, row*col - n_skip, n_skip, filt_report);
 		if (level < max_level) {	/* Delete the temporary filtered grid(s) */
 			gmt_remove_file (GMT, Zgrid);
