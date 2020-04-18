@@ -278,6 +278,131 @@ enum GMTAPI_enum_status {
  * gmtapi_* functions are exported and may be used in other gmt_*.c files
  */
 
+GMT_LOCAL int gmtapi_sort_on_classic (const void *vA, const void *vB) {
+	const struct GMT_MODULEINFO *A = vA, *B = vB;
+	if (A == NULL) return +1;	/* Get the NULL entry to the end */
+	if (B == NULL) return -1;	/* Get the NULL entry to the end */
+	return strcmp(A->cname, B->cname);
+}
+
+
+/* Function to exclude some special core modules from being reported by gmt --help|show-modules */
+GMT_LOCAL int gmtapi_skip_this_module (const char *name) {
+	if (!strncmp (name, "gmtread", 7U)) return 1;	/* Skip the gmtread module */
+	if (!strncmp (name, "gmtwrite", 8U)) return 1;	/* Skip the gmtwrite module */
+	return 0;	/* Display this one */
+}
+
+/* Function to exclude modern mode modules from being reported by gmt --show-classic */
+GMT_LOCAL int gmtapi_skip_modern_module (const char *name) {
+	if (!strncmp (name, "subplot", 7U)) return 1;	/* Skip the subplot module */
+	if (!strncmp (name, "figure", 6U)) return 1;	/* Skip the figure module */
+	if (!strncmp (name, "begin", 5U)) return 1;		/* Skip the begin module */
+	if (!strncmp (name, "clear", 5U)) return 1;		/* Skip the clear module */
+	if (!strncmp (name, "inset", 5U)) return 1;		/* Skip the inset module */
+	if (!strncmp (name, "movie", 5U)) return 1;		/* Skip the movie module */
+	if (!strncmp (name, "docs", 4U)) return 1;		/* Skip the docs module */
+	if (!strncmp (name, "end", 3U)) return 1;		/* Skip the end module */
+	return 0;	/* Display this one */
+}
+
+/* Pretty print all GMT core module names and their purposes for gmt --help */
+void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[]) {
+	unsigned int module_id = 0;
+	char message[GMT_LEN256];
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	GMT_Message (V_API, GMT_TIME_NONE, "\n===  GMT core: The main modules of the Generic Mapping Tools  ===\n");
+	while (M[module_id].cname != NULL) {
+		if (module_id == 0 || strcmp (M[module_id-1].component, M[module_id].component)) {
+			/* Start of new supplemental group */
+			snprintf (message, GMT_LEN256, "\nModule name:     Purpose of %s module:\n", M[module_id].component);
+			GMT_Message (V_API, GMT_TIME_NONE, message);
+			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
+		}
+		if (API->external || !gmtapi_skip_this_module (M[module_id].cname)) {
+			snprintf (message, GMT_LEN256, "%-16s %s\n",
+				M[module_id].mname, M[module_id].purpose);
+				GMT_Message (V_API, GMT_TIME_NONE, message);
+		}
+		++module_id;
+	}
+}
+
+/* Produce single list on stdout of all GMT core module names for gmt --show-modules */
+void gmtlib_module_list_all (void *V_API, struct GMT_MODULEINFO M[]) {
+	unsigned int module_id = 0;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	while (M[module_id].cname != NULL) {
+		if (API->external || !gmtapi_skip_this_module (M[module_id].cname))
+			printf ("%s\n", M[module_id].mname);
+		++module_id;
+	}
+}
+
+/* Produce single list on stdout of all GMT core module names for gmt --show-classic [i.e., classic mode names] */
+void gmtlib_module_classic_all (void *V_API, struct GMT_MODULEINFO M[]) {
+	unsigned int module_id = 0;
+	size_t n_modules = 0;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	while (M[n_modules].cname != NULL)	/* Count the modules */
+		++n_modules;
+
+	/* Sort array on classic names since original array is sorted on modern names */
+	qsort (M, n_modules, sizeof (struct GMT_MODULEINFO), gmtapi_sort_on_classic);
+
+	while (M[module_id].cname != NULL) {
+		if (API->external || !(gmtapi_skip_this_module (M[module_id].cname) || gmtapi_skip_modern_module (M[module_id].cname)))
+			printf ("%s\n", M[module_id].cname);
+		++module_id;
+	}
+}
+
+/* Lookup module id by name, return option keys pointer (for external API developers) */
+const char *gmtlib_module_keys (void *API, struct GMT_MODULEINFO M[], char *candidate) {
+	int module_id = 0;
+	gmt_M_unused(API);
+
+	/* Match actual_name against g_module[module_id].cname */
+	while (M[module_id].cname != NULL &&
+	       strcmp (candidate, M[module_id].cname))
+		++module_id;
+
+	/* Return Module keys or NULL */
+	return (M[module_id].keys);
+}
+
+/* Lookup module id by name, return group char name (for external API developers) */
+const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *candidate) {
+	int module_id = 0;
+	gmt_M_unused(API);
+
+	/* Match actual_name against g_module[module_id].cname */
+	while (M[module_id].cname != NULL &&
+	       strcmp (candidate, M[module_id].cname))
+		++module_id;
+
+	/* Return Module keys or NULL */
+	return (M[module_id].component);
+}
+
+#ifndef BUILD_SHARED_LIBS
+/* Lookup static module id by name, return function pointer */
+void *gmtlib_module_lookup (void *API, struct GMT_MODULEINFO M[], const char *candidate) {
+	int module_id = 0;
+	size_t len = strlen (candidate);
+	gmt_M_unused(API);
+
+	if (len < 4) return NULL;	/* All candidates should start with GMT_ */
+	/* Match actual_name against g_module[module_id].cname */
+	while (M[module_id].cname != NULL &&
+	       strcmp (&candidate[4], M[module_id].cname))
+		++module_id;
+
+	/* Return Module function or NULL */
+	return (M[module_id].p_func);
+}
+#endif
 
 /* A few functions are declared here since it is used in so many places */
 int gmtapi_report_error (void *V_API, int error);
