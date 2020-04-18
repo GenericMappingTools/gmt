@@ -229,7 +229,7 @@ EXTERN_MSC uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern,
 EXTERN_MSC void gmtlib_change_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 EXTERN_MSC void gmtlib_ellipsoid_name_convert (char *inname, char outname[]);
 
-EXTERN_MSC void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[]);
+EXTERN_MSC void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[], const char *title);
 EXTERN_MSC void gmtlib_module_list_all (void *V_API, struct GMT_MODULEINFO M[]);
 EXTERN_MSC void gmtlib_module_classic_all (void *V_API, struct GMT_MODULEINFO M[]);
 EXTERN_MSC const char *gmtlib_module_keys (void *API, struct GMT_MODULEINFO M[], char *candidate);
@@ -237,7 +237,6 @@ EXTERN_MSC const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[]
 #ifndef BUILD_SHARED_LIBS
 EXTERN_MSC void *gmtlib_module_lookup (void *API, struct GMT_MODULEINFO M[], const char *candidate);
 #endif
-
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,

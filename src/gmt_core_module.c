@@ -30,7 +30,7 @@
 
 /* Sorted array with information for all GMT core modules */
 
-static struct GMT_MODULEINFO g_core_module[] = {
+static struct GMT_MODULEINFO modules[] = {
 #ifdef BUILD_SHARED_LIBS
 	{"basemap", "psbasemap", "core", "Plot base maps and frames", ">X},>DA@AD)", NULL},
 	{"begin", "begin", "core", "Initiate a new GMT modern mode session", "", NULL},
@@ -232,32 +232,32 @@ static struct GMT_MODULEINFO g_core_module[] = {
 
 /* Pretty print all GMT core module names and their purposes for gmt --help */
 void gmtlib_core_module_show_all (void *API) {
-	gmtlib_module_show_all (API, g_core_module);
+	gmtlib_module_show_all (API, modules, GMT_CORE_STRING);
 }
 
 /* Produce single list on stdout of all GMT core module names for gmt --show-modules */
 void gmtlib_core_module_list_all (void *API) {
-	gmtlib_module_list_all (API, g_core_module);
+	gmtlib_module_list_all (API, modules);
 }
 
 /* Produce single list on stdout of all GMT core module names for gmt --show-classic [i.e., classic mode names] */
 void gmtlib_core_module_classic_all (void *API) {
-	gmtlib_module_classic_all (API, g_core_module);
+	gmtlib_module_classic_all (API, modules);
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 const char *gmtlib_core_module_keys (void *API, char *candidate) {
-	return (gmtlib_module_keys (API, g_core_module, candidate));
+	return (gmtlib_module_keys (API, modules, candidate));
 }
 
 /* Lookup module id by name, return group char name (for external API developers) */
 const char *gmtlib_core_module_group (void *API, char *candidate) {
-	return (gmtlib_module_group (API, g_core_module, candidate));
+	return (gmtlib_module_group (API, modules, candidate));
 }
 
 #ifndef BUILD_SHARED_LIBS
 /* Lookup static module id by name, return function pointer */
 void *gmtlib_core_module_lookup (void *API, const char *candidate) {
-	return (gmtlib_module_lookup (API, g_core_module, candidate));
+	return (gmtlib_module_lookup (API, modules, candidate));
 }
 #endif

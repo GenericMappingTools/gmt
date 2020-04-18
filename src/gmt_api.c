@@ -307,11 +307,11 @@ GMT_LOCAL int gmtapi_skip_modern_module (const char *name) {
 }
 
 /* Pretty print all GMT core module names and their purposes for gmt --help */
-void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[]) {
+void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[], const char *title) {
 	unsigned int module_id = 0;
 	char message[GMT_LEN256];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
-	GMT_Message (V_API, GMT_TIME_NONE, "\n===  GMT core: The main modules of the Generic Mapping Tools  ===\n");
+	GMT_Message (V_API, GMT_TIME_NONE, "\n===  %s  ===\n", title);
 	while (M[module_id].cname != NULL) {
 		if (module_id == 0 || strcmp (M[module_id-1].component, M[module_id].component)) {
 			/* Start of new supplemental group */

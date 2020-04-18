@@ -28,7 +28,7 @@
 
 /* Sorted array with information for all GMT supplements modules */
 
-static struct GMT_MODULEINFO g_supplements_module[] = {
+static struct GMT_MODULEINFO modules[] = {
 	{"earthtide", "earthtide", "geodesy", "Compute grids or time-series of solid Earth tides", ">D},GG),>DL,>DS", NULL},
 	{"gpsgridder", "gpsgridder", "geodesy", "Interpolate GPS strains using Green's functions for elastic deformation", "<D{,ND(,TG(,CD)=f,GG}", NULL},
 	{"velo", "psvelo", "geodesy", "Plot velocity vectors, crosses, and wedges", "<D{,>X}", NULL},
@@ -84,25 +84,25 @@ static struct GMT_MODULEINFO g_supplements_module[] = {
 
 /* Pretty print all GMT supplements module names and their purposes for gmt --help */
 void gmtlib_supplements_module_show_all (void *API) {
-	gmtlib_module_show_all (API, g_supplements_module);
+	gmtlib_module_show_all (API, modules, GMT_SUPPLEMENTS_STRING);
 }
 
 /* Produce single list on stdout of all GMT supplements module names for gmt --show-modules */
 void gmtlib_supplements_module_list_all (void *API) {
-	gmtlib_module_list_all (API, g_supplements_module);
+	gmtlib_module_list_all (API, modules);
 }
 
 /* Produce single list on stdout of all GMT supplements module names for gmt --show-classic [i.e., classic mode names] */
 void gmtlib_supplements_module_classic_all (void *API) {
-	gmtlib_module_classic_all (API, g_supplements_module);
+	gmtlib_module_classic_all (API, modules);
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 const char *gmtlib_supplements_module_keys (void *API, char *candidate) {
-	return (gmtlib_module_keys (API, g_supplements_module, candidate));
+	return (gmtlib_module_keys (API, modules, candidate));
 }
 
 /* Lookup module id by name, return group char name (for external API developers) */
 const char *gmtlib_supplements_module_group (void *API, char *candidate) {
-	return (gmtlib_module_group (API, g_supplements_module, candidate));
+	return (gmtlib_module_group (API, modules, candidate));
 }
