@@ -341,7 +341,7 @@ Optional Arguments
     interpolation step, bad navigation, namely too many repeated points,
     may cause trouble.  Measures are taken to minimize this effect but
     they aren't 100% fool proof. The interpolation method is controlled
-    by the GMT default GMT_INTERPOLANT. Append **e** for meter, **f**
+    by the GMT default :term:`GMT_INTERPOLANT`. Append **e** for meter, **f**
     for feet, **k** for km, **M** for miles, **n** for nautical miles,
     or **u** for survey feet [Default is **e** (meters)].
 
