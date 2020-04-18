@@ -183,6 +183,7 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 #include "gmt_sharedlibs.h" 	/* Common shared libs structures */
+#include "gmt_glue.h"
 #include <stdarg.h>
 
 #ifdef HAVE_DIRENT_H_
