@@ -174,7 +174,7 @@ For the purpose of this documentation a few definitions are needed:
 #. "\ GMT plugin library" refers to a collection of one or more new custom
    GMT-like modules that are presented as a plugin library.  It such libraries
    are placed in the official GMT plugin directory or their path is added to
-   the GMT defaults parameter GMT_CUSTOM_LIBS then the :doc:`gmt` executable can find them.
+   the GMT defaults parameter :term:`GMT_CUSTOM_LIBS` then the :doc:`gmt` executable can find them.
 
 #. "Family" refers to one of the many high-level GMT data types (e.g., grids, CPTs)
    and is typically a required argument to some API functions.
