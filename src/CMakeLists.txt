@@ -19,6 +19,7 @@
 #
 # src/CMakeLists.txt
 #
+set (SUPPL_NAME core)
 
 ##
 ##	Basic settings
@@ -369,14 +370,14 @@ set (GMT_MBSYSTEM_SRCS gmt_mbsystem_module.c gmt_mbsystem_module.h)
 # libgmt
 set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	common_runpath.h common_sighandler.c common_string.h clear.c begin.c
-	gmt_color_rgb.h gmt_colornames.h
+	gmt_color_rgb.h gmt_colornames.h gmt_moduleinfo.h gmt_glue.h
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
 	figure.c gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
 	gmt_contour.h gmt_customio.h gmt_datums.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
 	gmt_ellipsoids.h gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
 	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h gmt_modern.h
 	gmt_media_size.h gmt_mgg_header2.h gmt_sharedlibs.h gmt_memory.h gmt_mb.h
-	gmt_core_module.h gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_enum_dict.h
+	gmt_modules.h gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_enum_dict.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_gsformats.h
 	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h gmt_cpt_masters.h
 	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h postscriptlight.h
@@ -387,7 +388,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c gmt_parse.c inset.c
 	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c common_math.c
 	common_runpath.c common_sighandler.c common_string.c compat/qsort.c
-	gmt_sharedlibs.c gmt_core_module.c gmt_init.c gmt_map.c gmt_plot.c
+	gmt_sharedlibs.c gmt_glue.c gmt_init.c gmt_map.c gmt_plot.c
 	gmt_gdal_librarified.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
@@ -436,6 +437,8 @@ configure_file (psl_config.h.in psl_config.h)
 configure_file (gmt_version.h.in gmt_version.h)
 configure_file (isogmt.in isogmt${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt-config.in gmt-config${GMT_INSTALL_NAME_SUFFIX} @ONLY)
+configure_file (gmt_glue.h.in gmt_glue.h)
+configure_file (gmt_glue.c.in gmt_glue.c)
 
 
 ##
@@ -642,7 +645,7 @@ if (BUILD_DEVELOPER)
 		gmt_grdio.h gmt_hash.h gmt_io.h gmt_macros.h gmt_memory.h gmt_modern.h gmt_nan.h gmt_notposix.h gmt_plot.h
 		gmt_private.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_symbol.h gmt_synopsis.h
 		gmt_texture.h gmt_time.h gmt_types.h gmt_dev.h gmt_customio.h gmt_hidden.h gmt_mb.h
-		gmt_core_module.h gmt_supplements_module.h
+		gmt_shared.h gmt_modules.h gmt_glue.h gmt_supplements_module.h
 		DESTINATION ${GMT_INCLUDEDIR}
 		COMPONENT Runtime)
 	install (FILES compat/qsort.h
