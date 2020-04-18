@@ -48,6 +48,7 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+EXTERN_MSC int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, enum GMT_enum_type type, struct GMT_OGR *S);
 EXTERN_MSC size_t gmtlib_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloat *nan_value);
 EXTERN_MSC double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double *centroid);
 EXTERN_MSC int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *file);
