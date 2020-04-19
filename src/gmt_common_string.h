@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * common_string.h contains prototypes of functions shared between GMT and PSL
+ * gmt_common_string.h contains prototypes of functions shared between GMT and PSL
  *
  * Author:  Florian Wobbe
  * Date:    3-MAR-2012
@@ -23,13 +23,13 @@
  */
 
 /*!
- * \file common_string.h
+ * \file gmt_common_string.h
  * \brief Prototypes of functions shared between GMT and PSL
  */
 
 #pragma once
-#ifndef COMMON_STRING_H
-#define COMMON_STRING_H
+#ifndef GMT_COMMON_STRING_H
+#define GMT_COMMON_STRING_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
@@ -89,4 +89,4 @@ EXTERN_MSC char *basename(char *path);
 }
 #endif
 
-#endif /* !COMMON_STRING_H */
+#endif /* !GMT_COMMON_STRING_H */

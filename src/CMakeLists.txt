@@ -368,8 +368,8 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 set (GMT_MBSYSTEM_SRCS gmt_mbsystem_module.c gmt_mbsystem_module.h)
 
 # libgmt
-set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
-	common_runpath.h common_sighandler.c common_string.h clear.c begin.c
+set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
+	gmt_common_runpath.h gmt_common_sighandler.c gmt_common_string.h clear.c begin.c
 	gmt_color_rgb.h gmt_colornames.h ${CMAKE_CURRENT_BINARY_DIR}/gmt_moduleinfo.h gmt_glue.h
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
 	figure.c gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
@@ -386,8 +386,8 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_customio.c gmt_dcw.c gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c
 	gmt_memory.c gmt_nc.c gmt_notposix.c gmt_proj.c gmt_shore.c gmt_sph.c
 	gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c gmt_parse.c inset.c
-	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c common_math.c
-	common_runpath.c common_sighandler.c common_string.c compat/qsort.c
+	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c gmt_common_math.c
+	gmt_common_runpath.c gmt_common_sighandler.c gmt_common_string.c compat/qsort.c
 	gmt_sharedlibs.c ${CMAKE_CURRENT_BINARY_DIR}/gmt_glue.c gmt_init.c gmt_map.c gmt_plot.c
 	gmt_gdal_librarified.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
@@ -660,7 +660,7 @@ install (FILES gmt.h gmt_resources.h declspec.h
 # Install developer headers
 if (BUILD_DEVELOPER)
 	# Install Developer headers [These are clean and have no #define HAVE_* configuration]
-	install (FILES postscriptlight.h common_math.h common_string.h gmt_common.h gmt_constants.h gmt_contour.h
+	install (FILES postscriptlight.h gmt_common_math.h gmt_common_string.h gmt_common.h gmt_constants.h gmt_contour.h
 		gmt_dcw.h gmt_decorate.h gmt_defaults.h gmt_error.h gmt_error_codes.h gmt_fft.h gmt_gdalread.h gmt_grd.h
 		gmt_grdio.h gmt_hash.h gmt_io.h gmt_macros.h gmt_memory.h gmt_modern.h gmt_nan.h gmt_notposix.h gmt_plot.h
 		gmt_private.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_symbol.h gmt_synopsis.h

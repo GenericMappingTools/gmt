@@ -36,7 +36,7 @@
 #	endif
 #	endif
 #	include <signal.h>
-#	include "common_sighandler.h"
+#	include "gmt_common_sighandler.h"
 #endif
 
 #define PROGRAM_NAME	"gmt"

@@ -15,7 +15,7 @@
  * Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * common_math.c contains shared math functions
+ * gmt_common_math.c contains shared math functions
  *
  * Author:  Florian Wobbe
  * Date:    10-MAR-2012
@@ -55,7 +55,7 @@
 #	define assert(e) ((void)0)
 #endif
 
-#include "common_math.h"
+#include "gmt_common_math.h"
 
 
 /* Used for accessing the integer representation of floating-point numbers

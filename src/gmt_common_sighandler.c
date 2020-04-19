@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * common_sighandler.c contains code for catching SIGINT
+ * gmt_common_sighandler.c contains code for catching SIGINT
  *                     and for generating a stack backtrace
  *
  * Author:  Florian Wobbe
