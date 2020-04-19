@@ -441,8 +441,6 @@ struct GMT_MODULEINFO {
 	const char *component;        /* Component (core, supplement, custom) */
 	const char *purpose;          /* Program purpose */
 	const char *keys;             /* Program option info for external APIs */
-	/* gmt module function pointer: */
-	int (*p_func)(void*, int, void*);
 };
 
 /* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments
