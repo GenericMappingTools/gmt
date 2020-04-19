@@ -456,7 +456,7 @@ GMT_LOCAL void grd2kml_assert_tile_size (struct GMT_CTRL *GMT, bool global, stru
 	if (comm < *size)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "%s -L tile size %d is larger than the largest common factor between columns and rows (%d)\n", msg[active], *size, comm);
 	else if (fabs (((double)comm / (double)(*size)) - irint (comm / (*size))) > GMT_CONV4_LIMIT) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "%s -L tile size %d is not an integer fraction of the largest common factor between columns and rows (%d)\n", msg[active], *size, comm);
+		GMT_Report (GMT->parent, (active) ? GMT_MSG_WARNING : GMT_MSG_INFORMATION, "%s -L tile size %d is not an integer fraction of the largest common factor between columns and rows (%d)\n", msg[active], *size, comm);
 		if (active)
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "The common factors are%s - pick a product that is close to %d\n", string, *size);
 		else {	/* Determine the largest suitable size */
@@ -480,10 +480,12 @@ int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter,
 	int error;
 	double f;
 	/* We will filter the grid to make a coarser version that exactly matches the Ctrl->L.size expectations.
-	 * Note: If the desired increment is smaller than the actual, we must sample the grid instead */
+	 * Note: If the desired increment is smaller than the actual, we must sample the grid instead.
+	 * Note: If gridline-registered we scale filter width by sqrt(2) but rounded up a bit to make sure
+	 * it extends to the 4 corner nodes. */
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Low-pass-filtering the grid(s)\n", level);
-	f = (h->registration == GMT_GRID_NODE_REG) ? M_SQRT2 : 1.0;
-	sprintf (fwidth, "%.16g", f * inc);
+	f = (h->registration == GMT_GRID_NODE_REG) ? 1e-4*ceil (1e4*M_SQRT2) : 1.0;
+	sprintf (fwidth, "%.8g", f * inc);
 	sprintf (s_int, "%.16g", inc);
 	if (inc <h->inc[GMT_X]) {	/* Resample instead of filter */
 		sprintf (filt_report, " [Resampled with -I%s]", s_int);
