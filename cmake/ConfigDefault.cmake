@@ -187,10 +187,8 @@ if (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 	set (CMAKE_VERBOSE_MAKEFILE false)
 endif (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 
-# prefer shared libs over static
-if (NOT DEFINED BUILD_SHARED_LIBS)
-	set (BUILD_SHARED_LIBS true)
-endif (NOT DEFINED BUILD_SHARED_LIBS)
+# Only support shared libs
+set (BUILD_SHARED_LIBS true)
 
 # look also for lib64 when building 64-bit binaries
 if (NOT DEFINED FIND_LIBRARY_USE_LIB64_PATHS)

@@ -387,25 +387,6 @@ const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *can
 	return (M[module_id].component);
 }
 
-#ifndef BUILD_SHARED_LIBS
-/* Lookup static module id by name, return function pointer */
-void *gmtlib_module_lookup (void *API, struct GMT_MODULEINFO M[], const char *candidate) {
-	int module_id = 0;
-	size_t len = strlen (candidate);
-	gmt_M_unused(API);
-
-	if (len < 4) return NULL;	/* All candidates should start with GMT_ */
-	/* Match actual_name against g_module[module_id].cname */
-	while (M[module_id].cname != NULL &&
-	       strcmp (&candidate[4], M[module_id].cname))
-		++module_id;
-
-	/* Return Module function or NULL */
-	return (M[module_id].p_func);
-}
-#endif
-
-/* A few functions are declared here since it is used in so many places */
 int gmtapi_report_error (void *V_API, int error);
 int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int direction, int module_input);
 int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
@@ -952,14 +933,12 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
 	GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # 0 (core). Path = %s\n", API->lib[0].path);
 	++n_custom_libs;
-#ifdef BUILD_SHARED_LIBS
 	GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());
 		gmtapi_exit (API, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	dlerror (); /* Clear any existing error */
-#endif
 
 	/* 3. Add any plugins installed in <installdir>/lib/gmt/plugins */
 
@@ -10228,17 +10207,8 @@ GMT_LOCAL void * gmtapi_get_shared_module_func (struct GMTAPI_CTRL *API, const c
 	return (p_func);
 }
 
-#ifndef BUILD_SHARED_LIBS
-EXTERN_MSC void * gmtapi_core_module_lookup (struct GMTAPI_CTRL *API, const char *candidate);
-#endif
-
 /*! . */
 GMT_LOCAL void * gmtapi_get_module_func (struct GMTAPI_CTRL *API, const char *module, unsigned int lib_no) {
-#ifndef BUILD_SHARED_LIBS
-	if (lib_no == 0)	/* Get core module */
-		return (gmtapi_core_module_lookup (API, module));
-	/* Else we get custom module below */
-#endif
 	return (gmtapi_get_shared_module_func (API, module, lib_no));
 }
 

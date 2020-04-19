@@ -22,9 +22,6 @@
  */
 #include "gmt_dev.h"
 #include "gmt_internals.h"
-#ifndef BUILD_SHARED_LIBS
-#include "gmt_glue.h"
-#endif
 
 /* Sorted array with information for all GMT _@SUPPL_NAME@_ modules */
 
@@ -57,10 +54,3 @@ const char *gmtlib_@SUPPL_NAME@_module_keys (void *API, char *candidate) {
 const char *gmtlib_@SUPPL_NAME@_module_group (void *API, char *candidate) {
 	return (gmtlib_module_group (API, modules, candidate));
 }
-
-#ifndef BUILD_SHARED_LIBS
-/* Lookup static module id by name, return function pointer */
-void *gmtlib_@SUPPL_NAME@_module_lookup (void *API, const char *candidate) {
-	return (gmtlib_module_lookup (API, modules, candidate));
-}
-#endif

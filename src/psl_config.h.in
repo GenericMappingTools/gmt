@@ -42,9 +42,6 @@
 /* compile with ZLIB support <zlib.h> */
 #cmakedefine HAVE_ZLIB
 
-/* shared library */
-#cmakedefine BUILD_SHARED_LIBS
-
 /* system specific headers */
 
 #cmakedefine HAVE_ASSERT_H_
