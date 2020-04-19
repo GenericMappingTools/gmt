@@ -121,8 +121,6 @@ gmt_M_module_prototype (triangulate);
 gmt_M_module_prototype (pswiggle);
 gmt_M_module_prototype (xyz2grd);
 
-#include "gmt_glue.h"
-
 #ifdef __cplusplus
 }
 #endif
