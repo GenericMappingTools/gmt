@@ -371,11 +371,44 @@ GMT_LOCAL void grd2kml_set_dirpath (bool single, char *url, char *prefix, unsign
 	}
 }
 
-GMT_LOCAL double grd2kml_get_factor (unsigned int level) {
-	double f;
-	/* Regular power of 2 progression */
-	f = pow (2.0, level);
-	return (f);
+GMT_LOCAL void grd2kml_split (struct GMT_GRID_HEADER *H, unsigned int level, double *inc, double *step) {
+	unsigned int n = urint (pow (2, level+1));
+	double range = n * H->inc[GMT_X] * 360;
+	*step /= 2;	*inc /= 2;	/* We MUST use division by two since it is a quadtree */
+	if (range >= (360.0-GMT_CONV6_LIMIT)) {
+		*inc = H->inc[GMT_X];
+		*step = *inc * 360;
+	}
+}
+
+GMT_LOCAL unsigned int grd2kml_max_level (bool global, struct GMT_GRID_HEADER *H, unsigned int size) {
+	unsigned int level = 0;
+	if (global) {;
+		unsigned int n = 1, f = 1, go = 1;
+		double inc = 1.0, step = 360, range;
+		fprintf (stderr, "L = %d f = %d step = %g inc = %g n = %d\n", level, f, step, 60*inc, n);
+		f = 2;
+		do {
+			step /= f;	inc /= f;
+			n *= f;
+			range = n * H->inc[GMT_X] * 360;
+			if (range >= (360.0-GMT_CONV6_LIMIT)) {
+				n = urint (1.0 / H->inc[GMT_X]);
+				inc = H->inc[GMT_X];
+				step = inc * 360;
+				go = 0;
+			}
+			level++;
+			fprintf (stderr, "L = %d f = %d step = %g inc = %g n = %d\n", level, f, step,  60*inc, n);
+		} while (go);
+	}
+	else {
+		unsigned int mx, my;
+		mx = urint (ceil ((double)H->n_columns / (double)size)) * size;	/* Nearest image size in multiples of tile size */
+		my = urint (ceil ((double)H->n_rows / (double)size)) * size;
+		level = urint (ceil (log2 (MAX (mx, my) / (double)size)));	/* Number of levels in the quadtree */
+	}
+	return level;
 }
 
 GMT_LOCAL void grd2kml_assert_tile_size (struct GMT_CTRL *GMT, bool global, struct GMT_GRID_HEADER *H, bool active, unsigned int *size) {
@@ -488,9 +521,10 @@ char *CPT[8] = {"geo", "earth", "terra", "etopo1", "globe", "relief", "sealand",
 
 int GMT_grd2kml (void *V_API, int mode, void *args) {
 	int error = 0, kk, uniq, dpi, i_dir, dir, minLodPixels, maxLodPixels;
-	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, write_image_directly = true, found_one;
+	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon;
+	bool write_image_directly = true, found_one;
 
-	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0, n_tiles = 0;
+	unsigned int level, max_level, n = 0, k, nx, ny, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0, n_tiles = 0;
 
 	uint64_t node;
 
@@ -560,11 +594,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->M.interpolate)	/* Want interpolation and no colormasking in effect means we can let psconvert do it */
 		sprintf (im_arg, " -Ei");
+	max_level = grd2kml_max_level (global_lon, G->header, Ctrl->L.size);
+
 	nx = G->header->n_columns;	ny = (global_lon) ? nx : G->header->n_rows;	/* Dimensions of original grid, possibly made square for global grids */
-	mx = urint (ceil ((double)nx / (double)Ctrl->L.size)) * Ctrl->L.size;	/* Nearest image size in multiples of tile size */
-	my = urint (ceil ((double)ny / (double)Ctrl->L.size)) * Ctrl->L.size;
-	max_level = urint (ceil (log2 (MAX (mx, my) / (double)Ctrl->L.size)));	/* Number of levels in the quadtree */
-	factor = grd2kml_get_factor (max_level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
 
 	if ((60.0 * G->header->inc[GMT_X] - irint (60.0 * G->header->inc[GMT_X])) < GMT_CONV4_LIMIT) {
 		/* Grid spacing is an integer multiple of 1 arc minute or higher, use ddd:mm format */
@@ -620,18 +652,20 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 
 	Q = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_QUADTREE *);
-	factor = grd2kml_get_factor (max_level);	/* Max width of imaged pixels in multiples of original grid spacing for this level */
 
 	/* Determine extended region required if using the largest multiple of original grid spacing */
-	inc = factor * G->header->inc[GMT_X];
 
 	if (global_lon) {	/* Make it a square 360x360 grid so the quadtree splitting works */
 		ext_wesn[XLO] = G->header->wesn[XLO];
 		ext_wesn[XHI] = G->header->wesn[XHI];
 		ext_wesn[YLO] = -180.0;
 		ext_wesn[YHI] = +180.0;
+		step = 360.0;
+		inc = 1.0;
 	}
 	else {	/* Presumably a smaller region and we do not need to worry as much */
+		factor = 2;	/* Max width of imaged pixels in multiples of original grid spacing for this level */
+		inc = factor * G->header->inc[GMT_X];
 		ext_wesn[XLO] = floor (G->header->wesn[XLO] / inc + GMT_CONV6_LIMIT) * inc;
 		ext_wesn[XHI] = ceil  (G->header->wesn[XHI] / inc - GMT_CONV6_LIMIT) * inc;
 		ext_wesn[YLO] = floor (G->header->wesn[YLO] / inc + GMT_CONV6_LIMIT) * inc;
@@ -745,12 +779,13 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Extended grid size is by %d by %d, tile size is %d x %d\n", ny, nx, Ctrl->L.size, Ctrl->L.size);
 
-    step = MAX (ext_wesn[XHI] - ext_wesn[XLO], ext_wesn[YHI] - ext_wesn[YLO]);
-	inc = step / Ctrl->L.size;
+	if (!global_lon) {
+    	step = MAX (ext_wesn[XHI] - ext_wesn[XLO], ext_wesn[YHI] - ext_wesn[YLO]);
+		inc = step / Ctrl->L.size;
+	}
 	/* Loop over all the levels, starting at the top level (0) */
 	for (level = 0; level <= max_level; level++) {
 		found_one = false;
-		factor = grd2kml_get_factor (max_level - level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Factor = %g Dim = %d x %d -> %d x %d\n",
 			level, factor, irint (factor * Ctrl->L.size), irint (factor * Ctrl->L.size), Ctrl->L.size, Ctrl->L.size);
 		/* Create the level directory */
@@ -759,7 +794,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			if (gmt_mkdir (level_dir))
 				GMT_Report (API, GMT_MSG_INFORMATION, "Level directory %s already exist - overwriting files\n", level_dir);
 		}
-		if (level < max_level || !doubleAlmostEqual (G->header->inc[GMT_X], inc) || G->header->registration == GMT_GRID_NODE_REG) {	/* Filter the data to match level resolution */
+		if (level < max_level || G->header->registration == GMT_GRID_NODE_REG) {	/* Filter the data to match level resolution */
 			sprintf (Zgrid, "%s/grd2kml_Z_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
 			if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, G->header, inc, DataGrid, Zgrid, filt_report)) {
 				gmt_M_free (GMT, Q);
@@ -778,6 +813,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		else {	/* Use as is for the highest resolution */
 			sprintf (filt_report, " [Original grid used]");
 			strcpy (Zgrid, DataGrid);
+			step = Ctrl->L.size * G->header->inc[GMT_X];
 			if (Ctrl->I.active) strcpy (Igrid, IntensGrid);
 		}
 
@@ -932,8 +968,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			gmt_remove_file (GMT, Zgrid);
 			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
 		}
-		inc /= 2;
-		step /= 2;
+		grd2kml_split (G->header, level, &inc, &step);
 	}
 	n_tiles = n;
 
@@ -1089,7 +1124,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		fprintf (fp, "          <east>%.14g</east>\n",   Q[k]->wesn[XHI]);
 		fprintf (fp, "          <west>%.14g</west>\n",   Q[k]->wesn[XLO]);
 		fprintf (fp, "        </LatLonBox>\n");
- 		fprintf (fp, "        <altitudeMode>relativeToSeaFloor</altitudeMode><altitude>0</altitude>\n");
+ 		//fprintf (fp, "        <altitudeMode>relativeToSeaFloor</altitudeMode><altitude>0</altitude>\n");
+ 		fprintf (fp, "        <altitudeMode>relativeToGround</altitudeMode><altitude>0</altitude>\n");
 		fprintf (fp, "      </GroundOverlay>\n");
 		i_dir = (Q[k]->level == 0) ? 1 : -1;
 		/* Now add up to 4 quad links */
