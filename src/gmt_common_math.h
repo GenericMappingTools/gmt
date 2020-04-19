@@ -15,7 +15,7 @@
  * Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * common_math.h declares shared math functions
+ * gmt_common_math.h declares shared math functions
  *
  * Author:  Florian Wobbe
  * Date:    10-MAR-2012
@@ -23,13 +23,13 @@
  */
 
 /*!
- * \file common_math.h
+ * \file gmt_common_math.h
  * \brief declares shared math functions
  */
 
 #pragma once
-#ifndef COMMON_MATH_H
-#define COMMON_MATH_H
+#ifndef GMT_COMMON_MATH_H
+#define GMT_COMMON_MATH_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
@@ -104,4 +104,4 @@ extern "C" {
 }
 #endif
 
-#endif /* !COMMON_MATH_H */
+#endif /* !GMT_COMMON_MATH_H */

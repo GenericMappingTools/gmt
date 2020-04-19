@@ -115,7 +115,7 @@ extern "C" {
 
 #include <time.h>
 
-#include "common_math.h"     /* Shared math functions */
+#include "gmt_common_math.h" /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */
 #include "gmt_private.h"     /* API declaration needed by libraries */
 #include "gmt_hidden.h"      /* Hidden bookkeeping structure for API containers */
@@ -164,7 +164,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #endif
 
 #include "gmt_prototypes.h"     /* All GMT low-level API */
-#include "common_string.h"      /* All code shared between GMT and PSL */
+#include "gmt_common_string.h"  /* All code shared between GMT and PSL */
 
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 

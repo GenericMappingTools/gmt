@@ -85,7 +85,7 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
-#include "common_byteswap.h"
+#include "gmt_common_byteswap.h"
 
 struct GRD_PAD {	/* Local structure */
 	double wesn[4];

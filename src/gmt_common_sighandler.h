@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * common_sighandler.h contains the prototype of a signal-handling function
+ * gmt_common_sighandler.h contains the prototype of a signal-handling function
  *
  * Author:  Florian Wobbe
  * Date:    5-SEP-2013
@@ -23,16 +23,16 @@
  */
 
 /*!
- * \file common_sighandler.h
+ * \file gmt_common_sighandler.h
  * \brief Prototype of a signal-handling function
  */
 
 #pragma once
-#ifndef COMMON_SIGHANDLER_H
-#define COMMON_SIGHANDLER_H
+#ifndef GMT_COMMON_SIGHANDLER_H
+#define GMT_COMMON_SIGHANDLER_H
 
 #if !(defined WIN32 || defined NO_SIGHANDLER)
 void sig_handler(int sig_num, siginfo_t *info, void *ucontext);
 #endif /* !(defined WIN32 || defined NO_SIGHANDLER) */
 
-#endif /* !COMMON_SIGHANDLER_H */
+#endif /* !GMT_COMMON_SIGHANDLER_H */
