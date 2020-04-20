@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grd2kml** *grid*
-[ |-A|\ *LOD* ]
+[ |-A|\ **g**\|\ **s** ]
 [ |-C|\ *cpt* ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
@@ -35,13 +35,15 @@ Description
 
 **grd2kml** reads a 2-D grid file and makes a *quadtree* of
 PNG images and KML wrappers for Google Earth using the selected
-tile size [256x256 pixels].  We downsample the grid depending on the
+tile size.  We downsample the grid depending on the
 viewing level in the quadtree using a Gaussian filter, but other
 filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
 intensities in the (-1,+1) range or by giving instructions to derive intensities
 from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
+If plain tiles are selected (no contours specified) then the PNG tiles are written directly from
+grdimage, otherwise we must first make a PostScript plot that is then converted to PNG.
 
 
 Required Arguments
@@ -55,9 +57,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *LOD*
-    Sets `minLodPixels <https://developers.google.com/kml/documentation/kmlreference#minlodpixels>`_
-    for the final, high-resolution PNG views [128].
+**-A**\ **g**\|\ **s**
+    Sets the altitude mode of the tiles.  Choose from **g** (relative to ground) or
+    **s** (relative to seafloor) [**g**].
 
 .. _-C:
 
@@ -87,6 +89,7 @@ Optional Arguments
 **-H**\ *factor*
     Improve the quality of rasterization by passing the sub-pixel smoothing factor
     to psconvert (same as **-H** option in psconvert) [no sub-pixel smoothing].
+    Ignored when **-W** is not used.
 
 .. _-I:
 
@@ -106,8 +109,8 @@ Optional Arguments
 **-L**\ *tilesize*
     Sets the fixed size of the image building blocks.  Must be an integer that
     is radix 2.  Typical values are 256 or 512 [256].  **Note**: For global
-    grids (here meaning 360-degree longitude range), we will compute an optimal
-    *tilesize* if **-L** is not specified.
+    grids (here meaning 360-degree longitude range), we will select a
+    *tilesize* of 360 if **-L** is not specified.
 
 .. _-N:
 
@@ -118,8 +121,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    Make grid nodes with z = NaN transparent, using the color-masking
-    feature in PostScript Level 3 (the PS device must support PS Level 3).
+    Make grid nodes with z = NaN transparent.
 
 .. _-T:
 
@@ -141,6 +143,19 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+Quadtree building
+-----------------
+
+We extend the input grid to obtain a square dimension that can be repeatedly divided by 2
+until we arrive at the original grid cell dimensions.  For global grids this means we
+extend the grid to a 360 x 360 Cartesian region and an initial grid increment of one
+degree.  THis is the first global tile. As the quartering of tiles continue we may not
+end exactly at the original grid spacing but at the largest increment less than or equal to the
+original increment. For non-global grids, e.g., smaller (local or regional)
+grids, we extend the domain to a radix-2 multiple of the *tilesize* times the grid
+increment.  This initial tile is then quartered until we reach the original grid increment.
+
 
 Notes
 -----
