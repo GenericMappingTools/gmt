@@ -696,7 +696,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			if (gmt_mkdir (level_dir))
 				GMT_Report (API, GMT_MSG_INFORMATION, "Level directory %s already exist - overwriting files\n", level_dir);
 		}
-		if (level < max_level || G->header->registration == GMT_GRID_NODE_REG) {	/* Filter the data to match level resolution */
+		if (level < max_level || G->header->registration == GMT_GRID_NODE_REG || !doubleAlmostEqual (inc,G->header->inc[GMT_X])) {	/* Filter the data to match level resolution */
 			sprintf (Zgrid, "%s/grd2kml_Z_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
 			if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, G->header, inc, DataGrid, Zgrid, filt_report)) {
 				gmt_M_free (GMT, Q);
