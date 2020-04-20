@@ -42,8 +42,9 @@ Optionally, illumination may be added by providing a grid file with
 intensities in the (-1,+1) range or by giving instructions to derive intensities
 from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
-If plain tiles are selected (no contours specified) then the PNG tiles are written directly from
-grdimage, otherwise we must first make a PostScript plot that is then converted to PNG.
+If plain tiles are selected (i.e., no contours specified) then the PNG tiles are written directly from
+:doc:`grdimage`, otherwise we must first make a PostScript plot that is then converted to PNG via
+:doc:`psconvert`.
 
 
 Required Arguments
@@ -121,7 +122,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    Make grid nodes with z = NaN transparent.
+    Make grid nodes with z = NaN transparent [opaque with NaN-color set via the color table].
 
 .. _-T:
 
@@ -139,7 +140,8 @@ Optional Arguments
     Supply a file with records each holding a contour value and a contour pen.
     We then overlay the selected contour lines on top of the image [no contours].
     If *cfile* is not a valid file we assume you instead gave a *pen* and want
-    to draw all the contours implied by the *cpt* in effect.
+    to draw all the contours implied by the *cpt* specified in **-C**.  The contours
+    are overlain via calls to :doc:`grdcontour`.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -147,15 +149,18 @@ Optional Arguments
 Quadtree building
 -----------------
 
-We extend the input grid to obtain a square dimension that can be repeatedly divided by 2
-until we arrive at the original grid cell dimensions.  For global grids this means we
+We extend the input grid vi :doc:`grdcut` to obtain a square dimension that can be repeatedly divided by 2
+until we arrive at tiles with the original grid increments.  For global grids this mean we
 extend the grid to a 360 x 360 Cartesian region and an initial grid increment of one
-degree.  THis is the first global tile. As the quartering of tiles continue we may not
-end exactly at the original grid spacing but at the largest increment less than or equal to the
-original increment. For non-global grids, e.g., smaller (local or regional)
-grids, we extend the domain to a radix-2 multiple of the *tilesize* times the grid
-increment.  This initial tile is then quartered until we reach the original grid increment.
-
+degree.  This is the first global tile. As the quartering of tiles and halving of grid
+increment continue we may not end exactly at the original grid spacing but at the largest
+increment less than or equal to the original increment. For non-global grids, e.g., smaller
+(local or regional) grids, we extend the domain to a radix-2 multiple of the *tilesize*
+times the grid increment.  This initial tile is then quartered and the grid increment halved
+until we reach the original grid increment. Tiles that have all NaNs are not produced.
+THe tiles are inherently pixel-registered. Thus, if a global grid has gridline-registration then
+we are down-sampling the extended grid onto a pixel-registered coarser grid.  Because these
+nodes do not coincide with the original nodes we widen the filter width by a factor of sqrt(2).
 
 Notes
 -----
@@ -171,7 +176,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To test a quadtree image representation of the coarse topography grid earth_relief06m, using
+To test a quadtree image representation of the coarse topography grid earth_relief_06m, using
 the optimally determined tile size, auto color, and supplying a suitable title, try::
 
     gmt grd2kml @earth_relief_06m -NEarth6m -T"Earth Relief 6x6 arc minutes" -Cearth
