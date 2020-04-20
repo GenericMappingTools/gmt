@@ -20,7 +20,7 @@ Synopsis (begin mode)
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
 |-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
 [ |-A|\ *autolabel* ]
-[ |-C|\ [*side*]\ /*clearance*]
+[ |-C|\ [*side*]\ *clearance* ]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
 [ |-M|\ *margins* ]
@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*side*]\ /*clearance*
+**-C**\ [*side*]\ *clearance*
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
     or **y** for both **s** and **n**.  No *side* means all sides. The option is repeatable to set aside space
@@ -176,7 +176,7 @@ Optional Arguments
 Synopsis (set mode)
 -------------------
 
-**gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance* ] [ |SYN_OPT-V| ]
+**gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ *clearance* ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot.
 **Note**: If any **-J** option is passed with **?** as scale or width when plotting subplots,
@@ -203,7 +203,7 @@ Optional Arguments
 
 .. _subplot_set-C2:
 
-**-C**\ *side*\ /*clearance*
+**-C**\ [*side*]\ *clearance*
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can

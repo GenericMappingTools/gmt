@@ -4210,6 +4210,20 @@ bool gmt_input_is_nan_proxy (struct GMT_CTRL *GMT, double value) {
 	return doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], value);		/* Change to NaN if value ~nan_proxy */
 }
 
+/*! Appends one more metadata item to this OGR structure */
+int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, enum GMT_enum_type type, struct GMT_OGR *S) {
+	if (S == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtio_append_ogr_item: No GMT_OGR structure available\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	S->n_aspatial++;
+	S->name = gmt_M_memory (GMT, S->name, S->n_aspatial, char *);
+	S->name[S->n_aspatial-1] = strdup (name);
+	S->type = gmt_M_memory (GMT, S->type, S->n_aspatial, enum GMT_enum_type);
+	S->type[S->n_aspatial-1] = type;
+	return (GMT_NOERROR);
+}
+
 //*! . */
 void gmtlib_write_ogr_header (FILE *fp, struct GMT_OGR *G) {
 	/* Write out table-level OGR/GMT header metadata */

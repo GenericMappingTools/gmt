@@ -668,9 +668,9 @@ if (BUILD_SUPPLEMENTS)
 	set (GMT_SUPPL_SRCS gmt_modern.c gmt_supplements_module.h gmt_supplements_module.c)
 
 	# supplement directories to be built as supplement libraries
-	# EXTRA_BUILD_DIRS are directories for non-GMT supplements.
-	# See cmake/ConfigUserAdvancedTemplate.cmake for setting this parameter.
-	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${EXTRA_BUILD_DIRS})
+	# SUPPL_EXTRA_DIRS are directories for custom supplements.
+	# See cmake/ConfigUserAdvancedTemplate.cmake for details.
+	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${SUPPL_EXTRA_DIRS})
 
 	# process supplement directories
 	foreach (_dir ${GMT_SUPPL_DIRS})
@@ -698,6 +698,9 @@ if (BUILD_SUPPLEMENTS)
 		# supplement extra libraries for each supplement library
 		get_subdir_var (_suppl_extra_libraries SUPPL_EXTRA_LIBS ${_dir})
 		list (APPEND SUPPL_${_suppl_lib_name}_EXTRA_LIBRARIES ${_suppl_extra_libraries})
+
+		# rename the supplement dll [Windows only]
+		get_subdir_var (SUPPL_${_suppl_lib_name}_DLL_RENAME SUPPL_DLL_RENAME ${_dir})
 	endforeach (_dir)
 
 	# remove duplicate supplement library names, so multiple supplement packages can be built into one single library
@@ -752,6 +755,11 @@ if (BUILD_SUPPLEMENTS)
 			set_target_properties (${_suppl_lib_name} PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
 		endif (WIN32 AND ${_suppl_lib_name} STREQUAL "supplements" AND SUPP_DLL_RENAME)
 
+		# Rename non-GMT supplement DLLs
+		if (WIN32 AND SUPPL_${_suppl_lib_name}_DLL_RENAME)
+			set_target_properties (${_suppl_lib_name} PROPERTIES RUNTIME_OUTPUT_NAME ${SUPPL_${_suppl_lib_name}_DLL_RENAME})
+		endif (WIN32 AND SUPPL_${_suppl_lib_name}_DLL_RENAME)
+
 		# Testing
 		add_dependencies (check ${_suppl_lib_name})
 
@@ -769,14 +777,6 @@ if (BUILD_SUPPLEMENTS)
 			RUNTIME DESTINATION ${GMT_BINDIR}/gmt_plugins # Windows
 			COMPONENT Runtime)
 	endforeach (_suppl_lib_name ${GMT_SUPPL_LIBRARIES})
-
-	# Include any extra files that are listed in EXTRA_MODULES_SUPPL defined in ConfigUserAdvanced.cmake
-	# This include(s) will add new modules to the official GMT supplements
-	if (EXTRA_MODULES_SUPPL)
-		foreach (_f ${EXTRA_MODULES_SUPPL})
-			include (${_f})
-		endforeach(_f)
-	endif (EXTRA_MODULES_SUPPL)
 
 	# install more
 	foreach (_dir ${GMT_SUPPL_DIRS})
@@ -809,14 +809,6 @@ if (BUILD_SUPPLEMENTS)
 		endif (BUILD_DEVELOPER)
 	endforeach (_dir)
 endif (BUILD_SUPPLEMENTS)
-
-# Include any extra files that are listed in EXTRA_INCLUDE_NEWSUPPL defined in ConfigUserAdvanced.cmake
-# This include(s) will create new pluggins
-if (EXTRA_INCLUDE_NEWSUPPL)
-	foreach (_f ${EXTRA_INCLUDE_NEWSUPPL})
-		include (${_f})
-	endforeach(_f)
-endif (EXTRA_INCLUDE_NEWSUPPL)
 
 
 ##

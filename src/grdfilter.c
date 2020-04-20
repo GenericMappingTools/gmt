@@ -753,6 +753,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 							Ctrl->F.quantile = atof (&p[2]);
 							p[0] = '\0';	/* Chop off the +q modifier */
 						}
+						Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, &txt[1]);
 					}
 					else if (Ctrl->F.filter == 'f' || Ctrl->F.filter == 'o') {	/* Custom filter or operator */
 						if (gmt_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN, GMT_IS_GRID))
