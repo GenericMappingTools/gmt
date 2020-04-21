@@ -15717,6 +15717,17 @@ double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t
 	return (area);
 }
 
+unsigned int gmt_polygon_orientation (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo) {
+	/* Estimate area of a polygon.  geo is 1 if geographic data. Input data remains unchanged.
+	 * Since area will be +ve if polygon is CW, negative if CCW we return */
+	double area, dummy[2];
+	if (geo)	/* Spherical centroid and area */
+		area = gmtlib_geo_centroid_area (GMT, x, y, n, dummy);
+	else	/* Cartesian centroid and area */
+		area = gmtsupport_cart_centroid_area (GMT, x, y, n, dummy);
+	return ((area < 0.0) ? GMT_POL_IS_CCW : GMT_POL_IS_CW);
+}
+
 /*! . */
 void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
 	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean).  Input data remains unchanged. */

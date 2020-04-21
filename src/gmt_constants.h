@@ -257,6 +257,11 @@ enum GMT_enum_inside {
 	GMT_ONEDGE,
 	GMT_INSIDE};
 
+/*! Return codes from gmt_polygon_orientation */
+enum GMT_enum_polorient {
+	GMT_POL_IS_CCW = 0,
+	GMT_POL_IS_CW  = 1};
+
 /*! Codes for -q selections */
 enum GMT_enum_skiprows {
 	GMT_RANGE_ROW_IN   = 1,
