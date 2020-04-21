@@ -88,6 +88,10 @@ struct GRD2KML_CTRL {
 	struct GRD2KML_Q {	/* -Q */
 		bool active;
 	} Q;
+	struct GRD2KML_S {	/* -S[n] */
+		bool active;
+		unsigned int extra;
+	} S;
 	struct  GRD2KML_W {	/* -W<cfile> */
 		bool active;
 		char *file;
@@ -137,7 +141,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-As|g] [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-Q] [-T<title>] [%s] [-W<contfile>|<pen>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-Q] [-S[<extra>]] [-T<title>] [%s] [-W<contfile>|<pen>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -165,6 +169,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [256].  For global grids, we compute a size if -L is not given.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use PS Level 3 color-masking to make nodes with z = NaN transparent.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra interpolated levels [no extra layers].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set title (document description) for the top-level KML.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give file with select contours and pens to draw contours on the images [no contours].\n");
@@ -289,6 +294,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 			case 'Q':	/* Colormasking */
 				Ctrl->Q.active = true;
 				break;
+			case 'S':	/* Extra levels */
+				Ctrl->S.active = true;
+				Ctrl->S.extra = (opt->arg[0]) ? atoi (opt->arg) : 1;
+				break;
 			case 'T':	/* Title */
 				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.title = strdup (opt->arg);
@@ -382,7 +391,7 @@ GMT_LOCAL unsigned int grd2kml_max_level (struct GMT_CTRL *GMT, bool global, str
 		my = urint (ceil ((double)H->n_rows / (double)size)) * size;
 		level = urint (ceil (log2 (MAX (mx, my) / (double)size)));	/* Number of levels in the quadtree */
 	}
-	return level;
+	return level+1;
 }
 
 GMT_LOCAL void grd2kml_assert_tile_size (struct GMT_CTRL *GMT, bool global, bool active, unsigned int *size) {
@@ -514,7 +523,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active)	/* Want NaN colormasking */
 		sprintf (im_arg, " -Q");
 
-	max_level = grd2kml_max_level (GMT, global_lon, G->header, Ctrl->L.size);
+	max_level = grd2kml_max_level (GMT, global_lon, G->header, Ctrl->L.size) + Ctrl->S.extra;
 
 	nx = G->header->n_columns;	ny = (global_lon) ? nx : G->header->n_rows;	/* Dimensions of original grid, possibly made square for global grids */
 

@@ -22,6 +22,7 @@ Synopsis
 [ |-L|\ *tilesize* ]
 [ |-N|\ *prefix* ]
 [ |-Q| ]
+[ |-S|\ [*extra*] ]
 [ |-T|\ *title* ]
 [ |-W|\ *cfile*\|\ *pen* ]
 [ |SYN_OPT-V| ]
@@ -123,6 +124,14 @@ Optional Arguments
 
 **-Q**
     Make grid nodes with z = NaN transparent [opaque with NaN-color set via the color table].
+
+.. _-S:
+
+
+**-S**\ [*extra*]
+    Add extra layers beyond that necessary to capture the full resolution of the data [none].
+    This will let GMT interpolate your grid and make more tiles, versus letting Google Earth
+    interpolate the last resolution PNG files.
 
 .. _-T:
 
