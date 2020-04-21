@@ -35,7 +35,7 @@ Description
 -----------
 
 **grd2kml** reads a 2-D grid file and makes a *quadtree* of
-PNG images and KML wrappers for Google Earth using the selected
+PNG or JPG images and KML wrappers for Google Earth using the selected
 tile size.  We downsample the grid depending on the
 viewing level in the quadtree using a Gaussian filter, but other
 filters can be selected as well.
@@ -44,7 +44,7 @@ intensities in the (-1,+1) range or by giving instructions to derive intensities
 from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 If plain tiles are selected (i.e., no contours specified) then the PNG tiles are written directly from
-:doc:`grdimage`, otherwise we must first make a PostScript plot that is then converted to PNG via
+:doc:`grdimage`, otherwise we must first make a PostScript plot that is then converted to raster images via
 :doc:`psconvert`.
 
 
@@ -118,12 +118,13 @@ Optional Arguments
 
 **-N**\ *prefix*
     Sets a unique name prefixed used for the top-level KML filename *and* the
-    directory where all referenced KML files and PNG images will be written [GMT_Quadtree].
+    directory where all referenced KML files and raster images will be written [GMT_Quadtree].
 
 .. _-Q:
 
 **-Q**
     Make grid nodes with z = NaN transparent [opaque with NaN-color set via the color table].
+    This produces transparent PNG [Default is opaque JPG].
 
 .. _-S:
 
@@ -131,7 +132,7 @@ Optional Arguments
 **-S**\ [*extra*]
     Add extra layers beyond that necessary to capture the full resolution of the data [none].
     This will let GMT interpolate your grid and make more tiles, versus letting Google Earth
-    interpolate the last resolution PNG files.
+    interpolate the last resolution raster images.
 
 .. _-T:
 
@@ -185,12 +186,12 @@ Examples
 
 .. include:: explain_example.rst_
 
-To test a quadtree image representation of the coarse topography grid earth_relief_06m, using
+To test a quadtree JPG image representation of the coarse topography grid earth_relief_06m, using
 the optimally determined tile size, auto color, and supplying a suitable title, try::
 
     gmt grd2kml @earth_relief_06m -NEarth6m -T"Earth Relief 6x6 arc minutes" -Cearth
 
-To make a quadtree image representation of the large topography grid file ellice_basin.nc,
+To make a quadtree PNG image representation of the large topography grid file ellice_basin.nc,
 supplying automatic shading based on the topography, and using 512x512 tiles,
 supplying a suitable title, and using color masking for unmapped area, try::
 

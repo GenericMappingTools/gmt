@@ -477,6 +477,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	static char *kml_xmlns = "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">";
 	static char *alt_mode[2] = {"relativeToGround", "relativeToSeaFloor"};
+	static char *ext[2] = {"jpg", "png"}, img_code[2] = {'j', 'G'};
 
 	FILE *fp = NULL;
 
@@ -699,9 +700,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		sprintf (grdcontour, "-JX%3.2lfid -O -C%s -Ve", dim, contour_file);
 
 	if (Ctrl->H.active)	/* Do sub-pixel smoothing */
-		sprintf (ps_cmd, "-TG -E100 -P -Ve -Z -H%d", Ctrl->H.factor);
+		sprintf (ps_cmd, "-T%c -E100 -P -Ve -Z -H%d", img_code[Ctrl->Q.active], Ctrl->H.factor);
 	else
-		sprintf (ps_cmd, "-TG -E100 -P -Ve -Z");
+		sprintf (ps_cmd, "-T%c -E100 -P -Ve -Z", img_code[Ctrl->Q.active]);
 
 	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Extended grid size is by %d by %d, tile size is %d x %d\n", ny, nx, Ctrl->L.size, Ctrl->L.size);
 
@@ -794,15 +795,15 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					/* Will pass -W so grdimage will notify us if there was no valid image data imaged */
 					if (!Ctrl->W.active) {
 						/* Build the grdimage command to write an image directly via GDAL - no need to go via PostSCript */
-						char pngfile[PATH_MAX] = {""};
+						char imagefile[PATH_MAX] = {""};
 						if (Ctrl->D.single)
-							sprintf (pngfile, "%s/L%2.2dR%3.3dC%3.3d.png", Ctrl->N.prefix, level, row, col);
+							sprintf (imagefile, "%s/L%2.2dR%3.3dC%3.3d.%s", Ctrl->N.prefix, level, row, col, ext[Ctrl->Q.active]);
 						else
-							sprintf (pngfile, "%s/R%3.3dC%3.3d.png", level_dir, row, col);
+							sprintf (imagefile, "%s/R%3.3dC%3.3d.%s", level_dir, row, col, ext[Ctrl->Q.active]);
 						if (Ctrl->I.active)	/* Must pass two grids */
-							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s -A%s", grdimage, z_data, Igrid, W, E, S, N, pngfile);
+							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s -A%s", grdimage, z_data, Igrid, W, E, S, N, imagefile);
 						else
-							sprintf (cmd, "%s %s -R%s/%s/%s/%s -A%s", grdimage, z_data, W, E, S, N, pngfile);
+							sprintf (cmd, "%s %s -R%s/%s/%s/%s -A%s", grdimage, z_data, W, E, S, N, imagefile);
 						error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 						if (!(error == GMT_NOERROR || error == GMT_IMAGE_NO_DATA)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to create a direct PNG from grid\n");
@@ -955,7 +956,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create file : %s\n", file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		/* First this tile's kml info and png href */
+		/* First this tile's kml info and image href */
 		minLodPixels = (Q[k]->level == 0) ? 1 : Ctrl->L.size / 2;
 		maxLodPixels = (Q[k]->level == max_level) ? -1 : 4*Ctrl->L.size;
 		grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
@@ -996,7 +997,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		fprintf (fp, "    <GroundOverlay>\n");
 		fprintf (fp, "      <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);
 		grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1-dir, path);
-		fprintf (fp, "      <Icon>\n        <href>%sR%3.3dC%3.3d.png</href>\n      </Icon>\n", path, Q[k]->row, Q[k]->col);
+		fprintf (fp, "      <Icon>\n        <href>%sR%3.3dC%3.3d.%s</href>\n      </Icon>\n", path, Q[k]->row, Q[k]->col, ext[Ctrl->Q.active]);
 		fprintf (fp, "      <LatLonBox>\n");
 		fprintf (fp, "        <north>%.14g</north>\n", Q[k]->wesn[YHI]);
 		fprintf (fp, "        <south>%.14g</south>\n", Q[k]->wesn[YLO]);
