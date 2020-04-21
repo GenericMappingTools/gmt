@@ -413,7 +413,7 @@ GMT_LOCAL void grd2kml_assert_tile_size (struct GMT_CTRL *GMT, bool global, bool
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Final tile size is %d.\n", *size);
 }
 
-int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter, struct GMT_GRID_HEADER *h, double inc, char *DataGrid, char *Zgrid, char *filt_report) {
+int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter, unsigned int registration, double orig_inc, double inc, char *DataGrid, char *Zgrid, char *filt_report) {
 	char s_int[GMT_LEN32] = {""}, fwidth[GMT_LEN32] = {""};
 	char cmd[GMT_LEN256] = {""};
 	int error;
@@ -423,10 +423,10 @@ int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter,
 	 * Note: If gridline-registered we scale filter width by sqrt(2) but rounded up a bit to make sure
 	 * it extends to the 4 corner nodes. */
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: Low-pass-filtering the grid(s)\n", level);
-	f = (h->registration == GMT_GRID_NODE_REG) ? 1e-4*ceil (1e4*M_SQRT2) : 1.0;	/* Round up a bit */
+	f = (registration == GMT_GRID_NODE_REG) ? 1e-4*ceil (1e4*M_SQRT2) : 1.0;	/* Round up a bit */
 	sprintf (fwidth, "%.8g", f * inc);
 	sprintf (s_int, "%.16g", inc);
-	if (inc < h->inc[GMT_X]) {	/* Resample original instead of filtering it down */
+	if (inc < orig_inc) {	/* Resample original instead of filtering it down */
 		sprintf (filt_report, " [Resampled with -I%s]", s_int);
 		sprintf (cmd, "%s -I%s -rp -G%s", DataGrid, s_int, Zgrid);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Running grdsample : %s\n", cmd);
@@ -455,12 +455,13 @@ int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter,
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grd2kml (void *V_API, int mode, void *args) {
-	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon;
+	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, adjust = false;
 
 	int error = 0, kk, uniq, i_dir, dir, minLodPixels, maxLodPixels;
 
 	unsigned int level, max_level, dpi = 100, n = 0, k, nx, ny, row, col, n_skip, quad, im_type;
 	unsigned int n_NaN, n_NM, n_alloc = GMT_CHUNK, n_bummer = 0, n_tiles = 0, n_img[2] = {0,0};
+	unsigned int registration;
 
 	uint64_t node;
 
@@ -503,6 +504,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grd2kml main code ----------------------------*/
 
+	uniq = (int)getpid();	/* Unique number for temporary files  */
+
 	/* Read grid header only to determine dimensions and required levels for the Pyramid */
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
@@ -518,9 +521,25 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	global_lon = gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI]);
 
-	grd2kml_assert_tile_size (GMT, global_lon, Ctrl->L.active, &Ctrl->L.size);	/* Set or comment on tile size */
+	if (!global_lon && G->header->registration == GMT_GRID_NODE_REG) {
+		/* It is better to have a pixel-registered grid for tiling so that we can use the highest resolution exactly at the highest level.
+		 * We will convert input to a fake pixel grid by extending its domain by half the increments */
+		GMT_Destroy_Data (API, &G);
+		sprintf (file, "%s/grd2kml_pixeldata_tmp_%6.6d.grd", API->tmp_dir, uniq);
+		sprintf (cmd, "%s -T -G%s", Ctrl->In.file, file);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Convert data grid to pixel orientation\n");
+		if ((error = GMT_Call_Module (API, "grdedit", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
+			Return (GMT_RUNTIME_ERROR);
+		}
+		adjust = true;
+		gmt_M_str_free (Ctrl->In.file);
+		Ctrl->In.file = strdup (file);
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+	}
 
-	uniq = (int)getpid();	/* Unique number for temporary files  */
+	grd2kml_assert_tile_size (GMT, global_lon, Ctrl->L.active, &Ctrl->L.size);	/* Set or comment on tile size */
 
 	max_level = grd2kml_max_level (GMT, global_lon, G->header, Ctrl->L.size, Ctrl->S.extra);
 
@@ -546,6 +565,16 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	else if (Ctrl->I.file) {	/* Can read the intensity file and compare region etc. to data grid */
 		struct GMT_GRID *I = NULL;
 		double x_noise = GMT_CONV4_LIMIT * G->header->inc[GMT_X], y_noise = GMT_CONV4_LIMIT * G->header->inc[GMT_Y];
+		if (adjust) {	/* Also make intensity grid pixel-registered */
+			sprintf (file, "%s/grd2kml_pixelintens_tmp_%6.6d.grd", API->tmp_dir, uniq);
+			sprintf (cmd, "%s -T -G%s", Ctrl->I.file, file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Convert intensity grid to pixel orientation\n");
+			if ((error = GMT_Call_Module (API, "grdedit", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
+				Return (GMT_RUNTIME_ERROR);
+			}
+			gmt_M_str_free (Ctrl->I.file);
+			Ctrl->I.file = strdup (file);
+		}
 		if ((I = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -558,12 +587,14 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Data grid and intensity grid do not cover the same area!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
+		GMT_Destroy_Data (API, &I);
 	}
 
 	Q = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_QUADTREE *);
 
 	/* Determine extended region required if using the largest multiple of original grid spacing */
 
+	registration = G->header->registration;
 	if (global_lon) {	/* Make it a square 360x360 grid so the quadtree splitting works */
 		ext_wesn[XLO] = G->header->wesn[XLO];
 		ext_wesn[XHI] = G->header->wesn[XHI];
@@ -579,13 +610,14 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		range = MAX (G->header->wesn[XHI] - G->header->wesn[XLO], G->header->wesn[YHI] - G->header->wesn[YLO]);	/* Largest data dimension in degrees */
 		width = pow (2.0, max_level);	/* Radix-2 number of the smallest tiles in both x and y */
 		step = width * tile_size;		/* Square dimension of extended grid in degrees */
-		col = nx / 2;	row = ny / 2;	/* Half-way point in grid */
+		col = G->header->n_columns / 2;	row = G->header->n_rows / 2;	/* Half-way point in grid */
 		/* Extend the grid half-step away from the approximate center of the input grid */
 		ext_wesn[XLO] = gmt_M_grd_col_to_x (GMT, col, G->header) - step / 2;
 		ext_wesn[XHI] = ext_wesn[XLO] + step;
 		ext_wesn[YLO] = gmt_M_grd_row_to_y (GMT, row, G->header) - step / 2;
 		ext_wesn[YHI] = ext_wesn[YLO] + step;
 		inc = step / Ctrl->L.size;
+		nx = ny = width * Ctrl->L.size;
 	}
 	if (ext_wesn[XLO] < G->header->wesn[XLO] || ext_wesn[XHI] > G->header->wesn[XHI] || ext_wesn[YLO] < G->header->wesn[YLO] || ext_wesn[YHI] > G->header->wesn[YHI]) {
 		/* Extend the original grid with NaNs so it is an exact multiple of largest grid stride at max level */
@@ -712,16 +744,16 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			if (gmt_mkdir (level_dir))
 				GMT_Report (API, GMT_MSG_INFORMATION, "Level directory %s already exist - overwriting files\n", level_dir);
 		}
-		if (level < max_level || G->header->registration == GMT_GRID_NODE_REG || !doubleAlmostEqual (inc,G->header->inc[GMT_X])) {	/* Filter the data to match level resolution */
+		if (level < max_level || registration == GMT_GRID_NODE_REG || !doubleAlmostEqual (inc, G->header->inc[GMT_X])) {	/* Filter the data to match level resolution */
 			sprintf (Zgrid, "%s/grd2kml_Z_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
-			if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, G->header, inc, DataGrid, Zgrid, filt_report)) {
+			if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, registration, G->header->inc[GMT_X], inc, DataGrid, Zgrid, filt_report)) {
 				gmt_M_free (GMT, Q);
 				if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (Ctrl->I.active) {	/* Also filter the intensity grid */
 				sprintf (Igrid, "%s/grd2kml_I_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
-				if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, G->header, inc, IntensGrid, Igrid, filt_report)) {
+				if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, registration, G->header->inc[GMT_X], inc, IntensGrid, Igrid, filt_report)) {
 					gmt_M_free (GMT, Q);
 					if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
 					Return (GMT_RUNTIME_ERROR);
@@ -887,7 +919,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			sprintf (box, "%g x %g d", step, step);
 		else
 			sprintf (box, "%g x %g m", 60*step, 60*step);
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Level %2.2d: %18s %3d by %3d = %5d tiles, %5d mapped, %3d empty%s\n", level, box, row, col, row*col, row*col - n_skip, n_skip, filt_report);
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Level %2.2d: Tile size: %18s Tiles: %3d by %3d = %5d %5d mapped %3d empty%s\n", level, box, row, col, row*col, row*col - n_skip, n_skip, filt_report);
 		if (level < max_level) {	/* Delete the temporary filtered grid(s) */
 			gmt_remove_file (GMT, Zgrid);
 			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
