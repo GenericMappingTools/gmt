@@ -86,9 +86,6 @@ struct GRD2KML_CTRL {
 		bool active;
 		unsigned int size;
 	} L;
-	struct GRD2KML_Q {	/* -Q */
-		bool active;
-	} Q;
 	struct GRD2KML_S {	/* -S[n] */
 		bool active;
 		unsigned int extra;
@@ -105,7 +102,7 @@ struct GRD2KML_CTRL {
 
 /* Structure used to keep track of which tile and its 4 possible underlings */
 struct GMT_QUADTREE {
-	unsigned int level, q;
+	unsigned int level, q, type;
 	unsigned int row, col;
 	char tag[16];
 	char *region;
@@ -142,7 +139,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-As|g] [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-Q] [-S[<extra>]] [-T<title>] [%s] [-W<contfile>|<pen>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-S[<extra>]] [-T<title>] [%s] [-W<contfile>|<pen>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -169,7 +166,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grid> instead, append +a<azim> [-45] and +n<method> [t1]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [256].  For global grids, we compute a size if -L is not given.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use PS Level 3 color-masking to make nodes with z = NaN transparent.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra interpolated levels [no extra layers].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set title (document description) for the top-level KML.\n");
 	GMT_Option (API, "V");
@@ -292,8 +288,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				gmt_M_str_free (Ctrl->N.prefix);
 				Ctrl->N.prefix = strdup (opt->arg);
 				break;
-			case 'Q':	/* Colormasking */
-				Ctrl->Q.active = true;
+			case 'Q':	/* Deprecated colormasking option */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Q is deprecated as transparency is automatically detected\n");
 				break;
 			case 'S':	/* Extra levels */
 				Ctrl->S.active = true;
@@ -463,7 +459,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	int error = 0, kk, uniq, i_dir, dir, minLodPixels, maxLodPixels;
 
-	unsigned int level, max_level, dpi = 100, n = 0, k, nx, ny, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0, n_tiles = 0;
+	unsigned int level, max_level, dpi = 100, n = 0, k, nx, ny, row, col, n_skip, quad, im_type;
+	unsigned int n_NaN, n_NM, n_alloc = GMT_CHUNK, n_bummer = 0, n_tiles = 0, n_img[2] = {0,0};
 
 	uint64_t node;
 
@@ -477,7 +474,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	static char *kml_xmlns = "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">";
 	static char *alt_mode[2] = {"relativeToGround", "relativeToSeaFloor"};
-	static char *ext[2] = {"jpg", "png"}, img_code[2] = {'j', 'G'};
+	static char *ext[2] = {"jpg", "png"}, img_code[2] = {'j', 'G'}, *transp = " -Q";
 
 	FILE *fp = NULL;
 
@@ -692,19 +689,18 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	/* Set up the constant parts of the grdimage command */
 	sprintf (grdimage, "-JX%3.2lfi -X0 -Y0%s -W -Ve --PS_MEDIA=%3.2lfix%3.2lfi", dim, K, dim, dim);
-	if (Ctrl->Q.active)	/* Want NaN colormasking */
-		strcat (grdimage, " -Q");
 	if (Ctrl->C.active) { strcat (grdimage, " -C"); strcat (grdimage, Ctrl->C.file); }
 	/* Set up the constant parts of the grdcontour command */
 	if (Ctrl->W.active)	/* Overlay contours */
 		sprintf (grdcontour, "-JX%3.2lfid -O -C%s -Ve", dim, contour_file);
 
 	if (Ctrl->H.active)	/* Do sub-pixel smoothing */
-		sprintf (ps_cmd, "-T%c -E100 -P -Ve -Z -H%d", img_code[Ctrl->Q.active], Ctrl->H.factor);
+		sprintf (ps_cmd, "-E100 -P -Ve -Z -H%d", Ctrl->H.factor);
 	else
-		sprintf (ps_cmd, "-T%c -E100 -P -Ve -Z", img_code[Ctrl->Q.active]);
+		sprintf (ps_cmd, "-E100 -P -Ve -Z");
 
 	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Extended grid size is by %d by %d, tile size is %d x %d\n", ny, nx, Ctrl->L.size, Ctrl->L.size);
+	n_NM = Ctrl->L.size * Ctrl->L.size;	/* Number of nodes or pixels in a tile */
 
 	/* Loop over all the levels, starting at the top level (0) */
 	for (level = 0; level <= max_level; level++) {
@@ -777,12 +773,14 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					Return (API->error);
 				}
 				/* Determine if we have any non-NaN data points inside this grid */
-				for (trow = 0, use_tile = false; !use_tile && trow < T->header->n_rows; trow++) {
-					for (tcol = 0; !use_tile && tcol < T->header->n_columns; tcol++) {
+				for (trow = n_NaN = 0; trow < T->header->n_rows; trow++) {
+					for (tcol = 0; tcol < T->header->n_columns; tcol++) {
 						node = gmt_M_ijp (T->header, trow, tcol);
-						use_tile = !gmt_M_is_fnan (T->data[node]);
+						if (gmt_M_is_fnan (T->data[node])) n_NaN++;
 					}
 				}
+				use_tile = (n_NaN < n_NM);
+				im_type = (n_NaN) ? 1 : 0;
 				if (use_tile) {	/* Found data inside this tile, make plot and rasterize (if PostScript) */
 					char z_data[GMT_VF_LEN] = {""}, psfile[PATH_MAX] = {""};
 					/* Open the grid subset as a virtual file we can pass to grdimage */
@@ -797,13 +795,14 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						/* Build the grdimage command to write an image directly via GDAL - no need to go via PostSCript */
 						char imagefile[PATH_MAX] = {""};
 						if (Ctrl->D.single)
-							sprintf (imagefile, "%s/L%2.2dR%3.3dC%3.3d.%s", Ctrl->N.prefix, level, row, col, ext[Ctrl->Q.active]);
+							sprintf (imagefile, "%s/L%2.2dR%3.3dC%3.3d.%s", Ctrl->N.prefix, level, row, col, ext[im_type]);
 						else
-							sprintf (imagefile, "%s/R%3.3dC%3.3d.%s", level_dir, row, col, ext[Ctrl->Q.active]);
+							sprintf (imagefile, "%s/R%3.3dC%3.3d.%s", level_dir, row, col, ext[im_type]);
 						if (Ctrl->I.active)	/* Must pass two grids */
 							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s -A%s", grdimage, z_data, Igrid, W, E, S, N, imagefile);
 						else
 							sprintf (cmd, "%s %s -R%s/%s/%s/%s -A%s", grdimage, z_data, W, E, S, N, imagefile);
+						if (im_type) strcat (cmd, transp);
 						error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 						if (!(error == GMT_NOERROR || error == GMT_IMAGE_NO_DATA)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to create a direct PNG from grid\n");
@@ -818,6 +817,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s ->%s", grdimage, z_data, Igrid, W, E, S, N, psfile);
 						else
 							sprintf (cmd, "%s %s -R%s/%s/%s/%s ->%s", grdimage, z_data, W, E, S, N, psfile);
+						if (im_type) strcat (cmd, transp);
 						error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 						if (error == GMT_NOERROR && Ctrl->W.active) {	/* Overlay contours */
 							sprintf (cmd, "%s %s -R%s/%s/%s/%s ->>%s", grdcontour, z_data, W, E, S, N, psfile);
@@ -848,9 +848,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %2.2d: Mapped tile %s\n", level, region);
 						if (Ctrl->W.active) {	/* Make PS, now rasterize to PNG */
 							if (Ctrl->D.single)
-								sprintf (cmd, "%s -D%s -FL%2.2dR%3.3dC%3.3d %s", ps_cmd, Ctrl->N.prefix, level, row, col, psfile);
+								sprintf (cmd, "%s -T%c -D%s -FL%2.2dR%3.3dC%3.3d %s", ps_cmd, img_code[im_type], Ctrl->N.prefix, level, row, col, psfile);
 							else
-								sprintf (cmd, "%s -D%s -FR%3.3dC%3.3d %s", ps_cmd, level_dir, row, col, psfile);
+								sprintf (cmd, "%s -T%c -D%s -FR%3.3dC%3.3d %s", ps_cmd, img_code[im_type], level_dir, row, col, psfile);
 							if (GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd)) {
 								GMT_Report (API, GMT_MSG_ERROR, "Unable to rasterize current PNG tile!\n");
 								gmt_M_free (GMT, Q);
@@ -859,7 +859,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						}
 						/* Update our list of tiles created */
 						Q[n] = gmt_M_memory (GMT, NULL, 1, struct GMT_QUADTREE);
-						Q[n]->row = row; Q[n]->col = col;	Q[n]->level = level;
+						Q[n]->row = row; Q[n]->col = col;	Q[n]->level = level;	Q[n]->type = im_type;
 						Q[n]->wesn[XLO] = wesn[XLO];	Q[n]->wesn[XHI] = wesn[XHI];
 						Q[n]->wesn[YLO] = wesn[YLO];	Q[n]->wesn[YHI] = wesn[YHI];
 						sprintf (Q[n]->tag, "L%2.2dR%3.3dC%3.3d", level, row, col);
@@ -868,6 +868,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 							n_alloc <<= 1;
 							Q = gmt_M_memory (GMT, Q, n_alloc, struct GMT_QUADTREE *);
 						}
+						n_img[im_type]++;
 					}
 				}
 				else {	/* Just NaNs inside this tile */
@@ -997,7 +998,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		fprintf (fp, "    <GroundOverlay>\n");
 		fprintf (fp, "      <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);
 		grd2kml_set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1-dir, path);
-		fprintf (fp, "      <Icon>\n        <href>%sR%3.3dC%3.3d.%s</href>\n      </Icon>\n", path, Q[k]->row, Q[k]->col, ext[Ctrl->Q.active]);
+		fprintf (fp, "      <Icon>\n        <href>%sR%3.3dC%3.3d.%s</href>\n      </Icon>\n", path, Q[k]->row, Q[k]->col, ext[Q[k]->type]);
 		fprintf (fp, "      <LatLonBox>\n");
 		fprintf (fp, "        <north>%.14g</north>\n", Q[k]->wesn[YHI]);
 		fprintf (fp, "        <south>%.14g</south>\n", Q[k]->wesn[YLO]);
@@ -1039,7 +1040,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Q[k]);		/* Free this tile information */
 	}
 	gmt_M_free (GMT, Q);
-	GMT_Report (API, GMT_MSG_NOTICE, "Done: %d tiles written to directory %s\n", n_tiles, Ctrl->N.prefix);
+	GMT_Report (API, GMT_MSG_NOTICE, "Done: %d tiles (%d JPG and %d PNG) written to directory %s\n", n_tiles, n_img[0], n_img[1], Ctrl->N.prefix);
 
 	Return (GMT_NOERROR);
 }

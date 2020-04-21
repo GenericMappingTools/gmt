@@ -21,7 +21,6 @@ Synopsis
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-L|\ *tilesize* ]
 [ |-N|\ *prefix* ]
-[ |-Q| ]
 [ |-S|\ [*extra*] ]
 [ |-T|\ *title* ]
 [ |-W|\ *cfile*\|\ *pen* ]
@@ -120,12 +119,6 @@ Optional Arguments
     Sets a unique name prefixed used for the top-level KML filename *and* the
     directory where all referenced KML files and raster images will be written [GMT_Quadtree].
 
-.. _-Q:
-
-**-Q**
-    Make grid nodes with z = NaN transparent [opaque with NaN-color set via the color table].
-    This produces transparent PNG [Default is opaque JPG].
-
 .. _-S:
 
 
@@ -171,6 +164,8 @@ until we reach the original grid increment. Tiles that have all NaNs are not pro
 THe tiles are inherently pixel-registered. Thus, if a global grid has gridline-registration then
 we are down-sampling the extended grid onto a pixel-registered coarser grid.  Because these
 nodes do not coincide with the original nodes we widen the filter width by a factor of sqrt(2).
+We detect if NaNs are present in any tile and if so produce a transparent PNG tile; otherwise we
+make an opaque JPG tile.
 
 Notes
 -----
@@ -186,16 +181,16 @@ Examples
 
 .. include:: explain_example.rst_
 
-To test a quadtree JPG image representation of the coarse topography grid earth_relief_06m, using
+To test a quadtree image representation of the coarse topography grid earth_relief_06m, using
 the optimally determined tile size, auto color, and supplying a suitable title, try::
 
     gmt grd2kml @earth_relief_06m -NEarth6m -T"Earth Relief 6x6 arc minutes" -Cearth
 
-To make a quadtree PNG image representation of the large topography grid file ellice_basin.nc,
+To make a quadtree image representation of the large topography grid file ellice_basin.nc,
 supplying automatic shading based on the topography, and using 512x512 tiles,
 supplying a suitable title, and using color masking for unmapped area, try::
 
-    gmt grd2kml ellice_basin.nc -I+d -Nellice -L512 -Q -T"Ellice Basin Bathymetry"
+    gmt grd2kml ellice_basin.nc -I+d -Nellice -L512 -T"Ellice Basin Bathymetry"
 
 See Also
 --------
