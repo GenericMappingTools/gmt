@@ -8287,7 +8287,8 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 	struct GMT_DATASEGMENT *S2 = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
  	bool add_pole, separate;
-	int outline = 0;
+	int outline = 0, P_handedness = GMT_NOTSET, H_handedness;
+	int geo = gmt_M_is_geographic (GMT, GMT_IN);
 	uint64_t used = 0;
 	char *type[2] = {"Perimeter", "Polar cap perimeter"};
 	char *use[2] = {"fill only", "fill and outline"};
@@ -8323,7 +8324,17 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 	if (PSL->internal.comments) snprintf (comment, GMT_LEN64, "%s polygon for %s\n", type[add_pole], use[PSL->current.outline]);
 	used = gmtplot_geo_polygon_segment (GMT, S, add_pole, true, comment);	/* First lay down perimeter */
 	for (S2 = gmt_get_next_S (S); S2; S2 = gmt_get_next_S (S2)) {	/* Process all holes [none processed if there aren't any holes] */
+		if (P_handedness == GMT_NOTSET)
+			P_handedness = gmt_polygon_orientation (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, geo);
+		H_handedness = gmt_polygon_orientation (GMT, S2->data[GMT_X], S2->data[GMT_Y], S2->n_rows, geo);
+
 		if (PSL->internal.comments) snprintf (comment, GMT_LEN64, "Hole polygon for %s\n", use[PSL->current.outline]);
+		if (H_handedness == P_handedness) {
+			uint64_t row_f, row_l, col;
+			for (row_f = 0, row_l = S2->n_rows - 1; row_f < S2->n_rows/2; row_f++, row_l--) {
+				for (col = 0; col < S2->n_columns; col++) gmt_M_double_swap (S2->data[col][row_f], S2->data[col][row_l]);
+			}
+		}
 		used += gmtplot_geo_polygon_segment (GMT, S2, false, false, comment);	/* Add this hole to the path */
 	}
 	if (used) {
