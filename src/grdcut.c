@@ -654,13 +654,14 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	nx_old = G->header->n_columns;		ny_old = G->header->n_rows;
 
 	if (Ctrl->N.active && extend) {	/* Determine the pad needed for the extended area */
-		double del;
+		double del, off;
 		/* First a sanity check that new extended region differ by integer multiples of dx,dy */
 		for (side = 0; side < 4; side++) {
 			if (!outside[side]) continue;
 			del = fabs ((G->header->wesn[side] - wesn_requested[side]) * HH->r_inc[side/2]);
-			if ((del - floor (del + GMT_CONV4_LIMIT)) > 0.25) {	/* Limit off by half interval ? */
-				GMT_Report (API, GMT_MSG_WARNING, "New limit for side %d wrong by ~half increment - adjusted outwards\n");
+			off = (del - floor (del + GMT_CONV4_LIMIT));
+			if (off > 0.25) {	/* Limit off by half interval ? */
+				GMT_Report (API, GMT_MSG_WARNING, "New limit for %s wrong by %g increment - adjusted outwards\n", name[type][side], off);
 				del = (side%2) ? +ceil (del) : -ceil (del);
 				wesn_requested[side] = G->header->wesn[side] + del * G->header->inc[side/2];
 			}
