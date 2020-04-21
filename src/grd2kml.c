@@ -391,7 +391,7 @@ GMT_LOCAL unsigned int grd2kml_max_level (struct GMT_CTRL *GMT, bool global, str
 		my = urint (ceil ((double)H->n_rows / (double)size)) * size;
 		level = urint (ceil (log2 (MAX (mx, my) / (double)size)));	/* Number of levels in the quadtree */
 	}
-	return level+1;
+	return level;
 }
 
 GMT_LOCAL void grd2kml_assert_tile_size (struct GMT_CTRL *GMT, bool global, bool active, unsigned int *size) {
