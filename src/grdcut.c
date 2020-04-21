@@ -654,6 +654,18 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	nx_old = G->header->n_columns;		ny_old = G->header->n_rows;
 
 	if (Ctrl->N.active && extend) {	/* Determine the pad needed for the extended area */
+		double del;
+		/* First a sanity check that new extended region differ by integer multiples of dx,dy */
+		for (side = 0; side < 4; side++) {
+			if (!outside[side]) continue;
+			del = fabs ((G->header->wesn[side] - wesn_requested[side]) * HH->r_inc[side/2]);
+			if ((del - floor (del + GMT_CONV4_LIMIT)) > 0.25) {	/* Limit off by half interval ? */
+				GMT_Report (API, GMT_MSG_WARNING, "New limit for side %d wrong by ~half increment - adjusted outwards\n");
+				del = (side%2) ? +ceil (del) : -ceil (del);
+				wesn_requested[side] = G->header->wesn[side] + del * G->header->inc[side/2];
+			}
+		}
+
 		gmt_M_memcpy (def_pad, GMT->current.io.pad, 4, unsigned int);	/* Default pad */
 		gmt_M_memcpy (pad, def_pad, 4, unsigned int);			/* Starting pad */
 		if (outside[XLO]) pad[XLO] += urint ((G->header->wesn[XLO] - wesn_requested[XLO]) * HH->r_inc[GMT_X]);
@@ -677,7 +689,11 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		G = G_dup;	/* Since G was not allocated here anyway - it came from the outside and will be deleted there */
 	}
 	if (Ctrl->N.active && extend) {	/* Now shrink pad back to default and simultaneously extend region and apply nodata values */
-		unsigned int xlo, xhi, ylo, yhi, row, col;
+		unsigned int xlo, xhi, ylo, yhi, row, col, n_zero, n_zero_e;
+		n_zero = 0;	/* Count zeros in the grid before extension */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (G->data[node] == 0.0) n_zero++;
+		}
 		gmt_M_memcpy (G->header->wesn, wesn_requested, 4, double);
 		gmt_M_memcpy (GMT->current.io.pad, def_pad, 4, unsigned int);	/* Reset default pad */
 		gmt_M_grd_setpad (GMT, G->header, GMT->current.io.pad);	/* Set the default pad */
@@ -688,21 +704,36 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		ylo = outside[YLO] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO], G->header) : G->header->n_rows - 1;
 		yhi = outside[YHI] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI], G->header) : 0;
 		if (outside[XLO]) {
-			for (row = 0; row < G->header->n_rows; row++)
-				for (col = 0; col < xlo; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
+			for (row = 0; row < G->header->n_rows; row++) {
+				node = gmt_M_ijp (G->header,row,0);
+				for (col = 0; col < xlo; col++, node++)
+					G->data[node] = Ctrl->N.value;
+			}
 		}
 		if (outside[XHI]) {
 			for (row = 0; row < G->header->n_rows; row++)
-				for (col = xhi+1; col < G->header->n_columns; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
+				node = gmt_M_ijp (G->header,row,col);
+				for (col = xhi+1; col < G->header->n_columns; col++, node++)
+					G->data[node] = Ctrl->N.value;
 		}
 		if (outside[YLO]) {
 			for (row = ylo+1; row < G->header->n_rows; row++)
-				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
+				node = gmt_M_ijp (G->header,row,col);
+				for (col = xlo; col <= xhi; col++, node++)
+					G->data[node] = Ctrl->N.value;
 		}
 		if (outside[YHI]) {
 			for (row = 0; row < yhi; row++)
-				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
+				node = gmt_M_ijp (G->header,row,col);
+				for (col = xlo; col <= xhi; col++, node++)
+					G->data[node] = Ctrl->N.value;
 		}
+		n_zero_e = 0;	/* Count zeros in the grid after extension */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (G->data[node] == 0.0) n_zero_e++;
+		}
+		if (n_zero_e != n_zero)
+			GMT_Report (API, GMT_MSG_WARNING, "Something went wrong - %d extended nodes not set to NaN\n", n_zero_e-n_zero);
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
