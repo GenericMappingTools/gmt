@@ -33,9 +33,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:RVabdefghijoqs" GMT_OPT("HMm")
 
-#define POL_IS_CW	1
-#define POL_IS_CCW	0
-
 #define GMT_W	3
 
 #define POL_UNION		1
@@ -187,7 +184,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/* 
 GMT_LOCAL unsigned int gmtspatial_area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int geo) {
 	double size = gmt_centroid_area (GMT, x, y, n, geo, out);
  	out[GMT_Z] = fabs (size);
-	return ((size < 0.0) ? POL_IS_CCW : POL_IS_CW);
+	return ((size < 0.0) ? GMT_POL_IS_CCW : GMT_POL_IS_CW);
 }
 
 #if 0
@@ -243,7 +240,7 @@ GMT_LOCAL unsigned int gmtspatial_gmtspatial_area_size_old (struct GMT_CTRL *GMT
 	gmt_M_free (GMT, yp);
 	if (geo) size *= (GMT->current.map.dist[GMT_MAP_DIST].scale * GMT->current.map.dist[GMT_MAP_DIST].scale);
 	out[GMT_Z] = fabs (size);
-	return ((size < 0.0) ? POL_IS_CCW : POL_IS_CW);
+	return ((size < 0.0) ? GMT_POL_IS_CCW : GMT_POL_IS_CW);
 }
 #endif
 
@@ -914,9 +911,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 			case 'E':	/* Orient polygons -E+n|p  (old -E-|+) */
 			 	Ctrl->E.active = true;
 				if (opt->arg[0] == '-' || strstr (opt->arg, "+n"))
-					Ctrl->E.mode = POL_IS_CW;
+					Ctrl->E.mode = GMT_POL_IS_CW;
 				else if (opt->arg[0] == '+' || strstr (opt->arg, "+p"))
-					Ctrl->E.mode = POL_IS_CCW;
+					Ctrl->E.mode = GMT_POL_IS_CCW;
 				else
 					n_errors++;
 				break;
