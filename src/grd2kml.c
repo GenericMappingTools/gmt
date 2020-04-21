@@ -368,7 +368,7 @@ GMT_LOCAL void grd2kml_halve_dimensions (double *inc, double *step) {
 	*inc  /= 2;
 }
 
-GMT_LOCAL unsigned int grd2kml_max_level (struct GMT_CTRL *GMT, bool global, struct GMT_GRID_HEADER *H, unsigned int size) {
+GMT_LOCAL unsigned int grd2kml_max_level (struct GMT_CTRL *GMT, bool global, struct GMT_GRID_HEADER *H, unsigned int size, unsigned int extra) {
 	unsigned int level = 0;
 	if (global) {;
 		unsigned int n = 1, f = 1, go = 1;
@@ -384,12 +384,19 @@ GMT_LOCAL unsigned int grd2kml_max_level (struct GMT_CTRL *GMT, bool global, str
 			level++;
 			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Level = %d tile size = %gd grid inc = %gm n_tiles = %d\n", level, step, 60*inc, n);
 		} while (go);
+		while (extra) {	/* Add the extra levels */
+			step /= f;	inc /= f;
+			n *= f;
+			level++;
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Level = %d tile size = %gd grid inc = %gm n_tiles = %d\n", level, step, 60*inc, n);
+			extra--;
+		}
 	}
 	else {
 		unsigned int mx, my;
 		mx = urint (ceil ((double)H->n_columns / (double)size)) * size;	/* Nearest image size in multiples of tile size */
 		my = urint (ceil ((double)H->n_rows / (double)size)) * size;
-		level = urint (ceil (log2 (MAX (mx, my) / (double)size)));	/* Number of levels in the quadtree */
+		level = urint (ceil (log2 (MAX (mx, my) / (double)size))) + extra;	/* Number of levels in the quadtree plus optional extra levels */
 	}
 	return level;
 }
@@ -523,7 +530,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active)	/* Want NaN colormasking */
 		sprintf (im_arg, " -Q");
 
-	max_level = grd2kml_max_level (GMT, global_lon, G->header, Ctrl->L.size) + Ctrl->S.extra;
+	max_level = grd2kml_max_level (GMT, global_lon, G->header, Ctrl->L.size, Ctrl->S.extra);
 
 	nx = G->header->n_columns;	ny = (global_lon) ? nx : G->header->n_rows;	/* Dimensions of original grid, possibly made square for global grids */
 
