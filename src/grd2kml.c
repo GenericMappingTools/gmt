@@ -671,7 +671,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	/* Contour file has records of <cvalue> [<angle>] C|A [<pen>].  With angle = 0 we want <cvalue> C <pen> records */
 		uint64_t c;
 		char line[GMT_LEN256] = {""};
+		struct GMT_DATASEGMENT *S = NULL;
 		if (!gmt_access (GMT, Ctrl->W.file, F_OK)) {	/* Was given an actual file */
+			gmt_set_cartesian (GMT, GMT_IN);
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->W.file, NULL)) == NULL) {
 				gmt_M_free (GMT, Q);
 				Return (GMT_RUNTIME_ERROR);
@@ -681,15 +683,16 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, Q);
 				Return (GMT_RUNTIME_ERROR);
 			}
+			S = C->table[0]->segment[0];
 			for (c = 0; c < C->n_records; c++) {	/* Must reformat the records to fit grdcontour requirements */
-				if (C->table[0]->segment[0]->text[c] == NULL) {
+				if (S->text[c] == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "No text record found\n");
 					gmt_M_free (GMT, Q);
 					Return (GMT_RUNTIME_ERROR);
 				}
-				sprintf (line, "C %s", C->table[0]->segment[0]->text[c]);	/* Build the required record format for grdcontour */
-				gmt_M_str_free (C->table[0]->segment[0]->text[c]);	/* Free previous string */
-				C->table[0]->segment[0]->text[c] = strdup (line);	/* Update string */
+				sprintf (line, "C %s", S->text[c]);	/* Build the required record format for grdcontour */
+				gmt_M_str_free (S->text[c]);	/* Free previous string */
+				S->text[c] = strdup (line);	/* Update string */
 			}
 		}
 		else {	/* Use contours from CPT file, with -W<pen> */
@@ -704,15 +707,16 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, Q);
 				Return (GMT_RUNTIME_ERROR);
 			}
+			S = C->table[0]->segment[0];
 			sprintf (line, "C %s", Ctrl->W.file);	/* Build the required record format for grdcontour */
 			for (c = 0; c < P->n_colors; c++) {	/* Do all the low boundaries */
-				C->table[0]->segment[0]->data[GMT_X][c] = P->data[c].z_low;
-				gmt_M_str_free (C->table[0]->segment[0]->text[c]);	/* Free previous string */
-				C->table[0]->segment[0]->text[c] = strdup (line);	/* Update string */
+				S->data[GMT_X][c] = P->data[c].z_low;
+				gmt_M_str_free (S->text[c]);	/* Free previous string */
+				S->text[c] = strdup (line);	/* Update string */
 			}
-			C->table[0]->segment[0]->data[GMT_X][c] = P->data[P->n_colors-1].z_high;
-			gmt_M_str_free (C->table[0]->segment[0]->text[c]);	/* Free previous string */
-			C->table[0]->segment[0]->text[c] = strdup (line);	/* Update string */
+			S->data[GMT_X][c] = P->data[P->n_colors-1].z_high;
+			gmt_M_str_free (S->text[c]);	/* Free previous string */
+			S->text[c] = strdup (line);	/* Update string */
 		}
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, C, contour_file) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual file for contours\n");
