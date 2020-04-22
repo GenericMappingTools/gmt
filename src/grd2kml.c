@@ -732,7 +732,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) { strcat (grdimage, " -C"); strcat (grdimage, Ctrl->C.file); }
 	/* Set up the constant parts of the grdcontour command */
 	if (Ctrl->W.active)	/* Overlay contours */
-		sprintf (grdcontour, "-JX%3.2lfid -O -C%s -Ve", dim, contour_file);
+		sprintf (grdcontour, "-JX%3.2lfi -O -C%s -Ve", dim, contour_file);
 
 	if (Ctrl->H.active)	/* Do sub-pixel smoothing */
 		sprintf (ps_cmd, "-E100 -P -Ve -Z -H%d", Ctrl->H.factor);
