@@ -489,7 +489,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			         GMT->current.setting.ref_ellipsoid[k].eq_radius);
 		else {
 			gmtlib_ellipsoid_name_convert (GMT->current.setting.ref_ellipsoid[k].name, gdal_ellipsoid_name);
-			if (!strcmp (gdal_ellipsoid_name, "unknown"))
+			if (strcmp (gdal_ellipsoid_name, "unknown") != 0)
 				sprintf (buf, "+proj=longlat +ellps=%s +no_defs", gdal_ellipsoid_name);
 			else if (!strcmp (gdal_ellipsoid_name, "Web-Mercator"))
 				sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
