@@ -43,9 +43,10 @@ struct GRD2KML_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct GRD2KML_A {	/* -Ag|s [s] */
+	struct GRD2KML_A {	/* -Ag|s|a[<altitude>] [g] */
 		bool active;
 		int mode;
+		double altitude;
 	} A;
 	struct GRD2KML_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
 		bool active;
@@ -142,7 +143,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-As|g] [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-Aa|g|s[<altitude>]] [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-S[<extra>]] [-T<title>] [%s] [-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -152,7 +153,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets file name prefix for image directory and KML file. If the directory\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   already exist we will overwrite the files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Sets altitude mode of tiles relative to g(round) or s(eafloor) [g]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Altitude mode of the image layer, choose among three modes:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a Absolute altitude.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     g Altitude relative to sea surface or ground.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s Altitude relative to sea floor or ground.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append fixed <altitude> [g0: Clamped to sea surface or ground].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb. Optionally, instead give name of a master cpt\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", GMT_DEFAULT_CPT_NAME);
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
@@ -215,11 +220,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'g': Ctrl->A.mode = 0; break;
 					case 's': Ctrl->A.mode = 1; break;
+					case 'a': Ctrl->A.mode = 2; break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Append either g(round) or s(eafloor).\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Append either a(bsolute), g(round) or s(eafloor) with optional <altitude>.\n");
 						n_errors++;
 						break;
 				}
+				if (opt->arg[1]) Ctrl->A.altitude = atof (&opt->arg[1]);
 				break;
 			case 'C':	/* CPT */
 				Ctrl->C.active = true;
@@ -486,7 +493,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	char box[GMT_LEN32] = {""}, grdimage[GMT_LEN256] = {""}, grdcontour[GMT_LEN256] = {""}, scalepen_arg[GMT_LEN32] = {""};
 
 	static char *kml_xmlns = "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">";
-	static char *alt_mode[2] = {"relativeToGround", "relativeToSeaFloor"};
+	static char *alt_mode[3] = {"relativeToGround", "relativeToSeaFloor", "absolute"};
 	static char *ext[2] = {"jpg", "png"}, img_code[2] = {'j', 'G'}, *transp = " -Q";
 
 	FILE *fp = NULL;
@@ -1066,7 +1073,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		fprintf (fp, "        <east>%.14g</east>\n",   Q[k]->wesn[XHI]);
 		fprintf (fp, "        <west>%.14g</west>\n",   Q[k]->wesn[XLO]);
 		fprintf (fp, "      </LatLonBox>\n");
- 		fprintf (fp, "      <altitudeMode>%s</altitudeMode><altitude>0</altitude>\n", alt_mode[Ctrl->A.mode]);
+ 		fprintf (fp, "      <altitudeMode>%s</altitudeMode><altitude>%g</altitude>\n", alt_mode[Ctrl->A.mode], Ctrl->A.altitude);
 		fprintf (fp, "    </GroundOverlay>\n");
 		i_dir = (Q[k]->level == 0) ? 1 : -1;
 		/* Now add up to 4 quad links */

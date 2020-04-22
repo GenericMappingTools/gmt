@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grd2kml** *grid*
-[ |-A|\ **g**\|\ **s** ]
+[ |-A|\ **a**\|\ **g**\|\ **s**\ [*altitude*] ]
 [ |-C|\ *cpt* ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
@@ -58,9 +58,15 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **g**\|\ **s**
-    Sets the altitude mode of the tiles.  Choose from **g** (relative to ground) or
-    **s** (relative to seafloor) [**g**].
+
+**-A**\ **a**\|\ **g**\|\ **s**\ [*altitude*]
+    Select one of three altitude modes recognized by Google Earth that
+    determines the altitude (in m) of the tile layer: **a** absolute
+    altitude, **g** altitude relative to sea surface or ground, **s**
+    altitude relative to seafloor or ground. To plot the tiles at a
+    fixed altitude, append an altitude *altitude* (in m). Use 0 to clamp the
+    features to the chosen reference surface. [By default the tiles are clamped
+    to the sea surface or ground].
 
 .. _-C:
 
