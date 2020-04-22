@@ -160,17 +160,18 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     c: Cosine arch : Weighted averaging with cosine arc weights.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     g: Gaussian    : Weighted averaging with Gaussian weights [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     m: Median      : Median (50%% quantile) value of all points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Tell psconvert to do sub-pixel smoothing using factor <factor> [no sub-pixel smoothing].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Do sub-pixel smoothing using factor <factor> [no sub-pixel smoothing]. Ignored if -W not set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a single value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grid> instead, append +a<azim> [-45] and +n<method> [t1]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [256].  For global grids, we compute a size if -L is not given.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [512; for global grids, we instead select 360].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra interpolated levels [no extra layers].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set title (document description) for the top-level KML.\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Give file with select contours and pens to draw contours on the images [no contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no file is given we assume it is a pen and use the contours implied by the CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Give file with select contours and pens to overlay contours [no contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no file is given we assume it is a pen and to use the contours implied by the CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Pen widths apply at final tile resolution and are scaled down for each lower level.\n");
 	GMT_Option (API, "f,n,.");
 
 	return (GMT_MODULE_USAGE);
@@ -471,7 +472,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	char W[GMT_LEN16] = {""}, E[GMT_LEN16] = {""}, S[GMT_LEN16] = {""}, N[GMT_LEN16] = {""}, file[PATH_MAX] = {""};
 	char DataGrid[PATH_MAX] = {""}, IntensGrid[PATH_MAX] = {""}, path[PATH_MAX] = {""}, filt_report[GMT_LEN128] = {""};
 	char region[GMT_LEN128] = {""}, ps_cmd[GMT_LEN128] = {""}, contour_file[GMT_VF_LEN] = {""}, K[4] = {""};
-	char box[GMT_LEN32] = {""}, grdimage[GMT_LEN256] = {""}, grdcontour[GMT_LEN256] = {""};
+	char box[GMT_LEN32] = {""}, grdimage[GMT_LEN256] = {""}, grdcontour[GMT_LEN256] = {""}, scalepen_arg[GMT_LEN32] = {""};
 
 	static char *kml_xmlns = "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">";
 	static char *alt_mode[2] = {"relativeToGround", "relativeToSeaFloor"};
@@ -672,8 +673,14 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		uint64_t c;
 		char line[GMT_LEN256] = {""};
 		struct GMT_DATASEGMENT *S = NULL;
+
 		if (!gmt_access (GMT, Ctrl->W.file, F_OK)) {	/* Was given an actual file */
 			gmt_set_cartesian (GMT, GMT_IN);
+			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to specify number of columns (1) to read\n");
+				gmt_M_free (GMT, Q);
+				Return (GMT_RUNTIME_ERROR);
+			}
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->W.file, NULL)) == NULL) {
 				gmt_M_free (GMT, Q);
 				Return (GMT_RUNTIME_ERROR);
@@ -774,12 +781,15 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			step = Ctrl->L.size * G->header->inc[GMT_X];
 			if (Ctrl->I.active) strcpy (Igrid, IntensGrid);
 		}
-
 		/* Loop over all rows at this level */
 		row = col = n_skip = 0;
 		wesn[YLO] = ext_wesn[YLO];
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_FLOAT);
 
+		if (Ctrl->W.active) {		/* Set pen width scale and overall cutoff pen size (0.1) in points */
+			double p = pow (M_SQRT2, -(double)(max_level - level));
+			sprintf (scalepen_arg, " -W+s%g/0.1",p);
+		}
 		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
 			wesn[YHI] = wesn[YLO] + step;	/* Top row may extend beyond grid and be transparent */
 			gmt_ascii_format_one (GMT, N, wesn[YHI], GMT_IS_FLOAT);	/* GMT_IS_FLOAT and not GMT_IS_LAT since we may exceed 90 */
@@ -860,7 +870,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						if (im_type) strcat (cmd, transp);
 						error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 						if (error == GMT_NOERROR && Ctrl->W.active) {	/* Overlay contours */
-							sprintf (cmd, "%s %s -R%s/%s/%s/%s ->>%s", grdcontour, z_data, W, E, S, N, psfile);
+							sprintf (cmd, "%s %s -R%s/%s/%s/%s %s ->>%s", grdcontour, z_data, W, E, S, N, scalepen_arg, psfile);
 							GMT_Init_VirtualFile (API, 0, z_data);	/* Read the same grid again */
 							GMT_Init_VirtualFile (API, 0, contour_file);	/* Read the same contours again */
 							if ((error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd))) {

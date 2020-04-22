@@ -43,7 +43,7 @@ intensities in the (-1,+1) range or by giving instructions to derive intensities
 from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 If plain tiles are selected (i.e., no contours specified) then the PNG tiles are written directly from
-:doc:`grdimage`, otherwise we must first make a PostScript plot that is then converted to raster images via
+:doc:`grdimage`. Otherwise, we must first make a PostScript plot that is then converted to raster image via
 :doc:`psconvert`.
 
 
@@ -142,9 +142,13 @@ Optional Arguments
 **-W**\ *cfile*\|\ *pen*
     Supply a file with records each holding a contour value and a contour pen.
     We then overlay the selected contour lines on top of the image [no contours].
+    Consequently, **-W** triggers the tile creation via PostScript and thus is slower.
     If *cfile* is not a valid file we assume you instead gave a *pen* and want
     to draw all the contours implied by the *cpt* specified in **-C**.  The contours
-    are overlain via calls to :doc:`grdcontour`.
+    are overlain via calls to :doc:`grdcontour`.  **Note**: The contour pen width(s)
+    refer to the highest tile level and are reduced by a factor of sqrt(2) for each
+    lower level.  Contours with scaled pen widths < 0.1 points are skipped (except
+    for pen widths that exactly equal 0 or "faint").
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
