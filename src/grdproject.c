@@ -313,7 +313,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			}
 			gmt_xy_to_geo (GMT, &lon_t, &lat_t, x_c, y_c);
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", lon_t-1, lon_t+1, lat_t-1, lat_t+1);
-			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
+			GMT_Report (API, GMT_MSG_INFORMATION, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
 			GMT->common.R.active[RSET] = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -348,7 +348,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			}
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", MIN(xSW, xNW), yB, MAX(xNE, xSE), yT);
 
-			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active[RSET] = false;
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Load up our best wesn setting - it will be used below if -I */
