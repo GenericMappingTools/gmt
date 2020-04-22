@@ -812,7 +812,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	bool use_contour = true, skip_points, skip_triangles;
 
 	unsigned int pscontour_sum, m, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
-	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped, n_out;
+	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped, n_out, n_cont_attempts = 0;
 	unsigned int i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
 
 	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;
@@ -1639,6 +1639,8 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 						n_save++;
 					}
 					gmt_hold_contour (GMT, &xp, &yp, m, cont[c].val, cont_label, cont[c].type, cont[c].angle, is_closed, true, &Ctrl->contour);
+					n_cont_attempts++;
+
 				}
 
 				gmt_M_free (GMT, xp);
@@ -1666,6 +1668,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, save);
 		}
 		if (make_plot) {
+			if (get_contours && n_cont_attempts == 0) GMT_Report (API, GMT_MSG_INFORMATION, "No contours drawn, check your -A and -C settings?\n");
 			gmt_contlabel_plot (GMT, &Ctrl->contour);
 			gmt_contlabel_free (GMT, &Ctrl->contour);
 		}
