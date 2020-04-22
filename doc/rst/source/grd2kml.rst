@@ -23,7 +23,7 @@ Synopsis
 [ |-N|\ *prefix* ]
 [ |-S|\ [*extra*] ]
 [ |-T|\ *title* ]
-[ |-W|\ *cfile*\|\ *pen* ]
+[ |-W|\ *cfile*\|\ *pen*\ [**+s**\ *scale*/*limit*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -139,16 +139,16 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *cfile*\|\ *pen*
+**-W**\ *cfile*\|\ *pen*\ [**+s**\ *scale*/*limit*]
     Supply a file with records each holding a contour value and a contour pen.
     We then overlay the selected contour lines on top of the image [no contours].
     Consequently, **-W** triggers the tile creation via PostScript and thus is slower.
     If *cfile* is not a valid file we assume you instead gave a *pen* and want
     to draw all the contours implied by the *cpt* specified in **-C**.  The contours
     are overlain via calls to :doc:`grdcontour`.  **Note**: The contour pen width(s)
-    refer to the highest tile level and are reduced by a factor of sqrt(2) for each
-    lower level.  Contours with scaled pen widths < 0.1 points are skipped (except
-    for pen widths that exactly equal 0 or "faint").
+    refer to the highest tile level and are reduced by a factor of *scale* [sqrt(2)] for each
+    lower level.  Contours with scaled pen widths < *limit* [0.1] points are skipped (except
+    for pen widths that exactly equal 0 or "faint").  Use **+s** to change these values.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -170,6 +170,17 @@ we are down-sampling the extended grid onto a pixel-registered coarser grid.  Be
 nodes do not coincide with the original nodes we widen the filter width by a factor of sqrt(2).
 We detect if NaNs are present in any tile and if so produce a transparent PNG tile; otherwise we
 make an opaque JPG tile.
+
+Contour overlays
+----------------
+
+Because each tile is a fixed size image (e.g., 512x512 pixels) but the amount of data represented
+changes by factors of 4 for each new level, we cannot use a constant thickness contour pen for all
+levels.  Thus, the pen you supply must be considered the final pen applied to the highest resolution
+map overlays.  Furthermore, because the *dpi* here is very small compared to regular GMT plots, it is
+important to improve the appearance of the contours by using sub-pixel smoothing (**-H**). Both
+generating PostScript tiles and using sub-pixel smoothing adds considerable processing time over
+plain tiles.
 
 Notes
 -----

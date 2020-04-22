@@ -97,6 +97,8 @@ struct GRD2KML_CTRL {
 	struct  GRD2KML_W {	/* -W<contour_file> */
 		bool active;
 		char *file;
+		double scale;	/* Scaling of pen width modifier */
+		double cutoff;	/* Ignore contours whose pen is < this width in points */
 	} W;
 };
 
@@ -119,6 +121,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->F.filter = 'g';
 	C->I.method  = strdup ("t1");	/* Default normalization for shading when -I is used */
 	C->L.size = 512;	/* Default tile size unless global grids [360] */
+	C->W.scale = M_SQRT2;
+	C->W.cutoff = 0.1;
 	return (C);
 }
 
@@ -139,7 +143,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-As|g] [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-S[<extra>]] [-T<title>] [%s] [-W<contfile>|<pen>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-S[<extra>]] [-T<title>] [%s] [-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -171,7 +175,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give file with select contours and pens to overlay contours [no contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no file is given we assume it is a pen and to use the contours implied by the CPT file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Pen widths apply at final tile resolution and are scaled down for each lower level.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Pen widths apply at final tile resolution and are reduced by *scl* [1.1412] for each lower level.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If a contour's scaled width is < *limit* [0.1] it will not be drawn.\n");
 	GMT_Option (API, "f,n,.");
 
 	return (GMT_MODULE_USAGE);
@@ -302,10 +307,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Contours and pens */
 				Ctrl->W.active = true;
+				if ((c = strstr (opt->arg, "+s"))) {	/* Gave +s<scl> modifier to scale pen widths given via -C and optional cutoff pen width */
+					sscanf (&c[2], "%lf/%lg", &Ctrl->W.scale, &Ctrl->W.cutoff);
+					c[0] = '\0';	/* Temporarily chop off the modifier */
+				}
 				if (opt->arg[0]) {
 					gmt_M_str_free (Ctrl->W.file);
 					Ctrl->W.file = strdup (opt->arg);
 				}
+				if (c) c[0] = '+';	/* Restore */
+
 				break;
 
 			default:	/* Report bad options */
@@ -786,9 +797,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		wesn[YLO] = ext_wesn[YLO];
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_FLOAT);
 
-		if (Ctrl->W.active) {		/* Set pen width scale and overall cutoff pen size (0.1) in points */
-			double p = pow (M_SQRT2, -(double)(max_level - level));
-			sprintf (scalepen_arg, " -W+s%g/0.1",p);
+		if (Ctrl->W.active) {		/* Set pen width scale and overall cutoff pen size [0.1] in points */
+			double p = pow (Ctrl->W.scale, -(double)(max_level - level));
+			sprintf (scalepen_arg, " -W+s%g/%g", p, Ctrl->W.cutoff);
 		}
 		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
 			wesn[YHI] = wesn[YLO] + step;	/* Top row may extend beyond grid and be transparent */
