@@ -96,6 +96,7 @@ struct GRDCONTOUR_CTRL {
 	struct GRDCONTOUR_W {	/* -W[a|c]<pen>[+c[l|f]] */
 		bool active;
 		bool cpt_effect;
+		bool scaling;
 		unsigned int cptmode;	/* Apply to both a&c */
 		double scale;	/* Scaling of pen width modifier [Only used from grd2kml so far] */
 		double cutoff;	/* Ignore contours whose pen is < this width in points [Only used from grd2kml so far] */
@@ -569,6 +570,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				Ctrl->W.active = true;
 				if ((c = strstr (opt->arg, "+s"))) {	/* Gave +s<scl> modifier to scale pen widths given via -C and optional cutoff pen width */
 					sscanf (&c[2], "%lf/%lg", &Ctrl->W.scale, &Ctrl->W.cutoff);
+					Ctrl->W.scaling = true;
 					break;
 				}
 				k = reset = 0;
@@ -1544,13 +1546,16 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* Reset markers and set up new zero-contour */
 
 		cval = cont[c].val;
+		id = (cont[c].type == 'A' || cont[c].type == 'a') ? PEN_ANNOT : PEN_CONT;
 
 		if (cont[c].penset) {	/* Per-contour pen specification given */
 			Ctrl->contour.line_pen = cont[c].pen;	/* Load contour-specific pen into contour structure */
-			if (Ctrl->W.scale > 0) Ctrl->contour.line_pen.width *= Ctrl->W.scale;	/* Apply global pen-width scaling */
-			if (Ctrl->contour.line_pen.width > 0.0 && Ctrl->contour.line_pen.width < Ctrl->W.cutoff) {
-				GMT_Report (API, GMT_MSG_INFORMATION, "Skipping the %g contour as pen width (%g) is less than threshold of %g points\n", cval, Ctrl->contour.line_pen.width, Ctrl->W.cutoff);
-				continue;	/* The tests for nonzero allows -Wfaint (i.e., -W0) to pass */
+			if (Ctrl->W.scaling) {	/* Apply global pen-width scaling */
+				Ctrl->contour.line_pen.width *= Ctrl->W.scale;
+				if (Ctrl->contour.line_pen.width > 0.0 && Ctrl->contour.line_pen.width < Ctrl->W.cutoff) {
+					GMT_Report (API, GMT_MSG_INFORMATION, "Skipping the %g contour as pen width (%g) is less than threshold of %g points\n", cval, Ctrl->contour.line_pen.width, Ctrl->W.cutoff);
+					continue;	/* The tests for nonzero allows -Wfaint (i.e., -W0) to pass */
+				}
 			}
 		}
 		else
@@ -1564,8 +1569,6 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			G->data[ij] = G_orig->data[ij] - (gmt_grdfloat)cval;		/* If there are NaNs they will remain NaNs */
 			if (G->data[ij] == 0.0) G->data[ij] += (gmt_grdfloat)small;	  /* There will be no actual zero-values, just -ve and +ve values */
 		}
-
-		id = (cont[c].type == 'A' || cont[c].type == 'a') ? PEN_ANNOT : PEN_CONT;
 
 		if (Ctrl->W.cpt_effect) {
 			gmt_get_rgb_from_z (GMT, P, cval, rgb);
