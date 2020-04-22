@@ -14,7 +14,8 @@ Required Arguments
 .. _-J:
 
 **-Jx**
-    *xscale[/yscale]* (Linear scale(s) in distance unit/data unit).
+    *xscale*\ [/*yscale*] (Linear scale(s) in distance unit/data unit), or
+    **-JX** with *width*\ [/*height*] dimensions.
 
 .. _-T:
 

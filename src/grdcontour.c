@@ -96,7 +96,10 @@ struct GRDCONTOUR_CTRL {
 	struct GRDCONTOUR_W {	/* -W[a|c]<pen>[+c[l|f]] */
 		bool active;
 		bool cpt_effect;
+		bool scaling;
 		unsigned int cptmode;	/* Apply to both a&c */
+		double scale;	/* Scaling of pen width modifier [Only used from grd2kml so far] */
+		double cutoff;	/* Ignore contours whose pen is < this width in points [Only used from grd2kml so far] */
 		struct GMT_PEN pen[2];
 	} W;
 	struct GRDCONTOUR_Z {	/* -Z[<fact>[/shift>]][p] */
@@ -565,6 +568,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				break;
 			case 'W':	/* Pen settings */
 				Ctrl->W.active = true;
+				if ((c = strstr (opt->arg, "+s"))) {	/* Gave +s<scl> modifier to scale pen widths given via -C and optional cutoff pen width */
+					sscanf (&c[2], "%lf/%lg", &Ctrl->W.scale, &Ctrl->W.cutoff);
+					Ctrl->W.scaling = true;
+					break;
+				}
 				k = reset = 0;
 				if ((opt->arg[0] == '-' && opt->arg[1]) || (opt->arg[0] == '+' && opt->arg[1] != 'c')) {	/* Definitively old-style args */
 					if (opt->arg[k] == '+') Ctrl->W.cptmode = 1, k++;
@@ -1538,6 +1546,21 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* Reset markers and set up new zero-contour */
 
 		cval = cont[c].val;
+		id = (cont[c].type == 'A' || cont[c].type == 'a') ? PEN_ANNOT : PEN_CONT;
+
+		if (cont[c].penset) {	/* Per-contour pen specification given */
+			Ctrl->contour.line_pen = cont[c].pen;	/* Load contour-specific pen into contour structure */
+			if (Ctrl->W.scaling) {	/* Apply global pen-width scaling */
+				Ctrl->contour.line_pen.width *= Ctrl->W.scale;
+				if (Ctrl->contour.line_pen.width > 0.0 && Ctrl->contour.line_pen.width < Ctrl->W.cutoff) {
+					GMT_Report (API, GMT_MSG_INFORMATION, "Skipping the %g contour as pen width (%g) is less than threshold of %g points\n", cval, Ctrl->contour.line_pen.width, Ctrl->W.cutoff);
+					continue;	/* The tests for nonzero allows -Wfaint (i.e., -W0) to pass */
+				}
+			}
+		}
+		else
+			Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
+
 		GMT_Report (API, GMT_MSG_INFORMATION, "Tracing the %g contour\n", cval);
 
 		/* New approach to avoid round-off */
@@ -1547,12 +1570,6 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			if (G->data[ij] == 0.0) G->data[ij] += (gmt_grdfloat)small;	  /* There will be no actual zero-values, just -ve and +ve values */
 		}
 
-		id = (cont[c].type == 'A' || cont[c].type == 'a') ? PEN_ANNOT : PEN_CONT;
-
-		if (cont[c].penset)
-			Ctrl->contour.line_pen = cont[c].pen;	/* Load contour-specific pen into contour structure */
-		else
-			Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
 		if (Ctrl->W.cpt_effect) {
 			gmt_get_rgb_from_z (GMT, P, cval, rgb);
 			if (Ctrl->W.cptmode & 1)	/* Override pen color according to CPT */
@@ -1653,7 +1670,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (make_plot && n_cont_attempts == 0) GMT_Report (API, GMT_MSG_WARNING, "No contours drawn, check your -A, -C, -L settings?\n");
+	if (make_plot && n_cont_attempts == 0) GMT_Report (API, GMT_MSG_INFORMATION, "No contours drawn, check your -A, -C, -L settings?\n");
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */

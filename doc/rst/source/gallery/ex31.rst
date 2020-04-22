@@ -12,7 +12,7 @@ includes the following steps:
 
 -  create a ``PSL_custom_fonts.txt`` file;
 
--  set the GMT parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``, and ``FONT``;
+-  set the GMT parameters :term:`MAP_DEGREE_SYMBOL`, :term:`PS_CHAR_ENCODING`, and :term:`FONT`;
 
 The script produces the plot in Figure. All
 standard fonts have been substituted by the free OpenType fonts Linux

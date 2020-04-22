@@ -507,23 +507,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	}
 	else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
 		n = sscanf (Ctrl->D.refpoint->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-		/* First deal with bar dimensions and horizontal vs vertical */
-		j = (unsigned int)strlen (txt_b) - 1;
-		if (txt_b[j] == 'h' || txt_b[j] == 'H') {	/* Want horizontal color bar */
-			Ctrl->D.horizontal = true;
-			txt_b[j] = 0;	/* Remove this to avoid unit confusion */
+		if (n < 2) {	/* Gave not enough args  */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: No bar dimensions provided\n");
+			n_errors++;
 		}
-		Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
-		Ctrl->D.dim[GMT_Y]  = gmt_M_to_inch (GMT, txt_b);
-		if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
-			Ctrl->D.justify = gmt_flip_justify (GMT, Ctrl->D.refpoint->justify);
-		else
-			Ctrl->D.justify = (Ctrl->D.horizontal) ? PSL_TC : PSL_ML;	/* Old default justifications for non-Dj settings */
-		/* Now deal with optional arguments, if any */
-		switch (n) {
-			case 3: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
-			case 4: Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_d); break;	/* Just got offsets */
-			case 5: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_e); break;	/* Got both */
+		else {	/* First deal with bar dimensions and horizontal vs vertical */
+			j = (unsigned int)strlen (txt_b) - 1;
+			if (txt_b[j] == 'h' || txt_b[j] == 'H') {	/* Want horizontal color bar */
+				Ctrl->D.horizontal = true;
+				txt_b[j] = 0;	/* Remove this to avoid unit confusion */
+			}
+			Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+			Ctrl->D.dim[GMT_Y]  = gmt_M_to_inch (GMT, txt_b);
+			if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
+				Ctrl->D.justify = gmt_flip_justify (GMT, Ctrl->D.refpoint->justify);
+			else
+				Ctrl->D.justify = (Ctrl->D.horizontal) ? PSL_TC : PSL_ML;	/* Old default justifications for non-Dj settings */
+			/* Now deal with optional arguments, if any */
+			switch (n) {
+				case 3: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
+				case 4: Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_d); break;	/* Just got offsets */
+				case 5: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_e); break;	/* Got both */
+			}
 		}
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
