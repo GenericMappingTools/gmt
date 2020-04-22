@@ -97,8 +97,8 @@ struct GRDCONTOUR_CTRL {
 		bool active;
 		bool cpt_effect;
 		unsigned int cptmode;	/* Apply to both a&c */
-		double scale;	/* Scaling of pen width modifier */
-		double cutoff;	/* Ignore contours whose pen is < this width in points */
+		double scale;	/* Scaling of pen width modifier [Only used from grd2kml so far] */
+		double cutoff;	/* Ignore contours whose pen is < this width in points [Only used from grd2kml so far] */
 		struct GMT_PEN pen[2];
 	} W;
 	struct GRDCONTOUR_Z {	/* -Z[<fact>[/shift>]][p] */
