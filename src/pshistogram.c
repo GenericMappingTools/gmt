@@ -1143,7 +1143,11 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 					case PSHISTOGRAM_LOG10_FREQ_PCT:	yp[k] = d_log101p (GMT, 100.0 * yp[k] / F.sum_w);	break;
 				}
 
-				gmt_geo_to_xy (GMT, xp[k], yp[k], &xtmp, &ytmp);
+
+				if (Ctrl->A.active)
+					gmt_geo_to_xy (GMT, yp[k], xp[k], &xtmp, &ytmp);
+				else
+					gmt_geo_to_xy (GMT, xp[k], yp[k], &xtmp, &ytmp);
 				xp[k] = xtmp;	yp[k] = ytmp;
 			}
 			PSL_plotline (PSL, xp, yp, NP, PSL_MOVE|PSL_STROKE);
