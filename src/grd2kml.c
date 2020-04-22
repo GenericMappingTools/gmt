@@ -523,15 +523,15 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	if (!global_lon && G->header->registration == GMT_GRID_NODE_REG) {
 		/* It is better to have a pixel-registered grid for tiling so that we can use the highest resolution exactly at the highest level.
-		 * We will convert input to a fake pixel grid by extending its domain by half the increments */
-		GMT_Destroy_Data (API, &G);
+		 * We will convert input to a fake pixel grid by extending its domain by half the increments. No resampling takes place here. */
+		GMT_Destroy_Data (API, &G);	/* Delete previous grid struct */
 		sprintf (file, "%s/grd2kml_pixeldata_tmp_%6.6d.grd", API->tmp_dir, uniq);
-		sprintf (cmd, "%s -T -G%s", Ctrl->In.file, file);
+		sprintf (cmd, "%s -T -G%s", Ctrl->In.file, file);	/* Toggle registration */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Convert data grid to pixel orientation\n");
 		if ((error = GMT_Call_Module (API, "grdedit", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
 			Return (GMT_RUNTIME_ERROR);
 		}
-		adjust = true;
+		adjust = true;	/* Since may need to do the same for an intensity grid */
 		gmt_M_str_free (Ctrl->In.file);
 		Ctrl->In.file = strdup (file);
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
@@ -551,7 +551,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if (gmt_mkdir (Ctrl->N.prefix))
 		GMT_Report (API, GMT_MSG_INFORMATION, "Directory %s already exist - will overwrite files\n", Ctrl->N.prefix);
 
-	if (Ctrl->I.derive) {	/* Auto-create single intensity grid from data grid to ensure constant scaling */
+	if (Ctrl->I.derive) {	/* Auto-create single intensity grid from (possibly pixel-reregistered) data grid to ensure constant scaling */
 		sprintf (file, "%s/grd2kml_intensity_tmp_%6.6d.grd", API->tmp_dir, uniq);
 		Ctrl->I.file = strdup (file);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Derive an intensity grid from data grid\n");
@@ -612,9 +612,13 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		step = width * tile_size;		/* Square dimension of extended grid in degrees */
 		col = G->header->n_columns / 2;	row = G->header->n_rows / 2;	/* Half-way point in grid */
 		/* Extend the grid half-step away from the approximate center of the input grid */
-		ext_wesn[XLO] = gmt_M_grd_col_to_x (GMT, col, G->header) - step / 2;
+		ext_wesn[XLO] = gmt_M_grd_col_to_x (GMT, col, G->header);
+		if (registration == GMT_GRID_PIXEL_REG) ext_wesn[XLO] -= 0.5 * G->header->inc[GMT_X];	/* Must adjust since we don't want node location but cell boundary */
+		ext_wesn[XLO] -= step / 2;
 		ext_wesn[XHI] = ext_wesn[XLO] + step;
-		ext_wesn[YLO] = gmt_M_grd_row_to_y (GMT, row, G->header) - step / 2;
+		ext_wesn[YLO] = gmt_M_grd_row_to_y (GMT, row, G->header);
+		if (registration == GMT_GRID_PIXEL_REG) ext_wesn[YLO] -= 0.5 * G->header->inc[GMT_Y];	/* Must adjust since we don't want node location but cell boundary */
+		ext_wesn[YLO] -= step / 2;
 		ext_wesn[YHI] = ext_wesn[YLO] + step;
 		inc = step / Ctrl->L.size;
 		nx = ny = width * Ctrl->L.size;

@@ -654,19 +654,6 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	nx_old = G->header->n_columns;		ny_old = G->header->n_rows;
 
 	if (Ctrl->N.active && extend) {	/* Determine the pad needed for the extended area */
-		double del, off;
-		/* First a sanity check that new extended region differ by integer multiples of dx,dy */
-		for (side = 0; side < 4; side++) {
-			if (!outside[side]) continue;
-			del = fabs ((G->header->wesn[side] - wesn_requested[side]) * HH->r_inc[side/2]);
-			off = (del - floor (del + GMT_CONV4_LIMIT));
-			if (off > 0.25) {	/* Limit off by half interval ? */
-				GMT_Report (API, GMT_MSG_WARNING, "New limit for %s wrong by %g increment - adjusted outwards\n", name[type][side], off);
-				del = (side%2) ? +ceil (del) : -ceil (del);
-				wesn_requested[side] = G->header->wesn[side] + del * G->header->inc[side/2];
-			}
-		}
-
 		gmt_M_memcpy (def_pad, GMT->current.io.pad, 4, unsigned int);	/* Default pad */
 		gmt_M_memcpy (pad, def_pad, 4, unsigned int);			/* Starting pad */
 		if (outside[XLO]) pad[XLO] += urint ((G->header->wesn[XLO] - wesn_requested[XLO]) * HH->r_inc[GMT_X]);
@@ -705,29 +692,20 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		ylo = outside[YLO] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO], G->header) : G->header->n_rows - 1;
 		yhi = outside[YHI] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI], G->header) : 0;
 		if (outside[XLO]) {
-			for (row = 0; row < G->header->n_rows; row++) {
-				node = gmt_M_ijp (G->header,row,0);
-				for (col = 0; col < xlo; col++, node++)
-					G->data[node] = Ctrl->N.value;
-			}
+			for (row = 0; row < G->header->n_rows; row++)
+				for (col = 0; col < xlo; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
 		if (outside[XHI]) {
 			for (row = 0; row < G->header->n_rows; row++)
-				node = gmt_M_ijp (G->header,row,col);
-				for (col = xhi+1; col < G->header->n_columns; col++, node++)
-					G->data[node] = Ctrl->N.value;
+				for (col = xhi+1; col < G->header->n_columns; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
 		if (outside[YLO]) {
 			for (row = ylo+1; row < G->header->n_rows; row++)
-				node = gmt_M_ijp (G->header,row,col);
-				for (col = xlo; col <= xhi; col++, node++)
-					G->data[node] = Ctrl->N.value;
+				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
 		if (outside[YHI]) {
 			for (row = 0; row < yhi; row++)
-				node = gmt_M_ijp (G->header,row,col);
-				for (col = xlo; col <= xhi; col++, node++)
-					G->data[node] = Ctrl->N.value;
+				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
 		n_zero_e = 0;	/* Count zeros in the grid after extension */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
