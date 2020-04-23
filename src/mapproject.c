@@ -1115,6 +1115,13 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
 		gmt_set_cartesian (GMT, GMT_IN);
 	}
+	else if (GMT->current.proj.proj4_is_cart[0]) {	/* Proj4 used and starting ref system is not geog */
+		gmt_set_cartesian(GMT, GMT_IN);
+		if (GMT->current.proj.proj4_is_cart[1])
+			gmt_set_cartesian(GMT, GMT_OUT);
+		else
+			gmt_set_geographic(GMT, GMT_OUT);
+	}
 	else if (datum_conv_only || Ctrl->N.active) {	/* Both in and out are geographic */
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);

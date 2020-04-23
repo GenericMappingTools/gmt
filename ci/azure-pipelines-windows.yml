@@ -7,7 +7,7 @@ steps:
 # To rebuild the cache, you have to change the date in the key list
 - task: Cache@2
   inputs:
-    key: $(Agent.OS) | vcpkg | 20200206
+    key: $(Agent.OS) | vcpkg | 20200422
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
@@ -18,7 +18,7 @@ steps:
     cd ${VCPKG_INSTALLATION_ROOT}
     git fetch --tags
     git tag
-    git checkout tags/2020.01
+    git checkout tags/2020.04
     # By default, vcpkg builds both release and debug configurations.
     # Set VCPKG_BUILD_TYPE to build release only to save half time
     echo 'set (VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
