@@ -88,6 +88,8 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[R_PC])
 # elif defined(__riscv)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.__gregs[REG_PC])
+# elif defined(__sh__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.pc)
 # elif defined(__s390__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.psw.addr)
 # elif defined(__sparc__)
