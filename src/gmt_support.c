@@ -15717,6 +15717,17 @@ double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t
 	return (area);
 }
 
+unsigned int gmt_polygon_orientation (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo) {
+	/* Estimate area of a polygon.  geo is 1 if geographic data. Input data remains unchanged.
+	 * Since area will be +ve if polygon is CW, negative if CCW we return */
+	double area, dummy[2];
+	if (geo)	/* Spherical centroid and area */
+		area = gmtlib_geo_centroid_area (GMT, x, y, n, dummy);
+	else	/* Cartesian centroid and area */
+		area = gmtsupport_cart_centroid_area (GMT, x, y, n, dummy);
+	return ((area < 0.0) ? GMT_POL_IS_CCW : GMT_POL_IS_CW);
+}
+
 /*! . */
 void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
 	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean).  Input data remains unchanged. */
@@ -16549,11 +16560,13 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 	 */
 	bool got_angle;
 	char pen[GMT_LEN64] = {""}, txt[GMT_LEN64] = {""};
-	unsigned int seg, row, c;
+	unsigned int seg, row, c, save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
 	int nc;
 	struct GMT_DATASET *C = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_CONTOUR_INFO * cont = NULL;
+
+	gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Since x is likely longitude we must avoid 360 wrapping here */
 
 	if ((C = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read contour information file %s - aborting\n", file);
@@ -16608,6 +16621,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 			if (got_angle) *type = 2;	/* Must set this directly if angles are provided */
 		}
 	}
+	gmt_set_column (GMT, GMT_IN, GMT_X, save_coltype);
 
 	/* Return information structure array back to the calling environment */
 

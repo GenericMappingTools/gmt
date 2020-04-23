@@ -6851,6 +6851,7 @@ void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT
 	/* Update the min/max of all segments and the entire table */
 	uint64_t seg, col;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
 	if (!T) return;	/* No table given */
 	if (!T->n_columns) return;	/* No columns given */
@@ -6863,6 +6864,14 @@ void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT
 	T->n_records = 0;
 	for (seg = 0; seg < T->n_segments; seg++) {
 		S = T->segment[seg];
+		SH = gmt_get_DS_hidden (S);
+		if (gmt_parse_segment_item (GMT, S->header, "-Ph", NULL))
+			SH->pol_mode = GMT_IS_HOLE;
+		/* If this is a hole then set link from previous segment to this one */
+		if (seg && gmt_polygon_is_hole (GMT, S)) {
+			struct GMT_DATASEGMENT_HIDDEN *SH2 = gmt_get_DS_hidden (T->segment[seg-1]);
+			SH2->next = S;
+		}
 		gmt_set_seg_minmax (GMT, geometry, 0, S);
 		if (S->n_rows == 0) continue;
 		for (col = 0; col < T->n_columns; col++) {

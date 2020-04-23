@@ -677,7 +677,11 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		G = G_dup;	/* Since G was not allocated here anyway - it came from the outside and will be deleted there */
 	}
 	if (Ctrl->N.active && extend) {	/* Now shrink pad back to default and simultaneously extend region and apply nodata values */
-		unsigned int xlo, xhi, ylo, yhi, row, col;
+		unsigned int xlo, xhi, ylo, yhi, row, col, n_zero, n_zero_e;
+		n_zero = 0;	/* Count zeros in the grid before extension */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (G->data[node] == 0.0) n_zero++;
+		}
 		gmt_M_memcpy (G->header->wesn, wesn_requested, 4, double);
 		gmt_M_memcpy (GMT->current.io.pad, def_pad, 4, unsigned int);	/* Reset default pad */
 		gmt_M_grd_setpad (GMT, G->header, GMT->current.io.pad);	/* Set the default pad */
@@ -703,6 +707,12 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			for (row = 0; row < yhi; row++)
 				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
+		n_zero_e = 0;	/* Count zeros in the grid after extension */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (G->data[node] == 0.0) n_zero_e++;
+		}
+		if (n_zero_e != n_zero)
+			GMT_Report (API, GMT_MSG_WARNING, "Something went wrong - %d extended nodes not set to NaN\n", n_zero_e-n_zero);
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {

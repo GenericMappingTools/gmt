@@ -213,7 +213,7 @@ Optional Arguments
     with the **-B** option is that it creates a frame and very likely
     its annotations. That introduces pixels outside the map data extent,
     and therefore the map extents estimation will be wrong. To avoid
-    this problem use *-*\ *-*\ MAP_FRAME_TYPE=inside option which plots all
+    this problem use **--MAP_FRAME_TYPE**\ =inside option which plots all
     annotations and ticks inside the image and therefore does not
     compromise the coordinate computations. Pay attention also to the
     cases when the plot has any of the sides with whites only because
@@ -425,4 +425,3 @@ See Also
 
 :doc:`gmt`,
 :doc:`coast`
-
