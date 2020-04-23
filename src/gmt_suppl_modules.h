@@ -15,8 +15,6 @@
 extern "C" {
 #endif
 
-#define GMT_SUPPLEMENTS_STRING "GMT suppl: The official supplements to the Generic Mapping Tools"
-
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 

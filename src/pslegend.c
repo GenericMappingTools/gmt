@@ -428,16 +428,6 @@ GMT_LOCAL bool pslegend_new_fontsyntax (struct GMT_CTRL *GMT, char *word1, char 
 
 #define PSLEGEND_MAX_COLS	100
 
-int GMT_legend (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: legend\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_pslegend (V_API, mode, args);
-}
-
 int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pslegend task */
 	unsigned int tbl, pos, first = 0, ID, n_item = 0;
@@ -1896,4 +1886,14 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	}
 
 	Return (GMT_NOERROR);
+}
+
+int GMT_legend (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: legend\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_pslegend (V_API, mode, args);
 }

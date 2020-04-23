@@ -23,6 +23,8 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+#define GMT_PURPOSE_STRING "@SUPPL_PURPOSE@"
+
 /* Sorted array with information for all GMT _@SUPPL_NAME@_ modules */
 
 static struct GMT_MODULEINFO modules[] = {
@@ -32,7 +34,7 @@ static struct GMT_MODULEINFO modules[] = {
 
 /* Pretty print all shared module names and their purposes for gmt --help */
 void gmtlib_@SUPPL_NAME@_module_show_all (void *API) {
-	gmtlib_module_show_all (API, modules, GMT_CORE_STRING);
+	gmtlib_module_show_all (API, modules, GMT_PURPOSE_STRING);
 }
 
 /* Produce single list on stdout of all shared module names for gmt --show-modules */

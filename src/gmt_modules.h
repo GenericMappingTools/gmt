@@ -15,8 +15,6 @@
 extern "C" {
 #endif
 
-#define GMT_CORE_STRING "GMT core: The main modules of the Generic Mapping Tools"
-
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
