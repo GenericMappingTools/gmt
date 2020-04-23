@@ -433,7 +433,7 @@ add_custom_target (gen_gmt_headers DEPENDS ${GMT_GEN_HDRS})
 
 # generate gmt_moduleinfo.h
 set (_moduleinfo)
-foreach (_prog_src ${GMT_PROGS_SRCS})
+foreach (_prog_src ${GMT_PROGS_SRCS} begin.c clear.c end.c figure.c inset.c subplot.c)
 	file (READ ${_prog_src} _src_content)
 	string (REGEX MATCH "#define THIS_MODULE_CLASSIC_NAME[ \t]*\"([a-zA-Z0-9]*)\"" _this_module_classic_name ${_src_content})
 	set (_this_module_classic_name ${CMAKE_MATCH_1})
@@ -447,6 +447,9 @@ foreach (_prog_src ${GMT_PROGS_SRCS})
 	set (_this_module_keys ${CMAKE_MATCH_1})
 	list (APPEND _moduleinfo "\t{\"${_this_module_modern_name}\", \"${_this_module_classic_name}\", \"${_this_module_lib}\", \"${_this_module_purpose}\", \"${_this_module_keys}\"},")
 endforeach (_prog_src ${GMT_PROGS_SRCS})
+# Two more entries for "gmtread" and "gmtwrite"
+list (APPEND _moduleinfo "\t{\"gmtread\", \"gmtread\", \"core\", \"Read GMT objects into external API\", \"-T-,<?{,>?}\"},")
+list (APPEND _moduleinfo "\t{\"gmtwrite\", \"gmtwrite\", \"core\", \"Write GMT objects from external API\", \"-T-,<?{,>?}\"},")
 list (JOIN _moduleinfo "\n" _moduleinfo)
 file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/gmt_moduleinfo.h" ${_moduleinfo})
 
