@@ -15541,6 +15541,13 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				}
 				else {
 					size_t len, k = 3;
+
+					if (!strcmp(GMT->init.module_name, "grdproject")) {
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "Cannot use the PROJ +to construct here. Not implemented, try grdgdal instead.\n\n");
+						error = 1;
+						break;
+					}
+
 					len = strlen(pch);
 					pch[0] = '\0';
 					error  = gmtinit_parse_proj4 (GMT, item, source);
@@ -15551,7 +15558,12 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 						error = 1;
 						break;
 					}
+					if (GMT->current.proj.projection_GMT != GMT_LINEAR)
+						GMT->current.proj.proj4_is_cart[0] = true;		/* Need to know this in mapproject*/
+
 					error += gmtinit_parse_proj4 (GMT, &pch[k], dest);
+					if (GMT->current.proj.projection_GMT != GMT_LINEAR)
+						GMT->current.proj.proj4_is_cart[1] = true;
 				}
 				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, source, dest);
 				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, dest, source);
