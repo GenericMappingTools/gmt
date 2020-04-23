@@ -462,6 +462,7 @@ configure_file (isogmt.in isogmt${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt-config.in gmt-config${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt_glue.h.in gmt_glue.h)
 configure_file (gmt_glue.c.in gmt_glue.c)
+set (SUPPL_NAME suppl)
 configure_file (gmt_suppl_glue.h.in gmt_suppl_glue.h)
 configure_file (gmt_suppl_glue.c.in gmt_suppl_glue.c)
 
