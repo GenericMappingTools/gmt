@@ -462,6 +462,8 @@ configure_file (isogmt.in isogmt${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt-config.in gmt-config${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt_glue.h.in gmt_glue.h)
 configure_file (gmt_glue.c.in gmt_glue.c)
+configure_file (gmt_suppl_glue.h.in gmt_suppl_glue.h)
+configure_file (gmt_suppl_glue.c.in gmt_suppl_glue.c)
 
 
 ##
@@ -668,7 +670,7 @@ if (BUILD_DEVELOPER)
 		gmt_grdio.h gmt_hash.h gmt_io.h gmt_macros.h gmt_memory.h gmt_modern.h gmt_nan.h gmt_notposix.h gmt_plot.h
 		gmt_private.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_symbol.h gmt_synopsis.h
 		gmt_texture.h gmt_time.h gmt_types.h gmt_dev.h gmt_customio.h gmt_hidden.h gmt_mb.h
-		gmt_modules.h gmt_supplements_module.h
+		gmt_modules.h gmt_suppl_modules.h
 		DESTINATION ${GMT_INCLUDEDIR}
 		COMPONENT Runtime)
 	install (FILES compat/qsort.h
@@ -691,7 +693,7 @@ if (BUILD_SUPPLEMENTS)
 		set (CMAKE_SHARED_MODULE_SUFFIX .so)
 	endif (UNIX)
 	# Needed in supplement libraries
-	set (GMT_SUPPL_SRCS gmt_modern.c gmt_supplements_module.h gmt_supplements_module.c)
+	set (GMT_SUPPL_SRCS gmt_modern.c gmt_suppl_modules.h ${CMAKE_CURRENT_BINARY_DIR}/gmt_suppl_glue.c)
 
 	# supplement directories to be built as supplement libraries
 	# SUPPL_EXTRA_DIRS are directories for custom supplements.

@@ -3,7 +3,7 @@
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
-/* gmt_glue.h declares the prototypes for shared library function
+/* gmt_suppl_glue.h declares the prototypes for shared library function
  * calls that the gmt driver needs to find in order to learn about
  * each module in the shared library.  This include file is included
  * by gmt_api.c.

@@ -3,7 +3,7 @@
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
-/* gmt_glue.c populates the external array of this shared lib with
+/* gmt_suppl_glue.c populates the external array of this shared lib with
  * module parameters such as name, group, purpose and keys strings.
  * This file also contains the following convenience functions to
  * display all module purposes or just list their names:
@@ -26,7 +26,7 @@
 /* Sorted array with information for all GMT _@SUPPL_NAME@_ modules */
 
 static struct GMT_MODULEINFO modules[] = {
-#include "gmt_moduleinfo.h"
+#include "gmt_suppl_moduleinfo.h"
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
 
