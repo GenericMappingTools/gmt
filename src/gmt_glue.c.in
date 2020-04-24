@@ -11,9 +11,6 @@
  *   void gmt_@SUPPL_NAME@_module_show_all (struct GMTAPI_CTRL *API);
  *   void gmt_@SUPPL_NAME@_module_list_all (void *API);
  *   void gmt_@SUPPL_NAME@_module_classic_all (void *API);
- *   const char *gmtlib_@SUPPL_NAME@_module_keys (void *API, char *candidate);
- *   const char *gmtlib_@SUPPL_NAME@_module_group  (void *API, char *candidate);
-
  *
  * These functions may be called by gmt --help and gmt --show-modules
  *
@@ -21,9 +18,11 @@
  * function indirectly via GMT_Encode_Options to retrieve option keys
  * needed for module arg processing:
  *
- *   char * gmt_@SUPPL_NAME@_module_keys (void *API, const char *module);
+ *   const char *gmtlib_@SUPPL_NAME@_module_keys (void *API, char *candidate);
+ *   const char *gmtlib_@SUPPL_NAME@_module_group  (void *API, char *candidate);
  *
  */
+ 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
