@@ -144,8 +144,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_error.h"          /* Only contains error codes */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
-//#include "gmt_modules.h" 		/* Core modules */
-//#include "gmt_suppl_modules.h" 	/* Suppl modules */
 #include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */
 #include "gmt_grd.h"            /* Define grd file header structure */
 #include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
