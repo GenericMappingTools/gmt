@@ -33,26 +33,26 @@ static struct GMT_MODULEINFO modules[] = {
 };
 
 /* Pretty print all shared module names and their purposes for gmt --help */
-void gmtlib_@SUPPL_NAME@_module_show_all (void *API) {
+EXTERN_MSC void gmtlib_@SUPPL_NAME@_module_show_all (void *API) {
 	gmtlib_module_show_all (API, modules, GMT_PURPOSE_STRING);
 }
 
 /* Produce single list on stdout of all shared module names for gmt --show-modules */
-void gmtlib_@SUPPL_NAME@_module_list_all (void *API) {
+EXTERN_MSC void gmtlib_@SUPPL_NAME@_module_list_all (void *API) {
 	gmtlib_module_list_all (API, modules);
 }
 
 /* Produce single list on stdout of all shared module names for gmt --show-classic [i.e., classic mode names] */
-void gmtlib_@SUPPL_NAME@_module_classic_all (void *API) {
+EXTERN_MSC void gmtlib_@SUPPL_NAME@_module_classic_all (void *API) {
 	gmtlib_module_classic_all (API, modules);
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
-const char *gmtlib_@SUPPL_NAME@_module_keys (void *API, char *candidate) {
+EXTERN_MSC const char *gmtlib_@SUPPL_NAME@_module_keys (void *API, char *candidate) {
 	return (gmtlib_module_keys (API, modules, candidate));
 }
 
 /* Lookup module id by name, return group char name (for external API developers) */
-const char *gmtlib_@SUPPL_NAME@_module_group (void *API, char *candidate) {
+EXTERN_MSC const char *gmtlib_@SUPPL_NAME@_module_group (void *API, char *candidate) {
 	return (gmtlib_module_group (API, modules, candidate));
 }

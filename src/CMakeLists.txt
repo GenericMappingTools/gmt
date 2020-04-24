@@ -371,7 +371,7 @@ set (GMT_MBSYSTEM_SRCS gmt_mbsystem_module.c gmt_mbsystem_module.h)
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_common_runpath.h gmt_common_sighandler.c gmt_common_string.h clear.c begin.c
-	gmt_color_rgb.h gmt_colornames.h ${CMAKE_CURRENT_BINARY_DIR}/gmt_moduleinfo.h gmt_glue.h
+	gmt_color_rgb.h gmt_colornames.h ${CMAKE_CURRENT_BINARY_DIR}/gmt_moduleinfo.h
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
 	figure.c gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
 	gmt_contour.h gmt_customio.h gmt_datums.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
@@ -462,11 +462,9 @@ configure_file (gmt_version.h.in gmt_version.h)
 configure_file (isogmt.in isogmt${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt-config.in gmt-config${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt_sharedlibs.h.in gmt_sharedlibs.h)
-configure_file (gmt_glue.h.in gmt_glue.h)
 configure_file (gmt_glue.c.in gmt_glue.c)
 set (SUPPL_NAME ${GMT_SUPPL_LIB_NAME})
 set (SUPPL_PURPOSE "GMT suppl: The official supplements to the Generic Mapping Tools")
-configure_file (gmt_suppl_glue.h.in gmt_suppl_glue.h)
 configure_file (gmt_suppl_glue.c.in gmt_suppl_glue.c)
 
 
