@@ -26,7 +26,6 @@ jobs:
       set -x -e
       cd src
       bash gmt_make_PSL_strings.sh
-      bash gmt_make_pattern_include.sh
       bash gmt_make_enum_dicts.sh
       # check if any files are changed
       if [ $(git ls-files -m) ]; then

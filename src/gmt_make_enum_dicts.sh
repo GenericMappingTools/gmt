@@ -41,7 +41,7 @@ cat << EOF > gmt_enum_dict.h
  *--------------------------------------------------------------------*/
 
 /*
- * Include file for getting GMT API enum codes programmatically via GMT_API_enum ()
+ * Include file for getting GMT API enum codes programmatically via GMT_Get_Enum ()
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
