@@ -34,9 +34,6 @@
  *			GMT MACROS DEFINITIONS
  *--------------------------------------------------------------------*/
 
-/* Used to build gmt module prototypes in gmt_modules.h files */
-#define gmt_M_module_prototype(name) EXTERN_MSC int GMT_ ## name (void *API, int mode, void *args)
-
 #define gmt_M_compat_check(C,version) (C->current.setting.compatibility <= version)	/* true if this section should be processed with backwards compatibility to given version */
 
 #ifndef MIN
