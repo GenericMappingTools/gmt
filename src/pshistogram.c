@@ -785,7 +785,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 
-	if (GMT->current.proj.projection != GMT_LINEAR) {
+	if (!Ctrl->I.active && GMT->current.proj.projection != GMT_LINEAR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -J: Only Cartesian scaling available in this module.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
