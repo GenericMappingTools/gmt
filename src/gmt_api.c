@@ -183,8 +183,6 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 #include "gmt_sharedlibs.h" 	/* Common shared libs structures */
-#include "gmt_glue.h"
-#include "gmt_suppl_glue.h"
 #include <stdarg.h>
 
 #ifdef HAVE_DIRENT_H_
@@ -10324,24 +10322,6 @@ GMT_LOCAL const char * gmtapi_get_shared_module_group (struct GMTAPI_CTRL *API, 
 }
 
 /*! . */
-GMT_LOCAL const char * gmtapi_get_module_group (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
-	/* DO not rename this function */
-	if (lib_no == 0)	/* Get core module */
-		return (gmtlib_core_module_group (API, module));
-	/* Else we get custom module below */
-	return (gmtapi_get_shared_module_group (API, module, lib_no));
-}
-
-/*! . */
-GMT_LOCAL const char * gmtapi_get_module_keys (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
-	/* DO not rename this function */
-	if (lib_no == 0)	/* Get core module */
-		return (gmtlib_core_module_keys (API, module));
-	/* Else we get custom module below */
-	return (gmtapi_get_shared_module_keys (API, module, lib_no));
-}
-
-/*! . */
 const char * gmt_get_module_group (void *V_API, char *module) {
 	/* Call the specified shared module and retrieve the group of the module.
  	 * This function, while in the API, is only for API developers and thus has a
@@ -10358,13 +10338,13 @@ const char * gmt_get_module_group (void *V_API, char *module) {
 	API->error = GMT_NOERROR;
 
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for module in any of the shared libs */
-		group = gmtapi_get_module_group (API, module, lib);
+		group = gmtapi_get_shared_module_group (API, module, lib);
 		if (group) return (group);	/* Found it in this shared library, return the group */
 	}
 	/* If we get here we did not found it.  Try to prefix module with gmt */
 	strncat (gmt_module, module, GMT_LEN32-4);		/* Concatenate gmt and module name to get function name */
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
-		group = gmtapi_get_module_group (API, gmt_module, lib);
+		group = gmtapi_get_shared_module_group (API, gmt_module, lib);
 		if (group) {	/* Found it in this shared library, adjust module name and return the group */
 			strncpy (module, gmt_module, strlen(gmt_module));	/* Rewrite module name to contain prefix of gmt */
 			return (group);
@@ -10390,13 +10370,13 @@ GMT_LOCAL const char * gmtapi_retrieve_module_keys (void *V_API, char *module) {
 	API->error = GMT_NOERROR;
 
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for module in any of the shared libs */
-		keys = gmtapi_get_module_keys (API, module, lib);
+		keys = gmtapi_get_shared_module_keys (API, module, lib);
 		if (keys) return (keys);	/* Found it in this shared library, return the keys */
 	}
 	/* If we get here we did not found it.  Try to prefix module with gmt */
 	strncat (gmt_module, module, GMT_LEN32-4);		/* Concatenate gmt and module name to get function name */
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
-		keys = gmtapi_get_module_keys (API, gmt_module, lib);
+		keys = gmtapi_get_shared_module_keys (API, gmt_module, lib);
 		if (keys) {	/* Found it in this shared library, adjust module name and return the keys */
 			strncpy (module, gmt_module, strlen(gmt_module));	/* Rewrite module name to contain prefix of gmt */
 			return (keys);
