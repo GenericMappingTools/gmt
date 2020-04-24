@@ -641,11 +641,6 @@ install (PROGRAMS gmt_shell_functions.sh
 	DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
-# Install gmt_make_module_src.sh to share/tools
-install (PROGRAMS gmt_make_module_src.sh
-	DESTINATION ${GMT_DATADIR}/tools
-	COMPONENT Runtime)
-
 if (WIN32)
 	install (PROGRAMS gmtswitch.bat
 		DESTINATION ${GMT_BINDIR}
