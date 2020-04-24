@@ -371,13 +371,12 @@ set (GMT_MBSYSTEM_SRCS gmt_mbsystem_module.c gmt_mbsystem_module.h)
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_common_runpath.h gmt_common_sighandler.c gmt_common_string.h clear.c begin.c
-	gmt_color_rgb.h gmt_colornames.h ${CMAKE_CURRENT_BINARY_DIR}/gmt_${SUPPL_NAME}_moduleinfo.h
+	gmt_color_rgb.h gmt_colornames.h gmt_media_size.h gmt_mgg_header2.h 
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
 	figure.c gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
 	gmt_contour.h gmt_customio.h gmt_datums.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
 	gmt_ellipsoids.h gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
 	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h gmt_modern.h
-	gmt_media_size.h gmt_mgg_header2.h ${CMAKE_CURRENT_BINARY_DIR}/gmt_sharedlibs.h
 	gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_enum_dict.h gmt_memory.h gmt_mb.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_gsformats.h
 	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h gmt_cpt_masters.h
@@ -389,8 +388,10 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c gmt_parse.c inset.c
 	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c gmt_common_math.c
 	gmt_common_runpath.c gmt_common_sighandler.c gmt_common_string.c compat/qsort.c
-	gmt_sharedlibs.c ${CMAKE_CURRENT_BINARY_DIR}/gmt_${SUPPL_NAME}_glue.c gmt_init.c gmt_map.c gmt_plot.c
-	gmt_gdal_librarified.c
+	gmt_sharedlibs.c  gmt_init.c gmt_map.c gmt_plot.c gmt_gdal_librarified.c
+	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SUPPL_NAME}_moduleinfo.h
+	${CMAKE_CURRENT_BINARY_DIR}/gmt_sharedlibs.h
+	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SUPPL_NAME}_glue.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
 	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS})
