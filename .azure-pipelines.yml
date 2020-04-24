@@ -26,7 +26,6 @@ jobs:
       set -x -e
       cd src
       bash gmt_make_PSL_strings.sh
-      bash gmt_make_pattern_include.sh
       bash gmt_make_module_src.sh core
       bash gmt_make_module_src.sh supplements
       bash gmt_make_enum_dicts.sh
