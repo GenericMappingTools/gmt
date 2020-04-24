@@ -377,8 +377,8 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_contour.h gmt_customio.h gmt_datums.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
 	gmt_ellipsoids.h gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
 	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h gmt_modern.h
-	gmt_media_size.h gmt_mgg_header2.h gmt_sharedlibs.h gmt_memory.h gmt_mb.h
-	gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_enum_dict.h
+	gmt_media_size.h gmt_mgg_header2.h ${CMAKE_CURRENT_BINARY_DIR}/gmt_sharedlibs.h
+	gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_enum_dict.h gmt_memory.h gmt_mb.h
 	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_gsformats.h
 	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h gmt_cpt_masters.h
 	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h postscriptlight.h
@@ -461,9 +461,10 @@ configure_file (psl_config.h.in psl_config.h)
 configure_file (gmt_version.h.in gmt_version.h)
 configure_file (isogmt.in isogmt${GMT_INSTALL_NAME_SUFFIX} @ONLY)
 configure_file (gmt-config.in gmt-config${GMT_INSTALL_NAME_SUFFIX} @ONLY)
+configure_file (gmt_sharedlibs.h.in gmt_sharedlibs.h)
 configure_file (gmt_glue.h.in gmt_glue.h)
 configure_file (gmt_glue.c.in gmt_glue.c)
-set (SUPPL_NAME supplements)
+set (SUPPL_NAME ${GMT_SUPPL_LIB_NAME})
 set (SUPPL_PURPOSE "GMT suppl: The official supplements to the Generic Mapping Tools")
 configure_file (gmt_suppl_glue.h.in gmt_suppl_glue.h)
 configure_file (gmt_suppl_glue.c.in gmt_suppl_glue.c)
@@ -715,10 +716,10 @@ if (BUILD_SUPPLEMENTS)
 		get_subdir_var (_suppl_extra_includes SUPPL_EXTRA_INCLUDES ${_dir})
 		include_directories (${_suppl_extra_includes})
 
-		# get supplement library name ["supplements" if undefined]
+		# get supplement library name ["${GMT_SUPPL_LIB_NAME}" if undefined]
 		get_subdir_var (_suppl_lib_name SUPPL_LIB_NAME ${_dir})
 		if (NOT _suppl_lib_name)
-			set (_suppl_lib_name "supplements")
+			set (_suppl_lib_name "${GMT_SUPPL_LIB_NAME}")
 		endif (NOT _suppl_lib_name)
 		list (APPEND GMT_SUPPL_LIBRARIES ${_suppl_lib_name})
 
@@ -801,10 +802,10 @@ if (BUILD_SUPPLEMENTS)
 			LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
 			DEFINE_SYMBOL "LIBRARY_EXPORTS")
 
-		# Rename supplements.dll to SUPP_DLL_RENAME
-		if (WIN32 AND ${_suppl_lib_name} STREQUAL "supplements" AND SUPP_DLL_RENAME)
+		# Rename ${GMT_SUPPL_LIB_NAME}.dll to SUPP_DLL_RENAME
+		if (WIN32 AND ${_suppl_lib_name} STREQUAL "${GMT_SUPPL_LIB_NAME}" AND SUPP_DLL_RENAME)
 			set_target_properties (${_suppl_lib_name} PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
-		endif (WIN32 AND ${_suppl_lib_name} STREQUAL "supplements" AND SUPP_DLL_RENAME)
+		endif (WIN32 AND ${_suppl_lib_name} STREQUAL "${GMT_SUPPL_LIB_NAME}" AND SUPP_DLL_RENAME)
 
 		# Rename non-GMT supplement DLLs
 		if (WIN32 AND SUPPL_${_suppl_lib_name}_DLL_RENAME)
@@ -844,12 +845,12 @@ if (BUILD_SUPPLEMENTS)
 
 		# install example files
 		install (FILES ${_suppl_example_files}
-			DESTINATION ${GMT_DOCDIR}/supplements/${_suppl_name}
+			DESTINATION ${GMT_DOCDIR}/${GMT_SUPPL_LIB_NAME}/${_suppl_name}
 			COMPONENT Documentation)
 
 		# install example scriptss
 		install (PROGRAMS ${_suppl_example_progs}
-			DESTINATION ${GMT_DOCDIR}/supplements/${_suppl_name}
+			DESTINATION ${GMT_DOCDIR}/${GMT_SUPPL_LIB_NAME}/${_suppl_name}
 			COMPONENT Documentation)
 
 		# install developer headers

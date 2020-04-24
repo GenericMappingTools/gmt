@@ -153,8 +153,8 @@ set (PSL_LIB_NAME ${_prefix}${_name}${_lib_suffix})
 
 # Get name of shared supplemental library
 if (BUILD_SUPPLEMENTS)
-	get_target_property (_name supplements OUTPUT_NAME)
-	get_target_property (_prefix supplements PREFIX)
+	get_target_property (_name ${GMT_SUPPL_LIB_NAME} OUTPUT_NAME)
+	get_target_property (_prefix ${GMT_SUPPL_LIB_NAME} PREFIX)
 	set (GMT_SUPPL_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_MODULE_SUFFIX})
 	set (SUPPL "yes [${GMT_SUPPL_LIB_NAME}]")
 else (BUILD_SUPPLEMENTS)

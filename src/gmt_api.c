@@ -969,8 +969,8 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Loading GMT plugins from: %s\n", plugindir);
 		for (e = 0; e < n_extensions; e++) {	/* Handle case of more than one allowed shared library extension */
 			if ((list = gmtlib_get_dir_list (GMT, plugindir, extension[e]))) {	/* Add these files to the libs */
-				for (k = 0; list[k] && strncmp (list[k], "supplements", 11U); k++);	/* Look for supplements */
-				if (list[k] && k) gmt_M_charp_swap (list[0], list[k]);	/* Put supplements first if not first already */
+				for (k = 0; list[k] && strncmp (list[k], GMT_SUPPL_LIB_NAME, strlen(GMT_SUPPL_LIB_NAME)); k++);	/* Look for official supplements */
+				if (list[k] && k) gmt_M_charp_swap (list[0], list[k]);	/* Put official supplements first if not first already */
 				k = 0;
 				while (list[k]) {
 					snprintf (path, PATH_MAX, "%s/%s", plugindir, list[k]);
@@ -6236,7 +6236,7 @@ int GMT_Destroy_Session (void *V_API) {
 	module = strdup (API->GMT->init.module_name);	/* Need a copy as the pointer to static memory in library will close soon */
 	gmtapi_garbage_collection (API, GMT_NOTSET);	/* Free any remaining memory from data registration during the session */
 	gmtapi_free_sharedlibs (API);			/* Close shared libraries and free list */
-	API->GMT->init.module_name = module;		/* So GMT_Report will function after supplemental.so shut down */
+	API->GMT->init.module_name = module;		/* So GMT_Report will function after GMT_SUPPL_LIB_NAME.so shut down */
 
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) gmtapi_unregister_io (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);

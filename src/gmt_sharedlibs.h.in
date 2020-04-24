@@ -19,6 +19,9 @@ extern "C" {
 
 #ifdef _WIN32
 #include <windows.h>
+
+#define GMT_SUPPL_LIB_NAME "@GMT_SUPPL_LIB_NAME@"
+
 /* Various functions declared in gmt_sharedlibs.c */
 EXTERN_MSC void *dlopen (const char *module_name, int mode);
 EXTERN_MSC int dlclose (void *handle);
@@ -33,7 +36,7 @@ EXTERN_MSC void *dlopen_special (const char *name);
 /*! Info for each GMT shared library. This array is filled out when parsing GMT_CUSTOM_LIBS at end of GMT_Create_Session */
 
 struct Gmt_libinfo {
-	char *name;	/* Library tag name [without leading "lib" and extension], e.g. "gmt", "gmtsuppl" */
+	char *name;	/* Library tag name [without leading "lib" and extension], e.g. "gmt", "supplements" */
 	char *path;	/* Full path to library as given in GMT_CUSTOM_LIBS */
 	bool skip;	/* true if we tried to open it and it was not available the first time */
 	void *handle;	/* Handle to the shared library, returned by dlopen or dlopen_special */

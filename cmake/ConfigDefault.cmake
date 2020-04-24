@@ -70,6 +70,9 @@ set (GMT_LIB_SOVERSION 6)
 # The build version (VERSION) of the GMT libraries.
 set (GMT_LIB_VERSION "${GMT_LIB_SOVERSION}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
 
+# The name of the official GMT supplemental shared library (if built).
+set (GMT_SUPPL_LIB_NAME "supplements")
+
 # The GMT documentation URL
 if (GMT_PUBLIC_RELEASE OR GMT_PACKAGE_VERSION_PATCH)
 	set (GMT_DOC_URL "https://docs.generic-mapping-tools.org/${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}")
