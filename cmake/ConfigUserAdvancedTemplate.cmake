@@ -150,6 +150,7 @@
 
 # Enable building of shared libraries [TRUE] (disable to use static libraries;
 # not recommended; on non-x86 architectures uncomment the next option as well):
+# NOTE: currently only support shared libraries
 #set (BUILD_SHARED_LIBS FALSE)
 
 # Create position independent code on all targets [auto] (needed for static

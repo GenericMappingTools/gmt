@@ -190,9 +190,9 @@ if (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 	set (CMAKE_VERBOSE_MAKEFILE false)
 endif (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 
-# Currently only support shared libs
+# Currently only support shared libraries
 if (NOT DEFINED BUILD_SHARED_LIBS)
-	set (BUILD_SHARED_LIBS true)	
+	set (BUILD_SHARED_LIBS true)
 endif (NOT DEFINED BUILD_SHARED_LIBS)
 
 # look also for lib64 when building 64-bit binaries
