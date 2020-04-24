@@ -705,6 +705,7 @@ if (BUILD_SUPPLEMENTS)
 	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${SUPPL_EXTRA_DIRS})
 
 	# process supplement directories
+	set (_moduleinfo)
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		# include CMake settings in supplement directories
 		add_subdirectory (${_dir})
@@ -733,7 +734,27 @@ if (BUILD_SUPPLEMENTS)
 
 		# rename the supplement dll [Windows only]
 		get_subdir_var (SUPPL_${_suppl_lib_name}_DLL_RENAME SUPPL_DLL_RENAME ${_dir})
+
+
+		# generate gmt_suppl_moduleinfo.h
+		get_subdir_var_files (_suppl_progs_srcs SUPPL_PROGS_SRCS ${_dir})
+		foreach (_prog_src ${_suppl_progs_srcs})
+			file (READ ${_prog_src} _src_content)
+			string (REGEX MATCH "#define THIS_MODULE_CLASSIC_NAME[ \t]*\"([^\n]*)\"\n" _this_module_classic_name ${_src_content})
+			set (_this_module_classic_name ${CMAKE_MATCH_1})
+			string (REGEX MATCH "#define THIS_MODULE_MODERN_NAME[ \t]*\"([^\n]*)\"\n" _this_module_modern_name ${_src_content})
+			set (_this_module_modern_name ${CMAKE_MATCH_1})
+			string (REGEX MATCH "#define THIS_MODULE_LIB[ \t]*\"([^\n]*)\"\n" _this_module_lib ${_src_content})
+			set (_this_module_lib ${CMAKE_MATCH_1})
+			string (REGEX MATCH "#define THIS_MODULE_PURPOSE[ \t]*\"([^\n]*)\"\n" _this_module_purpose ${_src_content})
+			set (_this_module_purpose ${CMAKE_MATCH_1})
+			string (REGEX MATCH "#define THIS_MODULE_KEYS[ \t]*\"([^\n]*)\"\n" _this_module_keys ${_src_content})
+			set (_this_module_keys ${CMAKE_MATCH_1})
+			list (APPEND _moduleinfo "\t{\"${_this_module_modern_name}\", \"${_this_module_classic_name}\", \"${_this_module_lib}\", \"${_this_module_purpose}\", \"${_this_module_keys}\"},")
+		endforeach (_prog_src ${GMT_PROGS_SRCS})
 	endforeach (_dir)
+    list (JOIN _moduleinfo "\n" _moduleinfo)
+	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/gmt_suppl_moduleinfo.h" ${_moduleinfo})
 
 	# remove duplicate supplement library names, so multiple supplement packages can be built into one single library
 	list (REMOVE_DUPLICATES GMT_SUPPL_LIBRARIES)
