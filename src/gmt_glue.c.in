@@ -28,7 +28,7 @@
 /* Sorted array with information for all GMT _@SUPPL_NAME@_ modules */
 
 static struct GMT_MODULEINFO modules[] = {
-#include "gmt_moduleinfo.h"
+#include "gmt_@SUPPL_NAME@_moduleinfo.h"
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
 
