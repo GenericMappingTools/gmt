@@ -358,7 +358,8 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), ""))
+		Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->I.active) {			/* Must flip the column types since in is Cartesian and out is geographic */
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
@@ -403,7 +404,7 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 	                                  GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	if (Ctrl->I.active) {	/* Transforming from rectangular projection to geographical */
-		char buf[GMT_LEN128] = {""}, gdal_ellipsoid_name[GMT_LEN16] = {""};
+		char buf[GMT_LEN256] = {""}, gdal_ellipsoid_name[GMT_LEN16] = {""};
 
 		/* if (GMT->common.R.oblique) gmt_M_double_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
 
@@ -440,7 +441,8 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 		gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		gmt_set_grddim (GMT, Geo->header);
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL)
+			Return (API->error);
 		gmt_grd_init (GMT, Geo->header, options, true);
 		gmt_BC_init (GMT, Geo->header);
 
@@ -500,6 +502,10 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_WARNING, "Unknown conversion between GMT and GDAL ellipsoid names. Using a generic spherical body.");
 			}
 		}
+		if (Geo->header->ProjRefPROJ4) gmt_M_str_free (Geo->header->ProjRefPROJ4);
+		if (Geo->header->ProjRefWKT)   gmt_M_str_free(Geo->header->ProjRefWKT);
+		Geo->header->ProjRefEPSG = 0;
+		Geo->header->ProjRefPROJ4 = strdup(buf);
 
 		gmt_grd_project (GMT, Rect, Geo, true);
 
