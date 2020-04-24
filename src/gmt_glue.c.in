@@ -3,13 +3,17 @@
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
 
-/* gmt_glue.c populates the external array of this shared lib with
+/* gmt_@SUPPL_NAME@_glue.c populates the external array of this shared lib with
  * module parameters such as name, group, purpose and keys strings.
  * This file also contains the following convenience functions to
- * display all module purposes or just list their names:
+ * display all module purposes, list their names, or return keys or group:
  *
  *   void gmt_@SUPPL_NAME@_module_show_all (struct GMTAPI_CTRL *API);
  *   void gmt_@SUPPL_NAME@_module_list_all (void *API);
+ *   void gmt_@SUPPL_NAME@_module_classic_all (void *API);
+ *   const char *gmtlib_@SUPPL_NAME@_module_keys (void *API, char *candidate);
+ *   const char *gmtlib_@SUPPL_NAME@_module_group  (void *API, char *candidate);
+
  *
  * These functions may be called by gmt --help and gmt --show-modules
  *
@@ -23,8 +27,6 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
-#define GMT_PURPOSE_STRING "@SUPPL_PURPOSE@"
-
 /* Sorted array with information for all GMT _@SUPPL_NAME@_ modules */
 
 static struct GMT_MODULEINFO modules[] = {
@@ -34,7 +36,7 @@ static struct GMT_MODULEINFO modules[] = {
 
 /* Pretty print all shared module names and their purposes for gmt --help */
 EXTERN_MSC void gmtlib_@SUPPL_NAME@_module_show_all (void *API) {
-	gmtlib_module_show_all (API, modules, GMT_PURPOSE_STRING);
+	gmtlib_module_show_all (API, modules, "@SUPPL_PURPOSE@");
 }
 
 /* Produce single list on stdout of all shared module names for gmt --show-modules */
