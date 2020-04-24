@@ -35,7 +35,7 @@ EXTERN_MSC void *dlopen_special (const char *name);
 
 /*! Info for each GMT shared library. This array is filled out when parsing GMT_CUSTOM_LIBS at end of GMT_Create_Session */
 
-struct Gmt_libinfo {
+struct GMT_LIBINFO {
 	char *name;	/* Library tag name [without leading "lib" and extension], e.g. "gmt", "supplements" */
 	char *path;	/* Full path to library as given in GMT_CUSTOM_LIBS */
 	bool skip;	/* true if we tried to open it and it was not available the first time */

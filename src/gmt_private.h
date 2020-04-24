@@ -164,7 +164,7 @@ struct GMTAPI_CTRL {
 	bool deep_debug;			/* temporary for debugging */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
 	unsigned int do_not_exit;		/* 0 by default, meaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
-	struct Gmt_libinfo *lib;		/* List of shared libs to consider */
+	struct GMT_LIBINFO *lib;		/* List of shared libs to consider */
 	unsigned int n_shared_libs;		/* How many in lib */
 	/* Items used by GMT_Put_Record and sub-functions */
 	int (*api_put_record) (struct GMTAPI_CTRL *API, unsigned int, struct GMT_RECORD *);
