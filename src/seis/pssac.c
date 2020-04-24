@@ -592,7 +592,7 @@ GMT_LOCAL int pssac_init_list (struct GMT_CTRL *GMT, char **files, unsigned int 
 	return n_files;
 }
 
-int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that implements the pssac task */
+EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that implements the pssac task */
 	bool old_is_world, free_plot_pen = false, read_from_ascii, draw_line;
 	unsigned int n_files, *plot_pen = NULL;
 	int error = GMT_NOERROR, n, i, npts;
@@ -939,7 +939,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 	Return (GMT_OK);
 }
 
-int GMT_sac (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_sac (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {

@@ -672,7 +672,7 @@ GMT_LOCAL unsigned int grdtrack_grd_spiral_search (struct GMT_CTRL *GMT, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdtrack (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdtrack task */
 
 	int status, error, ks;

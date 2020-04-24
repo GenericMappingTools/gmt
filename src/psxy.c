@@ -883,7 +883,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psxy (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxy task */
 	bool polygon, penset_OK = true, not_line, old_is_world, rgb_from_z = false, decorate_custom = false;
 	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false;

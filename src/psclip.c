@@ -208,7 +208,7 @@ GMT_LOCAL void psclip_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *P
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psclip (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	double x0, y0;
@@ -344,7 +344,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	Return (GMT_NOERROR);
 }
 
-int GMT_clip (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_clip (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {

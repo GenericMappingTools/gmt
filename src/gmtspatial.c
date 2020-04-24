@@ -1084,7 +1084,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtspatial (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int geometry = GMT_IS_POLY, internal = 0, external = 0, smode = GMT_NO_STRINGS;
 	bool mseg = false;

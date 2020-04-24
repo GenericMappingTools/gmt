@@ -606,7 +606,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psmask (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 	unsigned int section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
 	unsigned int io_mode = GMT_WRITE_SET, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
 	unsigned int fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
@@ -974,7 +974,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 	Return (GMT_NOERROR);
 }
 
-int GMT_mask (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mask (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {

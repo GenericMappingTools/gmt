@@ -407,7 +407,7 @@ GMT_LOCAL bool grdrotater_skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATA
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdrotater (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 	int scol, srow, error = 0;	/* Signed row, col */
 	int n_stages;
 	bool not_global, global = false;

@@ -473,7 +473,7 @@ int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter,
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grd2kml (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 	bool use_tile = false, z_extend = false, i_extend = false, tmp_cpt = false, global_lon, adjust = false;
 
 	int error = 0, kk, uniq, i_dir, dir, minLodPixels, maxLodPixels;

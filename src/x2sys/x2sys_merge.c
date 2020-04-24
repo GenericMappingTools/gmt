@@ -128,7 +128,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_merge (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	uint64_t  i, j, k, n_base, n_merge, merge_start, *map_merge_end = NULL;
 	uint64_t *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
 	int error;

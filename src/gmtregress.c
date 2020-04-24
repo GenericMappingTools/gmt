@@ -1057,7 +1057,7 @@ GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in,
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtregress (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 	uint64_t k, seg, tbl, col = 0, row, n_try = 0, n_t, n_alloc = 0, n_columns = GMTREGRESS_N_FARGS;
 
 	int error = 0;

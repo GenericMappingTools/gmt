@@ -845,7 +845,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pscoupe (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	int n_rec = 0, n_plane_old = 0, form = 0, error;
 	int i, transparence_old = 0, not_defined = 0;
 	int n_scanned = 0;
@@ -1240,7 +1240,7 @@ Definition of scalar moment.
 	Return (GMT_NOERROR);
 }
 
-int GMT_coupe (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_coupe (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {

@@ -248,7 +248,7 @@ GMT_LOCAL int rotsmoother_compare_ages (const void *point_1v, const void *point_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_rotsmoother (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	bool stop;
 	uint64_t n_read = 0, rot, p, first = 0, last, n_use = 0, n_out = 0, n_total_use = 0, n_minimum, n_alloc = GMT_CHUNK;
 	int error = 0, n_fields;

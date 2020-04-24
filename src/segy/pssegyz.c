@@ -578,7 +578,7 @@ GMT_LOCAL void pssegyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz,
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pssegyz (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pssegyz (void *V_API, int mode, void *args) {
 	int nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny, error;
 	double xlen, ylen, xpix, ypix, x0, y0, trans[3] = {-1.0,-1.0,-1.0};
 	float scale = 1.0f, toffset = 0.0f;
@@ -837,7 +837,7 @@ use a few of these*/
 	Return (GMT_NOERROR);
 }
 
-int GMT_segyz (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_segyz (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {

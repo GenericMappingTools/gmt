@@ -796,7 +796,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pscontour (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	int add, error = 0;
 	bool two_only = false, make_plot, skip = false, convert, get_contours, is_closed;
 	bool use_contour = true, skip_points, skip_triangles;
@@ -1696,7 +1696,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	Return (GMT_NOERROR);
 }
 
-int GMT_contour (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_contour (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {

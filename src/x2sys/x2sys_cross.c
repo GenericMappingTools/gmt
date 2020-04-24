@@ -336,7 +336,7 @@ GMT_LOCAL void x2syscross_local_xy_to_geo (double *x, double *y, int plat) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 #define Crashout(code) {gmt_M_free (GMT, duplicate); x2syscross_free_pairs (GMT, &pair, n_pairs); x2sys_free_list (GMT, trk_name, n_tracks); if (fpC) fclose (fpC); x2sys_end (GMT, s); Return (error);}
 
-int GMT_x2sys_cross (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	char **trk_name = NULL;			/* Name of tracks */
 	char line[GMT_BUFSIZ] = {""};		/* buffer */
 	char item[GMT_BUFSIZ] = {""};		/* buffer */

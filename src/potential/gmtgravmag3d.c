@@ -380,7 +380,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	bool bat = true, DO = true;
 	unsigned int row, col, i, j, k, kk, ndata_r = 0;

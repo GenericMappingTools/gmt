@@ -5994,7 +5994,7 @@ GMT_LOCAL void grdmath_expand_recall_cmd (struct GMT_OPTION *list) {
 	}
 }
 
-int GMT_grdmath (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 	int k, op = 0, new_stack = GMT_NOTSET, rowx, colx, status, start, error = 0;
 	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack, pos;
 	unsigned int consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];

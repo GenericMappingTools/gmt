@@ -746,7 +746,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdblend (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final, out_case, zmode;
 	int status, pcol, err, error;
 	bool reformat, wrap_x, write_all_at_once = false, first_grid, delayed = true;

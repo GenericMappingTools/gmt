@@ -762,7 +762,7 @@ GMT_LOCAL int mgd77list_augment_aux_columns (int n_items, char **item_name, stru
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77list (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 	int i, c, id, k, time_column, lon_column, lat_column, error = 0;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
 	int ms_col = 0, md_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;

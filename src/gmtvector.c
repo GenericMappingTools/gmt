@@ -439,7 +439,7 @@ GMT_LOCAL void gmtvector_gmt_make_rot2d_matrix (double angle, double R[3][3]) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtvector (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 	unsigned int tbl, error = 0, k, n, n_in, n_components, n_out, add_cols = 0, geo;
 	bool single = false, convert;
 

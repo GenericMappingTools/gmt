@@ -143,7 +143,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77path (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77path (void *V_API, int mode, void *args) {
 	uint64_t n_cruises = 0, i, n_paths;
 	int error = 0;
 

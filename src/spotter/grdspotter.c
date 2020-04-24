@@ -490,7 +490,7 @@ GMT_LOCAL void grdspotter_normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdspotter (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
 	unsigned int n_stages;	/* Number of stage rotations (poles) */
 	unsigned int try;		/* Number of current bootstrap estimate */
 	unsigned int row, row2, col, col2, k_step;

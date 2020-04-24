@@ -745,7 +745,7 @@ GMT_LOCAL char *pstext_get_label (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl
 	return (out);	/* The main program must free this at the end of each record processing */
 }
 
-int GMT_pstext (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pstext task */
 
 	int  error = 0, k, fmode, nscan = 0, *c_just = NULL;
@@ -1372,7 +1372,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	Return (GMT_NOERROR);
 }
 
-int GMT_text (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_text (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API == NULL) return (GMT_NOT_A_SESSION);

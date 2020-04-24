@@ -296,7 +296,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_list (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, **weight_name = NULL, *tofrom[2] = {"stdin", "stdout"}, *from = NULL;
 	char record[GMT_BUFSIZ] = {""};
 	struct X2SYS_INFO *s = NULL;

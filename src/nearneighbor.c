@@ -272,7 +272,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_nearneighbor (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	int col_0, row_0, row, col, row_end, col_end, ii, jj, error = 0;
 	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
 	bool wrap_180, replicate_x, replicate_y;

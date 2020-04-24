@@ -442,7 +442,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	size_t  ij;
 	unsigned int km = 0;		/* index of current body facet (for mag only) */

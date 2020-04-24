@@ -390,7 +390,7 @@ GMT_LOCAL int img2grd_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_img2grd (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_img2grd (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
 	unsigned int first, n_columns, n_rows, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;

@@ -1500,7 +1500,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 EXTERN_MSC int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in);
 
-int GMT_psscale (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psscale task */
 	int error = 0;
 	unsigned int i;

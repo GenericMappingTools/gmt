@@ -559,7 +559,7 @@ GMT_LOCAL int mgd77track_bad_coordinates (double lon, double lat) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77track (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77track (void *V_API, int mode, void *args) {
 	uint64_t rec, first_rec, last_rec, i, n_id = 0, mrk = 0, use, n_cruises = 0;
 	int this_julian = 0, last_julian, error = 0, n_paths, argno;
 	bool first, form, both = false;

@@ -270,7 +270,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdmask (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 	bool periodic = false, periodic_grid = false, do_test = true;
 	bool wrap_180, replicate_x, replicate_y, worry_about_jumps;
 	unsigned int side = 0, known_side, *d_col = NULL, d_row = 0;

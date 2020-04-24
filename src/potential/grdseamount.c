@@ -459,7 +459,7 @@ GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdseamount (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	int error, scol, srow, scol_0, srow_0;
 
 	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0;

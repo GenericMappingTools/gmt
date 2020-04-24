@@ -841,7 +841,7 @@ GMT_LOCAL void filter1d_load_parameters (struct FILTER1D_INFO *F, struct FILTER1
 #define Return(code,...) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_ERROR, __VA_ARGS__); bailout (code);}
 #define Return2(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_filter1d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 	uint64_t col, tbl, row, seg;
 	int error;
 	unsigned int save_col, n_out_cols;

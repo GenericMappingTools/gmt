@@ -397,7 +397,7 @@ GMT_LOCAL int pssolar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun)
 }
 
 /* --------------------------------------------------------------------------------------------------- */
-int GMT_pssolar (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 	int     j, n, hour, min, error = 0;
 	int     n_pts = 361;						/* Number of points for the terminators */
 	char    record[GMT_LEN256] = {""};
@@ -603,7 +603,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	Return (GMT_NOERROR);
 }
 
-int GMT_solar (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_solar (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {

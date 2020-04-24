@@ -432,7 +432,7 @@ GMT_LOCAL int grdhisteq_do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRI
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdhisteq (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	double wesn[4];

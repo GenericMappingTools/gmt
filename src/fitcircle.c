@@ -351,7 +351,7 @@ GMT_LOCAL double fitcircle_get_small_circle (struct GMT_CTRL *GMT, struct FITCIR
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, data); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_fitcircle (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_fitcircle (void *V_API, int mode, void *args) {
 	bool greenwich = false;
 	unsigned int imin, imax, nrots, j, k, n, np, n_cols = 0, col = 0;
 	int error = 0;

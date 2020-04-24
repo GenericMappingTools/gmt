@@ -594,7 +594,7 @@ EXTERN_MSC bool gmtlib_file_is_srtmlist (struct GMTAPI_CTRL *API, const char *fi
 #define img_region_is_invalid(h) (h->wesn[XLO] == 0.0 && h->wesn[YLO] == 0.0 && img_inc_is_one(h) && \
                                   (h->wesn[YHI] > 90.0 || h->wesn[XHI] > 720.0))
 
-int GMT_grdimage (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_grid = false, set_gray, rgb_from_z, rgb_cube_scan;
 	bool do_indexed = false, has_content = false, mem_G[3] = {false, false, false}, mem_I = false, mem_D = false;

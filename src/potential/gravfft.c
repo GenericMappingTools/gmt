@@ -486,7 +486,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gravfft (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 	unsigned int k, n;
 	int      error = 0;
 	uint64_t m;

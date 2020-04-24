@@ -306,7 +306,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
-int GMT_gmtlogo (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	/* High-level function that implements the gmtlogo task */
 	int error, fmode;
 

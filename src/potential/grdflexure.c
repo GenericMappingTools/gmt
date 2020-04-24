@@ -788,7 +788,7 @@ GMT_LOCAL int grdflexure_compare_loads (const void *load_1v, const void *load_2v
 	return (0);
 }
 
-int GMT_grdflexure (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	unsigned int t_eval, t_load, n_load_times = 0;
 	int error;
 	bool retain_original;
