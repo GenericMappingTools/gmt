@@ -451,6 +451,7 @@ foreach (_prog_src ${GMT_PROGS_SRCS} begin.c clear.c end.c figure.c inset.c subp
 	set (_this_module_keys ${CMAKE_MATCH_1})
 	list (APPEND _moduleinfo "\t{\"${_this_module_modern_name}\", \"${_this_module_classic_name}\", \"${_this_module_lib}\", \"${_this_module_purpose}\", \"${_this_module_keys}\"},")
 endforeach (_prog_src ${GMT_PROGS_SRCS})
+list (SORT _moduleinfo) # sorted list of modules
 list (JOIN _moduleinfo "\n" _moduleinfo)
 file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_moduleinfo.h" ${_moduleinfo})
 
