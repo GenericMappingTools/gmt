@@ -274,8 +274,8 @@ enum GMTAPI_enum_status {
  *		PRIVATE FUNCTIONS ONLY USED BY THIS LIBRARY FILE
  *==================================================================================================
  *
- * api_* functions are static and only used in gmt_api.c
- * gmtapi_* functions are exported and may be used in other gmt_*.c files
+ * gmtapi_* functions are static and only used in gmt_api.c
+ * gmtlib_* functions are exported and may be used in other gmt_*.c files
  */
 
 GMT_LOCAL int gmtapi_sort_on_classic (const void *vA, const void *vB) {
