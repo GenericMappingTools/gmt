@@ -7,7 +7,7 @@ steps:
 # To rebuild the cache, you have to change the date in the key list
 - task: Cache@2
   inputs:
-    key: $(Agent.OS) | vcpkg | 20200206
+    key: $(Agent.OS) | vcpkg | 20200422
     path: $(VCPKG_INSTALLATION_ROOT)/installed/
     cacheHitVar: CACHE_VCPKG_RESTORED
   displayName: Cache vcpkg libraries
@@ -18,7 +18,7 @@ steps:
     cd ${VCPKG_INSTALLATION_ROOT}
     git fetch --tags
     git tag
-    git checkout tags/2020.01
+    git checkout tags/2020.04
     # By default, vcpkg builds both release and debug configurations.
     # Set VCPKG_BUILD_TYPE to build release only to save half time
     echo 'set (VCPKG_BUILD_TYPE release)' >> ${VCPKG_INSTALLATION_ROOT}/triplets/${WIN_PLATFORM}.cmake
@@ -104,6 +104,14 @@ steps:
     cmake --build .
   displayName: Compile GMT
 
+# Cache the ${HOME}/.gmt directory, for docs and testing
+- task: Cache@2
+  inputs:
+    key: cachedata | 20200409
+    path: $(HOME)/.gmt
+    cacheHitVar: CACHE_CACHEDATA_RESTORED
+  displayName: Cache GMT remote data for testing
+
 - bash: |
     set -x -e
     cd build
@@ -130,15 +138,19 @@ steps:
     gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
   displayName: Check a few simple commands
 
+# Download remote files, if not already cached
 - bash: |
     set -x -e
-    # Download cache files from remote server before testing, see see #939.
     $(gmt --show-sharedir)/tools/gmt_getremote.sh cache
-    # Download earth relief files used in testing
     gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
+  displayName: Download remote data
+  condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
+
+# Run the full tests, and rerun failed tests
+- bash: |
+    set -x -e
     # disable MinGW's path conversion, see #1035.
     export MSYS_NO_PATHCONV=1
-    # run all jobs, and rerun failed jobs
     cd build
     ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests

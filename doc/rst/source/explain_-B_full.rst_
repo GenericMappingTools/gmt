@@ -39,7 +39,10 @@
 -   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
     The first optional flag following **-B** selects **p** (rimary) [Default] or
-    **s** (econdary) axes information (mostly used for time axes annotations).
+    **s** (econdary) axes information (mostly used for time axes annotations but
+    available for geographic axes as well. **Note**: primary refers to annotations
+    closest to the axis and secondary to annotations further away.  Hence, primary
+    annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts).
     The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
     If none are given then we default to **xy**.  If you wish to give different annotation intervals
     or labels for the various axes then you must repeat the **B** option for

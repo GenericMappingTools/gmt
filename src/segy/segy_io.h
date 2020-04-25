@@ -15,7 +15,7 @@
 #define SEGY_IO_H
 
 #include "gmt_dev.h"
-#include "common_byteswap.h"
+#include "gmt_common_byteswap.h"
 
 #include "segy.h"
 #include "segyreel.h"

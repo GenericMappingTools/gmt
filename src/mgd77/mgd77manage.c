@@ -27,7 +27,7 @@
 #define THIS_MODULE_PURPOSE	"Manage the content of MGD77+ files"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-RVbjn"
+#define THIS_MODULE_OPTIONS "-RVbjn" GMT_OPT("Q")
 
 #define N_PAR		7
 #define COL_SCALE	0
@@ -58,8 +58,6 @@
 #define MODE_i		6
 #define MODE_n		7
 #define MODE_t		8
-
-EXTERN_MSC int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 
 struct MGD77MANAGE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -198,7 +196,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 /* Help functions to decode the -A and -I options */
 
-GMT_LOCAL int decode_A_options (int mode, char *line, char *file, double parameters[]) {
+GMT_LOCAL int mgd77manage_decode_A_options (int mode, char *line, char *file, double parameters[]) {
 	int error = 0, n;
 	char *c = strstr (line, "+f");
 
@@ -217,7 +215,7 @@ GMT_LOCAL int decode_A_options (int mode, char *line, char *file, double paramet
 	return (error);
 }
 
-GMT_LOCAL int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[]) {
+GMT_LOCAL int mgd77manage_decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[]) {
 	/* -I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\" */
 	unsigned int i = 0, k, error, pos = 0;
 	char p[GMT_BUFSIZ] = {""};
@@ -289,7 +287,7 @@ GMT_LOCAL int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, 
 	return ((lrint (parameters[COL_TYPE]) == MGD77_NOT_SET) || (i != 7));
 }
 
-GMT_LOCAL int skip_if_missing (struct GMT_CTRL *GMT, char *name, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET **D) {
+GMT_LOCAL int mgd77manage_skip_if_missing (struct GMT_CTRL *GMT, char *name, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET **D) {
 	/* Used when a needed column is not present and we must free memory and goto next file */
 	int id;
 
@@ -300,7 +298,7 @@ GMT_LOCAL int skip_if_missing (struct GMT_CTRL *GMT, char *name, char *file, str
 	return (id);
 }
 
-GMT_LOCAL int got_default_answer (char *line, char *answer) {
+GMT_LOCAL int mgd77manage_got_default_answer (char *line, char *answer) {
 	int i, k, len;
 
 	len = (int)strlen (line) - 1;
@@ -350,18 +348,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 				switch (opt->arg[k]) {
 					case 'a':	/* Plain column data file of exact same # of records */
 						Ctrl->A.mode = MODE_a;
-						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
+						n_errors += mgd77manage_decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'c':	/* Add reference field or correction term */
 						Ctrl->A.mode = MODE_c;
-						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
+						n_errors += mgd77manage_decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'D':	/* dist,val data file - interpolate to get values at all records */
 						Ctrl->A.interpolate = true;
 						/* Intentionally fall through - to 'd' */
 					case 'd':	/* dist,val data file - only update records with matching distances */
 						Ctrl->A.mode = MODE_d;
-						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
+						n_errors += mgd77manage_decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'E':	/* Plain E77 error flag file from mgd77sniffer */
 						Ctrl->A.ignore_verify = true;	/* Process raw e77 files that have not been verified */
@@ -394,15 +392,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 						break;
 					case 'g':	/* Sample along track from this GMT grid file */
 						Ctrl->A.mode = MODE_g;
-						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
+						n_errors += mgd77manage_decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'i':	/* Sample along track from this *.img grid file */
 						Ctrl->A.mode = MODE_i;
-						n_errors += decode_A_options (1, &opt->arg[k+1], file, Ctrl->A.parameters);
+						n_errors += mgd77manage_decode_A_options (1, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'n':	/* recno,val data file - only update records with matching rec number */
 						Ctrl->A.mode = MODE_n;
-						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
+						n_errors += mgd77manage_decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'T':	/* abstime,val data file - interpolate to get values at all records */
 						Ctrl->A.interpolate = true;
@@ -410,7 +408,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 					case 't':	/* abstime,val data file - only update records with matching times */
 						Ctrl->A.mode = MODE_t;
 						Ctrl->A.kind = GMT_IS_ABSTIME;
-						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
+						n_errors += mgd77manage_decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "-A modifier must be a|c|d|D|e|g|i|n|t|T\n");
@@ -454,7 +452,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 
 			case 'I':	/* Column attribute information */
 				Ctrl->I.active = true;
-				n_errors += decode_I_options (GMT, opt->arg, Ctrl->I.c_abbrev, Ctrl->I.c_name, Ctrl->I.c_units,
+				n_errors += mgd77manage_decode_I_options (GMT, opt->arg, Ctrl->I.c_abbrev, Ctrl->I.c_name, Ctrl->I.c_units,
 				                              &Ctrl->I.c_size, Ctrl->I.c_comment, Ctrl->A.parameters);
 				break;
 
@@ -471,12 +469,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 				}
 				break;
 
-			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
-				if (gmt_M_compat_check (GMT, 4))
-					n_errors += gmtinit_backwards_SQ_parsing (GMT, 'Q', opt->arg);
-				else
-					n_errors += gmt_default_error (GMT, opt->option);
-				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -506,7 +498,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77manage (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	int cdf_var_id, n_dims = 0, dims[2];		/* netCDF variables should be declared as int */
 	size_t start[2] = {0, 0}, count[2] = {0, 0};	/* NetCDF offset variables are size_t */
 
@@ -680,7 +672,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			ok_to_read = false;
 			tmp_string = gmt_M_memory (GMT, NULL, n_alloc, char *);
 			while (gmt_fgets (GMT, word, GMT_BUFSIZ, fp)) {
-				if (word[0] == GMT->current.setting.io_head_marker[GMT_IN]) continue;
+				if (gmt_is_a_blank_line (line) || strchr (GMT->current.setting.io_head_marker_in, word[0])) continue;	/* Skip all headers or blank lines  */
 				width = (int)strlen (word);
 				tmp_string[n] = gmt_M_memory (GMT, NULL, width + 1, char);
 				strcpy (tmp_string[n], word);
@@ -890,9 +882,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			int ix, iy, it;
 			double date, *xvar = NULL, *yvar = NULL, *tvar = NULL, IGRF[7];
 
-			if ((ix = skip_if_missing (GMT, "lon",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((iy = skip_if_missing (GMT, "lat",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((it = skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((ix = mgd77manage_skip_if_missing (GMT, "lon",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((iy = mgd77manage_skip_if_missing (GMT, "lat",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((it = mgd77manage_skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 
 			xvar = D->values[ix];
 			yvar = D->values[iy];
@@ -910,8 +902,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			int ix, iy, use;
 			double *xvar = NULL, *yvar = NULL;
 
-			if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((ix = mgd77manage_skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((iy = mgd77manage_skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 
 			if (GF_version == MGD77_NOT_SET) {
 				use = (In.original) ? MGD77_ORIG : MGD77_REVISED;
@@ -934,9 +926,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			int ix, iy, it;
 			double *xvar = NULL, *yvar = NULL, *tvar = NULL;
 
-			if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((it = skip_if_missing (GMT, "twt", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((ix = mgd77manage_skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((iy = mgd77manage_skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((it = mgd77manage_skip_if_missing (GMT, "twt", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 
 			xvar = D->values[ix];
 			yvar = D->values[iy];
@@ -951,11 +943,11 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			double date, *xvar = NULL, *yvar = NULL, *tvar = NULL, *mvar = NULL, IGRF[7];
 			char field[5] = {""};
 
-			if ((ix = skip_if_missing (GMT, "lon",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((iy = skip_if_missing (GMT, "lat",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((it = skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((ix = mgd77manage_skip_if_missing (GMT, "lon",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((iy = mgd77manage_skip_if_missing (GMT, "lat",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((it = mgd77manage_skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 			sprintf (field, "mtf%d", MTF_col);
-			if ((im = skip_if_missing (GMT, field, list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((im = mgd77manage_skip_if_missing (GMT, field, list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 
 			xvar = D->values[ix];
 			yvar = D->values[iy];
@@ -977,8 +969,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			double *xvar = NULL, *yvar = NULL;
 			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
-			if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((ix = mgd77manage_skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+			if ((iy = mgd77manage_skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 
 			xvar = D->values[ix];
 			yvar = D->values[iy];
@@ -1029,8 +1021,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			size_t LEN_size = LEN;
 			colvalue = gmt_M_memory (GMT, colvalue, D->H.n_records, double);
 			if (Ctrl->A.mode == MODE_d) {	/* Must create distances in user's units */
-				if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-				if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+				if ((ix = mgd77manage_skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+				if ((iy = mgd77manage_skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 				x = D->values[ix];
 				y = D->values[iy];
 				if ((d = gmt_dist_array_2 (GMT, x, y, D->H.n_records, dist_scale, GMT->common.h.mode)) == NULL)
@@ -1038,7 +1030,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				x = d;
 			}
 			else if (Ctrl->A.mode == MODE_t) {	/* Time */
-				if ((it = skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
+				if ((it = mgd77manage_skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 				x = D->values[it];
 			}
 			if (Ctrl->A.interpolate) {	/* Using given table to interpolate the values at all mgd77 records */
@@ -1246,7 +1238,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 						GMT_Message (API, GMT_TIME_NONE, "%s: %s\n", list[argno], line);
 					continue;
 				}
-				if (!got_default_answer (line, answer)) continue;
+				if (!mgd77manage_got_default_answer (line, answer)) continue;
 
 				/* Here we must do something */
 
@@ -1341,7 +1333,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				}
 			}
 			/* Now start on data record section */
-			if ((it = skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET)
+			if ((it = mgd77manage_skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET)
 				has_time = false;
 			else {	/* See if we really have time or if they are all NaN */
 				tvar = D->values[it];

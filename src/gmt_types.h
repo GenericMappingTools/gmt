@@ -329,6 +329,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */
 	double *y;
+	double gridline_spacing[2];		/* Holds last gridline spacing used for this plot, via gmt.history */
 	char format[3][2][GMT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
 	struct GMT_SUBPLOT panel;	/* Current subplot panel settings */
 	struct GMT_INSET inset;		/* Current inset settings */
@@ -431,6 +432,15 @@ struct GMT_CTRL {
 	struct GMT_INTERNAL hidden;	/* Internal global variables that are not to be changed directly by users */
 	struct PSL_CTRL *PSL;		/* Pointer to the PSL structure [or NULL] */
 	struct GMTAPI_CTRL *parent;	/* Owner of this structure [or NULL]; gives access to the API from functions being passed *GMT only */
+};
+
+/* Shared library structure: name (classic and modern), library, purpose, keys for each module */
+struct GMT_MODULEINFO {
+	const char *mname;            /* Program (modern) name */
+	const char *cname;            /* Program (classic) name */
+	const char *component;        /* Component (core, supplement, custom) */
+	const char *purpose;          /* Program purpose */
+	const char *keys;             /* Program option info for external APIs */
 };
 
 /* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments

@@ -267,8 +267,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 #define INV_3 (1.0/3.0)
 
-GMT_LOCAL double parint (double x[], double y[], int n) {
-	/* parint is a piecewise parabolic integrator
+GMT_LOCAL double talwani3d_parint (double x[], double y[], int n) {
+	/* talwani3d_parint is a piecewise parabolic integrator
 	 *
 	 * Arguments:
 	 *       x and y are arrays of size n   (sent)
@@ -330,7 +330,7 @@ GMT_LOCAL double parint (double x[], double y[], int n) {
 	return (area);
 }
 
-GMT_LOCAL double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
+GMT_LOCAL double talwani3d_get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
 	/* Talwani et al., 1959 */
 	int k;
 	double gsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside;
@@ -422,7 +422,7 @@ GMT_LOCAL double get_grav3d (double x[], double y[], int n, double x_obs, double
 	return (GAMMA * rho * gsum);	/* Return contribution in mGal */
 }
 
-GMT_LOCAL double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
+GMT_LOCAL double talwani3d_get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
 	/* Kim & Wessel, 2016 */
 	int k;
 	double vsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside;
@@ -511,7 +511,7 @@ GMT_LOCAL double get_vgg3d (double x[], double y[], int n, double x_obs, double 
 	return (10 * GAMMA * rho * vsum);	/* To get Eotvos = 0.1 mGal/km */
 }
 
-GMT_LOCAL double definite_integral (double a, double s, double c) {
+GMT_LOCAL double talwani3d_definite_integral (double a, double s, double c) {
 	/* Return out definite integral n_ij (except the factor z_j) */
 	/* Here, 0 <= a <= TWO_I and c >= 0 */
 	double s2, c2, u2, k, k2, q, q2, f, v, n_ij, arg1, arg2, y;
@@ -538,16 +538,16 @@ GMT_LOCAL double definite_integral (double a, double s, double c) {
 #endif
 	if (a > M_PI_2) n_ij = -n_ij;
 	if (gmt_M_is_dnan (n_ij))
-		fprintf (stderr, "definite_integral returns n_ij = NaN!\n");
+		fprintf (stderr, "talwani3d_definite_integral returns n_ij = NaN!\n");
 	return (n_ij);
 }
 
-GMT_LOCAL double integral (double a, double sa, double b, double sb, double c) {
+GMT_LOCAL double talwani3d_integral (double a, double sa, double b, double sb, double c) {
 	/* Return integral of geoid function from a to b */
-	return (definite_integral (b, sb, c) - definite_integral (a, sa, c));
+	return (talwani3d_definite_integral (b, sb, c) - talwani3d_definite_integral (a, sa, c));
 }
 
-GMT_LOCAL double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat, double G0) {
+GMT_LOCAL double talwani3d_get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat, double G0) {
 	/* Kim & Wessel, 2016 */
 	int k;
 	double nsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside, c, z_j = z_obs;
@@ -611,7 +611,7 @@ GMT_LOCAL double get_geoid3d (double x[], double y[], int n, double x_obs, doubl
 						s_th = p_i / r2;
 						del_alpha = theta_i - fi_i;
 						c = z_j / fabs (p_i);
-						part1 = integral (fi_i, s_fi, theta_i, s_th, c);
+						part1 = talwani3d_integral (fi_i, s_fi, theta_i, s_th, c);
 						part2 = z_j * (part1 - del_alpha);
 #if 0
 						if (dump) fprintf (stderr, "I(%g, %g, %g) = %g [z = %g p_i = %g, da = %g dx = %g dy = %g]\n", R2D*(fi_i), R2D*(theta_i), c, part2, z_j, p_i, del_alpha, dx, dy);
@@ -637,7 +637,7 @@ GMT_LOCAL double get_geoid3d (double x[], double y[], int n, double x_obs, doubl
 	return (1.0e-2 * GAMMA * rho * nsum / G0);	/* To get geoid in meter */
 }
 
-GMT_LOCAL double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth, double G0) {
+GMT_LOCAL double talwani3d_get_one_output (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth, double G0) {
 	/* Evaluate output at a single observation point (x,y,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
@@ -669,17 +669,17 @@ GMT_LOCAL double get_one_output3D (double x_obs, double y_obs, double z_obs, str
 		z = cake[k].depth - z_obs;	/* Vertical distance from observation point to this slice */
 		for (sl = cake[k].first_slice; sl; sl = sl->next) {	/* Loop over slices */
 			if (mode == TALWANI3D_FAA) /* FAA */
-				vtry[k] += get_grav3d  (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth);
+				vtry[k] += talwani3d_get_grav3d  (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth);
 			else if (mode == TALWANI3D_GEOID) /* GEOID */
-				vtry[k] += get_geoid3d (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth, G0);
+				vtry[k] += talwani3d_get_geoid3d (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth, G0);
 			else /* VGG */
-				vtry[k] += get_vgg3d   (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth);
+				vtry[k] += talwani3d_get_vgg3d   (sl->x, sl->y, sl->n, x_obs, y_obs, z, sl->rho, flat_earth);
 		}
 	}
-	return (parint (depths, vtry, ndepths));	/* Use parabolic integrator and return value */
+	return (talwani3d_parint (depths, vtry, ndepths));	/* Use parabolic integrator and return value */
 }
 
-GMT_LOCAL int comp_cakes (const void *cake_a, const void *cake_b) {
+GMT_LOCAL int talwani3d_comp_cakes (const void *cake_a, const void *cake_b) {
 	/* Used in the sorting of layers on depths */
 	const struct CAKE *a = cake_a, *b = cake_b;
 	if (a->depth < b->depth) return (-1);
@@ -690,7 +690,7 @@ GMT_LOCAL int comp_cakes (const void *cake_a, const void *cake_b) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_talwani3d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 	int error = 0, ns;
 	unsigned int k, tbl, seg, ndepths = 0, n = 0, dup_node = 0, n_duplicate = 0;
 	uint64_t node;
@@ -757,14 +757,14 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
 	}
 	else {	/* Got a dataset with output locations via -N */
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from the -N file */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from the -N file */
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL)
 			Return (API->error);
 		if (D->n_columns < 2) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (D->min[GMT_Y] + D->max[GMT_Y]);
 	}
 
@@ -899,7 +899,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	/* Finish allocation and sort on layers */
 
 	cake = gmt_M_memory (GMT, cake, ndepths, struct CAKE);
-	qsort (cake, ndepths, sizeof (struct CAKE), comp_cakes);
+	qsort (cake, ndepths, sizeof (struct CAKE), talwani3d_comp_cakes);
 
 	if (n_duplicate) GMT_Report (API, GMT_MSG_WARNING, "Ignored %u duplicate vertices\n", n_duplicate);
 
@@ -916,7 +916,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Start calculating %s\n", kind[Ctrl->F.mode]);
 
 	G0 = (Ctrl->F.lset) ? g_normal (Ctrl->F.lat) : g_normal (lat);
-	/* Set up depths array needed by get_one_output3D */
+	/* Set up depths array needed by talwani3d_get_one_output */
 	depths = gmt_M_memory (GMT, NULL, ndepths, double);
 	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
@@ -962,7 +962,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				 * with OpenMP due to race condiations that would mess up the output order */
 				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
 					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->data[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
-					GMT->hidden.mem_coord[GMT_X][row] = get_one_output3D (S->data[GMT_X][row] * scl, S->data[GMT_Y][row] * scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth, G0);
+					GMT->hidden.mem_coord[GMT_X][row] = talwani3d_get_one_output (S->data[GMT_X][row] * scl, S->data[GMT_Y][row] * scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth, G0);
 				}
 				/* This loop is not under OpenMP */
 				out[GMT_Z] = Ctrl->Z.level;	/* Default observation z level unless provided in input file */
@@ -1003,7 +1003,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = gmt_M_ijp (G->header, row, col);
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */
-				G->data[node] = (gmt_grdfloat) get_one_output3D (x_obs[col], y_obs, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth, G0);
+				G->data[node] = (gmt_grdfloat) talwani3d_get_one_output (x_obs[col], y_obs, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth, G0);
 			}
 		}
 		gmt_M_free (GMT, x_obs);

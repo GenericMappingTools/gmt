@@ -96,7 +96,7 @@ struct PSMASK_INFO {
 	unsigned int bit[32], offset;
 };
 
-GMT_LOCAL void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, uint64_t nn, double rgb[], unsigned int id, unsigned int flag) {
+GMT_LOCAL void psmask_draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, uint64_t nn, double rgb[], unsigned int id, unsigned int flag) {
 	uint64_t i;
 	double x, y;
 
@@ -113,7 +113,7 @@ GMT_LOCAL void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %d\n", id);
 }
 
-GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max) {
+GMT_LOCAL uint64_t psmask_trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max) {
 	/* Loosely based on support_trace_contour in gmt_support.c.
 	 * Differs in that grd[] is known to only have values 0 (no data) or 1 (data point).
 	 */
@@ -238,10 +238,10 @@ GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO
 	return (n);	/* Return length of polygon */
 }
 
-GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max) {
+GMT_LOCAL uint64_t psmask_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max) {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
-	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points.
+	 * psmask_trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points.
 	 * Note: info->offset is added to edge_word when looking at vertical edges.
 	 */
 
@@ -278,7 +278,7 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 					*x[0] = gmt_M_grd_col_to_x (GMT, i, h);
 					*y[0] = gmt_M_grd_row_to_y (GMT, j, h) + 0.5 * h->inc[GMT_Y];
 					edge[edge_word] |= info->bit[edge_bit];
-					n = trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 3, max);
+					n = psmask_trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 3, max);
 					go_on = false;
 					i0 = i + 1;
 					j0 = j;	/* Return to finish this row later */
@@ -302,7 +302,7 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 					*x[0] = gmt_M_grd_col_to_x (GMT, i, h) + 0.5 * h->inc[GMT_X];
 					*y[0] = gmt_M_grd_row_to_y (GMT, j, h);
 					edge[edge_word] |= info->bit[edge_bit];
-					n = trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 2, max);
+					n = psmask_trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 2, max);
 					go_on = false;
 					i0 = i + 1;
 					j0 = j;	/* Return to finish this row later */
@@ -325,7 +325,7 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 	return (n);
 }
 
-GMT_LOCAL void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *grd, double *x, double *y, uint64_t n, int orient) {
+GMT_LOCAL void psmask_orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *grd, double *x, double *y, uint64_t n, int orient) {
 	/* Determine handedness of the contour and if opposite of orient reverse the contour */
 	int side[2], z_dir, k, k2;
 	bool reverse;
@@ -395,7 +395,7 @@ GMT_LOCAL void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h,
 	}
 }
 
-GMT_LOCAL void shrink_clip_contours (double *x, double *y, uint64_t np, double w, double e, double s, double n) {
+GMT_LOCAL void psmask_shrink_clip_contours (double *x, double *y, uint64_t np, double w, double e, double s, double n) {
 	/* Moves outside points to boundary.  Array length is not changed. */
 	uint64_t i;
 
@@ -606,17 +606,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mask (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: mask\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_psmask (V_API, mode, args);
-}
-
-int GMT_psmask (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 	unsigned int section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
 	unsigned int io_mode = GMT_WRITE_SET, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
 	unsigned int fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
@@ -882,10 +872,10 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 			section = 0;
 			first = 1;
-			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &max_alloc_points)) > 0) {
+			while ((n = psmask_clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &max_alloc_points)) > 0) {
 				closed = false;
-				shrink_clip_contours (x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
-				if (Ctrl->F.active) orient_contours (GMT, Grid->header, grd, x, y, n, Ctrl->F.value);
+				psmask_shrink_clip_contours (x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
+				if (Ctrl->F.active) psmask_orient_contours (GMT, Grid->header, grd, x, y, n, Ctrl->F.value);
 				if (Ctrl->D.active && n > (uint64_t)Ctrl->Q.min) {	/* Save the contour as output data */
 					S = gmt_prepare_contour (GMT, x, y, n, GMT->session.d_NaN);
 					/* Select which table this segment should be added to */
@@ -906,12 +896,12 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 						SH->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
 					}
 				}
-				if (make_plot) draw_clip_contours (GMT, PSL, x, y, n, Ctrl->G.fill.rgb, section, first);
+				if (make_plot) psmask_draw_clip_contours (GMT, PSL, x, y, n, Ctrl->G.fill.rgb, section, first);
 				first = 0;
 				section++;
 			}
 
-			if (make_plot) draw_clip_contours (GMT, PSL, x, y, 0, Ctrl->G.fill.rgb, section, 2);	/* Activate clip-path */
+			if (make_plot) psmask_draw_clip_contours (GMT, PSL, x, y, 0, Ctrl->G.fill.rgb, section, 2);	/* Activate clip-path */
 
 			gmt_M_free (GMT, edge);
 			gmt_M_free (GMT, x);
@@ -970,7 +960,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		gmt_M_free (GMT, grd);
 		if (GMT_Destroy_Data (API, &Grid) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to free Grid\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to free grid\n");
 		}
 		if (Ctrl->S.active) gmt_M_free (GMT, d_col);
 		gmt_M_free (GMT, grd_x0);
@@ -982,4 +972,14 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 	if (make_plot) gmt_plotend (GMT);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_mask (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: mask\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psmask (V_API, mode, args);
 }

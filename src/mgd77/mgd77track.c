@@ -211,7 +211,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info) {
+GMT_LOCAL int mgd77track_get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info) {
 	int i1, i2, flag1, flag2, type;
 	bool error = false;
 	double value;
@@ -315,14 +315,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				if (opt->arg[j] && opt->arg[j] != ',')
 					Ctrl->A.size = atof (&opt->arg[j]) * GMT->session.u2u[GMT_PT][GMT_INCH];
 				if (t) {
-					if (get_annotinfo (&t[2], &Ctrl->A.info)) n_errors++;
+					if (mgd77track_get_annotinfo (&t[2], &Ctrl->A.info)) n_errors++;
 					Ctrl->A.mode = -Ctrl->A.mode;	/* Flag to tell machinery not to annot at entry */
 					t[0] = '+';	/* Restore modifier */
 				}
 				else if ((t = strchr (opt->arg, ','))) {	/* Want label at regular spacing */
 					if (gmt_M_compat_check (GMT, 5)) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Option -A: ,<inc> is deprecated, use +i<inc> instead\n");
-						if (get_annotinfo (&t[1], &Ctrl->A.info)) n_errors++;
+						if (mgd77track_get_annotinfo (&t[1], &Ctrl->A.info)) n_errors++;
 						Ctrl->A.mode = -Ctrl->A.mode;	/* Flag to tell machinery not to annot at entry */
 					}
 					else {
@@ -412,7 +412,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				if (get_annotinfo (opt->arg, &Ctrl->L.info)) n_errors++;
+				if (mgd77track_get_annotinfo (opt->arg, &Ctrl->L.info)) n_errors++;
 				break;
 
 			case 'N':
@@ -504,7 +504,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int n_records) {
+GMT_LOCAL double mgd77track_get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int n_records) {
 	int i1, i2, j;
 	double angle, x1, x0, y1, y0, sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
 
@@ -534,7 +534,7 @@ GMT_LOCAL double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double
 	return (angle);
 }
 
-GMT_LOCAL void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double lon, double lat, double angle, char *text, double size) {
+GMT_LOCAL void mgd77track_annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double lon, double lat, double angle, char *text, double size) {
 	int just, form;
 
 	if (lat < GMT->common.R.wesn[YLO])
@@ -551,7 +551,7 @@ GMT_LOCAL void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 	PSL_plottext (PSL, x, y, size, text, angle, just, form);
 }
 
-GMT_LOCAL int bad_coordinates (double lon, double lat) {
+GMT_LOCAL int mgd77track_bad_coordinates (double lon, double lat) {
 	return (gmt_M_is_dnan (lon) || gmt_M_is_dnan (lat));
 }
 
@@ -559,7 +559,7 @@ GMT_LOCAL int bad_coordinates (double lon, double lat) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77track (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77track (void *V_API, int mode, void *args) {
 	uint64_t rec, first_rec, last_rec, i, n_id = 0, mrk = 0, use, n_cruises = 0;
 	int this_julian = 0, last_julian, error = 0, n_paths, argno;
 	bool first, form, both = false;
@@ -681,10 +681,10 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		lat = (double*)D->values[2];
 		if ((track_dist = gmt_dist_array_2(GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL)		/* Work internally in meters */
 			gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
-		for (rec = 0; rec < D->H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] <
+		for (rec = 0; rec < D->H.n_records && mgd77track_bad_coordinates (lon[rec], lat[rec]) && track_time[rec] <
 		     Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
 		first_rec = rec;
-		for (rec = D->H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) &&
+		for (rec = D->H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && mgd77track_bad_coordinates (lon[rec], lat[rec]) &&
 		     track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */
 		last_rec = rec;
 		GMT_Report (API, GMT_MSG_INFORMATION, "mgd77track: Plotting %s [%s]\n", list[argno], D->H.mgd77[use]->Survey_Identifier);
@@ -730,14 +730,14 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 		first = true;
 		for (rec = first_rec; rec <= last_rec; rec++) {
-			if (bad_coordinates (lon[rec], lat[rec]) || gmt_map_outside (GMT, lon[rec], lat[rec])) {
+			if (mgd77track_bad_coordinates (lon[rec], lat[rec]) || gmt_map_outside (GMT, lon[rec], lat[rec])) {
 				first = true;
 				continue;
 			}
 			gmt_geo_to_xy (GMT, lon[rec], lat[rec], &x, &y);
 			if (first) {
 				if (Ctrl->A.mode > 0) {
-					c_angle = get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);
+					c_angle = mgd77track_get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);
 					if (Ctrl->N.active) {	/* Keep these in a list to plot after clipping is turned off */
 						cruise_id[n_id].x = x;
 						cruise_id[n_id].y = y;
@@ -755,7 +755,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 						}
 					}
 					else
-						annot_legname (GMT, PSL, x, y, lon[rec], lat[rec], c_angle, name, GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size);
+						mgd77track_annot_legname (GMT, PSL, x, y, lon[rec], lat[rec], c_angle, name, GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size);
 				}
 				first = false;
 				for (i = 0; i < 2; i++) {
@@ -791,7 +791,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 				}
 			}
 			if (annot_tick[ANNOT]) {
-				angle = get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);
+				angle = mgd77track_get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);
 				if (angle < 0.0)
 					angle += 90.0;
 				else
@@ -849,12 +849,12 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 			}
 			if (annot_tick[ANNOT] || draw_tick[ANNOT]) annot_tick[ANNOT] = draw_tick[ANNOT] = false;
 			if (annot_tick[LABEL]) {
-				angle = get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);
+				angle = mgd77track_get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);
 				if (angle < 0.0)
 					angle += 90.0;
 				else
 					angle -= 90.0;
-				annot_legname (GMT, PSL, x, y, lon[rec], lat[rec], angle, name, GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size);
+				mgd77track_annot_legname (GMT, PSL, x, y, lon[rec], lat[rec], angle, name, GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size);
 				annot_tick[LABEL] = false;
 			}
 		}
@@ -872,7 +872,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		double size;
 		size = GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size;
 		for (id = 0; id < n_id; id++)
-			annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat,
+			mgd77track_annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat,
 			               cruise_id[id].angle, cruise_id[id].text, size);
 	}
 	gmt_M_free (GMT, cruise_id);

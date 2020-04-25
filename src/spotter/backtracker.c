@@ -363,7 +363,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 #define SPOTTER_BACK -1
 #define SPOTTER_FWD  +1
 
-GMT_LOCAL int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], double tp[], unsigned int np, struct EULER p[], unsigned int ns, double d_km, double t_zero, unsigned int time_flag, double wesn[], double **c) {
+GMT_LOCAL int backtracker_spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], double tp[], unsigned int np, struct EULER p[], unsigned int ns, double d_km, double t_zero, unsigned int time_flag, double wesn[], double **c) {
 	int n = -1;
 	/* Call either spotter_forthtrack (way = 1) or spotter_backtrack (way = -1) */
 
@@ -375,7 +375,7 @@ GMT_LOCAL int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double 
 			n = spotter_forthtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, time_flag, wesn, c);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad use of spotter_track\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad use of backtracker_spotter_track\n");
 			break;
 	}
 
@@ -385,7 +385,7 @@ GMT_LOCAL int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_backtracker (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 
 	uint64_t n_points;		/* Number of data points read */
@@ -464,7 +464,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 			n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
 
 		spotter_way = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? SPOTTER_FWD : SPOTTER_BACK;
-		GMT_Report (API, GMT_MSG_INFORMATION, "Loaded rotations in order for %slines; calling spotter_track with direction %swards\n", emode[mode], fmode[(spotter_way+1)/2]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Loaded rotations in order for %slines; calling backtracker_spotter_track with direction %swards\n", emode[mode], fmode[(spotter_way+1)/2]);
 
 		if (fabs (Ctrl->L.d_km) > GMT_CONV4_LIMIT) {		/* User wants to interpolate tracks rather than project individual points */
 			make_path = true;
@@ -475,7 +475,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->F.active) {	/* Get and use hotspot motion file */
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
 		if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -487,7 +487,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input file %s does not start at the present\n", Ctrl->F.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */
 		for (row = 0; row < H->n_rows; row++) H->data[GMT_Y][row] = gmt_lat_swap (GMT, H->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	}
@@ -620,8 +620,8 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 						lat += (hlat - H->data[GMT_Y][0]);
 					}
 					lon *= D2R;	lat *= D2R;
-					if (spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from spotter_track - aborting\n");
+					if (backtracker_spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
+						GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from backtracker_spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
@@ -645,8 +645,8 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 						lat += (hlat - H->data[GMT_Y][0]);
 					}
 					lon *= D2R;	lat *= D2R;
-					if (spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from spotter_track - aborting\n");
+					if (backtracker_spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
+						GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from backtracker_spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
@@ -663,8 +663,8 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 			else {	/* Either no drift or we are asking for flowlines */
 				lon = in[GMT_X];	lat = in[GMT_Y];
 				lon *= D2R;		lat *= D2R;
-				if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-					GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from spotter_track - aborting\n");
+				if (backtracker_spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
+					GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from backtracker_spotter_track - aborting\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				n_track = lrint (c[0]);
@@ -704,8 +704,8 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 			}
 			else {	/* Reconstruct the point */
 				lon *= D2R;	lat *= D2R;
-				if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-					GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from spotter_track - aborting\n");
+				if (backtracker_spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
+					GMT_Report (API, GMT_MSG_ERROR, "Nothing returned from backtracker_spotter_track - aborting\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				out[GMT_X] = lon * R2D;

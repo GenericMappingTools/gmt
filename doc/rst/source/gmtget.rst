@@ -49,12 +49,12 @@ Optional Arguments
 Examples
 --------
 
-To list the value of the parameter PS_COMMENTS::
+To list the value of the parameter :term:`PS_COMMENTS`::
 
     gmt get PS_COMMENTS
 
 To get both the values of the parameter
-MAP_GRID_CROSS_SIZE_PRIMARY and MAP_GRID_CROSS_SIZE_SECONDARY on one line, try::
+:term:`MAP_GRID_CROSS_SIZE_PRIMARY` and :term:`MAP_GRID_CROSS_SIZE_SECONDARY` on one line, try::
 
     gmt get MAP_GRID_CROSS_SIZE_PRIMARY MAP_GRID_CROSS_SIZE_SECONDARY
 

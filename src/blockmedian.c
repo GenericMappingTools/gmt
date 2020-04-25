@@ -289,7 +289,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra, unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data) {
+GMT_LOCAL void blockmedian_output_record (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra, unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data) {
 	double weight_half, weight_count;
 	uint64_t node, n_in_cell, node1;
 	unsigned int k, k_for_xy;
@@ -368,7 +368,7 @@ GMT_LOCAL void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, u
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_blockmedian (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_blockmedian (void *V_API, int mode, void *args) {
 	int error = 0;
 	bool do_extra = false, duplicate_col, bail = false;
 	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
@@ -628,7 +628,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 		/* Now we have weight sum [and copy of z in case of -E]; now calculate the quantile(s): */
 
-		median_output (GMT, Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, emode, quantile, n_quantiles, data);
+		blockmedian_output_record (GMT, Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, emode, quantile, n_quantiles, data);
 		/* Here, x,y,z are loaded into out */
 
 		if (Ctrl->E.mode & BLK_DO_EXTEND4) {	/* Need 7 items: x, y, median, min, 25%, 75%, max [,weight] */

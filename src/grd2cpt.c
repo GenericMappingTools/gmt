@@ -415,7 +415,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, char **grdfile, uint64_t n) {
+GMT_LOCAL int grd2cpt_free_the_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, char **grdfile, uint64_t n) {
 	/* Free what we are pointing to */
 	uint64_t k;
 	for (k = 0; k < n; k++) {
@@ -429,7 +429,7 @@ GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, cha
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grd2cpt (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
@@ -514,7 +514,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
 		if ((G[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, opt->arg, NULL)) == NULL) {
-			error = free_them_grids (API, G, grdfile, k);
+			error = grd2cpt_free_the_grids (API, G, grdfile, k);
 			gmt_M_free (GMT, G);
 			gmt_M_free (GMT, grdfile);
 			Return ((error) ? error : API->error);
@@ -522,7 +522,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->n_columns == G[k-1]->header->n_columns && G[k]->header->n_rows == G[k-1]->header->n_rows)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Grids do not have the same domain!\n");
-			error = free_them_grids (API, G, grdfile, k);
+			error = grd2cpt_free_the_grids (API, G, grdfile, k);
 			gmt_M_free (GMT, G);
 			gmt_M_free (GMT, grdfile);
 			Return ((error) ? error : API->error);
@@ -606,7 +606,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		}
 		if (!write)
 			gmt_save_current_cpt (GMT, Pout, cpt_flags);	/* Save for use by session, if modern */
-		free_them_grids (API, G, grdfile, ngrd);
+		grd2cpt_free_the_grids (API, G, grdfile, ngrd);
 		gmt_M_free (GMT, G);
 		gmt_M_free (GMT, grdfile);
 
@@ -647,7 +647,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		}
 		if (j == Ctrl->E.levels-1) cdf_cpt[j].z = G[0]->header->z_max;
 	}
-	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make a equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
+	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make an equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
 		double start, range;
 
 		switch (Ctrl->S.kind) {
@@ -743,9 +743,9 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);
 	if (error == GMT_NOERROR)
-		error = free_them_grids (API, G, grdfile, ngrd);
+		error = grd2cpt_free_the_grids (API, G, grdfile, ngrd);
 	else
-		free_them_grids (API, G, grdfile, ngrd);
+		grd2cpt_free_the_grids (API, G, grdfile, ngrd);
 	gmt_M_free (GMT, G);
 	gmt_M_free (GMT, grdfile);
 

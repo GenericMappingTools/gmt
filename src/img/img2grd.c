@@ -54,7 +54,7 @@
  */
 
 #include "gmt_dev.h"
-#include "common_byteswap.h"
+#include "gmt_common_byteswap.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"img2grd"
 #define THIS_MODULE_MODERN_NAME	"img2grd"
@@ -333,7 +333,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL double  img_gud_fwd (double y) {
+GMT_LOCAL double img2grd_gud_fwd (double y) {
 	/* The Forward Gudermannian function.  Given y, the distance
 	 * from the Equator to a latitude on a spherical Mercator map
 	 * developed from a sphere of unit radius, returns the latitude
@@ -343,7 +343,7 @@ GMT_LOCAL double  img_gud_fwd (double y) {
 	return(2.0 * atan(exp(y)) - M_PI_2);
 }
 
-GMT_LOCAL double  img_gud_inv (double phi) {
+GMT_LOCAL double img2grd_gud_inv (double phi) {
 	/* The Inverse Gudermannian function.  Given phi, a latitude
 	 * in radians, returns the distance from the Equator to this
 	 * latitude on a Mercator map tangent to a sphere of unit
@@ -353,36 +353,36 @@ GMT_LOCAL double  img_gud_inv (double phi) {
 	return(log(tan(M_PI_4 + 0.5 * phi)));
 }
 
-GMT_LOCAL double img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord) {
+GMT_LOCAL double img2grd_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord) {
 	/* Given Latitude in degrees and pointer to coordinate struct,
 	 * return (double) coordinate from top edge of input img file
 	 * measured downward in coordinate pixels.  */
 
-	 return(coord->nytop - coord->radius * img_gud_inv(lat*D2R));
+	 return(coord->nytop - coord->radius * img2grd_gud_inv(lat*D2R));
 }
 
-GMT_LOCAL double  img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord) {
+GMT_LOCAL double img2grd_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord) {
 	/* Given Y coordinate, measured downward from top edge of
 	 * input img file in pixels, and pointer to coordinate struct,
 	 * return Latitude in degrees.  */
 
-	return( R2D * img_gud_fwd( (coord->nytop - ypix) / coord->radius) );
+	return( R2D * img2grd_gud_fwd( (coord->nytop - ypix) / coord->radius) );
 }
 
-GMT_LOCAL int img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c) {
+GMT_LOCAL int img2grd_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c) {
 	/* Given the RANGE info, set up the COORD values.  Return (-1) on failure;
 	 * 0 on success.  */
 
 	if (r->maxlon < 360.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR from img_setup_coord: Cannot handle maxlon < 360.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR from img2grd_setup_coord: Cannot handle maxlon < 360.\n");
 		return (-1);
 	}
 
 	c->nxcol  = irint (r->maxlon * 60.0 / r->mpixel);
 	c->nx360  = irint (360.0 * 60.0 / r->mpixel);
 	c->radius = c->nx360 / (2.0 * M_PI);
-	c->nytop  = irint (c->radius * img_gud_inv(r->maxlat*D2R) );
-	c->nyrow  = c->nytop - irint (c->radius * img_gud_inv(r->minlat*D2R) );
+	c->nytop  = irint (c->radius * img2grd_gud_inv(r->maxlat*D2R) );
+	c->nyrow  = c->nytop - irint (c->radius * img2grd_gud_inv(r->minlat*D2R) );
 
 	return (0);
 }
@@ -390,7 +390,7 @@ GMT_LOCAL int img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, st
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_img2grd (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_img2grd (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
 	unsigned int first, n_columns, n_rows, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
@@ -524,7 +524,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->T.value == 3) strcpy (z_units, "T/F, one or more constraints fell in this pixel.");
 
-	if (img_setup_coord (GMT, &imgrange, &imgcoord) ) {
+	if (img2grd_setup_coord (GMT, &imgrange, &imgcoord) ) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure in img coordinate specification [-I -W or -D].\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -552,8 +552,8 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 
 	/* Expected edges of input image based on coordinate initialization (might not exactly match user spec) */
 
-	toplat = img_ypix_to_lat (0.0, &imgcoord);
-	botlat = img_ypix_to_lat ((double)imgcoord.nyrow, &imgcoord);
+	toplat = img2grd_ypix_to_lat (0.0, &imgcoord);
+	botlat = img2grd_ypix_to_lat ((double)imgcoord.nyrow, &imgcoord);
 	dx = 1.0 / ((double)imgcoord.nx360 / 360.0);
 	inc[GMT_X] = inc[GMT_Y] = dx * navg;
 
@@ -570,12 +570,12 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 
 	/* Re-adjust user's -R so that it falls on pixel coordinate boundaries */
 
-	jinstart = navg * (urint (floor (img_lat_to_ypix (wesn[YHI], &imgcoord) / navg)));
-	jinstop  = navg * (urint (ceil  (img_lat_to_ypix (wesn[YLO], &imgcoord) / navg)));
+	jinstart = navg * (urint (floor (img2grd_lat_to_ypix (wesn[YHI], &imgcoord) / navg)));
+	jinstop  = navg * (urint (ceil  (img2grd_lat_to_ypix (wesn[YLO], &imgcoord) / navg)));
 	/* jinstart <= jinputrow < jinstop  */
 	n_rows = (int)(jinstop - jinstart) / navg;
-	north2 = wesn[YHI] = img_ypix_to_lat ((double)jinstart, &imgcoord);
-	south2 = wesn[YLO] = img_ypix_to_lat ((double)jinstop,  &imgcoord);
+	north2 = wesn[YHI] = img2grd_ypix_to_lat ((double)jinstart, &imgcoord);
+	south2 = wesn[YLO] = img2grd_ypix_to_lat ((double)jinstop,  &imgcoord);
 
 	iinstart = navg * (urint (floor (wesn[XLO]/inc[GMT_X])));
 	iinstop  = navg * (urint (ceil  (wesn[XHI]/inc[GMT_X])));
@@ -606,7 +606,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		bottom = wesn[YLO];
 	}
 	else {
-		int equator = irint (img_lat_to_ypix (0.0, &imgcoord));
+		int equator = irint (img2grd_lat_to_ypix (0.0, &imgcoord));
 		wesn[XLO] = iinstart * inc[GMT_X];
 		wesn[XHI] = wesn[XLO] + n_columns * inc[GMT_X];
 		wesn[YHI] = (imgcoord.nyrow - (int)jinstart - equator) * inc[GMT_Y];
@@ -745,7 +745,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, row);
 
 	if (!Ctrl->E.active) {	/* Update R history with exact region found above */
-		/* Because the Mercator grid's equidistant y-nodes are not equidistant when converted back to geogrpaohic coordinates,
+		/* Because the Mercator grid's equidistant y-nodes are not equidistant when converted back to geographic coordinates,
 		 * the corresponding south and north coordinates for the outside of the pixels will generally not match the given
 		 * south and north boundaries in the specified -R setting.  Because this is only an issue in this program we replace
 		 * the given -R with the exact -R in the gmt.history file so that any subsequent module call using -R shorthand will

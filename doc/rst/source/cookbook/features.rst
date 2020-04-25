@@ -263,7 +263,7 @@ listing, see the :doc:`/gmt.conf` man pages.
 We suggest that you go through all the available parameters at least
 once so that you know what is available to change via one of the
 described mechanisms.  The gmt.conf file can be cleared by running
-**gmt clear conf**.
+**gmt clear settings**.
 
 Command line arguments
 ----------------------
@@ -402,7 +402,8 @@ Three classes of files are given special treatment in GMT.
    the default setting for :term:`GMT_DATA_SERVER`.  Alternatively, configure the CMake
    parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
-   set the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` to be 0.
+   limit the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` or
+   you can temporarily turn off such downloads by setting :term:`GMT_AUTO_DOWNLOAD` off.
 
 The user cache (:term:`DIR_CACHE`) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
@@ -738,8 +739,9 @@ specification. The line attribute modifiers are:
 
 * **+s**
     Normally, all PostScript line drawing is implemented as a linear spline, i.e., we simply
-    draw straight line-segments between the given data points.  Use this modifier to render the
-    line using Bezier splines for a smoother curve.
+    draw straight line-segments between the map-projected data points.  Use this modifier to render the
+    line using Bezier splines for a smoother curve. **Note**: The spline is fit to the projected
+    2-D coordinates, not the raw user coordinates (i.e., it is not a spherical surface spline).
 
 .. _Line_bezier:
 
@@ -748,7 +750,7 @@ specification. The line attribute modifiers are:
    :align: center
 
    (left) Normal plotting of line given input points (red circles) via **-W**\ 2p. (right) Letting
-   the points be interpolated by a Bezier cubic spline via **-W**\ 2p\ **+s**.
+   the projected points be interpolated by a Bezier cubic spline via **-W**\ 2p\ **+s**.
 
 * **+v**\ [**b**\|\ **e**]\ *vspecs*
     By default, lines are normally drawn from start to end.  Using the **+v** modifier you can

@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * common_runpath.c contains code shared between GMT and PSL
+ * gmt_common_runpath.c contains code shared between GMT and PSL
  *
  * Author:  Florian Wobbe
  * Date:    3-MAR-2012
@@ -53,9 +53,9 @@
 #endif
 
 #include "gmt_notposix.h"
-#include "common_string.h"
+#include "gmt_common_string.h"
 
-#include "common_runpath.h"
+#include "gmt_common_runpath.h"
 
 /* #define DEBUG_RUNPATH */
 

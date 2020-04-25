@@ -243,7 +243,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdedit (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdedit task */
 	bool grid_was_read = false, do_J = false;
 
@@ -281,7 +281,6 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdedit main code ----------------------------*/
 
 	if ((do_J = GMT->common.J.active)) {	/* Only gave -J to set the proj4 flag, so grid is already projected (i.e., Cartesian) */
-		EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
 		projstring = gmt_export2proj4 (GMT);	/* Convert the GMT -J<...> into a proj4 string */
  		if (strstr (projstring, "+proj=longlat") || strstr (projstring, "+proj=latlong")) {	/* These means we have a geographic grid */
 			gmt_set_geographic (GMT, GMT_IN);	/* Force Geographic */

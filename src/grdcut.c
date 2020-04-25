@@ -222,7 +222,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int mode, unsigned int *side, bool *all) {
+GMT_LOCAL unsigned int grdcut_count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int mode, unsigned int *side, bool *all) {
 	/* Loop around current perimeter and count # of nans, return sum and pass back which side had most nans */
 	unsigned int col, row, sum = 0, k, dim[4] = {0, 0, 0, 0};
 	uint64_t node;
@@ -258,7 +258,7 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 	return ((row0 == row1 && col0 == col1) ? 0 : sum);	/* Return 0 if we run out of grid, else the sum */
 }
 
-GMT_LOCAL int set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], double inc[]) {
+GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], double inc[]) {
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Default is to take the -R as given */
 	if (GMT->common.R.oblique == false || GMT->current.proj.projection == GMT_NO_PROJ) return GMT_NOERROR;	/* Nothing else to do */
 
@@ -308,11 +308,11 @@ GMT_LOCAL int set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], do
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdcut (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;
-	bool outside[4] = {false, false, false, false}, all;
+	bool outside[4] = {false, false, false, false}, all, bail = false, geo_to_cart = false;
 
 	char *name[2][4] = {{"left", "right", "bottom", "top"}, {"west", "east", "south", "north"}};
 
@@ -355,7 +355,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		row1 = G->header->n_rows - 1;	col1 = G->header->n_columns - 1;
 		if (Ctrl->Z.mode == NAN_IS_SKIPPED) {	/* Must scan in from outside to the inside, one side at the time, remove side with most Nans */
-			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);	/* Initial border count */
+			sum = grdcut_count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);	/* Initial border count */
 			while (sum) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
 				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
 					col0++;
@@ -373,7 +373,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 					row0++;
 					GMT_Report (API, GMT_MSG_INFORMATION, "Stip off top row\n");
 				}
-				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);
+				sum = grdcut_count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);
 			}
 			if (col0 == col1 || row0 == row1) {
 				GMT_Report (API, GMT_MSG_ERROR, "The sub-region implied by -Z+n is empty!\n");
@@ -381,7 +381,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->Z.mode == NAN_IS_FRAME) {	/* Must scan in from outside to the inside, one side at the time, remove sides with all Nans */
-			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);	/* Initial border count */
+			sum = grdcut_count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);	/* Initial border count */
 			while (all) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
 				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
 					col0++;
@@ -399,7 +399,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 					row0++;
 					GMT_Report (API, GMT_MSG_INFORMATION, "Stip off top row\n");
 				}
-				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);
+				sum = grdcut_count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);
 			}
 			if (col0 == col1 || row0 == row1) {
 				GMT_Report (API, GMT_MSG_ERROR, "The sub-region implied by -Z+N is empty!\n");
@@ -558,11 +558,35 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
-		if (set_rectangular_subregion (GMT, wesn_new, G->header->inc)) {
+		if (grdcut_set_rectangular_subregion (GMT, wesn_new, G->header->inc)) {
 			Return (API->error);	/* Get header only */
 		}
 	}
 
+	/* Basic sanity checking that the requested region has at least some overlap with the actual region */
+
+	if (wesn_new[YLO] >= G->header->wesn[YHI] || wesn_new[YHI] <= G->header->wesn[YLO]) {	/* y-check is simple */
+		GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely below or above the current grid region\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Geographic data required more trickery */
+		double we[2] = {wesn_new[XLO], wesn_new[XHI]};
+		while (we[XHI] > G->header->wesn[XLO]) we[XLO] -= 360.0, we[XHI] -= 360.0;	/* Wind past on the left */
+		we[XLO] += 360.0, we[XHI] += 360.0;	/* Now we either overlap or we are past on the right */
+		if (we[XLO] >= G->header->wesn[XHI])
+			bail = true;	/* Outside original w/e extent */
+		if (wesn_new[YLO] < -90.0 || wesn_new[YHI] > 90.0) {
+			gmt_grd_set_cartesian (GMT, G->header, 2);
+			geo_to_cart = true;
+		}
+	}
+	else if (wesn_new[XLO] >= G->header->wesn[XHI] || wesn_new[XHI] <= G->header->wesn[XLO])	/* Cartesian x-check is simple */
+		bail = true;
+
+	if (bail) {
+		GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely to the left or to the right of the current grid region\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
 	gmt_M_memcpy (wesn_requested, wesn_new, 4, double);
 	if (wesn_new[YLO] < G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO], outside[YLO] = true;
 	if (wesn_new[YHI] > G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI], outside[YHI] = true;
@@ -653,7 +677,11 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		G = G_dup;	/* Since G was not allocated here anyway - it came from the outside and will be deleted there */
 	}
 	if (Ctrl->N.active && extend) {	/* Now shrink pad back to default and simultaneously extend region and apply nodata values */
-		unsigned int xlo, xhi, ylo, yhi, row, col;
+		unsigned int xlo, xhi, ylo, yhi, row, col, n_zero, n_zero_e;
+		n_zero = 0;	/* Count zeros in the grid before extension */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (G->data[node] == 0.0) n_zero++;
+		}
 		gmt_M_memcpy (G->header->wesn, wesn_requested, 4, double);
 		gmt_M_memcpy (GMT->current.io.pad, def_pad, 4, unsigned int);	/* Reset default pad */
 		gmt_M_grd_setpad (GMT, G->header, GMT->current.io.pad);	/* Set the default pad */
@@ -679,6 +707,12 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			for (row = 0; row < yhi; row++)
 				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
+		n_zero_e = 0;	/* Count zeros in the grid after extension */
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (G->data[node] == 0.0) n_zero_e++;
+		}
+		if (n_zero_e != n_zero)
+			GMT_Report (API, GMT_MSG_WARNING, "Something went wrong - %d extended nodes not set to NaN\n", n_zero_e-n_zero);
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
@@ -695,6 +729,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO],
 		            wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->n_columns, G->header->n_rows);
 	}
+	if (geo_to_cart) GMT_Report (API, GMT_MSG_WARNING, "Expanded grid region implies the grid is no longer geographic\n");
 
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
 		unsigned int row, col;

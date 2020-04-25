@@ -716,7 +716,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
+GMT_LOCAL int mgd77list_separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
 	unsigned int i, j, k, n_aux;
 	int this_aux;
 
@@ -741,7 +741,7 @@ GMT_LOCAL int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, s
 	return (n_aux);
 }
 
-GMT_LOCAL int augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, int n_aux) {
+GMT_LOCAL int mgd77list_augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, int n_aux) {
 	/* This adds additional aux columns that are required by the correction table and not already requested by other means (e.g. -F) */
 	int i, j, k, this_aux, n;
 
@@ -762,7 +762,7 @@ GMT_LOCAL int augment_aux_columns (int n_items, char **item_name, struct MGD77_A
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77list (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 	int i, c, id, k, time_column, lon_column, lat_column, error = 0;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
 	int ms_col = 0, md_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
@@ -893,9 +893,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	n_out_columns = M.n_out_columns;				/* This is the total number of columns in the final output */
 	if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) negative_depth = false;	/* Just so we don't accidentally access dvalue[z_col] further down in the loop */
 	if (MGD77_Get_Column (GMT, "msd", &M) == MGD77_NOT_SET) negative_msd = false;	/* Just so we don't accidentally access dvalue[m_col] further down in the loop */
-	n_aux = separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxiliary columns are requested (if any) */
+	n_aux = mgd77list_separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxiliary columns are requested (if any) */
 	if (Ctrl->L.active) {
-		n_aux = augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxiliary columns are needed by -L */
+		n_aux = mgd77list_augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxiliary columns are needed by -L */
 		for (kk = 0; kk < n_items; kk++) gmt_M_free (GMT, item_names[kk]);
 		if (n_items) gmt_M_free (GMT, item_names);
 		MGD77_Free_Table (GMT, n_items, item_names);
@@ -1479,7 +1479,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 						for (k_off = 1; k_off < D->H.n_records; k_off++) {
 							/* Often cruises have repeated points that will prevent gmt_intpol usage because dx = 0
-							   We will workaround it by adding a epsilon (.1 meter) to the repeated pt. However,
+							   We will workaround it by adding an epsilon (.1 meter) to the repeated pt. However,
 							   often the situation is further complicated because repeat points can come in large
 							   packs. For those cases we add an increasingly small offset. But when the number of
 							   repetitions are large, even this strategy fails and we get error from gmt_intpol */

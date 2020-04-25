@@ -64,6 +64,7 @@ struct GRDIMAGE_CTRL {
 	struct GRDIMG_A {	/* -A to write a raster file or return image to API */
 		bool active;
 		bool return_image;
+		unsigned int way;
 		char *file;
 	} A;
 	struct GRDIMG_E {	/* -Ei|<dpi> */
@@ -255,13 +256,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 						n_errors++;
 					}
 					Ctrl->A.return_image = true;
+					Ctrl->A.way = 1;	/* Building image directly, use TRPa layout, no call to GDAL */
 				}
 				else if ((n = strlen (opt->arg)) == 0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -A: No output name provided\n");
 					n_errors++;
 				}
+				else if (gmt_M_file_is_memory (opt->arg)) {
+					Ctrl->A.file = strdup (opt->arg);
+					Ctrl->A.way = 1;	/* Building image directly, use TRPa layout, no call to GDAL */
+				}
 				else if (!strcmp (gmt_get_ext (opt->arg), "ppm")) {	/* Want a ppm image which we can do without GDAL */
 					Ctrl->A.file = strdup (opt->arg);
+					Ctrl->A.way = 1;	/* Building image directly, use TRP layout, no call to GDAL, writing a PPM file */
 				}
 #ifdef HAVE_GDAL
 				else {	/* Must give file and GDAL driver and this requires GDAL support */
@@ -444,7 +451,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL unsigned int grdimage_clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Problem is that many global grids are reported with misleading -R or imprecise
 	 * -R or non-global -R yet nx * xinc = 360, etc.  We fix these here for GMT use. */
 	unsigned int flag = 0;
@@ -473,33 +480,33 @@ GMT_LOCAL unsigned int clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GR
 	if ((flag & 1)  && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
 		h->inc[GMT_X] = 360.0 / (h->n_columns - 1);	/* Get exact increment */
 		h->wesn[XHI] = h->wesn[XLO] + 360.0;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected geographic global gridline-registered grid with sloppy longitude bounds.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected geographic global gridline-registered grid with sloppy longitude bounds.\n");
 	}
 	if ((flag & 2)  && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
 		h->inc[GMT_X] = 360.0 / h->n_columns;	/* Get exact increment */
 		h->wesn[XHI] = h->wesn[XLO] + h->inc[GMT_X] * (h->n_columns - 1);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy longitude bounds.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy longitude bounds.\n");
 	}
 	if ((flag & 4) && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
 		h->inc[GMT_Y] = 180.0 / (h->n_rows - 1);	/* Get exact increment */
 		h->wesn[YLO] = -90.0;
 		h->wesn[YHI] = 90.0;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected geographic global gridline-registered grid with gridline latitude bounds.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected geographic global gridline-registered grid with gridline latitude bounds.\n");
 	}
 	if ((flag & 8) && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
 		h->inc[GMT_Y] = 180.0 / h->n_rows;	/* Get exact increment */
 		h->wesn[YLO] = -90.0 + 0.5 * h->inc[GMT_Y];
 		h->wesn[YHI] = h->wesn[YLO] +  h->inc[GMT_Y] * (h->n_rows - 1);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy latitude bounds.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy latitude bounds.\n");
 	}
 	if (flag) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Old region: %g/%g/%g/%g with incs %g/%g\n", wasR[XLO], wasR[XHI], wasR[YLO], wasR[YHI], wasI[GMT_X], wasI[GMT_Y]);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "New region: %g/%g/%g/%g with incs %g/%g\n", h->wesn[XLO], h->wesn[XHI], h->wesn[YLO], h->wesn[YHI], h->inc[GMT_X], h->inc[GMT_Y]);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Old region: %g/%g/%g/%g with incs %g/%g\n", wasR[XLO], wasR[XHI], wasR[YLO], wasR[YHI], wasI[GMT_X], wasI[GMT_Y]);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "New region: %g/%g/%g/%g with incs %g/%g\n", h->wesn[XLO], h->wesn[XHI], h->wesn[YLO], h->wesn[YHI], h->inc[GMT_X], h->inc[GMT_Y]);
 	}
 	return 1;
 }
 
-GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struct GMT_GRID_HEADER *g, bool projected, unsigned int mixed) {
+GMT_LOCAL void grdimage_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struct GMT_GRID_HEADER *g, bool projected, unsigned int mixed) {
 	/* Sets the projected extent of the grid given the map projection
 	 * The extreme x/y coordinates are returned in r, and dx/dy, and
 	 * n_columns/n_rows are set accordingly.  Not that some of these may change
@@ -559,7 +566,7 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	}
 }
 
-GMT_LOCAL int set_rgb_three_grids (struct GMT_GRID *Grid_proj[], uint64_t node, double *NaN_rgb, double *rgb) {
+GMT_LOCAL int grdimage_set_rgb_three_grids (struct GMT_GRID *Grid_proj[], uint64_t node, double *NaN_rgb, double *rgb) {
 	/* Got three grids with red, green, blue values */
 	int k;
 	for (k = 0; k < 3; k++) {
@@ -587,7 +594,7 @@ EXTERN_MSC bool gmtlib_file_is_srtmlist (struct GMTAPI_CTRL *API, const char *fi
 #define img_region_is_invalid(h) (h->wesn[XLO] == 0.0 && h->wesn[YLO] == 0.0 && img_inc_is_one(h) && \
                                   (h->wesn[YHI] > 90.0 || h->wesn[XHI] > 720.0))
 
-int GMT_grdimage (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_grid = false, set_gray, rgb_from_z, rgb_cube_scan;
 	bool do_indexed = false, has_content = false, mem_G[3] = {false, false, false}, mem_I = false, mem_D = false;
@@ -641,7 +648,17 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use an intensity grid */
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;	/* Either reading 3 grids (r, g, b) or a z-data grid */
-	if (Ctrl->A.file) {Ctrl->Out.file = Ctrl->A.file; Ctrl->A.file = NULL;}	/* Only use Out.file for writing */
+	if (Ctrl->A.file) {
+		Ctrl->Out.file = Ctrl->A.file; Ctrl->A.file = NULL;	/* Only use Out.file for writing */
+		if (strcmp (gmt_get_ext (Ctrl->Out.file), "ppm")) {	/* Turn off the automatic creation of aux files by GDAL */
+#ifdef WIN32
+			if (_putenv ("GDAL_PAM_ENABLED=NO"))
+#else
+			if (setenv ("GDAL_PAM_ENABLED", "NO", 0))
+#endif
+				GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
+		}
+	}
 
 	/* Read the illumination grid header right away so we can use its region to set that of an image (if requested) */
 	if (use_intensity_grid) {	/* Illumination grid desired */
@@ -706,7 +723,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
-		mixed = clean_global_headers (GMT, I->header);
+		mixed = grdimage_clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
 		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
 			GMT_Report(API, GMT_MSG_WARNING, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
@@ -876,7 +893,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
 			Return (API->error);
 		}
-		mixed = clean_global_headers (GMT, Grid_orig[k]->header);
+		mixed = grdimage_clean_global_headers (GMT, Grid_orig[k]->header);
 	}
 
 
@@ -890,7 +907,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (!Ctrl->I.derive && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->I.file, Intens_orig) == NULL) {
 			Return (API->error);	/* Failed to read the intensity grid data */
 		}
-		mixed = clean_global_headers (GMT, Intens_orig->header);
+		mixed = grdimage_clean_global_headers (GMT, Intens_orig->header);
 		if (n_grids && (Intens_orig->header->n_columns != Grid_orig[0]->header->n_columns ||
 		                Intens_orig->header->n_rows != Grid_orig[0]->header->n_rows)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Dimensions of intensity grid do not match that of the data grid!\n");
@@ -932,7 +949,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) { /* Must project the input image instead */
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
-			GMT_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
+			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
 			gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
 			                Ctrl->In.file[0]);
 			if (Ctrl->A.active) /* Need to set background color to white for raster images */
@@ -949,7 +966,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if ((Grid_proj[k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig[k])) == NULL)
 				Return (API->error);	/* Just to get a header we can change */
 			/* Determine the dimensions of the projected grid */
-			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project, mixed);
+			grdimage_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project, mixed);
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if a dpi was specified, else keep as is */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig[k]->header->registration;
 			gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
@@ -995,7 +1012,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				gmt_copy_gridheader (GMT, header_G[k], Grid_orig[k]->header);
 			}
 			Grid_proj[k] = Grid_orig[k];
-			GMT_set_proj_limits (GMT, Grid_proj[k]->header, tmp_header, need_to_project, mixed);
+			grdimage_set_proj_limits (GMT, Grid_proj[k]->header, tmp_header, need_to_project, mixed);
 		}
 		if (use_intensity_grid) {
 			if (mem_I) {
@@ -1013,7 +1030,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				gmt_copy_gridheader (GMT, header_D, I->header);
 			}
 			Img_proj = I;
-			GMT_set_proj_limits (GMT, Img_proj->header, tmp_header, need_to_project, mixed);
+			grdimage_set_proj_limits (GMT, Img_proj->header, tmp_header, need_to_project, mixed);
 		}
 		gmt_free_header (API->GMT, &tmp_header);
 	}
@@ -1081,7 +1098,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	NaN_rgb = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];
 	if (Ctrl->Q.active) {	/* Want colormask via NaN entries */
 		if (gray_only) {
-			GMT_Report (API, GMT_MSG_WARNING, "Your image is grayscale only but -Q requires 24-bit; image will be expanded to 24-bit.\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Your image is grayscale only but -Q requires 24-bit; image will be expanded to 24-bit.\n");
 			gray_only = false;
 			NaN_rgb = red;	/* Arbitrarily pick red as the NaN color since the entire image is gray only */
 			gmt_M_memcpy (P->bfn[GMT_NAN].rgb, red, 4, double);
@@ -1117,14 +1134,14 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		else
 #endif
 			gmt_strncpy (mem_layout, "TRPa", 4);					/* Don't let it be empty (may it screw?) */
-		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* This is the grdimage's mem layout */
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* Set grdimage's image memory layout */
 
 		if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {
 			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
 			Return(API->error);	/* Well, no luck with that allocation */
 		}
 
-		GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset previous mem layout */
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset to previous memory layout */
 
 		HH = gmt_get_H_hidden (Out->header);
 		if ((pch = strstr(Ctrl->Out.file, "+c")) != NULL) {			/* Check if we have +c<options> */
@@ -1195,6 +1212,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				for (col = 0; col < n_columns; col++) {	/* Compute rgb for each pixel along this scanline */
 					node = kk + actual_col[col];
 					index = gmt_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
+					if (index != (GMT_NAN - 3)) has_content = true;
 					if (index != (GMT_NAN - 3) && Ctrl->I.active) {	/* Need to deal with illumination */
 						if (intensity_mode & 1)	/* Intensity value comes from the grid */
 							gmt_illuminate (GMT, Intens_proj->data[node], rgb);
@@ -1239,7 +1257,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 						}
 					}
 					else	/* Got three grids with red, green, blue values */
-						index = set_rgb_three_grids (Grid_proj, node, NaN_rgb, rgb);
+						index = grdimage_set_rgb_three_grids (Grid_proj, node, NaN_rgb, rgb);
 
 					if (Ctrl->I.active && index != (GMT_NAN - 3)) {	/* Need to deal with illumination */
 						if (intensity_mode & 1) {	/* Intensity value comes from the grid */
@@ -1322,7 +1340,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		for (kk = 0, P->is_bw = true; P->is_bw && kk < header_work->nm; kk++)
 			if (!(bitimage_8[kk] == 0 || bitimage_8[kk] == 255)) P->is_bw = false;
 
-	if (P && P->is_bw && !Ctrl->A.active) {	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits */
+	if (P && P->is_bw && !Ctrl->A.active) {	/* Can get away with a 1-bit image, but we must pack the original byte to 8 image bits, unless we are returning the image (8 or 24 bit only allowed) */
 		int nx8, shift, b_or_w, nx_pixels;
 		uint64_t imsize, k8;
 		unsigned char *bit = NULL;
@@ -1367,7 +1385,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 	else if ((P && gray_only) || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit grayscale image */
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 8-bit grayshade image %s\n", way[Ctrl->A.return_image]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 8-bit grayshade image %s\n", way[Ctrl->A.way]);
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 				Return (API->error);
 		}
@@ -1387,7 +1405,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 24-bit color image %s\n", way[Ctrl->A.return_image]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 24-bit color image %s\n", way[Ctrl->A.way]);
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 				Return (API->error);
 		}

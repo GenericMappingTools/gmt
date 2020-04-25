@@ -283,7 +283,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_hotspotter (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	uint64_t n_smts;		/* Number of seamounts read */
 	uint64_t n_track;		/* Number of points along a single flowline */

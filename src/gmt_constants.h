@@ -257,6 +257,11 @@ enum GMT_enum_inside {
 	GMT_ONEDGE,
 	GMT_INSIDE};
 
+/*! Return codes from gmt_polygon_orientation */
+enum GMT_enum_polorient {
+	GMT_POL_IS_CCW = 0,
+	GMT_POL_IS_CW  = 1};
+
 /*! Codes for -q selections */
 enum GMT_enum_skiprows {
 	GMT_RANGE_ROW_IN   = 1,
@@ -303,6 +308,11 @@ enum GMT_enum_download {
 enum GMT_enum_autolegend {
 	GMT_LEGEND_PEN_D  = 0, GMT_LEGEND_PEN_V  = 1,
 	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2};
+
+/*! Various mode for custom symbols */
+enum GMT_enum_customsymb {
+	GMT_CUSTOM_DEF  = 1,
+	GMT_CUSTOM_EPS  = 2};
 
 //#define GMT_LEGEND_DX1_MUL 1.0	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
 //#define GMT_LEGEND_DX2_MUL 2.0	/* Default offset from margin to start of label if given as '-' times max symbol size */
@@ -372,6 +382,11 @@ enum GMT_enum_extrap {
 	GMT_EXTRAPOLATE_NONE = 0,   /* No extrapolation; set to NaN outside bounds */
 	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */
 	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
+
+enum GMT_enum_cross {
+	GMT_CROSS_NORMAL = 0,	/* Regular grid cross */
+	GMT_CROSS_ASYMM,    	/* Asymmetrical tick away from Equator/Greenwich */
+	GMT_CROSS_SYMM}; 	/* Symmetric grid ticks */
 
 /*! Timer reporting modes */
 enum GMT_enum_tictoc {

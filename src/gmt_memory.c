@@ -58,7 +58,7 @@
  *	     simpler and the number of columns is typically very small (2-3).
  */
 
-GMT_LOCAL void memory_init_tmp_arrays (struct GMT_CTRL *GMT, int direction, size_t n_cols) {
+GMT_LOCAL void gmtmemory_init_tmp_arrays (struct GMT_CTRL *GMT, int direction, size_t n_cols) {
 	/* Initialization of GMT coordinate temp arrays - this is called at most once per GMT session  */
 
 	if (!GMT->hidden.mem_set) {
@@ -81,7 +81,7 @@ GMT_LOCAL void memory_init_tmp_arrays (struct GMT_CTRL *GMT, int direction, size
 	GMT->hidden.mem_set = true;
 }
 
-GMT_LOCAL int memory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char *where) {
+GMT_LOCAL int gmtmemory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char *where) {
 	/* Handle reporting and aborting if memory allocation fails */
 	double mem = ((double)nelem) * ((double)size);
 	unsigned int k = 0;
@@ -112,7 +112,7 @@ GMT_LOCAL int memory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t 
  * Splay tree manipulation functions are modified after Sleator and Tarjan, 1985:
  * Self-adjusting binary search trees. JACM, 32(3), doi:10.1145/3828.3835 */
 
-static inline double gmt_memtrack_mem (size_t mem, unsigned int *unit) {
+static inline double gmtmemory_memtrack_mem (size_t mem, unsigned int *unit) {
 	/* Report the memory in the chosen unit */
 	unsigned int k = 0;
 	double val = mem / 1024.0;	/* Kb */
@@ -155,7 +155,7 @@ int gmt_memtrack_init (struct GMT_CTRL *GMT) {
 	return (GMT_OK);
 }
 
-static inline struct MEMORY_ITEM * gmt_treesplay (struct MEMORY_ITEM *t, void *addr) {
+static inline struct MEMORY_ITEM *gmtmemory_treesplay (struct MEMORY_ITEM *t, void *addr) {
 	/* Simple top-down splay, not requiring addr to be in the tree t.
 	 * This function searches for an item with key addr in the tree rooted at t. If
 	 * it's there, it is splayed to the root. If it isn't there, then the node put
@@ -204,7 +204,7 @@ static inline struct MEMORY_ITEM * gmt_treesplay (struct MEMORY_ITEM *t, void *a
 	return t;
 }
 
-static inline struct MEMORY_ITEM * gmt_treeinsert (struct MEMORY_ITEM *t, void *addr) {
+static inline struct MEMORY_ITEM *gmtmemory_treeinsert (struct MEMORY_ITEM *t, void *addr) {
 	/* Insert addr into the tree t, unless it's already there.
 	 * Return a pointer to the resulting tree. */
 	struct MEMORY_ITEM *new = calloc (1, sizeof (struct MEMORY_ITEM));
@@ -212,7 +212,7 @@ static inline struct MEMORY_ITEM * gmt_treeinsert (struct MEMORY_ITEM *t, void *
 	new->ptr = addr;
 	if (t == NULL)
 		return new;
-	t = gmt_treesplay (t, addr);
+	t = gmtmemory_treesplay (t, addr);
 	if (addr < t->ptr) {
 		new->l = t->l;
 		new->r = t;
@@ -230,27 +230,27 @@ static inline struct MEMORY_ITEM * gmt_treeinsert (struct MEMORY_ITEM *t, void *
 	}
 }
 
-static inline struct MEMORY_ITEM * gmt_treefind (struct MEMORY_ITEM **t, void *addr) {
+static inline struct MEMORY_ITEM *gmtmemory_treefind (struct MEMORY_ITEM **t, void *addr) {
 	/* Splay item with addr to the root and update tree pointer t. Return
 	 * pointer to the resulting tree. If it isn't there, then return NULL. */
 	struct MEMORY_ITEM *x = *t;
-	x = gmt_treesplay (x, addr);
+	x = gmtmemory_treesplay (x, addr);
 	*t = x;
 	return (x != NULL && x->ptr == addr) ? x : NULL;
 }
 
-static inline struct MEMORY_ITEM * gmt_treedelete (struct MEMORY_ITEM *t, void *addr) {
+static inline struct MEMORY_ITEM *gmtmemory_treedelete (struct MEMORY_ITEM *t, void *addr) {
 	/* Delete addr from the tree t, if it's there.
 	 * Return a pointer to the resulting tree. */
 	struct MEMORY_ITEM *x;
 
 	if (t==NULL) return NULL;
-	t = gmt_treesplay(t, addr);
+	t = gmtmemory_treesplay(t, addr);
 	if (addr == t->ptr) { /* found it */
 		if (t->l == NULL) {
 			x = t->r;
 		} else {
-			x = gmt_treesplay (t->l, addr);
+			x = gmtmemory_treesplay (t->l, addr);
 			x->r = t->r;
 		}
 		gmt_M_str_free (t->name);
@@ -260,19 +260,19 @@ static inline struct MEMORY_ITEM * gmt_treedelete (struct MEMORY_ITEM *t, void *
 	return t; /* It wasn't there */
 }
 
-static inline void gmt_treedestroy (struct MEMORY_ITEM **t) {
+static inline void gmtmemory_treedestroy (struct MEMORY_ITEM **t) {
 	/* Remves all items from the tree rooted at t. */
 	struct MEMORY_ITEM *x = *t;
 	if (x != NULL) {
-		gmt_treedestroy (&x->l);
-		gmt_treedestroy (&x->r);
+		gmtmemory_treedestroy (&x->l);
+		gmtmemory_treedestroy (&x->r);
 		gmt_M_str_free (x->name);
 		gmt_M_str_free (x);
 		*t = NULL;
 	}
 }
 
-static inline void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, void *ptr, void *prev_ptr, size_t size) {
+static inline void gmtmemory_memtrack_add (struct GMT_CTRL *GMT, const char *where, void *ptr, void *prev_ptr, size_t size) {
 	/* Called from gmt_M_memory to update current list of memory allocated */
 	size_t old, diff;
 	void *use = NULL;
@@ -282,9 +282,9 @@ static inline void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, vo
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 
 	use = (prev_ptr) ? prev_ptr : ptr;
-	entry = (M->search) ? gmt_treefind (&M->root, use) : NULL;
+	entry = (M->search) ? gmtmemory_treefind (&M->root, use) : NULL;
 	if (!entry) { /* Not found, must insert new_entry entry at end */
-		entry = gmt_treeinsert (M->root, use);
+		entry = gmtmemory_treeinsert (M->root, use);
 		entry->name = strdup (where);
 		old = 0;
 		M->n_ptr++;
@@ -295,9 +295,9 @@ static inline void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, vo
 		old = entry->size;
 		if (entry->ptr != ptr) {	/* Must delete and add back since the address changed */
 			char *name = entry->name; /* remember pointer of name */
-			entry->name = NULL; /* prevent pointer from being freed in gmt_treedelete */
-			entry = gmt_treedelete (entry, entry->ptr);
-			entry = gmt_treeinsert (entry, ptr);
+			entry->name = NULL; /* prevent pointer from being freed in gmtmemory_treedelete */
+			entry = gmtmemory_treedelete (entry, entry->ptr);
+			entry = gmtmemory_treeinsert (entry, ptr);
 			entry->name = name; /* put name back */
 		}
 		M->n_reallocated++;
@@ -333,10 +333,10 @@ static inline void gmt_memtrack_add (struct GMT_CTRL *GMT, const char *where, vo
 	M->root = entry; /* Update root pointer */
 }
 
-static inline bool gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, void *ptr) {
+static inline bool gmtmemory_memtrack_sub (struct GMT_CTRL *GMT, const char *where, void *ptr) {
 	/* Called from gmt_M_free to remove memory pointer */
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
-	struct MEMORY_ITEM *entry = gmt_treefind (&M->root, ptr);
+	struct MEMORY_ITEM *entry = gmtmemory_treefind (&M->root, ptr);
 
 	M->n_freed++; /* Increment first to also count multiple frees on same address */
 	if (!entry) {
@@ -354,15 +354,15 @@ static inline bool gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, vo
 		M->current -= entry->size;	/* "Free" the memory */
 	if (M->do_log)
 		fprintf (M->fp, "DEL: 0x%zx %10" PRIuS " %7.0lf %s %s\n", (size_t)entry->ptr, entry->size, M->current / 1024.0, GMT->init.module_name, entry->name);
-	M->root = gmt_treedelete (entry, entry->ptr);
+	M->root = gmtmemory_treedelete (entry, entry->ptr);
 	M->n_ptr--;
 	return true;
 }
 
-static inline void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) {
+static inline void gmtmemory_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) {
 	unsigned int u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
-	double size = gmt_memtrack_mem (x->size, &u);
+	double size = gmtmemory_memtrack_mem (x->size, &u);
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Memory not freed first allocated in %s (ID = %" PRIuS "): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
 	if (M->do_log)
@@ -370,11 +370,11 @@ static inline void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) 
 						 PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
 }
 
-static inline void gmt_treeprint (struct GMT_CTRL *GMT, struct MEMORY_ITEM *t) {
+static inline void gmtmemory_treeprint (struct GMT_CTRL *GMT, struct MEMORY_ITEM *t) {
 	if (t != NULL) {
-		gmt_treeprint (GMT, t->l);
-		gmt_treereport (GMT, t);
-		gmt_treeprint (GMT, t->r);
+		gmtmemory_treeprint (GMT, t->l);
+		gmtmemory_treereport (GMT, t);
+		gmtmemory_treeprint (GMT, t->r);
 	}
 }
 
@@ -393,19 +393,19 @@ void gmt_memtrack_report (struct GMT_CTRL *GMT) {
 		n_multi_frees = M->n_freed - M->n_allocated;
 	/* Only insist on report if a leak or multi free, otherwise requires -Vd: */
 	level = (excess || n_multi_frees) ? GMT_MSG_WARNING : GMT_MSG_DEBUG;
-	size = gmt_memtrack_mem (M->maximum, &u);
+	size = gmtmemory_memtrack_mem (M->maximum, &u);
 	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n",
 							size, unit[u], M->maximum);
 		if (M->do_log)
 			fprintf (M->fp, "# Max total memory allocated was %.3f %s [%"
 							 PRIuS " bytes]\n", size, unit[u], M->maximum);
-	size = gmt_memtrack_mem (M->largest, &u);
+	size = gmtmemory_memtrack_mem (M->largest, &u);
 	GMT_Report (GMT->parent, level, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->largest);
 		if (M->do_log)
 			fprintf (M->fp, "# Single largest allocation was %.3f %s [%"
 							 PRIuS " bytes]\n", size, unit[u], M->largest);
 	if (M->current) {
-		size = gmt_memtrack_mem (M->current, &u);
+		size = gmtmemory_memtrack_mem (M->current, &u);
 		GMT_Report (GMT->parent, level, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
 								size, unit[u], M->current);
 		if (M->do_log)
@@ -427,8 +427,8 @@ void gmt_memtrack_report (struct GMT_CTRL *GMT) {
 		if (M->do_log)
 			fprintf (M->fp, "# Items NOT PROPERLY FREED: %" PRIu64 "\n", excess);
 	}
-	gmt_treeprint (GMT, M->root);
-	gmt_treedestroy (&M->root); /* Remove remaining items from tree if any */
+	gmtmemory_treeprint (GMT, M->root);
+	gmtmemory_treedestroy (&M->root); /* Remove remaining items from tree if any */
 
 	if (M->do_log) {
 		time_t now = time (NULL);
@@ -458,7 +458,7 @@ void gmt_prep_tmp_arrays (struct GMT_CTRL *GMT, int direction, size_t row, size_
 
 	/* Check if this is the very first time, if so we initialize the arrays */
 	if (!GMT->hidden.mem_set)
-		memory_init_tmp_arrays (GMT, direction, n_cols);	/* First time we get here */
+		gmtmemory_init_tmp_arrays (GMT, direction, n_cols);	/* First time we get here */
 
 	/* Check if we are exceeding our column count so far, if so we must allocate more columns */
 	else if (n_cols > GMT->hidden.mem_cols) {	/* Must allocate more columns, this is expected to happen rarely */
@@ -528,7 +528,7 @@ void *gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 		else
 			tmp = realloc ( prev_addr, nelem * size);
 		if (tmp == NULL)
-			memory_die_if_memfail (GMT, nelem, size, where);
+			gmtmemory_die_if_memfail (GMT, nelem, size, where);
 	}
 	else {
 		if (nelem == 0) return (NULL); /* Take care of n == 0 */
@@ -550,12 +550,12 @@ void *gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 		else
 			tmp = calloc (nelem, size);
 		if (tmp == NULL)
-			memory_die_if_memfail (GMT, nelem, size, where);
+			gmtmemory_die_if_memfail (GMT, nelem, size, where);
 	}
 
 #ifdef MEMDEBUG
 	if (GMT->hidden.mem_keeper->active)
-		gmt_memtrack_add (GMT, where, tmp, prev_addr, nelem * size);
+		gmtmemory_memtrack_add (GMT, where, tmp, prev_addr, nelem * size);
 #endif
 	return (tmp);
 }
@@ -572,7 +572,7 @@ void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 
 #ifdef MEMDEBUG
 	if (GMT->hidden.mem_keeper && GMT->hidden.mem_keeper->active) {
-		bool is_safe_to_free = gmt_memtrack_sub (GMT, where, addr);
+		bool is_safe_to_free = gmtmemory_memtrack_sub (GMT, where, addr);
 		if (is_safe_to_free == false)
 			return; /* Address addr was not allocated by gmt_memory_func before */
 	}
@@ -596,7 +596,7 @@ void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 	addr = NULL;
 }
 
-void * gmt_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where) {
+void *gmt_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where) {
 	/* gmt_M_malloc is used to initialize, grow, and finalize an array allocation in cases
 	 * were more memory is needed as new data are read.  There are three different situations:
 	 * A) Initial allocation of memory:

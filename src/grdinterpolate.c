@@ -90,7 +90,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void free_files (struct GMT_CTRL *GMT, char ***list, unsigned int n) {
+GMT_LOCAL void grdinterpolate_free_files (struct GMT_CTRL *GMT, char ***list, unsigned int n) {
 	for (unsigned int k = 0; k < n; k++)
 		gmt_M_str_free ((*list)[k]);
 	gmt_M_free (GMT, *list);
@@ -98,7 +98,7 @@ GMT_LOCAL void free_files (struct GMT_CTRL *GMT, char ***list, unsigned int n) {
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	free_files (GMT, &(C->In.file), C->In.n_files);
+	grdinterpolate_free_files (GMT, &(C->In.file), C->In.n_files);
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->S.file);
 	gmt_M_str_free (C->S.header);
@@ -296,7 +296,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int nz) {
+GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int nz) {
 	/* Return true if spacing between layers is constant */
 	unsigned int k;
 	double dz;
@@ -315,7 +315,7 @@ GMT_LOCAL bool equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdinterpolate (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	char file[PATH_MAX] = {""}, cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL;
 	bool equi_levels;
 	int error = 0;
@@ -379,7 +379,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -T: Unable to set up output level array\n");
 		Return (API->error);
 	}
-	equi_levels = equidistant_levels (GMT, level, n_layers);	/* Are levels equidistant? */
+	equi_levels = grdinterpolate_equidistant_levels (GMT, level, n_layers);	/* Are levels equidistant? */
 	level_type = gmt_M_type (GMT, GMT_IN, GMT_Z);	/* Either time or floating point values like depth */
 
 	/* Determine the range of input layers needed for interpolation */
@@ -425,7 +425,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, Si->data[GMT_Z]);	/* Free it so we can add it next */
 				Si->data[GMT_Z] = gmt_dist_array (GMT, Si->data[GMT_X], Si->data[GMT_Y], Si->n_rows, true);
 			}
-			if (!equidistant_levels (GMT, Si->data[GMT_Z], Si->n_rows)) {
+			if (!grdinterpolate_equidistant_levels (GMT, Si->data[GMT_Z], Si->n_rows)) {
 				GMT_Report (API, GMT_MSG_ERROR, "File %s does not contain equidistant coordinates\n", Ctrl->E.lines);
 				Return (API->error);
 			}

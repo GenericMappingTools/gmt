@@ -131,7 +131,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* True if grid is a COARDS/CF netCDF file */
-GMT_LOCAL inline bool is_nc_grid (struct GMT_GRID *grid) {
+GMT_LOCAL inline bool grdpaste_is_nc_grid (struct GMT_GRID *grid) {
 	return
 		grid->header->type == GMT_GRID_IS_NB ||
 		grid->header->type == GMT_GRID_IS_NS ||
@@ -140,7 +140,7 @@ GMT_LOCAL inline bool is_nc_grid (struct GMT_GRID *grid) {
 		grid->header->type == GMT_GRID_IS_ND;
 }
 
-int GMT_grdpaste (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 	int error = 0, way = 0;
 	unsigned int one_or_zero;
 	bool common_y = false;
@@ -349,7 +349,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 1:         /* B is on top of A */
 		case 10:		/* B is on top of A but their grid reg limits underlap by one cell */
 		case 11:        /* B is on top of A but their pixel reg limits overlap by one cell */
-			if (is_nc_grid(A)) {
+			if (grdpaste_is_nc_grid(A)) {
 				AH->data_offset = B->header->n_columns * (B->header->n_rows - one_or_zero);
 				if (way == 11)
 					AH->data_offset -= B->header->n_columns;
@@ -368,7 +368,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
-			if (is_nc_grid(B)) {
+			if (grdpaste_is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
 			}
 			else {
@@ -388,7 +388,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 2:         /* A is on top of B */
 		case 21:        /* A is on top of B but their grid reg limits underlap by one cell */
 		case 22:        /* A is on top of B but their pixel reg limits overlap by one cell */
-			if (!is_nc_grid(A)) {
+			if (!grdpaste_is_nc_grid(A)) {
 				GMT->current.io.pad[YLO] = B->header->n_rows - one_or_zero;
 				if (way == 22)
 					GMT->current.io.pad[YLO]--;
@@ -400,7 +400,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
-			if (is_nc_grid(B)) {
+			if (grdpaste_is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
 				BH->data_offset = A->header->n_columns * (A->header->n_rows - one_or_zero);
 				if (way == 22)
@@ -425,7 +425,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 3:         /* A is on the right of B */
 		case 32:        /* A is on right of B but their grid reg limits underlap by one cell */
 		case 33:        /* A is on right of B but their pixel reg limits overlap by one cell */
-			if (is_nc_grid(A)) {
+			if (grdpaste_is_nc_grid(A)) {
 				AH->stride = C->header->n_columns;
 				AH->data_offset = B->header->n_columns - one_or_zero;
 				if (way == 33)
@@ -445,7 +445,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
-			if (is_nc_grid(B)) {
+			if (grdpaste_is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
 				BH->stride = C->header->n_columns;
 			}
@@ -465,7 +465,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 4:         /* A is on the left of B */
 		case 43:        /* A is on left of B but their grid reg limits underlap by one cell */
 		case 44:        /* A is on left of B but their pixel reg limits overlap by one cell */
-			if (is_nc_grid(A)) {
+			if (grdpaste_is_nc_grid(A)) {
 				AH->stride = C->header->n_columns;
 			}
 			else {
@@ -480,7 +480,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
-			if (is_nc_grid(B)) {
+			if (grdpaste_is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
 				BH->stride = C->header->n_columns;
 				BH->data_offset = A->header->n_columns - one_or_zero;

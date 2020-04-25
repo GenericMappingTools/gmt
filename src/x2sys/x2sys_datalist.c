@@ -184,7 +184,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A) {
+GMT_LOCAL bool x2sysdatalist_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A) {
 	uint64_t n = 0;
 	size_t n_alloc = GMT_CHUNK;
 	char file[PATH_MAX] = {""}, *line = file; /* Just reusing the file space */
@@ -218,7 +218,7 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, **ignore = NULL;
 	char fmt_record[GMT_BUFSIZ] = {""};
 
@@ -480,7 +480,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 		if (Ctrl->A.active) {	/* Load along-track adjustments */
 			for (k = 0; k < s->n_out_columns; k++)
-				adj_col[k] = x2sys_load_adjustments (GMT, X2SYS_HOME, Ctrl->T.TAG, trk_name[trk_no], s->info[s->out_order[k]].name, &A[k]);
+				adj_col[k] = x2sysdatalist_load_adjustments (GMT, X2SYS_HOME, Ctrl->T.TAG, trk_name[trk_no], s->info[s->out_order[k]].name, &A[k]);
 		}
 
 		if (Ctrl->E.active) {	/* Insert a segment header between files */

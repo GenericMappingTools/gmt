@@ -37,9 +37,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vabdefghioqs" GMT_OPT("HMm")
 
-EXTERN_MSC int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
-EXTERN_MSC int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
-
 #define INV_ROWS	1
 #define INV_SEGS	2
 #define INV_TBLS	4
@@ -417,7 +414,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
+GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
 	uint64_t col;
 	/* Loop over all columns and compare the two records, if differ then return false.
 	 * If passes all columns then they are the same and we return true. */
@@ -430,7 +427,7 @@ GMT_LOCAL bool is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtconvert (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	bool match = false, prevent_seg_headers = false;
 	int error = 0;
 	uint64_t out_col, col, n_cols_in = 0, n_cols_out, tbl, tlen;
@@ -646,7 +643,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				n_in_rows++;
 				if (Ctrl->Z.active && (n_in_rows < Ctrl->Z.first || n_in_rows > Ctrl->Z.last)) continue;	/* Skip if outside limited record range */
 				if (!Ctrl->E.active) {
-					if (Ctrl->T.active[1] && row && is_duplicate_row (S, row)) continue;	/* Skip duplicate records */
+					if (Ctrl->T.active[1] && row && gmtconvert_is_duplicate_row (S, row)) continue;	/* Skip duplicate records */
 				}
 				else if (Ctrl->E.mode < 0) {	/* Only pass first or last or both of them, skipping all others */
 					if (row > 0 && row < last_row) continue;		/* Always skip the middle of the segment */
@@ -770,7 +767,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			do_it = false;
 		}
 		else
-			GMT_Report (API, GMT_MSG_WARNING, "Sort data based on column %d in %s order\n", (int)Ctrl->N.col, way[Ctrl->N.dir+1]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Sort data based on column %d in %s order\n", (int)Ctrl->N.col, way[Ctrl->N.dir+1]);
 		GMT->current.io.record_type[GMT_OUT] = GMT->current.io.record_type[GMT_IN];
 		for (tbl = 0; do_it && tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 			for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */

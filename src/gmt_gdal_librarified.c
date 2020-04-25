@@ -107,7 +107,7 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 }
 
 /* ------------------------------------------------------------------------------------------------------------ */
-GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
+GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc" "dd" */
 	/* Based on GMT_Create_Options() */
 	unsigned int pos = 0, k, n_args = 0;
@@ -261,9 +261,12 @@ GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 	/* Initialize GDAL, read data and create a GMT Grid container
 	   These operations are common to several functions, so wrap them in a function */
 
-	GDALAllRegister();
+	if ((*Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
+		                          GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
+		return GMT->parent->error;
 
-	if (mode == GMT_IS_DATASET) {				/* Read vector data */
+	if (mode == GMT_IS_DATASET) {	/* Read vector data */
+		GDALAllRegister();
 		if (GDLL->M.read_gdal) 		/* Read input data with the GDAL machinery */
 			*hSrcDS = GDALOpenEx(GDLL->fname_in, GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR, NULL, NULL, NULL);
 		else
@@ -275,12 +278,52 @@ GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 		}
 	}
 	else {							/* Read raster data directly in GDAL */
-		*hSrcDS = GDALOpen(GDLL->fname_in, GA_ReadOnly);
+		if (GDLL->M.read_gdal) { 	/* Read input data with the GDAL machinery */
+			GDALAllRegister();
+			*hSrcDS = GDALOpen(GDLL->fname_in, GA_ReadOnly);
+		}
+		else {
+			struct GMT_GRID *G = NULL;
+			struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
+
+			if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, GDLL->fname_in, NULL)) == NULL) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read input grid.\n");
+				return -1;
+			}
+
+			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
+			if (G->header->ProjRefPROJ4) {to_GDALW->P.ProjRefPROJ4 = G->header->ProjRefPROJ4;	to_GDALW->P.active = true;}
+			if (G->header->ProjRefWKT)   {to_GDALW->P.ProjRefWKT   = G->header->ProjRefWKT;	to_GDALW->P.active = true;}
+			if (G->header->ProjRefEPSG)   to_GDALW->P.ProjRefEPSG  = G->header->ProjRefEPSG;	// Not yet used
+			to_GDALW->flipud = 0;
+			if (gmt_M_is_geographic (GMT, GMT_IN))
+				to_GDALW->geog = 1;
+			else
+				to_GDALW->geog = 0;
+			to_GDALW->n_columns = G->header->n_columns;
+			to_GDALW->n_rows = G->header->n_rows;
+			to_GDALW->nXSizeFull = G->header->mx;
+			to_GDALW->n_bands = G->header->n_bands;
+			to_GDALW->registration = G->header->registration;
+			to_GDALW->pad[0] = G->header->pad[XLO];		to_GDALW->pad[1] = G->header->pad[XHI];
+			to_GDALW->pad[2] = G->header->pad[YLO];		to_GDALW->pad[3] = G->header->pad[YHI];
+			to_GDALW->ULx = G->header->wesn[XLO];
+			to_GDALW->ULy = G->header->wesn[YHI];
+			to_GDALW->x_inc = gmt_M_get_inc (GMT, G->header->wesn[XLO], G->header->wesn[XHI], G->header->n_columns, G->header->registration);
+			to_GDALW->y_inc = gmt_M_get_inc (GMT, G->header->wesn[YLO], G->header->wesn[YHI], G->header->n_rows, G->header->registration);
+			to_GDALW->nan_value = G->header->nan_value;
+			to_GDALW->data = G->data;
+			to_GDALW->type = strdup("float32");
+			to_GDALW->H.active = true;				/* Tell gdalwrite that we just want it to send us back the GDAL dtaset pointer */
+
+			gmt_gdalwrite (GMT, NULL, to_GDALW);
+			*hSrcDS = to_GDALW->H.hSrcDS;
+			gmt_M_str_free (to_GDALW->type);
+			//gmt_M_free (GMT, to_GDALW);
+			GDALAllRegister();						/* Only register now because gdalwrite also Registers/DeRegister */
+		}
 	}
 
-	if ((*Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
-		                          GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
-		return GMT->parent->error;
 	return 0;
 }
 

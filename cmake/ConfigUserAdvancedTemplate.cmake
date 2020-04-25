@@ -150,6 +150,7 @@
 
 # Enable building of shared libraries [TRUE] (disable to use static libraries;
 # not recommended; on non-x86 architectures uncomment the next option as well):
+# NOTE: currently only support shared libraries
 #set (BUILD_SHARED_LIBS FALSE)
 
 # Create position independent code on all targets [auto] (needed for static
@@ -191,13 +192,11 @@
 # Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
 
-# List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes
-# that link against the full gmt libs (not just the API; for building codes
-# that only need the GMT API, see the gmt-custom project).
-#set (EXTRA_BUILD_DIRS apidemo)
-
-# List extra new supplemental modules for testing without adding them to the module list
-#set (EXTRA_MODULES_SUPPL newsuppl1.c newsuppl2.c)
+# List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules
+# that link against the full gmt libs. (For building codes that only need the GMT API,
+# see the https://github.com/GenericMappingTools/custom-supplements project).
+# These supplemental modules can be built into seperate libraries.
+#set (SUPPL_EXTRA_DIRS newsuppl1 newsuppl2 ...)
 
 # Directory in which to install the release sources per default
 # [${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION}]:

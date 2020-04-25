@@ -338,7 +338,7 @@ GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if 
 #define Return(code) {gmt_M_free (GMT, table); return (code);}
 
 #ifdef HAVE_GDAL
-GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b) {
+GMT_LOCAL int psimage_find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b) {
 	size_t i, j;
 	int idx;
 	bool trans = false;
@@ -383,17 +383,7 @@ GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input);
 
-int GMT_image (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: image\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_psimage (V_API, mode, args);
-}
-
-int GMT_psimage (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0, is_gdal = 0;
 	unsigned int row, col;
 	size_t n;
@@ -494,7 +484,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 						for (n = 0; n < 3; n++) colormap[n+4*k] = gmt_M_u255(Ctrl->G.rgb[k][n]);	/* Do not override the A entry, just R/G/B */
 				}
 			}
-			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
+			if (!Ctrl->G.active) has_trans = psimage_find_unique_color (GMT, colormap, n, &r, &g, &b);
 
 			/* Expand 8-bit indexed image to 24-bit image */
 			I->data = gmt_M_memory (GMT, I->data, 3 * I->header->nm, unsigned char);
@@ -510,7 +500,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		}
 		else if (I->header->n_bands == 4) { /* RGBA image, with a color map */
 			uint64_t n4, j4;
-			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, I->data, I->header->nm, &r, &g, &b);
+			if (!Ctrl->G.active) has_trans = psimage_find_unique_color (GMT, I->data, I->header->nm, &r, &g, &b);
 			for (j4 = n4 = 0; j4 < 4 * I->header->nm; j4++) { /* Reduce image from 32- to 24-bit */
 				if (has_trans && I->data[j4+3] == 0)
 					I->data[n4++] = (unsigned char)r, I->data[n4++] = (unsigned char)g, I->data[n4++] = (unsigned char)b, j4 += 3;
@@ -522,9 +512,9 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 		/* If a transparent color was found, we replace it with a unique one */
 		if (has_trans) {
-			Ctrl->G.rgb[PSIMG_TRA][0] = r / 255.;
-			Ctrl->G.rgb[PSIMG_TRA][1] = g / 255.;
-			Ctrl->G.rgb[PSIMG_TRA][2] = b / 255.;
+			Ctrl->G.rgb[PSIMG_TRA][0] = gmt_M_is255(r);
+			Ctrl->G.rgb[PSIMG_TRA][1] = gmt_M_is255(g);
+			Ctrl->G.rgb[PSIMG_TRA][2] = gmt_M_is255(b);
 		}
 
 		picture = (unsigned char *)I->data;
@@ -662,7 +652,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 			if (header.depth == 0)
 				PSL_plotepsimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture, &header);
 			else if (header.depth == 1) {
-				/* Invert is opposite from what is expected. This is to match the behaviour of -Gp */
+				/* Invert is opposite from what is expected. This is to match the behavior of -Gp */
 				if (Ctrl->I.active)
 					PSL_plotbitimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,
 							header.width, header.height, Ctrl->G.rgb[PSIMG_FGD], Ctrl->G.rgb[PSIMG_BGD]);
@@ -694,4 +684,14 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		PSL_free (picture);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_image (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: image\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psimage (V_API, mode, args);
 }

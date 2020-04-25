@@ -86,7 +86,7 @@ The GMT documentation is written in the plaintext markup language
 by documentation generator [Sphinx](https://www.sphinx-doc.org/en/master/).
 The reST plaintext files for the GMT documentation are located in the [doc/rst/source](/doc/rst/source) folder.
 You may need to know some basic reST syntax before making changes. Please refer to our
-[reStructuredText Cheatsheet](https://docs.generic-mapping-tools.org/latest/rst_cheatsheet.html) for details.
+[reStructuredText Cheatsheet](https://docs.generic-mapping-tools.org/latest/rst-cheatsheet.html) for details.
 
 Usually you don't need to build the documentation locally for small changes.
 If you want, you can install Sphinx locally,

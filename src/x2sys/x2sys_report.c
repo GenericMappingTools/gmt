@@ -212,7 +212,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struc
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ structure on distance */
+GMT_LOCAL int x2sysreport_comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ structure on distance */
         if ( ((struct COE_ADJUST *)point_1)->d < ((struct COE_ADJUST *)point_2)->d)
                 return(-1);
         else if ( ((struct COE_ADJUST *)point_1)->d > ((struct COE_ADJUST *)point_2)->d)
@@ -224,7 +224,7 @@ GMT_LOCAL int comp_structs (const void *point_1, const void *point_2) { /* Sort 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_report (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, *c = NULL, fmt[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, word[GMT_BUFSIZ] = {""};
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
@@ -453,7 +453,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 			adj[k].K[adj[k].n].c = 0.0;
 			adj[k].n++;
 
-			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
+			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), x2sysreport_comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = gmt_fopen (GMT, file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s!\n", file);

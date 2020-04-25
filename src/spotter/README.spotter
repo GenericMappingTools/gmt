@@ -22,15 +22,15 @@ hotspotter.c		: hotspotter C program code
 originater.c		: originater C program code
 polespotter.c		: polespotter C program code
 rotconverter.c		: rotconverter C program code
-libspotter.c		: SPOTTER C library code
-spotter.h		: SPOTTER C include file
-spotter.sh		: UNIX example script
-spotter.bat		: DOS example batch job
+spotter.c         : SPOTTER C library code
+spotter.h         : SPOTTER C include file
+spotter.sh        : UNIX example script
+spotter.bat       : DOS example batch job
 
 These files are now on the GMT cache server:
 @DC85.txt		: Duncan and Clague [1985] stage poles
 @WK97.txt		: Wessel and Kroenke [1997] stage poles
-@seamounts.txt		: Wessel and Lyons [1997] seamount set(*)
+@seamounts.txt	: Wessel and Lyons [1997] seamount set(*)
 @pac_hs.txt		: Yamaji [1992] list of Pacific hotspots
 
 (*) Only subset of large (> 100 Eotvos) seamounts.  The full data set

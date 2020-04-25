@@ -79,7 +79,7 @@ struct TREND2D_DATA {
 	double	w;
 };
 
-GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, double *ymin, double *ymax, unsigned int weighted_input, double **work) {
+GMT_LOCAL int trend2d_read_data (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, double *ymin, double *ymax, unsigned int weighted_input, double **work) {
 	uint64_t i;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	double *in = NULL;
@@ -138,7 +138,7 @@ GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **dat
 	return (0);
 }
 
-GMT_LOCAL void allocate_the_memory (struct GMT_CTRL *GMT, uint64_t np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model) {
+GMT_LOCAL void trend2d_allocate_the_memory (struct GMT_CTRL *GMT, uint64_t np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model) {
 	*gtg = gmt_M_memory (GMT, NULL, np*np, double);
 	*v = gmt_M_memory (GMT, NULL, np*np, double);
 	*gtd = gmt_M_memory (GMT, NULL, np, double);
@@ -150,7 +150,7 @@ GMT_LOCAL void allocate_the_memory (struct GMT_CTRL *GMT, uint64_t np, double **
 	*w_model = gmt_M_memory (GMT, NULL, np, double);
 }
 
-GMT_LOCAL void write_output_trend (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs) {
+GMT_LOCAL void trend2d_write_output_trend (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs) {
 	uint64_t i;
 	unsigned int j;
 	static double out[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -185,7 +185,7 @@ GMT_LOCAL void write_output_trend (struct GMT_CTRL *GMT, struct TREND2D_DATA *da
 	}
 }
 
-GMT_LOCAL void free_the_memory (struct GMT_CTRL *GMT, double *gtg, double *v, double *gtd, double *lambda, double *workb, double *workz, double *c_model, double *o_model, double *w_model, struct TREND2D_DATA *data, double *work) {
+GMT_LOCAL void trend2d_free_the_memory (struct GMT_CTRL *GMT, double *gtg, double *v, double *gtd, double *lambda, double *workb, double *workz, double *c_model, double *o_model, double *w_model, struct TREND2D_DATA *data, double *work) {
 	gmt_M_free (GMT, work);
 	gmt_M_free (GMT, data);
 	gmt_M_free (GMT, w_model);
@@ -199,7 +199,7 @@ GMT_LOCAL void free_the_memory (struct GMT_CTRL *GMT, double *gtg, double *v, do
 	gmt_M_free (GMT, gtg);
 }
 
-GMT_LOCAL void transform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax) {
+GMT_LOCAL void trend2d_transform_x (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax) {
 	uint64_t i;
 	double offsetx, scalex;
 	double offsety, scaley;
@@ -215,7 +215,7 @@ GMT_LOCAL void transform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, doubl
 	}
 }
 
-GMT_LOCAL void untransform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax) {
+GMT_LOCAL void trend2d_untransform_x (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax) {
 	uint64_t i;
 	double offsetx, scalex;
 	double offsety, scaley;
@@ -231,7 +231,7 @@ GMT_LOCAL void untransform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, dou
 	}
 }
 
-GMT_LOCAL double get_chisq_2d (struct TREND2D_DATA *data, uint64_t n_data, unsigned int n_model) {
+GMT_LOCAL double trend2d_get_chisq (struct TREND2D_DATA *data, uint64_t n_data, unsigned int n_model) {
 	uint64_t i, nu;
 	double chi = 0.0;
 
@@ -246,7 +246,7 @@ GMT_LOCAL double get_chisq_2d (struct TREND2D_DATA *data, uint64_t n_data, unsig
 	return (chi);
 }
 
-GMT_LOCAL void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *work, double *scale) {
+GMT_LOCAL void trend2d_recompute_weights (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *work, double *scale) {
 	uint64_t i;
 	double k, ksq, rr;
 
@@ -271,7 +271,7 @@ GMT_LOCAL void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *
 	}
 }
 
-GMT_LOCAL void load_g_row_2d (double x, double y, unsigned int n, double *gr) {
+GMT_LOCAL void trend2d_load_g_row (double x, double y, unsigned int n, double *gr) {
 	/* Current data position, appropriately normalized.  */
 	/* Number of model parameters, and elements of gr[]  */
 	/* Elements of row of G matrix.  */
@@ -319,27 +319,27 @@ GMT_LOCAL void load_g_row_2d (double x, double y, unsigned int n, double *gr) {
 	}
 }
 
-GMT_LOCAL void calc_m_and_r_2d (struct TREND2D_DATA *data, uint64_t n_data, double *model, unsigned int n_model, double *grow) {
+GMT_LOCAL void trend2d_calc_m_and_r (struct TREND2D_DATA *data, uint64_t n_data, double *model, unsigned int n_model, double *grow) {
 	/*	model[n_model] holds solved coefficients of m_type model.
 		grow[n_model] is a vector for a row of G matrix.  */
 
 	uint64_t i;
 	unsigned int j;
 	for (i = 0; i < n_data; i++) {
-		load_g_row_2d (data[i].x, data[i].y, n_model, grow);
+		trend2d_load_g_row (data[i].x, data[i].y, n_model, grow);
 		data[i].m = 0.0;
 		for (j = 0; j < n_model; j++) data[i].m += model[j]*grow[j];
 		data[i].r = data[i].z - data[i].m;
 	}
 }
 
-GMT_LOCAL void move_model_a_to_b_2d (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b) {
+GMT_LOCAL void trend2d_move_model_a_to_b (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b) {
 	unsigned int i;
 	for (i = 0; i < n_model; i++) model_b[i] = model_a[i];
 	*chisq_b = *chisq_a;
 }
 
-GMT_LOCAL void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp) {
+GMT_LOCAL void trend2d_load_gtg_and_gtd (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp) {
 	/* mp is row dimension of gtg  */
 
 	uint64_t i;
@@ -356,7 +356,7 @@ GMT_LOCAL void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *d
 
 	/* Sum over all data  */
 	for (i = 0; i < n_data; i++) {
-		load_g_row_2d (data[i].x, data[i].y, n_model, grow);
+		trend2d_load_g_row (data[i].x, data[i].y, n_model, grow);
 		if (data[i].w != 1.0) {
 			wz = data[i].w * data[i].z;
 			for (j = 0; j < n_model; j++) {
@@ -373,7 +373,7 @@ GMT_LOCAL void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *d
 	}
 }
 
-GMT_LOCAL void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir) {
+GMT_LOCAL void trend2d_solve_system (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir) {
 
 	unsigned int i, j, k, rank = 0, nrots;
 	double c_test, temp_inverse_ij;
@@ -535,7 +535,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_trend2d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_trend2d (void *V_API, int mode, void *args) {
 	unsigned int i, n_model, rank, np;
 	int error = 0;
 	bool significant;
@@ -576,54 +576,54 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 
 	GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 360.0;	/* For -L not to cause trouble in GMT->current.io.input */
 	np = Ctrl->N.value;	/* Row dimension for matrices gtg and v  */
-	allocate_the_memory (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
+	trend2d_allocate_the_memory (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
 
 	if ((error = GMT_Set_Columns (API, GMT_IN, 3 + Ctrl->W.active, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	i = (Ctrl->F.report) ? np : Ctrl->n_outputs;
 	if ((error = GMT_Set_Columns (API, GMT_OUT, i, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
-	if ((error = read_data_trend2d (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.mode, &work)) != 0) {
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+	if ((error = trend2d_read_data (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.mode, &work)) != 0) {
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 
 	if (xmin == xmax || ymin == ymax) {
 		GMT_Report (API, GMT_MSG_ERROR, "Maximum and minimum input values are the same.\n");
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_data == 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "Could not read any data.\n");
-		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_data < (uint64_t)Ctrl->N.value) {
 		GMT_Report (API, GMT_MSG_ERROR, "Ill-posed problem; n_data < n_model_max.\n");
 	}
 
-	transform_x_2d (data, n_data, xmin, xmax, ymin, ymax);	/* Set domain to [-1, 1] or [-pi, pi]  */
+	trend2d_transform_x (data, n_data, xmin, xmax, ymin, ymax);	/* Set domain to [-1, 1] or [-pi, pi]  */
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " data with X values from %.8g to %.8g\n", n_data, xmin, xmax);
 	GMT_Report (API, GMT_MSG_INFORMATION, "N_model%sRank%sChi_Squared%sSignificance\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
@@ -634,58 +634,58 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		n_model = 1;
 
 		/* Fit first model  */
-		load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-		solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-		calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-		c_chisq = get_chisq_2d (data, n_data, n_model);
+		trend2d_load_gtg_and_gtd (GMT,data, n_data, gtg, gtd, workb, n_model, np);
+		trend2d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+		trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+		c_chisq = trend2d_get_chisq (data, n_data, n_model);
 		GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, 1.0);
 		if (Ctrl->N.robust) {
 			do {
-				recompute_weights_2d (GMT, data, n_data, work, &scale);
-				move_model_a_to_b_2d (c_model, w_model, n_model, &c_chisq, &w_chisq);
-				load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-				solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-				c_chisq = get_chisq_2d (data, n_data, n_model);
+				trend2d_recompute_weights (GMT, data, n_data, work, &scale);
+				trend2d_move_model_a_to_b (c_model, w_model, n_model, &c_chisq, &w_chisq);
+				trend2d_load_gtg_and_gtd (GMT,data, n_data, gtg, gtd, workb, n_model, np);
+				trend2d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+				trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+				c_chisq = trend2d_get_chisq (data, n_data, n_model);
 				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
 				GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */
 			if (w_chisq < c_chisq) {
-				move_model_a_to_b_2d (w_model, c_model, n_model, &w_chisq, &c_chisq);
-				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-				if (Ctrl->weighted_output && n_model == Ctrl->N.value) recompute_weights_2d (GMT, data, n_data, work, &scale);
+				trend2d_move_model_a_to_b (w_model, c_model, n_model, &w_chisq, &c_chisq);
+				trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+				if (Ctrl->weighted_output && n_model == Ctrl->N.value) trend2d_recompute_weights (GMT, data, n_data, work, &scale);
 			}
 		}
 		/* First [robust] model has been found  */
 
 		significant = true;
 		while (n_model < Ctrl->N.value && significant) {
-			move_model_a_to_b_2d (c_model, o_model, n_model, &c_chisq, &o_chisq);
+			trend2d_move_model_a_to_b (c_model, o_model, n_model, &c_chisq, &o_chisq);
 			n_model++;
 
 			/* Fit next model  */
-			load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-			solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-			calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-			c_chisq = get_chisq_2d (data, n_data, n_model);
+			trend2d_load_gtg_and_gtd (GMT,data, n_data, gtg, gtd, workb, n_model, np);
+			trend2d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+			trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+			c_chisq = trend2d_get_chisq (data, n_data, n_model);
 			GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, 1.0);
 			if (Ctrl->N.robust) {
 				do {
-					recompute_weights_2d (GMT, data, n_data, work, &scale);
-					move_model_a_to_b_2d (c_model, w_model, n_model, &c_chisq, &w_chisq);
-					load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-					solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-					calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-					c_chisq = get_chisq_2d (data, n_data, n_model);
+					trend2d_recompute_weights (GMT, data, n_data, work, &scale);
+					trend2d_move_model_a_to_b (c_model, w_model, n_model, &c_chisq, &w_chisq);
+					trend2d_load_gtg_and_gtd (GMT,data, n_data, gtg, gtd, workb, n_model, np);
+					trend2d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+					trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+					c_chisq = trend2d_get_chisq (data, n_data, n_model);
 					significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
 					GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, prob);
 				} while (significant);
 				/* Go back to previous model only if w_chisq < c_chisq  */
 				if (w_chisq < c_chisq) {
-					move_model_a_to_b_2d (w_model, c_model, n_model, &w_chisq, &c_chisq);
-					calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-					if (Ctrl->weighted_output && n_model == Ctrl->N.value) recompute_weights_2d (GMT, data, n_data, work, &scale);
+					trend2d_move_model_a_to_b (w_model, c_model, n_model, &w_chisq, &c_chisq);
+					trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+					if (Ctrl->weighted_output && n_model == Ctrl->N.value) trend2d_recompute_weights (GMT, data, n_data, work, &scale);
 				}
 			}
 			/* Next [robust] model has been found  */
@@ -695,34 +695,34 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		if (!significant) {	/* Go back to previous [robust] model, stored in o_model  */
 			n_model--;
 			rank--;
-			move_model_a_to_b_2d (o_model, c_model, n_model, &o_chisq, &c_chisq);
-			calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-			if (Ctrl->N.robust && Ctrl->weighted_output) recompute_weights_2d (GMT, data, n_data, work, &scale);
+			trend2d_move_model_a_to_b (o_model, c_model, n_model, &o_chisq, &c_chisq);
+			trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+			if (Ctrl->N.robust && Ctrl->weighted_output) trend2d_recompute_weights (GMT, data, n_data, work, &scale);
 		}
 	}
 	else {
 		n_model = Ctrl->N.value;
-		load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-		solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-		calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-		c_chisq = get_chisq_2d (data, n_data, n_model);
+		trend2d_load_gtg_and_gtd (GMT,data, n_data, gtg, gtd, workb, n_model, np);
+		trend2d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+		trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+		c_chisq = trend2d_get_chisq (data, n_data, n_model);
 		GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, 1.0);
 		if (Ctrl->N.robust) {
 			do {
-				recompute_weights_2d (GMT, data, n_data, work, &scale);
-				move_model_a_to_b_2d (c_model, w_model, n_model, &c_chisq, &w_chisq);
-				load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-				solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
-				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-				c_chisq = get_chisq_2d (data, n_data, n_model);
+				trend2d_recompute_weights (GMT, data, n_data, work, &scale);
+				trend2d_move_model_a_to_b (c_model, w_model, n_model, &c_chisq, &w_chisq);
+				trend2d_load_gtg_and_gtd (GMT,data, n_data, gtg, gtd, workb, n_model, np);
+				trend2d_solve_system (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+				trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+				c_chisq = trend2d_get_chisq (data, n_data, n_model);
 				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
 				GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */
 			if (w_chisq < c_chisq) {
-				move_model_a_to_b_2d (w_model, c_model, n_model, &w_chisq, &c_chisq);
-				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
-				if (Ctrl->weighted_output && n_model == Ctrl->N.value) recompute_weights_2d (GMT, data, n_data, work, &scale);
+				trend2d_move_model_a_to_b (w_model, c_model, n_model, &w_chisq, &c_chisq);
+				trend2d_calc_m_and_r (data, n_data, c_model, n_model, workb);
+				if (Ctrl->weighted_output && n_model == Ctrl->N.value) trend2d_recompute_weights (GMT, data, n_data, work, &scale);
 			}
 		}
 	}
@@ -738,7 +738,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		GMT_Message (API, GMT_TIME_NONE, "\n");
 	}
 
-	untransform_x_2d (data, n_data, xmin, xmax, ymin, ymax);
+	trend2d_untransform_x (data, n_data, xmin, xmax, ymin, ymax);
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
@@ -753,12 +753,12 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 
 	}
 	else
-		write_output_trend (GMT,data, n_data, Ctrl->F.col, Ctrl->n_outputs);
+		trend2d_write_output_trend (GMT,data, n_data, Ctrl->F.col, Ctrl->n_outputs);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
-	free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+	trend2d_free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 
 	Return (GMT_NOERROR);
 }

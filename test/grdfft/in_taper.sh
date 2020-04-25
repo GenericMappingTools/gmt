@@ -4,7 +4,7 @@
 ps=in_taper.ps
 gmt set GMT_FFT kiss
 
-# Create a egg-carton input grid
+# Create an egg-carton input grid
 gmt grdmath -R0/300/0/200 -I1 -r X 5 MUL COSD Y 10 MUL SIND MUL = t.nc
 cat << EOF > box
 0	0

@@ -109,7 +109,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL double specular (double n_columns, double n_rows, double nz, double *s) {
+GMT_LOCAL double grdgradient_specular (double n_columns, double n_rows, double nz, double *s) {
 	/* SPECULAR Specular reflectance.
 	   R = SPECULAR(Nx,Ny,Nz,S,V) returns the reflectance of a surface with
 	   normal vector components [Nx,Ny,Nz].  S and V specify the direction
@@ -402,7 +402,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdgradient (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	bool bad, new_grid = false, separate = false;
 	int p[4], mx, error = 0;
 	unsigned int row, col, n;
@@ -679,7 +679,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 					mag = d_sqrt (dzdx * dzdx + dzdy * dzdy + norm_z * norm_z);
 					dzdx /= mag;	dzdy /= mag;	norm_z /= mag;
 					diffuse = MAX (0, s[0] * dzdx + s[1] * dzdy + s[2] * norm_z);
-					spec = specular (dzdx, dzdy, norm_z, s);
+					spec = grdgradient_specular (dzdx, dzdy, norm_z, s);
 					spec = pow (spec, Ctrl->E.shine);
 					output = (Ctrl->E.ambient + Ctrl->E.diffuse * diffuse + Ctrl->E.specular * spec) / k_ads;
 				}

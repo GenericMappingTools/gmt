@@ -153,7 +153,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct
 	spherical operation.
  */
 
-GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], uint64_t n_source, double band, bool geo, uint64_t index[]) {
+GMT_LOCAL uint64_t gmtsimplify_douglas_peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], uint64_t n_source, double band, bool geo, uint64_t index[]) {
 /* x/y_source	Input coordinates, n_source of them.  These are not changed */
 /* band;	tolerance in Cartesian user units or degrees */
 /* geo:		true if data is lon/lat */
@@ -274,7 +274,7 @@ GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[]
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtsimplify (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	int error;
 	unsigned int smode = GMT_NO_STRINGS;
 	bool geo, poly, skip;
@@ -333,7 +333,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance scalings according to unit selected */
 
 	/* Convert tolerance to degrees [or leave as Cartesian] */
-	/* We must do this here since Douglas_Peucker_geog is doing its own thing and cannot use gmt_distance yet */
+	/* We must do this here since gmtsimplify_douglas_peucker_geog is doing its own thing and cannot use gmt_distance yet */
 
 	tolerance = Ctrl->T.tolerance;
 	switch (Ctrl->T.unit) {
@@ -371,7 +371,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 			/* If input segment is a closed polygon then the simplified segment must have at least 4 points, else 3 is enough */
 			poly = (!gmt_polygon_is_open (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows));
 			index = gmt_M_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
-			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
+			np_out = gmtsimplify_douglas_peucker_geog (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
 			skip = ((poly && np_out < 4) || (np_out == 2 && S[GMT_IN]->data[GMT_X][index[0]] == S[GMT_IN]->data[GMT_X][index[1]] && S[GMT_IN]->data[GMT_Y][index[0]] == S[GMT_IN]->data[GMT_Y][index[1]]));
 			if (!skip) {	/* Must allocate one segment for output */
 				smode = (S[GMT_IN]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;

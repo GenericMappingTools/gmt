@@ -102,7 +102,7 @@ enum Netcdf_io_mode {
 };
 
 /* Wrapper around gmt_nc_put_vara_grdfloat and gmt_nc_get_vara_grdfloat */
-static inline int io_nc_vara_grdfloat (int ncid, int varid, const size_t *startp, const size_t *countp, gmt_grdfloat *fp, unsigned io_mode) {
+static inline int gmtnc_vara_grdfloat (int ncid, int varid, const size_t *startp, const size_t *countp, gmt_grdfloat *fp, unsigned io_mode) {
 	if (io_mode == k_put_netcdf)	/* write netcdf */
 		return gmt_nc_put_vara_grdfloat (ncid, varid, startp, countp, fp);
 	/* read netcdf */
@@ -110,7 +110,7 @@ static inline int io_nc_vara_grdfloat (int ncid, int varid, const size_t *startp
 }
 
 /* Wrapper around gmt_nc_put_varm_grdfloat and gmt_nc_get_varm_grdfloat */
-static inline int io_nc_varm_grdfloat (int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const ptrdiff_t *imapp, gmt_grdfloat *fp, unsigned io_mode) {
+static inline int gmtnc_varm_grdfloat (int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const ptrdiff_t *imapp, gmt_grdfloat *fp, unsigned io_mode) {
 	if (io_mode == k_put_netcdf)	/* write netcdf */
 		return gmt_nc_put_varm_grdfloat (ncid, varid, startp, countp, stridep, imapp, fp);
 	/* read netcdf */
@@ -221,9 +221,9 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 #endif
 			/* get/put chunked rows */
 			if (stride)
-				status = io_nc_varm_grdfloat (HH->ncid, HH->z_id, start, count, onestride, imap, grid, io_mode);
+				status = gmtnc_varm_grdfloat (HH->ncid, HH->z_id, start, count, onestride, imap, grid, io_mode);
 			else
-				status = io_nc_vara_grdfloat (HH->ncid, HH->z_id, start, count, grid, io_mode);
+				status = gmtnc_vara_grdfloat (HH->ncid, HH->z_id, start, count, grid, io_mode);
 
 			/* advance grid location and set new origin */
 			grid += count[yx_dim[0]] * ((stride == 0 ? width_t : stride));
@@ -242,9 +242,9 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
 #endif
 			if (stride)
-				status = io_nc_varm_grdfloat (HH->ncid, HH->z_id, start, count, onestride, imap, grid, io_mode);
+				status = gmtnc_varm_grdfloat (HH->ncid, HH->z_id, start, count, onestride, imap, grid, io_mode);
 			else
-				status = io_nc_vara_grdfloat (HH->ncid, HH->z_id, start, count, grid, io_mode);
+				status = gmtnc_vara_grdfloat (HH->ncid, HH->z_id, start, count, grid, io_mode);
 		}
 	}
 	else {
@@ -252,9 +252,9 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		count[yx_dim[0]] = height_t;
 		count[yx_dim[1]] = width_t;
 		if (stride)
-			status = io_nc_varm_grdfloat (HH->ncid, HH->z_id, start, count, onestride, imap, grid, io_mode);
+			status = gmtnc_varm_grdfloat (HH->ncid, HH->z_id, start, count, onestride, imap, grid, io_mode);
 		else
-			status = io_nc_vara_grdfloat (HH->ncid, HH->z_id, start, count, grid, io_mode);
+			status = gmtnc_vara_grdfloat (HH->ncid, HH->z_id, start, count, grid, io_mode);
 	}
 	return status;
 }
@@ -375,14 +375,14 @@ GMT_LOCAL void gmtnc_set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRI
 	GMT->current.setting.io_nc4_chunksize[1] = (size_t) ceil (header->n_columns / floor (header->n_columns / chunksize[1]));
 }
 
-GMT_LOCAL bool not_obviously_global (double *we) {
+GMT_LOCAL bool gmtnc_not_obviously_global (double *we) {
 	/* If range is not 360 and boundaries are not 0, 180, 360 then we pass */
 	if (!gmt_M_360_range (we[0], we[1])) return true;
 	if (!(doubleAlmostEqualZero (we[0], 0.0) || doubleAlmostEqual (we[0], -180.0))) return true;
 	return false;
 }
 
-GMT_LOCAL bool not_obviously_polar (double *se) {
+GMT_LOCAL bool gmtnc_not_obviously_polar (double *se) {
 	/* If range is not 180 and boundaries are not -90/90 then we pass */
 	if (!gmt_M_180_range (se[0], se[1])) return true;
 	if (!(doubleAlmostEqual (se[0], -90.0) && doubleAlmostEqual (se[1], 90.0))) return true;
@@ -627,7 +627,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
 			if (fabs (dummy[0] - xy[0]) > ((0.5+GMT_CONV5_LIMIT) * dx) || fabs (dummy[1] - xy[header->n_columns-1]) > ((0.5+GMT_CONV5_LIMIT) * dx)) {
-				if (not_obviously_global (dummy)) {
+				if (gmtnc_not_obviously_global (dummy)) {
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "The x-coordinates and range attribute are in conflict; must rely on coordinates only\n");
 					dummy[0] = xy[0], dummy[1] = xy[header->n_columns-1];
 					has_range = false;	/* Since useless information */
@@ -708,7 +708,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
 			if (fabs (dummy[0] - xy[0]) > ((0.5+GMT_CONV5_LIMIT) * dy) || fabs (dummy[1] - xy[header->n_rows-1]) > ((0.5+GMT_CONV5_LIMIT) * dy)) {
-				if (not_obviously_polar (dummy)) {
+				if (gmtnc_not_obviously_polar (dummy)) {
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "The y-coordinates and range attribute are in conflict; must rely on coordinates only\n");
 					dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
 					has_range = false;	/* Since useless information */
@@ -818,7 +818,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->z_min = header->z_max = 0.0;
 		}
 		{	/* Get deflation and chunking info */
-			int storage_mode, shuffle, deflate, deflate_level;
+			int storage_mode, shuffle = 0, deflate = 0, deflate_level = 0;
 			size_t chunksize[5]; /* chunksize of z */
 			gmt_M_err_trap (nc_inq_var_chunking (ncid, z_id, &storage_mode, chunksize));
 			if (storage_mode == NC_CHUNKED) {
@@ -828,7 +828,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			else { /* NC_CONTIGUOUS */
 				HH->z_chunksize[0] = HH->z_chunksize[1] = 0;
 			}
-			gmt_M_err_trap (nc_inq_var_deflate (ncid, z_id, &shuffle, &deflate, &deflate_level));
+			if (HH->is_netcdf4) gmt_M_err_trap (nc_inq_var_deflate (ncid, z_id, &shuffle, &deflate, &deflate_level));
 			HH->z_shuffle = shuffle ? true : false; /* if shuffle filter is turned on */
 			HH->z_deflate_level = deflate ? deflate_level : 0; /* if deflate filter is in use */
 		}
@@ -890,7 +890,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
 			int id[1], dim[1];
 
-			if (header->ProjRefWKT == NULL) {				/* Must convert from proj4 string to WKT */
+			if (header->ProjRefWKT == NULL || !header->ProjRefWKT[0]) {				/* Must convert from proj4 string to WKT */
 				OGRSpatialReferenceH hSRS = OSRNewSpatialReference(NULL);
 
 				if (header->ProjRefPROJ4 && (!strncmp(header->ProjRefPROJ4, "+unavailable", 4) || strlen(header->ProjRefPROJ4) <= 5)) {	/* Silently jump out of here */

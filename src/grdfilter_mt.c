@@ -25,7 +25,7 @@
 */
 
 /*
-This is a experimental multi-threaded version that uses gthreads from GLIB an hence depends on that lib
+This is an experimental multi-threaded version that uses gthreads from GLIB an hence depends on that lib
 that on its turn depends on  linintl (gettext)
 
 To compile I patched src/CMakeList.txt by adding these two lines
@@ -181,9 +181,9 @@ struct THREAD_STRUCT {
 };
 
 static void *threading_function (void *args);
-void threaded_function (struct THREAD_STRUCT *t);
+void grdfilter_threaded_function (struct THREAD_STRUCT *t);
 
-void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFILTER_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDFILTER_CTRL);
@@ -195,7 +195,7 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
+static void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->F.file);
@@ -205,8 +205,8 @@ void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* D
 }
 
 /* -----------------------------------------------------------------------------------*/
-static void *thread_function (void *args) {
-	threaded_function ((struct THREAD_STRUCT *)args);
+static void *grdfilter_thread_function (void *args) {
+	grdfilter_threaded_function ((struct THREAD_STRUCT *)args);
 	return NULL;
 }
 
@@ -969,7 +969,7 @@ int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 
 		if (Ctrl->z.n_threads == 1) {		/* Independently of WITH_THREADS, if only one don't call the threading machine */
    			threadArg[i].r_stop = Gout->header->n_rows;
-			threaded_function (&threadArg[0]);
+			grdfilter_threaded_function (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
 		}
 #ifndef HAVE_GLIB_GTHREAD
@@ -977,7 +977,7 @@ int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Gout->header->n_rows) / Ctrl->z.n_threads);
    		if (i == Ctrl->z.n_threads - 1) threadArg[i].r_stop = Gout->header->n_rows;	/* Make sure last row is not left behind */
-		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
+		threads[i] = g_thread_new(NULL, grdfilter_thread_function, (void*)&(threadArg[i]));
 	}
 
 	if (Ctrl->z.n_threads > 1) {		/* Otherwise g_thread_new was never called aand so no need to "join" */
@@ -1077,7 +1077,7 @@ int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 }
 
 /* ----------------------------------------------------------------------------------------------------- */
-void threaded_function (struct THREAD_STRUCT *t) {
+void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 
 	bool visit_check = false, go_on, get_weight_sum = true;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out;
