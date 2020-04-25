@@ -58,7 +58,7 @@
 #define GMT_CORE_LIB_NAME "@GMT_CORE_LIB_NAME@"
 
 /* Name of supplemental library */
-#define GMT_SUPPL_LIB_NAME "@GMT_SUPPL_LIB_NAME@"
+#define GMT_SUPPL_LIBRARY "@GMT_SUPPL_LIBRARY@"
 
 /* Name of PSL library */
 #define PSL_LIB_NAME "@PSL_LIB_NAME@"
