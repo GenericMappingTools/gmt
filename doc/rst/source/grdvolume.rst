@@ -30,7 +30,7 @@ Description
 -----------
 
 **grdvolume** reads a 2-D grid file and calculates the volume contained between the surface and the plane specified
-by the given contour (or zero if not given) and reports the area, volume, and maximum mean height (volume/area).
+by the given contour (or zero if not given) and reports the contour, area, volume, and maximum mean height (volume/area).
 Alternatively, specify a range of contours to be tried and **grdvolume** will determine the volume and area inside
 the contour for all contour values. Using **-T**, the contour that produced the maximum mean height (or maximum
 curvature of heights vs contour value) is reported as well. This feature may be used with :doc:`grdfilter`
@@ -140,6 +140,9 @@ To find the volume of water in a lake with its free surface at 0 and max depth o
 Notes
 -----
 
+#. The output of **grdvolume** is one or more records (one per contour if **-C**
+   is set to search multiple contours) containing *contour area volume volume/area*.
+   These records are written to standard output.
 #. For geographical grids we convert degrees to "Flat Earth" distances in
    meter.  You can use **-S** to select another distance unit.  The
    area is then reported in this unit squared while the volume is reported
