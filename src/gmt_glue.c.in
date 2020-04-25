@@ -35,7 +35,7 @@ static struct GMT_MODULEINFO modules[] = {
 
 /* Pretty print all shared module names and their purposes for gmt --help */
 EXTERN_MSC void gmtlib_@SUPPL_NAME@_module_show_all (void *API) {
-	gmtlib_module_show_all (API, modules, "@SUPPL_PURPOSE@");
+	gmtlib_module_show_all (API, modules, "@SHARED_LIB_PURPOSE@");
 }
 
 /* Produce single list on stdout of all shared module names for gmt --show-modules */
