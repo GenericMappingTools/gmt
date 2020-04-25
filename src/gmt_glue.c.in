@@ -21,6 +21,8 @@
  *   const char *gmtlib_@SHARED_LIB_NAME@_module_keys (void *API, char *candidate);
  *   const char *gmtlib_@SHARED_LIB_NAME@_module_group  (void *API, char *candidate);
  *
+ * All functions are exported by the shared library so that gmt can call these
+ * functions by name to learn about the library.
  */
  
 #include "gmt_dev.h"
