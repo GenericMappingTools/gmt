@@ -335,11 +335,12 @@ endif (NOT LICENSE_RESTRICTED)
 ##
 ##	Set list of source codes
 ##
-# main gmt program for install compatibility links via install_module_symlink [Windows only]
-set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
-
+# Two variables for generating gmt_${SHARED_LIB_NAME}_glue.c and gmt_${SHARED_LIB_NAME}_moduleinfo.h
 set (SHARED_LIB_NAME core)
 set (SHARED_LIB_PURPOSE "GMT core: The main modules of the Generic Mapping Tools")
+
+# main gmt program for installing compatibility links via install_module_symlink [Windows only]
+set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 
 # Legacy modules for which to install compatibility links via install_module_symlink
 set (GMT_COMPAT_MODULES minmax gmtstitch gmtdp grdreformat ps2raster originator PARENT_SCOPE)
@@ -452,7 +453,6 @@ foreach (_prog_src ${GMT_PROGS_SRCS} begin.c clear.c end.c figure.c inset.c subp
 endforeach (_prog_src ${GMT_PROGS_SRCS})
 list (JOIN _moduleinfo "\n" _moduleinfo)
 file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_moduleinfo.h" ${_moduleinfo})
-
 
 # Configure header files to pass some of the CMake settings to the source code
 configure_file (gmt_config.h.in gmt_config.h)
@@ -684,19 +684,22 @@ if (BUILD_SUPPLEMENTS)
 		set (CMAKE_SHARED_MODULE_SUFFIX .so)
 	endif (UNIX)
 
-	set (SHARED_LIB_NAME ${GMT_SUPPL_LIB_NAME})
-	set (SHARED_LIB_PURPOSE "GMT suppl: The official supplements to the Generic Mapping Tools")
-	configure_file (gmt_glue.c.in gmt_${SHARED_LIB_NAME}_glue.c)
-	# Needed in supplement libraries
-	set (GMT_SUPPL_SRCS gmt_modern.c ${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c)
-
 	# supplement directories to be built as supplement libraries
 	# SUPPL_EXTRA_DIRS are directories for custom supplements.
 	# See cmake/ConfigUserAdvancedTemplate.cmake for details.
 	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${SUPPL_EXTRA_DIRS})
 
+	# Two variables for gmt_${SHARED_LIB_NAME}_glue.c and gmt_${SHARED_LIB_NAME}_modueinfo.h
+	set (SHARED_LIB_NAME ${GMT_SUPPL_LIB_NAME})
+	set (SHARED_LIB_PURPOSE "GMT suppl: The official supplements to the Generic Mapping Tools")
+
+	# generate gmt_${SHARED_LIB_NAME}_glue.c
+	configure_file (gmt_glue.c.in gmt_${SHARED_LIB_NAME}_glue.c)
+
+	# Needed in supplement libraries
+	set (GMT_SUPPL_SRCS gmt_modern.c ${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c)
+
 	# process supplement directories
-	set (_moduleinfo)
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		# include CMake settings in supplement directories
 		add_subdirectory (${_dir})
@@ -725,30 +728,30 @@ if (BUILD_SUPPLEMENTS)
 
 		# rename the supplement dll [Windows only]
 		get_subdir_var (SUPPL_${_suppl_lib_name}_DLL_RENAME SUPPL_DLL_RENAME ${_dir})
-
-
-		# generate gmt_${SHARED_LIB_NAME}_moduleinfo.h
-		get_subdir_var_files (_suppl_progs_srcs SUPPL_PROGS_SRCS ${_dir})
-		foreach (_prog_src ${_suppl_progs_srcs})
-			file (READ ${_prog_src} _src_content)
-			string (REGEX MATCH "#define THIS_MODULE_CLASSIC_NAME[ \t]*\"([^\n]*)\"\n" _this_module_classic_name ${_src_content})
-			set (_this_module_classic_name ${CMAKE_MATCH_1})
-			string (REGEX MATCH "#define THIS_MODULE_MODERN_NAME[ \t]*\"([^\n]*)\"\n" _this_module_modern_name ${_src_content})
-			set (_this_module_modern_name ${CMAKE_MATCH_1})
-			string (REGEX MATCH "#define THIS_MODULE_LIB[ \t]*\"([^\n]*)\"\n" _this_module_lib ${_src_content})
-			set (_this_module_lib ${CMAKE_MATCH_1})
-			string (REGEX MATCH "#define THIS_MODULE_PURPOSE[ \t]*\"([^\n]*)\"\n" _this_module_purpose ${_src_content})
-			set (_this_module_purpose ${CMAKE_MATCH_1})
-			string (REGEX MATCH "#define THIS_MODULE_KEYS[ \t]*\"([^\n]*)\"\n" _this_module_keys ${_src_content})
-			set (_this_module_keys ${CMAKE_MATCH_1})
-			list (APPEND _moduleinfo "\t{\"${_this_module_modern_name}\", \"${_this_module_classic_name}\", \"${_this_module_lib}\", \"${_this_module_purpose}\", \"${_this_module_keys}\"},")
-		endforeach (_prog_src ${GMT_PROGS_SRCS})
 	endforeach (_dir)
-    list (JOIN _moduleinfo "\n" _moduleinfo)
-	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_moduleinfo.h" ${_moduleinfo})
 
 	# remove duplicate supplement library names, so multiple supplement packages can be built into one single library
 	list (REMOVE_DUPLICATES GMT_SUPPL_LIBRARIES)
+
+	# generate gmt_${SHARED_LIB_NAME}_moduleinfo.h
+	set (_moduleinfo)
+	get_subdir_var_files (_suppl_progs_srcs SUPPL_PROGS_SRCS ${GMT_SUPPL_DIRS})
+	foreach (_prog_src ${_suppl_progs_srcs})
+		file (READ ${_prog_src} _src_content)
+		string (REGEX MATCH "#define THIS_MODULE_CLASSIC_NAME[ \t]*\"([^\n]*)\"\n" _this_module_classic_name ${_src_content})
+		set (_this_module_classic_name ${CMAKE_MATCH_1})
+		string (REGEX MATCH "#define THIS_MODULE_MODERN_NAME[ \t]*\"([^\n]*)\"\n" _this_module_modern_name ${_src_content})
+		set (_this_module_modern_name ${CMAKE_MATCH_1})
+		string (REGEX MATCH "#define THIS_MODULE_LIB[ \t]*\"([^\n]*)\"\n" _this_module_lib ${_src_content})
+		set (_this_module_lib ${CMAKE_MATCH_1})
+		string (REGEX MATCH "#define THIS_MODULE_PURPOSE[ \t]*\"([^\n]*)\"\n" _this_module_purpose ${_src_content})
+		set (_this_module_purpose ${CMAKE_MATCH_1})
+		string (REGEX MATCH "#define THIS_MODULE_KEYS[ \t]*\"([^\n]*)\"\n" _this_module_keys ${_src_content})
+		set (_this_module_keys ${CMAKE_MATCH_1})
+		list (APPEND _moduleinfo "\t{\"${_this_module_modern_name}\", \"${_this_module_classic_name}\", \"${_this_module_lib}\", \"${_this_module_purpose}\", \"${_this_module_keys}\"},")
+	endforeach (_prog_src ${GMT_PROGS_SRCS})
+    list (JOIN _moduleinfo "\n" _moduleinfo)
+	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_moduleinfo.h" ${_moduleinfo})
 
 	# loop over all supplement libraries
 	foreach (_suppl_lib_name ${GMT_SUPPL_LIBRARIES})
