@@ -371,7 +371,7 @@ set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c gmt_mbsystem_moduleinfo.h)
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_common_runpath.h gmt_common_sighandler.c gmt_common_string.h clear.c begin.c
-	gmt_color_rgb.h gmt_colornames.h gmt_media_size.h gmt_mgg_header2.h 
+	gmt_color_rgb.h gmt_colornames.h gmt_media_size.h gmt_mgg_header2.h
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
 	figure.c gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
 	gmt_contour.h gmt_customio.h gmt_datums.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
@@ -435,7 +435,7 @@ add_custom_target (gen_gmt_headers DEPENDS ${GMT_GEN_HDRS})
 
 # generate gmt_${SUPPL_NAME}_moduleinfo.h
 set (_moduleinfo)
-foreach (_prog_src ${GMT_PROGS_SRCS} begin.c clear.c end.c figure.c inset.c subplot.c)
+foreach (_prog_src ${GMT_PROGS_SRCS} begin.c clear.c end.c figure.c inset.c subplot.c gmtread.c gmtwrite.c)
 	file (READ ${_prog_src} _src_content)
 	string (REGEX MATCH "#define THIS_MODULE_CLASSIC_NAME[ \t]*\"([^\n]*)\"\n" _this_module_classic_name ${_src_content})
 	set (_this_module_classic_name ${CMAKE_MATCH_1})
@@ -449,9 +449,6 @@ foreach (_prog_src ${GMT_PROGS_SRCS} begin.c clear.c end.c figure.c inset.c subp
 	set (_this_module_keys ${CMAKE_MATCH_1})
 	list (APPEND _moduleinfo "\t{\"${_this_module_modern_name}\", \"${_this_module_classic_name}\", \"${_this_module_lib}\", \"${_this_module_purpose}\", \"${_this_module_keys}\"},")
 endforeach (_prog_src ${GMT_PROGS_SRCS})
-# Two more entries for "gmtread" and "gmtwrite"
-list (APPEND _moduleinfo "\t{\"gmtread\", \"gmtread\", \"core\", \"Read GMT objects into external API\", \"-T-,<?{,>?}\"},")
-list (APPEND _moduleinfo "\t{\"gmtwrite\", \"gmtwrite\", \"core\", \"Write GMT objects from external API\", \"-T-,<?{,>?}\"},")
 list (JOIN _moduleinfo "\n" _moduleinfo)
 file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/gmt_${SUPPL_NAME}_moduleinfo.h" ${_moduleinfo})
 
