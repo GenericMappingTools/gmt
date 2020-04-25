@@ -19,8 +19,6 @@
 #
 # src/CMakeLists.txt
 #
-set (SHARED_LIB_NAME core)
-set (SHARED_LIB_PURPOSE "GMT core: The main modules of the Generic Mapping Tools")
 
 ##
 ##	Basic settings
@@ -339,6 +337,9 @@ endif (NOT LICENSE_RESTRICTED)
 ##
 # main gmt program for install compatibility links via install_module_symlink [Windows only]
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
+
+set (SHARED_LIB_NAME core)
+set (SHARED_LIB_PURPOSE "GMT core: The main modules of the Generic Mapping Tools")
 
 # Legacy modules for which to install compatibility links via install_module_symlink
 set (GMT_COMPAT_MODULES minmax gmtstitch gmtdp grdreformat ps2raster originator PARENT_SCOPE)
