@@ -17,10 +17,10 @@
 extern "C" {
 #endif
 
+#define GMT_SUPPL_LIB_NAME "@GMT_SUPPL_LIB_NAME@"
+
 #ifdef _WIN32
 #include <windows.h>
-
-#define GMT_SUPPL_LIB_NAME "@GMT_SUPPL_LIB_NAME@"
 
 /* Various functions declared in gmt_sharedlibs.c */
 EXTERN_MSC void *dlopen (const char *module_name, int mode);
