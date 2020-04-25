@@ -275,7 +275,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "\nERROR: No module named %s was found.  This could mean one of four cases:\n", module);
 			fprintf (stderr, "  1. There actually is no such module; please check your spelling.\n");
 			fprintf (stderr, "  2. You used a modern mode module name while running in GMT classic mode.\n");
-			if (strlen (GMT_SUPPL_LIB_NAME))
+			if (strlen (GMT_SUPPL_LIBRARY))
 				fprintf (stderr, "  3. Module exists in the GMT supplemental library, but the library could not be found.\n");
 			else
 				fprintf (stderr, "  3. Module exists in the GMT supplemental library, but the library was not installed.\n");
