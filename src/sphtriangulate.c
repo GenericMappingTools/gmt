@@ -530,7 +530,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *Ctrl, str
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sphtriangulate (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	char *tmode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
 	int error = 0;
 	bool first = false, steradians = false, do_authalic = false;

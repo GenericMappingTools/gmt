@@ -303,7 +303,7 @@ GMT_LOCAL void xyz2grd_protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *opt
 	}
 }
 
-int GMT_xyz2grd (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
 	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1;

@@ -699,27 +699,9 @@ GMT_LOCAL int pscoast_check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SH
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_coast (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {	/* See if -E+l|L was given, which is part of usage */
-		struct GMT_OPTION *opt = NULL, *options = GMT_Create_Options (API, mode, args);
-		bool list_items = false, dump_data = false;
-		if (API->error) return (API->error);	/* Set or get option list */
-		list_items = ((opt = GMT_Find_Option (API, 'E', options)) && opt->arg[0] == '+' && strchr ("lL", opt->arg[1]));
-		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
-		gmt_M_free_options (mode);
-		if (!list_items && !dump_data) {
-			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: coast\n");
-			return (GMT_NOT_A_VALID_MODULE);
-		}
-	}
-	return GMT_pscoast (V_API, mode, args);
-}
-
 EXTERN_MSC uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx);
 
-int GMT_pscoast (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pscoast task */
 
 	int i, np, ind, bin = 0, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
@@ -1330,4 +1312,22 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	GMT->current.map.coastline = false;
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_coast (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {	/* See if -E+l|L was given, which is part of usage */
+		struct GMT_OPTION *opt = NULL, *options = GMT_Create_Options (API, mode, args);
+		bool list_items = false, dump_data = false;
+		if (API->error) return (API->error);	/* Set or get option list */
+		list_items = ((opt = GMT_Find_Option (API, 'E', options)) && opt->arg[0] == '+' && strchr ("lL", opt->arg[1]));
+		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
+		gmt_M_free_options (mode);
+		if (!list_items && !dump_data) {
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: coast\n");
+			return (GMT_NOT_A_VALID_MODULE);
+		}
+	}
+	return GMT_pscoast (V_API, mode, args);
 }

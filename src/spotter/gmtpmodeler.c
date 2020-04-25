@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {if (p) gmt_M_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	unsigned int inside, stage, n_stages, k;
 	int retval, error = 0, n_fields;
 

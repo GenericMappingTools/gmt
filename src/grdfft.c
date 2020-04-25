@@ -815,7 +815,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdfft (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdfft (void *V_API, int mode, void *args) {
 	int error = 0, status;
 	unsigned int op_count = 0, par_count = 0, k;
 	char *spec_msg[2] = {"spectrum", "cross-spectrum"};

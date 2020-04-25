@@ -402,7 +402,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdgradient (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	bool bad, new_grid = false, separate = false;
 	int p[4], mx, error = 0;
 	unsigned int row, col, n;

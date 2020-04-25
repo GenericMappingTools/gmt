@@ -95,7 +95,7 @@
 #include "gmt_dev.h"
 #include <stdarg.h>
 #include "gmt_internals.h"
-#include "common_runpath.h"
+#include "gmt_common_runpath.h"
 
 #ifdef GMT_MATLAB
 #	include <mex.h>

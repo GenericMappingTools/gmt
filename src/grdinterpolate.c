@@ -315,7 +315,7 @@ GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdinterpolate (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	char file[PATH_MAX] = {""}, cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL;
 	bool equi_levels;
 	int error = 0;

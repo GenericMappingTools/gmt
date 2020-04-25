@@ -274,7 +274,7 @@ GMT_LOCAL double polespotter_get_angle_between_trends (struct GMT_CTRL *GMT, dou
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_polespotter (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_polespotter (void *V_API, int mode, void *args) {
 	bool create_great_circles;
 	int error;
 	unsigned int d, n_steps, grow, gcol, k;

@@ -1178,7 +1178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdredpol (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	bool wrote_one = false;
 	unsigned int i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;

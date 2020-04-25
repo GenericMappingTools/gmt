@@ -278,8 +278,114 @@ enum GMTAPI_enum_status {
  * gmtapi_* functions are exported and may be used in other gmt_*.c files
  */
 
+GMT_LOCAL int gmtapi_sort_on_classic (const void *vA, const void *vB) {
+	const struct GMT_MODULEINFO *A = vA, *B = vB;
+	if (A == NULL) return +1;	/* Get the NULL entry to the end */
+	if (B == NULL) return -1;	/* Get the NULL entry to the end */
+	return strcmp(A->cname, B->cname);
+}
 
-/* A few functions are declared here since it is used in so many places */
+
+/* Function to exclude some special core modules from being reported by gmt --help|show-modules */
+GMT_LOCAL int gmtapi_skip_this_module (const char *name) {
+	if (!strncmp (name, "gmtread", 7U)) return 1;	/* Skip the gmtread module */
+	if (!strncmp (name, "gmtwrite", 8U)) return 1;	/* Skip the gmtwrite module */
+	return 0;	/* Display this one */
+}
+
+/* Function to exclude modern mode modules from being reported by gmt --show-classic */
+GMT_LOCAL int gmtapi_skip_modern_module (const char *name) {
+	if (!strncmp (name, "subplot", 7U)) return 1;	/* Skip the subplot module */
+	if (!strncmp (name, "figure", 6U)) return 1;	/* Skip the figure module */
+	if (!strncmp (name, "begin", 5U)) return 1;		/* Skip the begin module */
+	if (!strncmp (name, "clear", 5U)) return 1;		/* Skip the clear module */
+	if (!strncmp (name, "inset", 5U)) return 1;		/* Skip the inset module */
+	if (!strncmp (name, "movie", 5U)) return 1;		/* Skip the movie module */
+	if (!strncmp (name, "docs", 4U)) return 1;		/* Skip the docs module */
+	if (!strncmp (name, "end", 3U)) return 1;		/* Skip the end module */
+	return 0;	/* Display this one */
+}
+
+/* Pretty print all GMT core module names and their purposes for gmt --help */
+void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[], const char *title) {
+	unsigned int module_id = 0;
+	char message[GMT_LEN256];
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	GMT_Message (V_API, GMT_TIME_NONE, "\n===  %s  ===\n", title);
+	while (M[module_id].cname != NULL) {
+		if (module_id == 0 || strcmp (M[module_id-1].component, M[module_id].component)) {
+			/* Start of new supplemental group */
+			snprintf (message, GMT_LEN256, "\nModule name:     Purpose of %s module:\n", M[module_id].component);
+			GMT_Message (V_API, GMT_TIME_NONE, message);
+			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
+		}
+		if (API->external || !gmtapi_skip_this_module (M[module_id].cname)) {
+			snprintf (message, GMT_LEN256, "%-16s %s\n",
+				M[module_id].mname, M[module_id].purpose);
+				GMT_Message (V_API, GMT_TIME_NONE, message);
+		}
+		++module_id;
+	}
+}
+
+/* Produce single list on stdout of all GMT core module names for gmt --show-modules */
+void gmtlib_module_list_all (void *V_API, struct GMT_MODULEINFO M[]) {
+	unsigned int module_id = 0;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	while (M[module_id].cname != NULL) {
+		if (API->external || !gmtapi_skip_this_module (M[module_id].cname))
+			printf ("%s\n", M[module_id].mname);
+		++module_id;
+	}
+}
+
+/* Produce single list on stdout of all GMT core module names for gmt --show-classic [i.e., classic mode names] */
+void gmtlib_module_classic_all (void *V_API, struct GMT_MODULEINFO M[]) {
+	unsigned int module_id = 0;
+	size_t n_modules = 0;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	while (M[n_modules].cname != NULL)	/* Count the modules */
+		++n_modules;
+
+	/* Sort array on classic names since original array is sorted on modern names */
+	qsort (M, n_modules, sizeof (struct GMT_MODULEINFO), gmtapi_sort_on_classic);
+
+	while (M[module_id].cname != NULL) {
+		if (API->external || !(gmtapi_skip_this_module (M[module_id].cname) || gmtapi_skip_modern_module (M[module_id].cname)))
+			printf ("%s\n", M[module_id].cname);
+		++module_id;
+	}
+}
+
+/* Lookup module id by name, return option keys pointer (for external API developers) */
+const char *gmtlib_module_keys (void *API, struct GMT_MODULEINFO M[], char *candidate) {
+	int module_id = 0;
+	gmt_M_unused(API);
+
+	/* Match actual_name against g_module[module_id].cname */
+	while (M[module_id].cname != NULL &&
+	       strcmp (candidate, M[module_id].cname))
+		++module_id;
+
+	/* Return Module keys or NULL */
+	return (M[module_id].keys);
+}
+
+/* Lookup module id by name, return group char name (for external API developers) */
+const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *candidate) {
+	int module_id = 0;
+	gmt_M_unused(API);
+
+	/* Match actual_name against g_module[module_id].cname */
+	while (M[module_id].cname != NULL &&
+	       strcmp (candidate, M[module_id].cname))
+		++module_id;
+
+	/* Return Module keys or NULL */
+	return (M[module_id].component);
+}
+
 int gmtapi_report_error (void *V_API, int error);
 int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int direction, int module_input);
 int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
@@ -815,7 +921,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	bool running_in_bindir_src = !strncmp (GMT->init.runtime_bindir, GMT_BINARY_DIR_SRC_DEBUG, strlen(GMT_BINARY_DIR_SRC_DEBUG));
 #endif
 
-	API->lib = gmt_M_memory (GMT, NULL, n_alloc, struct Gmt_libinfo);
+	API->lib = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_LIBINFO);
 
 	/* 1. Load the GMT core library by default [unless static build] */
 	/* Note: To extract symbols from the currently executing process we need to load it as a special library.
@@ -826,14 +932,12 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
 	GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # 0 (core). Path = %s\n", API->lib[0].path);
 	++n_custom_libs;
-#ifdef BUILD_SHARED_LIBS
 	GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());
 		gmtapi_exit (API, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 	dlerror (); /* Clear any existing error */
-#endif
 
 	/* 3. Add any plugins installed in <installdir>/lib/gmt/plugins */
 
@@ -863,8 +967,8 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Loading GMT plugins from: %s\n", plugindir);
 		for (e = 0; e < n_extensions; e++) {	/* Handle case of more than one allowed shared library extension */
 			if ((list = gmtlib_get_dir_list (GMT, plugindir, extension[e]))) {	/* Add these files to the libs */
-				for (k = 0; list[k] && strncmp (list[k], "supplements", 11U); k++);	/* Look for supplements */
-				if (list[k] && k) gmt_M_charp_swap (list[0], list[k]);	/* Put supplements first if not first already */
+				for (k = 0; list[k] && strncmp (list[k], GMT_SUPPL_LIB_NAME, strlen(GMT_SUPPL_LIB_NAME)); k++);	/* Look for official supplements */
+				if (list[k] && k) gmt_M_charp_swap (list[0], list[k]);	/* Put official supplements first if not first already */
 				k = 0;
 				while (list[k]) {
 					snprintf (path, PATH_MAX, "%s/%s", plugindir, list[k]);
@@ -877,7 +981,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 						n_custom_libs++;			/* Add up entries found */
 						if (n_custom_libs == n_alloc) {		/* Allocate more memory for list */
 							n_alloc <<= 1;
-							API->lib = gmt_M_memory (GMT, API->lib, n_alloc, struct Gmt_libinfo);
+							API->lib = gmt_M_memory (GMT, API->lib, n_alloc, struct GMT_LIBINFO);
 						}
 					}
 					++k;
@@ -911,7 +1015,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 							n_custom_libs++;		/* Add up entries found */
 							if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
 								n_alloc <<= 1;
-								API->lib = gmt_M_memory (GMT, API->lib, n_alloc, struct Gmt_libinfo);
+								API->lib = gmt_M_memory (GMT, API->lib, n_alloc, struct GMT_LIBINFO);
 							}
 						}
 						else
@@ -936,7 +1040,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 					n_custom_libs++;		/* Add up entries found */
 					if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
 						n_alloc <<= 1;
-						API->lib = gmt_M_memory (GMT, API->lib, n_alloc, struct Gmt_libinfo);
+						API->lib = gmt_M_memory (GMT, API->lib, n_alloc, struct GMT_LIBINFO);
 					}
 				}
 				else
@@ -947,7 +1051,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	}
 
 	API->n_shared_libs = n_custom_libs;	/* Update total number of shared libraries */
-	API->lib = gmt_M_memory (GMT, API->lib, API->n_shared_libs, struct Gmt_libinfo);
+	API->lib = gmt_M_memory (GMT, API->lib, API->n_shared_libs, struct GMT_LIBINFO);
 
 	return (GMT_NOERROR);
 }
@@ -6130,7 +6234,7 @@ int GMT_Destroy_Session (void *V_API) {
 	module = strdup (API->GMT->init.module_name);	/* Need a copy as the pointer to static memory in library will close soon */
 	gmtapi_garbage_collection (API, GMT_NOTSET);	/* Free any remaining memory from data registration during the session */
 	gmtapi_free_sharedlibs (API);			/* Close shared libraries and free list */
-	API->GMT->init.module_name = module;		/* So GMT_Report will function after supplemental.so shut down */
+	API->GMT->init.module_name = module;		/* So GMT_Report will function after GMT_SUPPL_LIB_NAME.so shut down */
 
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) gmtapi_unregister_io (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
@@ -10102,17 +10206,8 @@ GMT_LOCAL void * gmtapi_get_shared_module_func (struct GMTAPI_CTRL *API, const c
 	return (p_func);
 }
 
-#ifndef BUILD_SHARED_LIBS
-EXTERN_MSC void * gmtapi_core_module_lookup (struct GMTAPI_CTRL *API, const char *candidate);
-#endif
-
 /*! . */
 GMT_LOCAL void * gmtapi_get_module_func (struct GMTAPI_CTRL *API, const char *module, unsigned int lib_no) {
-#ifndef BUILD_SHARED_LIBS
-	if (lib_no == 0)	/* Get core module */
-		return (gmtapi_core_module_lookup (API, module));
-	/* Else we get custom module below */
-#endif
 	return (gmtapi_get_shared_module_func (API, module, lib_no));
 }
 
@@ -10227,24 +10322,6 @@ GMT_LOCAL const char * gmtapi_get_shared_module_group (struct GMTAPI_CTRL *API, 
 }
 
 /*! . */
-GMT_LOCAL const char * gmtapi_get_module_group (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
-	/* DO not rename this function */
-	if (lib_no == 0)	/* Get core module */
-		return (gmtlib_core_module_group (API, module));
-	/* Else we get custom module below */
-	return (gmtapi_get_shared_module_group (API, module, lib_no));
-}
-
-/*! . */
-GMT_LOCAL const char * gmtapi_get_module_keys (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
-	/* DO not rename this function */
-	if (lib_no == 0)	/* Get core module */
-		return (gmtlib_core_module_keys (API, module));
-	/* Else we get custom module below */
-	return (gmtapi_get_shared_module_keys (API, module, lib_no));
-}
-
-/*! . */
 const char * gmt_get_module_group (void *V_API, char *module) {
 	/* Call the specified shared module and retrieve the group of the module.
  	 * This function, while in the API, is only for API developers and thus has a
@@ -10261,13 +10338,13 @@ const char * gmt_get_module_group (void *V_API, char *module) {
 	API->error = GMT_NOERROR;
 
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for module in any of the shared libs */
-		group = gmtapi_get_module_group (API, module, lib);
+		group = gmtapi_get_shared_module_group (API, module, lib);
 		if (group) return (group);	/* Found it in this shared library, return the group */
 	}
 	/* If we get here we did not found it.  Try to prefix module with gmt */
 	strncat (gmt_module, module, GMT_LEN32-4);		/* Concatenate gmt and module name to get function name */
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
-		group = gmtapi_get_module_group (API, gmt_module, lib);
+		group = gmtapi_get_shared_module_group (API, gmt_module, lib);
 		if (group) {	/* Found it in this shared library, adjust module name and return the group */
 			strncpy (module, gmt_module, strlen(gmt_module));	/* Rewrite module name to contain prefix of gmt */
 			return (group);
@@ -10293,13 +10370,13 @@ GMT_LOCAL const char * gmtapi_retrieve_module_keys (void *V_API, char *module) {
 	API->error = GMT_NOERROR;
 
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for module in any of the shared libs */
-		keys = gmtapi_get_module_keys (API, module, lib);
+		keys = gmtapi_get_shared_module_keys (API, module, lib);
 		if (keys) return (keys);	/* Found it in this shared library, return the keys */
 	}
 	/* If we get here we did not found it.  Try to prefix module with gmt */
 	strncat (gmt_module, module, GMT_LEN32-4);		/* Concatenate gmt and module name to get function name */
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
-		keys = gmtapi_get_module_keys (API, gmt_module, lib);
+		keys = gmtapi_get_shared_module_keys (API, gmt_module, lib);
 		if (keys) {	/* Found it in this shared library, adjust module name and return the keys */
 			strncpy (module, gmt_module, strlen(gmt_module));	/* Rewrite module name to contain prefix of gmt */
 			return (keys);

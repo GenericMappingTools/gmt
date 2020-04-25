@@ -267,7 +267,7 @@ GMT_LOCAL uint64_t gmtconnect_copy_this_segment (struct GMT_DATASEGMENT *in, str
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, segment); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtconnect (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	bool separate_open_and_closed = false, first, wrap_up = false, done, closed, *skip = NULL;

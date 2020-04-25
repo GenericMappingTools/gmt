@@ -764,7 +764,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mapproject (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	int ks, n_fields, two, way, error = 0, fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 
 	bool line_start = true, do_geo_conv = false, double_whammy = false, first = true;

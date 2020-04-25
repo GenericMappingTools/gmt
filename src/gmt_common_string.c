@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * common_string.c contains code shared between GMT and PSL
+ * gmt_common_string.c contains code shared between GMT and PSL
  *
  * Author:  Florian Wobbe
  * Date:    3-MAR-2012
@@ -56,7 +56,7 @@
 #include <errno.h>
 
 #include "gmt_notposix.h"
-#include "common_string.h"
+#include "gmt_common_string.h"
 
 #define BUF_SIZE 4096
 

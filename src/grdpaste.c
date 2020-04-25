@@ -140,7 +140,7 @@ GMT_LOCAL inline bool grdpaste_is_nc_grid (struct GMT_GRID *grid) {
 		grid->header->type == GMT_GRID_IS_ND;
 }
 
-int GMT_grdpaste (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 	int error = 0, way = 0;
 	unsigned int one_or_zero;
 	bool common_y = false;

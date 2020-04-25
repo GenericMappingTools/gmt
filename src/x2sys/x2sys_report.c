@@ -224,7 +224,7 @@ GMT_LOCAL int x2sysreport_comp_structs (const void *point_1, const void *point_2
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_report (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, *c = NULL, fmt[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, word[GMT_BUFSIZ] = {""};
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;

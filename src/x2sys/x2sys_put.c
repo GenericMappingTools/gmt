@@ -186,7 +186,7 @@ GMT_LOCAL struct X2SYS_BIX_TRACK_INFO *x2sysput_bix_find_track (char *track, boo
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_put (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 

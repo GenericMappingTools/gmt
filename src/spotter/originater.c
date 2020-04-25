@@ -359,7 +359,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_originater (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_originater (void *V_API, int mode, void *args) {
 	unsigned int n_max_spots, n_input;
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np, n_expected_fields, n_out;

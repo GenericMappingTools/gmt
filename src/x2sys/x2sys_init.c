@@ -270,7 +270,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_init (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_init (void *V_API, int mode, void *args) {
 
 	time_t right_now;
 	char tag_file[PATH_MAX] = {""}, track_file[PATH_MAX] = {""}, bin_file[PATH_MAX] = {""}, def_file[PATH_MAX] = {""};

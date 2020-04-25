@@ -161,7 +161,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_kml2gmt (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	unsigned int i, start, fmode = POINT, n_features = 0, pos;
 	int error = 0, n_scan;
 	size_t length;

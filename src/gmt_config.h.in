@@ -63,9 +63,6 @@
 /* compile with GLIB GThread support <glib.h> */
 #cmakedefine HAVE_GLIB_GTHREAD
 
-/* shared library */
-#cmakedefine BUILD_SHARED_LIBS
-
 /* set license restrictions */
 #cmakedefine LICENSE_RESTRICTED @LICENSE_RESTRICTED@
 #ifndef LICENSE_RESTRICTED

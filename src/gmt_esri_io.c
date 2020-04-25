@@ -28,7 +28,7 @@
   * Joaquim Luis, Mars 2011.
   */
 
-#include "common_byteswap.h"
+#include "gmt_common_byteswap.h"
 
 /* Private function visible only in this file */
 

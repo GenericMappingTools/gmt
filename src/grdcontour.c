@@ -982,7 +982,7 @@ GMT_LOCAL void grdcontour_embed_quotes (char *orig, char *dup) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdcontour (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 	int error, c;
 	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false;

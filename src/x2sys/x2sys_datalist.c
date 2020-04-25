@@ -218,7 +218,7 @@ GMT_LOCAL bool x2sysdatalist_load_adjustments (struct GMT_CTRL *GMT, char *DIR, 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, **ignore = NULL;
 	char fmt_record[GMT_BUFSIZ] = {""};
 

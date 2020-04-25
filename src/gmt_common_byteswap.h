@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * common_byteswap.h contains inline functions for byteswapping
+ * gmt_common_byteswap.h contains inline functions for byteswapping
  *
  * Author:  Florian Wobbe
  * Date:    12-APR-2012
@@ -23,13 +23,13 @@
  */
 
 /*!
- * \file common_byteswap.h
+ * \file gmt_common_byteswap.h
  * \brief Inline functions for byteswapping
  */
 
 #pragma once
-#ifndef COMMON_BYTESWAP_H
-#define COMMON_BYTESWAP_H
+#ifndef GMT_COMMON_BYTESWAP_H
+#define GMT_COMMON_BYTESWAP_H
 
 #include "gmt_config.h"
 #include <stdint.h>
@@ -131,4 +131,4 @@ static inline uint64_t inline_bswap64 (uint64_t x) {
 #	define bswap64 inline_bswap64
 #endif /* HAVE___BUILTIN_BSWAP64 */
 
-#endif /* !COMMON_BYTESWAP_H */
+#endif /* !GMT_COMMON_BYTESWAP_H */

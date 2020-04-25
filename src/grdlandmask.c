@@ -258,7 +258,7 @@ GMT_LOCAL void grdlandmask_assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdlandmask (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	bool temp_shift = false, wrap, used_polygons, double_dip;
 	unsigned int base = 3, k, bin, np, side, np_new;
 	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1, error = 0;

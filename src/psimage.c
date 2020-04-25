@@ -383,17 +383,7 @@ GMT_LOCAL int psimage_find_unique_color (struct GMT_CTRL *GMT, unsigned char *rg
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input);
 
-int GMT_image (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: image\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_psimage (V_API, mode, args);
-}
-
-int GMT_psimage (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0, is_gdal = 0;
 	unsigned int row, col;
 	size_t n;
@@ -694,4 +684,14 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		PSL_free (picture);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_image (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: image\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psimage (V_API, mode, args);
 }

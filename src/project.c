@@ -632,7 +632,7 @@ GMT_LOCAL int project_write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_project (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
 	bool skip, z_first = true, z_set_auto = false;
 	int error = 0;

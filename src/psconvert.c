@@ -1456,7 +1456,7 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 }
 
 
-int GMT_psconvert (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
 	size_t len, line_size = 0U, half_baked_size = 0;

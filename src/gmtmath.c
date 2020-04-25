@@ -5990,7 +5990,7 @@ GMT_LOCAL bool gmtmath_color_operator_on_table (bool scalar, char *arg) {
 	return false;
 }
 
-int GMT_gmtmath (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 	int i, k, op = 0, status = 0, last;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
 	unsigned int j, nstack = 0, n_stored = 0, kk, eaten, created;

@@ -482,7 +482,7 @@ GMT_LOCAL double blockmode_weighted_mode (struct BLK_DATA *d, double wsum, unsig
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); gmt_M_free (GMT, data); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_blockmode (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_blockmode (void *V_API, int mode, void *args) {
 	bool mode_xy, do_extra = false, is_integer, duplicate_col, bail = false;
 
 	int way, error = 0;

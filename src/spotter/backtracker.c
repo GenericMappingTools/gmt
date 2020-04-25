@@ -385,7 +385,7 @@ GMT_LOCAL int backtracker_spotter_track (struct GMT_CTRL *GMT, int way, double x
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_backtracker (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 
 	uint64_t n_points;		/* Number of data points read */

@@ -429,7 +429,7 @@ GMT_LOCAL int grd2cpt_free_the_grids (struct GMTAPI_CTRL *API, struct GMT_GRID *
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grd2cpt (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;

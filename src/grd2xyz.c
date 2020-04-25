@@ -215,7 +215,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grd2xyz (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	bool first = true;
 	unsigned int row, col, n_output, w_col = 3;
 	int error = 0, write_error = 0;

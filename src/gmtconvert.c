@@ -427,7 +427,7 @@ GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtconvert (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	bool match = false, prevent_seg_headers = false;
 	int error = 0;
 	uint64_t out_col, col, n_cols_in = 0, n_cols_out, tbl, tlen;

@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * common_runpath.h contains prototypes of functions shared between GMT and PSL
+ * gmt_common_runpath.h contains prototypes of functions shared between GMT and PSL
  *
  * Author:  Florian Wobbe
  * Date:    3-MAR-2012
@@ -23,13 +23,13 @@
  */
 
 /*!
- * \file common_runpath.h
+ * \file gmt_common_runpath.h
  * \brief Prototypes of functions shared between GMT and PSL
  */
 
 #pragma once
-#ifndef COMMON_RUNPATH_H
-#define COMMON_RUNPATH_H
+#ifndef GMT_COMMON_RUNPATH_H
+#define GMT_COMMON_RUNPATH_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
@@ -59,4 +59,4 @@ EXTERN_MSC char *gmt_guess_sharedir (char *sharedir, const char *runpath);
 }
 #endif
 
-#endif  /* !COMMON_RUNPATH_H */
+#endif  /* !GMT_COMMON_RUNPATH_H */

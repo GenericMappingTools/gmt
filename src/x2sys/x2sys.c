@@ -103,7 +103,7 @@
  */
 
 #include "gmt_dev.h"
-#include "common_byteswap.h"
+#include "gmt_common_byteswap.h"
 #include "gmt_internals.h"
 #include "mgd77/mgd77.h"
 #include "x2sys.h"

@@ -438,7 +438,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdvolume (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdvolume (void *V_API, int mode, void *args) {
 	bool bad, shrink, cut[4];
 	int error = 0, ij_inc[5];
 	unsigned int row, col, c, k, pos, neg, nc, n_contours;

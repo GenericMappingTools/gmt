@@ -690,7 +690,7 @@ GMT_LOCAL int talwani3d_comp_cakes (const void *cake_a, const void *cake_b) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_talwani3d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 	int error = 0, ns;
 	unsigned int k, tbl, seg, ndepths = 0, n = 0, dup_node = 0, n_duplicate = 0;
 	uint64_t node;

@@ -268,7 +268,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_rotconverter (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_rotconverter (void *V_API, int mode, void *args) {
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 	struct EULER *a = NULL, *b = NULL;	/* Pointer to arrays of stage poles */
 

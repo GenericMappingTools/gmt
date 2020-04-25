@@ -904,7 +904,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 	static unsigned int n_conv_tot = 0;
 #endif
 
-int GMT_grdfilter (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdfilter (void *V_API, int mode, void *args) {
 	bool fast_way, slow = false, slower = false, same_grid = false;
 	bool spherical = false, full_360, visit_check = false, get_weight_sum = true;
 	unsigned int n_nan = 0, col_out, row_out, effort_level;

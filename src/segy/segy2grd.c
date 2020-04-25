@@ -266,7 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_segy2grd (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 	bool  read_cont = false, swap_bytes = !GMT_BIGENDIAN;
 	int error = 0;
 	unsigned int ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;

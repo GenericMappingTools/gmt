@@ -154,7 +154,7 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
-#include "common_byteswap.h"
+#include "gmt_common_byteswap.h"
 
 /* A few functions needed from elsewhere */
 EXTERN_MSC unsigned int gmtapi_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID);

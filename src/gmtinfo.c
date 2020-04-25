@@ -367,7 +367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, xyzminL); gmt_M_free (GMT, lonmin);  gmt_M_free (GMT, lonmax); gmt_M_free (GMT, xyzmaxL); gmt_M_free (GMT, Q); gmt_M_free (GMT, Z); gmt_M_free (GMT, Out); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtinfo (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	bool got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];

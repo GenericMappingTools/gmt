@@ -1209,7 +1209,7 @@ GMT_LOCAL bool movie_is_gmt_end_show (char *line) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_movie (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	int error = 0, precision, scol, srow;
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 

@@ -450,17 +450,7 @@ GMT_LOCAL void pssegy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_segy (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: segy\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_pssegy (V_API, mode, args);
-}
-
-int GMT_pssegy (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pssegy (void *V_API, int mode, void *args) {
 	bool plot_it = false;
 	unsigned int i, nm, ix, iy;
 	uint32_t n_samp = 0, n_tracelist = 0;
@@ -720,4 +710,14 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active) gmt_M_free (GMT, tracelist);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_segy (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: segy\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_pssegy (V_API, mode, args);
 }

@@ -308,7 +308,7 @@ GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wes
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdcut (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;

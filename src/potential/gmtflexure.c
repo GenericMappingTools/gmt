@@ -1224,7 +1224,7 @@ GMT_LOCAL int gmtflexure_flxrk (struct GMT_CTRL *GMT, double w[], double  d[], d
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtflexure (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	uint64_t tbl, seg, row, n_columns;
 	int error;
 	bool airy;

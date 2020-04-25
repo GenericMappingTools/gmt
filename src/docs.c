@@ -62,7 +62,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_docs (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 	bool other_file = false, print_url = false, got_file = false, called = false, remote = false, direct_URL = false;
 	int error = 0, id;
 	size_t vlen = 0;

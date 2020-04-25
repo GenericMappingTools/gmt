@@ -723,24 +723,6 @@ GMT_LOCAL int pstext_validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEX
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_text (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
-		bool list_fonts = false;
-		if (API->error) return (API->error);	/* Set or get option list */
-		list_fonts = (GMT_Find_Option (API, 'L', options) != NULL);
-		gmt_M_free_options (mode);
-		if (!list_fonts) {
-			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: text\n");
-			return (GMT_NOT_A_VALID_MODULE);
-		}
-	}
-	return GMT_pstext (V_API, mode, args);
-}
-
 GMT_LOCAL char *pstext_get_label (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, char *txt) {
 	char *out = NULL;
 	if (Ctrl->F.word) {	/* Must output a specific word from the trailing text only */
@@ -763,7 +745,7 @@ GMT_LOCAL char *pstext_get_label (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl
 	return (out);	/* The main program must free this at the end of each record processing */
 }
 
-int GMT_pstext (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pstext task */
 
 	int  error = 0, k, fmode, nscan = 0, *c_just = NULL;
@@ -1388,4 +1370,22 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_text (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
+		bool list_fonts = false;
+		if (API->error) return (API->error);	/* Set or get option list */
+		list_fonts = (GMT_Find_Option (API, 'L', options) != NULL);
+		gmt_M_free_options (mode);
+		if (!list_fonts) {
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: text\n");
+			return (GMT_NOT_A_VALID_MODULE);
+		}
+	}
+	return GMT_pstext (V_API, mode, args);
 }

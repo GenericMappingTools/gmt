@@ -512,7 +512,7 @@ GMT_LOCAL double talwani2d_get_one_output (struct GMT_CTRL *GMT, double x_obs, d
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_talwani2d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 	int srow, error = 0, ns;
 	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node = 0, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;

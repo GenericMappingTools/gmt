@@ -157,7 +157,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77header (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 	int i, id, argno, length, id_col, t_col, x_col, y_col, saved_range, use;
 	int n_paths, counter[MGD77_MAX_COLS], quad_no, n_quad;
 	int b_col, twt_col, g_col, m_col, f_col, mt1_col, mt2_col;

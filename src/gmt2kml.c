@@ -820,7 +820,7 @@ GMT_LOCAL void gmt2kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmt2kml (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act;
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl;
 

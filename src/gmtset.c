@@ -135,7 +135,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_
 
 EXTERN_MSC void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg);
 
-int GMT_gmtset (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtset (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	struct GMTSET_CTRL *Ctrl = NULL;

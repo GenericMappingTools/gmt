@@ -170,7 +170,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 
 EXTERN_MSC void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 
-int GMT_grdconvert (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int hmode, type[2] = {0, 0};
 	char fname[2][GMT_BUFSIZ];

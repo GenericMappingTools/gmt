@@ -121,7 +121,7 @@ GMT_LOCAL char * begin_get_session_name_and_format (struct GMTAPI_CTRL *API, str
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_begin (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_begin (void *V_API, int mode, void *args) {
 	int error = 0;
 	char *arg = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

@@ -556,7 +556,7 @@ GMT_LOCAL void dimfilter_set_weight_matrix (struct DIMFILTER_INFO *F, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_dimfilter (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_dimfilter (void *V_API, int mode, void *args) {
 	unsigned short int **sector = NULL;
 
 	unsigned int *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;

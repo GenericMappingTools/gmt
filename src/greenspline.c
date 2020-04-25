@@ -1423,7 +1423,7 @@ GMT_LOCAL void greenspline_dump_system (double *A, double *b, uint64_t nm, char 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_greenspline (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
 	unsigned int dimension = 0, normalize = 0, n_cols, w_col, L_Max = 0;
 	size_t n_alloc;

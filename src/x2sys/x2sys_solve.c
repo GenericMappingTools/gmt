@@ -294,7 +294,7 @@ GMT_LOCAL uint64_t x2syssolve_next_unused_track (uint64_t *cluster, uint64_t n) 
 	return (n);	/* Found nothing so we are done */
 }
 
-int GMT_x2sys_solve (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	char **trk_list = NULL, text[GMT_BUFSIZ] = {""}, frmt_name[16] = {""};
 	char trk[2][GMT_LEN64], line[GMT_BUFSIZ] = {""};
 	char file_TAG[GMT_LEN64] = {""}, file_column[GMT_LEN64] = {""};

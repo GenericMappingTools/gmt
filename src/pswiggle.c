@@ -437,17 +437,7 @@ GMT_LOCAL void pswiggle_alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, doub
 	*zz = gmt_M_memory (GMT, *zz, *n_alloc, double);
 }
 
-int GMT_wiggle (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: wiggle\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_pswiggle (V_API, mode, args);
-}
-
-int GMT_pswiggle (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 	bool negative;
 	int error = 0;
 
@@ -613,4 +603,14 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, zz);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_wiggle (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: wiggle\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_pswiggle (V_API, mode, args);
 }

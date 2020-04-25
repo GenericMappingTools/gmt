@@ -368,7 +368,7 @@ GMT_LOCAL void blockmedian_output_record (struct GMT_CTRL *GMT, struct GMT_GRID_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_blockmedian (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_blockmedian (void *V_API, int mode, void *args) {
 	int error = 0;
 	bool do_extra = false, duplicate_col, bail = false;
 	uint64_t n_lost, node, first_in_cell, first_in_new_cell;

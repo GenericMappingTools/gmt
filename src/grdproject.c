@@ -224,7 +224,7 @@ EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction,
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdproject (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 	bool set_n = false, shift_xy = false;
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
 	int error = 0;

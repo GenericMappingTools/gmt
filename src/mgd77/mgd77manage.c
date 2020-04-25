@@ -498,7 +498,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77manage (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	int cdf_var_id, n_dims = 0, dims[2];		/* netCDF variables should be declared as int */
 	size_t start[2] = {0, 0}, count[2] = {0, 0};	/* NetCDF offset variables are size_t */
 

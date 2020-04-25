@@ -118,7 +118,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct
 
 EXTERN_MSC void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg);
 
-int GMT_gmtdefaults (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	int error;
 
 	struct GMTDEFAULTS_CTRL *Ctrl = NULL;

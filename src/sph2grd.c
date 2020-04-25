@@ -211,7 +211,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sph2grd (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_sph2grd (void *V_API, int mode, void *args) {
 	bool ortho = false, duplicate_col;
 	int row, col, n_columns, error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
 	unsigned int n_PLM, n_CS, n_CS_nx, next_10_percent = 10;

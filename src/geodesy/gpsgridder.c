@@ -515,7 +515,7 @@ GMT_LOCAL void gpsgridder_dump_system (double *A, double *obs, uint64_t n_params
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gpsgridder (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, n_uv, n_params, n_ok = 0, ij;
 	uint64_t Gu_ij, Gv_ij, Guv_ij, Gvu_ij, off, n_duplicates = 0, n_skip = 0;
 	unsigned int normalize, n_cols;

@@ -474,7 +474,7 @@ GMT_LOCAL void grdfill_nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdfill (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	char *ID = NULL, *RG_orig_hist = NULL;
 	int error = 0, RG_id = 0;
 	unsigned int hole_number = 0, row, col, limit[4], n_nodes;
