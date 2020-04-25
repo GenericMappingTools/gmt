@@ -285,6 +285,13 @@ GMT_LOCAL int gmtapi_sort_on_classic (const void *vA, const void *vB) {
 	return strcmp(A->cname, B->cname);
 }
 
+GMT_LOCAL int gmtapi_sort_on_modern (const void *vA, const void *vB) {
+	const struct GMT_MODULEINFO *A = vA, *B = vB;
+	if (A == NULL) return +1;	/* Get the NULL entry to the end */
+	if (B == NULL) return -1;	/* Get the NULL entry to the end */
+	return strcmp(A->mname, B->mname);
+}
+
 
 /* Function to exclude some special core modules from being reported by gmt --help|show-modules */
 GMT_LOCAL int gmtapi_skip_this_module (const char *name) {
@@ -311,6 +318,7 @@ void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[], const char 
 	unsigned int module_id = 0;
 	char message[GMT_LEN256];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
 	GMT_Message (V_API, GMT_TIME_NONE, "\n===  %s  ===\n", title);
 	while (M[module_id].cname != NULL) {
 		if (module_id == 0 || strcmp (M[module_id-1].component, M[module_id].component)) {
@@ -331,7 +339,15 @@ void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[], const char 
 /* Produce single list on stdout of all GMT core module names for gmt --show-modules */
 void gmtlib_module_list_all (void *V_API, struct GMT_MODULEINFO M[]) {
 	unsigned int module_id = 0;
+	size_t n_modules = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	while (M[n_modules].cname != NULL)	/* Count the modules */
+		++n_modules;
+
+	/* Sort array on modern names */
+	qsort (M, n_modules, sizeof (struct GMT_MODULEINFO), gmtapi_sort_on_modern);
+
 	while (M[module_id].cname != NULL) {
 		if (API->external || !gmtapi_skip_this_module (M[module_id].cname))
 			printf ("%s\n", M[module_id].mname);
@@ -348,7 +364,7 @@ void gmtlib_module_classic_all (void *V_API, struct GMT_MODULEINFO M[]) {
 	while (M[n_modules].cname != NULL)	/* Count the modules */
 		++n_modules;
 
-	/* Sort array on classic names since original array is sorted on modern names */
+	/* Sort array on classic names */
 	qsort (M, n_modules, sizeof (struct GMT_MODULEINFO), gmtapi_sort_on_classic);
 
 	while (M[module_id].cname != NULL) {
