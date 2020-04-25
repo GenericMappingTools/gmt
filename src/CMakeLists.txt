@@ -827,7 +827,7 @@ if (BUILD_SUPPLEMENTS)
 	# install more
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		# get variables from subdirectory
-		get_subdir_var (_suppl_name SHARED_LIB_NAME ${_dir})
+		get_subdir_var (_suppl_name SUPPL_NAME ${_dir})
 		get_subdir_var (_suppl_progs_srcs SUPPL_PROGS_SRCS ${_dir})
 		get_subdir_var_files (_suppl_headers SUPPL_HEADERS ${_dir})
 		get_subdir_var_files (_suppl_example_files SUPPL_EXAMPLE_FILES ${_dir})
