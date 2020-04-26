@@ -31,6 +31,7 @@
 static struct GMT_MODULEINFO modules[] = {
 #include "gmt_mbsystem_moduleinfo.h"
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
+};
 
 /* Pretty print all shared module names and their purposes for gmt --help */
 EXTERN_MSC void mbsystem_module_show_all (void *API) {
