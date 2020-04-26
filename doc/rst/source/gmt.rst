@@ -79,6 +79,13 @@ If no module is given then several other options are available:
     scripting language among *bash*, *csh*, or *batch*.  Default is the main shell
     closest to your current shell (e.g., bash for zsh, csh for tcsh).
 
+**--new-glue**\ =\ *name*
+    Write the C code glue needed when building third-party supplements as shared
+    libraries.  The *name* is the name of the shared library. Run **gmt** in the directory
+    of the supplement and the glue code will be written to *stdout*.  Including this C code
+    when building the shared library means **gmt** can list available modules via the
+    **--show-modules**, **--help** options.  We recommend saving the code to gmt\_\ *name*\_glue.c.
+
 **--show-bindir**
     Show directory of executables and exit.
 
