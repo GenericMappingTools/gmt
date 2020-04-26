@@ -312,7 +312,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Find area, volume, and mean height inside the given <cval> contour,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   OR search using all contours from <low> to <high> in steps of <delta>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default returns cval, area, volume and mean height of entire grid].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default returns cval=0, area, volume and mean height of entire grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   OR append r (-Cr) to compute 'outside' area and volume between <low> and <high>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or below <cval> and grid's minimum.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
