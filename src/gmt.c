@@ -325,6 +325,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
 			fprintf (stderr, "  --new-script[=L]  Write GMT modern mode script template to stdout.\n");
 			fprintf (stderr, "                    Optionally specify bash|csh|batch [Default is current shell].\n");
+			fprintf (stderr, "  --new-glue=name   Write C code for external supplements to glue them to GMT.\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 			fprintf (stderr, "  --show-citation   Show the most recent citation for GMT.\n");
 			fprintf (stderr, "  --show-classic    Show all classic module names.\n");
