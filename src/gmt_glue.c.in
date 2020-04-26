@@ -8,8 +8,8 @@
  * This file also contains the following convenience functions to
  * display all module purposes, list their names, or return keys or group:
  *
- *   void @SHARED_LIB_NAME@_module_show_all (struct GMTAPI_CTRL *API);
- *   void @SHARED_LIB_NAME@_module_list_all (void *API);
+ *   void @SHARED_LIB_NAME@_module_show_all    (void *API);
+ *   void @SHARED_LIB_NAME@_module_list_all    (void *API);
  *   void @SHARED_LIB_NAME@_module_classic_all (void *API);
  *
  * These functions may be called by gmt --help and gmt --show-modules
@@ -18,8 +18,8 @@
  * function indirectly via GMT_Encode_Options to retrieve option keys
  * needed for module arg processing:
  *
- *   const char *@SHARED_LIB_NAME@_module_keys (void *API, char *candidate);
- *   const char *@SHARED_LIB_NAME@_module_group  (void *API, char *candidate);
+ *   const char *@SHARED_LIB_NAME@_module_keys  (void *API, char *candidate);
+ *   const char *@SHARED_LIB_NAME@_module_group (void *API, char *candidate);
  *
  * All functions are exported by the shared library so that gmt can call these
  * functions by name to learn about the library.
