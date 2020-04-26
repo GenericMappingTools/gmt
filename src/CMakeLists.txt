@@ -714,6 +714,9 @@ if (BUILD_SUPPLEMENTS)
 		get_subdir_var (_suppl_extra_libraries SUPPL_EXTRA_LIBS ${_dir})
 		list (APPEND SUPPL_${_suppl_lib_name}_EXTRA_LIBRARIES ${_suppl_extra_libraries})
 
+		# library purpose of non-official supplement packages
+		get_subdir_var (SUPPL_${_suppl_lib_name}_LIB_PURPOSE SUPPL_LIB_PURPOSE ${_dir})
+
 		# rename the supplement dll [Windows only]
 		get_subdir_var (SUPPL_${_suppl_lib_name}_DLL_RENAME SUPPL_DLL_RENAME ${_dir})
 	endforeach (_dir)
@@ -727,7 +730,11 @@ if (BUILD_SUPPLEMENTS)
 		if (_suppl_lib_name EQUAL GMT_SUPPL_LIBRARIES)
 			set (SHARED_LIB_PURPOSE "GMT ${GMT_SUPPL_LIBRARIES}: The official supplements to the Generic Mapping Tools")
 		else (_suppl_lib_name EQUAL GMT_SUPPL_LIBRARIES)
-			set (SHARED_LIB_PURPOSE "GMT ${_suppl_lib_name}: The non-official supplements to the Generic Mapping Tools")
+			if (SUPPL_${_suppl_lib_name}_LIB_PURPOSE)
+				set (SHARED_LIB_PURPOSE "${SUPPL_${_suppl_lib_name}_LIB_PURPOSE}")
+			else (SUPPL_${_suppl_lib_name}_LIB_PURPOSE)
+				set (SHARED_LIB_PURPOSE	"GMT ${_suppl_lib_name}: The non-official supplements to the Generic Mapping Tools")
+			endif (SUPPL_${_suppl_lib_name}_LIB_PURPOSE)
 		endif (_suppl_lib_name EQUAL GMT_SUPPL_LIBRARIES)
 
 		# generate gmt_${SHARED_LIB_NAME}_glue.c
