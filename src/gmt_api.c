@@ -315,7 +315,7 @@ GMT_LOCAL int gmtapi_skip_modern_module (const char *name) {
 
 /* Pretty print all GMT core module names and their purposes for gmt --help */
 void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[], const char *title) {
-	unsigned int module_id = 0;
+	unsigned int module_id = 0, n;
 	char message[GMT_LEN256];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
@@ -327,6 +327,11 @@ void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[], const char 
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
+		n = module_id + 1;	/* Determine extent of this component lib */
+		while (M[n].cname != NULL && !strcmp (M[n-1].component, M[n].component)) n++;
+		/* Sort array on modern names */
+		qsort (&M[module_id], n-module_id, sizeof (struct GMT_MODULEINFO), gmtapi_sort_on_modern);
+
 		if (API->external || !gmtapi_skip_this_module (M[module_id].cname)) {
 			snprintf (message, GMT_LEN256, "%-16s %s\n",
 				M[module_id].mname, M[module_id].purpose);
