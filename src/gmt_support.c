@@ -16722,6 +16722,8 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 				first_purpose = false;
 			}
 		}
+		if (M[n].mname == NULL && M[n].cname == NULL && M[n].component == NULL && M[n].purpose == NULL && M[n].keys == NULL) /* Not a module file */
+			n--;
 		fclose (fp);
 		k++;	/* Go to next file */
 	}
