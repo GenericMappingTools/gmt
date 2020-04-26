@@ -337,7 +337,7 @@ endif (NOT LICENSE_RESTRICTED)
 ##
 # Two variables for generating gmt_${SHARED_LIB_NAME}_glue.c and gmt_${SHARED_LIB_NAME}_moduleinfo.h
 set (SHARED_LIB_NAME core)
-set (SHARED_LIB_PURPOSE "GMT core: The main modules of the Generic Mapping Tools")
+set (SHARED_LIB_PURPOSE "GMT ${SHARED_LIB_NAME}: The main modules of the Generic Mapping Tools")
 
 # main gmt program for installing compatibility links via install_module_symlink [Windows only]
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
@@ -682,17 +682,8 @@ if (BUILD_SUPPLEMENTS)
 	# See cmake/ConfigUserAdvancedTemplate.cmake for details.
 	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${SUPPL_EXTRA_DIRS})
 
-	# Two variables for gmt_${SHARED_LIB_NAME}_glue.c and gmt_${SHARED_LIB_NAME}_modueinfo.h
-	set (SHARED_LIB_NAME ${GMT_SUPPL_LIB_NAME})
-	set (SHARED_LIB_PURPOSE "GMT suppl: The official supplements to the Generic Mapping Tools")
-
-	# generate gmt_${SHARED_LIB_NAME}_glue.c
-	configure_file (gmt_glue.c.in gmt_${SHARED_LIB_NAME}_glue.c)
-
-	# Needed in supplement libraries
-	set (GMT_SUPPL_SRCS gmt_modern.c ${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c)
-
-	# process supplement directories
+	# process supplement directories and collect information for each supplement libraries
+	set (GMT_SUPPL_LIBRARIES) # empty the library list
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		# include CMake settings in supplement directories
 		add_subdirectory (${_dir})
@@ -711,6 +702,10 @@ if (BUILD_SUPPLEMENTS)
 		endif (NOT _suppl_lib_name)
 		list (APPEND GMT_SUPPL_LIBRARIES ${_suppl_lib_name})
 
+		# supplement (both GMT and non-GMT) source files of modules
+		get_subdir_var_files (_suppl_progs_srcs SUPPL_PROGS_SRCS ${_dir})
+		list (APPEND SUPPL_${_suppl_lib_name}_PROGS_SRCS ${_suppl_progs_srcs})
+
 		# supplement (both GMT and non-GMT) source files for each supplement library
 		get_subdir_var_files (_suppl_lib_srcs SUPPL_LIB_SRCS ${_dir})
 		list (APPEND SUPPL_${_suppl_lib_name}_LIB_SRCS ${_suppl_lib_srcs})
@@ -719,28 +714,46 @@ if (BUILD_SUPPLEMENTS)
 		get_subdir_var (_suppl_extra_libraries SUPPL_EXTRA_LIBS ${_dir})
 		list (APPEND SUPPL_${_suppl_lib_name}_EXTRA_LIBRARIES ${_suppl_extra_libraries})
 
+		# library purpose of non-official supplement packages
+		get_subdir_var (SUPPL_${_suppl_lib_name}_LIB_PURPOSE SUPPL_LIB_PURPOSE ${_dir})
+
 		# rename the supplement dll [Windows only]
 		get_subdir_var (SUPPL_${_suppl_lib_name}_DLL_RENAME SUPPL_DLL_RENAME ${_dir})
 	endforeach (_dir)
-
 	# remove duplicate supplement library names, so multiple supplement packages can be built into one single library
 	list (REMOVE_DUPLICATES GMT_SUPPL_LIBRARIES)
 
-	# generate gmt_${SHARED_LIB_NAME}_moduleinfo.h
-	get_subdir_var_files (_suppl_progs_srcs SUPPL_PROGS_SRCS ${GMT_SUPPL_DIRS})
-	add_custom_command (OUTPUT gmt_${SHARED_LIB_NAME}_moduleinfo.h
-		COMMAND ${CMAKE_COMMAND}
-		-D GENERATE_COMMAND=gen_gmt_moduleinfo_h
-		-D OUTPUT_HEADER_FILE="gmt_${SHARED_LIB_NAME}_moduleinfo.h"
-		-D PROGS_SRCS="${_suppl_progs_srcs}"
-		-D GMT_SRC=${GMT_SOURCE_DIR}
-		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-		-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
-		DEPENDS ${_suppl_progs_srcs})
-	add_custom_target (gen_gmt_suppl_headers DEPENDS gmt_${SHARED_LIB_NAME}_moduleinfo.h)
-
 	# loop over all supplement libraries
 	foreach (_suppl_lib_name ${GMT_SUPPL_LIBRARIES})
+		# Two variables for gmt_${SHARED_LIB_NAME}_glue.c and gmt_${SHARED_LIB_NAME}_modueinfo.h
+		set (SHARED_LIB_NAME ${_suppl_lib_name})
+		if (${_suppl_lib_name} STREQUAL ${GMT_SUPPL_LIB_NAME})
+			set (SHARED_LIB_PURPOSE "GMT ${GMT_SUPPL_LIB_NAME}: The official supplements to the Generic Mapping Tools")
+		else (${_suppl_lib_name} STREQUAL ${GMT_SUPPL_LIB_NAME})
+			if (SUPPL_${_suppl_lib_name}_LIB_PURPOSE)
+				set (SHARED_LIB_PURPOSE "${SUPPL_${_suppl_lib_name}_LIB_PURPOSE}")
+			else (SUPPL_${_suppl_lib_name}_LIB_PURPOSE)
+				set (SHARED_LIB_PURPOSE	"GMT ${_suppl_lib_name}: The non-official supplements to the Generic Mapping Tools")
+			endif (SUPPL_${_suppl_lib_name}_LIB_PURPOSE)
+		endif (${_suppl_lib_name} STREQUAL ${GMT_SUPPL_LIB_NAME})
+
+		# generate gmt_${SHARED_LIB_NAME}_glue.c
+		configure_file (gmt_glue.c.in gmt_${SHARED_LIB_NAME}_glue.c)
+		# Needed in supplement libraries
+		set (GMT_SUPPL_SRCS ${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c)
+
+		# generate gmt_${SHARED_LIB_NAME}_moduleinfo.h
+		add_custom_command (OUTPUT gmt_${SHARED_LIB_NAME}_moduleinfo.h
+			COMMAND ${CMAKE_COMMAND}
+			-D GENERATE_COMMAND=gen_gmt_moduleinfo_h
+			-D OUTPUT_HEADER_FILE="gmt_${SHARED_LIB_NAME}_moduleinfo.h"
+			-D PROGS_SRCS="${SUPPL_${_suppl_lib_name}_PROGS_SRCS}"
+			-D GMT_SRC=${GMT_SOURCE_DIR}
+			-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+			-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
+			DEPENDS ${SUPPL_${_suppl_lib_name}_PROGS_SRCS})
+		add_custom_target (gen_gmt_suppl_${_suppl_lib_name}_headers DEPENDS gmt_${SHARED_LIB_NAME}_moduleinfo.h)
+
 		if (WIN32)
 			add_library (${_suppl_lib_name}
 				${GMT_GEN_HDRS}
@@ -754,7 +767,7 @@ if (BUILD_SUPPLEMENTS)
 		endif (WIN32)
 
 		add_dependencies (${_suppl_lib_name} gen_gmt_headers) # make supplib after gen_gmt_headers
-		add_dependencies (${_suppl_lib_name} gen_gmt_suppl_headers) # make supplib after gen_gmt_suppl_headers
+		add_dependencies (${_suppl_lib_name} gen_gmt_suppl_${_suppl_lib_name}_headers) # make supplib after gen_gmt_suppl_headers
 		add_dependencies (${_suppl_lib_name} pslib) # make supplib after pslib
 		add_dependencies (${_suppl_lib_name} gmtlib) # make supplib after pslib
 
