@@ -740,7 +740,7 @@ if (BUILD_SUPPLEMENTS)
 		# generate gmt_${SHARED_LIB_NAME}_glue.c
 		configure_file (gmt_glue.c.in gmt_${SHARED_LIB_NAME}_glue.c)
 		# Needed in supplement libraries
-		set (GMT_SUPPL_SRCS gmt_modern.c ${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c)
+		set (GMT_SUPPL_SRCS ${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c)
 
 		# generate gmt_${SHARED_LIB_NAME}_moduleinfo.h
 		add_custom_command (OUTPUT gmt_${SHARED_LIB_NAME}_moduleinfo.h
