@@ -48,13 +48,15 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* or **-Cr**\ *cval*
-    find area, volume and mean height (volume/area) inside the *cval* contour. Alternatively, search using
+    find area, volume and mean height (volume/area) inside and above the *cval* contour. Alternatively, search using
     all contours from *low* to *high* in steps of *delta*. [Default returns area, volume and mean height
     of the entire grid]. The area is measured in the plane of the contour. The **Cr** form on the other
-    hand computes the volume between the grid surface and the plans defined by *low* and *high*,
+    hand computes the volume between the grid surface and the planes defined by *low* and *high*,
     or below *cval* and grid's minimum. Note that this is an *outside* volume whilst the other forms
     compute an *inside* (below the surface) area volume. Use this form to compute for example the volume
-    of water between two contours.
+    of water between two contours. **Note**: If no **-C** is given then there is no contour and we return
+    the entire grid area, volume and the mean height; *cval* will be reported as 0 but we are not tracing
+    a zero-contour (which we do if **-C**\ 0 is given).
 
 .. _-L:
 
@@ -136,6 +138,16 @@ To find the volume of water in a lake with its free surface at 0 and max depth o
    ::
 
     gmt grdvolume lake.nc -Cr-300/0
+
+Volume integration
+------------------
+
+The surface will be approximated using a bilinear expression for the *z*-value inside each grid box
+defined by four grid nodes: :math:`z(x,y) = z_0 + z_x^{'}x + z_y^{'}y + z_{xy}^{''}xy`, where the
+first term is the grid value at the lower left corner of the cell (where our relative coordinates
+*x* = *y* = 0). The primed *z*-values are derivatives in *x*, *y*, and both directions, respectively.
+We analytically integrate this expression within each box, allowing for straight line contour intersections
+to go through a box and affect the integration domain and limits.
 
 Notes
 -----
