@@ -337,7 +337,7 @@ endif (NOT LICENSE_RESTRICTED)
 ##
 # Two variables for generating gmt_${SHARED_LIB_NAME}_glue.c and gmt_${SHARED_LIB_NAME}_moduleinfo.h
 set (SHARED_LIB_NAME core)
-set (SHARED_LIB_PURPOSE "GMT core: The main modules of the Generic Mapping Tools")
+set (SHARED_LIB_PURPOSE "GMT ${SHARED_LIB_NAME}: The main modules of the Generic Mapping Tools")
 
 # main gmt program for installing compatibility links via install_module_symlink [Windows only]
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
@@ -725,9 +725,9 @@ if (BUILD_SUPPLEMENTS)
 		# Two variables for gmt_${SHARED_LIB_NAME}_glue.c and gmt_${SHARED_LIB_NAME}_modueinfo.h
 		set (SHARED_LIB_NAME ${_suppl_lib_name})
 		if (_suppl_lib_name EQUAL GMT_SUPPL_LIBRARIES)
-			set (SHARED_LIB_PURPOSE "GMT suppl: The official supplements to the Generic Mapping Tools")
+			set (SHARED_LIB_PURPOSE "GMT ${GMT_SUPPL_LIBRARIES}: The official supplements to the Generic Mapping Tools")
 		else (_suppl_lib_name EQUAL GMT_SUPPL_LIBRARIES)
-			set (SHARED_LIB_PURPOSE "GMT suppl: The non-official supplements to the Generic Mapping Tools")
+			set (SHARED_LIB_PURPOSE "GMT ${_suppl_lib_name}: The non-official supplements to the Generic Mapping Tools")
 		endif (_suppl_lib_name EQUAL GMT_SUPPL_LIBRARIES)
 
 		# generate gmt_${SHARED_LIB_NAME}_glue.c
