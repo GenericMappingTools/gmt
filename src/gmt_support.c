@@ -16660,13 +16660,22 @@ char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 }
 #endif
 
+/*! . */
+GMT_LOCAL int gmtsupport_sort_moduleinfo (const void *p_1, const void *p_2) {
+	const struct GMT_MODULEINFO *point_1 = (const struct GMT_MODULEINFO *)p_1, *point_2 = (const struct GMT_MODULEINFO *)p_2;
+	int res = strcmp (point_1->mname, point_2->mname);
+	if (res < 0) return -1;
+	if (res > 0) return +1;
+	return 0;
+}
+
 int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	/* Called when we get gmt --new-glue=library is run, e.g.,
 	 * 	gmt --new-glue=mbsystem > gmt_mbsystem_glue.c
 	 */
 
 	char **C = NULL;
-	char line[GMT_BUFSIZ] = {""}, argument[GMT_LEN64] = {""};
+	char line[GMT_BUFSIZ] = {""}, argument[GMT_LEN256] = {""};
 	bool first;
 	int error = GMT_NOERROR, k = 0, n_alloc = 0, n = -1;	/* Advance to 0 for first item */
 	FILE *fp = NULL;
@@ -16722,6 +16731,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	n++;
 	GMT_Report (API, GMT_MSG_INFORMATION, "%d module files found in current directory\n", n);
 
+	 qsort (M, n, sizeof (struct GMT_MODULEINFO), gmtsupport_sort_moduleinfo);
 
 	printf ("/*\n * Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)\n");
 	printf (" * See LICENSE.TXT file for copying and redistribution conditions.\n */\n");
