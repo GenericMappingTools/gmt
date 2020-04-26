@@ -84,7 +84,7 @@ If no module is given then several other options are available:
     libraries.  The *name* is the name of the shared library. Run **gmt** in the directory
     of the supplement and the glue code will be written to *stdout*.  Including this C code
     when building the shared library means **gmt** can list available modules via the
-    **-show-modules**, **--help** options.  We recommend saving the code to gmt_*name*_glue.c.
+    **--show-modules**, **--help** options.  We recommend saving the code to gmt\_\ *name*\_glue.c.
 
 **--show-bindir**
     Show directory of executables and exit.
