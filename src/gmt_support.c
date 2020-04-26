@@ -16739,15 +16739,15 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	printf (" * module parameters such as name, group, purpose and keys strings.\n");
 	printf (" * This file also contains the following convenience functions to\n");
 	printf (" * display all module purposes, list their names, or return keys or group:\n *\n");
-	printf (" *   void gmt_%s_module_show_all (struct GMTAPI_CTRL *API);\n", library);
-	printf (" *   void gmt_%s_module_list_all (void *API);\n", library);
-	printf (" *   void gmt_%s_module_classic_all (void *API);\n *\n", library);
+	printf (" *   void %s_module_show_all    (void *API);\n", library);
+	printf (" *   void %s_module_list_all    (void *API);\n", library);
+	printf (" *   void %s_module_classic_all (void *API);\n *\n", library);
 	printf (" * These functions may be called by gmt --help and gmt --show-modules\n *\n");
 	printf (" * Developers of external APIs for accessing GMT modules will use this\n");
 	printf (" * function indirectly via GMT_Encode_Options to retrieve option keys\n");
 	printf (" * needed for module arg processing:\n *\n");
-	printf (" *   const char *gmtlib_%s_module_keys (void *API, char *candidate);\n", library);
-	printf (" *   const char *gmtlib_%s_module_group  (void *API, char *candidate);\n *\n", library);
+	printf (" *   const char * %s_module_keys  (void *API, char *candidate);\n", library);
+	printf (" *   const char * %s_module_group (void *API, char *candidate);\n *\n", library);
 	printf (" * All functions are exported by the shared %s library so that gmt can call these\n", library);
 	printf (" * functions by name to learn about the contents of the library.\n */\n\n");
 	printf ("#include \"gmt_dev.h\"\n#include \"gmt_internals.h\"\n\n");
@@ -16757,19 +16757,19 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 		printf ("\t{%s, %s, %s, %s, %s},\n", M[k].mname, M[k].cname, M[k].component, M[k].purpose, M[k].keys);
 	printf ("\t{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */\n\n");
 	printf ("/* Pretty print all shared module names and their purposes for gmt --help */\n");
-	printf ("EXTERN_MSC void gmtlib_%s_module_show_all (void *API) {\n", library);
+	printf ("EXTERN_MSC void %s_module_show_all (void *API) {\n", library);
 	printf ("\tgmtlib_module_show_all (API, modules, \"%s\");\n}\n\n", library);
 	printf ("/* Produce single list on stdout of all shared module names for gmt --show-modules */\n");
-	printf ("EXTERN_MSC void gmtlib_%s_module_list_all (void *API) {\n", library);
+	printf ("EXTERN_MSC void %s_module_list_all (void *API) {\n", library);
 	printf ("\tgmtlib_module_list_all (API, modules);\n}\n\n");
 	printf ("/* Produce single list on stdout of all shared module names for gmt --show-classic [i.e., classic mode names] */\n");
-	printf ("EXTERN_MSC void gmtlib_%s_module_classic_all (void *API) {\n", library);
+	printf ("EXTERN_MSC void %s_module_classic_all (void *API) {\n", library);
 	printf ("\tgmtlib_module_classic_all (API, modules);\n}\n\n");
 	printf ("/* Lookup module id by name, return option keys pointer (for external API developers) */\n");
-	printf ("EXTERN_MSC const char *gmtlib_%s_module_keys (void *API, char *candidate) {\n", library);
+	printf ("EXTERN_MSC const char *%s_module_keys (void *API, char *candidate) {\n", library);
 	printf ("\treturn (gmtlib_module_keys (API, modules, candidate));\n}\n\n");
 	printf ("/* Lookup module id by name, return group char name (for external API developers) */\n");
-	printf ("EXTERN_MSC const char *gmtlib_%s_module_group (void *API, char *candidate) {\n", library);
+	printf ("EXTERN_MSC const char *%s_module_group (void *API, char *candidate) {\n", library);
 	printf ("\treturn (gmtlib_module_group (API, modules, candidate));\n}\n");
 
 CROAK:	/* We are done or premature return due to error */
