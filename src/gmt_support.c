@@ -16739,7 +16739,9 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 
 	if (first_purpose) {
 		GMT_Report (API, GMT_MSG_NOTICE, "No #define THIS_MODULE_LIB_PURPOSE setting found in any module.  Please edit argument to gmtlib_module_show_all\n");
-		lib_purpose = library;
+		sprintf (line, "GMT %s: The third-party supplements to the Generic Mapping Tools", library);
+		lib_purpose = strdup (line);
+		GMT_Report (API, GMT_MSG_NOTICE, "Default purpose: %s\n", lib_purpose);
 	}
 
 	qsort (M, n, sizeof (struct GMT_MODULEINFO), gmtsupport_sort_moduleinfo);
@@ -16794,7 +16796,7 @@ CROAK:	/* We are done or premature return due to error */
 		gmt_M_str_free (M[k].keys);
 	}
 	gmt_M_free (API->GMT, M);
-	if (!first_purpose) gmt_M_str_free (lib_purpose);
+	gmt_M_str_free (lib_purpose);
 
 	return (error);
 }
