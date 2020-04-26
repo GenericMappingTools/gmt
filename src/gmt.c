@@ -261,6 +261,16 @@ int main (int argc, char *argv[]) {
 				gmt_M_str_free (name);
 				status = GMT_NOERROR;
 			}
+			/* print new glue C code for supplement */
+			else if (!strncmp (argv[arg_n], "--new-glue", 10U)) {
+				char *s = strstr (argv[arg_n], "=");	if (s) s++;	/* Skip the equal */
+				if (s && s[0] == '\0') {
+					fprintf (stderr, "gmt: ERROR: --new-glue library name not given\n");
+					status = GMT_RUNTIME_ERROR;
+				}
+				else
+					status = gmt_write_glue_function (api_ctrl, s);
+			}
 
 		} /* for (arg_n = 1; arg_n < argc; ++arg_n) */
 	} /* status == GMT_NOERROR */
