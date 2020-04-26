@@ -16674,9 +16674,9 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	 * 	gmt --new-glue=mbsystem > gmt_mbsystem_glue.c
 	 */
 
-	char **C = NULL;
+	char **C = NULL, *lib_purpose = NULL;
 	char line[GMT_BUFSIZ] = {""}, argument[GMT_LEN256] = {""};
-	bool first;
+	bool first, first_purpose = true;
 	int error = GMT_NOERROR, k = 0, n_alloc = 0, n = -1;	/* Advance to 0 for first item */
 	FILE *fp = NULL;
 	struct GMT_MODULEINFO *M = NULL;
@@ -16717,6 +16717,10 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 				M[n].purpose = strdup (argument);
 			else if (!strncmp (line, "#define THIS_MODULE_KEYS", 24U))
 				M[n].keys = strdup (argument);
+			else if (!strncmp (line, "#define THIS_MODULE_LIB_PURPOSE", 31U) && first_purpose) {
+				lib_purpose = strdup (argument);
+				first_purpose = false;
+			}
 		}
 		fclose (fp);
 		k++;	/* Go to next file */
@@ -16731,7 +16735,12 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	n++;
 	GMT_Report (API, GMT_MSG_INFORMATION, "%d module files found in current directory\n", n);
 
-	 qsort (M, n, sizeof (struct GMT_MODULEINFO), gmtsupport_sort_moduleinfo);
+	if (first_purpose) {
+		GMT_Report (API, GMT_MSG_NOTICE, "No #define THIS_MODULE_LIB_PURPOSE setting found in any module.  Please edit argument to gmtlib_module_show_all\n");
+		lib_purpose = library;
+	}
+
+	qsort (M, n, sizeof (struct GMT_MODULEINFO), gmtsupport_sort_moduleinfo);
 
 	printf ("/*\n * Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)\n");
 	printf (" * See LICENSE.TXT file for copying and redistribution conditions.\n */\n");
@@ -16758,7 +16767,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	printf ("\t{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */\n\n");
 	printf ("/* Pretty print all shared module names and their purposes for gmt --help */\n");
 	printf ("EXTERN_MSC void %s_module_show_all (void *API) {\n", library);
-	printf ("\tgmtlib_module_show_all (API, modules, \"%s\");\n}\n\n", library);
+	printf ("\tgmtlib_module_show_all (API, modules, \"%s\");\n}\n\n", lib_purpose);
 	printf ("/* Produce single list on stdout of all shared module names for gmt --show-modules */\n");
 	printf ("EXTERN_MSC void %s_module_list_all (void *API) {\n", library);
 	printf ("\tgmtlib_module_list_all (API, modules);\n}\n\n");
@@ -16783,6 +16792,7 @@ CROAK:	/* We are done or premature return due to error */
 		gmt_M_str_free (M[k].keys);
 	}
 	gmt_M_free (API->GMT, M);
+	if (!first_purpose) gmt_M_str_free (lib_purpose);
 
 	return (error);
 }
