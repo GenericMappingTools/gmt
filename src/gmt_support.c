@@ -16722,8 +16722,10 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 				first_purpose = false;
 			}
 		}
-		if (M[n].mname == NULL && M[n].cname == NULL && M[n].component == NULL && M[n].purpose == NULL && M[n].keys == NULL) /* Not a module file */
+		if (M[n].mname == NULL && M[n].cname == NULL && M[n].component == NULL && M[n].purpose == NULL && M[n].keys == NULL) { /* Not a module file */
 			n--;	/* Counteract the n++ that will happen in the next file */
+			GMT_Report (API, GMT_MSG_WARNING, "File %s had incomplete set of #define THIS_MODULE_* parameters; file skipped.\n", C[k]);
+		}
 		fclose (fp);
 		k++;	/* Go to next file */
 	}
@@ -16735,13 +16737,13 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	}
 
 	n++;
-	GMT_Report (API, GMT_MSG_INFORMATION, "%d module files found in current directory\n", n);
+	GMT_Report (API, GMT_MSG_INFORMATION, "%d %s module files found in current directory\n", n, library);
 
 	if (first_purpose) {
-		GMT_Report (API, GMT_MSG_NOTICE, "No #define THIS_MODULE_LIB_PURPOSE setting found in any module.  Please edit argument to gmtlib_module_show_all\n");
+		GMT_Report (API, GMT_MSG_WARNING, "No #define THIS_MODULE_LIB_PURPOSE setting found in any module.  Please edit argument to gmtlib_module_show_all\n");
 		sprintf (line, "GMT %s: The third-party supplements to the Generic Mapping Tools", library);
 		lib_purpose = strdup (line);
-		GMT_Report (API, GMT_MSG_NOTICE, "Default purpose: %s\n", lib_purpose);
+		GMT_Report (API, GMT_MSG_WARNING, "Default purpose assigned: %s\n", lib_purpose);
 	}
 
 	qsort (M, n, sizeof (struct GMT_MODULEINFO), gmtsupport_sort_moduleinfo);
