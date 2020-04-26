@@ -35,7 +35,7 @@ static struct GMT_MODULEINFO modules[] = {
 
 /* Pretty print all shared module names and their purposes for gmt --help */
 EXTERN_MSC void mbsystem_module_show_all (void *API) {
-	gmtlib_module_show_all (API, modules, "MB-System: GMt-compatible modules");
+	gmtlib_module_show_all (API, modules, "MB-System: GMT-compatible modules");
 }
 
 /* Produce single list on stdout of all shared module names for gmt --show-modules */
