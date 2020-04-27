@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: grdvolume reads a 2d grid file, and calculates the volume
+ * Brief synopsis: grdvolume reads a 2D grid file, and calculates the volume
  * under the surface using exact integration of the bilinear interpolating
  * surface.  As an option, the user may supply a contour value; then the
  * volume is only integrated inside the chosen contour.
@@ -67,7 +67,7 @@ struct GRDVOLUME_CTRL {
 };
 
 /* This function returns the volume bounded by a trapezoid based on two vertical
- * lines x0 and x1 and two horizontal lines y0 = ax +b and y1 = cx + d
+ * lines x0 and x1 and two horizontal lines y0 = ax + b and y1 = cx + d
  */
 
 GMT_LOCAL double grdvolume_vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, double a, double b, double c, double d) {
@@ -318,7 +318,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default returns cval=0, area, volume and mean height of entire grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   OR append r (-Cr) to compute 'outside' area and volume between <low> and <high>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or below <cval> and grid's minimum.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D In conjunction with -C<low>/<high>/<delta>, report slice volumes and base area.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D In conjunction with -C<low>/<high>/<delta>, report slice volumes and area.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S For geographic grids we convert degrees to \"Flat-Earth\" distances in meters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a unit from %s to select another distance unit.\n", GMT_LEN_UNITS2_DISPLAY);
@@ -726,12 +726,13 @@ EXTERN_MSC int GMT_grdvolume (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
 		else if (Ctrl->D.active) {	/* Get slice volumes */
+			out[3] = Ctrl->C.inc;	/* Fixed slice height = thickness */
 			for (c = 0; c < (n_contours-1); c++) {
-				out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c] - vol[c+1];	out[3] = Ctrl->C.inc;
+				out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c] - vol[c+1];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 		}
-		else {
+		else {	/* Get volumes above contours */
 			for (c = 0; c < n_contours; c++) {
 				out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */

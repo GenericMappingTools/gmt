@@ -13,6 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* or |-C|\ **r**\ *cval*]
+[ |-D| ]
 [ |-L|\ *base* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ [*unit*] ]
@@ -57,6 +58,13 @@ Optional Arguments
     of water between two contours. **Note**: If no **-C** is given then there is no contour and we return
     the entire grid area, volume and the mean height; *cval* will be reported as 0 but we are not tracing
     a zero-contour (which we do if **-C**\ 0 is given).
+
+.. _-D:
+
+**-D**
+    Requires **-C**\ *low/high/delta* and will compute the area and volume of each horizontal *slice* as defined by the
+    contours.  The reported contour value is the base of the slice, and the *height* is always set to *delta* (since
+    that is the thickness of all slices).
 
 .. _-L:
 
