@@ -742,7 +742,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				Ctrl->G.active = true;
-				if (strcmp (opt->arg, "+z", 2U) == 0)
+				if (strncmp (opt->arg, "+z", 2U) == 0)
 					Ctrl->G.set_color = true;
 				else if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " "); n_errors++;
@@ -857,7 +857,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 
 	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Option -Z: No CPT given via -C\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->G.active, "Option -Z: Not compatible with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.file == NULL || Ctrl->C.file[0] == '\0'), "Option -C: No CPT given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_parse_symbol_option (GMT, Ctrl->S.arg, S, 0, true), "Option -S: Parsing failure\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (S->symbol == PSL_VECTOR || S->symbol == GMT_SYMBOL_GEOVECTOR || S->symbol == PSL_MARC \
