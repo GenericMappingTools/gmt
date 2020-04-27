@@ -179,14 +179,19 @@ enum GMT_enum_apierr {
 };
 
 enum GMT_enum_module {
-	GMT_MODULE_USAGE	= -7,	/* What GMT_Call_Module returns if told to print usage only */
-	GMT_MODULE_SYNOPSIS	= -6,	/* What GMT_Call_Module returns if told to print synopsis only */
-	GMT_MODULE_CLASSIC	= -5,	/* mode for GMT_Call_Module to print list of all classic modules */
-	GMT_MODULE_LIST		= -4,	/* mode for GMT_Call_Module to print list of all modern modules */
-	GMT_MODULE_EXIST	= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
-	GMT_MODULE_PURPOSE	= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
-	GMT_MODULE_OPT		= -1,	/* Gave linked list of option structures to GMT_Call_Module */
-	GMT_MODULE_CMD		=  0	/* Gave an array of text strings (argv[]) to GMT_Call_Module */
+	GMT_MODULE_USAGE		= -7,	/* What GMT_Call_Module returns if told to print usage only */
+	GMT_MODULE_SYNOPSIS		= -6,	/* What GMT_Call_Module returns if told to print synopsis only */
+	GMT_MODULE_CLASSIC		= -5,	/* mode for GMT_Call_Module to print list of all classic modules */
+	GMT_MODULE_LIST			= -4,	/* mode for GMT_Call_Module to print list of all modern modules */
+	GMT_MODULE_EXIST		= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
+	GMT_MODULE_PURPOSE		= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
+	GMT_MODULE_OPT			= -1,	/* Gave linked list of option structures to GMT_Call_Module */
+	GMT_MODULE_CMD			=  0,	/* Gave an array of text strings (argv[]) to GMT_Call_Module */
+	GMT_MODULE_HELP     	 	=  0,	/* Mode for GMT_Show_ModuleInfo to do gmt --help */
+	GMT_MODULE_SHOW_MODERN   	=  1,	/* Mode for GMT_Show_ModuleInfo to list all modern modules in gmt --show-modules */
+	GMT_MODULE_SHOW_CLASSIC  	=  2,	/* Mode for GMT_Show_ModuleInfo to list all classic modules in gmt --show-classic */
+	GMT_MODULE_KEYS  		=  0,	/* Mode for GMT_Get_ModuleInfo to request the module keys */
+	GMT_MODULE_GROUP   		=  1	/* Mode for GMT_Get_ModuleInfo to request the module group */
 };
 
 /* Array indices for input/output/stderr variables */
@@ -767,6 +772,19 @@ struct GMT_RESOURCE {	/* Information related to passing resources between GMT an
 	int pos;			/* Corresponding index into external object in|out arrays */
 	int mode;			/* Either primary (0) or secondary (1) resource */
 	void *object;			/* Pointer to the actual GMT object */
+};
+
+/*============================================================ */
+/*  struct GMT_MODULEINFO is for supplement Developers only == */
+/*============================================================ */
+
+/* Shared library structure: name (classic and modern), library, purpose, keys for each module */
+struct GMT_MODULEINFO {
+	const char *mname;            /* Program (modern) name */
+	const char *cname;            /* Program (classic) name */
+	const char *component;        /* Component (core, supplement, custom) */
+	const char *purpose;          /* Program purpose */
+	const char *keys;             /* Program option info for external APIs */
 };
 
 #endif /* GMT_RESOURCES_H */

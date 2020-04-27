@@ -434,15 +434,6 @@ struct GMT_CTRL {
 	struct GMTAPI_CTRL *parent;	/* Owner of this structure [or NULL]; gives access to the API from functions being passed *GMT only */
 };
 
-/* Shared library structure: name (classic and modern), library, purpose, keys for each module */
-struct GMT_MODULEINFO {
-	const char *mname;            /* Program (modern) name */
-	const char *cname;            /* Program (classic) name */
-	const char *component;        /* Component (core, supplement, custom) */
-	const char *purpose;          /* Program purpose */
-	const char *keys;             /* Program option info for external APIs */
-};
-
 /* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments
  * and is used to declare gmtlib_get_io_ptr in gmt_io.c and gmt_prototypes.h */
 typedef int (*p_to_io_func) (struct GMT_CTRL *, FILE *, uint64_t, double *);

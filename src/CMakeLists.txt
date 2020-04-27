@@ -368,7 +368,7 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 	PSL_ISO-8859-10.h PSL_ISO-8859-13.h PSL_ISO-8859-14.h PSL_ISO-8859-15.h
 	PSL_strings.h PSL_patterns.h)
 
-set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c gmt_mbsystem_moduleinfo.h)
+set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h

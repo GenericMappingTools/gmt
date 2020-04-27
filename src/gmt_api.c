@@ -278,6 +278,14 @@ enum GMTAPI_enum_status {
  * gmtlib_* functions are exported and may be used in other gmt_*.c files
  */
 
+int gmtapi_report_error (void *V_API, int error);
+int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int direction, int module_input);
+int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
+unsigned int gmtapi_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID);
+void gmtapi_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
+char * gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
+GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API);
+
 GMT_LOCAL int gmtapi_sort_on_classic (const void *vA, const void *vB) {
 	const struct GMT_MODULEINFO *A = vA, *B = vB;
 	if (A == NULL) return +1;	/* Get the NULL entry to the end */
@@ -407,13 +415,47 @@ const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *can
 	return (M[module_id].component);
 }
 
-int gmtapi_report_error (void *V_API, int error);
-int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int direction, int module_input);
-int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
-unsigned int gmtapi_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID);
-void gmtapi_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
-char * gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
-GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API);
+int GMT_Show_ModuleInfo (void *API, struct GMT_MODULEINFO M[], char *arg, unsigned int mode) {
+	/* API function to display module information from shared libraries */
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	switch (mode) {
+		case GMT_MODULE_HELP:
+			if (arg == NULL) return_error (API, GMT_ARG_IS_NULL);
+			gmtlib_module_show_all (API, M, arg);
+			break;
+		case GMT_MODULE_SHOW_MODERN:
+			gmtlib_module_list_all (API, M);
+			break;
+		case GMT_MODULE_SHOW_CLASSIC:
+			gmtlib_module_classic_all (API, M);
+			break;
+		default:
+			GMT_Report (API, GMT_MSG_ERROR, "Internal error in GMT_Show_ModuleInfo: Passed bad mode (%d)\n", mode);
+			return_error (API, GMT_NOT_A_VALID_MODE);
+			break;
+	}
+	return (GMT_NOERROR);
+}
+
+const char * GMT_Get_ModuleInfo (void *API, struct GMT_MODULEINFO M[], char *module, unsigned int mode) {
+	/* API function to display module information from shared libraries */
+	const char *answer = NULL;
+	if (API == NULL) return_null (NULL, GMT_NOT_A_SESSION);
+	if (module == NULL) return_null (NULL, GMT_ARG_IS_NULL);
+	switch (mode) {
+		case GMT_MODULE_KEYS:
+			answer = gmtlib_module_keys (API, M, module);
+			break;
+		case GMT_MODULE_GROUP:
+			answer = gmtlib_module_group (API, M, module);
+			break;
+		default:
+			GMT_Report (API, GMT_MSG_ERROR, "Internal error in GMT_Get_ModuleInfo: Passed bad mode (%d)\n", mode);
+			return_null (NULL, GMT_NOT_A_VALID_MODE);
+			break;
+	}
+	return (answer);
+}
 
 /* Series of one-line functions to assign val to a particular union member of array u at position row, rounding if integer output */
 GMT_LOCAL void gmtapi_put_val_double (union GMT_UNIVECTOR *u, uint64_t row, double val) { u->f8[row]  =                  val; }

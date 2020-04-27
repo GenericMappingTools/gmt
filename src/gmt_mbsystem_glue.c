@@ -7,9 +7,9 @@
  * This file also contains the following convenience functions to
  * display all module purposes, list their names, or return keys or group:
  *
- *   void mbsystem_module_show_all    (void *API);
- *   void mbsystem_module_list_all    (void *API);
- *   void mbsystem_module_classic_all (void *API);
+ *   int mbsystem_module_show_all    (void *API);
+ *   int mbsystem_module_list_all    (void *API);
+ *   int mbsystem_module_classic_all (void *API);
  *
  * These functions may be called by gmt --help and gmt --show-modules
  *
@@ -24,36 +24,37 @@
  * functions by name to learn about the contents of the library.
  */
 
-#include "gmt_dev.h"
-#include "gmt_internals.h"
+#include "gmt.h"
 
 /* Sorted array with information for all GMT mbsystem modules */
 static struct GMT_MODULEINFO modules[] = {
-#include "gmt_mbsystem_moduleinfo.h"
+	{"mbcontour", "mbcontour", "mbsystem", "Plot swath bathymetry, amplitude, or backscatter", "CC(,>X}"},
+	{"mbgrdtiff", "mbgrdtiff", "mbsystem", "Project grids or images and plot them on maps", "<G{+,CC(,IG("},
+	{"mbswath", "mbswath", "mbsystem", "Plot swath bathymetry, amplitude, or backscatter", "CC(,NC(,>X}"},
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
 
 /* Pretty print all shared module names and their purposes for gmt --help */
-EXTERN_MSC void mbsystem_module_show_all (void *API) {
-	gmtlib_module_show_all (API, modules, "MB-System: GMT-compatible modules");
+EXTERN_MSC int mbsystem_module_show_all (void *API) {
+	return (GMT_Show_ModuleInfo (API, modules, "MB-System: GMT-compatible modules", GMT_MODULE_HELP));
 }
 
 /* Produce single list on stdout of all shared module names for gmt --show-modules */
-EXTERN_MSC void mbsystem_module_list_all (void *API) {
-	gmtlib_module_list_all (API, modules);
+EXTERN_MSC int mbsystem_module_list_all (void *API) {
+	return (GMT_Show_ModuleInfo (API, modules, NULL, GMT_MODULE_SHOW_MODERN));
 }
 
 /* Produce single list on stdout of all shared module names for gmt --show-classic [i.e., classic mode names] */
-EXTERN_MSC void mbsystem_module_classic_all (void *API) {
-	gmtlib_module_classic_all (API, modules);
+EXTERN_MSC int mbsystem_module_classic_all (void *API) {
+	return (GMT_Show_ModuleInfo (API, modules, NULL, GMT_MODULE_SHOW_CLASSIC));
 }
 
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 EXTERN_MSC const char *mbsystem_module_keys (void *API, char *candidate) {
-	return (gmtlib_module_keys (API, modules, candidate));
+	return (GMT_Get_ModuleInfo (API, modules, candidate, GMT_MODULE_KEYS));
 }
 
 /* Lookup module id by name, return group char name (for external API developers) */
 EXTERN_MSC const char *mbsystem_module_group (void *API, char *candidate) {
-	return (gmtlib_module_group (API, modules, candidate));
+	return (GMT_Get_ModuleInfo (API, modules, candidate, GMT_MODULE_GROUP));
 }
