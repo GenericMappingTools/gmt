@@ -16740,7 +16740,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "%d %s module files found in current directory\n", n, library);
 
 	if (first_purpose) {
-		GMT_Report (API, GMT_MSG_WARNING, "No #define THIS_MODULE_LIB_PURPOSE setting found in any module.  Please edit argument to gmtlib_module_show_all\n");
+		GMT_Report (API, GMT_MSG_WARNING, "No #define THIS_MODULE_LIB_PURPOSE setting found in any module.  Please edit argument in gmtlib_%s_show_all\n", library);
 		sprintf (line, "GMT %s: The third-party supplements to the Generic Mapping Tools", library);
 		lib_purpose = strdup (line);
 		GMT_Report (API, GMT_MSG_WARNING, "Default purpose assigned: %s\n", lib_purpose);
@@ -16754,9 +16754,9 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	printf (" * module parameters such as name, group, purpose and keys strings.\n");
 	printf (" * This file also contains the following convenience functions to\n");
 	printf (" * display all module purposes, list their names, or return keys or group:\n *\n");
-	printf (" *   void %s_module_show_all    (void *API);\n", library);
-	printf (" *   void %s_module_list_all    (void *API);\n", library);
-	printf (" *   void %s_module_classic_all (void *API);\n *\n", library);
+	printf (" *   int %s_module_show_all    (void *API);\n", library);
+	printf (" *   int %s_module_list_all    (void *API);\n", library);
+	printf (" *   int %s_module_classic_all (void *API);\n *\n", library);
 	printf (" * These functions may be called by gmt --help and gmt --show-modules\n *\n");
 	printf (" * Developers of external APIs for accessing GMT modules will use this\n");
 	printf (" * function indirectly via GMT_Encode_Options to retrieve option keys\n");
@@ -16772,20 +16772,20 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 		printf ("\t{%s, %s, %s, %s, %s},\n", M[k].mname, M[k].cname, M[k].component, M[k].purpose, M[k].keys);
 	printf ("\t{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */\n\n");
 	printf ("/* Pretty print all shared module names and their purposes for gmt --help */\n");
-	printf ("EXTERN_MSC void %s_module_show_all (void *API) {\n", library);
-	printf ("\tgmtlib_module_show_all (API, modules, \"%s\");\n}\n\n", lib_purpose);
+	printf ("EXTERN_MSC int %s_module_show_all (void *API) {\n", library);
+	printf ("\treturn (GMT_Show_ModuleInfo (API, modules, \"%s\", GMT_MODULE_HELP));\n}\n\n", lib_purpose);
 	printf ("/* Produce single list on stdout of all shared module names for gmt --show-modules */\n");
-	printf ("EXTERN_MSC void %s_module_list_all (void *API) {\n", library);
-	printf ("\tgmtlib_module_list_all (API, modules);\n}\n\n");
+	printf ("EXTERN_MSC int %s_module_list_all (void *API) {\n", library);
+	printf ("\treturn (GMT_Show_ModuleInfo (API, modules, NULL, GMT_MODULE_SHOW_MODERN));\n}\n\n");
 	printf ("/* Produce single list on stdout of all shared module names for gmt --show-classic [i.e., classic mode names] */\n");
-	printf ("EXTERN_MSC void %s_module_classic_all (void *API) {\n", library);
-	printf ("\tgmtlib_module_classic_all (API, modules);\n}\n\n");
+	printf ("EXTERN_MSC int %s_module_classic_all (void *API) {\n", library);
+	printf ("\treturn (GMT_Show_ModuleInfo (API, modules, NULL, GMT_MODULE_SHOW_CLASSIC));\n}\n\n");
 	printf ("/* Lookup module id by name, return option keys pointer (for external API developers) */\n");
 	printf ("EXTERN_MSC const char *%s_module_keys (void *API, char *candidate) {\n", library);
-	printf ("\treturn (gmtlib_module_keys (API, modules, candidate));\n}\n\n");
+	printf ("\treturn (GMT_Get_ModuleInfo (API, modules, candidate, GMT_MODULE_KEYS));\n}\n\n");
 	printf ("/* Lookup module id by name, return group char name (for external API developers) */\n");
 	printf ("EXTERN_MSC const char *%s_module_group (void *API, char *candidate) {\n", library);
-	printf ("\treturn (gmtlib_module_group (API, modules, candidate));\n}\n");
+	printf ("\treturn (GMT_Get_ModuleInfo (API, modules, candidate, GMT_MODULE_GROUP));\n}\n");
 
 CROAK:	/* We are done or premature return due to error */
 
