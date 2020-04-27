@@ -19,7 +19,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy*\ [/*dz*] ]
-[ |-G|\ *fill* ]
+[ |-G|\ *fill*\|\ **+z** ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
 [ |-N| ]
@@ -30,7 +30,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *value*\|\ *file*\ [**+f**\|\ **l**]]
+[ |-Z|\ *value*\|\ *file*]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -71,7 +71,7 @@ To plot a point with color and outline dictated by the *t.cpt* file for the *lev
 
    ::
 
-    echo 175 30 0 | gmt plot3d -R150/200/20/50 -JM15c -Sc0.5c -Z65 -Ct.cpt -pdf map
+    echo 175 30 0 | gmt plot3d -R150/200/20/50 -JM15c -B -Sc0.5c -Z65 -G+z -Ct.cpt -pdf map
 
 .. include:: plot3d_notes.rst_
 

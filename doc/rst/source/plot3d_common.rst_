@@ -87,6 +87,8 @@ Optional Arguments
     Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that the module will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
+    If **-Z** is set, use **-G+z** to assign fill color via **-C**\ *cpt* and the
+    *z*-values obtained.
 
 .. _-I:
 
@@ -149,6 +151,8 @@ Optional Arguments
     is appended then the color of the line are taken from the CPT (see
     **-C**). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.
+    If **-Z** is set, then append **+z** to **-W** to assign pen color via **-C**\ *cpt* and the
+    *z*-values obtained.
 
 .. _-X:
 
@@ -156,11 +160,11 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *value*\|\ *file*\ [**+f**\|\ **l**]
+**-Z**\ *value*\|\ *file*
     Instead of specifying a symbol or polygon fill and outline color via **-G** and **-W**,
     give both a *value* via **-Z** and a color lookup table via **-C**.  Alternatively,
     give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
-    To just set the fill or outline, append **+f** or **+l**, respectively [both]. 
+    To apply the color obtain to a fill, use **-G+z**; to apply it to the pen color, append **+z** to **-W**.
 
 .. include:: explain_-aspatial.rst_
 
