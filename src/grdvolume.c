@@ -45,6 +45,9 @@ struct GRDVOLUME_CTRL {
 		bool reverse, reverse_min;
 		double low, high, inc;
 	} C;
+	struct D {	/* -D */
+		bool active;
+	} D;
 	struct L {	/* -L<base> */
 		bool active;
 		double value;
@@ -302,7 +305,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* D
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high> or -Cr<cval>] [-L<base>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high> or -Cr<cval>] [-D] [-L<base>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<unit>] [-T[c|h]] [%s] [%s] [-Z<fact>[/<shift>]]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
@@ -315,6 +318,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default returns cval=0, area, volume and mean height of entire grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   OR append r (-Cr) to compute 'outside' area and volume between <low> and <high>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or below <cval> and grid's minimum.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D In conjunction with -C<low>/<high>/<delta>, report slice volumes and base area.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S For geographic grids we convert degrees to \"Flat-Earth\" distances in meters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a unit from %s to select another distance unit.\n", GMT_LEN_UNITS2_DISPLAY);
@@ -383,6 +387,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 						Ctrl->C.high = Ctrl->C.low, Ctrl->C.inc = 1.0;	/* So calculation of ncontours will yield 1 */
 				}
 				break;
+			case 'D':
+				Ctrl->D.active = true;
+				break;
 			case 'L':
 				Ctrl->L.active = true;
 				if (opt->arg[0]) Ctrl->L.value = atof (opt->arg);
@@ -427,6 +434,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 	                                   "Option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_dnan (Ctrl->L.value),
 	                                   "Option -L: Must specify base\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && n < 3,
+	                                   "Option -D: Must specify a range of contours with -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active,
 	                                   "Option -T: Must also specify -Clow/high/delta\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && doubleAlmostEqualZero (Ctrl->C.high, Ctrl->C.low),
@@ -715,6 +724,12 @@ EXTERN_MSC int GMT_grdvolume (void *V_API, int mode, void *args) {
 		if (Ctrl->C.reverse) {
 			out[0] = 0;	out[1] = area[0] - area[1];	out[2] = vol[0] - vol[1];	out[3] = out[2] / out[1];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+		}
+		else if (Ctrl->D.active) {	/* Get slice volumes */
+			for (c = 0; c < (n_contours-1); c++) {
+				out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c] - vol[c+1];	out[3] = Ctrl->C.inc;
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+			}
 		}
 		else {
 			for (c = 0; c < n_contours; c++) {
