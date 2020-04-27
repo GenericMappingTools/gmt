@@ -146,7 +146,7 @@ GMT_LOCAL void grdvolume_NE_triangle (struct GMT_GRID *G, uint64_t ij, bool tria
 	y1_1 = y1 - 1.0;
 	if (x0_1 != 0.0) {
 		a = y1_1 / x0_1;
-		frac = grdvolume_vol_prism_frac_x (G, ij, x0, 1.0, a, 1.0 - a * x0, 0.0, 0.0);
+		frac = grdvolume_vol_prism_frac_x (G, ij, x0, 1.0, a, 1.0 - a * x0, 0.0, 1.0);
 	}
 	if (triangle) {
 		*dv += frac;
