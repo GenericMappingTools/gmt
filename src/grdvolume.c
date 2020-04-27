@@ -63,6 +63,10 @@ struct GRDVOLUME_CTRL {
 	} Z;
 };
 
+/* For equations underlying the math here, see the explanation in
+ * https://github.com/GenericMappingTools/sandbox/blob/master/gurudocs/grdvolume_integration.pdf
+  */
+
 /* This function returns the volume bounded by a trapezoid based on two vertical
  * lines x0 and x1 and two horizontal lines y0 = ax +b and y1 = cx + d
  */
