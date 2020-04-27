@@ -166,13 +166,17 @@ EXTERN_MSC int gmt_f77_readgrdinfo_ (unsigned int dim[], double wesn[], double i
 EXTERN_MSC int gmt_f77_readgrd_	    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
 EXTERN_MSC int gmt_f77_writegrd_    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file, int ltitle, int lremark, int lfile);
 
-/* 7 for external API developers only */
+/* 6 for external API developers only */
 EXTERN_MSC struct GMT_RESOURCE * GMT_Encode_Options (void *API, const char *module, int n_in, struct GMT_OPTION **head, unsigned int *n);
-EXTERN_MSC int GMT_Expand_Option   (void *API, struct GMT_OPTION *current, const char *txt);
-EXTERN_MSC int GMT_Set_AllocMode   (void *API, unsigned int family, void *object);
-EXTERN_MSC int GMT_Extract_Region  (void *API, char *file, double wesn[]);
-EXTERN_MSC float GMT_Get_Version   (void *API, unsigned int *major, unsigned int *minor, unsigned int *patch);
-EXTERN_MSC void * GMT_Get_Ctrl	   (void *API);
+EXTERN_MSC void * GMT_Get_Ctrl	                    (void *API);
+EXTERN_MSC float GMT_Get_Version                    (void *API, unsigned int *major, unsigned int *minor, unsigned int *patch);
+EXTERN_MSC int GMT_Expand_Option                    (void *API, struct GMT_OPTION *current, const char *txt);
+EXTERN_MSC int GMT_Set_AllocMode                    (void *API, unsigned int family, void *object);
+EXTERN_MSC int GMT_Extract_Region                   (void *API, char *file, double wesn[]);
+
+/* 2 for automatic glue generation use only (so not documented) */
+EXTERN_MSC const char * GMT_Get_ModuleInfo          (void *API, struct GMT_MODULEINFO M[], char *module, unsigned int mode);
+EXTERN_MSC int GMT_Show_ModuleInfo                  (void *API, struct GMT_MODULEINFO M[], char *arg, unsigned int mode);
 
 #ifdef __cplusplus
 }
