@@ -29,7 +29,7 @@ echo "-Zz.txt -G+z" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i >> $ps
 gmt psxy -R -J pol.txt -B0 -Ct.cpt -Zz.txt -G+z -W2p -O -K -X8.5c >> $ps
 echo "-Zz.txt -G+z -W2p" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i >> $ps
 gmt psxy -R -J pol.txt -B0 -Ct.cpt -Zz.txt -G+z -W2p+z -O -K -X-8.5c -Y8.5c >> $ps
-echo "-Zz.tx -G+z -W2p+z" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i >> $ps
+echo "-Zz.txt -G+z -W2p+z" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i >> $ps
 gmt psxy -R -J pol.txt -B0 -Ct.cpt -Zz.txt -Gcyan -W2p+z -O -K -X8.5c >> $ps
 echo "-Zz.txt -Gcyan -W2p+z" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i >> $ps
 gmt psxy -R -J pol.txt -B0 -Ct.cpt -Zz.txt -W2p+z -O -K -X-8.5c -Y8.5c >> $ps
