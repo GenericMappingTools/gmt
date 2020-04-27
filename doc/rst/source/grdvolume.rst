@@ -63,7 +63,7 @@ Optional Arguments
 
 **-D**
     Requires **-C**\ *low/high/delta* and will compute the area and volume of each horizontal *slice* as defined by the
-    contours.  The reported contour value is the base of the slice, and the *height* is always set to *delta* (since
+    contours.  The reported contour and area values refer to the base of the slice, and the *height* is always set to *delta* (since
     that is the thickness of all slices).
 
 .. _-L:
