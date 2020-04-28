@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 #
-# Build the lastest GMT source codes
+# Build the lastest GMT source codes.
+#
+# Usage:
+#
+# 1. Install GMT dependencies following the [wiki](https://github.com/GenericMappingTools/gmt/wiki)
+# 2. curl https://raw.githubusercontent.com/GenericMappingTools/gmt/master/ci/build-gmt-master.sh | bash
+#
+# Environmental variables that affect the building process:
+#
+# - GMT_INSTALL_DIR: GMT installation location
 #
 
 set -x -e
