@@ -30,7 +30,7 @@ GMT_BUILD_TMPDIR=$(mktemp -d ${TMPDIR:-/tmp/}gmt.XXXXXX)
 cd ${GMT_BUILD_TMPDIR}
 
 # 2. Download GMT, GSHHG and DCW from GitHub
-git clone --depth 10 https://github.com/GenericMappingTools/gmt.git gmt
+git clone --depth 1 https://github.com/GenericMappingTools/gmt.git gmt
 curl -SLO https://github.com/GenericMappingTools/gshhg-gmt/releases/download/${GSHHG_VERSION}/${GSHHG}.${EXT}
 curl -SLO https://github.com/GenericMappingTools/dcw-gmt/releases/download/${DCW_VERSION}/${DCW}.${EXT}
 
