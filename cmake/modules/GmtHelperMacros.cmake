@@ -93,7 +93,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 			get_directory_property (_files DIRECTORY ${_dir} DEFINITION ${VAR_NAME})
 			foreach (_file ${_files})
 				if (IS_ABSOLUTE ${_file})
-					# don't prepand name if is an absolute path
+					# don't prepend name if is an absolute path
 					list (APPEND ${VARIABLE} "${_file}")
 				else (IS_ABSOLUTE ${_file})
 					# prepend dirname

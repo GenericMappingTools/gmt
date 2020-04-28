@@ -195,7 +195,7 @@
 # List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules
 # that link against the full gmt libs. (For building codes that only need the GMT API,
 # see the https://github.com/GenericMappingTools/custom-supplements project).
-# These supplemental modules can be built into seperate libraries.
+# These supplemental modules can be built into separate libraries.
 #set (SUPPL_EXTRA_DIRS newsuppl1 newsuppl2 ...)
 
 # Directory in which to install the release sources per default
