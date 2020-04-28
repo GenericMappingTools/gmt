@@ -3,6 +3,8 @@
 # Build the lastest GMT source codes
 #
 
+set -x -e
+
 # Following variables can be modified via environment variables
 GMT_INSTALL_DIR=${GMT_INSTALL_DIR:-${HOME}/gmt-install-dir}
 
@@ -27,8 +29,8 @@ curl -SLO https://github.com/GenericMappingTools/dcw-gmt/releases/download/${DCW
 # 3. Extract tarballs
 tar -xvf ${GSHHG}.${EXT}
 tar -xvf ${DCW}.${EXT}
-mv ${GSHHG} gmt/share/coast
-mv ${DCW} gmt/share/dcw
+mv ${GSHHG} gmt/share/gshhg-gmt
+mv ${DCW} gmt/share/dcw-gmt
 
 # 4. Configure GMT
 cd gmt/
@@ -48,3 +50,5 @@ make install
 # 6. Cleanup
 cd ${cwd}
 rm -r /tmp/build-gmt
+
+set -x -e
