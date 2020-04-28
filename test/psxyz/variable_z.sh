@@ -36,4 +36,3 @@ gmt psxy -R -J pol.txt -B0 -Ct.cpt -Zz.txt -W2p+z -O -K -X-8.5c -Y8.5c -p >> $ps
 echo "-Zz.txt -W2p+z" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i -p >> $ps
 gmt psxy -R -J pol.txt -B0 -Ct.cpt -Z3 -G+z -W2p -O -K -X8.5c -p >> $ps
 echo "-Z3 -G+z -W2p" | gmt pstext -R -J -O -F+f12p+cTL -Dj0.1i -p >> $ps
-gv $ps

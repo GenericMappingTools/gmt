@@ -14,7 +14,7 @@ Synopsis
 
 **gmt set** [ |-C| \| |-D|\ [**s**\|\ **u**] \|
 |-G|\ *defaultsfile* ] [ **-**\ [**BJRXYp**]\ *value* ]
-PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*
+PARAMETER1 *value1* PARAMETER2 *value2* PARAMETER3  *value3*
 ...
 
 |No-spaces|

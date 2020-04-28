@@ -6499,8 +6499,12 @@ char *gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 
 	static char text[GMT_BUFSIZ];
 
-	if (F->form & 2)
-		snprintf (text, GMT_BUFSIZ, "%gp,%s,%s=%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
+	if (F->form & 2) {
+		if (F->form & 8)
+			snprintf (text, GMT_BUFSIZ, "%gp,%s,%s=~%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
+		else
+			snprintf (text, GMT_BUFSIZ, "%gp,%s,%s=%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
+	}
 	else
 		snprintf (text, GMT_BUFSIZ, "%gp,%s,%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill));
 	return (text);
