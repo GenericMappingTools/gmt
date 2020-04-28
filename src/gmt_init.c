@@ -9222,7 +9222,7 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 	for (opt = options; opt; opt = opt->next) {
 		if (!(opt->option == '<' || opt->option == '#') || !opt->arg) continue;		/* Skip other and empty options */
 		if (!strcmp (opt->arg, "=")) continue;			/* User forgot and gave parameter = value (3 words) */
-		if (opt->arg[0] != '=' && strchr (opt->arg, '=') && param && !strstr (param, "FONT_")) {	/* User forgot and gave parameter=value (1 word) */
+		if (opt->arg[0] != '=' && strchr (opt->arg, '=') && !strstr (opt->arg, "FONT_")) {	/* User forgot and gave parameter=value (1 word); OK except for FONTS */
 			p = 0;
 			while (opt->arg[p] && opt->arg[p] != '=') p++;
 			opt->arg[p] = '\0';	/* Temporarily remove the equal sign */
