@@ -206,15 +206,15 @@ by the official GMT repository. You can uninstall the older packages by:
 
 ### Ubuntu/Debian
 
-**Note:** Ubuntu/Debian are way behind in packing a recent GMT version.
-Typically you may find they offer 5.2.1 from 2015 while the rest of us have
-moved on to 2019. Your best bet then is to
+GMT 6.0 packages are available for Ubuntu 20.04 (Focal Fossa) and Debian 11 (Bullseye/Testing).
+Install it via
+
+    sudo apt-get install gmt gmt-dcw gmt-gshhg-data
+
+**Note** that the above command will install GMT 5.4 for older Ubuntu/Debian versions,
+e.g. Ubuntu 18.04 Bionic Beaver and Debian 10 Buster/Stable.
+If you want the latest GMT 6.0 release, your best bet then is to
 [build the latest release from source](BUILDING.md).
-Otherwise, installing from the distros goes like this:
-
-Install GMT5 via
-
-    sudo apt-get install gmt gmt-dcw gmt-gshhg
 
 Install other GMT dependencies (some are optional) via:
 
