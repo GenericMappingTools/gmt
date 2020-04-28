@@ -26,9 +26,8 @@ EXT="tar.gz"
 
 cwd=${PWD}
 # 1. Create temporary directory for building
-rm -rf /tmp/build-gmt
-mkdir -p /tmp/build-gmt
-cd /tmp/build-gmt
+GMT_BUILD_TMPDIR=$(mktemp -d ${TMPDIR:-/tmp/}gmt.XXXXXX)
+cd ${GMT_BUILD_TMPDIR}
 
 # 2. Download GMT, GSHHG and DCW from GitHub
 git clone --depth 10 https://github.com/GenericMappingTools/gmt.git gmt
@@ -58,6 +57,6 @@ make install
 
 # 6. Cleanup
 cd ${cwd}
-rm -r /tmp/build-gmt
+rm -rf ${GMT_BUILD_TMPDIR}
 
 set -x -e
