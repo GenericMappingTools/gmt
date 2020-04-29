@@ -11802,44 +11802,6 @@ char *GMT_Duplicate_String (void *API, const char* string) {
 	return strdup (string);
 }
 
-/* Help functions specific to the Julia/GMT API */
-
-EXTERN_MSC int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size_t off);
-int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size_t off) {
-	/* This is a magic backdoor to change static members of API structures that had to be declared as
-	   immutables types in Julia and therefore impossible to change from within Julia.
-	   *ptr  -> structure pointer whose member identified by the offset 'off' is to be changed.
-	   *what -> pointer to the new value of the struct member that will be changed.
-	   *type -> string with the type description, using the Julia types names. e.g. 'UInt32' or 'Float64'
-	   The offset value 'off' is that obtained with the Julia's fieldoffsets() function, which is
-	   equivalent to the 'offsetof()' C macro.
-	*/
-	if (!strcmp(type, "Int32"))
-		*(int *)((char *)ptr + off) = *(int *)what;
-	else if (!strcmp(type, "UInt32"))
-		*(unsigned int *)((char *)ptr + off) = *(unsigned int *)what;
-	else if (!strcmp(type, "Int64"))
-		*(int64_t *)((char *)ptr + off) = *(int64_t *)what;
-	else if (!strcmp(type, "UInt64"))
-		*(uint64_t *)((char *)ptr + off) = *(uint64_t *)what;
-	else if (!strcmp(type, "Float32"))
-		*(float *)((char *)ptr + off) = *(float *)what;
-	else if (!strcmp(type, "Float64"))
-		*(double *)((char *)ptr + off) = *(double *)what;
-	else if (!strcmp(type, "Int16"))
-		*(signed short *)((char *)ptr + off) = *(signed short *)what;
-	else if (!strcmp(type, "UInt16"))
-		*(unsigned short *)((char *)ptr + off) = *(unsigned short *)what;
-	else if (!strcmp(type, "UInt8"))
-		*(unsigned char *)((char *)ptr + off) = *(unsigned char *)what;
-	else if (!strcmp(type, "Int8"))
-		*(char *)((char *)ptr + off) = *(char *)what;
-	else {
-		GMT_Report(V_API, GMT_MSG_ERROR, "GMT/Julia Backdoor: Type (%s) not accepted. Possibly a pointer to something.\n", type);
-		return_error (V_API, GMT_NOT_A_VALID_PARAMETER);
-	}
-	return GMT_NOERROR;
-}
 
 /* Sub-functions to perform specific conversions */
 
@@ -12942,7 +12904,45 @@ float GMT_Get_Version (void *API, unsigned int *major, unsigned int *minor, unsi
 	return major_loc + (float)minor_loc / 10;
 }
 
-void * GMT_Get_Ctrl (void *V_API) {
+/* Help functions specific to the Julia/GMT API.  They are not documented */
+
+EXTERN_MSC int gmtlib_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size_t off) {
+	/* This is a magic backdoor to change static members of API structures that had to be declared as
+	   immutables types in Julia and therefore impossible to change from within Julia.
+	   *ptr  -> structure pointer whose member identified by the offset 'off' is to be changed.
+	   *what -> pointer to the new value of the struct member that will be changed.
+	   *type -> string with the type description, using the Julia types names. e.g. 'UInt32' or 'Float64'
+	   The offset value 'off' is that obtained with the Julia's fieldoffsets() function, which is
+	   equivalent to the 'offsetof()' C macro.
+	*/
+	if (!strcmp(type, "Int32"))
+		*(int *)((char *)ptr + off) = *(int *)what;
+	else if (!strcmp(type, "UInt32"))
+		*(unsigned int *)((char *)ptr + off) = *(unsigned int *)what;
+	else if (!strcmp(type, "Int64"))
+		*(int64_t *)((char *)ptr + off) = *(int64_t *)what;
+	else if (!strcmp(type, "UInt64"))
+		*(uint64_t *)((char *)ptr + off) = *(uint64_t *)what;
+	else if (!strcmp(type, "Float32"))
+		*(float *)((char *)ptr + off) = *(float *)what;
+	else if (!strcmp(type, "Float64"))
+		*(double *)((char *)ptr + off) = *(double *)what;
+	else if (!strcmp(type, "Int16"))
+		*(signed short *)((char *)ptr + off) = *(signed short *)what;
+	else if (!strcmp(type, "UInt16"))
+		*(unsigned short *)((char *)ptr + off) = *(unsigned short *)what;
+	else if (!strcmp(type, "UInt8"))
+		*(unsigned char *)((char *)ptr + off) = *(unsigned char *)what;
+	else if (!strcmp(type, "Int8"))
+		*(char *)((char *)ptr + off) = *(char *)what;
+	else {
+		GMT_Report(V_API, GMT_MSG_ERROR, "GMT/Julia Backdoor: Type (%s) not accepted. Possibly a pointer to something.\n", type);
+		return_error (V_API, GMT_NOT_A_VALID_PARAMETER);
+	}
+	return GMT_NOERROR;
+}
+
+EXTERN_MSC void * gmtlib_get_ctrl (void *V_API) {
 	/* For external environments that need to get the GMT pointer for calling
 	 * lower-level GMT library functions that expects the GMT pointer */
 	struct GMTAPI_CTRL *API = NULL;
