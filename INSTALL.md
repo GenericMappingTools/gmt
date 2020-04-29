@@ -206,15 +206,19 @@ by the official GMT repository. You can uninstall the older packages by:
 
 ### Ubuntu/Debian
 
-**Note:** Ubuntu/Debian are way behind in packing a recent GMT version.
-Typically you may find they offer 5.2.1 from 2015 while the rest of us have
-moved on to 2019. Your best bet then is to
-[build the latest release from source](BUILDING.md).
-Otherwise, installing from the distros goes like this:
-
-Install GMT5 via
+GMT 6.0 packages are available for Ubuntu 20.04 (Focal Fossa) and Debian 11 (Bullseye/Testing).
+Install it via
 
     sudo apt-get install gmt gmt-dcw gmt-gshhg
+
+**Note** that the above command will install GMT 5.4 for older Ubuntu/Debian versions,
+e.g. Ubuntu 18.04 Bionic Beaver and Debian 10 Buster/Stable.
+If you want the latest GMT 6.0 release, your best bet then is to
+[build the latest release from source](BUILDING.md).
+Keep in mind that Ubuntu 16.04 LTS for mysterious reasons does not
+include the [supplemental modules](https://docs.generic-mapping-tools.org/latest/modules.html#supplemental-modules),
+but you can obtain them by [building from source](BUILDING.md) or upgrading to Ubuntu 18.04 LTS (or newer).
+
 
 Install other GMT dependencies (some are optional) via:
 
@@ -222,10 +226,6 @@ Install other GMT dependencies (some are optional) via:
     sudo apt-get install ghostscript
     # optional
     sudo apt-get install gdal-bin
-
-**Note:** The Ubuntu package under 16.04 LTS for mysterious reasons does not
-include the supplements. If you need them you will need to
-[build from source](BUILDING.md) or upgrade to 18.04 LTS.
 
 ### ArchLinux
 
