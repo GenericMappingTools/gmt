@@ -2712,6 +2712,17 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	Return (GMT_NOERROR);
 }
 
+EXTERN_MSC int GMT_ps2raster (void *V_API, int mode, void *args) {
+	/* This was the GMT5.1 name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (gmt_M_compat_check (API->GMT, 5)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Module ps2raster is deprecated; use psconvert.\n");
+		return (GMT_Call_Module (API, "psconvert", mode, args));
+	}
+	GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: ps2raster\n");
+	return (GMT_NOT_A_VALID_MODULE);
+}
+
 #ifdef WIN32
 GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	/* Search the Windows registry for the directory containing the gswinXXc.exe
@@ -2828,3 +2839,4 @@ FOUNDGS:		/* Arrive directly here when we found a ghost in GMT/bin */
 }
 
 #endif		/* WIN32 */
+

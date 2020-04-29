@@ -48,6 +48,37 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+#if defined (WIN32) /* Use Windows API */
+EXTERN_MSC char *dlerror (void);
+#endif
+
+EXTERN_MSC double gmtlib_distance_type (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE, unsigned int id);
+EXTERN_MSC bool gmtlib_genper_reset (struct GMT_CTRL *GMT, bool reset);
+EXTERN_MSC double gmtlib_left_boundary (struct GMT_CTRL *GMT, double y);
+EXTERN_MSC double gmtlib_right_boundary (struct GMT_CTRL *GMT, double y);
+EXTERN_MSC unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
+EXTERN_MSC int gmtlib_report_error	(void *C, int error);	/* Lives in gmt_api.c */
+EXTERN_MSC void gmtlib_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, double olat);	/* Convert oblique lon/lat to regular lon/lat */
+EXTERN_MSC char *gmtlib_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
+EXTERN_MSC int gmtlib_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int direction, int module_input);
+EXTERN_MSC int gmtlib_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
+EXTERN_MSC unsigned int gmtlib_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID);
+EXTERN_MSC void gmtlib_translin (struct GMT_CTRL *GMT, double forw, double *inv);
+EXTERN_MSC void gmtlib_itranslin (struct GMT_CTRL *GMT, double *forw, double inv);
+EXTERN_MSC void gmtlib_garbage_collection (struct GMTAPI_CTRL *API, int level);	/* From gmt_api.c */
+EXTERN_MSC void gmtlib_fft_cleanup (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmtlib_fft_initialization (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmtlib_grdio_init (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmtlib_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
+EXTERN_MSC int gmtlib_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmtlib_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmtlib_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmtlib_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmtlib_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmtlib_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC unsigned int gmtlib_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid);
+EXTERN_MSC void gmtlib_fourt_stats (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned int n_rows, unsigned int *f, double *r, size_t *s, double *t);
 EXTERN_MSC int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, enum GMT_enum_type type, struct GMT_OGR *S);
 EXTERN_MSC size_t gmtlib_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloat *nan_value);
 EXTERN_MSC double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double *centroid);
@@ -239,6 +270,7 @@ EXTERN_MSC const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[]
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,
 			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */
 int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image, struct GMT_IMAGE *I);
+EXTERN_MSC int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 #endif
 
 /* LOCAL MACROS USED BY GMT_*.C ONLY - NOT PART OF GMT_DEV.H DISTRIBUTION */

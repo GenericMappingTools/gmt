@@ -287,3 +287,14 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	Return (GMT_NOERROR);
 }
+
+EXTERN_MSC int GMT_grdreformat (void *V_API, int mode, void *args) {
+	/* This was the GMT5.1 name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (gmt_M_compat_check (API->GMT, 5)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Module grdreformat is deprecated; use grdconvert.\n");
+		return (GMT_Call_Module (API, "grdconvert", mode, args));
+	}
+	GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: grdreformat\n");
+	return (GMT_NOT_A_VALID_MODULE);
+}

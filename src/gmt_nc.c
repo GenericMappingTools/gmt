@@ -40,7 +40,7 @@
  *  gmt_nc_update_grd_info: Update header in existing file
  *  gmt_nc_write_grd_info:  Write header to new file
  *  gmt_nc_write_grd:       Write header and data set to new file
- *  gmt_is_nc_grid:	    Determine if we have a nc grid
+ *  gmtlib_is_nc_grid:	    Determine if we have a nc grid
  *
  * Private functions:
  *  gmtnc_setup_chunk_cache:      Change the default HDF5 chunk cache settings
@@ -1405,7 +1405,7 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	return GMT_NOERROR;
 }
 
-int gmt_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Returns GMT_NOERROR if NetCDF grid */
 	int ncid, z_id = -1, j = 0, nvars, ndims, err, old = false;
 	nc_type z_type;

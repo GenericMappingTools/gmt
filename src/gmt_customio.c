@@ -188,7 +188,7 @@ GMT_LOCAL int gmtcustomio_write_rasheader (FILE *fp, struct rasterfile *h) {
 	return (GMT_NOERROR);
 }
 
-int gmt_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is a Sun rasterfile */
 	FILE *fp = NULL;
 	struct rasterfile h;
@@ -559,7 +559,7 @@ int gmt_native_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 #define free_and_return(code) { gmt_free_header(GMT, &t_head); return (code); }
 
-int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	uint64_t mx, status, size;
 	off_t nm;
 	double item_size;
@@ -1284,7 +1284,7 @@ struct srf_header7 {	/* Surfer 7 file header structure */
 	int len_d;		/* Length in bytes of the DATA section */
 };
 
-int gmt_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	FILE *fp = NULL;
 	char id[5];
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -2186,7 +2186,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 /* 23: ESRI Arc/Info ASCII interchange format */
 #include "gmt_esri_io.c"
 
-void gmt_grdio_init (struct GMT_CTRL *GMT) {
+void gmtlib_grdio_init (struct GMT_CTRL *GMT) {
 	unsigned int id;
 
 	/* First element is empty */

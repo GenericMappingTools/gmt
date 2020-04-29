@@ -36,7 +36,7 @@
 
 /* Public Functions:
 
-int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
+int gmtlib_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 int gmt_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
@@ -116,7 +116,7 @@ GMT_LOCAL void gmtagcio_save_header (char *remark, gmt_grdfloat *agchead) {
  *----------------------------------------------------------|
  */
 
-int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an AGC grid file. */
 	FILE *fp = NULL;
 	int n_columns, n_rows;

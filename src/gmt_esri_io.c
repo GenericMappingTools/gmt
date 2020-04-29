@@ -351,7 +351,7 @@ GMT_LOCAL int gmtesriio_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GR
 	return (GMT_NOERROR);
 }
 
-int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an ESRI Interchange ASCII file */
 	FILE *fp = NULL;
 	char record[GMT_BUFSIZ];

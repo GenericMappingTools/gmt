@@ -100,7 +100,7 @@ GMT_LOCAL uint64_t gmtfft_get_non_symmetric_f (unsigned int *f, unsigned int n) 
 #define FSIGNIF			24
 #endif
 
-void gmtfft_fourt_stats (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned int n_rows, unsigned int *f, double *r, size_t *s, double *t) {
+void gmtlib_fourt_stats (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned int n_rows, unsigned int *f, double *r, size_t *s, double *t) {
 	/* Find the proportional run time, t, and rms relative error, r,
 	 * of a Fourier transform of size n_columns,n_rows.  Also gives s, the size
 	 * of the workspace that will be needed by the transform.
@@ -185,7 +185,7 @@ void gmtlib_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int n_columns, unsig
 	double current_time, best_time, given_time, s_time, e_time;
 	double current_err, best_err, given_err, s_err, t_err;
 
-	gmtfft_fourt_stats (GMT, n_columns, n_rows, f, &given_err, &given_space, &given_time);
+	gmtlib_fourt_stats (GMT, n_columns, n_rows, f, &given_err, &given_space, &given_time);
 	given_space += n_columns * n_rows;
 	given_space *= 8;
 	if (do_print)
@@ -212,7 +212,7 @@ void gmtlib_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int n_columns, unsig
 		                nyg = ny2 * ny3 * ny5;
 		                if (nyg < n_rows || nyg > ystop) continue;
 
-			gmtfft_fourt_stats (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
+			gmtlib_fourt_stats (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
 			current_space += nxg*nyg;
 			current_space *= 8;
 			if (current_err < best_err) {
@@ -1673,7 +1673,7 @@ int GMT_FFT_2D (void *V_API, gmt_grdfloat *data, unsigned int n_columns, unsigne
 	return status;
 }
 
-void gmt_fft_initialization (struct GMT_CTRL *GMT) {
+void gmtlib_fft_initialization (struct GMT_CTRL *GMT) {
 	/* Called by gmt_begin and sets up pointers to the available FFT calls */
 #if defined HAVE_FFTW3F_THREADS
 	int n_cpu = gmtlib_get_num_processors();
@@ -1715,7 +1715,7 @@ void gmt_fft_initialization (struct GMT_CTRL *GMT) {
 	GMT->session.fft2d[k_fft_brenner] = &gmtfft_2d_brenner;
 }
 
-void gmt_fft_cleanup (struct GMT_CTRL *GMT) {
+void gmtlib_fft_cleanup (struct GMT_CTRL *GMT) {
 	/* Called by gmt_end */
 #ifndef __APPLE__
 	gmt_M_unused(GMT);
