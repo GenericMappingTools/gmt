@@ -215,6 +215,10 @@ Install it via
 e.g. Ubuntu 18.04 Bionic Beaver and Debian 10 Buster/Stable.
 If you want the latest GMT 6.0 release, your best bet then is to
 [build the latest release from source](BUILDING.md).
+Keep in mind that Ubuntu 16.04 LTS for mysterious reasons does not
+include the [supplemental modules](https://docs.generic-mapping-tools.org/latest/modules.html#supplemental-modules),
+but you can obtain them by [building from source](BUILDING.md) or upgrading to Ubuntu 18.04 LTS (or newer).
+
 
 Install other GMT dependencies (some are optional) via:
 
@@ -222,10 +226,6 @@ Install other GMT dependencies (some are optional) via:
     sudo apt-get install ghostscript
     # optional
     sudo apt-get install gdal-bin
-
-**Note:** The Ubuntu package under 16.04 LTS for mysterious reasons does not
-include the supplements. If you need them you will need to
-[build from source](BUILDING.md) or upgrade to 18.04 LTS.
 
 ### ArchLinux
 
