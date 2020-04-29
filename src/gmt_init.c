@@ -119,12 +119,6 @@
    So far, only gmtset calls this function with core = true, but this is a too fragile solution */
 #define GMT_KEYWORD_UPDATE(val) if (core) GMT_keywords_updated[val] = true
 
-EXTERN_MSC void gmt_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
-EXTERN_MSC void gmt_fft_initialization (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmt_fft_cleanup (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level);	/* From gmt_api.c */
-EXTERN_MSC void gmt_translin (struct GMT_CTRL *GMT, double forw, double *inv);				/* Forward linear	*/
-EXTERN_MSC void gmt_itranslin (struct GMT_CTRL *GMT, double *forw, double inv);				/* Inverse linear	*/
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
@@ -414,7 +408,6 @@ static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 
 #if defined (WIN32) /* Use Windows API */
 #include <Windows.h>
-EXTERN_MSC char *dlerror (void);
 
 /*! . */
 GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
@@ -6321,8 +6314,8 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 
 	GMT->current.proj.projection = GMT_NO_PROJ;
 	/* We need some defaults here for the cases where we do not actually set these with gmt_map_setup */
-	GMT->current.proj.fwd_x = GMT->current.proj.fwd_y = GMT->current.proj.fwd_z = &gmt_translin;
-	GMT->current.proj.inv_x = GMT->current.proj.inv_y = GMT->current.proj.inv_z = &gmt_itranslin;
+	GMT->current.proj.fwd_x = GMT->current.proj.fwd_y = GMT->current.proj.fwd_z = &gmtlib_translin;
+	GMT->current.proj.inv_x = GMT->current.proj.inv_y = GMT->current.proj.inv_z = &gmtlib_itranslin;
 	/* z_level will be updated in GMT_init_three_D, but if it doesn't, it does not matter,
 	 * because by default, z_scale = 0.0 */
 	GMT->current.proj.z_level = DBL_MAX;
@@ -6332,7 +6325,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	GMT->current.proj.z_project.plane = -1;	/* Initialize no perspective projection */
 	GMT->current.proj.z_project.level = 0.0;
 	for (i = 0; i < 4; i++) GMT->current.proj.edge[i] = true;
-	gmt_grdio_init (GMT);
+	gmtlib_grdio_init (GMT);
 	gmt_set_pad (GMT, pad); /* Sets default number of rows/cols for boundary padding in this session */
 	GMT->current.proj.f_horizon = 90.0;
 	GMT->current.proj.proj4 = gmt_M_memory (GMT, NULL, GMT_N_PROJ4, struct GMT_PROJ4);
@@ -13901,7 +13894,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		           GMT->current.proj.n_geodesic_calls, GMT->current.proj.n_geodesic_approx);
 	}
 
-	gmtapi_garbage_collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory for this module level */
+	gmtlib_garbage_collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory for this module level */
 
 	/* At the end of the module we restore all GMT settings as we found them (in Ccopy) */
 
@@ -13962,7 +13955,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmtinit_reset_colformats (GMT);		/* Wipe previous settings */
 	gmtinit_free_dirnames (GMT);		/* Wipe previous dir names */
 
-	gmt_fft_cleanup (GMT); /* Clean FFT resources */
+	gmtlib_fft_cleanup (GMT); /* Clean FFT resources */
 
 	/* Overwrite GMT with what we saved in gmt_init_module */
 	gmt_M_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
@@ -16199,7 +16192,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	if (GMT->current.setting.io_gridfile_shorthand) gmtinit_setshorthand (GMT);	/* Load the short hand mechanism from gmt.io */
 
-	gmt_fft_initialization (GMT);	/* Determine which FFT algos are available and set pointers */
+	gmtlib_fft_initialization (GMT);	/* Determine which FFT algos are available and set pointers */
 
 	gmtinit_set_today (GMT);	/* Determine today's rata die value */
 

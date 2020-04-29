@@ -384,9 +384,9 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h gmt_cpt_masters.h
 	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h postscriptlight.h
 	s_rint.h triangle.h gmt.h gmt_resources.h gmt_private.h subplot.c
-	gmt_error_codes.h gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_compat.c
+	gmt_error_codes.h gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c
 	gmt_customio.c gmt_dcw.c gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c
-	gmt_memory.c gmt_nc.c gmt_notposix.c gmt_proj.c gmt_shore.c gmt_sph.c
+	gmt_memory.c gmt_nc.c gmt_notposix.c gmt_shore.c gmt_sph.c
 	gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c gmt_parse.c inset.c
 	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c gmt_common_math.c
 	gmt_common_runpath.c gmt_common_sighandler.c gmt_common_string.c compat/qsort.c

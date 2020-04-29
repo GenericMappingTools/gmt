@@ -912,3 +912,14 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	Return (GMT_NOERROR);
 }
+
+EXTERN_MSC int GMT_minmax (void *V_API, int mode, void *args) {
+	/* This was the GMT4 name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (gmt_M_compat_check (API->GMT, 4)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Module minmax is deprecated; use gmtinfo.\n");
+		return (GMT_Call_Module (API, "gmtinfo", mode, args));
+	}
+	GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: minmax\n");
+	return (GMT_NOT_A_VALID_MODULE);
+}

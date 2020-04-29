@@ -114,9 +114,6 @@ struct CPT_Z_SCALE {
 	double z_unit_to_meter;	/* Scale, given z_unit, to convert z from <unit> to meters */
 };
 
-EXTERN_MSC double gmt_distance_type (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE, int id);
-EXTERN_MSC char * gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for user file */
-
 static char *GMT_just_code[12] = {"--", "LB", "CB", "RB", "--", "LM", "CM", "RM", "--", "LT", "CT", "RT"};
 
 #define gmt_M_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? true : false)	/* true for uneven units */
@@ -2626,8 +2623,8 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 			if (G->dist_kind == 1 || G->label_type == GMT_LABEL_IS_MDIST) {
 				lon[0] = lon[1];	lat[0] = lat[1];
 				gmt_xy_to_geo (GMT, &lon[1], &lat[1], xx[i], yy[i]);
-				if (G->dist_kind == 1) step = gmt_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
-				if (G->label_type == GMT_LABEL_IS_MDIST) stept = gmt_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_LABEL_DIST);
+				if (G->dist_kind == 1) step = gmtlib_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
+				if (G->label_type == GMT_LABEL_IS_MDIST) stept = gmtlib_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_LABEL_DIST);
 			}
 			if (radii[i] < G->min_radius) step = stept = 0.0;	/* If curvature is too great we simply don't add up distances */
 			track_dist[i] = track_dist[i-1] + step;
@@ -2946,7 +2943,7 @@ GMT_LOCAL void gmtsupport_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, 
 		if (G->dist_kind == 1) {	/* Wanted spacing in map distance units */
 			lon[0] = lon[1];	lat[0] = lat[1];
 			gmt_xy_to_geo (GMT, &lon[1], &lat[1], xx[i], yy[i]);
-			if (G->dist_kind == 1) step = gmt_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
+			if (G->dist_kind == 1) step = gmtlib_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
 		}
 		track_dist[i] = track_dist[i-1] + step;
 		value_dist[i] = value_dist[i-1] + stept;
@@ -13968,7 +13965,7 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 }
 
 /*! . */
-unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels) {
+unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels) {
 	/* Reads a file with one or more records of the form
 	 * value	types	[label]
 	 * where value is the coordinate of the tickmark, types is a combination
@@ -14048,7 +14045,7 @@ unsigned int gmtlib_coordinate_array (struct GMT_CTRL *GMT, double min, double m
 	if (!T->active) return (0);	/* Nothing to do */
 
 	if (T->special && GMT->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
-		n = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[T->parent], (char)tolower((unsigned char) T->type), array, labels);
+		n = gmtlib_load_custom_annot (GMT, &GMT->current.map.frame.axis[T->parent], (char)tolower((unsigned char) T->type), array, labels);
 		return (n);
 	}
 

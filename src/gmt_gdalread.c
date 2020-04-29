@@ -25,7 +25,7 @@
  *
  * Public functions (2):
  *
- *	gmt_is_gdal_grid : Determine if a grid is GDAL readable
+ *	gmtlib_is_gdal_grid : Determine if a grid is GDAL readable
  *	gmt_gdalread     : Read a GDAL grid
  */
 
@@ -684,7 +684,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
  *----------------------------------------------------------|
  */
 
-int gmt_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GDALDatasetH hDataset;
 	GDALDriverH	hDriver;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);

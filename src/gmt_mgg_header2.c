@@ -12,7 +12,7 @@
  *
  * Public functions (5):
  *
- *	gmt_is_mgg2_grid	:
+ *	gmtlib_is_mgg2_grid	:
  *	gmt_mgg2_read_grd_info  :
  *	gmt_mgg2_write_grd_info	:
  *	gmt_mgg2_read_grd       :
@@ -183,7 +183,7 @@ GMT_LOCAL void gmtmggheader2_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_
  *----------------------------------------------------------|
  */
 
-int gmt_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;

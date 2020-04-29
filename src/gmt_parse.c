@@ -64,13 +64,11 @@ static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line 
 #include "gmt_unique.h"
 };
 
-EXTERN_MSC int gmtapi_report_error	(void *C, int error);	/* Lives in gmt_api.c */
-
 /* Some private macros and inline function used in this file */
-#define ptr_return(API,err,ptr)   { gmtapi_report_error(API,err); return (ptr);}
-#define return_null(API,err)      { gmtapi_report_error(API,err); return (NULL);}
-#define return_error(API,err)     { gmtapi_report_error(API,err); return (err);}
-#define return_value(API,err,val) { gmtapi_report_error(API,err); return (val);}
+#define ptr_return(API,err,ptr)   { gmtlib_report_error(API,err); return (ptr);}
+#define return_null(API,err)      { gmtlib_report_error(API,err); return (NULL);}
+#define return_error(API,err)     { gmtlib_report_error(API,err); return (err);}
+#define return_value(API,err,val) { gmtlib_report_error(API,err); return (val);}
 
 static inline struct GMTAPI_CTRL *gmtparse_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
 
