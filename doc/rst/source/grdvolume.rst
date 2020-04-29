@@ -30,7 +30,7 @@ Synopsis
 Description
 -----------
 
-**grdvolume** reads a 2-D grid file and calculates the volume contained between the surface and the plane specified
+**grdvolume** reads a 2-D grid file and calculates the volume contained below the surface and above the plane specified
 by the given contour (or zero if not given) and reports the contour, area, volume, and maximum mean height (volume/area).
 Alternatively, specify a range of contours to be tried and **grdvolume** will determine the volume and area inside
 the contour for all contour values. Using **-T**, the contour that produced the maximum mean height (or maximum
@@ -52,7 +52,7 @@ Optional Arguments
     find area, volume and mean height (volume/area) inside and above the *cval* contour. Alternatively, search using
     all contours from *low* to *high* in steps of *delta*. [Default returns area, volume and mean height
     of the entire grid]. The area is measured in the plane of the contour. The **Cr** form on the other
-    hand computes the volume between the grid surface and the planes defined by *low* and *high*,
+    hand computes the volume below the grid surface and above the planes defined by *low* and *high*,
     or below *cval* and grid's minimum. Note that this is an *outside* volume whilst the other forms
     compute an *inside* (below the surface) area volume. Use this form to compute for example the volume
     of water between two contours. **Note**: If no **-C** is given then there is no contour and we return
@@ -63,8 +63,8 @@ Optional Arguments
 
 **-D**
     Requires **-C**\ *low/high/delta* and will compute the area and volume of each horizontal *slice* as defined by the
-    contours.  The reported contour and area values refer to the base of the slice, and the *height* is always set to *delta* (since
-    that is the thickness of all slices).
+    contours.  The reported contour and area values refer to the base of the slice, and the *height* is set to *delta*
+    (since that is the thickness of all slices).
 
 .. _-L:
 
@@ -122,13 +122,13 @@ To determine area (in km^2), volume (in km^3), and mean height (in km) of all la
 
     gmt grdvolume @earth_relief_05m -R190/210/15/25 -C0 -Sk -Z0.001
 
-To find the volume between the surface peaks.nc and the contour z = 250 m in meters, use
+To find the volume below the surface peaks.nc and above the contour z = 250 m in meters, use
 
    ::
 
     gmt grdvolume peaks.nc -Se -C250
 
-To search for the contour, between 100 and 300 in steps of 10, that
+To search for the contour, ranging from 100 to 300 in steps of 10, that
 maximizes the ratio of volume to surface area for the file peaks.nc, use
 
    ::
