@@ -41,36 +41,36 @@
 #define THIS_MODULE_OPTIONS "-:RVbdehijqs"
 
 struct SPHTRIANGULATE_CTRL {
-	struct SPHTRI_Out {	/* -> */
+	struct SPHTRIANGULATE_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct SPHTRI_A {	/* -A */
+	struct SPHTRIANGULATE_A {	/* -A */
 		bool active;
 	} A;
-	struct SPHTRI_C {	/* -C */
+	struct SPHTRIANGULATE_C {	/* -C */
 		bool active;
 	} C;
-	struct SPHTRI_D {	/* -D */
+	struct SPHTRIANGULATE_D {	/* -D */
 		bool active;
 	} D;
-	struct SPHTRI_G {	/* -G<output_grdfile> */
+	struct SPHTRIANGULATE_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct SPHTRI_L {	/* -L<unit>] */
+	struct SPHTRIANGULATE_L {	/* -L<unit>] */
 		bool active;
 		char unit;
 	} L;
-	struct SPHTRI_N {	/* -N */
+	struct SPHTRIANGULATE_N {	/* -N */
 		bool active;
 		char *file;
 	} N;
-	struct SPHTRI_Q {	/* -Q */
+	struct SPHTRIANGULATE_Q {	/* -Q */
 		bool active;
 		unsigned int mode;	/* 0 is Delaunay, 1 is Voronoi */
 	} Q;
-	struct SPHTRI_T {	/* -T */
+	struct SPHTRIANGULATE_T {	/* -T */
 		bool active;
 	} T;
 };

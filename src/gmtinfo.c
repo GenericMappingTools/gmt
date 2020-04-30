@@ -49,7 +49,7 @@ EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, doub
 #define GMT_INFO_TABLEINFO	2
 #define GMT_INFO_DATAINFO	3
 
-struct MINMAX_CTRL {	/* All control options for this program (except common args) */
+struct GMTINFO_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	unsigned int n_files;
 	struct GMTINFO_A {	/* -A */
@@ -108,16 +108,16 @@ GMT_LOCAL int gmtinfo_strip_blanks_and_output (struct GMT_CTRL *GMT, char *text,
 }
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct MINMAX_CTRL *C = NULL;
+	struct GMTINFO_CTRL *C = NULL;
 
-	C = gmt_M_memory (GMT, NULL, 1, struct MINMAX_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMTINFO_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.col = UINT_MAX;	/* Meaning not set */
 	return (C);
 }
 
-static void Free_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C);
 }
@@ -173,7 +173,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtinfo and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -384,7 +384,7 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	struct GMT_QUAD *Q = NULL;
 	struct GMT_RANGE **Z = NULL;
-	struct MINMAX_CTRL *Ctrl = NULL;
+	struct GMTINFO_CTRL *Ctrl = NULL;
 	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;

@@ -45,25 +45,25 @@
 
 struct GRDLANDMASK_CTRL {	/* All control options for this program (except common args) */
 	/* ctive is true if the option has been activated */
-	struct GRDLNDM_A {	/* -A<min_area>[/<min_level>/<max_level>] */
+	struct GRDLANDMASK_A {	/* -A<min_area>[/<min_level>/<max_level>] */
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
-	struct GRDLNDM_D {	/* -D<resolution>[+f] */
+	struct GRDLANDMASK_D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c, or a for auto */
 	} D;
-	struct GRDLNDM_E {	/* -E[<border> | <cborder>/<lborder>/<iborder>/<pborder>] */
+	struct GRDLANDMASK_E {	/* -E[<border> | <cborder>/<lborder>/<iborder>/<pborder>] */
 		bool active;
 		bool linetrace;	/* True if -E was given arguments as we must trace the lines through the grid */
 		unsigned int inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
-	struct GRDLNDM_G {	/* -G<maskfile> */
+	struct GRDLANDMASK_G {	/* -G<maskfile> */
 		bool active;
 		char *file;
 	} G;
-	struct GRDLNDM_N {	/* -N<maskvalues> */
+	struct GRDLANDMASK_N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int wetdry;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		gmt_grdfloat mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
