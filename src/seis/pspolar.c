@@ -70,7 +70,7 @@ struct PSPOLAR_CTRL {
 	struct PSPOLAR_Q {	/* Repeatable: -Q<mode>[<args>] for various symbol parameters */
 		bool active;
 	} Q;
-	struct H2 {	/* -Qh for Hypo71 */
+	struct PSPOLAR_H2 {	/* -Qh for Hypo71 */
 		bool active;
 	} H2;
 	struct PSPOLAR_S {	/* -S<symbol><size>[c|i|p] */
@@ -79,7 +79,7 @@ struct PSPOLAR_CTRL {
 		double size;
 		struct GMT_FILL fill;
 	} S;
-	struct S2 {	/* -Qs<half-size>[+v<size>[+<specs>] */
+	struct PSPOLAR_S2 {	/* -Qs<half-size>[+v<size>[+<specs>] */
 		bool active;
 		bool scolor;
 		bool vector;

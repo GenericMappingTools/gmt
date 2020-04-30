@@ -101,35 +101,35 @@ struct PSMECA_CTRL {
 		bool active;
 		char *file;
 	} Z;
-	struct A2 {	/* -Fa[size[/Psymbol[Tsymbol]]] */
+	struct PSMECA_A2 {	/* -Fa[size[/Psymbol[Tsymbol]]] */
 		bool active;
 		char P_symbol, T_symbol;
 		double size;
 	} A2;
-	struct E2 {	/* -Fe<fill> */
+	struct PSMECA_E2 {	/* -Fe<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} E2;
-	struct G2 {	/* -Fg<fill> */
+	struct PSMECA_G2 {	/* -Fg<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G2;
-	struct P2 {	/* -Fp[<pen>] */
+	struct PSMECA_P2 {	/* -Fp[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} P2;
-	struct R2 {	/* -Fr[<fill>] */
+	struct PSMECA_R2 {	/* -Fr[<fill>] */
 		bool active;
 		struct GMT_FILL fill;
 	} R2;
-	struct T2 {	/* -Ft[<pen>] */
+	struct PSMECA_T2 {	/* -Ft[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} T2;
-	struct O2 {	/* -Fo */
+	struct PSMECA_O2 {	/* -Fo */
 		bool active;
 	} O2;
-	struct Z2 {	/* -Fz[<pen>] */
+	struct PSMECA_Z2 {	/* -Fz[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} Z2;

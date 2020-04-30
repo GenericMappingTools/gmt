@@ -161,7 +161,7 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 		unsigned int id;
 		char *file;
 	} Q;
-	struct S2 {	/* -S2 */
+	struct GRDSPOTTER_S2 {	/* -S2 */
 		bool active;
 		double dist;
 	} S2;

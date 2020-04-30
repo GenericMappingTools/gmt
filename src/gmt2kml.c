@@ -121,7 +121,7 @@ struct GMT2KML_CTRL {
 		double value[2];
 		double scale;
 	} Q;
-	struct R2 {	/* -R */
+	struct GMT2KML_R2 {	/* -R */
 		bool active;
 		bool automatic;
 	} R2;
