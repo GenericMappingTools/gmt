@@ -36,14 +36,14 @@
 /* Control structure for gmtset */
 
 struct GMTSET_CTRL {
-	struct C {	/* -C */
+	struct GMTSET_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D[s|u] */
+	struct GMTSET_D {	/* -D[s|u] */
 		bool active;
 		char mode;
 	} D;
-	struct G {	/* -Gfilename */
+	struct GMTSET_G {	/* -Gfilename */
 		bool active;
 		char *file;
 	} G;

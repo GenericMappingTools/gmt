@@ -38,23 +38,23 @@
 /* Control structure for psbasemap */
 
 struct PSBASEMAP_CTRL {
-	struct A {	/* -A */
+	struct PSBASEMAP_A {	/* -A */
 		bool active;
 		char *file;
 	} A;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+s<file>][+t][+u<unit>] */
+	struct PSBASEMAP_D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+s<file>][+t][+u<unit>] */
 		bool active;
 		struct GMT_MAP_INSET inset;
 	} D;
-	struct F {	/* -F[d|f|l][+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct PSBASEMAP_F {	/* -F[d|f|l][+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		/* The panels are members of GMT_MAP_SCALE, GMT_MAP_ROSE, and GMT_MAP_INSET */
 	} F;
-	struct L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
+	struct PSBASEMAP_L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
 		bool active;
 		struct GMT_MAP_SCALE scale;
 	} L;
-	struct T {	/* -Td|m<params> */
+	struct PSBASEMAP_T {	/* -Td|m<params> */
 		bool active;
 		struct GMT_MAP_ROSE rose;
 	} T;

@@ -61,7 +61,7 @@
 
 struct MGD77MANAGE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A */
+	struct MGD77MANAGE_A {	/* -A */
 		bool active;
 		bool replace;
 		bool interpolate;

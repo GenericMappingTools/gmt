@@ -42,48 +42,48 @@
 #define THIS_MODULE_OPTIONS "-:>JRVbdefhiqrs" GMT_OPT("Hm")
 
 struct TRIANGULATE_CTRL {
-	struct Out {	/* -> */
+	struct TRIANGULATE_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct C {	/* -C<input_slope_grid> */
+	struct TRIANGULATE_C {	/* -C<input_slope_grid> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -Dx|y */
+	struct TRIANGULATE_D {	/* -Dx|y */
 		bool active;
 		unsigned int dir;
 	} D;
-	struct E {	/* -E<value> */
+	struct TRIANGULATE_E {	/* -E<value> */
 		bool active;
 		double value;
 	} E;
-	struct F {	/* -F<pregrid>[+d] */
+	struct TRIANGULATE_F {	/* -F<pregrid>[+d] */
 		bool active;
 		char *file;
 		unsigned int mode;
 	} F;
-	struct G {	/* -G<output_grdfile> */
+	struct TRIANGULATE_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct M {	/* -M */
+	struct TRIANGULATE_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct TRIANGULATE_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q[n] */
+	struct TRIANGULATE_Q {	/* -Q[n] */
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct S {	/* -S */
+	struct TRIANGULATE_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct TRIANGULATE_T {	/* -T */
 		bool active;
 	} T;
-	struct Z {	/* -Z */
+	struct TRIANGULATE_Z {	/* -Z */
 		bool active;
 	} Z;
 };

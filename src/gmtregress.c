@@ -66,43 +66,43 @@ enum GMT_enum_regress {
 /* Control structure for gmtregress */
 
 struct GMTREGRESS_CTRL {
-	struct Out {	/* ->[<outfile>] */
+	struct GMTREGRESS_Out {	/* ->[<outfile>] */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* 	-A<min>/<max>/<inc> */
+	struct GMTREGRESS_A {	/* 	-A<min>/<max>/<inc> */
 		bool active;
 		double min, max, inc;
 	} A;
-	struct C {	/* 	-C<confidence> */
+	struct GMTREGRESS_C {	/* 	-C<confidence> */
 		bool active;
 		double value;
 	} C;
-	struct E {	/* 	-Ex|y|o|r */
+	struct GMTREGRESS_E {	/* 	-Ex|y|o|r */
 		bool active;
 		unsigned int mode;
 	} E;
-	struct F {	/* 	-Fxymrcsw */
+	struct GMTREGRESS_F {	/* 	-Fxymrcsw */
 		bool active;
 		bool band;	/* True if c was given */
 		bool param;	/* True if only -Fp was given */
 		unsigned int n_cols;
 		char col[GMTREGRESS_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
-	struct N {	/* 	-N1|2|r|w */
+	struct GMTREGRESS_N {	/* 	-N1|2|r|w */
 		bool active;
 		unsigned int mode;
 	} N;
-	struct S {	/* 	-S[r] */
+	struct GMTREGRESS_S {	/* 	-S[r] */
 		bool active;
 		unsigned int mode;
 	} S;
-	struct T {	/* 	-T[<min>/<max>/]<inc>[+n] */
+	struct GMTREGRESS_T {	/* 	-T[<min>/<max>/]<inc>[+n] */
 		bool active;
 		bool no_eval;
 		struct GMT_ARRAY T;
 	} T;
-	struct W {	/* 	-W[s]x|y|r */
+	struct GMTREGRESS_W {	/* 	-W[s]x|y|r */
 		bool active;
 		unsigned int type;	/* 0 for weights, 1 if sigmas */
 		unsigned int n_weights;	/* 1-3 if any weights are selected */

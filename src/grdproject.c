@@ -36,30 +36,30 @@
 #define THIS_MODULE_OPTIONS "-JRVnr" GMT_OPT("S")
 
 struct GRDPROJECT_CTRL {
-	struct GRDPRJ_In {	/* Input grid */
+	struct GRDPROJECT_In {	/* Input grid */
 		bool active;
 		char *file;
 	} In;
-	struct GRDPRJ_C {	/* -C[<dx/dy>] */
+	struct GRDPROJECT_C {	/* -C[<dx/dy>] */
 		bool active;
 		double easting, northing;
 	} C;
-	struct GRDPRJ_E {	/* -E<dpi> */
+	struct GRDPROJECT_E {	/* -E<dpi> */
 		bool active;
 		int dpi;
 	} E;
-	struct GRDPRJ_F {	/* -F[k|m|n|i|c|p] */
+	struct GRDPROJECT_F {	/* -F[k|m|n|i|c|p] */
 		bool active;
 		char unit;
 	} F;
-	struct GRDPRJ_G {	/* -G */
+	struct GRDPROJECT_G {	/* -G */
 		bool active;
 		char *file;
 	} G;
-	struct GRDPRJ_I {	/* -I */
+	struct GRDPROJECT_I {	/* -I */
 		bool active;
 	} I;
-	struct GRDPRJ_M {	/* -Mc|i|m */
+	struct GRDPROJECT_M {	/* -Mc|i|m */
 		bool active;
 		char unit;
 	} M;

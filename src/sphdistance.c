@@ -51,32 +51,32 @@ enum sphdist_modes {
 	SPHD_VALUES = 2};
 
 struct SPHDISTANCE_CTRL {
-	struct A {	/* -A[m|p|x|y|step] */
+	struct SPHDISTANCE_A {	/* -A[m|p|x|y|step] */
 		bool active;
 		unsigned int mode;
 		double step;
 	} A;
-	struct C {	/* -C */
+	struct SPHDISTANCE_C {	/* -C */
 		bool active;
 	} C;
-	struct E {	/* -Ed|n|z[<dist>] */
+	struct SPHDISTANCE_E {	/* -Ed|n|z[<dist>] */
 		bool active;
 		unsigned int mode;
 		double dist;
 	} E;
-	struct G {	/* -G<maskfile> */
+	struct SPHDISTANCE_G {	/* -G<maskfile> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L<unit>] */
+	struct SPHDISTANCE_L {	/* -L<unit>] */
 		bool active;
 		char unit;
 	} L;
-	struct N {	/* -N */
+	struct SPHDISTANCE_N {	/* -N */
 		bool active;
 		char *file;
 	} N;
-	struct Q {	/* -Q */
+	struct SPHDISTANCE_Q {	/* -Q */
 		bool active;
 		char *file;
 	} Q;

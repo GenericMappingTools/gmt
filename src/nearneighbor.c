@@ -44,26 +44,26 @@
 
 struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct E {	/* -E<empty> */
+	struct NEARNEIGHBOR_E {	/* -E<empty> */
 		bool active;
 		double value;
 	} E;
-	struct G {	/* -G<grdfile> */
+	struct NEARNEIGHBOR_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N<sectors>[+m<min_sectors>] | -Nn */
+	struct NEARNEIGHBOR_N {	/* -N<sectors>[+m<min_sectors>] | -Nn */
 		bool active;
 		unsigned int sectors, min_sectors;
 		unsigned int mode;
 	} N;
-	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
+	struct NEARNEIGHBOR_S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		bool active;
 		int mode;	/* May be negative */
 		double radius;
 		char unit;
 	} S;
-	struct W {	/* -W */
+	struct NEARNEIGHBOR_W {	/* -W */
 		bool active;
 	} W;
 };

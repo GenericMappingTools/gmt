@@ -34,27 +34,27 @@
 #define THIS_MODULE_OPTIONS "-RVh"
 
 struct GRDHISTEQ_CTRL {
-	struct In {
+	struct GRDHISTEQ_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C<n_cells>*/
+	struct GRDHISTEQ_C {	/* -C<n_cells>*/
 		bool active;
 		unsigned int value;
 	} C;
-	struct D {	/* -D[<file>] */
+	struct GRDHISTEQ_D {	/* -D[<file>] */
 		bool active;
 		char *file;
 	} D;
-	struct G {	/* -G<file> */
+	struct GRDHISTEQ_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N[<norm>] */
+	struct GRDHISTEQ_N {	/* -N[<norm>] */
 		bool active;
 		double norm;
 	} N;
-	struct Q {	/* -Q */
+	struct GRDHISTEQ_Q {	/* -Q */
 		bool active;
 	} Q;
 };
@@ -64,7 +64,7 @@ struct INDEXED_DATA {
 	uint64_t i;
 };
 
-struct CELL {
+struct GRDHISTEQ_CELL {
 	gmt_grdfloat low;
 	gmt_grdfloat high;
 };
@@ -176,7 +176,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL gmt_grdfloat grdhisteq_get_cell (gmt_grdfloat x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell) {
+GMT_LOCAL gmt_grdfloat grdhisteq_get_cell (gmt_grdfloat x, struct GRDHISTEQ_CELL *cell, unsigned int n_cells_m1, unsigned int last_cell) {
 	unsigned int low, high, i;
 
 	low = 0;
@@ -210,11 +210,11 @@ GMT_LOCAL int grdhisteq_do_hist_equalization_cart (struct GMT_CTRL *GMT, struct 
 	uint64_t i, j, nxy;
 	unsigned int n_cells_m1 = 0, current_cell, pad[4];
 	double delta_cell, target, out[3];
-	struct CELL *cell = NULL;
+	struct GRDHISTEQ_CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
 	struct GMT_RECORD *Out = NULL;
 
-	cell = gmt_M_memory (GMT, NULL, n_cells, struct CELL);
+	cell = gmt_M_memory (GMT, NULL, n_cells, struct GRDHISTEQ_CELL);
 
 	/* Sort the data and find the division points */
 
@@ -285,7 +285,7 @@ GMT_LOCAL int grdhisteq_do_hist_equalization_geo (struct GMT_CTRL *GMT, struct G
 	uint64_t i, j, node, nxy = 0;
 	unsigned int n_cells_m1 = 0, current_cell, row, col;
 	double cell_w, delta_w, target_w, wsum = 0.0, out[3];
-	struct CELL *cell = gmt_M_memory (GMT, NULL, n_cells, struct CELL);
+	struct GRDHISTEQ_CELL *cell = gmt_M_memory (GMT, NULL, n_cells, struct GRDHISTEQ_CELL);
 	struct GMT_GRID *W = gmt_duplicate_grid (GMT, Grid, GMT_DUPLICATE_ALLOC);
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, Grid->header->nm, struct GMT_OBSERVATION);
 	struct GMT_RECORD *Out = NULL;

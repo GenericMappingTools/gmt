@@ -66,55 +66,55 @@
 
 struct GMT2KML_CTRL {
 	double t_transp;
-	struct In {
+	struct GMT2KML_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct GMT2KML_A {	/* -A */
 		bool active;
 		bool get_alt;
 		unsigned int mode;
 		double scale;
 		double altitude;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct GMT2KML_C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D<descriptfile> */
+	struct GMT2KML_D {	/* -D<descriptfile> */
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E[+e][+s] */
+	struct GMT2KML_E {	/* -E[+e][+s] */
 		bool active;
 		bool extrude;
 		bool tessellate;
 	} E;
-	struct F {	/* -F */
+	struct GMT2KML_F {	/* -F */
 		bool active;
 		unsigned int mode;
 		unsigned int geometry;
 	} F;
-	struct G {	/* -G<fill>+f|n */
+	struct GMT2KML_G {	/* -G<fill>+f|n */
 		bool active[2];
 		struct GMT_FILL fill[2];
 	} G;
-	struct I {	/* -I<icon> */
+	struct GMT2KML_I {	/* -I<icon> */
 		bool active;
 		char *file;
 	} I;
-	struct L {	/* -L */
+	struct GMT2KML_L {	/* -L */
 		bool active;
 		unsigned int n_cols;
 		char **name;
 	} L;
-	struct N {	/* -N */
+	struct GMT2KML_N {	/* -N */
 		bool active;
 		unsigned int col;
 		unsigned int mode;
 		char *fmt;
 	} N;
-	struct Q {	/* -Qi|a<az> and -Qs<scale> */
+	struct GMT2KML_Q {	/* -Qi|a<az> and -Qs<scale> */
 		bool active;
 		unsigned int mode, dmode;
 		char unit;
@@ -125,20 +125,20 @@ struct GMT2KML_CTRL {
 		bool active;
 		bool automatic;
 	} R2;
-	struct S {	/* -S */
+	struct GMT2KML_S {	/* -S */
 		bool active;
 		double scale[2];
 	} S;
-	struct T {	/* -T */
+	struct GMT2KML_T {	/* -T */
 		bool active;
 		char *title;
 		char *folder;
 	} T;
-	struct W {	/* -W<pen>[+c[l|f]] */
+	struct GMT2KML_W {	/* -W<pen>[+c[l|f]] */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z */
+	struct GMT2KML_Z {	/* -Z */
 		bool active;
 		bool invisible;
 		bool open;
@@ -146,7 +146,7 @@ struct GMT2KML_CTRL {
 	} Z;
 };
 
-struct KML {
+struct GMT2KML_KML {
 	double *lon, *lat, *z;	/* Points defining the data for the wiggle */
 	double *flon, *flat;	/* The fake lon, lat of the wiggle on the Earth */
 	uint64_t n_in;	/* Poinst making the wiggle data */
@@ -705,9 +705,9 @@ GMT_LOCAL bool gmt2kml_crossed_dateline (double this_x, double last_x) {
 	return (false);
 }
 
-GMT_LOCAL struct KML * gmt2kml_alloc (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+GMT_LOCAL struct GMT2KML_KML * gmt2kml_alloc (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	uint64_t tbl, seg, max = 0;
-	struct KML *kml = gmt_M_memory (GMT, NULL, 1, struct KML);
+	struct GMT2KML_KML *kml = gmt_M_memory (GMT, NULL, 1, struct GMT2KML_KML);
 	for (tbl = 0; tbl < D->n_tables; tbl++) for (seg = 0; seg < D->table[tbl]->n_segments; seg++) if (D->table[tbl]->segment[seg]->n_rows > max) max = D->table[tbl]->segment[seg]->n_rows;
 	kml->n_alloc = 3 * max;
 	kml->lon  = gmt_M_memory (GMT, NULL, kml->n_alloc, double);
@@ -718,7 +718,7 @@ GMT_LOCAL struct KML * gmt2kml_alloc (struct GMT_CTRL *GMT, struct GMT_DATASET *
 	return (kml);
 }
 
-GMT_LOCAL void gmt2kml_free (struct GMT_CTRL *GMT, struct KML ** kml) {
+GMT_LOCAL void gmt2kml_free (struct GMT_CTRL *GMT, struct GMT2KML_KML ** kml) {
 	gmt_M_free (GMT, (*kml)->lon);
 	gmt_M_free (GMT, (*kml)->lat);
 	gmt_M_free (GMT, (*kml)->z);
@@ -759,7 +759,7 @@ GMT_LOCAL void gmt2kml_plot_object (struct GMTAPI_CTRL *API, struct GMT_RECORD *
 	gmt2kml_print (API, Out, --N, "</Placemark>");
 }
 
-GMT_LOCAL void gmt2kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out, struct KML *kml, double zscale, int mode, double azim[], int fill, int outline, int process_id, int amode, int N, double altitude) {
+GMT_LOCAL void gmt2kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out, struct GMT2KML_KML *kml, double zscale, int mode, double azim[], int fill, int outline, int process_id, int amode, int N, double altitude) {
 	int64_t i, np = 0;
 	double lon_len, lat_len, az = 0.0, s = 0.0, c = 0.0, lon_inc, lat_inc;
 	double start_az = 0, stop_az = 0, daz;
@@ -836,7 +836,7 @@ EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	double rgb[4], out[5], last_x = 0;
 
-	struct KML *kml = NULL;
+	struct GMT2KML_KML *kml = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_DATASET *D = NULL;

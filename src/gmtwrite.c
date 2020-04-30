@@ -36,11 +36,11 @@
 /* Control structure for gmtwrite */
 
 struct GMTWRITE_CTRL {
-	struct IO {	/* Need two args with filenames */
+	struct GMTWRITE_IO {	/* Need two args with filenames */
 		bool active[2];
 		char *file[2];
 	} IO;
-	struct T {	/* -T sets data type */
+	struct GMTWRITE_T {	/* -T sets data type */
 		bool active;
 		enum GMT_enum_family mode;
 	} T;

@@ -41,20 +41,20 @@
 #define THIS_MODULE_OPTIONS "->V"
 
 struct X2SYS_PUT_CTRL {
-	struct In {	/* -In */
+	struct X2SYS_PUT_In {	/* -In */
 		bool active;
 		char *file;
 	} In;
-	struct D {	/* -D */
+	struct X2SYS_PUT_D {	/* -D */
 		bool active;
 	} D;
-	struct F {	/* -F */
+	struct X2SYS_PUT_F {	/* -F */
 		bool active;
 	} F;
-	struct S {	/* -S */
+	struct X2SYS_PUT_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct X2SYS_PUT_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;

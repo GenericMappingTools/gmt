@@ -34,11 +34,11 @@
 #define THIS_MODULE_OPTIONS "-Vf"
 
 struct GRDPASTE_CTRL {
-	struct In {
+	struct GRDPASTE_In {
 		bool active;
 		char *file[2];
 	} In;
-	struct G {	/* -G<output_grdfile> */
+	struct GRDPASTE_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;

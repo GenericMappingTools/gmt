@@ -34,11 +34,11 @@
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
 
 struct PSIMAGE_CTRL {
-	struct PSIMG_In {
+	struct PSIMAGE_In {
 		bool active;
 		char *file;
 	} In;
-	struct PSIMG_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<n_columns>[/<n_rows>]][+o<dx>[/<dy>]][+r<dpi>] */
+	struct PSIMAGE_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<n_columns>[/<n_rows>]][+o<dx>[/<dy>]][+r<dpi>] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
@@ -48,25 +48,25 @@ struct PSIMAGE_CTRL {
 		double dpi;
 		unsigned int n_columns, n_rows;
 	} D;
-	struct PSIMG_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct PSIMAGE_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
 	} F;
-	struct PSIMG_G {	/* -G<rgb>[+b|f|t] */
+	struct PSIMAGE_G {	/* -G<rgb>[+b|f|t] */
 		bool active;
 		double rgb[3][4];
 	} G;
-	struct PSIMG_I {	/* -I */
+	struct PSIMAGE_I {	/* -I */
 		bool active;
 	} I;
-	struct PSIMG_M {	/* -M */
+	struct PSIMAGE_M {	/* -M */
 		bool active;
 	} M;
 };
 
-#define PSIMG_BGD	0
-#define PSIMG_FGD	1
-#define PSIMG_TRA	2
+#define PSIMAGE_BGD	0
+#define PSIMAGE_FGD	1
+#define PSIMAGE_TRA	2
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSIMAGE_CTRL *C;
@@ -74,7 +74,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->G.rgb[PSIMG_FGD][0] = C->G.rgb[PSIMG_BGD][0] = C->G.rgb[PSIMG_TRA][0] = -2;	/* All turned off */
+	C->G.rgb[PSIMAGE_FGD][0] = C->G.rgb[PSIMAGE_BGD][0] = C->G.rgb[PSIMAGE_TRA][0] = -2;	/* All turned off */
 	C->D.n_columns = C->D.n_rows = 1;
 	return (C);
 }
@@ -132,7 +132,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, ind = PSIMG_FGD, k = 0;
+	unsigned int n_errors = 0, n_files = 0, ind = PSIMAGE_FGD, k = 0;
 	int n;
 	bool p_fail = false;
 	char string[GMT_LEN256] = {""}, *p = NULL;
@@ -215,28 +215,28 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 			case 'G':	/* Background/foreground color for 1-bit images */
 				Ctrl->G.active = true;
 				if ((p = strstr (opt->arg, "+b")))	/* Background color (or transparency) selected */
-					ind = PSIMG_BGD, k = 0, p[0] = '\0';
+					ind = PSIMAGE_BGD, k = 0, p[0] = '\0';
 				else if ((p = strstr (opt->arg, "+f")))	/* Foreground color (or transparency) selected */
-					ind = PSIMG_FGD, k = 0, p[0] = '\0';
+					ind = PSIMAGE_FGD, k = 0, p[0] = '\0';
 				else if ((p = strstr (opt->arg, "+t"))) {	/* Transparency color specified */
-					ind = PSIMG_TRA;	k = 0; p[0] = '\0';
+					ind = PSIMAGE_TRA;	k = 0; p[0] = '\0';
 					if (opt->arg[0] == '\0') {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -G: Must specify a color when +t is used\n");
 						n_errors++;
 					}
 				}
 				else if (gmt_M_compat_check (GMT, 5)) {	/* Must check old-style arguments */
-					if (opt->arg[0] == '-' || gmt_colorname2index (GMT, opt->arg) >= 0 || !gmt_getrgb (GMT, opt->arg, Ctrl->G.rgb[PSIMG_FGD]))	/* Foreground color selected as default */
-						ind = PSIMG_FGD, k = 0;
+					if (opt->arg[0] == '-' || gmt_colorname2index (GMT, opt->arg) >= 0 || !gmt_getrgb (GMT, opt->arg, Ctrl->G.rgb[PSIMAGE_FGD]))	/* Foreground color selected as default */
+						ind = PSIMAGE_FGD, k = 0;
 					else if (opt->arg[0] == 'f')	/* Foreground color selected */
-						ind = PSIMG_FGD, k = 1;
+						ind = PSIMAGE_FGD, k = 1;
 					else if (opt->arg[0] == 'b')	/* Background color (or transparency) selected */
-						ind = PSIMG_BGD, k = 1;
+						ind = PSIMAGE_BGD, k = 1;
 					else if (opt->arg[0] == 't')	/* Transparency color specified */
-						ind = PSIMG_TRA, k = 1;
+						ind = PSIMAGE_TRA, k = 1;
 				}
 				else	/* Just -G[<color>] for foreground */
-					ind = PSIMG_FGD, k = 0;
+					ind = PSIMAGE_FGD, k = 0;
 				if (opt->arg[k] == '\0')	/* No color given means set transparency */
 					Ctrl->G.rgb[ind][0] = -1;
 				else if (opt->arg[k] == '-') {	/* - means set transparency but only in GMT 5 and earlier */
@@ -297,7 +297,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Option -D: Must specify image width (+w) or dpi (+r)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
 			"Option -D: Must specify positive values for replication with +n\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[PSIMG_FGD][0] == -1 && Ctrl->G.rgb[PSIMG_BGD][0] == -1,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[PSIMAGE_FGD][0] == -1 && Ctrl->G.rgb[PSIMAGE_BGD][0] == -1,
 			"Option -G: Only one of fore/back-ground can be transparent for 1-bit images\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -473,10 +473,10 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 			for (n = 0; n < (size_t)(4 * I->n_indexed_colors) && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
 			n /= 4;
 			if (n == 2 && Ctrl->G.active) {	/* Replace back or fore-ground color with color given in -G, or catch selection for transparency */
-				if (Ctrl->G.rgb[PSIMG_TRA][0] != -2) {
+				if (Ctrl->G.rgb[PSIMAGE_TRA][0] != -2) {
 					GMT_Report (API, GMT_MSG_WARNING, "Your -G<color>+t is ignored for 1-bit images; see +b/+f modifiers instead\n");
 				}
-				for (unsigned int k = PSIMG_BGD; k <= PSIMG_FGD; k++) {
+				for (unsigned int k = PSIMAGE_BGD; k <= PSIMAGE_FGD; k++) {
 					if (Ctrl->G.rgb[k][0] == -1) {	/* Want this color to be transparent */
 						has_trans = 1; r = colormap[4*k]; g = colormap[1+4*k]; b = colormap[2+4*k];
 					}
@@ -512,9 +512,9 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 
 		/* If a transparent color was found, we replace it with a unique one */
 		if (has_trans) {
-			Ctrl->G.rgb[PSIMG_TRA][0] = gmt_M_is255(r);
-			Ctrl->G.rgb[PSIMG_TRA][1] = gmt_M_is255(g);
-			Ctrl->G.rgb[PSIMG_TRA][2] = gmt_M_is255(b);
+			Ctrl->G.rgb[PSIMAGE_TRA][0] = gmt_M_is255(r);
+			Ctrl->G.rgb[PSIMAGE_TRA][1] = gmt_M_is255(g);
+			Ctrl->G.rgb[PSIMAGE_TRA][2] = gmt_M_is255(b);
 		}
 
 		picture = (unsigned char *)I->data;
@@ -548,14 +548,14 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 
 	/* Add transparent color at beginning, if requested */
-	if (Ctrl->G.rgb[PSIMG_TRA][0] < 0)
+	if (Ctrl->G.rgb[PSIMAGE_TRA][0] < 0)
 		PS_transparent = 1;
 	else if (header.depth >= 8) {
 		PS_transparent = -1;
 		j = header.depth / 8;
 		n = j * (header.width * header.height + 1);
 		buffer = gmt_M_memory (GMT, NULL, n, unsigned char);
-		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.rgb[PSIMG_TRA][i]);
+		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.rgb[PSIMAGE_TRA][i]);
 		gmt_M_memcpy (&(buffer[j]), picture, n - j, unsigned char);
 #ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {	/* If I is NULL then nothing is done */
@@ -655,10 +655,10 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 				/* Invert is opposite from what is expected. This is to match the behavior of -Gp */
 				if (Ctrl->I.active)
 					PSL_plotbitimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,
-							header.width, header.height, Ctrl->G.rgb[PSIMG_FGD], Ctrl->G.rgb[PSIMG_BGD]);
+							header.width, header.height, Ctrl->G.rgb[PSIMAGE_FGD], Ctrl->G.rgb[PSIMAGE_BGD]);
 				else
 					PSL_plotbitimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,
-							header.width, header.height, Ctrl->G.rgb[PSIMG_BGD], Ctrl->G.rgb[PSIMG_FGD]);
+							header.width, header.height, Ctrl->G.rgb[PSIMAGE_BGD], Ctrl->G.rgb[PSIMAGE_FGD]);
 			}
 			else
 				 PSL_plotcolorimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,

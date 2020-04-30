@@ -65,34 +65,34 @@ FILE *fp = NULL;
 #endif
 
 struct TALWANI3D_CTRL {
-	struct A {	/* -A Set positive up  */
+	struct TALWANI3D_A {	/* -A Set positive up  */
 		bool active;
 	} A;
-	struct D {	/* -D<rho> fixed density to override model files */
+	struct TALWANI3D_D {	/* -D<rho> fixed density to override model files */
 		bool active;
 		double rho;
 	} D;
-	struct F {	/* -F[f|n[<lat>]|v] */
+	struct TALWANI3D_F {	/* -F[f|n[<lat>]|v] */
 		bool active, lset;
 		unsigned int mode;
 		double lat;
 	} F;
-	struct G {	/* Output file */
+	struct TALWANI3D_G {	/* Output file */
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -Idx[/dy] */
+	struct TALWANI3D_I {	/* -Idx[/dy] */
 		bool active;
 		double inc[2];
 	} I;
-	struct M {	/* -Mh|z  */
+	struct TALWANI3D_M {	/* -Mh|z  */
 		bool active[2];	/* True if km, else m */
 	} M;
-	struct N {	/* Desired output points */
+	struct TALWANI3D_N {	/* Desired output points */
 		bool active;
 		char *file;
 	} N;
-	struct Z {	/* Observation level file or constant */
+	struct TALWANI3D_Z {	/* Observation level file or constant */
 		bool active;
 		double level;
 		unsigned int mode;
@@ -100,15 +100,15 @@ struct TALWANI3D_CTRL {
 	} Z;
 };
 
-struct SLICE {	/* Holds a single contour slice and its density, plus link to next slice at the same depth */
-	struct SLICE *next;
+struct TALWANI3D_SLICE {	/* Holds a single contour slice and its density, plus link to next slice at the same depth */
+	struct TALWANI3D_SLICE *next;
 	int n;
 	double rho;
 	double *x, *y;
 };
 
-struct CAKE {	/* Holds linked list of slices for same depth */
-	struct SLICE *first_slice;
+struct TALWANI3D_CAKE {	/* Holds linked list of slices for same depth */
+	struct TALWANI3D_SLICE *first_slice;
 	double depth;
 };
 
@@ -637,12 +637,12 @@ GMT_LOCAL double talwani3d_get_geoid3d (double x[], double y[], int n, double x_
 	return (1.0e-2 * GAMMA * rho * nsum / G0);	/* To get geoid in meter */
 }
 
-GMT_LOCAL double talwani3d_get_one_output (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth, double G0) {
+GMT_LOCAL double talwani3d_get_one_output (double x_obs, double y_obs, double z_obs, struct TALWANI3D_CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth, double G0) {
 	/* Evaluate output at a single observation point (x,y,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
 	double z;
-	struct SLICE *sl = NULL;
+	struct TALWANI3D_SLICE *sl = NULL;
 	double vtry[GMT_TALWANI3D_N_DEPTHS];	/* Allocate on stack since trouble with OpenMP otherwise */
 #if 0
 	/* Debug stuff that will eventually go away after more testing */
@@ -681,7 +681,7 @@ GMT_LOCAL double talwani3d_get_one_output (double x_obs, double y_obs, double z_
 
 GMT_LOCAL int talwani3d_comp_cakes (const void *cake_a, const void *cake_b) {
 	/* Used in the sorting of layers on depths */
-	const struct CAKE *a = cake_a, *b = cake_b;
+	const struct TALWANI3D_CAKE *a = cake_a, *b = cake_b;
 	if (a->depth < b->depth) return (-1);
 	if (a->depth > b->depth) return (+1);
 	return (0);
@@ -702,8 +702,8 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 	double z_level, depth = 0.0, rho = 0.0, lat = 45.0, G0;
 	double *x = NULL, *y = NULL, *in = NULL, *depths = NULL;
 
-	struct SLICE *sl = NULL, *slnext = NULL;
-	struct CAKE *cake = NULL;
+	struct TALWANI3D_SLICE *sl = NULL, *slnext = NULL;
+	struct TALWANI3D_CAKE *cake = NULL;
 	struct TALWANI3D_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -784,7 +784,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 	/* Set up cake slice array and pointers */
 
 	n_alloc1 = GMT_CHUNK;
-	cake = gmt_M_memory (GMT, NULL, n_alloc1, struct CAKE);
+	cake = gmt_M_memory (GMT, NULL, n_alloc1, struct TALWANI3D_CAKE);
 
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
@@ -811,10 +811,10 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 					if (k == ndepths) {	/* New depth, must allocate another cake */
 						if (ndepths == n_alloc1) {
 							n_alloc1 <<= 1;
-							cake = gmt_M_memory (GMT, cake, n_alloc1, struct CAKE);
+							cake = gmt_M_memory (GMT, cake, n_alloc1, struct TALWANI3D_CAKE);
 						}
 						cake[k].depth = depth;
-						cake[k].first_slice = gmt_M_memory (GMT, NULL, 1, struct SLICE);
+						cake[k].first_slice = gmt_M_memory (GMT, NULL, 1, struct TALWANI3D_SLICE);
 						cake[k].first_slice->rho = rho;
 						cake[k].first_slice->x = x;
 						cake[k].first_slice->y = y;
@@ -824,7 +824,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 					else {	/* Hook onto existing list of slices at same depth */
 						sl = cake[k].first_slice;
 						while (sl->next) sl = sl->next;	/* Get to end of the slices */
-						sl->next = gmt_M_memory (GMT, NULL, 1, struct SLICE);
+						sl->next = gmt_M_memory (GMT, NULL, 1, struct TALWANI3D_SLICE);
 						sl->next->rho = rho;
 						sl->next->x = x;
 						sl->next->y = y;
@@ -898,8 +898,8 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 
 	/* Finish allocation and sort on layers */
 
-	cake = gmt_M_memory (GMT, cake, ndepths, struct CAKE);
-	qsort (cake, ndepths, sizeof (struct CAKE), talwani3d_comp_cakes);
+	cake = gmt_M_memory (GMT, cake, ndepths, struct TALWANI3D_CAKE);
+	qsort (cake, ndepths, sizeof (struct TALWANI3D_CAKE), talwani3d_comp_cakes);
 
 	if (n_duplicate) GMT_Report (API, GMT_MSG_WARNING, "Ignored %u duplicate vertices\n", n_duplicate);
 

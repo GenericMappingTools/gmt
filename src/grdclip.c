@@ -52,15 +52,15 @@ struct GRDCLIP_RECLASSIFY {
 };
 
 struct GRDCLIP_CTRL {
-	struct In {
+	struct GRDCLIP_In {
 		bool active;
 		char *file;
 	} In;
-	struct G {	/* -G<output_grdfile> */
+	struct GRDCLIP_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct S {	/* -Sa<high/above>, -Sb<low/below>, -Si<low/high/between>, -Sr<old>/<new> */
+	struct GRDCLIP_S {	/* -Sa<high/above>, -Sb<low/below>, -Si<low/high/between>, -Sr<old>/<new> */
 		bool active;
 		unsigned int mode;
 		unsigned int n_class;

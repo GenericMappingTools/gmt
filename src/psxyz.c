@@ -36,30 +36,30 @@
 /* Control structure for psxyz */
 
 struct PSXYZ_CTRL {
-	struct A {	/* -A[m|y|p|x|step] */
+	struct PSXYZ_A {	/* -A[m|y|p|x|step] */
 		bool active;
 		unsigned int mode;
 		double step;
 	} A;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct PSXYZ_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D<dx>/<dy>[/<dz>] */
+	struct PSXYZ_D {	/* -D<dx>/<dy>[/<dz>] */
 		bool active;
 		double dx, dy, dz;
 	} D;
-	struct G {	/* -G<fill>|+z */
+	struct PSXYZ_G {	/* -G<fill>|+z */
 		bool active;
 		bool set_color;
 		struct GMT_FILL fill;
 	} G;
-	struct I {	/* -I[<intensity>] */
+	struct PSXYZ_I {	/* -I[<intensity>] */
 		bool active;
 		unsigned int mode;	/* 0 if constant, 1 if read from file (symbols only) */
 		double value;
 	} I;
-	struct L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
+	struct PSXYZ_L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
 		bool active;
 		bool polygon;		/* true when just -L is given */
 		int outline;		/* 1 when +p<pen> is given */
@@ -68,27 +68,27 @@ struct PSXYZ_CTRL {
 		double value;
 		struct GMT_PEN pen;
 	} L;
-	struct N {	/* -N[r|c] */
+	struct PSXYZ_N {	/* -N[r|c] */
 		bool active;
 		unsigned int mode;
 	} N;
-	struct Q {	/* -Q */
+	struct PSXYZ_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S */
+	struct PSXYZ_S {	/* -S */
 		bool active;
 		char *arg;
 	} S;
-	struct T {	/* -T */
+	struct PSXYZ_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W<pen>[+c[l|f]][+o<offset>][+s][+v[b|e]<size><vecargs>][+z] */
+	struct PSXYZ_W {	/* -W<pen>[+c[l|f]][+o<offset>][+s][+v[b|e]<size><vecargs>][+z] */
 		bool active;
 		bool cpt_effect;
 		bool set_color;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z<value> */
+	struct PSXYZ_Z {	/* -Z<value> */
 		bool active;
 		double value;
 		char *file;

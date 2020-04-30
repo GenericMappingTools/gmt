@@ -31,31 +31,31 @@
 
 struct POLESPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A<abyssalhilefile> */
+	struct POLESPOTTER_A {	/* -A<abyssalhilefile> */
 		bool active;
 		char *file;
 		double weight;
 	} A;
-	struct D {	/* -D<spacing> */
+	struct POLESPOTTER_D {	/* -D<spacing> */
 		bool active;
 		double length;
 	} D;
-	struct E {	/* -Ea|f<sigma> */
+	struct POLESPOTTER_E {	/* -Ea|f<sigma> */
 		bool active;
 	} E;
-	struct F {	/* -F<fzfile> */
+	struct POLESPOTTER_F {	/* -F<fzfile> */
 		bool active;
 		char *file;
 		double weight;
 	} F;
-	struct G {	/* -Goutfile */
+	struct POLESPOTTER_G {	/* -Goutfile */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N */
+	struct POLESPOTTER_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -Ss|l|p[<modifiers>] */
+	struct POLESPOTTER_S {	/* -Ss|l|p[<modifiers>] */
 		bool active;
 		bool dump_lines;
 		bool dump_crossings;

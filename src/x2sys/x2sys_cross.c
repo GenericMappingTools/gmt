@@ -88,7 +88,7 @@ struct X2SYS_CROSS_CTRL {
 	} Z;
 };
 
-struct PAIR {				/* Used with -Kkombinations.lis option */
+struct X2SYS_CROSS_PAIR {				/* Used with -Kkombinations.lis option */
 	char *id1, *id2;
 };
 
@@ -279,7 +279,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int x2syscross_combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t n_pairs) {
+GMT_LOCAL int x2syscross_combo_ok (char *name_1, char *name_2, struct X2SYS_CROSS_PAIR *pair, uint64_t n_pairs) {
 	uint64_t i;
 
 	/* Return true if this particular combination is found in the list of pairs */
@@ -291,10 +291,10 @@ GMT_LOCAL int x2syscross_combo_ok (char *name_1, char *name_2, struct PAIR *pair
 	return (false);
 }
 
-GMT_LOCAL void x2syscross_free_pairs (struct GMT_CTRL *GMT, struct PAIR **pair, uint64_t n_pairs) {
+GMT_LOCAL void x2syscross_free_pairs (struct GMT_CTRL *GMT, struct X2SYS_CROSS_PAIR **pair, uint64_t n_pairs) {
 	/* Free the array of pairs */
 	uint64_t k;
-	struct PAIR *P = *pair;
+	struct X2SYS_CROSS_PAIR *P = *pair;
 	for (k = 0; k < n_pairs; k++) {
 		gmt_M_str_free (P[k].id1);
 		gmt_M_str_free (P[k].id2);
@@ -403,7 +403,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	struct GMT_XOVER XC;				/* Structure with resulting crossovers */
 	struct X2SYS_FILE_INFO data_set[2];		/* File information */
 	struct X2SYS_BIX Bix;
-	struct PAIR *pair = NULL;			/* Used with -Akombinations.lis option */
+	struct X2SYS_CROSS_PAIR *pair = NULL;			/* Used with -Akombinations.lis option */
 	FILE *fp = NULL, *fpC = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct X2SYS_CROSS_CTRL *Ctrl = NULL;
@@ -484,7 +484,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		}
 
 		n_alloc = add_chunk = GMT_CHUNK;
-		pair = gmt_M_memory (GMT, NULL, n_alloc, struct PAIR);
+		pair = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_CROSS_PAIR);
 
 		while (fgets (line, GMT_BUFSIZ, fp)) {
 
@@ -503,8 +503,8 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				size_t old_n_alloc = n_alloc;
 				add_chunk *= 2;
 				n_alloc += add_chunk;
-				pair = gmt_M_memory (GMT, pair, n_alloc, struct PAIR);
-				gmt_M_memset (&(pair[old_n_alloc]), n_alloc - old_n_alloc, struct PAIR);
+				pair = gmt_M_memory (GMT, pair, n_alloc, struct X2SYS_CROSS_PAIR);
+				gmt_M_memset (&(pair[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_CROSS_PAIR);
 			}
 		}
 		fclose (fp);
@@ -513,7 +513,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "No combinations found in file %s!\n", Ctrl->A.file);
 			Crashout (GMT_RUNTIME_ERROR);
 		}
-		if (n_pairs < n_alloc) pair = gmt_M_memory (GMT, pair, n_pairs, struct PAIR);
+		if (n_pairs < n_alloc) pair = gmt_M_memory (GMT, pair, n_pairs, struct X2SYS_CROSS_PAIR);
 		GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 "\n", n_pairs);
 	}
 

@@ -40,40 +40,40 @@
 #define THIS_MODULE_OPTIONS	"->RVfn"
 
 struct GRDINTERPOLATE_CTRL {
-	struct In {
+	struct GRDINTERPOLATE_In {
 		bool active;
 		char **file;
 		unsigned int n_files;
 	} In;
-	struct E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
+	struct GRDINTERPOLATE_E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
 		bool active;
 		unsigned int mode;
 		char *lines;
 		double step;
 		char unit;
 	} E;
-	struct F {	/* -Fl|a|c[1|2] */
+	struct GRDINTERPOLATE_F {	/* -Fl|a|c[1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
 		char spline[GMT_LEN8];
 	} F;
-	struct G {	/* -G<output_grdfile>  */
+	struct GRDINTERPOLATE_G {	/* -G<output_grdfile>  */
 		bool active;
 		char *file;
 	} G;
-	struct S {	/* -S<x>/<y>|<pointfile>[+h<header>] */
+	struct GRDINTERPOLATE_S {	/* -S<x>/<y>|<pointfile>[+h<header>] */
 		bool active;
 		double x, y;
 		char *file;
 		char *header;
 	} S;
-	struct T {	/* -T<start>/<stop>/<inc> or -T<value> */
+	struct GRDINTERPOLATE_T {	/* -T<start>/<stop>/<inc> or -T<value> */
 		bool active;
 		struct GMT_ARRAY T;
 		char *string;
 	} T;
-	struct Z {	/* -Z<min>/<max>/<inc>, -Z<file>, or -Z<list> */
+	struct GRDINTERPOLATE_Z {	/* -Z<min>/<max>/<inc>, -Z<file>, or -Z<list> */
 		bool active[2];
 		struct GMT_ARRAY T;
 	} Z;

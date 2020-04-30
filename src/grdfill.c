@@ -41,20 +41,20 @@ enum GRDFILL_mode {
 };
 
 struct GRDFILL_CTRL {
-	struct In {
+	struct GRDFILL_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A<algo>[<options>] */
+	struct GRDFILL_A {	/* -A<algo>[<options>] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} A;
-	struct G {	/* -G<outgrid> */
+	struct GRDFILL_G {	/* -G<outgrid> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L[p] */
+	struct GRDFILL_L {	/* -L[p] */
 		bool active;
 		unsigned int mode;	/* 0 = region, 1 = polygons */
 	} L;

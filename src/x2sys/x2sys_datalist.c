@@ -38,28 +38,28 @@
 #define THIS_MODULE_OPTIONS "->RVbd"
 
 struct X2SYS_DATALIST_CTRL {
-	struct A {	/* -A */
+	struct X2SYS_DATALIST_A {	/* -A */
 		bool active;
 	} A;
-	struct E {	/* -E */
+	struct X2SYS_DATALIST_E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* -F */
+	struct X2SYS_DATALIST_F {	/* -F */
 		bool active;
 		char *flags;
 	} F;
-	struct I {	/* -I */
+	struct X2SYS_DATALIST_I {	/* -I */
 		bool active;
 		char *file;
 	} I;
-	struct L {	/* -L */
+	struct X2SYS_DATALIST_L {	/* -L */
 		bool active;
 		char *file;
 	} L;
-	struct S {	/* -S */
+	struct X2SYS_DATALIST_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct X2SYS_DATALIST_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;

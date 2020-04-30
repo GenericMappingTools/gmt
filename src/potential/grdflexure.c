@@ -49,70 +49,70 @@ struct GMT_MODELTIME {	/* Hold info about time */
 };
 
 struct GRDFLEXURE_CTRL {
-	struct In {	/* Input load file, template, or =flist */
+	struct GRDFLEXURE_In {	/* Input load file, template, or =flist */
 		bool active, many, list;
 		char *file;
 	} In;
-	struct A {	/* -A<Nx/Ny/Nxy> In-plane forces */
+	struct GRDFLEXURE_A {	/* -A<Nx/Ny/Nxy> In-plane forces */
 		bool active;
 		double Nx, Ny, Nxy;
 	} A;
-	struct C {	/* -Cy<E> or -Cp<poisson> */
+	struct GRDFLEXURE_C {	/* -Cy<E> or -Cp<poisson> */
 		bool active[2];
 		double E, nu;
 	} C;
-	struct D {	/* -D<rhom/rhol[/rhoi]/rhow> */
+	struct GRDFLEXURE_D {	/* -D<rhom/rhol[/rhoi]/rhow> */
 		bool active, approx;
 		unsigned int mode;
 		double rhom, rhol, rhoi, rhow;
 	} D;
-	struct E {	/* -E<te> */
+	struct GRDFLEXURE_E {	/* -E<te> */
 		bool active;
 		double te;
 	} E;
-	struct F {	/* -F<nu> or -F<nu_a>/<h_a>/<nu_m> */
+	struct GRDFLEXURE_F {	/* -F<nu> or -F<nu_a>/<h_a>/<nu_m> */
 		bool active;
 		unsigned int mode;
 		double nu_a, nu_m, h_a;
 	} F;
-	struct G {	/* -G<outfile> */
+	struct GRDFLEXURE_G {	/* -G<outfile> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L<outlist> */
+	struct GRDFLEXURE_L {	/* -L<outlist> */
 		bool active;
 		char *file;
 	} L;
-	struct M {	/* -M<maxwell_t>  */
+	struct GRDFLEXURE_M {	/* -M<maxwell_t>  */
 		bool active;
 		double maxwell_t;	/* Maxwell time */
 		double scale;		/* scale for time */
 		char unit;		/* Unit of time */
 	} M;
-	struct N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
+	struct GRDFLEXURE_N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
 		bool active;
 		struct GMT_FFT_INFO *info;
 	} N;
-	struct S {	/* Starved moat */
+	struct GRDFLEXURE_S {	/* Starved moat */
 		bool active;
 		double beta;	/* Fraction of moat w(x) filled in [1] */
 	} S;
-	struct T {	/* -T[l]<t0>/<t1>/<d0>|n  */
+	struct GRDFLEXURE_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
 		bool active, log;
 		unsigned int n_eval_times;
 		struct GMT_MODELTIME *time;	/* The current sequence of times */
 	} T;
-	struct W {	/* Water depth */
+	struct GRDFLEXURE_W {	/* Water depth */
 		bool active;
 		double water_depth;	/* Reference water depth [0] */
 	} W;
-	struct Z {	/* Moho depth */
+	struct GRDFLEXURE_Z {	/* Moho depth */
 		bool active;
 		double zm;	/* Reference depth to flexed surface [0] */
 	} Z;
 };
 
-struct RHEOLOGY {	/* Used to pass parameters in/out of functions */
+struct GRDFLEXURE_RHEOLOGY {	/* Used to pass parameters in/out of functions */
 	double eval_time_yr;	/* Time in years of evaluation or relative time since loading */
 	double load_time_yr;	/* Time in years of loading, or zero */
 	double t0;		/* Time in seconds since loading */
@@ -128,9 +128,9 @@ struct RHEOLOGY {	/* Used to pass parameters in/out of functions */
 	double dens_ratio;	/* (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom */
 	bool relative;		/* eval_time_yr is relative to load time [at 0] */
 	bool isotropic;		/* true when no inplane forces are set (no -A) */
-	double (*transfer) (double *, struct RHEOLOGY *);	/* pointer to function returning isostatic response for given k and R */
-	double (*tr_elastic_sub) (double *, struct RHEOLOGY *);	/* pointer to sub-function returning elastic isostatic response for given k and R */
-	void (*setup) (struct GMT_CTRL *, struct GRDFLEXURE_CTRL *, struct GMT_FFT_WAVENUMBER *, struct RHEOLOGY *);	/* Init function */
+	double (*transfer) (double *, struct GRDFLEXURE_RHEOLOGY *);	/* pointer to function returning isostatic response for given k and R */
+	double (*tr_elastic_sub) (double *, struct GRDFLEXURE_RHEOLOGY *);	/* pointer to sub-function returning elastic isostatic response for given k and R */
+	void (*setup) (struct GMT_CTRL *, struct GRDFLEXURE_CTRL *, struct GMT_FFT_WAVENUMBER *, struct GRDFLEXURE_RHEOLOGY *);	/* Init function */
 };
 
 struct FLX_GRID {
@@ -303,25 +303,25 @@ void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct 
 		sprintf (file, format, T->value);
 }
 
-GMT_LOCAL double grdflexure_transfer_elastic_sub_iso (double *k, struct RHEOLOGY *R) {
+GMT_LOCAL double grdflexure_transfer_elastic_sub_iso (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Elastic transfer function (isotropic) */
 	double grdflexure_transfer_fn = 1.0 / (R->ce * pow (k[GMT_FFT_K_IS_KR], 4.0) + 1.0);
 	return (grdflexure_transfer_fn);
 }
 
-GMT_LOCAL double grdflexure_transfer_elastic_sub (double *k, struct RHEOLOGY *R) {
+GMT_LOCAL double grdflexure_transfer_elastic_sub (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Elastic transfer function (general) */
 	double grdflexure_transfer_fn = 1.0 / (R->ce * pow (k[GMT_FFT_K_IS_KR], 4.0) + R->Nx_e * k[GMT_FFT_K_IS_KX] * k[GMT_FFT_K_IS_KX] + R->Ny_e * k[GMT_FFT_K_IS_KY] * k[GMT_FFT_K_IS_KY] + R->Nxy_e * k[GMT_FFT_K_IS_KX] * k[GMT_FFT_K_IS_KY] + 1.0);
 	return (grdflexure_transfer_fn);
 }
 
-GMT_LOCAL double grdflexure_transfer_elastic (double *k, struct RHEOLOGY *R) {
+GMT_LOCAL double grdflexure_transfer_elastic (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Elastic transfer function */
 	double grdflexure_transfer_fn = R->scale * R->tr_elastic_sub (k, R);
 	return (grdflexure_transfer_fn);
 }
 
-GMT_LOCAL void grdflexure_grdflexure_setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
+GMT_LOCAL void grdflexure_grdflexure_setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Do the isostatic response function convolution in the Freq domain.
 	   All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
 	   densities in kg/m**3, Te in m, etc.
@@ -371,7 +371,7 @@ GMT_LOCAL void grdflexure_grdflexure_setup_elastic (struct GMT_CTRL *GMT, struct
 		R->scale, rigidity_d, R->ce, R->Nx_e, R->Ny_e, R->Nxy_e);
 }
 
-GMT_LOCAL double grdflexure_relax_time_2 (double k, struct RHEOLOGY *R) {
+GMT_LOCAL double grdflexure_relax_time_2 (double k, struct GRDFLEXURE_RHEOLOGY *R) {
 	/*  grdflexure_relax_time_2 evalues relaxation time(k) of 2-layer viscous mantle
 	 *
 	 *     k	= wavenumber in 1/m
@@ -391,7 +391,7 @@ GMT_LOCAL double grdflexure_relax_time_2 (double k, struct RHEOLOGY *R) {
 	return (tau);
 }
 
-GMT_LOCAL void grdflexure_setup_fv2 (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
+GMT_LOCAL void grdflexure_setup_fv2 (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Setup function for 2-layer viscous mantle beneath elastic plate */
 	grdflexure_grdflexure_setup_elastic (GMT, Ctrl, K, R);	/* Both firmoviscous setups rely on the elastic setup */
 	R->t0 = (R->relative) ?  R->eval_time_yr : R->load_time_yr - R->eval_time_yr;	/* Either relative to load time or both are absolute times */
@@ -407,7 +407,7 @@ GMT_LOCAL void grdflexure_setup_fv2 (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTR
 		R->t0, R->dens_ratio, R->nu_ratio, R->nu_ratio1, R->cv);
 }
 
-GMT_LOCAL double grdflexure_transfer_fv2 (double *k, struct RHEOLOGY *R) {
+GMT_LOCAL double grdflexure_transfer_fv2 (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Transfer function for 2-layer viscous mantle */
 	double phi_e, phi_fv2, tau;
 	phi_e = R->tr_elastic_sub (k, R);
@@ -416,7 +416,7 @@ GMT_LOCAL double grdflexure_transfer_fv2 (double *k, struct RHEOLOGY *R) {
 	return (R->scale * phi_fv2);
 }
 
-GMT_LOCAL void grdflexure_setup_fv (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
+GMT_LOCAL void grdflexure_setup_fv (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Setup function for 1-layer viscous mantle beneath elastic plate */
 	grdflexure_grdflexure_setup_elastic (GMT, Ctrl, K, R);	/* Both firmoviscous setups rely on the elastic setup */
 	R->t0 = (R->relative) ?  R->eval_time_yr : R->load_time_yr - R->eval_time_yr;	/* Either relative to load time or both are absolute times */
@@ -428,7 +428,7 @@ GMT_LOCAL void grdflexure_setup_fv (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "FV Setup: R->t0 = %g R->dens_ratio = %g R->cv = %g\n", R->t0, R->dens_ratio, R->cv);
 }
 
-GMT_LOCAL double grdflexure_transfer_fv (double *k, struct RHEOLOGY *R) {
+GMT_LOCAL double grdflexure_transfer_fv (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
 /*	Firmoviscous response function for elastic plate over
  *	viscous half-space.  Give:
  *
@@ -449,13 +449,13 @@ GMT_LOCAL double grdflexure_transfer_fv (double *k, struct RHEOLOGY *R) {
 	return (R->scale * phi_fv);
 }
 
-GMT_LOCAL void grdflexure_setup_ve (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
+GMT_LOCAL void grdflexure_setup_ve (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct GRDFLEXURE_RHEOLOGY *R) {
 	grdflexure_grdflexure_setup_elastic (GMT, Ctrl, K, R);	/* Both firmoviscous setups rely on the elastic setup */
 	R->cv = 1.0 / (Ctrl->M.maxwell_t * (86400*365.25));	/* Convert to seconds */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "VE Setup: R->cv = %g, t_maxwell = %g%c\n", R->cv, Ctrl->M.maxwell_t * Ctrl->M.scale, Ctrl->M.unit);
 }
 
-GMT_LOCAL double grdflexure_transfer_ve (double *k, struct RHEOLOGY *R) {
+GMT_LOCAL double grdflexure_transfer_ve (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
 /*	Viscoelastic response function for VE plate.  Give:
  *
  *	k	- wavenumbers (1/m)
@@ -472,7 +472,7 @@ GMT_LOCAL double grdflexure_transfer_ve (double *k, struct RHEOLOGY *R) {
 	return (R->scale * phi_ve);
 }
 
-GMT_LOCAL void grdflexure_apply_grdflexure_transfer_function (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct RHEOLOGY *R) {
+GMT_LOCAL void grdflexure_apply_grdflexure_transfer_function (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Do the spectral convolution for isostatic response in the Freq domain. */
 	uint64_t k;
 	double  mk[3], grdflexure_transfer_fn;
@@ -741,9 +741,9 @@ GMT_LOCAL struct FLX_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT, struct
 	return (G);
 }
 
-GMT_LOCAL struct RHEOLOGY *grdflexure_select_rheology (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl) {
+GMT_LOCAL struct GRDFLEXURE_RHEOLOGY *grdflexure_select_rheology (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl) {
 	unsigned int fmode = 0;
-	struct RHEOLOGY *R = NULL;
+	struct GRDFLEXURE_RHEOLOGY *R = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	/* Select the transfer function to use */
@@ -754,7 +754,7 @@ GMT_LOCAL struct RHEOLOGY *grdflexure_select_rheology (struct GMT_CTRL *GMT, str
 	else				/* Elastic */
 		fmode = FLX_E;
 
-	R = gmt_M_memory (GMT, NULL, 1, struct RHEOLOGY);	/* Allocate rheology structure */
+	R = gmt_M_memory (GMT, NULL, 1, struct GRDFLEXURE_RHEOLOGY);	/* Allocate rheology structure */
 
 	switch (fmode) {	/* Set function pointers */
 		case FLX_E:
@@ -796,7 +796,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	char file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
-	struct RHEOLOGY *R = NULL;
+	struct GRDFLEXURE_RHEOLOGY *R = NULL;
 	struct FLX_GRID **Load = NULL, *This_Load = NULL;
 	struct GMT_GRID *Out = NULL;
 	struct GMT_DATASET *L = NULL;

@@ -39,23 +39,23 @@
 
 struct PROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A<azimuth> */
+	struct PROJECT_A {	/* -A<azimuth> */
 		bool active;
 		double azimuth;
 	} A;
-	struct C {	/* -C<ox>/<oy> */
+	struct PROJECT_C {	/* -C<ox>/<oy> */
 		bool active;
 		double x, y;
 	} C;
-	struct E {	/* -E<bx>/<by> */
+	struct PROJECT_E {	/* -E<bx>/<by> */
 		bool active;
 		double x, y;
 	} E;
-	struct F {	/* -F<flags> */
+	struct PROJECT_F {	/* -F<flags> */
 		bool active;
 		char col[PROJECT_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
-	struct G {	/* -G<inc>[/<colat>][+h] */
+	struct PROJECT_G {	/* -G<inc>[/<colat>][+h] */
 		bool active;
 		bool header;
 		bool through_C;
@@ -63,29 +63,29 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 		double inc;
 		double colat;
 	} G;
-	struct L {	/* -L[w][<l_min>/<l_max>] */
+	struct PROJECT_L {	/* -L[w][<l_min>/<l_max>] */
 		bool active;
 		bool constrain;
 		double min, max;
 	} L;
-	struct N {	/* -N */
+	struct PROJECT_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q */
+	struct PROJECT_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S */
+	struct PROJECT_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T<px>/<py> */
+	struct PROJECT_T {	/* -T<px>/<py> */
 		bool active;
 		double x, y;
 	} T;
-	struct W {	/* -W<w_min>/<w_max> */
+	struct PROJECT_W {	/* -W<w_min>/<w_max> */
 		bool active;
 		double min, max;
 	} W;
-	struct Z {	/* -Z<major/minor/azimuth>[+e] */
+	struct PROJECT_Z {	/* -Z<major/minor/azimuth>[+e] */
 		bool active;
 		bool exact;
 		double major, minor, azimuth;

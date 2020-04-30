@@ -47,28 +47,28 @@ struct SUN_PARAMS {
 };
 
 struct PSSOLAR_CTRL {
-	struct PSSOL_C {		/* -C */
+	struct PSSOLAR_C {		/* -C */
 		bool active;
 	} C;
-	struct PSSOL_G {		/* -G<fill> */
+	struct PSSOLAR_G {		/* -G<fill> */
 		bool active;
 		bool clip;
 		struct GMT_FILL fill;
 	} G;
-	struct PSSOL_I {		/* -I info about solar stuff */
+	struct PSSOLAR_I {		/* -I info about solar stuff */
 		bool   active;
 		bool   position;
 		int    TZ;			/* Time Zone */
 		double lon, lat;
 		struct GMT_GCAL calendar;
 	} I;
-	struct PSSOL_M {		/* -M dumps the terminators data instead of plotting them */
+	struct PSSOLAR_M {		/* -M dumps the terminators data instead of plotting them */
 		bool active;
 	} M;
-	struct PSSOL_N {		/* -N */
+	struct PSSOLAR_N {		/* -N */
 		bool active;
 	} N;
-	struct PSSOL_T {		/* -T terminator options */
+	struct PSSOLAR_T {		/* -T terminator options */
 		bool   active;
 		bool   night, civil, nautical, astronomical;
 		unsigned int n_terminators;
@@ -77,7 +77,7 @@ struct PSSOLAR_CTRL {
 		double radius[4];
 		struct GMT_GCAL calendar;
 	} T;
-	struct PSSOL_W {		/* -W<pen> */
+	struct PSSOLAR_W {		/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;

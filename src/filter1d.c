@@ -50,14 +50,14 @@
 /* Control structure for filter1d */
 
 struct FILTER1D_CTRL {
-	struct D {	/* -D<inc> */
+	struct FILTER1D_D {	/* -D<inc> */
 		bool active;
 		double inc;
 	} D;
-	struct E {	/* -E */
+	struct FILTER1D_E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* -F<type><width>[<mode>] */
+	struct FILTER1D_F {	/* -F<type><width>[<mode>] */
 		bool active;
 		bool highpass;
 		char filter;	/* Character codes for the filter */
@@ -65,11 +65,11 @@ struct FILTER1D_CTRL {
 		int mode;	/* -1/0/+1 */
 		char *file;	/* Character codes for the filter */
 	} F;
-	struct L {	/* -L<lackwidth> */
+	struct FILTER1D_L {	/* -L<lackwidth> */
 		bool active;
 		double value;
 	} L;
-	struct N {	/* -N<t_col> or -Nc|<unit>[+a] */
+	struct FILTER1D_N {	/* -N<t_col> or -Nc|<unit>[+a] */
 		bool active;
 		bool add_col;
 		char unit;
@@ -77,15 +77,15 @@ struct FILTER1D_CTRL {
 		unsigned int spatial;
 		int col;
 	} N;
-	struct Q {	/* -Q<factor> */
+	struct FILTER1D_Q {	/* -Q<factor> */
 		bool active;
 		double value;
 	} Q;
-	struct S {	/* -S<symmetry> */
+	struct FILTER1D_S {	/* -S<symmetry> */
 		bool active;
 		double value;
 	} S;
-	struct T {	/* -T<tmin/tmax/tinc>[+a|n] */
+	struct FILTER1D_T {	/* -T<tmin/tmax/tinc>[+a|n] */
 		bool active;
 		struct GMT_ARRAY T;
 	} T;

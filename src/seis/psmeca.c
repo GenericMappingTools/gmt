@@ -46,37 +46,37 @@ PostScript code is written to stdout.
 
 /* Control structure for psmeca */
 struct PSMECA_CTRL {
-	struct C {	/* -C[<pen>][+s<size>] */
+	struct PSMECA_C {	/* -C[<pen>][+s<size>] */
 		bool active;
 		double size;
 		struct GMT_PEN pen;
 	} C;
-	struct D {	/* -D<min/max> */
+	struct PSMECA_D {	/* -D<min/max> */
 		bool active;
 		double depmin, depmax;
 	} D;
-	struct E {	/* -E<fill> */
+	struct PSMECA_E {	/* -E<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} E;
-	struct F {	/* Repeatable -F<mode>[<args>] */
+	struct PSMECA_F {	/* Repeatable -F<mode>[<args>] */
 		bool active;
 	} F;
-	struct G {	/* -G<fill> */
+	struct PSMECA_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct L {	/* -L<pen> */
+	struct PSMECA_L {	/* -L<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} L;
-	struct M {	/* -M */
+	struct PSMECA_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct PSMECA_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] */
+	struct PSMECA_S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		bool no_label;
 		unsigned int readmode;
@@ -88,16 +88,16 @@ struct PSMECA_CTRL {
 		double offset[2];
 		struct GMT_FONT font;
 	} S;
-	struct T {	/* -Tnplane[/<pen>] */
+	struct PSMECA_T {	/* -Tnplane[/<pen>] */
 		bool active;
 		unsigned int n_plane;
 		struct GMT_PEN pen;
 	} T;
-	struct W {	/* -W<pen> */
+	struct PSMECA_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z<cpt> */
+	struct PSMECA_Z {	/* -Z<cpt> */
 		bool active;
 		char *file;
 	} Z;

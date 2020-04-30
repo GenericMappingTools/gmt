@@ -44,61 +44,61 @@
 /* Control structure for gmtconvert */
 
 struct GMTCONVERT_CTRL {
-	struct Out {	/* -> */
+	struct GMTCONVERT_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A */
+	struct GMTCONVERT_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C[+l<min>+u<max>+i>] */
+	struct GMTCONVERT_C {	/* -C[+l<min>+u<max>+i>] */
 		bool active, invert;
 		uint64_t min, max;
 	} C;
-	struct D {	/* -D[<template>][+o<orig>] */
+	struct GMTCONVERT_D {	/* -D[<template>][+o<orig>] */
 		bool active;
 		bool origin;
 		unsigned int mode;
 		unsigned int t_orig, s_orig;
 		char *name;
 	} D;
-	struct E {	/* -E */
+	struct GMTCONVERT_E {	/* -E */
 		bool active;
 		bool end;
 		int mode;	/* -3, -1, -1, 0, or increment stride */
 	} E;
-	struct F {	/* -F<mode> */
+	struct GMTCONVERT_F {	/* -F<mode> */
 		bool active;
 		struct GMT_SEGMENTIZE S;
 	} F;
-	struct I {	/* -I[ast] */
+	struct GMTCONVERT_I {	/* -I[ast] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct L {	/* -L */
+	struct GMTCONVERT_L {	/* -L */
 		bool active;
 	} L;
-	struct N {	/* -N<col>[+a|d] sorting */
+	struct GMTCONVERT_N {	/* -N<col>[+a|d] sorting */
 		bool active;
 		int dir;	/* +1 ascending [default], -1 descending */
 		uint64_t col;
 	} N;
-	struct Q {	/* -Q<selections> */
+	struct GMTCONVERT_Q {	/* -Q<selections> */
 		bool active;
 		struct GMT_INT_SELECTION *select;
 	} Q;
-	struct S {	/* -S[~]\"search string\" */
+	struct GMTCONVERT_S {	/* -S[~]\"search string\" */
 		bool active;
 		struct GMT_TEXT_SELECTION *select;
 	} S;
-	struct T {	/* -T[sd] */
+	struct GMTCONVERT_T {	/* -T[sd] */
 		bool active[2];
 	} T;
-	struct W {	/* -W[+n] */
+	struct GMTCONVERT_W {	/* -W[+n] */
 		bool active;
 		unsigned int mode;
 	} W;
-	struct Z {	/* -Z[<first>]:[<last>] [DEPRECATED - use -q instead]*/
+	struct GMTCONVERT_Z {	/* -Z[<first>]:[<last>] [DEPRECATED - use -q instead]*/
 		bool active;
 		int64_t first, last;
 	} Z;

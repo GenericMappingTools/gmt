@@ -37,37 +37,37 @@
 
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct In {
+	struct GRDROTATER_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -Aw/e/s/n */
+	struct GRDROTATER_A {	/* -Aw/e/s/n */
 		bool active;
 		double wesn[4];
 	} A;
-	struct D {	/* -Drotpolfile or -Dtemplate */
+	struct GRDROTATER_D {	/* -Drotpolfile or -Dtemplate */
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
+	struct GRDROTATER_E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
 		bool active;
 		struct SPOTTER_ROT rot;
 	} E;
-	struct F {	/* -Fpolfile */
+	struct GRDROTATER_F {	/* -Fpolfile */
 		bool active;
 		char *file;
 	} F;
-	struct G {	/* -Goutfile or -Gtemplate*/
+	struct GRDROTATER_G {	/* -Goutfile or -Gtemplate*/
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N */
+	struct GRDROTATER_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S */
+	struct GRDROTATER_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T<time>, -T<start/stop/inc> or -T<tfile.txt> */
+	struct GRDROTATER_T {	/* -T<time>, -T<start/stop/inc> or -T<tfile.txt> */
 		bool active;
 		unsigned int n_times;	/* Number of reconstruction times */
 		double *value;	/* Array with one or more reconstruction times */

@@ -45,23 +45,23 @@
 #define INSET_END		0
 
 struct INSET_CTRL {
-	struct In {	/* begin | end */
+	struct INSET_In {	/* begin | end */
 		bool active;
 		unsigned int mode;	/* INSET_BEGIN|END*/
 	} In;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+t][+u] */
+	struct INSET_D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+t][+u] */
 		bool active;
 		struct GMT_MAP_INSET inset;
 	} D;
-	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct INSET_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		/* The panel is a member of GMT_MAP_INSET */
 	} F;
-	struct M {	/* -M<margin> | <xmargin>/<ymargin>  | <wmargin>/<emargin>/<smargin>/<nmargin>  */
+	struct INSET_M {	/* -M<margin> | <xmargin>/<ymargin>  | <wmargin>/<emargin>/<smargin>/<nmargin>  */
 		bool active;
 		double margin[4];
 	} M;
-	struct N {	/* -N  (no clip) */
+	struct INSET_N {	/* -N  (no clip) */
 		bool active;
 	} N;
 };

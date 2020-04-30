@@ -60,11 +60,11 @@ enum psscale_shift {
 /* Control structure for psscale */
 
 struct PSSCALE_CTRL {
-	struct C {	/* -C<cpt> */
+	struct PSSCALE_C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]]+e[b|f][<length>][+n[<text>]] */
+	struct PSSCALE_D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]]+e[b|f][<length>][+n[<text>]] */
 		bool active;
 		bool horizontal;
 		bool move;
@@ -79,42 +79,42 @@ struct PSSCALE_CTRL {
 		char *etext;
 		char *opt;
 	} D;
-	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct PSSCALE_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
 	} F;
-	struct G {	/* -Glow/high for input CPT truncation */
+	struct PSSCALE_G {	/* -Glow/high for input CPT truncation */
 		bool active;
 		double z_low, z_high;
 	} G;
-	struct I {	/* -I[<intens>|<min_i>/<max_i>] */
+	struct PSSCALE_I {	/* -I[<intens>|<min_i>/<max_i>] */
 		bool active;
 		double min, max;
 	} I;
-	struct M {	/* -M */
+	struct PSSCALE_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N<dpi>|p */
+	struct PSSCALE_N {	/* -N<dpi>|p */
 		bool active;
 		unsigned int mode;
 		double dpi;
 	} N;
-	struct L {	/* -L[i][<gap>] */
+	struct PSSCALE_L {	/* -L[i][<gap>] */
 		bool active;
 		bool interval;
 		double spacing;
 	} L;
-	struct Q {	/* -Q */
+	struct PSSCALE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S */
+	struct PSSCALE_S {	/* -S */
 		bool active;
 	} S;
-	struct W {	/* -W<scale> */
+	struct PSSCALE_W {	/* -W<scale> */
 		bool active;
 		double scale;
 	} W;
-	struct Z {	/* -Z<zfile> */
+	struct PSSCALE_Z {	/* -Z<zfile> */
 		bool active;
 		char *file;
 	} Z;

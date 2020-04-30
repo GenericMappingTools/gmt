@@ -43,40 +43,40 @@ static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "
 /* Control structure for grdimage */
 
 struct GRDIMAGE_CTRL {
-	struct GRDIMG_In {
+	struct GRDIMAGE_In {
 		bool active;
 		bool do_rgb;
 		char *file[3];
 	} In;
-	struct GRDIMG_Out {
+	struct GRDIMAGE_Out {
 		bool active;
 		char *file;
 	} Out;
-	struct GRDIMG_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
+	struct GRDIMAGE_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
 		bool active;
 		double dz;
 		char *file;
 	} C;
-	struct GRDIMG_D {	/* -D to read image instead of grid */
+	struct GRDIMAGE_D {	/* -D to read image instead of grid */
 		bool active;
 		bool mode;	/* Use info of -R option to reference image */
 	} D;
-	struct GRDIMG_A {	/* -A to write a raster file or return image to API */
+	struct GRDIMAGE_A {	/* -A to write a raster file or return image to API */
 		bool active;
 		bool return_image;
 		unsigned int way;
 		char *file;
 	} A;
-	struct GRDIMG_E {	/* -Ei|<dpi> */
+	struct GRDIMAGE_E {	/* -Ei|<dpi> */
 		bool active;
 		bool device_dpi;
 		unsigned int dpi;
 	} E;
-	struct GRDIMG_G {	/* -G<rgb>[+b|f] */
+	struct GRDIMAGE_G {	/* -G<rgb>[+b|f] */
 		bool active;
 		double rgb[2][4];
 	} G;
-	struct GRDIMG_I {	/* -I[<intensfile>|<value>|<modifiers>] */
+	struct GRDIMAGE_I {	/* -I[<intensfile>|<value>|<modifiers>] */
 		bool active;
 		bool constant;
 		bool derive;
@@ -86,16 +86,16 @@ struct GRDIMAGE_CTRL {
 		char *method;	/* Default scaling method */
 		char *ambient;	/* Default ambient offset */
 	} I;
-	struct GRDIMG_M {	/* -M */
+	struct GRDIMAGE_M {	/* -M */
 		bool active;
 	} M;
-	struct GRDIMG_N {	/* -N */
+	struct GRDIMAGE_N {	/* -N */
 		bool active;
 	} N;
-	struct GRDIMG_Q {	/* -Q */
+	struct GRDIMAGE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct GRDIMG_W {	/* -W */
+	struct GRDIMAGE_W {	/* -W */
 		bool active;
 	} W;
 };

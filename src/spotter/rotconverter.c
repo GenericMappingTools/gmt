@@ -74,33 +74,33 @@
 
 struct ROTCONVERTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A */
+	struct ROTCONVERTER_A {	/* -A */
 		bool active;
 	} A;
-	struct D {	/* -D */
+	struct ROTCONVERTER_D {	/* -D */
 		bool active;
 	} D;
-	struct F {	/* -F */
+	struct ROTCONVERTER_F {	/* -F */
 		bool active;
 		bool mode;	/* out mode (true if total reconstruction rotations) */
 	} F;
-	struct G {	/* -G */
+	struct ROTCONVERTER_G {	/* -G */
 		bool active;
 	} G;
-	struct M {	/* -M[<value>] */
+	struct ROTCONVERTER_M {	/* -M[<value>] */
 		bool active;
 		double value;
 	} M;
-	struct N {	/* -N */
+	struct ROTCONVERTER_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S */
+	struct ROTCONVERTER_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct ROTCONVERTER_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W */
+	struct ROTCONVERTER_W {	/* -W */
 		bool active;
 	} W;
 };

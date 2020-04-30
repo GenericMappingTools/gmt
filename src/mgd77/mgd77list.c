@@ -140,7 +140,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
-	struct T {	/* -T */
+	struct MGD77LIST_T {	/* -T */
 		bool active;
 		int mode;	/* May be -1 */
 	} T;

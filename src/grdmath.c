@@ -102,22 +102,22 @@
 
 struct GRDMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct Out {	/* = <filename> */
+	struct GRDMATH_Out {	/* = <filename> */
 		bool active;
 	} Out;
-	struct A {	/* -A<min_area>[/<min_level>/<max_level>][+ag|i|s][+r|l][+p<percent>] */
+	struct GRDMATH_A {	/* -A<min_area>[/<min_level>/<max_level>][+ag|i|s][+r|l][+p<percent>] */
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
-	struct D {	/* -D<resolution>[+f] */
+	struct GRDMATH_D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c, or auto */
 	} D;
-	struct M {	/* -M */
+	struct GRDMATH_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct GRDMATH_N {	/* -N */
 		bool active;
 	} N;
 };

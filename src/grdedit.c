@@ -42,41 +42,41 @@
 #define THIS_MODULE_OPTIONS "-:JRVbdefhi" GMT_OPT("H")
 
 struct GRDEDIT_CTRL {
-	struct In {
+	struct GRDEDIT_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct GRDEDIT_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C */
+	struct GRDEDIT_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
+	struct GRDEDIT_D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
 		char *information;
 	} D;
-	struct E {	/* -E[a|h|l|r|t|v] */
+	struct GRDEDIT_E {	/* -E[a|h|l|r|t|v] */
 		bool active;
 		char mode;	/* l rotate 90 degrees left (CCW), t = transpose, r = rotate 90 degrees right (CW) */
 				/* a rotate around (180), h flip grid horizontally (FLIPLR), v flip grid vertically (FLIPUD) */
 	} E;
-	struct G {
+	struct GRDEDIT_G {
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L[+n|p] */
+	struct GRDEDIT_L {	/* -L[+n|p] */
 		bool active;
 		int mode;
 	} L;
-	struct N {	/* N<xyzfile> */
+	struct GRDEDIT_N {	/* N<xyzfile> */
 		bool active;
 		char *file;
 	} N;
-	struct S {	/* -S */
+	struct GRDEDIT_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct GRDEDIT_T {	/* -T */
 		bool active;
 	} T;
 };

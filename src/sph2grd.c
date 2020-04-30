@@ -42,28 +42,28 @@ enum Sph2grd_fmode {
 
 struct SPH2GRD_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct D {	/* -D */
+	struct SPH2GRD_D {	/* -D */
 		bool active;
 		char mode;
 	} D;
-	struct E {	/* -E */
+	struct SPH2GRD_E {	/* -E */
 		bool active;
 	} E;
-	struct G {	/* -G<grdfile> */
+	struct SPH2GRD_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct F {	/* -F[k]<lc>/<lp>/<hp>/<hc> or -F[k]<lo>/<hi> */
+	struct SPH2GRD_F {	/* -F[k]<lc>/<lp>/<hp>/<hc> or -F[k]<lo>/<hi> */
 		bool active;
 		bool km;	/* True if filter was specified in km instead of harmonic degree */
 		int mode;
 		double lc, lp, hp, hc;
 	} F;
-	struct N {	/* -Ng|m|s */
+	struct SPH2GRD_N {	/* -Ng|m|s */
 		bool active;
 		char mode;
 	} N;
-	struct Q {	/* -Q */
+	struct SPH2GRD_Q {	/* -Q */
 		bool active;
 	} Q;
 };

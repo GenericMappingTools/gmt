@@ -35,23 +35,23 @@ EXTERN_MSC void MGD77_select_high_resolution (struct GMT_CTRL *GMT);
 
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct C {	/* -C */
+	struct MGD77CONVERT_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D */
+	struct MGD77CONVERT_D {	/* -D */
 		bool active;
 	} D;
-	struct L {	/* -L */
+	struct MGD77CONVERT_L {	/* -L */
 		bool active;
 		unsigned int mode;
 		unsigned int dest;
 	} L;
-	struct F {	/* -F */
+	struct MGD77CONVERT_F {	/* -F */
 		bool active;
 		unsigned int mode;
 		int format;
 	} F;
-	struct T {	/* -T */
+	struct MGD77CONVERT_T {	/* -T */
 		bool active;
 		unsigned int mode;
 		int format;

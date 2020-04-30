@@ -88,50 +88,50 @@
 
 struct BACKTRACKER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A[young/old] */
+	struct BACKTRACKER_A {	/* -A[young/old] */
 		bool active;
 		unsigned int mode;	/* 1 specific limits for all input points, 2 if limits are in cols 4 + 5  */
 		double t_low, t_high;
 	} A;
-	struct D {	/* -Df|b */
+	struct BACKTRACKER_D {	/* -Df|b */
 		bool active;
 		unsigned int mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
 	} D;
-	struct E {	/* -Erotfile[+i], -E<ID1>-<ID2>[+i], or -E<lon/lat/angle> */
+	struct BACKTRACKER_E {	/* -Erotfile[+i], -E<ID1>-<ID2>[+i], or -E<lon/lat/angle> */
 		bool active;
 		struct SPOTTER_ROT rot;
 	} E;
-	struct F {	/* -Fdriftfile */
+	struct BACKTRACKER_F {	/* -Fdriftfile */
 		bool active;
 		char *file;
 	} F;
-	struct L {	/* -L */
+	struct BACKTRACKER_L {	/* -L */
 		bool active;
 		unsigned int mode;	/* 0 = hotspot tracks, 1 = flowlines */
 		bool stage_id;	/* 1 returns stage id instead of ages */
 		double d_km;	/* Resampling spacing */
 	} L;
-	struct M {	/* -M[<value>] */
+	struct BACKTRACKER_M {	/* -M[<value>] */
 		bool active;
 		double value;
 	} M;
-	struct N {	/* -N */
+	struct BACKTRACKER_N {	/* -N */
 		bool active;
 		double t_upper;
 	} N;
-	struct Q {	/* -Q<tfix> */
+	struct BACKTRACKER_Q {	/* -Q<tfix> */
 		bool active;
 		double t_fix;	/* Set fixed age*/
 	} Q;
-	struct S {	/* -S */
+	struct BACKTRACKER_S {	/* -S */
 		bool active;
 		char *file;
 	} S;
-	struct T {	/* -T<tzero> */
+	struct BACKTRACKER_T {	/* -T<tzero> */
 		bool active;
 		double t_zero;	/* Set zero age*/
 	} T;
-	struct W {	/* -W<flag> */
+	struct BACKTRACKER_W {	/* -W<flag> */
 		bool active;
 		char mode;
 	} W;

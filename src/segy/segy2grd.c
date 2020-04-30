@@ -45,48 +45,48 @@
 #define PLOT_OFFSET	2
 
 struct SEGY2GRD_CTRL {
-	struct In {	/* -In */
+	struct SEGY2GRD_In {	/* -In */
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct SEGY2GRD_A {	/* -A */
 		bool active;
 		int mode;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct SEGY2GRD_C {	/* -C<cpt> */
 		bool active;
 		double value;
 	} C;
-	struct D {	/* -D */
+	struct SEGY2GRD_D {	/* -D */
 		bool active;
 		char *text;
 	} D;
-	struct G {	/* -G */
+	struct SEGY2GRD_G {	/* -G */
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -Idx[/dy] */
+	struct SEGY2GRD_I {	/* -Idx[/dy] */
 		bool active;
 		double inc[2];
 	} I;
-	struct L {	/* -L */
+	struct SEGY2GRD_L {	/* -L */
 		bool active;
 		int value;
 	} L;
-	struct M {	/* -M */
+	struct SEGY2GRD_M {	/* -M */
 		bool active;
 		unsigned int value;
 	} M;
-	struct N {	/* -N */
+	struct SEGY2GRD_N {	/* -N */
 		bool active;
 		double d_value;
 		float f_value;
 	} N;
-	struct Q {	/* -Qx|y */
+	struct SEGY2GRD_Q {	/* -Qx|y */
 		bool active[2];
 		double value[2];
 	} Q;
-	struct S {	/* -S */
+	struct SEGY2GRD_S {	/* -S */
 		bool active;
 		unsigned int mode;
 		int value;

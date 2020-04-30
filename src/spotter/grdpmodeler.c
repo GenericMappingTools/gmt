@@ -47,32 +47,32 @@
 
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct In {
+	struct GRDPMODELER_In {
 		bool active;
 		char *file;
 	} In;
-	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
+	struct GRDPMODELER_E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
 		bool active;
 		struct SPOTTER_ROT rot;
 	} E;
-	struct F {	/* -Fpolfile */
+	struct GRDPMODELER_F {	/* -Fpolfile */
 		bool active;
 		char *file;
 	} F;
-	struct G {	/* -Goutfile */
+	struct GRDPMODELER_G {	/* -Goutfile */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N */
+	struct GRDPMODELER_N {	/* -N */
 		bool active;
 		double t_upper;
 	} N;
-	struct S {	/* -Sa|d|s|v|w|x|y|X|Y */
+	struct GRDPMODELER_S {	/* -Sa|d|s|v|w|x|y|X|Y */
 		bool active, center;
 		unsigned int mode[N_PM_ITEMS];
 		unsigned int n_items;
 	} S;
-	struct T {	/* -T<fixtime> */
+	struct GRDPMODELER_T {	/* -T<fixtime> */
 		bool active;
 		double value;
 	} T;

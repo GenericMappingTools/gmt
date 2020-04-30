@@ -36,44 +36,44 @@
 /* Control structure for pspolar */
 
 struct PSPOLAR_CTRL {
-	struct C {	/* -C */
+	struct PSPOLAR_C {	/* -C */
 		bool active;
 		double lon, lat, size;
 		struct GMT_PEN pen;
 	} C;
-	struct D {	/* -D */
+	struct PSPOLAR_D {	/* -D */
 		bool active;
 		double lon, lat;
 	} D;
- 	struct E {	/* -E<fill> */
+ 	struct PSPOLAR_E {	/* -E<fill> */
 		bool active;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} E;
-	struct F {	/* -F<fill> */
+	struct PSPOLAR_F {	/* -F<fill> */
 		bool active;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} F;
- 	struct G {	/* -G<fill> */
+ 	struct PSPOLAR_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} G;
-	struct M {	/* -M<scale>[+m<magnitude>] */
+	struct PSPOLAR_M {	/* -M<scale>[+m<magnitude>] */
 		bool active;
 		double ech;
 	} M;
-	struct N {	/* -N */
+	struct PSPOLAR_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* Repeatable: -Q<mode>[<args>] for various symbol parameters */
+	struct PSPOLAR_Q {	/* Repeatable: -Q<mode>[<args>] for various symbol parameters */
 		bool active;
 	} Q;
 	struct H2 {	/* -Qh for Hypo71 */
 		bool active;
 	} H2;
-	struct S {	/* -S<symbol><size>[c|i|p] */
+	struct PSPOLAR_S {	/* -S<symbol><size>[c|i|p] */
 		bool active;
 		int symbol;
 		double size;
@@ -92,7 +92,7 @@ struct PSPOLAR_CTRL {
 		struct GMT_FILL fill;
 		struct GMT_SYMBOL S;
 	} S2;
-	struct T { /* New syntax: -T+a<angle>+j<justify>+o<dx>/<dy>+f<font> */
+	struct PSPOLAR_T { /* New syntax: -T+a<angle>+j<justify>+o<dx>/<dy>+f<font> */
 		bool active;
 		double angle;
 		int justify;
@@ -100,7 +100,7 @@ struct PSPOLAR_CTRL {
 		struct GMT_FONT font;
 		int form; /* for back-compatibility only */
  	} T;
-	struct W {	/* -W<pen> */
+	struct PSPOLAR_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;

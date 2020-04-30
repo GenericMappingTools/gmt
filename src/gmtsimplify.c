@@ -50,11 +50,11 @@
 /* Control structure for gmtsimplify */
 
 struct GMTSIMPLIFY_CTRL {
-	struct Out {	/* ->[<outfile>] */
+	struct GMTSIMPLIFY_Out {	/* ->[<outfile>] */
 		bool active;
 		char *file;
 	} Out;
-	struct T {	/* 	-T[-|=|+]<tolerance>[d|s|m|e|f|k|M|n] */
+	struct GMTSIMPLIFY_T {	/* 	-T[-|=|+]<tolerance>[d|s|m|e|f|k|M|n] */
 		bool active;
 		int mode;	/* Can be negative */
 		double tolerance;

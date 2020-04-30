@@ -65,47 +65,47 @@ struct MGD77TRACK_MARKER {
 
 struct MGD77TRACK_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A */
+	struct MGD77TRACK_A {	/* -A */
 		bool active;
 		int mode;	/* May be negative */
 		double size;
 		struct MGD77TRACK_ANNOT info;
 	} A;
-	struct D {	/* -D */
+	struct MGD77TRACK_D {	/* -D */
 		bool active;
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
-	struct F {	/* -F */
+	struct MGD77TRACK_F {	/* -F */
 		bool active;
 		int mode;
 	} F;
-	struct G {	/* -G */
+	struct MGD77TRACK_G {	/* -G */
 		bool active[3];
 		unsigned int value[3];
 	} G;
-	struct I {	/* -I */
+	struct MGD77TRACK_I {	/* -I */
 		bool active;
 		unsigned int n;
 		char code[3];
 	} I;
-	struct L {	/* -L */
+	struct MGD77TRACK_L {	/* -L */
 		bool active;
 		struct MGD77TRACK_ANNOT info;
 	} L;
-	struct N {	/* -N */
+	struct MGD77TRACK_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S */
+	struct MGD77TRACK_S {	/* -S */
 		bool active;
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
-	struct T {	/* -T */
+	struct MGD77TRACK_T {	/* -T */
 		bool active;
 		struct MGD77TRACK_MARKER marker[3];
 	} T;
-	struct W {	/* -W<pen> */
+	struct MGD77TRACK_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;

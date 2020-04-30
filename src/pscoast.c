@@ -68,73 +68,73 @@
 /* Control structure for pscoast */
 
 struct PSCOAST_CTRL {
-	struct A {	/* -A<min_area>[/<min_level>/<max_level>][+ag|i|s][+r|l][+p<percent>] */
+	struct PSCOAST_A {	/* -A<min_area>[/<min_level>/<max_level>][+ag|i|s][+r|l][+p<percent>] */
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
-	struct C {	/* -C<fill>[+l|r] */
+	struct PSCOAST_C {	/* -C<fill>[+l|r] */
 		bool active;
 		struct GMT_FILL fill[2];	/* lake and riverlake fill */
 	} C;
-	struct D {	/* -D<resolution>[+f] */
+	struct PSCOAST_D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c, or a for auto */
 	} D;
-	struct E {	/* -E<DWC-options> */
+	struct PSCOAST_E {	/* -E<DWC-options> */
 		bool active;
 		struct GMT_DCW_SELECT info;
 	} E;
-	struct F {	/* -F[l|t][+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct PSCOAST_F {	/* -F[l|t][+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		/* The panels are members of GMT_MAP_SCALE and GMT_MAP_ROSE */
 	} F;
-	struct G {	/* -G[<fill>] */
+	struct PSCOAST_G {	/* -G[<fill>] */
 		bool active;
 		bool clip;
 		struct GMT_FILL fill;
 	} G;
-	struct I {	/* -I<feature>[/<pen>] */
+	struct PSCOAST_I {	/* -I<feature>[/<pen>] */
 		bool active;
 		unsigned int use[GSHHS_N_RLEVELS];
 		unsigned int list[GSHHS_N_RLEVELS];
 		unsigned int n_rlevels;
 		struct GMT_PEN pen[GSHHS_N_RLEVELS];
 	} I;
-	struct L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
+	struct PSCOAST_L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
 		bool active;
 		struct GMT_MAP_SCALE scale;
 	} L;
-	struct M {	/* -M */
+	struct PSCOAST_M {	/* -M */
 		bool active;
 		bool single;
 	} M;
-	struct N {	/* -N<feature>[/<pen>] */
+	struct PSCOAST_N {	/* -N<feature>[/<pen>] */
 		bool active;
 		unsigned int use[GSHHS_N_BLEVELS];
 		unsigned int list[GSHHS_N_BLEVELS];
 		unsigned int n_blevels;
 		struct GMT_PEN pen[GSHHS_N_BLEVELS];
 	} N;
-	struct Q {	/* -Q */
+	struct PSCOAST_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S[<fill>] */
+	struct PSCOAST_S {	/* -S[<fill>] */
 		bool active;
 		bool clip;
 		struct GMT_FILL fill;
 	} S;
-	struct T {	/* -Td|m<params> */
+	struct PSCOAST_T {	/* -Td|m<params> */
 		bool active;
 		struct GMT_MAP_ROSE rose;
 	} T;
-	struct W {	/* -W[<feature>/]<pen> */
+	struct PSCOAST_W {	/* -W[<feature>/]<pen> */
 		bool active;
 		bool use[GSHHS_MAX_LEVEL];
 		struct GMT_PEN pen[GSHHS_MAX_LEVEL];
 	} W;
 #ifdef DEBUG
-	struct DBG {	/* -+<bin> */
+	struct PSCOAST_DBG {	/* -+<bin> */
 		bool active;
 		int bin;
 	} debug;

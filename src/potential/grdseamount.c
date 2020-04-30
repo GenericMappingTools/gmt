@@ -60,58 +60,58 @@ struct GMT_MODELTIME {	/* Hold info about modeling time */
 };
 
 struct GRDSEAMOUNT_CTRL {
-	struct A {	/* -A[<out>/<in>] */
+	struct GRDSEAMOUNT_A {	/* -A[<out>/<in>] */
 		bool active;
 		gmt_grdfloat value[2];	/* Inside and outside value for mask */
 	} A;
-	struct C {	/* -C<shape> */
+	struct GRDSEAMOUNT_C {	/* -C<shape> */
 		bool active;
 		unsigned int mode;	/* 0 = Gaussian, 1 = parabola, 2 = cone, 3 = disc */
 	} C;
-	struct D {	/* -De|f|k|M|n|u */
+	struct GRDSEAMOUNT_D {	/* -De|f|k|M|n|u */
 		bool active;
 		char unit;
 	} D;
-	struct E {	/* -E */
+	struct GRDSEAMOUNT_E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* -F[<flattening>] */
+	struct GRDSEAMOUNT_F {	/* -F[<flattening>] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} F;
-	struct G {	/* -G<output_grdfile> */
+	struct GRDSEAMOUNT_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L[<hcut>] */
+	struct GRDSEAMOUNT_L {	/* -L[<hcut>] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} L;
-	struct M {	/* -M<outlist> */
+	struct GRDSEAMOUNT_M {	/* -M<outlist> */
 		bool active;
 		char *file;
 	} M;
-	struct N {	/* -N<norm> */
+	struct GRDSEAMOUNT_N {	/* -N<norm> */
 		bool active;
 		double value;
 	} N;
-	struct Q {	/* -Qc|i/g|l */
+	struct GRDSEAMOUNT_Q {	/* -Qc|i/g|l */
 		bool active;
 		unsigned int bmode;
 		unsigned int fmode;
 	} Q;
-	struct S {	/* -S<r_scale> */
+	struct GRDSEAMOUNT_S {	/* -S<r_scale> */
 		bool active;
 		double value;
 	} S;
-	struct T {	/* -T[l]<t0>/<t1>/<d0>|n  */
+	struct GRDSEAMOUNT_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
 		bool active, log;
 		unsigned int n_times;
 		struct GMT_MODELTIME *time;	/* The current sequence of times */
 	} T;
-	struct Z {	/* -Z<base> */
+	struct GRDSEAMOUNT_Z {	/* -Z<base> */
 		bool active;
 		double value;
 	} Z;

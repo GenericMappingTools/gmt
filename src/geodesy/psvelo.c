@@ -54,29 +54,29 @@ PostScript code is written to stdout.
 /* Control structure for psvelo */
 
 struct PSVELO_CTRL {
-	struct A {	/* -A */
+	struct PSVELO_A {	/* -A */
 		bool active;
 		struct GMT_SYMBOL S;
 	} A;
-	struct D {	/* -D */
+	struct PSVELO_D {	/* -D */
 		bool active;
 		double scale;
 	} D;
- 	struct E {	/* -E<fill> */
+ 	struct PSVELO_E {	/* -E<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} E;
- 	struct G {	/* -G<fill> */
+ 	struct PSVELO_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct L {	/* -L */
+	struct PSVELO_L {	/* -L */
 		bool active;
 	} L;
-	struct N {	/* -N */
+	struct PSVELO_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -r<fill> */
+	struct PSVELO_S {	/* -r<fill> */
 		bool active;
 		int symbol;
 		unsigned int readmode;
@@ -86,7 +86,7 @@ struct PSVELO_CTRL {
 		struct GMT_FILL fill;
 		struct GMT_FONT font;
 	} S;
-	struct W {	/* -W<pen> */
+	struct PSVELO_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;

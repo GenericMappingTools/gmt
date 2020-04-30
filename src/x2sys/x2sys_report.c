@@ -40,38 +40,38 @@
 #define XREPORT_INTERNAL	2
 
 struct X2SYS_REPORT_CTRL {
-	struct In {
+	struct X2SYS_REPORT_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct X2SYS_REPORT_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C */
+	struct X2SYS_REPORT_C {	/* -C */
 		bool active;
 		char *col;
 	} C;
-	struct I {	/* -I */
+	struct X2SYS_REPORT_I {	/* -I */
 		bool active;
 		char *file;
 	} I;
-	struct L {	/* -L */
+	struct X2SYS_REPORT_L {	/* -L */
 		bool active;
 		char *file;
 	} L;
-	struct N {	/* -N */
+	struct X2SYS_REPORT_N {	/* -N */
 		bool active;
 		uint64_t min;
 	} N;
-	struct Q {	/* -Q */
+	struct X2SYS_REPORT_Q {	/* -Q */
 		bool active;
 		int mode;
 	} Q;
-	struct S {	/* -S */
+	struct X2SYS_REPORT_S {	/* -S */
 		bool active;
 		char *file;
 	} S;
-	struct T {	/* -T */
+	struct X2SYS_REPORT_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;

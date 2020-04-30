@@ -50,60 +50,60 @@
 #define PLOT_OFFSET	2
 
 struct PSSEGY_CTRL {
-	struct In {	/* -In */
+	struct PSSEGY_In {	/* -In */
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct PSSEGY_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct PSSEGY_C {	/* -C<cpt> */
 		bool active;
 		double value;
 	} C;
-	struct D {	/* -D */
+	struct PSSEGY_D {	/* -D */
 		bool active;
 		double value;
 	} D;
-	struct E {	/* -E */
+	struct PSSEGY_E {	/* -E */
 		bool active;
 		double value;
 	} E;
-	struct F {	/* -F<fill> */
+	struct PSSEGY_F {	/* -F<fill> */
 		bool active;
 		double rgb[4];
 	} F;
-	struct I {	/* -I */
+	struct PSSEGY_I {	/* -I */
 		bool active;
 	} I;
-	struct L {	/* -L */
+	struct PSSEGY_L {	/* -L */
 		bool active;
 		uint32_t value;
 	} L;
-	struct M {	/* -M */
+	struct PSSEGY_M {	/* -M */
 		bool active;
 		uint32_t value;
 	} M;
-	struct N {	/* -N */
+	struct PSSEGY_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Qb|i|u|x|y */
+	struct PSSEGY_Q {	/* -Qb|i|u|x|y */
 		bool active[5];
 		double value[5];
 	} Q;
-	struct S {	/* -S */
+	struct PSSEGY_S {	/* -S */
 		bool active;
 		unsigned int mode;
 		int value;
 	} S;
-	struct T {	/* -T */
+	struct PSSEGY_T {	/* -T */
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* -W */
+	struct PSSEGY_W {	/* -W */
 		bool active;
 	} W;
-	struct Z {	/* -Z */
+	struct PSSEGY_Z {	/* -Z */
 		bool active;
 	} Z;
 };

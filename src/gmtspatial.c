@@ -48,7 +48,7 @@
 #define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment length, then they are not the same feature */
 #define MIN_SUBSET		2.0	/* If two close segments deemed approximate fits has lengths that differ by this factor then they are sub/super sets of each other */
 
-struct DUP {	/* Holds information on which single segment is closest to the current test segment */
+struct GMTSPATIAL_DUP {	/* Holds information on which single segment is closest to the current test segment */
 	uint64_t point;
 	uint64_t segment;
 	unsigned int table;
@@ -73,52 +73,52 @@ struct DUP_INFO {
 };
 
 struct GMTSPATIAL_CTRL {
-	struct Out {	/* -> */
+	struct GMTSPATIAL_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -Aa<min_dist>, -A */
+	struct GMTSPATIAL_A {	/* -Aa<min_dist>, -A */
 		bool active;
 		unsigned int mode;
 		int smode;
 		double min_dist;
 		char unit;
 	} A;
-	struct C {	/* -C */
+	struct GMTSPATIAL_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D[pol] */
+	struct GMTSPATIAL_D {	/* -D[pol] */
 		bool active;
 		int mode;
 		char unit;
 		char *file;
-		struct DUP I;
+		struct GMTSPATIAL_DUP I;
 	} D;
-	struct E {	/* -E+n|p */
+	struct GMTSPATIAL_E {	/* -E+n|p */
 		bool active;
 		unsigned int mode;
 	} E;
-	struct F {	/* -F */
+	struct GMTSPATIAL_F {	/* -F */
 		bool active;
 		unsigned int geometry;
 	} F;
-	struct I {	/* -I[i|e] */
+	struct GMTSPATIAL_I {	/* -I[i|e] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct L {	/* -L */
+	struct GMTSPATIAL_L {	/* -L */
 		bool active;
 		char unit;
 		double s_cutoff, path_noise, box_offset;
 	} L;
-	struct N {	/* -N<file>[+a][+p>ID>][+r][+z] */
+	struct GMTSPATIAL_N {	/* -N<file>[+a][+p>ID>][+r][+z] */
 		bool active;
 		bool all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
 		unsigned int mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
 		unsigned int ID;	/* If 1 we use running numbers */
 		char *file;
 	} N;
-	struct Q {	/* -Q[+c<min>/<max>][+h][+l][+p][+s[a|d]] */
+	struct GMTSPATIAL_Q {	/* -Q[+c<min>/<max>][+h][+l][+p][+s[a|d]] */
 		bool active;
 		bool header;	/* Place dimension and centroid in segment headers */
 		bool area;		/* Apply range test on dimension */
@@ -129,17 +129,17 @@ struct GMTSPATIAL_CTRL {
 		double limit[2];	/* Min and max area or length for output segments */
 		char unit;
 	} Q;
-	struct S {	/* -S[u|i|c|j|h] */
+	struct GMTSPATIAL_S {	/* -S[u|i|c|j|h] */
 		bool active;
 		unsigned int mode;
 	} S;
-	struct T {	/* -T[pol] */
+	struct GMTSPATIAL_T {	/* -T[pol] */
 		bool active;
 		char *file;
 	} T;
 };
 
-struct PAIR {
+struct GMTSPATIAL_PAIR {
 	double node;
 	uint64_t pos;
 };
@@ -268,7 +268,7 @@ GMT_LOCAL void gmtspatial_length_size (struct GMT_CTRL *GMT, double x[], double 
 }
 
 GMT_LOCAL int gmtspatial_comp_pairs (const void *a, const void *b) {
-	const struct PAIR *xa = a, *xb = b;
+	const struct GMTSPATIAL_PAIR *xa = a, *xb = b;
 	/* Sort on node value */
 	if (xa->node < xb->node) return (-1);
 	if (xa->node > xb->node) return (+1);
@@ -284,7 +284,7 @@ GMT_LOCAL void gmtspatial_write_record (struct GMT_CTRL *GMT, double **R, uint64
 	GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, &Out);
 }
 
-GMT_LOCAL int gmtspatial_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L) {
+GMT_LOCAL int gmtspatial_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct GMTSPATIAL_DUP *I, struct DUP_INFO **L) {
 	/* Given single line segment S and a dataset of many line segments in D, determine the closest neighbor
 	 * to S in D (call it S'), and if "really close" it might be a duplicate or slight revision to S.
 	 * There might be several features S' in D close to S so we return how many near or exact matches we
@@ -1591,14 +1591,14 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								uint64_t row0;
 								bool go, first;
 								double *xx = NULL, *yy = NULL, *kk = NULL;
-								struct PAIR *pair = NULL;
+								struct GMTSPATIAL_PAIR *pair = NULL;
 
-								pair = gmt_M_memory (GMT, NULL, nx, struct PAIR);
+								pair = gmt_M_memory (GMT, NULL, nx, struct GMTSPATIAL_PAIR);
 								xx = gmt_M_memory (GMT, NULL, nx, double);
 								yy = gmt_M_memory (GMT, NULL, nx, double);
 								kk = gmt_M_memory (GMT, NULL, nx, double);
 								for (px = 0; px < nx; px++) pair[px].node = XC.xnode[1][px], pair[px].pos = px;
-								qsort (pair, nx, sizeof (struct PAIR), gmtspatial_comp_pairs);
+								qsort (pair, nx, sizeof (struct GMTSPATIAL_PAIR), gmtspatial_comp_pairs);
 								for (px = 0; px < nx; px++) {
 									xx[px] = XC.x[pair[px].pos];
 									yy[px] = XC.y[pair[px].pos];

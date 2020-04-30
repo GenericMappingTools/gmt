@@ -27,14 +27,14 @@
 
 struct MGD77PATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A */
+	struct MGD77PATH_A {	/* -A */
 		bool active;
 		bool mode;
 	} A;
-	struct D {	/* -D */
+	struct MGD77PATH_D {	/* -D */
 		bool active;
 	} D;
-	struct I {	/* -I */
+	struct MGD77PATH_I {	/* -I */
 		bool active;
 		unsigned int n;
 		char code[3];
