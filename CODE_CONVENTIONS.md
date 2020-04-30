@@ -88,7 +88,9 @@ the names of these should derive from the file they are in.  For example,
 a low-level function in gmt_support.c that deals with parsing any fill
 argument containing a pattern is called **gmtsupport_parse_pattern**.  This
 function cannot be called outside gmt_support.c.  This naming convention makes
-it easy to find functions when debugging is needed.
+it easy to find functions when debugging is needed.  The only exception to this
+convention is the four static functions present in all modules: New_Ctrl, Free_Ctrl,
+usage, and parse.
 
 ### GMT C macros
 
@@ -104,7 +106,7 @@ Some lower-level include file declares static inline functions that are only acc
 by the functions in the file doing the including. These are used for tasks where macros
 may be too cumbersome.
 
-### Structs, enums, and constants
+### API structs, enums, and constants
 
 The lower-level functions use lower-level utility structures that are not
 part of the API but they are exposed to developers via [gmt_dev.h](src/gmt_dev.h).
@@ -115,3 +117,10 @@ and there are also upper-case and start with **GMT_**.  Finally, many constants
 (e.g., *#define GMT_TEXT_CLEARANCE 15*) are set via [gmt_dev.h](src/gmt_dev.h)
 and are thus available to C/C++ developers.  Unlike the API enums, there is no method
 to access these values via a GMT_Get_Enum-type function.
+
+### Private structs, enums, and constants
+
+Structures, enums and constants just used in one modules should have names that
+start with the uppercase name of the module, e.g., *struct GRDEDIT_A A* is the
+sub-structure that handles the -A option in grdedit.
+
