@@ -39,32 +39,32 @@
 #define THIS_MODULE_OPTIONS "->RV"
 
 struct X2SYS_GET_CTRL {
-	struct S2S_GET_C {	/* -C */
+	struct X2SYS_GET_C {	/* -C */
 		bool active;
 	} C;
-	struct S2S_GET_D {	/* -D */
+	struct X2SYS_GET_D {	/* -D */
 		bool active;
 	} D;
-	struct S2S_GET_F {	/* -F */
+	struct X2SYS_GET_F {	/* -F */
 		bool active;
 		char *flags;
 	} F;
-	struct S2S_GET_G {	/* -G */
+	struct X2SYS_GET_G {	/* -G */
 		bool active;
 	} G;
-	struct S2S_GET_L {	/* -L */
+	struct X2SYS_GET_L {	/* -L */
 		bool active;
 		int mode;
 		char *file;
 	} L;
-	struct S2S_GET_N {	/* -N */
+	struct X2SYS_GET_N {	/* -N */
 		bool active;
 		char *flags;
 	} N;
-	struct S2S_GET_S {	/* -S */
+	struct X2SYS_GET_S {	/* -S */
 		bool active;
 	} S;
-	struct S2S_GET_T {	/* -T */
+	struct X2SYS_GET_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;

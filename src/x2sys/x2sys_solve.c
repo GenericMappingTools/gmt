@@ -69,23 +69,23 @@
 #define F_IS_SCALE_OFF	7	/* Apply a scale and offset to the observations for each track */
 
 struct X2SYS_SOLVE_CTRL {
-	struct X2S_SOLVE_In {
+	struct X2SYS_SOLVE_In {
 		bool active;
 		char *file;
 	} In;
-	struct X2S_SOLVE_C {	/* -C */
+	struct X2SYS_SOLVE_C {	/* -C */
 		bool active;
 		char *col;
 	} C;
-	struct X2S_SOLVE_E {	/* -E */
+	struct X2SYS_SOLVE_E {	/* -E */
 		bool active;
 		int mode;
 	} E;
-	struct X2S_SOLVE_T {	/* -T */
+	struct X2SYS_SOLVE_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
-	struct X2S_SOLVE_W {	/* -W[+u] */
+	struct X2SYS_SOLVE_W {	/* -W[+u] */
 		bool active;
 		bool unweighted_stats;
 	} W;

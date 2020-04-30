@@ -31,7 +31,7 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 	bool do_IGRF;
 	bool do_CM4;
 	bool joint_IGRF_CM4;
-	struct MGD77_MAGREF_A {	/* -A */
+	struct MGD77MAGREF_A {	/* -A */
 		bool active;
 		bool fixed_alt;
 		bool fixed_time;
@@ -40,22 +40,22 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 		double altitude;
 		double time;
 	} A;
-	struct MGD77_MAGREF_C {	/* -C */
+	struct MGD77MAGREF_C {	/* -C */
 		bool active;
 	} C;
-	struct MGD77_MAGREF_D {	/* -D */
+	struct MGD77MAGREF_D {	/* -D */
 		bool active;
 	} D;
-	struct MGD77_MAGREF_F {	/* -F */
+	struct MGD77MAGREF_F {	/* -F */
 		bool active;
 	} F;
-	struct MGD77_MAGREF_G {	/* -G */
+	struct MGD77MAGREF_G {	/* -G */
 		bool active;
 	} G;
-	struct MGD77_MAGREF_L {	/* -L */
+	struct MGD77MAGREF_L {	/* -L */
 		bool active;
 	} L;
-	struct MGD77_MAGREF_S {	/* -S */
+	struct MGD77MAGREF_S {	/* -S */
 		bool active;
 	} S;
 };

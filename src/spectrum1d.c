@@ -48,36 +48,36 @@
 #define SPECTRUM1D_N_OUTPUT_CHOICES 8
 
 struct SPECTRUM1D_CTRL {
-	struct SPECT1D_Out {	/* -><file> */
+	struct SPECTRUM1D_Out {	/* -><file> */
 		bool active;
 		char *file;
 	} Out;
-	struct SPECT1D_C {	/* -C[<xycnpago>] */
+	struct SPECTRUM1D_C {	/* -C[<xycnpago>] */
 		bool active;
 		char col[SPECTRUM1D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} C;
-	struct SPECT1D_D {	/* -D<inc> */
+	struct SPECTRUM1D_D {	/* -D<inc> */
 		bool active;
 		double inc;
 	} D;
-	struct SPECT1D_L {	/* -L[m|h] */
+	struct SPECTRUM1D_L {	/* -L[m|h] */
 		bool active;
 		bool debug;
 		unsigned int mode;
 	} L;
-	struct SPECT1D_N {	/* -N[+]<namestem> */
+	struct SPECTRUM1D_N {	/* -N[+]<namestem> */
 		bool active;
 		unsigned int mode;
 		char *name;
 	} N;
-	struct SPECT1D_S {	/* -S<segment_size> */
+	struct SPECTRUM1D_S {	/* -S<segment_size> */
 		bool active;
 		unsigned int size;
 	} S;
-	struct SPECT1D_T {	/* -T */
+	struct SPECTRUM1D_T {	/* -T */
 		bool active;
 	} T;
-	struct SPECT1D_W {	/* -W */
+	struct SPECTRUM1D_W {	/* -W */
 		bool active;
 	} W;
 };

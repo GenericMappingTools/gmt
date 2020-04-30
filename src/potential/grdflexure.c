@@ -133,7 +133,7 @@ struct GRDFLEXURE_RHEOLOGY {	/* Used to pass parameters in/out of functions */
 	void (*setup) (struct GMT_CTRL *, struct GRDFLEXURE_CTRL *, struct GMT_FFT_WAVENUMBER *, struct GRDFLEXURE_RHEOLOGY *);	/* Init function */
 };
 
-struct FLX_GRID {
+struct GRDFLEXURE_GRID {
 	struct GMT_GRID *Grid;		/* Pointer to the grid, or NULL if it does not exist */
 	struct GMT_MODELTIME *Time;	/* Pointer to time info for this load */
 	struct GMT_FFT_WAVENUMBER *K;	/* Pointer to FFT struct, unless G is NULL */
@@ -685,9 +685,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL struct FLX_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT, struct GMT_OPTION *options, struct GRDFLEXURE_CTRL *Ctrl, char *file, struct GMT_MODELTIME *this_time) {
+GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT, struct GMT_OPTION *options, struct GRDFLEXURE_CTRL *Ctrl, char *file, struct GMT_MODELTIME *this_time) {
 	struct GMT_GRID *Grid = NULL, *Orig = NULL;
-	struct FLX_GRID *G = NULL;
+	struct GRDFLEXURE_GRID *G = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if (this_time)
@@ -725,7 +725,7 @@ GMT_LOCAL struct FLX_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT, struct
 		if (n_subaerial) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " nodes were subarial so heights were scaled for the equivalent submerged case\n", n_subaerial);
 	}
 	/* From here we address the grid via Grid; we are done with using the address Orig directly. */
-	G = gmt_M_memory (GMT, NULL, 1, struct FLX_GRID);	/* Allocate a Flex structure */
+	G = gmt_M_memory (GMT, NULL, 1, struct GRDFLEXURE_GRID);	/* Allocate a Flex structure */
 	G->K = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
 	/* Do the forward FFT */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Forward FFT\n");
@@ -782,7 +782,7 @@ GMT_LOCAL void grdflexure_accumulate_solution (struct GMT_CTRL *GMT, struct GMT_
 
 GMT_LOCAL int grdflexure_compare_loads (const void *load_1v, const void *load_2v) {
 	/*  Routine for qsort to sort loads structure with old loads (large t) be first in list. */
-	const struct FLX_GRID **load_1 = (const struct FLX_GRID **)load_1v, **load_2 = (const struct FLX_GRID **)load_2v;
+	const struct GRDFLEXURE_GRID **load_1 = (const struct GRDFLEXURE_GRID **)load_1v, **load_2 = (const struct GRDFLEXURE_GRID **)load_2v;
 	if ((*load_1)->Time->value > (*load_2)->Time->value) return (-1);
 	if ((*load_1)->Time->value < (*load_2)->Time->value) return (+1);
 	return (0);
@@ -797,7 +797,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct GRDFLEXURE_RHEOLOGY *R = NULL;
-	struct FLX_GRID **Load = NULL, *This_Load = NULL;
+	struct GRDFLEXURE_GRID **Load = NULL, *This_Load = NULL;
 	struct GMT_GRID *Out = NULL;
 	struct GMT_DATASET *L = NULL;
 	struct GRDFLEXURE_CTRL *Ctrl = NULL;
@@ -831,7 +831,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	if (Ctrl->In.many) {	/* Must read in load grids, possibly one for each time increment set by -T */
 		n_load_times = Ctrl->T.n_eval_times;	/* This (or fewer) loads and times will be used */
-		Load = gmt_M_memory (GMT, NULL, n_load_times, struct FLX_GRID *);	/* Allocate load array structure */
+		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);	/* Allocate load array structure */
 		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each time step there may be a load file */
 			gmt_modeltime_name (GMT, file, Ctrl->In.file, &Ctrl->T.time[t_load]);	/* Load time equal eval time */
 			Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, file, &Ctrl->T.time[t_load]);
@@ -849,7 +849,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 		/* Read the file successfully */
 		n_load_times = (unsigned int)Tin->n_records;
-		Load = gmt_M_memory (GMT, NULL, n_load_times, struct FLX_GRID *);		/* Allocate load grid array structure */
+		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);		/* Allocate load grid array structure */
 		for (seg = 0, t_load = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, t_load++) {
 				sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s", file, t_arg);
@@ -868,13 +868,13 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	}
 	else {	/* Just read the single load grid */
 		n_load_times = 1;
-		Load = gmt_M_memory (GMT, NULL, n_load_times, struct FLX_GRID *);		/* Allocate grid array structure with one entry */
+		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);		/* Allocate grid array structure with one entry */
 		Load[0] = grdflexure_prepare_load (GMT, options, Ctrl, Ctrl->In.file, NULL);	/* The single load grid (no time info) */
 	}
 
 	if (n_load_times > 1) {	/* Sort to ensure load array goes from old to young loads */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Sort %u loads from old to young\n", n_load_times);
-		qsort (Load, n_load_times, sizeof (struct FLX_GRID *), grdflexure_compare_loads);
+		qsort (Load, n_load_times, sizeof (struct GRDFLEXURE_GRID *), grdflexure_compare_loads);
 	}
 	K = Load[0]->K;	/* We only need one pointer to get to wavenumbers as they are all the same for all grids */
 

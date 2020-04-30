@@ -51,39 +51,39 @@ enum x2sys_sets {
 };
 
 struct X2SYS_CROSS_CTRL {
-	struct X2S_CROSS_A {	/* -A */
+	struct X2SYS_CROSS_A {	/* -A */
 		bool active;
 		char *file;
 	} A;
-	struct X2S_CROSS_C {	/* -C */
+	struct X2SYS_CROSS_C {	/* -C */
 		bool active;
 		char *file;
 	} C;
-	struct X2S_CROSS_D {	/* -Dg|s|n */
+	struct X2SYS_CROSS_D {	/* -Dg|s|n */
 		bool active;	/* Force selection if true, else examine */
 		int mode;	/* -1 for S pole, +1 for N pole */
 	} D;
-	struct X2S_CROSS_I {	/* -I */
+	struct X2SYS_CROSS_I {	/* -I */
 		bool active;
 		int mode;
 	} I;
-	struct X2S_CROSS_S {	/* -S */
+	struct X2SYS_CROSS_S {	/* -S */
 		bool active[2];
 		double limit[3];
 	} S;
-	struct X2S_CROSS_T {	/* -T */
+	struct X2SYS_CROSS_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
-	struct X2S_CROSS_W {	/* -W */
+	struct X2SYS_CROSS_W {	/* -W */
 		bool active;
 		unsigned int width;
 	} W;
-	struct X2S_CROSS_Q {	/* -Q */
+	struct X2SYS_CROSS_Q {	/* -Q */
 		bool active;
 		int mode;
 	} Q;
-	struct X2S_CROSS_Z {	/* -Z */
+	struct X2SYS_CROSS_Z {	/* -Z */
 		bool active;
 	} Z;
 };
