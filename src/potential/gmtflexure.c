@@ -58,57 +58,57 @@
  */
 
 struct GMTFLEXURE_CTRL {
-	struct Out {	/* -> */
+	struct GMTFLEXURE_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A[l|r]<bc>[<args>] */
+	struct GMTFLEXURE_A {	/* -A[l|r]<bc>[<args>] */
 		bool active;
 		unsigned int bc[2];	/* Left and Right BC code */
 		double deflection[2], moment[2], force[2];	/* Left and Right arguments */
 	} A;
-	struct C {	/* -Cy<E> or -Cp<poisson> */
+	struct GMTFLEXURE_C {	/* -Cy<E> or -Cp<poisson> */
 		bool active[2];
 		double E, nu;
 	} C;
-	struct D {	/* -D<rhom/rhol[/rhoi]/rhow> */
+	struct GMTFLEXURE_D {	/* -D<rhom/rhol[/rhoi]/rhow> */
 		bool active;
 		double rhom, rhol, rhoi, rhow;
 	} D;
-	struct E {	/* -E<te|D|>file> */
+	struct GMTFLEXURE_E {	/* -E<te|D|>file> */
 		bool active;
 		double te;
 		char *file;
 	} E;
-	struct F {	/* -F<force> */
+	struct GMTFLEXURE_F {	/* -F<force> */
 		bool active;
 		double force;
 	} F;
-	struct L {	/* Use variable restoring force [constant] */
+	struct GMTFLEXURE_L {	/* Use variable restoring force [constant] */
 		bool active;
 	} L;
-	struct M {	/* -Mx|z  */
+	struct GMTFLEXURE_M {	/* -Mx|z  */
 		bool active[2];	/* True if km, else m */
 	} M;
-	struct Q {	/* Load specifier -Qn|q|t[/args] */
+	struct GMTFLEXURE_Q {	/* Load specifier -Qn|q|t[/args] */
 		bool active;
 		bool set_x;
 		unsigned int mode;
 		struct GMT_ARRAY T;
 		char *file;
 	} Q;
-	struct S {	/* Compute second derivatives (curvatures) */
+	struct GMTFLEXURE_S {	/* Compute second derivatives (curvatures) */
 		bool active;
 	} S;
-	struct T {	/* Pre-existing deformation */
+	struct GMTFLEXURE_T {	/* Pre-existing deformation */
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* Water depth */
+	struct GMTFLEXURE_W {	/* Water depth */
 		bool active;
 		double water_depth;	/* Reference water depth [0] */
 	} W;
-	struct Z {	/* Moho depth */
+	struct GMTFLEXURE_Z {	/* Moho depth */
 		bool active;
 		double zm;	/* Reference depth to flexed surface [0] */
 	} Z;

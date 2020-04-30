@@ -44,43 +44,43 @@ enum grdgradient_mode {
 	GRDGRADIENT_VAR = 2};
 
 struct GRDGRADIENT_CTRL {
-	struct In {
+	struct GRDGRADIENT_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A<azim>[/<azim2>] | -A<file>*/
+	struct GRDGRADIENT_A {	/* -A<azim>[/<azim2>] | -A<file>*/
 		bool active;
 		bool two;
 		double azimuth[2];
 		unsigned int mode;
 		char *file;
 	} A;
-	struct D {	/* -D[a][c][o][n] */
+	struct GRDGRADIENT_D {	/* -D[a][c][o][n] */
 		bool active;
 		unsigned int mode;
 	} D;
-	struct E {	/* -E[s|p]<azim>/<elev[+a<ambient>][+d<diffuse>][+p<specular>][+<shine>] */
+	struct GRDGRADIENT_E {	/* -E[s|p]<azim>/<elev[+a<ambient>][+d<diffuse>][+p<specular>][+<shine>] */
 		bool active;
 		unsigned int mode;
 		double azimuth, elevation;
 		double ambient, diffuse, specular, shine;
 	} E;
-	struct G {	/* -G<file> */
+	struct GRDGRADIENT_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N[t_or_e][<amp>][+<ambient>][+o<offset>][+s<sigma>] */
+	struct GRDGRADIENT_N {	/* -N[t_or_e][<amp>][+<ambient>][+o<offset>][+s<sigma>] */
 		bool active;
 		unsigned int set[3];	/* 1 if values are specified for amp, offset and sigma, 2 means we want last-run values */
 		unsigned int mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset, ambient;
 	} N;
-	struct Q {	/* -Qc|r|R */
+	struct GRDGRADIENT_Q {	/* -Qc|r|R */
 		/* Note: If -Qc is set with -N then -G is not required. GMT_Encode_Options turns off the primary output */
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct S {	/* -S<slopefile> */
+	struct GRDGRADIENT_S {	/* -S<slopefile> */
 		bool active;
 		char *file;
 	} S;

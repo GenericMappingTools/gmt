@@ -45,61 +45,61 @@
 #define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
 
 struct GRD2CPT_CTRL {
-	struct In {
+	struct GRD2CPT_In {
 		bool active;
 	} In;
-	struct Out {	/* -> */
+	struct GRD2CPT_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A<transp>[+a] */
+	struct GRD2CPT_A {	/* -A<transp>[+a] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} A;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct GRD2CPT_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[i|o] */
+	struct GRD2CPT_D {	/* -D[i|o] */
 		bool active;
 		unsigned int mode;
 	} D;
-	struct E {	/* -E<nlevels> */
+	struct GRD2CPT_E {	/* -E<nlevels> */
 		bool active;
 		unsigned int levels;
 	} E;
-	struct F {	/* -F[r|R|h|c][+c] */
+	struct GRD2CPT_F {	/* -F[r|R|h|c][+c] */
 		bool active;
 		bool cat;
 		unsigned int model;
 	} F;
-	struct G {	/* -Glow/high for input CPT truncation */
+	struct GRD2CPT_G {	/* -Glow/high for input CPT truncation */
 		bool active;
 		double z_low, z_high;
 	} G;
-	struct H {	/* -H */
+	struct GRD2CPT_H {	/* -H */
 		bool active;
 	} H;
-	struct I {	/* -I[z][c] */
+	struct GRD2CPT_I {	/* -I[z][c] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct L {	/* -L<min_limit>/<max_limit> */
+	struct GRD2CPT_L {	/* -L<min_limit>/<max_limit> */
 		bool active;
 		double min, max;
 	} L;
-	struct M {	/* -M */
+	struct GRD2CPT_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct GRD2CPT_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q[i|o] */
+	struct GRD2CPT_Q {	/* -Q[i|o] */
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct T {	/* -T<start>/<stop>/<inc> or -T<n_levels> */
+	struct GRD2CPT_T {	/* -T<start>/<stop>/<inc> or -T<n_levels> */
 		bool active;
 		bool interpolate;
 		unsigned int mode;	/* 0 or 1 (-Tn) */
@@ -107,15 +107,15 @@ struct GRD2CPT_CTRL {
 		double low, high, inc;
 		char *file;
 	} T;
-	struct S {	/* -S<kind> */
+	struct GRD2CPT_S {	/* -S<kind> */
 		bool active;
 		int kind; /* -1 symmetric +-zmin, +1 +-zmax, -2 = +-Minx(|zmin|,|zmax|), +2 = +-Max(|zmin|,|zmax|), 0 = min to max [Default] */
 	} S;
-	struct W {	/* -W[w] */
+	struct GRD2CPT_W {	/* -W[w] */
 		bool active;
 		bool wrap;
 	} W;
-	struct Z {	/* -Z */
+	struct GRD2CPT_Z {	/* -Z */
 		bool active;
 	} Z;
 };

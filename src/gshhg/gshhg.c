@@ -33,34 +33,34 @@
 #define THIS_MODULE_OPTIONS "-:Vbdo"
 
 struct GSHHG_CTRL {
-	struct In {	/* <file> */
+	struct GSHHG_In {	/* <file> */
 		bool active;
 		char *file;
 	} In;
-	struct Out {	/* > <file> */
+	struct GSHHG_Out {	/* > <file> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A */
+	struct GSHHG_A {	/* -A */
 		bool active;
 		double min;	/* Cutoff area in km^2 */
 	} A;
-	struct L {	/* -L */
+	struct GSHHG_L {	/* -L */
 		bool active;
 	} L;
-	struct G {	/* -G */
+	struct GSHHG_G {	/* -G */
 		bool active;
 	} G;
-	struct I {	/* -I[<id>|c] */
+	struct GSHHG_I {	/* -I[<id>|c] */
 		bool active;
 		unsigned int mode;
 		unsigned int id;
 	} I;
-	struct N {	/* -N<level> */
+	struct GSHHG_N {	/* -N<level> */
 		bool active;
 		unsigned int level;
 	} N;
-	struct Q {	/* -Qe|i */
+	struct GSHHG_Q {	/* -Qe|i */
 		bool active;
 		unsigned int mode;
 	} Q;

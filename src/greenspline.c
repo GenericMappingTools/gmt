@@ -60,48 +60,48 @@ EXTERN_MSC int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint6
 /* Control structure for greenspline */
 
 struct GREENSPLINE_CTRL {
-	struct A {	/* -A<gradientfile> */
+	struct GREENSPLINE_A {	/* -A<gradientfile> */
 		bool active;
 		unsigned int mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
-	struct C {	/* -C[n]<cutoff>[+f<file>] */
+	struct GREENSPLINE_C {	/* -C[n]<cutoff>[+f<file>] */
 		bool active;
 		unsigned int movie;	/* Undocumented and not-yet-working movie mode +m incremental grids, +M total grids vs eigenvalue */
 		unsigned int mode;
 		double value;
 		char *file;
 	} C;
-	struct D {	/* -D<distflag> */
+	struct GREENSPLINE_D {	/* -D<distflag> */
 		bool active;
 		int mode;	/* Can be negative */
 	} D;
-	struct E {	/* -E[<file>] */
+	struct GREENSPLINE_E {	/* -E[<file>] */
 		bool active;
 		unsigned int mode;
 		char *file;
 	} E;
-	struct G {	/* -G<output_grdfile> */
+	struct GREENSPLINE_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -Idx[/dy[/dz]] */
+	struct GREENSPLINE_I {	/* -Idx[/dy[/dz]] */
 		bool active;
 		double inc[3];
 	} I;
-	struct L {	/* -L */
+	struct GREENSPLINE_L {	/* -L */
 		bool active;
 	} L;
-	struct M {	/* -M<gfuncfile> */
+	struct GREENSPLINE_M {	/* -M<gfuncfile> */
 		bool active;
 		unsigned int mode;	/* GMT_IN or GMT_OUT */
 		char *file;
 	} M;
-	struct N {	/* -N<outputnode_file> */
+	struct GREENSPLINE_N {	/* -N<outputnode_file> */
 		bool active;
 		char *file;
 	} N;
-	struct Q {	/* -Qdaz */
+	struct GREENSPLINE_Q {	/* -Qdaz */
 		bool active;
 		double az;
 		double dir[3];
@@ -114,22 +114,22 @@ struct GREENSPLINE_CTRL {
 		double range[6];	/* Min/max for each dimension */
 		double inc[2];		/* xinc/yinc when -Rgridfile was given*/
 	} R3;
-	struct S {	/* -S<mode>[<tension][+<mod>[args]] */
+	struct GREENSPLINE_S {	/* -S<mode>[<tension][+<mod>[args]] */
 		bool active;
 		unsigned int mode;
 		double value[4];
 		double rval[2];
 		char *arg;
 	} S;
-	struct T {	/* -T<mask_grdfile> */
+	struct GREENSPLINE_T {	/* -T<mask_grdfile> */
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* -W[w] */
+	struct GREENSPLINE_W {	/* -W[w] */
 		bool active;
 		unsigned int mode;	/* 0 = got sigmas, 1 = got weights */
 	} W;
-	struct Z {	/* -Z undocumented debugging option */
+	struct GREENSPLINE_Z {	/* -Z undocumented debugging option */
 		bool active;
 	} Z;
 };
@@ -192,7 +192,7 @@ struct GREENSPLINE_LOOKUP {	/* Used to spline interpolation of precalculated fun
 	double *A, *B, *C;	/* power/ratios of order l terms */
 };
 
-struct ZGRID {
+struct GREENSPLINE_ZGRID {
 	unsigned int nz;
 	double z_min, z_max, z_inc;
 };
@@ -1457,7 +1457,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	double (*dGdr) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *) = NULL;	/* Pointer to chosen gradient of Green's function */
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
-	struct ZGRID Z;
+	struct GREENSPLINE_ZGRID Z;
 	struct GREENSPLINE_LOOKUP *Lz = NULL, *Lg = NULL;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *Nin = NULL;
@@ -1490,7 +1490,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	gmt_M_memset (par,   N_PARAMS, double);
 	gmt_M_memset (norm,  GSP_LENGTH, double);
 	gmt_M_memset (&info, 1, struct GMT_GRID_INFO);
-	gmt_M_memset (&Z,    1, struct ZGRID);
+	gmt_M_memset (&Z,    1, struct GREENSPLINE_ZGRID);
 
 	if (Ctrl->S.mode == SANDWELL_1987_1D || Ctrl->S.mode == WESSEL_BERCOVICI_1998_1D) Ctrl->S.mode += (dimension - 1);
 	if (Ctrl->S.mode == LINEAR_1D) Ctrl->S.mode += (dimension - 1);

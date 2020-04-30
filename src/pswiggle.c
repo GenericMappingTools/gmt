@@ -44,45 +44,45 @@
 #define PSWIGGLE_NEG	1
 
 struct PSWIGGLE_CTRL {
-	struct A {	/* -A[<azimuth>] */
+	struct PSWIGGLE_A {	/* -A[<azimuth>] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} A;
-	struct C {	/* -C<center> */
+	struct PSWIGGLE_C {	/* -C<center> */
 		bool active;
 		double value;
 	} C;
-	struct D {	/* -D[g|j|J|n|x]<refpoint>+w<length>[+a][+j<justify>][+o<dx>[/<dy>]][+l<label>] */
+	struct PSWIGGLE_D {	/* -D[g|j|J|n|x]<refpoint>+w<length>[+a][+j<justify>][+o<dx>[/<dy>]][+l<label>] */
 		bool active;
 		struct GMT_MAP_SCALE scale;
 	} D;
-	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct PSWIGGLE_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;	/* Panel inside GMT_MAP_SCALE in -D */
 	} F;
-	struct G {	/* -G<fill>[+n][+p] */
+	struct PSWIGGLE_G {	/* -G<fill>[+n][+p] */
 		bool active[2];
 		struct GMT_FILL fill[2];
 	} G;
-	struct I {	/* -I<azimuth> */
+	struct PSWIGGLE_I {	/* -I<azimuth> */
 		bool active;
 		double value;
 	} I;
-	struct S {	/* -S[x]<lon0>/<lat0>/<length>/<units> [Backwards compatibility with GMT 5] */
+	struct PSWIGGLE_S {	/* -S[x]<lon0>/<lat0>/<length>/<units> [Backwards compatibility with GMT 5] */
 		bool active;
 		bool cartesian;
 		double lon, lat, length;
 		char *label;
 	} S;
-	struct T {	/* -T<pen> */
+	struct PSWIGGLE_T {	/* -T<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} T;
-	struct W {	/* -W<pen> */
+	struct PSWIGGLE_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z<scale> */
+	struct PSWIGGLE_Z {	/* -Z<scale> */
 		bool active;
 		double scale;
 		char unit;

@@ -79,47 +79,47 @@ struct DIMFILTER_INFO {
 };
 
 struct DIMFILTER_CTRL {
-	struct In {
+	struct DIMFILTER_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C */
+	struct DIMFILTER_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D<distflag> */
+	struct DIMFILTER_D {	/* -D<distflag> */
 		bool active;
 		int mode;
 	} D;
-	struct E {	/* -E */
+	struct DIMFILTER_E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* <type><filter_width>*/
+	struct DIMFILTER_F {	/* <type><filter_width>*/
 		bool active;
 		int filter;	/* Id for the filter */
 		double width;
 		int mode;
 	} F;
-	struct G {	/* -G<file> */
+	struct DIMFILTER_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L */
+	struct DIMFILTER_L {	/* -L */
 		bool active;
 	} L;
-	struct N {	/* -N */
+	struct DIMFILTER_N {	/* -N */
 		bool active;
 		unsigned int n_sectors;
 		int filter;	/* Id for the filter */
 		int mode;
 	} N;
-	struct Q {	/* -Q */
+	struct DIMFILTER_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S<file> */
+	struct DIMFILTER_S {	/* -S<file> */
 		bool active;
 		char *file;
 	} S;
-	struct T {	/* -T */
+	struct DIMFILTER_T {	/* -T */
 		bool active;
 	} T;
 };

@@ -70,12 +70,12 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 	} N;
 };
 
-struct BINCROSS {
+struct GRDLANDMASK_BINCROSS {
 	double x, y, d;
 };
 
 GMT_LOCAL int grdlandmask_comp_bincross (const void *p1, const void *p2) {
-	const struct BINCROSS *a = p1, *b = p2;
+	const struct GRDLANDMASK_BINCROSS *a = p1, *b = p2;
 
 	if (a->d < b->d) return (-1);
 	if (a->d > b->d) return (+1);
@@ -281,7 +281,7 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	struct GMT_GRID_HEADER *C = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_GSHHS_POL *p = NULL;
-	struct BINCROSS *X = NULL;
+	struct GRDLANDMASK_BINCROSS *X = NULL;
 	struct GRDLANDMASK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -380,7 +380,7 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	x = gmt_M_memory (GMT, NULL, Grid->header->n_columns, double);
 	y = gmt_M_memory (GMT, NULL, Grid->header->n_rows, double);
 	if (Ctrl->E.linetrace)
-		X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
+		X = gmt_M_memory (GMT, X, nx_alloc, struct GRDLANDMASK_BINCROSS);
 
 	nx1 = Grid->header->n_columns - 1;	ny1 = Grid->header->n_rows - 1;
 
@@ -539,7 +539,7 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 								nx++;
 								if (nx == nx_alloc) {
 									nx_alloc <<= 1;
-									X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
+									X = gmt_M_memory (GMT, X, nx_alloc, struct GRDLANDMASK_BINCROSS);
 								}
 							}
 							for (bcol = start_col; bcol <= end_col; bcol++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
@@ -553,12 +553,12 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 								nx++;
 								if (nx == nx_alloc) {
 									nx_alloc <<= 1;
-									X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
+									X = gmt_M_memory (GMT, X, nx_alloc, struct GRDLANDMASK_BINCROSS);
 								}
 							}
 
 							if (nx) {	/* Here we have intersections */
-								qsort (X, nx, sizeof (struct BINCROSS), grdlandmask_comp_bincross);	/* Sort on distances along the line segment */
+								qsort (X, nx, sizeof (struct GRDLANDMASK_BINCROSS), grdlandmask_comp_bincross);	/* Sort on distances along the line segment */
 								grdlandmask_assign_node (GMT, Grid, C, X[0].x, X[0].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
 								for (curr_x_pt = 1, prev_x_pt = 0; curr_x_pt < nx; curr_x_pt++, prev_x_pt++) {	/* Process the intervals, getting mid-points and using that to get bin */
 									grdlandmask_assign_node (GMT, Grid, C, X[curr_x_pt].x, X[curr_x_pt].y, f_level, &ij);	/* Possibly assign f_level to nearest node */

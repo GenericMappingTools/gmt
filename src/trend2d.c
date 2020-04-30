@@ -46,25 +46,25 @@
 struct TREND2D_CTRL {
 	unsigned int n_outputs;
 	bool weighted_output;
-	struct C {	/* -C<condition_#> */
+	struct TREND2D_C {	/* -C<condition_#> */
 		bool active;
 		double value;
 	} C;
-	struct F {	/* -F<xymrw>|p */
+	struct TREND2D_F {	/* -F<xymrw>|p */
 		bool active;
 		bool report;
 		char col[TREND2D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} F;
-	struct I {	/* -I[<confidence>] */
+	struct TREND2D_I {	/* -I[<confidence>] */
 		bool active;
 		double value;
 	} I;
-	struct N {	/* -N<n_model>[r] */
+	struct TREND2D_N {	/* -N<n_model>[r] */
 		bool active;
 		bool robust;
 		unsigned int value;
 	} N;
-	struct W {	/* -W[+s] */
+	struct TREND2D_W {	/* -W[+s] */
 		bool active;
 		unsigned int mode;
 	} W;

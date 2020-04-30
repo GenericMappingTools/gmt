@@ -35,32 +35,32 @@
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYpqt" GMT_OPT("c")
 
 struct PSLEGEND_CTRL {
-	struct PSLEGND_C {	/* -C<dx>[/<dy>] */
+	struct PSLEGEND_C {	/* -C<dx>[/<dy>] */
 		bool active;
 		double off[2];
 	} C;
-	struct PSLEGND_D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>][+l<spacing>][+o<dx>[/<dy>]] */
+	struct PSLEGEND_D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>][+l<spacing>][+o<dx>[/<dy>]] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double dim[2], off[2];
 		double spacing;
 		int justify;
 	} D;
-	struct PSLEGND_F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct PSLEGEND_F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		bool debug;			/* If true we draw guide lines */
 		struct GMT_MAP_PANEL *panel;
 	} F;
-	struct PSLEGND_S {	/* -S<scale> */
+	struct PSLEGEND_S {	/* -S<scale> */
 		bool active;
 		double scale;
 	} S;
-	struct PSLEGND_T {	/* -T<legendfile> */
+	struct PSLEGEND_T {	/* -T<legendfile> */
 		bool active;
 		char *file;
 	} T;
 #ifdef DEBUG
-	struct PSLEGND_DEBUG {	/* -+ */
+	struct PSLEGEND_DEBUG {	/* -+ */
 		bool active;
 	} DBG;
 #endif

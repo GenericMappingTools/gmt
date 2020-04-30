@@ -42,24 +42,24 @@
 #define INT_2D_GEO	2	/* Spherical 2-D path interpolation */
 
 struct SAMPLE1D_CTRL {
-	struct SAMP1D_Out {	/* -> */
+	struct SAMPLE1D_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct SAMP1D_A {	/* -A[f|m|p|r|R|l][+l] */
+	struct SAMPLE1D_A {	/* -A[f|m|p|r|R|l][+l] */
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct SAMP1D_F {	/* -Fl|a|c[1|2] */
+	struct SAMPLE1D_F {	/* -Fl|a|c[1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
 	} F;
-	struct SAMP1D_N {	/* -N<time_col> */
+	struct SAMPLE1D_N {	/* -N<time_col> */
 		bool active;
 		unsigned int col;
 	} N;
-	struct SAMP1D_T {	/* -T<tmin/tmax/tinc>[+a|n] */
+	struct SAMPLE1D_T {	/* -T<tmin/tmax/tinc>[+a|n] */
 		bool active;
 		struct GMT_ARRAY T;
 	} T;

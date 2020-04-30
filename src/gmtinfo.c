@@ -52,30 +52,30 @@ EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, doub
 struct MINMAX_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	unsigned int n_files;
-	struct A {	/* -A */
+	struct GMTINFO_A {	/* -A */
 		bool active;
 		unsigned int mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
 	} A;
-	struct C {	/* -C */
+	struct GMTINFO_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D[dx[/dy[/<dz>..]]] */
+	struct GMTINFO_D {	/* -D[dx[/dy[/<dz>..]]] */
 		bool active;
 		unsigned int ncol;
 		unsigned int mode;	/* 0 means center, 1 means use dx granularity */
 		double inc[GMT_MAX_COLUMNS];
 	} D;
-	struct E {	/* -E<L|l|H|h>[<col>] */
+	struct GMTINFO_E {	/* -E<L|l|H|h>[<col>] */
 		bool active;
 		bool abs;
 		int mode;	/* -1, 0, +1 */
 		uint64_t col;
 	} E;
-	struct F {	/* -F<i|d|t> */
+	struct GMTINFO_F {	/* -F<i|d|t> */
 		bool active;
 		int mode;	/*  */
 	} F;
-	struct I {	/* -I[b|e|f|p|s]dx[/dy[/<dz>..]][[+e|r|R<incs>]] */
+	struct GMTINFO_I {	/* -I[b|e|f|p|s]dx[/dy[/<dz>..]][[+e|r|R<incs>]] */
 		bool active;
 		unsigned int extend;
 		unsigned int ncol;
@@ -83,14 +83,14 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		double inc[GMT_MAX_COLUMNS];
 		double delta[4];
 	} I;
-	struct L {	/* -L */
+	struct GMTINFO_L {	/* -L */
 		bool active;
 	} L;
-	struct S {	/* -S[x|y] */
+	struct GMTINFO_S {	/* -S[x|y] */
 		bool active;
 		bool xbar, ybar;
 	} S;
-	struct T {	/* -T<dz>[/<col>] */
+	struct GMTINFO_T {	/* -T<dz>[/<col>] */
 		bool active;
 		double inc;
 		unsigned int col;

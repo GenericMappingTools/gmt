@@ -40,11 +40,11 @@ EXTERN_MSC int MGD77_Read_File_nohdr (struct GMT_CTRL *GMT, char *file, struct M
 
 struct MGD77HEADER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct H {	/* -H<file> */
+	struct MGD77HEADER_H {	/* -H<file> */
 		bool active;
 		char *file;
 	} H;
-	struct M {	/* -Mf[<item>|r|t] */
+	struct MGD77HEADER_M {	/* -Mf[<item>|r|t] */
 		bool active;
 		unsigned int mode;
 		unsigned int flag;

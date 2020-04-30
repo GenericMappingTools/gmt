@@ -36,22 +36,22 @@
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy" GMT_OPT("EZMmc")
 
 struct PSCLIP_CTRL {
-	struct A {	/* -A[m|p|step] */
+	struct PSCLIP_A {	/* -A[m|p|step] */
 		bool active;
 		unsigned int mode;
 		double step;
 	} A;
-	struct C {	/* -C */
+	struct PSCLIP_C {	/* -C */
 		bool active;
 		int n;	/* Number of levels to undo [1] */
 	} C;
-	struct N {	/* -N */
+	struct PSCLIP_N {	/* -N */
 		bool active;
 	} N;
-	struct T {	/* -T */
+	struct PSCLIP_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W<pen> */
+	struct PSCLIP_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;

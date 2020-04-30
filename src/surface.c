@@ -52,62 +52,62 @@
 #define THIS_MODULE_OPTIONS "-:RVabdefhiqrs" GMT_ADD_x_OPT GMT_OPT("FH")
 
 struct SURFACE_CTRL {
-	struct SRF_A {	/* -A<aspect_ratio> */
+	struct SURFACE_A {	/* -A<aspect_ratio> */
 		bool active;
 		unsigned int mode;	/* 1 if given as fraction */
 		double value;
 	} A;
-	struct SRF_C {	/* -C<converge_limit> */
+	struct SURFACE_C {	/* -C<converge_limit> */
 		bool active;
 		unsigned int mode;	/* 1 if given as fraction */
 		double value;
 	} C;
-	struct SRF_D {	/* -D<line.xyz>[+d][+z[<zval>]] */
+	struct SURFACE_D {	/* -D<line.xyz>[+d][+z[<zval>]] */
 		bool active;
 		bool debug;
 		bool fix_z;
 		double z;
 		char *file;	/* Name of file with breaklines */
 	} D;
-	struct SRF_G {	/* -G<file> */
+	struct SURFACE_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct SRF_J {	/* -G<file> */
+	struct SURFACE_J {	/* -G<file> */
 		bool active;
 		char *projstring;
 	} J;
-	struct SRF_L {	/* -Ll|u<limit> */
+	struct SURFACE_L {	/* -Ll|u<limit> */
 		bool active;
 		char *file[2];
 		double limit[2];
 		unsigned int mode[2];
 	} L;
-	struct SRF_M {	/* -M<radius> */
+	struct SURFACE_M {	/* -M<radius> */
 		bool active;
 		char *arg;
 	} M;
-	struct SRF_N {	/* -N<max_iterations> */
+	struct SURFACE_N {	/* -N<max_iterations> */
 		bool active;
 		unsigned int value;
 	} N;
-	struct SRF_Q {	/* -Q */
+	struct SURFACE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct SRF_S {	/* -S<radius>[m|s] */
+	struct SURFACE_S {	/* -S<radius>[m|s] */
 		bool active;
 		double radius;
 		char unit;
 	} S;
-	struct SRF_T {	/* -T<tension>[i][b] */
+	struct SURFACE_T {	/* -T<tension>[i][b] */
 		bool active;
 		double b_tension, i_tension;
 	} T;
-	struct SRF_W {	/* -W[<logfile>] */
+	struct SURFACE_W {	/* -W[<logfile>] */
 		bool active;
 		char *file;
 	} W;
-	struct SRF_Z {	/* -Z<over_relaxation_parameter> */
+	struct SURFACE_Z {	/* -Z<over_relaxation_parameter> */
 		bool active;
 		double value;
 	} Z;

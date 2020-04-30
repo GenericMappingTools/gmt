@@ -57,22 +57,22 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 #define THIS_MODULE_OPTIONS "-RVfr" GMT_ADD_x_OPT
 
 struct GRDFILTER_CTRL {
-	struct GRDFILT_In {
+	struct GRDFILTER_In {
 		bool active;
 		char *file;
 	} In;
-	struct GRDFILT_A {	/* -A<a|r|w|c>row/col */
+	struct GRDFILTER_A {	/* -A<a|r|w|c>row/col */
 		bool active;
 		char mode;
 		unsigned int ROW, COL;
 		double x, y;
 		char *file;
 	} A;
-	struct GRDFILT_D {	/* -D<distflag> */
+	struct GRDFILTER_D {	/* -D<distflag> */
 		bool active;
 		int mode;	/* -1 to 5 */
 	} D;
-	struct GRDFILT_F {	/* <type>[-]<filter_width>[/<width2>][<mode>] */
+	struct GRDFILTER_F {	/* <type>[-]<filter_width>[/<width2>][<mode>] */
 		bool active;
 		bool highpass;
 		bool custom;
@@ -86,18 +86,18 @@ struct GRDFILTER_CTRL {
 		int mode;	/*-1 0 +1 */
 		struct GMT_GRID *W;
 	} F;
-	struct GRDFILT_G {	/* -G<file> */
+	struct GRDFILTER_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct GRDFILT_N {	/* -Np|i|r */
+	struct GRDFILTER_N {	/* -Np|i|r */
 		bool active;
 		unsigned int mode;	/* 0 is default (i), 1 is replace (r), 2 is preserve (p) */
 	} N;
-	struct GRDFILT_T {	/* -T */
+	struct GRDFILTER_T {	/* -T */
 		bool active;
 	} T;
-	struct GRDFILT_z {	/* -z */
+	struct GRDFILTER_z {	/* -z */
 		bool active;
 		int n_threads;
 	} z;

@@ -40,53 +40,53 @@
 #define THIS_MODULE_NEEDS	"g"
 #define THIS_MODULE_OPTIONS "-RVn"
 
-struct REDPOL_CTRL {
-	struct In {
+struct GRDREDPOL_CTRL {
+	struct GRDREDPOL_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C */
+	struct GRDREDPOL_C {	/* -C */
 		bool use_igrf;
 		bool const_f;
 		double	dec;
 		double	dip;
 	} C;
-	struct E {	/* -E */
+	struct GRDREDPOL_E {	/* -E */
 		bool active;
 		bool dip_grd_only;
 		bool dip_dec_grd;
 		char *decfile;
 		char *dipfile;
 	} E;
-	struct F {	/* -F */
+	struct GRDREDPOL_F {	/* -F */
 		bool active;
 		unsigned int	ncoef_row;
 		unsigned int	ncoef_col;
 		unsigned int	compute_n;	/* Compute ncoef_col */
 		double	width;
 	} F;
-	struct G {	/* -G<file> */
+	struct GRDREDPOL_G {	/* -G<file> */
 		bool active;
 		char	*file;
 	} G;
-	struct M {	/* -M */
+	struct GRDREDPOL_M {	/* -M */
 		bool pad_zero;
 		bool mirror;
 	} M;
-	struct N {	/* -N */
+	struct GRDREDPOL_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S, size of working grid */
+	struct GRDREDPOL_S {	/* -S, size of working grid */
 		unsigned int	n_columns;
 		unsigned int	n_rows;
 	} S;
-	struct T {	/* -T */
+	struct GRDREDPOL_T {	/* -T */
 		double	year;
 	} T;
-	struct W {	/* -W */
+	struct GRDREDPOL_W {	/* -W */
 		double	wid;
 	} W;
-	struct Z {	/* -Z */
+	struct GRDREDPOL_Z {	/* -Z */
 		bool active;
 		char	*file;
 	} Z;
@@ -97,9 +97,9 @@ struct REDPOL_CTRL {
 #define ij_mn(Ctrl,i,j) (Ctrl->F.ncoef_row*(j)+(i))
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct REDPOL_CTRL *C;
+	struct GRDREDPOL_CTRL *C;
 
-	C = gmt_M_memory (GMT, NULL, 1, struct REDPOL_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDREDPOL_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.use_igrf = true;
@@ -112,7 +112,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->G.file);
@@ -124,7 +124,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deal
 
 GMT_LOCAL void grdgravmag3d_rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *gxar,
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double u,
-		double v, double alfa, double beta, double gama, struct REDPOL_CTRL *Ctrl) {
+		double v, double alfa, double beta, double gama, struct GRDREDPOL_CTRL *Ctrl) {
 
 	uint64_t ij = ij_mn(Ctrl,i,j-n21+1);
 	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
@@ -160,7 +160,7 @@ GMT_LOCAL void grdgravmag3d_rtp_filt_colinear (int i, int j, int n21, double *gx
 GMT_LOCAL void grdgravmag3d_rtp_filt_not_colinear (int i, int j, int n21, double *gxr, double *gxi, double *gxar,
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double *gxtr,
 		double *gxti, double *gxmr, double *gxmi, double *gxnr, double *gxni, double u, double v, double alfa,
-		double beta, double gama, double tau, double mu, double nu, struct REDPOL_CTRL *Ctrl) {
+		double beta, double gama, double tau, double mu, double nu, struct GRDREDPOL_CTRL *Ctrl) {
 
 	uint64_t ij = ij_mn(Ctrl,i,j-n21+1);
 	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
@@ -211,7 +211,7 @@ GMT_LOCAL void grdgravmag3d_rtp_filt_not_colinear (int i, int j, int n21, double
 	}
 }
 
-GMT_LOCAL void grdgravmag3d_mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j_data_start, struct REDPOL_CTRL *Ctrl) {
+GMT_LOCAL void grdgravmag3d_mirror_edges (gmt_grdfloat *grid, int nc, int i_data_start, int j_data_start, struct GRDREDPOL_CTRL *Ctrl) {
 	/* This routine mirrors or replicates the West and East borders j_data_start times
 	   and the South and North borders by i_data_start times.
 	   nc	is the total number of columns by which the grid is extended
@@ -415,11 +415,11 @@ GMT_LOCAL int grdgravmag3d_igrf10syn (struct GMT_CTRL *C, int isv, double date, 
   *	Updated for IGRF 11th generation
   */
 
-	struct IGRF {
+	struct GRDREDPOL_IGRF {
 		double e_1[3450];
 	};
      /* Initialized data */
-     static struct IGRF equiv_22 = {
+     static struct GRDREDPOL_IGRF equiv_22 = {
        {-31543.,-2298., 5922., -677., 2905.,-1061.,  924., 1121., /* g0 (1900) */
          1022.,-1469., -330., 1256.,    3.,  572.,  523.,  876.,
           628.,  195.,  660.,  -69., -361., -210.,  134.,  -75.,
@@ -1050,7 +1050,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdredpol and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -1197,7 +1197,7 @@ EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 	double	dec_m, dip_m, tau1, mu1, nu1, dt = 0, dm = 0, dn = 0, tau = 0, mu = 0, nu = 0;
 	double	wesn_new[4], out_igrf[7];
 
-	struct	REDPOL_CTRL *Ctrl = NULL;
+	struct	GRDREDPOL_CTRL *Ctrl = NULL;
 	struct	GMT_GRID *Gin = NULL, *Gout = NULL, *Gdip = NULL, *Gdec = NULL, *Gfilt = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct	GMT_OPTION *options = NULL;

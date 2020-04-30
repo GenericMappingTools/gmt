@@ -41,39 +41,39 @@
 EXTERN_MSC void x2sys_set_home (struct GMT_CTRL *GMT);
 
 struct X2SYS_INIT_CTRL {
-	struct In {	/*  */
+	struct X2SYS_INIT_In {	/*  */
 		bool active;
 		char *TAG;
 	} In;
-	struct C {	/* -C [Deprecated, now use -j] */
+	struct X2SYS_INIT_C {	/* -C [Deprecated, now use -j] */
 		bool active;
 		char *string;
 	} C;
-	struct D {	/* -D */
+	struct X2SYS_INIT_D {	/* -D */
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E */
+	struct X2SYS_INIT_E {	/* -E */
 		bool active;
 		char *string;
 	} E;
-	struct F {	/* -F */
+	struct X2SYS_INIT_F {	/* -F */
 		bool active;
 	} F;
-	struct G {	/* -G */
+	struct X2SYS_INIT_G {	/* -G */
 		bool active;
 		char *string;
 	} G;
-	struct I {	/* -I */
+	struct X2SYS_INIT_I {	/* -I */
 		bool active;
 		double inc[2];
 		char *string;
 	} I;
-	struct N {	/* -N */
+	struct X2SYS_INIT_N {	/* -N */
 		bool active[2];
 		char *string[2];
 	} N;
-	struct W {	/* -W */
+	struct X2SYS_INIT_W {	/* -W */
 		bool active[2];
 		char *string[2];
 	} W;

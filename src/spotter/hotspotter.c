@@ -135,28 +135,28 @@
 
 struct HOTSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct D {	/* -D<factor> */
+	struct HOTSPOTTER_D {	/* -D<factor> */
 		bool active;
 		double value;	/* Resampling factor */
 	} D;
-	struct E {	/* -E[+]rotfile */
+	struct HOTSPOTTER_E {	/* -E[+]rotfile */
 		bool active;
 		bool mode;
 		char *file;
 	} E;
-	struct G {	/* -Goutfile */
+	struct HOTSPOTTER_G {	/* -Goutfile */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N */
+	struct HOTSPOTTER_N {	/* -N */
 		bool active;
 		double t_upper;
 	} N;
-	struct S {	/* -S */
+	struct HOTSPOTTER_S {	/* -S */
 		bool active;
 		char *file;
 	} S;
-	struct T {	/* -T<tzero> */
+	struct HOTSPOTTER_T {	/* -T<tzero> */
 		bool active;
 		double t_zero;	/* Set zero age*/
 	} T;

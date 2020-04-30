@@ -39,24 +39,24 @@
 
 struct MGD77INFO_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct C {	/* -C */
+	struct MGD77INFO_C {	/* -C */
 		bool active;
 		unsigned int mode;
 	} C;
-	struct E {	/* -E */
+	struct MGD77INFO_E {	/* -E */
 		bool active;
 		unsigned int mode;
 	} E;
-	struct I {	/* -I */
+	struct MGD77INFO_I {	/* -I */
 		bool active;
 		unsigned int n;
 		char code[3];
 	} I;
-	struct L {	/* -L */
+	struct MGD77INFO_L {	/* -L */
 		bool active;
 		unsigned int mode;
 	} L;
-	struct M {	/* -M */
+	struct MGD77INFO_M {	/* -M */
 		bool active;
 		unsigned int mode;
 		unsigned int flag;

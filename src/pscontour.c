@@ -36,46 +36,46 @@
 
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
-	struct PSCONT_A {	/* -A[n|<int>][labelinfo] */
+	struct PSCONTOUR_A {	/* -A[n|<int>][labelinfo] */
 		bool active;
 		char *file;
 		unsigned int mode;	/* 1 turns off all labels */
 		double interval;
 		double single_cont;
 	} A;
-	struct PSCONT_C {	/* -C<cpt> */
+	struct PSCONTOUR_C {	/* -C<cpt> */
 		bool active;
 		bool cpt;
 		char *file;
 		double interval;
 		double single_cont;
 	} C;
-	struct PSCONT_D {	/* -D<dumpfile> */
+	struct PSCONTOUR_D {	/* -D<dumpfile> */
 		bool active;
 		char *file;
 	} D;
-	struct PSCONT_E {	/* -E<indexfile> */
+	struct PSCONTOUR_E {	/* -E<indexfile> */
 		bool active;
 		char *file;
 	} E;
-	struct PSCONT_G {	/* -G[d|f|n|l|L|x|X]<params> */
+	struct PSCONTOUR_G {	/* -G[d|f|n|l|L|x|X]<params> */
 		bool active;
 	} G;
-	struct PSCONT_I {	/* -I */
+	struct PSCONTOUR_I {	/* -I */
 		bool active;
 	} I;
-	struct PSCONT_L {	/* -L<pen> */
+	struct PSCONTOUR_L {	/* -L<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} L;
-	struct PSCONT_N {	/* -N */
+	struct PSCONTOUR_N {	/* -N */
 		bool active;
 	} N;
-	struct PSCONT_S {	/* -S[p|t] */
+	struct PSCONTOUR_S {	/* -S[p|t] */
 		bool active;
 		unsigned int mode;	/* 0 skip points; 1 skip triangles */
 	} S;
-	struct PSCONT_T {	/* -T[h|l][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
+	struct PSCONTOUR_T {	/* -T[h|l][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
 		bool active;
 		bool label;
 		bool all;
@@ -83,7 +83,7 @@ struct PSCONTOUR_CTRL {
 		double dim[2];	/* spacing, length */
 		char *txt[2];	/* Low and high label */
 	} T;
-	struct PSCONT_Q {	/* -Q[<cut>][+z] */
+	struct PSCONTOUR_Q {	/* -Q[<cut>][+z] */
 		bool active;
 		bool zero;	/* True if we should skip zero-contour */
 		bool project;	/* True if we need distances in plot units */
@@ -92,7 +92,7 @@ struct PSCONTOUR_CTRL {
 		unsigned int min;
 		char unit;
 	} Q;
-	struct PSCONT_W {	/* -W[a|c]<pen>[+c[l|f]] */
+	struct PSCONTOUR_W {	/* -W[a|c]<pen>[+c[l|f]] */
 		bool active;
 		bool cpt_effect;
 		unsigned int cptmode;	/* Apply to both a&c */
@@ -106,7 +106,7 @@ struct PSCONTOUR_CTRL {
 #define PEN_CONT	0
 #define PEN_ANNOT	1
 
-struct SAVE {
+struct PSCONTOUR_SAVE {
 	double *x, *y;
 	double cval;
 	unsigned int n;
@@ -284,7 +284,7 @@ GMT_LOCAL void pscontour_paint_it (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
+GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct PSCONTOUR_SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones.
 
@@ -826,7 +826,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_RECORD *In = NULL;
-	struct SAVE *save = NULL;
+	struct PSCONTOUR_SAVE *save = NULL;
 	struct PSCONTOUR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL, *opt = NULL;
@@ -1615,9 +1615,9 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 
 				if (make_plot) {
 					if (cont[c].do_tick && is_closed) {	/* Must store the entire contour for later processing */
-						if (n_save == n_save_alloc) save = gmt_M_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
+						if (n_save == n_save_alloc) save = gmt_M_malloc (GMT, save, n_save, &n_save_alloc, struct PSCONTOUR_SAVE);
 						n_alloc = 0;
-						gmt_M_memset (&save[n_save], 1, struct SAVE);
+						gmt_M_memset (&save[n_save], 1, struct PSCONTOUR_SAVE);
 						gmt_M_malloc2 (GMT, save[n_save].x, save[n_save].y, m, &n_alloc, double);
 						gmt_M_memcpy (save[n_save].x, xp, m, double);
 						gmt_M_memcpy (save[n_save].y, yp, m, double);
@@ -1648,7 +1648,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
 			size_t kk;
-			save = gmt_M_malloc (GMT, save, 0, &n_save, struct SAVE);
+			save = gmt_M_malloc (GMT, save, 0, &n_save, struct PSCONTOUR_SAVE);
 
 			pscontour_sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.all, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
 			for (kk = 0; kk < n_save; kk++) {

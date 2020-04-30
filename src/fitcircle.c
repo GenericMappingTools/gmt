@@ -83,15 +83,15 @@
 
 struct FITCIRCLE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct F {	/* -F[f|m|n|s|c] */
+	struct FITCIRCLE_F {	/* -F[f|m|n|s|c] */
 		bool active;
 		unsigned int mode;	/* f = 1, m = 2, n = 4, s = 8, c = 16 [31] */
 	} F;
-	struct L {	/* -L[<n>] */
+	struct FITCIRCLE_L {	/* -L[<n>] */
 		bool active;
 		unsigned int norm;	/* 1, 2, or 3 (both) */
 	} L;
-	struct S {	/* -S[<lat] */
+	struct FITCIRCLE_S {	/* -S[<lat] */
 		bool active;
 		unsigned int mode;	/* 0 = find latitude, 1 = use specified latitude */
 		double lat;	/* 0 for great circle */

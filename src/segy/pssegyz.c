@@ -53,62 +53,62 @@
 #define PLOT_OFFSET	2
 
 struct PSSEGYZ_CTRL {
-	struct In {	/* -In */
+	struct PSSEGYZ_In {	/* -In */
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct PSSEGYZ_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct PSSEGYZ_C {	/* -C<cpt> */
 		bool active;
 		double value;
 	} C;
-	struct D {	/* -D */
+	struct PSSEGYZ_D {	/* -D */
 		bool active;
 		double value[2];
 	} D;
-	struct E {	/* -E */
+	struct PSSEGYZ_E {	/* -E */
 		bool active;
 		double value;
 	} E;
-	struct F {	/* -F<fill> */
+	struct PSSEGYZ_F {	/* -F<fill> */
 		bool active;
 		double rgb[4];
 	} F;
-	struct I {	/* -I */
+	struct PSSEGYZ_I {	/* -I */
 		bool active;
 	} I;
-	struct L {	/* -L */
+	struct PSSEGYZ_L {	/* -L */
 		bool active;
 		int value;
 	} L;
-	struct M {	/* -M */
+	struct PSSEGYZ_M {	/* -M */
 		bool active;
 		int value;
 	} M;
-	struct N {	/* -N */
+	struct PSSEGYZ_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Qb|i|u|x|y */
+	struct PSSEGYZ_Q {	/* -Qb|i|u|x|y */
 		bool active[5];
 		double value[5];	/* b is bias, i is dpi, u is redval, x/y are trace and sample interval */
 	} Q;
-	struct S {	/* -S */
+	struct PSSEGYZ_S {	/* -S */
 		bool active;
 		bool fixed[2];
 		unsigned int mode[2];
 		int value[2];
 		double orig[2];
 	} S;
-	struct T {	/* -T */
+	struct PSSEGYZ_T {	/* -T */
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* -W */
+	struct PSSEGYZ_W {	/* -W */
 		bool active;
 	} W;
-	struct Z {	/* -Z */
+	struct PSSEGYZ_Z {	/* -Z */
 		bool active;
 	} Z;
 };

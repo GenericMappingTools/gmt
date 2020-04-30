@@ -49,35 +49,35 @@ enum gmtvector_method {	/* The available methods */
 	DO_BISECTOR};
 
 struct GMTVECTOR_CTRL {
-	struct Out {	/* -> */
+	struct GMTVECTOR_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct In {	/* infile */
+	struct GMTVECTOR_In {	/* infile */
 		bool active;
 		unsigned int n_args;
 		char *arg;
 	} In;
-	struct A {	/* -A[m[<conf>]|<vec>] */
+	struct GMTVECTOR_A {	/* -A[m[<conf>]|<vec>] */
 		bool active;
 		unsigned int mode;
 		double conf;
 		char *arg;
 	} A;
-	struct C {	/* -C[i|o] */
+	struct GMTVECTOR_C {	/* -C[i|o] */
 		bool active[2];
 	} C;
-	struct E {	/* -E */
+	struct GMTVECTOR_E {	/* -E */
 		bool active;
 	} E;
-	struct N {	/* -N */
+	struct GMTVECTOR_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S[vec] */
+	struct GMTVECTOR_S {	/* -S[vec] */
 		bool active;
 		char *arg;
 	} S;
-	struct T {	/* -T[operator] */
+	struct GMTVECTOR_T {	/* -T[operator] */
 		bool active;
 		bool degree;
 		enum gmtvector_method mode;

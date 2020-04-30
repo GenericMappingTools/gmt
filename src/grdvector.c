@@ -35,49 +35,49 @@
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfptxy" GMT_OPT("c")
 
 struct GRDVECTOR_CTRL {
-	struct In {
+	struct GRDVECTOR_In {
 		bool active;
 		char *file[2];
 	} In;
-	struct A {	/* -A */
+	struct GRDVECTOR_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C<cpt>[+i<dz>] */
+	struct GRDVECTOR_C {	/* -C<cpt>[+i<dz>] */
 		bool active;
 		double dz;
 		char *file;
 	} C;
-	struct G {	/* -G<fill> */
+	struct GRDVECTOR_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct I {	/* -I[x]<dx>[/<dy>] */
+	struct GRDVECTOR_I {	/* -I[x]<dx>[/<dy>] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct N {	/* -N */
+	struct GRDVECTOR_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q<size>[+<mods>] */
+	struct GRDVECTOR_Q {	/* -Q<size>[+<mods>] */
 		bool active;
 		struct GMT_SYMBOL S;
 	} Q;
-	struct S {	/* -S[l|i]<length|scale>[<unit>] */
+	struct GRDVECTOR_S {	/* -S[l|i]<length|scale>[<unit>] */
 		bool active;
 		bool constant;
 		bool invert;
 		char unit;
 		double factor;
 	} S;
-	struct T {	/* -T */
+	struct GRDVECTOR_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W<pen> */
+	struct GRDVECTOR_W {	/* -W<pen> */
 		bool active;
 		bool cpt_effect;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z */
+	struct GRDVECTOR_Z {	/* -Z */
 		bool active;
 	} Z;
 };

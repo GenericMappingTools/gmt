@@ -47,28 +47,28 @@
 
 struct GMTPMODELER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct In {
+	struct GMTPMODELER_In {
 		bool active;
 		char *file;
 	} In;
-	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
+	struct GMTPMODELER_E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
 		bool active;
 		struct SPOTTER_ROT rot;
 	} E;
-	struct F {	/* -Fpolfile */
+	struct GMTPMODELER_F {	/* -Fpolfile */
 		bool active;
 		char *file;
 	} F;
-	struct N {	/* -N */
+	struct GMTPMODELER_N {	/* -N */
 		bool active;
 		double t_upper;
 	} N;
-	struct S {	/* -Sa|d|s|v|w|x|y|X|Y */
+	struct GMTPMODELER_S {	/* -Sa|d|s|v|w|x|y|X|Y */
 		bool active, center;
 		unsigned int mode[N_PM_ITEMS];
 		unsigned int n_items;
 	} S;
-	struct T {	/* -T<fixtime> */
+	struct GMTPMODELER_T {	/* -T<fixtime> */
 		bool active;
 		double value;
 	} T;

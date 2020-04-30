@@ -36,10 +36,10 @@
 /* Control structure for gmtget */
 
 struct GMTGET_CTRL {
-	struct L {	/* -L */
+	struct GMTGET_L {	/* -L */
 		bool active;
 	} L;
-	struct G {	/* -Gfilename */
+	struct GMTGET_G {	/* -Gfilename */
 		bool active;
 		char *file;
 	} G;

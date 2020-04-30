@@ -44,19 +44,19 @@
 #define THIS_MODULE_OPTIONS "-:RVbdehiqrs" GMT_OPT("F")
 
 struct SPHINTERPOLATE_CTRL {
-	struct G {	/* -G<grdfile> */
+	struct SPHINTERPOLATE_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct Q {	/* -Q<interpolation> */
+	struct SPHINTERPOLATE_Q {	/* -Q<interpolation> */
 		bool active;
 		unsigned int mode;
 		double value[3];
 	} Q;
-	struct T {	/* -T for variable tension */
+	struct SPHINTERPOLATE_T {	/* -T for variable tension */
 		bool active;
 	} T;
-	struct Z {	/* -Z to scale data */
+	struct SPHINTERPOLATE_Z {	/* -Z to scale data */
 		bool active;
 	} Z;
 };

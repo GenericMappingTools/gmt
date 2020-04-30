@@ -52,40 +52,40 @@ enum Mask_Modes {
 };
 
 struct PSMASK_CTRL {
-	struct C {	/* -C */
+	struct PSMASK_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D<dumpfile> */
+	struct PSMASK_D {	/* -D<dumpfile> */
 		bool active;
 		char *file;
 	} D;
-	struct F {	/* -F<way> */
+	struct PSMASK_F {	/* -F<way> */
 		bool active;
 		int value;
 	} F;
-	struct G {	/* -G<fill> */
+	struct PSMASK_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct L {	/* -L<file>[+i|o] */
+	struct PSMASK_L {	/* -L<file>[+i|o] */
 		bool active;
 		int mode;	/* -1 = set inside node to NaN (+i), 0 as is, +1 set outside node to NaN (+o) */
 		char *file;
 	} L;
-	struct N {	/* -N */
+	struct PSMASK_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q<cut> */
+	struct PSMASK_Q {	/* -Q<cut> */
 		bool active;
 		unsigned int min;
 	} Q;
-	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n|s] */
+	struct PSMASK_S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n|s] */
 		bool active;
 		int mode;	/* May be negative */
 		double radius;
 		char unit;
 	} S;
-	struct T {	/* -T */
+	struct PSMASK_T {	/* -T */
 		bool active;
 	} T;
 };

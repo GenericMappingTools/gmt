@@ -33,60 +33,60 @@
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipqstxy" GMT_OPT("Ec")
 
 struct PSHISTOGRAM_CTRL {
-	struct Out {	/* -> */
+	struct PSHISTOGRAM_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A */
+	struct PSHISTOGRAM_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct PSHISTOGRAM_C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[+r][+f<font>][+o<off>][+b] */
+	struct PSHISTOGRAM_D {	/* -D[+r][+f<font>][+o<off>][+b] */
 		bool active;
 		unsigned int mode;	/* 0 for horizontal, 1 for vertical */
 		unsigned int just;	/* 0 for top of bar, 1 for below */
 		struct GMT_FONT font;
 		double offset;
 	} D;
-	struct F {	/* -F */
+	struct PSHISTOGRAM_F {	/* -F */
 		bool active;
 	} F;
-	struct G {	/* -Gfill */
+	struct PSHISTOGRAM_G {	/* -Gfill */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct I {	/* -I[o] */
+	struct PSHISTOGRAM_I {	/* -I[o] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct L {	/* -Ll|h|b */
+	struct PSHISTOGRAM_L {	/* -Ll|h|b */
 		bool active;
 		unsigned int mode;
 	} L;
-	struct N {	/* -N[<kind>]+p<pen>, <kind = 0,1,2 */
+	struct PSHISTOGRAM_N {	/* -N[<kind>]+p<pen>, <kind = 0,1,2 */
 		bool active;
 		bool selected[3];
 		struct GMT_PEN pen[3];
 	} N;
-	struct Q {	/* -Q[r] */
+	struct PSHISTOGRAM_Q {	/* -Q[r] */
 		bool active;
 		int mode;
 	} Q;
-	struct S {	/* -S */
+	struct PSHISTOGRAM_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T<tmin/tmax/tinc>[+n] | -Tfile|list  */
+	struct PSHISTOGRAM_T {	/* -T<tmin/tmax/tinc>[+n] | -Tfile|list  */
 		bool active;
 		struct GMT_ARRAY T;
 	} T;
-	struct W {	/* -W<pen> */
+	struct PSHISTOGRAM_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z<type>[+w] */
+	struct PSHISTOGRAM_Z {	/* -Z<type>[+w] */
 		bool active;
 		bool weights;
 		unsigned int mode;
@@ -247,7 +247,7 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	return (0);
 }
 
-GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct D *D) {
+GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct PSHISTOGRAM_D *D) {
 	int i, index, fmode = 0, label_justify;
 	uint64_t ibox;
 	char label[GMT_LEN64] = {""};

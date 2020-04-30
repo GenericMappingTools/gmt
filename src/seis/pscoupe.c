@@ -49,7 +49,7 @@ PostScript code is written to stdout.
 /* Control structure for pscoupe */
 
 struct PSCOUPE_CTRL {
-	struct A {	/* -A[<params>] */
+	struct PSCOUPE_A {	/* -A[<params>] */
 		bool active, frame, polygon;
 		int fuseau;
 		char proj_type;
@@ -59,31 +59,31 @@ struct PSCOUPE_CTRL {
 		struct nodal_plane PREF;
 		char newfile[PATH_MAX], extfile[PATH_MAX];
 	} A;
- 	struct E {	/* -E<fill> */
+ 	struct PSCOUPE_E {	/* -E<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} E;
-	struct F {	/* Repeatable -F<mode>[<args>] */
+	struct PSCOUPE_F {	/* Repeatable -F<mode>[<args>] */
 		bool active;
 	} F;
- 	struct G {	/* -G<fill> */
+ 	struct PSCOUPE_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct L {	/* -L<pen> */
+	struct PSCOUPE_L {	/* -L<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} L;
-	struct M {	/* -M */
+	struct PSCOUPE_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct PSCOUPE_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q */
+	struct PSCOUPE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] and -Fs */
+	struct PSCOUPE_S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] and -Fs */
 		bool active;
 		bool zerotrace;
 		bool no_label;
@@ -99,16 +99,16 @@ struct PSCOUPE_CTRL {
 		struct GMT_FILL fill;
 		struct GMT_FONT font;
 	} S;
-	struct T {	/* -Tnplane[/<pen>] */
+	struct PSCOUPE_T {	/* -Tnplane[/<pen>] */
 		bool active;
 		unsigned int n_plane;
 		struct GMT_PEN pen;
 	} T;
-	struct W {	/* -W<pen> */
+	struct PSCOUPE_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z<cpt> */
+	struct PSCOUPE_Z {	/* -Z<cpt> */
 		bool active;
 		char *file;
 	} Z;

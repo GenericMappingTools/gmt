@@ -99,23 +99,23 @@ struct TREND1D_CTRL {
 	unsigned int n_outputs;
 	bool weighted_output;
 	unsigned int model_parameters;	/* 0 = no output, 1 = polynomial output (users), 2 = polynomial output (normalized), 3 = Chebyshev (normalized) */
-	struct C {	/* -C<condition_#> */
+	struct TREND1D_C {	/* -C<condition_#> */
 		bool active;
 		double value;
 	} C;
-	struct F {	/* -F<xymrw> */
+	struct TREND1D_F {	/* -F<xymrw> */
 		bool active;
 		char col[TREND1D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} F;
-	struct I {	/* -I[<confidence>] */
+	struct TREND1D_I {	/* -I[<confidence>] */
 		bool active;
 		double value;
 	} I;
-	struct N {	/*  -N[p|P|f|F|c|C|s|S|x|X]<list-of-terms>[,...][+l<length>][+o<origin>][+r] */
+	struct TREND1D_N {	/*  -N[p|P|f|F|c|C|s|S|x|X]<list-of-terms>[,...][+l<length>][+o<origin>][+r] */
 		bool active;
 		struct GMT_MODEL M;
 	} N;
-	struct W {	/* -W[+s] */
+	struct TREND1D_W {	/* -W[+s] */
 		bool active;
 		unsigned int mode;
 	} W;

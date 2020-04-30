@@ -87,7 +87,7 @@ struct SPECTRUM1D_INFO {	/* Control structure for spectrum1d */
 	int n_spec, window, window_2;
 	gmt_grdfloat *datac;
 	double dt, x_variance, y_variance, d_n_windows, y_pow;
-	struct SPEC {
+	struct SPECTRUM1D_SPEC {
 		double xpow;	/* PSD in X(t)  */
 		double ypow;	/* PSD in Y(t)  */
 		double gain;	/* Amplitude increase X->Y in Optimal Response Function  */
@@ -101,7 +101,7 @@ GMT_LOCAL void spectrum1d_alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_
 	C->n_spec = C->window/2;	/* This means we skip zero frequency; data are detrended  */
 	C->window_2 = 2 * C->window;		/* This is for complex array stuff  */
 
-	C->spec = gmt_M_memory (GMT, NULL, C->n_spec, struct SPEC);
+	C->spec = gmt_M_memory (GMT, NULL, C->n_spec, struct SPECTRUM1D_SPEC);
 	C->datac = gmt_M_memory (GMT, NULL, C->window_2, gmt_grdfloat);
 }
 

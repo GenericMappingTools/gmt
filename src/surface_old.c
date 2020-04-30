@@ -49,47 +49,47 @@
 #define THIS_MODULE_OPTIONS "-:RVabdefhirs" GMT_OPT("FH")
 
 struct SURFACE_CTRL {
-	struct A {	/* -A<aspect_ratio>|m */
+	struct SURFACE_OLD_A {	/* -A<aspect_ratio>|m */
 		bool active;
 		unsigned int mode;	/* 1 if we want cos(mid_latitude) */
 		double value;
 	} A;
-	struct C {	/* -C<converge_limit> */
+	struct SURFACE_OLD_C {	/* -C<converge_limit> */
 		bool active;
 		unsigned int mode;	/* 1 if given as fraction */
 		double value;
 	} C;
-	struct D {	/* -D<line.xyz> */
+	struct SURFACE_OLD_D {	/* -D<line.xyz> */
 		bool active;
 		char *file;	/* Name of file with breaklines */
 	} D;
-	struct G {	/* -G<file> */
+	struct SURFACE_OLD_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -Ll|u<limit> */
+	struct SURFACE_OLD_L {	/* -Ll|u<limit> */
 		bool active;
 		char *low, *high;
 		double min, max;
 		unsigned int lmode, hmode;
 	} L;
-	struct N {	/* -N<max_iterations> */
+	struct SURFACE_OLD_N {	/* -N<max_iterations> */
 		bool active;
 		unsigned int value;
 	} N;
-	struct Q {	/* -Q */
+	struct SURFACE_OLD_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S<radius>[m|s] */
+	struct SURFACE_OLD_S {	/* -S<radius>[m|s] */
 		bool active;
 		double radius;
 		char unit;
 	} S;
-	struct T {	/* -T<tension>[i][b] */
+	struct SURFACE_OLD_T {	/* -T<tension>[i][b] */
 		bool active;
 		double b_tension, i_tension;
 	} T;
-	struct Z {	/* -Z<over_relaxation_parameter> */
+	struct SURFACE_OLD_Z {	/* -Z<over_relaxation_parameter> */
 		bool active;
 		double value;
 	} Z;

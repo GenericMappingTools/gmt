@@ -52,34 +52,34 @@
 #define THIS_MODULE_OPTIONS "-Vdehio" GMT_ADD_x_OPT
 
 struct TALWANI2D_CTRL {
-	struct Out {	/* -> */
+	struct TALWANI2D_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A positive up  */
+	struct TALWANI2D_A {	/* -A positive up  */
 		bool active;
 	} A;
-	struct D {	/* -D<rho> fixed density to override model files */
+	struct TALWANI2D_D {	/* -D<rho> fixed density to override model files */
 		bool active;
 		double rho;
 	} D;
-	struct F {	/* -F[f|n[<lat>]|v] */
+	struct TALWANI2D_F {	/* -F[f|n[<lat>]|v] */
 		bool active;
 		unsigned int mode;
 		double lat;
 	} F;
-	struct M {	/* -Mh|z  */
+	struct TALWANI2D_M {	/* -Mh|z  */
 		bool active[2];	/* True if km, else m */
 	} M;
-	struct N {	/* Output points with optional obs-z values*/
+	struct TALWANI2D_N {	/* Output points with optional obs-z values*/
 		bool active;
 		char *file;
 	} N;
-	struct T {	/* -T<min/max/inc>[+n] | -T<file> */
+	struct TALWANI2D_T {	/* -T<min/max/inc>[+n] | -T<file> */
 		bool active;
 		struct GMT_ARRAY T;
 	} T;
-	struct Z {	/* Observation level constant */
+	struct TALWANI2D_Z {	/* Observation level constant */
 		bool active;
 		double level;
 		double ymin, ymax;
@@ -87,7 +87,7 @@ struct TALWANI2D_CTRL {
 	} Z;
 };
 
-struct BODY2D {
+struct TALWANI2D_BODY2D {
 	int n;
 	double rho;
 	double *x, *z;
@@ -486,7 +486,7 @@ GMT_LOCAL double talwani2d_get_geoid2d (struct GMT_CTRL *GMT, double y[], double
 	return (N);
 }
 
-GMT_LOCAL double talwani2d_get_one_output (struct GMT_CTRL *GMT, double x_obs, double z_obs, struct BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax, double G0) {
+GMT_LOCAL double talwani2d_get_one_output (struct GMT_CTRL *GMT, double x_obs, double z_obs, struct TALWANI2D_BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax, double G0) {
 	/* Evaluate output at a single observation point (x,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
@@ -523,7 +523,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 	char *uname[2] = {"meter", "km"}, *kind[4] = {"FAA", "VGG", "GEOID", "FAA(2.5-D)"};
 	double *x = NULL, *z = NULL, *in = NULL;
 
-	struct BODY2D *body = NULL;
+	struct TALWANI2D_BODY2D *body = NULL;
 	struct TALWANI2D_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Out = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -592,7 +592,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 	/* Set up cake slice array and pointers */
 
 	n_alloc1 = GMT_CHUNK;
-	body = gmt_M_memory (GMT, NULL, n_alloc1, struct BODY2D);
+	body = gmt_M_memory (GMT, NULL, n_alloc1, struct TALWANI2D_BODY2D);
 	n_bodies = 0;
 	/* Read polygon information from multiple segment file */
 	GMT_Report (API, GMT_MSG_INFORMATION, "All x-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_HOR]]);
@@ -640,7 +640,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 				n = 0;
 				if (n_bodies == n_alloc1) {
 					n_alloc1 <<= 1;
-					body = gmt_M_memory (GMT, body, n_alloc1, struct BODY2D);
+					body = gmt_M_memory (GMT, body, n_alloc1, struct TALWANI2D_BODY2D);
 				}
 				continue;
 			}
@@ -668,7 +668,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 				n = 0;
 				if (n_bodies == n_alloc1) {
 					n_alloc1 <<= 1;
-					body = gmt_M_memory (GMT, body, n_alloc1, struct BODY2D);
+					body = gmt_M_memory (GMT, body, n_alloc1, struct TALWANI2D_BODY2D);
 				}
 			}
 			x[n] = in[GMT_X];	z[n] = in[GMT_Y];
@@ -693,7 +693,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 
 	/* Finish allocation */
 
-	body = gmt_M_memory (GMT, body, n_bodies, struct BODY2D);
+	body = gmt_M_memory (GMT, body, n_bodies, struct TALWANI2D_BODY2D);
 
 	if (n_duplicate) GMT_Report (API, GMT_MSG_WARNING, "Ignored %u duplicate vertices\n", n_duplicate);
 

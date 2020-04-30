@@ -82,43 +82,43 @@
 
 struct GMTMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct Out {	/* = <filename> */
+	struct GMTMATH_Out {	/* = <filename> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A[-]<t_f(t).d>[+e][+w|s] */
+	struct GMTMATH_A {	/* -A[-]<t_f(t).d>[+e][+w|s] */
 		bool active;
 		bool null;
 		unsigned int e_mode;	/* 0 save coefficients, 1 save predictions and residuals */
 		unsigned int w_mode;	/* 0 no weights, 1 = got weights, 2 = got sigmas */
 		char *file;
 	} A;
-	struct C {	/* -C<cols> */
+	struct GMTMATH_C {	/* -C<cols> */
 		bool active;
 		bool *cols;
 	} C;
-	struct E {	/* -E<min_eigenvalue> */
+	struct GMTMATH_E {	/* -E<min_eigenvalue> */
 		bool active;
 		double eigen;
 	} E;
-	struct I {	/* -I */
+	struct GMTMATH_I {	/* -I */
 		bool active;
 	} I;
-	struct L {	/* -L */
+	struct GMTMATH_L {	/* -L */
 		bool active;
 	} L;
-	struct N {	/* -N<n_col>/<t_col> */
+	struct GMTMATH_N {	/* -N<n_col>/<t_col> */
 		bool active;
 		uint64_t ncol, tcol;
 	} N;
-	struct Q {	/* -Q */
+	struct GMTMATH_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S[f|l] */
+	struct GMTMATH_S {	/* -S[f|l] */
 		bool active;
 		int mode;	/* -1 or +1 */
 	} S;
-	struct T {	/* -T[<tmin/tmax/t_inc>[+]] | -T<file> */
+	struct GMTMATH_T {	/* -T[<tmin/tmax/t_inc>[+]] | -T<file> */
 		bool active;
 		bool notime;
 		struct GMT_ARRAY T;

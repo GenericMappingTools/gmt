@@ -33,15 +33,15 @@
 #define THIS_MODULE_OPTIONS "-RVf"
 
 struct GRDCONVERT_CTRL {
-	struct In {
+	struct GRDCONVERT_In {
 		bool active;
 		char *file;
 	} In;
-	struct G {	/* -G<outgrid> */
+	struct GRDCONVERT_G {	/* -G<outgrid> */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N */
+	struct GRDCONVERT_N {	/* -N */
 		bool active;
 	} N;
 };

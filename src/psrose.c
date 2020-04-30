@@ -53,62 +53,62 @@
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A<sector_angle>[+r] */
+	struct PSROSE_A {	/* -A<sector_angle>[+r] */
 		bool active;
 		bool rose;
 		double inc;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct PSROSE_C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D */
+	struct PSROSE_D {	/* -D */
 		bool active;
 	} D;
-	struct E {	/* -Em|[+w]<modefile> */
+	struct PSROSE_E {	/* -Em|[+w]<modefile> */
 		bool active;
 		bool mode;
 		bool mean;
 		char *file;
 	} E;
-	struct F {	/* -F */
+	struct PSROSE_F {	/* -F */
 		bool active;
 	} F;
-	struct G {	/* -G<fill> */
+	struct PSROSE_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct I {	/* -I */
+	struct PSROSE_I {	/* -I */
 		bool active;
 	} I;
-	struct L {	/* -L */
+	struct PSROSE_L {	/* -L */
 		bool active;
 		char *w, *e, *s, *n;
 	} L;
-	struct M {	/* -M[<size>][<modifiers>] */
+	struct PSROSE_M {	/* -M[<size>][<modifiers>] */
 		bool active;
 		struct GMT_SYMBOL S;
 	} M;
-	struct N {	/* -N */
+	struct PSROSE_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q<alpha> */
+	struct PSROSE_Q {	/* -Q<alpha> */
 		bool active;
 		double value;
 	} Q;
-	struct S {	/* -S */
+	struct PSROSE_S {	/* -S */
 		bool active;
 		bool normalize;
 		double scale;	/* Get this via -JX */
 	} S;
-	struct T {	/* -T */
+	struct PSROSE_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W[v]<pen> */
+	struct PSROSE_W {	/* -W[v]<pen> */
 		bool active[2];
 		struct GMT_PEN pen[2];
 	} W;
-	struct Z {	/* -Zu|<scale> */
+	struct PSROSE_Z {	/* -Zu|<scale> */
 		bool active;
 		unsigned int mode;
 		double scale;

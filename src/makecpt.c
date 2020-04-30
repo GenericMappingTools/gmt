@@ -50,70 +50,70 @@ enum makecpt_enum_mode {DO_RANGE = 0,		/* Use actual data range in -T */
 /* Control structure for makecpt */
 
 struct MAKECPT_CTRL {
-	struct Out {	/* -> */
+	struct MAKECPT_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A<transp>[+a] */
+	struct MAKECPT_A {	/* -A<transp>[+a] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} A;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct MAKECPT_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[i|o] */
+	struct MAKECPT_D {	/* -D[i|o] */
 		bool active;
 		unsigned int mode;
 	} D;
-	struct E {	/* -E<nlevels> */
+	struct MAKECPT_E {	/* -E<nlevels> */
 		bool active;
 		unsigned int levels;
 	} E;
-	struct F {	/* -F[r|R|h|c][+c] */
+	struct MAKECPT_F {	/* -F[r|R|h|c][+c] */
 		bool active;
 		bool cat;
 		unsigned int model;
 	} F;
-	struct G {	/* -Glow/high for input CPT truncation */
+	struct MAKECPT_G {	/* -Glow/high for input CPT truncation */
 		bool active;
 		double z_low, z_high;
 	} G;
-	struct H {	/* -H */
+	struct MAKECPT_H {	/* -H */
 		bool active;
 	} H;
-	struct I {	/* -I[z][c] */
+	struct MAKECPT_I {	/* -I[z][c] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct M {	/* -M */
+	struct MAKECPT_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct MAKECPT_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S */
+	struct MAKECPT_S {	/* -S */
 		bool active;
 		bool discrete;
 		unsigned int mode;
 		double scale;
 		double q[2];
 	} S;
-	struct T {	/* -T<min/max[/inc>[+n]]|<file>|<z0,z1,...,zn> */
+	struct MAKECPT_T {	/* -T<min/max[/inc>[+n]]|<file>|<z0,z1,...,zn> */
 		bool active;
 		bool interpolate;
 		struct GMT_ARRAY T;
 	} T;
-	struct Q {	/* -Q[i|o] */
+	struct MAKECPT_Q {	/* -Q[i|o] */
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct W {	/* -W[w] */
+	struct MAKECPT_W {	/* -W[w] */
 		bool active;
 		bool wrap;
 	} W;
-	struct Z {	/* -Z */
+	struct MAKECPT_Z {	/* -Z */
 		bool active;
 	} Z;
 };

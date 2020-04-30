@@ -55,66 +55,66 @@ struct GRAVFFT_CTRL {
 	unsigned int n_par;
 	double *par;
 
-	struct GRVF_In {
+	struct GRAVFFT_In {
 		bool active;
 		unsigned int n_grids;	/* 1 or 2 */
 		char *file[2];
 	} In;
-	struct GRVF_C {	/* -C<zlevel> */
+	struct GRAVFFT_C {	/* -C<zlevel> */
 		bool active;
 		unsigned int n_pt;
 		double theor_inc;
 	} C;
-	struct GRVF_D {	/* -D[<rho>|<rhofile>] */
+	struct GRAVFFT_D {	/* -D[<rho>|<rhofile>] */
 		bool active;
 		bool variable;
 		char *file;
 	} D;
-	struct GRVF_E {	/* -E */
+	struct GRAVFFT_E {	/* -E */
 		bool active;
 		unsigned int n_terms;
 	} E;
-	struct GRVF_F {	/* -F[f[+s]|b|g|e|n|v] */
+	struct GRAVFFT_F {	/* -F[f[+s]|b|g|e|n|v] */
 		bool active;
 		bool slab;
 		bool bouger;
 		unsigned int mode;
 	} F;
-	struct GRVF_G {	/* -G<outfile> */
+	struct GRAVFFT_G {	/* -G<outfile> */
 		bool active;
 		char *file;
 	} G;
-	struct GRVF_I {	/* -I[<scale>|g] */
+	struct GRAVFFT_I {	/* -I[<scale>|g] */
 		bool active;
 		double value;
 	} I;
-	struct GRVF_N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
+	struct GRAVFFT_N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
 		bool active;
 		struct GMT_FFT_INFO *info;
 	} N;
-	struct GRVF_Q {
+	struct GRAVFFT_Q {
 		bool active;
 	} Q;
-	struct GRVF_S {	/* -S<scale> */
+	struct GRAVFFT_S {	/* -S<scale> */
 		bool active;
 	} S;
-	struct GRVF_T {	/* -T<te/rl/rm/rw[/ri>][+m] */
+	struct GRAVFFT_T {	/* -T<te/rl/rm/rw[/ri>][+m] */
 		bool active, moho, approx;
 		double te, rhol, rhom, rhow, rhoi;
 		double rho_cw;		/* crust-water density contrast */
 		double rho_mc;		/* mantle-crust density contrast */
 		double rho_mw;		/* mantle-water density contrast */
 	} T;
-	struct GRVF_W {	/* Water depth/observation level */
+	struct GRAVFFT_W {	/* Water depth/observation level */
 		bool active;
 		double water_depth;	/* Reference water depth [0] */
 	} W;
-	struct GRVF_Z {
+	struct GRAVFFT_Z {
 		bool active;
 		double zm;		/* mean Moho depth (given by user) */
 		double zl;		/* mean depth of swell compensation (user given) */
 	} Z;
-	struct GRVF_misc {	/* -T */
+	struct GRAVFFT_misc {	/* -T */
 		bool coherence;
 		bool give_wavelength;
 		bool give_km;

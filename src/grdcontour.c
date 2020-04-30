@@ -124,7 +124,7 @@ enum grdcontour_contour_type {cont_is_not_closed = 0,	/* Not a closed contour of
 	cont_is_closed_straddles_equator_south = -4,	/* Closed contour crossing equator that encloses the south pole */
 	cont_is_closed_straddles_equator_north = +4};	/* Closed contour crossing equator that encloses the north pole */
 
-struct SAVE {
+struct GRDCONTOUR_SAVE {
 	double *x, *y;
 	double *xp, *yp;
 	double cval;
@@ -654,7 +654,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 
 /* Three sub functions used by GMT_grdcontour */
 
-GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
+GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GRDCONTOUR_SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
 	   We need to do several types of testing here:
@@ -1010,7 +1010,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	struct GMT_CLOCK_IO Clock;
 	struct GMT_DATE_IO Date;
 	struct GMT_CONTOUR_INFO *cont = NULL;
-	struct SAVE *save = NULL;
+	struct GRDCONTOUR_SAVE *save = NULL;
 	struct GMT_GRID *G = NULL, *G_orig = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -1627,10 +1627,10 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 				if (make_plot && cont[c].do_tick && is_closed) {	/* Must store the entire contour for later processing */
 					/* These are original coordinates that have not yet been projected */
 					int extra;
-					if (n_save == n_save_alloc) save = gmt_M_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
+					if (n_save == n_save_alloc) save = gmt_M_malloc (GMT, save, n_save, &n_save_alloc, struct GRDCONTOUR_SAVE);
 					extra = (abs (closed) == 2);	/* Need extra slot to temporarily close half-polygons */
 					n_alloc = 0;
-					gmt_M_memset (&save[n_save], 1, struct SAVE);
+					gmt_M_memset (&save[n_save], 1, struct GRDCONTOUR_SAVE);
 					gmt_M_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, &n_alloc, double);
 					gmt_M_memcpy (save[n_save].x, x, n, double);
 					gmt_M_memcpy (save[n_save].y, y, n, double);
@@ -1703,7 +1703,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (make_plot) PSL_setdash (PSL, NULL, 0.0);
 
 	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
-		save = gmt_M_memory (GMT, save, n_save, struct SAVE);
+		save = gmt_M_memory (GMT, save, n_save, struct GRDCONTOUR_SAVE);
 
 		grdcontour_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.all, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
 		for (i = 0; i < n_save; i++) {

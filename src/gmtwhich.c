@@ -35,16 +35,16 @@
 
 struct GMTWHICH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A */
+	struct GMTWHICH_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C */
+	struct GMTWHICH_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D */
+	struct GMTWHICH_D {	/* -D */
 		bool active;
 	} D;
-	struct G {	/* -G[c|l|u] */
+	struct GMTWHICH_G {	/* -G[c|l|u] */
 		bool active;
 		unsigned int mode;
 	} G;

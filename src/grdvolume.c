@@ -36,31 +36,31 @@
 #define THIS_MODULE_OPTIONS "-RVfho"
 
 struct GRDVOLUME_CTRL {
-	struct In {
+	struct GRDVOLUME_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C */
+	struct GRDVOLUME_C {	/* -C */
 		bool active;
 		bool reverse, reverse_min;
 		double low, high, inc;
 	} C;
-	struct D {	/* -D */
+	struct GRDVOLUME_D {	/* -D */
 		bool active;
 	} D;
-	struct L {	/* -L<base> */
+	struct GRDVOLUME_L {	/* -L<base> */
 		bool active;
 		double value;
 	} L;
-	struct S {	/* -S */
+	struct GRDVOLUME_S {	/* -S */
 		bool active;
 		char unit;
 	} S;
-	struct T {	/* -T[c|z] */
+	struct GRDVOLUME_T {	/* -T[c|z] */
 		bool active;
 		unsigned int mode;
 	} T;
-	struct Z {	/* Z<fact>[/<shift>] */
+	struct GRDVOLUME_Z {	/* Z<fact>[/<shift>] */
 		bool active;
 		double scale, offset;
 	} Z;

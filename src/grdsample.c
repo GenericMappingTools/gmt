@@ -39,15 +39,15 @@
 #define THIS_MODULE_OPTIONS "-RVfnr" GMT_ADD_x_OPT GMT_OPT("FQ")
 
 struct GRDSAMPLE_CTRL {
-	struct In {
+	struct GRDSAMPLE_In {
 		bool active;
 		char *file;
 	} In;
-	struct G {	/* -G<grdfile> */
+	struct GRDSAMPLE_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct T {	/* -T */
+	struct GRDSAMPLE_T {	/* -T */
 		bool active;
 	} T;
 };

@@ -35,11 +35,11 @@
 #define THIS_MODULE_OPTIONS "->V"
 
 struct X2SYS_MERGE_CTRL {
-	struct A {	/* -A */
+	struct X2SYS_MERGE_A {	/* -A */
 		bool active;
 		char *file;
 	} A;
-	struct M {	/* -M */
+	struct X2SYS_MERGE_M {	/* -M */
 		bool active;
 		char *file;
 	} M;

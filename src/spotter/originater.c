@@ -134,45 +134,45 @@ struct HOTSPOT_ORIGINATOR {
 
 struct ORIGINATOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct D {	/* -D<factor */
+	struct ORIGINATER_D {	/* -D<factor */
 		bool active;
 		double value;
 	} D;
-	struct E {	/* -Erotfile[+i] */
+	struct ORIGINATER_E {	/* -Erotfile[+i] */
 		bool active;
 		bool mode;
 		char *file;
 	} E;
-	struct F {	/* -Fhotspotfile[+d] */
+	struct ORIGINATER_F {	/* -Fhotspotfile[+d] */
 		bool active;
 		bool mode;
 		char *file;
 	} F;
-	struct L {	/* -L */
+	struct ORIGINATER_L {	/* -L */
 		bool active;
 		unsigned int mode;
 		bool degree;	/* Report degrees */
 	} L;
-	struct N {	/* -N */
+	struct ORIGINATER_N {	/* -N */
 		bool active;
 		double t_upper;
 	} N;
-	struct Q {	/* -Q<tfix> */
+	struct ORIGINATER_Q {	/* -Q<tfix> */
 		bool active;
 		double t_fix, r_fix;
 	} Q;
-	struct S {	/* -S */
+	struct ORIGINATER_S {	/* -S */
 		bool active;
 		unsigned int n;
 	} S;
-	struct T {	/* -T */
+	struct ORIGINATER_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W<max_dist> */
+	struct ORIGINATER_W {	/* -W<max_dist> */
 		bool active;
 		double dist;
 	} W;
-	struct Z {	/* -Z */
+	struct ORIGINATER_Z {	/* -Z */
 		bool active;
 	} Z;
 };

@@ -106,45 +106,45 @@ struct GMT_IMG_COORD {
 };
 
 struct IMG2GRD_CTRL {
-	struct In {	/* Input file name */
+	struct IMG2GRD_In {	/* Input file name */
 		bool active;
 		char *file;	/* Input file name */
 	} In;
-	struct D {	/* -D[<minlat>/<maxlat>] */
+	struct IMG2GRD_D {	/* -D[<minlat>/<maxlat>] */
 		bool active;
 		double min, max;
 	} D;
-	struct E {	/* -E */
+	struct IMG2GRD_E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* -F */
+	struct IMG2GRD_F {	/* -F */
 		bool active;
 	} F;
-	struct G {	/* -G<output_grdfile> */
+	struct IMG2GRD_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -I<minutes> */
+	struct IMG2GRD_I {	/* -I<minutes> */
 		bool active;
 		double value;
 	} I;
-	struct M {	/* -M */
+	struct IMG2GRD_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N<ave> */
+	struct IMG2GRD_N {	/* -N<ave> */
 		bool active;
 		int value;
 	} N;
-	struct S {	/* -S<scale> */
+	struct IMG2GRD_S {	/* -S<scale> */
 		bool active;
 		unsigned int mode;
 		double value;
 	} S;
-	struct T {	/* -T<type> */
+	struct IMG2GRD_T {	/* -T<type> */
 		bool active;
 		int value;
 	} T;
-	struct W {	/* -W<maxlon> */
+	struct IMG2GRD_W {	/* -W<maxlon> */
 		bool active;
 		double value;
 	} W;

@@ -35,28 +35,28 @@
 #define THIS_MODULE_OPTIONS "-:JRVbdefhiqrs" GMT_OPT("FH")
 
 struct XYZ2GRD_CTRL {
-	struct In {
+	struct XYZ2GRD_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A[f|l|n|m|r|s|u|z] */
+	struct XYZ2GRD_A {	/* -A[f|l|n|m|r|s|u|z] */
 		bool active;
 		char mode;
 	} A;
-	struct D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
+	struct XYZ2GRD_D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
 		char *information;
 	} D;
-	struct E {	/* -E[<nodata>] */
+	struct XYZ2GRD_E {	/* -E[<nodata>] */
 		bool active;
 		bool set;
 		double nodata;
 	} E;
-	struct G {	/* -G<output_grdfile> */
+	struct XYZ2GRD_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct S {	/* -S */
+	struct XYZ2GRD_S {	/* -S */
 		bool active;
 		char *file;
 	} S;

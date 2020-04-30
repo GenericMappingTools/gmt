@@ -68,14 +68,14 @@
 #define SUBPLOT_PLACE_AT_BOTH	3
 
 struct SUBPLOT_CTRL {
-	struct In {	/* begin | end | set */
+	struct SUBPLOT_In {	/* begin | end | set */
 		bool active;
 		bool next;
 		bool no_B;
 		unsigned int mode;	/* SUBPLOT_BEGIN|SUBPLOT_SET|SUBPLOT_END*/
 		int row, col;		/* Current (row,col) subplot */
 	} In;
-	struct A {	/* -A[<letter>|<number>][+c<clearance>][+g<fill>][+j|J<pos>][+o<offset>][+p<pen>][+r|R][+v] */
+	struct SUBPLOT_A {	/* -A[<letter>|<number>][+c<clearance>][+g<fill>][+j|J<pos>][+o<offset>][+p<pen>][+r|R][+v] */
 		bool active;			/* Want to plot subplot tags */
 		char format[GMT_LEN128];	/* Format for plotting tag (or constant string when done via subplot set) */
 		char fill[GMT_LEN64];		/* Color fill for optional rectangle behind the tag [none] */
@@ -90,11 +90,11 @@ struct SUBPLOT_CTRL {
 		double off[2];			/* Offset from placement location [20% of font size] */
 		double clearance[2];		/* Padding around text for rectangle behind the tag [15%] */
 	} A;
-	struct C {	/* -C[side]<clearance>  */
+	struct SUBPLOT_C {	/* -C[side]<clearance>  */
 		bool active;
 		double gap[4];	/* Internal margins (in inches) on the 4 sides [0/0/0/0] */
 	} C;
-	struct F {	/* -F[f|s][<width>/<height>][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d][+w<pen>] */
+	struct SUBPLOT_F {	/* -F[f|s][<width>/<height>][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d][+w<pen>] */
 		bool active;
 		bool lines;
 		bool debug;		/* Draw red faint lines to illustrate the result of space partitioning */
@@ -107,7 +107,7 @@ struct SUBPLOT_CTRL {
 		char pen[GMT_LEN64];	/* Pen outline for the entire figure canvas */
 		char Lpen[GMT_LEN64];	/* Pen to draw midlines */
 	} F;
-	struct S {	/* -S[C|R]<layout> */
+	struct SUBPLOT_S {	/* -S[C|R]<layout> */
 		bool active;
 		bool has_label;		/* True if we want y labels */
 		char axes[4];		/* W|e|w|e|l|r for -SR,  S|s|N|n|b|t for -SC [Default is MAP_FRAME_AXES] */
@@ -119,16 +119,16 @@ struct SUBPLOT_CTRL {
 		unsigned tick;		/* 1 if only l|r or t|b, 0 for both */
 		unsigned parallel;	/* 1 if we want axis parallel annotations */
 	} S[2];
-	struct M {	/* -M<margin> | <xmargin>/<ymargin>  | <wmargin>/<emargin>/<smargin>/<nmargin>  */
+	struct SUBPLOT_M {	/* -M<margin> | <xmargin>/<ymargin>  | <wmargin>/<emargin>/<smargin>/<nmargin>  */
 		bool active;
 		double margin[4];
 	} M;
-	struct N {	/* NrowsxNcolumns (is not used as -N<> but without the option which is just internal) */
+	struct SUBPLOT_N {	/* NrowsxNcolumns (is not used as -N<> but without the option which is just internal) */
 		bool active;
 		unsigned int dim[2];		/* nrows, rcols */
 		unsigned int n_subplots;	/* The product of the two dims */
 	} N;
-	struct T {	/* -T<figuretitle> */
+	struct SUBPLOT_T {	/* -T<figuretitle> */
 		bool active;
 		char *title;	/* Title above the entire set of subplots */
 	} T;
