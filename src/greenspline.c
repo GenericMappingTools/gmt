@@ -106,7 +106,7 @@ struct GREENSPLINE_CTRL {
 		double az;
 		double dir[3];
 	} Q;
-	struct R3 {	/* -Rxmin/xmax[/ymin/ymax[/zmin/zmaz]] | -Ggridfile */
+	struct GREENSPLINE_R3 {	/* -Rxmin/xmax[/ymin/ymax[/zmin/zmaz]] | -Ggridfile */
 		bool active;
 		bool mode;		/* true if settings came from a grid file */
 		unsigned int dimension;	/* 1, 2, or 3 */
