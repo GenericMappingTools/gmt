@@ -122,7 +122,7 @@ static struct MAG_VAR4 {
 } *okabe_mag_var4;
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	C = gmt_M_memory (GMT, NULL, 1, struct GMTGRAVMAG3D_CTRL);
+	struct GMTGRAVMAG3D_CTRL *C = gmt_M_memory (GMT, NULL, 1, struct GMTGRAVMAG3D_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->L.zobs = 0;
