@@ -738,7 +738,7 @@ bool gmtlib_file_is_srtmrequest (struct GMTAPI_CTRL *API, const char *file, unsi
 	return true;
 }
 
-#define GMT_REMOTE_SRTM_POS 14	/* start of =srtm string in file if a srtm list */
+#define GMT_REMOTE_SRTM_POS 15	/* start of =srtm string counting from end in file if a srtm list */
 
 bool gmtlib_file_is_srtmlist (struct GMTAPI_CTRL *API, const char *file) {
 	size_t len = strlen(file);
@@ -762,7 +762,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	 * Uses the srtm_tiles.nc grid on the cache to know if a 1x1 degree has a tile. */
 	int x, lon, lat, iw, ie, is, in, n_tiles = 0;
 	uint64_t node;
-	char srtmlist[PATH_MAX] = {""}, YS, XS, *file = NULL, regtype[2] = {'G', 'P'};
+	char srtmlist[PATH_MAX] = {""}, YS, XS, *file = NULL, datatype[2] = {'L', 'O'}, regtype[2] = {'G', 'P'};
 	FILE *fp = NULL;
 	struct GMT_GRID *SRTM = NULL;
 
@@ -770,7 +770,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	iw = (int)floor (wesn[XLO]);	ie = (int)ceil (wesn[XHI]);
 	is = (int)floor (wesn[YLO]);	in = (int)ceil (wesn[YHI]);
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Isolation mode is baked in */
-		snprintf (srtmlist, PATH_MAX, "%s/=srtm%d%c.000000", API->GMT->parent->gwf_dir, res, regtype[plot_region]);
+		snprintf (srtmlist, PATH_MAX, "%s/=srtm%d%c%c.000000", API->GMT->parent->gwf_dir, res, datatype[ocean], regtype[plot_region]);
 		file = srtmlist;
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to create job file %s\n", file);
@@ -784,7 +784,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 #endif
 		if (API->tmp_dir)			/* Have a recognized temp directory */
 			snprintf (srtmlist, PATH_MAX, "%s/", API->tmp_dir);
-		snprintf (name, GMT_LEN16, "=srtm%d%c.XXXXXX", res, regtype[plot_region]);
+		snprintf (name, GMT_LEN16, "=srtm%d%c%c.XXXXXX", res, datatype[ocean], regtype[plot_region]);
 		strcat (srtmlist, name);
 #ifdef _WIN32
 		if ((file = mktemp (srtmlist)) == NULL) {
@@ -924,7 +924,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	return (strdup (file));
 }
 
-#define GMT_REMOTE_RES_POS 9	/* Position from the end where the SRTM resolution is placed */
+#define GMT_REMOTE_RES_POS 10	/* Position from the end where the SRTM resolution is placed */
 
 struct GMT_GRID *gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, char *file) {
 	/* Get here if file is a =srtm?.xxxxxx file.  Need to do:
