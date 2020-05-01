@@ -29,8 +29,13 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI@<D{,ID)"
-#define THIS_MODULE_NEEDS	"J"
+#define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipqstxy" GMT_OPT("Ec")
+
+/* Note: The NEEDS must be JR.  Although pshistogram can create a region from data, it
+ * does so indirectly by building the histogram and setting the ymin/ymax that way, NOT by
+ * reading y data (which is what a NEEDS of d or r would do).
+ */
 
 struct PSHISTOGRAM_CTRL {
 	struct PSHISTOGRAM_Out {	/* -> */
