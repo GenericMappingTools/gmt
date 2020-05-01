@@ -16766,12 +16766,13 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	printf (" *   const char * %s_module_group (void *API, char *candidate);\n *\n", library);
 	printf (" * All functions are exported by the shared %s library so that gmt can call these\n", library);
 	printf (" * functions by name to learn about the contents of the library.\n */\n\n");
-	printf ("#include \"gmt_dev.h\"\n#include \"gmt_internals.h\"\n\n");
+	printf ("#include \"gmt_dev.h\"\n\n");
 	printf ("/* Sorted array with information for all GMT %s modules */\n", library);
 	printf ("static struct GMT_MODULEINFO modules[] = {\n");
 	for (k = 0; k < n; k++)
 		printf ("\t{%s, %s, %s, %s, %s},\n", M[k].mname, M[k].cname, M[k].component, M[k].purpose, M[k].keys);
-	printf ("\t{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */\n\n");
+	printf ("\t{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */\n");
+	printf ("};\n\n");
 	printf ("/* Pretty print all shared module names and their purposes for gmt --help */\n");
 	printf ("EXTERN_MSC int %s_module_show_all (void *API) {\n", library);
 	printf ("\treturn (GMT_Show_ModuleInfo (API, modules, \"%s\", GMT_MODULE_HELP));\n}\n\n", lib_purpose);
@@ -16803,4 +16804,3 @@ CROAK:	/* We are done or premature return due to error */
 
 	return (error);
 }
-
