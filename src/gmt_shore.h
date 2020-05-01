@@ -36,7 +36,7 @@
 #define DLL_NETCDF
 #endif
 
-#include "netcdf.h"
+#include <netcdf.h>
 
 enum gmt_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
 	GSHHS_MAX_LEVEL			= 4,	/* Highest hierarchical level of coastlines */
