@@ -13814,7 +13814,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			gmt_parse_R_option (GMT, opt_R->arg);
 			API->GMT->hidden.func_level = level;	/* Reset to what it should be */
 			/* Enforce multiple of 1s or 3s in wesn so requested region is in phase with tiles and at least covers the given region.
-			 * When ocean is true we instead round to nearest 15s since earth_relief_15s will be used */
+			 * When ocean is true we instead round to nearest 15s since earth_relief_15s will be used.
+			 * the GMT_CONV8_LIMIT is there to ensure we dont round an almost exact x/dx */
 			k = (ocean) ? 0 : srtm_res;	/* Select 15s, 1s, or 3s increments */
 			GMT->common.R.wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / res[k]) + GMT_CONV8_LIMIT) * res[k];
 			GMT->common.R.wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / res[k]) - GMT_CONV8_LIMIT) * res[k];
