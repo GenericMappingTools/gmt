@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
+%%Title: GMT v6.1.0_4575a83_2020.05.01 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 27 12:16:19 2019
+%%CreationDate: Fri May  1 10:52:39 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -657,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -720,6 +722,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -731,8 +734,8 @@ N 0 600 M -83 0 D S
 N 0 1100 M -83 0 D S
 N 0 1600 M -83 0 D S
 N 0 2100 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (4.0) sw mx
@@ -817,8 +820,8 @@ N 1750 0 M 0 -83 D S
 N 1250 0 M 0 -83 D S
 N 750 0 M 0 -83 D S
 N 250 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 (3.0) sh mx
 (3.5) sh mx
 (4.0) sh mx
@@ -994,9 +997,9 @@ clipsave
 -2400 0 D
 P
 PSL_clip N
-1174 -2 M
--1 2 D
--700 2400 D
+1175 -2 M
+0 2 D
+-708 2400 D
 -1 2 D S
 PSL_cliprestore
 %%EndObject
@@ -1045,6 +1048,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -1056,8 +1060,8 @@ N 0 600 M -83 0 D S
 N 0 1100 M -83 0 D S
 N 0 1600 M -83 0 D S
 N 0 2100 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (4.0) sw mx
@@ -1301,8 +1305,8 @@ clipsave
 P
 PSL_clip N
 1014 -1 M
-0 1 D
--358 2400 D
+-1 1 D
+-356 2400 D
 0 1 D S
 PSL_cliprestore
 %%EndObject
@@ -1351,6 +1355,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -1362,8 +1367,8 @@ N 0 600 M -83 0 D S
 N 0 1100 M -83 0 D S
 N 0 1600 M -83 0 D S
 N 0 2100 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (4.0) sw mx
@@ -1606,9 +1611,9 @@ clipsave
 -2400 0 D
 P
 PSL_clip N
-1005 -1 M
+1006 -1 M
 0 1 D
--337 2400 D
+-343 2400 D
 0 1 D S
 PSL_cliprestore
 %%EndObject
@@ -1657,6 +1662,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -1668,8 +1674,8 @@ N 0 600 M -83 0 D S
 N 0 1100 M -83 0 D S
 N 0 1600 M -83 0 D S
 N 0 2100 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (4.0) sw mx
@@ -1785,8 +1791,8 @@ N 1750 0 M 0 83 D S
 N 1250 0 M 0 83 D S
 N 750 0 M 0 83 D S
 N 250 0 M 0 83 D S
-/PSL_AH0 0
 /MM {M} def
+/PSL_AH0 0
 (3.0) sh mx
 (3.5) sh mx
 (4.0) sh mx
@@ -1828,7 +1834,7 @@ N 50 0 M 0 42 D S
 0 -2400 T
 0 setlinecap
 /PSL_H_y PSL_L_y PSL_LH add 233 add def
-1200 2400 PSL_H_y add M
+1200 2400 PSL_H_y add PSL_slant_y add M
 400 F0
 (L1) bc Z
 clipsave
@@ -1936,15 +1942,15 @@ clipsave
 -2400 0 D
 P
 PSL_clip N
-2400 2245 M
--300 -202 D
--300 -202 D
--300 -203 D
--300 -202 D
--300 -203 D
--300 -202 D
--300 -202 D
--300 -203 D
+2400 2273 M
+-300 -208 D
+-300 -208 D
+-300 -207 D
+-300 -208 D
+-300 -208 D
+-300 -208 D
+-300 -208 D
+-300 -208 D
 S
 PSL_cliprestore
 %%EndObject
@@ -1993,6 +1999,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -2068,8 +2075,8 @@ N 1750 0 M 0 -83 D S
 N 1250 0 M 0 -83 D S
 N 750 0 M 0 -83 D S
 N 250 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (3.0) sh mx
@@ -2298,6 +2305,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -2582,6 +2590,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -2866,6 +2875,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -2972,8 +2982,8 @@ N 1750 0 M 0 83 D S
 N 1250 0 M 0 83 D S
 N 750 0 M 0 83 D S
 N 250 0 M 0 83 D S
-/PSL_AH0 0
 /MM {M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (3.0) sh mx
@@ -3017,7 +3027,7 @@ N 50 0 M 0 42 D S
 0 -2400 T
 0 setlinecap
 /PSL_H_y PSL_L_y PSL_LH add 233 add def
-1200 2400 PSL_H_y add M
+1200 2400 PSL_H_y add PSL_slant_y add M
 400 F0
 (L2) bc Z
 clipsave
@@ -3198,6 +3208,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -3273,8 +3284,8 @@ N 1750 0 M 0 -83 D S
 N 1250 0 M 0 -83 D S
 N 750 0 M 0 -83 D S
 N 250 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (3.0) sh mx
@@ -3503,6 +3514,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -3736,9 +3748,9 @@ clipsave
 -2400 0 D
 P
 PSL_clip N
-1068 -2 M
+1070 -2 M
 0 2 D
--467 2400 D
+-476 2400 D
 0 2 D S
 PSL_cliprestore
 %%EndObject
@@ -3787,6 +3799,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -4020,9 +4033,9 @@ clipsave
 -2400 0 D
 P
 PSL_clip N
-1068 -2 M
+1070 -2 M
 0 2 D
--467 2400 D
+-475 2400 D
 0 2 D S
 PSL_cliprestore
 %%EndObject
@@ -4071,6 +4084,7 @@ S
 2400 2100 M
 -2400 0 D
 S
+/PSL_slant_y 0 def
 2 setlinecap
 25 W
 N 0 2400 M 0 -2400 D S
@@ -4177,8 +4191,8 @@ N 1750 0 M 0 83 D S
 N 1250 0 M 0 83 D S
 N 750 0 M 0 83 D S
 N 250 0 M 0 83 D S
-/PSL_AH0 0
 /MM {M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (3.0) sh mx
@@ -4222,7 +4236,7 @@ N 50 0 M 0 42 D S
 0 -2400 T
 0 setlinecap
 /PSL_H_y PSL_L_y PSL_LH add 233 add def
-1200 2400 PSL_H_y add M
+1200 2400 PSL_H_y add PSL_slant_y add M
 400 F0
 (LMS) bc Z
 clipsave
@@ -4330,9 +4344,9 @@ clipsave
 -2400 0 D
 P
 PSL_clip N
-1085 -2 M
+1086 -2 M
 -1 2 D
--598 2400 D
+-600 2400 D
 -1 2 D S
 PSL_cliprestore
 %%EndObject
@@ -4420,7 +4434,8 @@ O0
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
