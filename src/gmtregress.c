@@ -537,6 +537,7 @@ GMT_LOCAL void gmtregress_ones (double *x, uint64_t n) {
 
 GMT_LOCAL void gmtregress_get_correlation (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par) {
 	/* standard r = s_xy / (s_x * s_y), using the weighted expressions for these terms.
+	 * Currently only set up to do standard y on x only (REGRESS_Y).
 	 */
 
 	uint64_t k;
@@ -556,7 +557,7 @@ GMT_LOCAL void gmtregress_get_correlation (struct GMT_CTRL *GMT, double *X, doub
 
 GMT_LOCAL void gmtregress_get_coeffR (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, unsigned int regression, double *par) {
 	/* Compute coefficient of determination, R ( = r^2 for LSY Pearsonian correlation).
-	 * Currently only set up to do standard y on x (weights on y) only.
+	 * Currently only set up to do standard y on x (weights on y) only (REGRESS_Y).
 	 * Compute both coefficient of determination (R) and the correlation coefficient (r).
 	 *   R = 1 - SSR/SST, with
 	 *   SSR is the sum of squared residuals: sum (y_i - y(x_i))^2
@@ -831,7 +832,7 @@ GMT_LOCAL double gmtregress_regress1D (struct GMT_CTRL *GMT, double *x, double *
 			if (tpar[GMTREGRESS_MISFT] < par[GMTREGRESS_MISFT])
 				gmt_M_memcpy (par, tpar, GMTREGRESS_NPAR, double);	/* Update best fit so far without stepping on the means and sigmas */
 		}
-		if (par[GMTREGRESS_MISFT] <= last_E && (f = (last_E - par[GMTREGRESS_MISFT])/par[GMTREGRESS_MISFT]) < GMT_CONV15_LIMIT)
+		if (d_a < 0.1 && par[GMTREGRESS_MISFT] <= last_E && (f = (last_E - par[GMTREGRESS_MISFT])/par[GMTREGRESS_MISFT]) < GMT_CONV15_LIMIT)
 			done = true;	/* Change is tiny so we are done */
 		else {	/* Gradually zoom in on the angles with smallest misfit but allow some slack */
 			a_min = MAX (-90.0, par[GMTREGRESS_ANGLE] - 0.25 * r_a);	/* Get a range that is ~-/+ 25% of previous range */
@@ -946,8 +947,11 @@ GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in,
 
 	uint64_t k;
 	unsigned int norm = in_norm;
+	unsigned int col, first_col;
 	bool flipped, reweighted_ls = false;
+	bool made[2] = {false, false};
 	double scale = 1.0, *x = NULL, *y = NULL, *z = NULL, *ww[3] = {NULL, NULL, NULL};
+	double *www[3] = {NULL, NULL, NULL};
 
 	if (in_norm == GMTREGRESS_NORM_RLS) {	/* Reweighted Least Squares means first LMS, then remove outliers, then L2 for final result */
 		norm = GMTREGRESS_NORM_LMS;
@@ -1023,9 +1027,7 @@ GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in,
 		}
 	}
 	if (reweighted_ls) {	/* Must identify outliers, give those points zero weight and redo the regression, but pass back the initial RLS z-scores */
-		unsigned int col, first_col;
-		bool made[2] = {false, false};
-		double w_k, *www[3] = {NULL, NULL, NULL};
+		double w_k;
 		/* If there are no weights then we must make unitary weights so we can change some weights to zero */
 		www[GMT_Z] = ww[GMT_Z];	/* Pass correlations as is, present or not */
 		first_col = (regression == GMTREGRESS_Y) ? GMT_Y : GMT_X;	/* Y-regression has errors in y, ortho may have x,y, weights for x-regression was flipped to y-regression */
@@ -1044,12 +1046,13 @@ GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in,
 			if (www[GMT_Y]) www[GMT_Y][k] *= w_k;
 		}
 		(void) gmtregress_do_regression (GMT, x_in, y_in, www, n, regression, GMTREGRESS_NORM_L2, par, 1);
-		for (col = first_col; col <= GMT_Y; col++)	/* Free any arrays we allocated */
-			if (made[col]) gmt_M_free (GMT, www[col]);
 	}
 	gmtregress_get_correlation (GMT, x_in, y_in, w, n, par);	/* Evaluate r */
 	gmtregress_get_coeffR (GMT, x_in, y_in, w, n, regression, par);	/* Evaluate R */
-
+	if (reweighted_ls) {	/* Free weights */
+		for (col = first_col; col <= GMT_Y; col++)	/* Free any arrays we allocated */
+			if (made[col]) gmt_M_free (GMT, www[col]);
+	}
 	return (z);	/* Return those z-scores, calling unit must free this array when done */
 }
 
@@ -1238,8 +1241,12 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 				}
 				else {
 					/* Make segment header with the findings for best regression */
-					snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g R: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
-						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_R]);
+					if (Ctrl->E.mode != GMTREGRESS_Y)	/* Can include Pearsonian orrelation and R */
+						snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g R: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
+							par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_R]);
+					else
+							snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
+						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC]);
 					GMT_Report (API, GMT_MSG_INFORMATION, "%s\n", buffer);	/* Report results if verbose */
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
 
