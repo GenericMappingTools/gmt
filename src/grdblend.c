@@ -191,7 +191,7 @@ GMT_LOCAL bool grdblend_overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INF
 	return false;
 }
 
-GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode) {
+GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode, bool delayed, struct GMT_GRID *Grid) {
 	int type, status, not_supported = 0;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
 	bool srtm_job = false, common_inc = true, common_reg = true;
@@ -199,7 +199,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	struct GMT_GRID_HEADER *h = *h_ptr;	/* Input header may be NULL or preset */
 	struct GMT_GRID_HIDDEN *GH = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
-	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ] = {""};
+	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ] = {""}, res[4] = {""};
 	static char *V_level = "qntcvld";
 	char Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""};
 	double wesn[4], sub = 0.0;
@@ -286,6 +286,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 
 	B = gmt_M_memory (GMT, NULL, n_files, struct GRDBLEND_INFO);
 	wesn[XLO] = wesn[YLO] = DBL_MAX;	wesn[XHI] = wesn[YHI] = -DBL_MAX;
+	if (!delayed) sprintf (res, "-r%c", (Grid->header->registration == GMT_GRID_PIXEL_REG) ? 'p' : 'g');	/* We know the required registration up front */
 
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 
@@ -419,7 +420,8 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 					sprintf (buffer, "%s/grdblend_resampled_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
 				else	/* Must dump it in current directory */
 					sprintf (buffer, "grdblend_resampled_%d_%d.nc", (int)getpid(), n);
-				snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, h->registration ? "-r" : "",
+				//snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, h->registration ? "-r" : "",
+				snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, res,
 				         Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				strcat (cmd, " --GMT_HISTORY=false");
@@ -743,13 +745,27 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL bool grdblend_got_plot_domain (struct GMTAPI_CTRL *API, const char *file, bool *ocean) {
+	/* If given an =srtm?? list then we return true if the region given when the list was assembled
+	 * was a plot domain (give to a PS producer) or a grid domain (given to a grid producer). */
+	char *c = NULL;
+	*ocean = false;
+	if (file == NULL || file[0] == '\0') return false;	/* Sanity check */
+	if ((c = strstr (file, "=srtm")) && strlen (c) > 7 && strchr ("13", c[5]) && c[7] == 'P') {
+		GMT_Report (API, GMT_MSG_DEBUG, "Got SRTM list determined from a plot region\n");
+		if (c[6] == 'O') *ocean = true;
+		return true;
+	}
+	return false;
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final, out_case, zmode;
 	int status, pcol, err, error;
-	bool reformat, wrap_x, write_all_at_once = false, first_grid, delayed = true;
+	bool reformat, wrap_x, write_all_at_once = false, first_grid, delayed = true, ocean = false;
 
 	uint64_t ij, n_fill, n_tot;
 	double wt_x, w, wt;
@@ -794,14 +810,25 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) {	/* Set output grid via -R -I [-r] */
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
+		double *region = NULL, wesn[4];
+		if (Ctrl->In.n == 1 && grdblend_got_plot_domain (API, Ctrl->In.file[0], &ocean)) {	/* Must adjust -R to be exact multiple of desired grid inc */
+			double inc15[2] = {15.0 / 3600.0, 15.0/ 3600.0};
+			double *inc = (ocean) ? inc15 : GMT->common.R.inc;	/* Pointer to the grid increment */
+			wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / inc[GMT_X]) + GMT_CONV8_LIMIT) * inc[GMT_X];
+			wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / inc[GMT_X]) - GMT_CONV8_LIMIT) * inc[GMT_X];
+			wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / inc[GMT_Y]) + GMT_CONV8_LIMIT) * inc[GMT_Y];
+			wesn[YHI] = ceil  ((GMT->common.R.wesn[YHI] / inc[GMT_Y]) - GMT_CONV8_LIMIT) * inc[GMT_Y];
+			region = wesn;	/* Use this (possibly slightly adjusted) region */
+		}
+		/* Here, region is either pointing to specific entries or is NULL, meaning we default to given -R */
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, region, NULL,
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL)
 				Return (API->error);
 		h_region = Grid->header;
 		delayed = false;	/* Was able to create the grid from command line options */
 	}
 
-	status = grdblend_init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &h_region, &blend, &zmode);
+	status = grdblend_init_blend_job (GMT, Ctrl->In.file, Ctrl->In.n, &h_region, &blend, &zmode, delayed, Grid);
 
 	if (Ctrl->In.n <= 1 && GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
@@ -967,6 +994,8 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 				n_fill++;						/* One more cell filled */
 				if (z[col] < Grid->header->z_min) Grid->header->z_min = z[col];	/* Update the extrema for output grid */
 				if (z[col] > Grid->header->z_max) Grid->header->z_max = z[col];
+                if (gmt_M_is_zero (z[col]))
+                    m = 1;
 			}
 			else			/* No grids covered this node, defaults to the no_data value */
 				z[col] = no_data_f;
