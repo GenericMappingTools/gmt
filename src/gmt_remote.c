@@ -72,7 +72,7 @@ char *file_to_delete_if_ctrl_C;
 #endif
 
 static char *all_grid_files[GMT_N_DATASETS]= {
-#include <gmt_datasets.h>
+#include "gmt_datasets.h"
 };
 
 GMT_LOCAL void gmtremote_delete_file_then_exit (int sig_no) {
@@ -474,7 +474,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD && (gmt_M_file_is_remotedata (file_name) || gmt_M_file_is_cache (file_name) || gmt_M_file_is_url (file_name))) {  /* Not allowed to use remote copying */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated\n");
-		return 0; 
+		return 0;
 	}
 	if (GMT->current.io.internet_error) return 0;   			/* Not able to use remote copying in this session */
 
