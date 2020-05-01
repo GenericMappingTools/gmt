@@ -2738,6 +2738,7 @@ GMT_LOCAL void gmtio_build_text_from_ogr (struct GMT_CTRL *GMT, struct GMT_DATAS
 		switch (GMT->common.a.col[col]) {
 			case GMT_IS_D:	/* Format -D<distance> */
 			case GMT_IS_G:	/* Format -G<fill> */
+			case GMT_IS_L:  /* Format -L<label> */
 			case GMT_IS_I:	/* Format -I<ID> */
 			case GMT_IS_T:	/* Format -T<text> */
 			case GMT_IS_W:	/* Format -W<pen> */
