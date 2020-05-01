@@ -832,8 +832,8 @@ GMT_LOCAL double gmtregress_regress1D (struct GMT_CTRL *GMT, double *x, double *
 			if (tpar[GMTREGRESS_MISFT] < par[GMTREGRESS_MISFT])
 				gmt_M_memcpy (par, tpar, GMTREGRESS_NPAR, double);	/* Update best fit so far without stepping on the means and sigmas */
 		}
-		if (d_a < 0.1 && par[GMTREGRESS_MISFT] <= last_E && (f = (last_E - par[GMTREGRESS_MISFT])/par[GMTREGRESS_MISFT]) < GMT_CONV15_LIMIT)
-			done = true;	/* Change is tiny so we are done */
+		if (d_a < 0.05 && par[GMTREGRESS_MISFT] <= last_E && (f = (last_E - par[GMTREGRESS_MISFT])/par[GMTREGRESS_MISFT]) < GMT_CONV15_LIMIT)
+			done = true;	/* Change is tiny so we are done, or d_a is too big to make a decision for yet */
 		else {	/* Gradually zoom in on the angles with smallest misfit but allow some slack */
 			a_min = MAX (-90.0, par[GMTREGRESS_ANGLE] - 0.25 * r_a);	/* Get a range that is ~-/+ 25% of previous range */
 			a_max = MIN (+90.0, par[GMTREGRESS_ANGLE] + 0.25 * r_a);	/* Get a range that is ~-/+ 25% of previous range */
@@ -1047,8 +1047,10 @@ GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in,
 		}
 		(void) gmtregress_do_regression (GMT, x_in, y_in, www, n, regression, GMTREGRESS_NORM_L2, par, 1);
 	}
-	gmtregress_get_correlation (GMT, x_in, y_in, w, n, par);	/* Evaluate r */
-	gmtregress_get_coeffR (GMT, x_in, y_in, w, n, regression, par);	/* Evaluate R */
+	if (regression == GMTREGRESS_Y) {	/* Can only do this for standard regression */
+		gmtregress_get_correlation (GMT, x_in, y_in, w, n, par);	/* Evaluate r */
+		gmtregress_get_coeffR (GMT, x_in, y_in, w, n, regression, par);	/* Evaluate R */
+	}
 	if (reweighted_ls) {	/* Free weights */
 		for (col = first_col; col <= GMT_Y; col++)	/* Free any arrays we allocated */
 			if (made[col]) gmt_M_free (GMT, www[col]);
