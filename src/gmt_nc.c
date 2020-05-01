@@ -62,7 +62,7 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
-#include "netcdf.h"
+#include <netcdf.h>
 
 /* Declaration modifier for netcdf DLL support
  * annoying: why can't netcdf.h do this on its own? */
