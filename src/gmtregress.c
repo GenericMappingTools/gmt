@@ -1243,7 +1243,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 				}
 				else {
 					/* Make segment header with the findings for best regression */
-					if (Ctrl->E.mode != GMTREGRESS_Y)	/* Can include Pearsonian orrelation and R */
+					if (Ctrl->E.mode == GMTREGRESS_Y)	/* Can include Pearsonian orrelation and R */
 						snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g R: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
 							par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_R]);
 					else
