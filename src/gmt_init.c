@@ -13796,7 +13796,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (gmtlib_file_is_srtmrequest (API, opt->arg, &srtm_res, &ocean)) {
 			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
 			char *list = NULL;
-			double sgn, res[4] = {0.0, 1.0/3600.0, 0.0, 3.0/3600.0};	/* Only access 1 or 3 here */
+			double res[4] = {0.0, 1.0/3600.0, 0.0, 3.0/3600.0};	/* Only access 1 or 3 here */
 			struct GMT_OPTION *opt_J = GMT_Find_Option (API, 'J', *options);
 			opt_R = GMT_Find_Option (API, 'R', *options);
 			if (opt_R == NULL) {
@@ -13812,17 +13812,21 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
 			gmt_parse_R_option (GMT, opt_R->arg);
 			API->GMT->hidden.func_level = level;	/* Reset to what it should be */
-			/* Enforce multiple of 1s or 3s in wesn so region is in phase with tiles */
-			sgn = (GMT->common.R.wesn[XLO] < 0.0) ? -1.0 : +1.0;
-			GMT->common.R.wesn[XLO] = sgn * ceil (fabs (GMT->common.R.wesn[XLO]) / res[srtm_res]) * res[srtm_res];
-			sgn = (GMT->common.R.wesn[XHI] < 0.0) ? -1.0 : +1.0;
-			GMT->common.R.wesn[XHI] = sgn * ceil  (fabs (GMT->common.R.wesn[XHI]) / res[srtm_res]) * res[srtm_res];
-			sgn = (GMT->common.R.wesn[YLO] < 0.0) ? -1.0 : +1.0;
-			GMT->common.R.wesn[YLO] = sgn * ceil (fabs (GMT->common.R.wesn[YLO]) / res[srtm_res]) * res[srtm_res];
-			sgn = (GMT->common.R.wesn[YHI] < 0.0) ? -1.0 : +1.0;
-			GMT->common.R.wesn[YHI] = sgn * ceil  (fabs (GMT->common.R.wesn[YHI]) / res[srtm_res]) * res[srtm_res];
+			/* Enforce multiple of 1s or 3s in wesn so requested region is in phase with tiles and at least covers the given region  */
+//			sgn = (GMT->common.R.wesn[XLO] < 0.0) ? -1.0 : +1.0;
+//			GMT->common.R.wesn[XLO] = sgn * ceil (fabs (GMT->common.R.wesn[XLO]) / res[srtm_res]) * res[srtm_res];
+//			sgn = (GMT->common.R.wesn[XHI] < 0.0) ? -1.0 : +1.0;
+//			GMT->common.R.wesn[XHI] = sgn * ceil  (fabs (GMT->common.R.wesn[XHI]) / res[srtm_res]) * res[srtm_res];
+//			sgn = (GMT->common.R.wesn[YLO] < 0.0) ? -1.0 : +1.0;
+//			GMT->common.R.wesn[YLO] = sgn * ceil (fabs (GMT->common.R.wesn[YLO]) / res[srtm_res]) * res[srtm_res];
+//			sgn = (GMT->common.R.wesn[YHI] < 0.0) ? -1.0 : +1.0;
+//			GMT->common.R.wesn[YHI] = sgn * ceil  (fabs (GMT->common.R.wesn[YHI]) / res[srtm_res]) * res[srtm_res];
+			GMT->common.R.wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / res[srtm_res]) + GMT_CONV8_LIMIT) * res[srtm_res];
+			GMT->common.R.wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / res[srtm_res]) - GMT_CONV8_LIMIT) * res[srtm_res];
+			GMT->common.R.wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / res[srtm_res]) + GMT_CONV8_LIMIT) * res[srtm_res];
+			GMT->common.R.wesn[YHI] = ceil  ((GMT->common.R.wesn[YHI] / res[srtm_res]) - GMT_CONV8_LIMIT) * res[srtm_res];
 			/* Get a file with a list of all needed srtm tiles */
-			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res, ocean);
+			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res, ocean, GMT->current.ps.active);
 			/* Replace the @[earth|srtm]_relief_0[1|3s file name with this local list */
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;

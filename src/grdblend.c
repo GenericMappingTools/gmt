@@ -743,6 +743,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL bool grdblend_got_plot_domain (struct GMTAPI_CTRL *API, const char *file) {
+	/* If given an =srtm?? list then we return true if the region given when the list was assembled
+	 * was a plot domain (give to a PS producer) or a grid domain (given to a grid producer). */
+	char *c = NULL;
+	if (file == NULL || file[0] == '\0') return false;	/* Sanity check */
+	if ((c = strstr (file, "=srtm")) && strlen (c) > 6 && strchr ("13", c[5]) && c[6] == 'P') {
+		GMT_Report (API, GMT_MSG_DEBUG, "Got SRTM list determined from a plot region\n");
+		return true;
+	}
+	return false;
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -794,7 +806,17 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) {	/* Set output grid via -R -I [-r] */
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
+		double *region = NULL, wesn[4];
+		if (Ctrl->In.n == 1 && grdblend_got_plot_domain (API, Ctrl->In.file[0])) {	/* Must adjust -R to be exact multiple of desired grid inc */
+			double *inc = GMT->common.R.inc;	/* Pointer to the grid increment */
+			wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / inc[GMT_X]) + GMT_CONV8_LIMIT) * inc[GMT_X];
+			wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / inc[GMT_X]) - GMT_CONV8_LIMIT) * inc[GMT_X];
+			wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / inc[GMT_Y]) + GMT_CONV8_LIMIT) * inc[GMT_Y];
+			wesn[YHI] = ceil  ((GMT->common.R.wesn[YHI] / inc[GMT_Y]) - GMT_CONV8_LIMIT) * inc[GMT_Y];
+			region = wesn;	/* Use this (possibly slightly adjusted) region */
+		}
+		/* Here, region is either pointing to specific entries or is NULL, meaning we default to given -R */
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, region, NULL,
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL)
 				Return (API->error);
 		h_region = Grid->header;
@@ -967,6 +989,8 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 				n_fill++;						/* One more cell filled */
 				if (z[col] < Grid->header->z_min) Grid->header->z_min = z[col];	/* Update the extrema for output grid */
 				if (z[col] > Grid->header->z_max) Grid->header->z_max = z[col];
+                if (gmt_M_is_zero (z[col]))
+                    m = 1;
 			}
 			else			/* No grids covered this node, defaults to the no_data value */
 				z[col] = no_data_f;
