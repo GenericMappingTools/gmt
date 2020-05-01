@@ -2257,7 +2257,9 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 			snprintf (format, GMT_LEN256, "w reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[XLO], val);
-			wesn[XLO] = val;
+			//wesn[XLO] = val;
+			wesn[XLO] = val - header->inc[GMT_X];
+			if (wesn[XLO] < header->wesn[XLO]) val += header->inc[GMT_X];
 		}
 
 		val = header->wesn[XLO] + lrint ((wesn[XHI] - header->wesn[XLO]) * HH->r_inc[GMT_X]) * header->inc[GMT_X];
@@ -2269,7 +2271,9 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 			snprintf (format, GMT_LEN256, "e reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[XHI], val);
-			wesn[XHI] = val;
+			//wesn[XHI] = val;
+			wesn[XHI] = val + header->inc[GMT_X];
+			if (wesn[XHI] > header->wesn[XHI]) val -= header->inc[GMT_X];
 		}
 	}
 
@@ -2283,7 +2287,9 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		snprintf (format, GMT_LEN256, "s reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[YLO], val);
-		wesn[YLO] = val;
+		//wesn[YLO] = val;
+		wesn[YLO] = val - header->inc[GMT_Y];
+		if (wesn[YLO] < header->wesn[YLO]) val += header->inc[GMT_Y];
 	}
 
 	val = header->wesn[YLO] + lrint ((wesn[YHI] - header->wesn[YLO]) * HH->r_inc[GMT_Y]) * header->inc[GMT_Y];
@@ -2293,7 +2299,9 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		snprintf (format, GMT_LEN256, "n reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[YHI], val);
-		wesn[YHI] = val;
+		//wesn[YHI] = val;
+		wesn[YHI] = val + header->inc[GMT_Y];
+		if (wesn[YHI] > header->wesn[YHI]) val -= header->inc[GMT_Y];
 	}
 	return (GMT_NOERROR);
 }
