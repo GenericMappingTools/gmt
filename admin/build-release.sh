@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
+#
 # Script that builds a GMT release and makes the compressed tarballs.
-# If run under macOS it also builds the macOS Bundle
+# If run under macOS it also builds the macOS Bundle.
+#
 # Requirements in addition to libraries and tools to build GMT:
 #	1) pngquant for squeezing PNG files down in size
 #	2) GMT_GSHHG_SOURCE and GMT_DCW_SOURCE environmental parameters set
 #	3) A ghostscript version we can include in the macOS bundle [MacPort]
+#   4) Version 1.* of build-sphinx
+#   5) grealpath (package coreutils)
+#   6) GNU tar (package gnutar)
 
 reset_config() {
 	rm -f ${TOPDIR}/cmake/ConfigUser.cmake
@@ -54,10 +59,15 @@ if [ "X${GMT_DCW_SOURCE}" = "X" ]; then
 	exit 1
 fi
 
+if [ $(egrep -c '^set \(GMT_PUBLIC_RELEASE TRUE\)' cmake/ConfigDefault.cmake) -eq 0 ]; then
+	echo "build-release.sh: Need to set GMT_PUBLIC_RELEASE to TRUE in cmake/ConfigDefault.cmake" >&2
+	exit 1
+fi
+
 S_ver=$(sphinx-build --version | awk '{print substr($2,1,1)}')
 if [ $S_ver -ne 1 ]; then
 	echo "build-release.sh: Need Sphinx version 1 to build release" >&2
-	exit 1
+#	exit 1
 fi
 
 G_ver=$(gs --version)
