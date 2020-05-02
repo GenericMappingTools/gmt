@@ -382,7 +382,7 @@ GMT_LOCAL void grd2kml_halve_dimensions (double *inc, double *step) {
 
 GMT_LOCAL unsigned int grd2kml_max_level (struct GMT_CTRL *GMT, bool global, struct GMT_GRID_HEADER *H, unsigned int size, unsigned int extra) {
 	unsigned int level = 0;
-	if (global) {;
+	if (global) {
 		unsigned int n = 1, f = 1, go = 1;
 		double inc = 1.0, step = 360, range;
 		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Level = %2.2d tile size = %gd grid inc = %gm n_tiles = %d\n", level, step, 60*inc, n);
