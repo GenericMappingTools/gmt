@@ -313,6 +313,7 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_DATA_RANGE data_range[2][GMT_MAX_RANGES];		/* One or more ranges for input or output times */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
+	double *nc_xarray, *nc_yarray;	/* For grids with variable x,y arrays */
 	/* The remainder are just pointers to memory allocated elsewhere */
 	int *varid;			/* Array of variable IDs (netCDF only) */
 	double *scale_factor;		/* Array of scale factors (netCDF only) */

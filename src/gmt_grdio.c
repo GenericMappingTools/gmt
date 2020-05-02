@@ -1573,6 +1573,7 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 	 */
 
 	unsigned int error = 0;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	if (!strcmp (GMT->init.module_name, "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
 
@@ -1588,9 +1589,11 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 			error++;
 			break;
 		case 1:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR,
+			if (HH->var_spacing[GMT_X] == 0) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR,
 			            "(x_max-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-			error++;
+				error++;
+			}
 		default:
 			/* Everything is OK */
 			break;
@@ -1606,9 +1609,11 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 			error++;
 			break;
 		case 1:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR,
+			if (HH->var_spacing[GMT_Y] == 0) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR,
 			            "(y_max-y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-			error++;
+				error++;
+			}
 		default:
 			/* Everything is OK */
 			break;

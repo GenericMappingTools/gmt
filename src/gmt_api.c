@@ -5137,8 +5137,18 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			break;
 	}
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Also allocate and initialize the x and y vectors unless already present  */
-		if (G_obj->x == NULL) G_obj->x = gmtapi_grid_coord (API, GMT_X, G_obj);	/* Get array of x coordinates */
-		if (G_obj->y == NULL) G_obj->y = gmtapi_grid_coord (API, GMT_Y, G_obj);	/* Get array of y coordinates */
+		if (G_obj->x == NULL) {
+			if (GMT->current.io.nc_xarray)	/* Got variable x-array and asked to used this instead */
+				G_obj->x = GMT->current.io.nc_xarray, GMT->current.io.nc_xarray = NULL;
+			else
+				G_obj->x = gmtapi_grid_coord (API, GMT_X, G_obj);	/* Get array of x coordinates */
+		}
+		if (G_obj->y == NULL) {
+			if (GMT->current.io.nc_yarray)	/* Got variable y-array and asked to used this instead */
+				G_obj->y = GMT->current.io.nc_yarray, GMT->current.io.nc_yarray = NULL;
+			else
+				G_obj->y = gmtapi_grid_coord (API, GMT_Y, G_obj);	/* Get array of y coordinates */
+		}
 	}
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */

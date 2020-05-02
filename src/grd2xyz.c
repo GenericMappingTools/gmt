@@ -227,6 +227,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	double wesn[4], d_value, out[4], *x = NULL, *y = NULL;
 
 	struct GMT_GRID *G = NULL, *W = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *H = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_Z_IO io;
 	struct GMT_OPTION *opt = NULL;
@@ -304,6 +305,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, G) == NULL) {
 			Return (API->error);	/* Get subset */
 		}
+
+		H = gmt_get_H_hidden (G->header);
 
 		n_total += G->header->nm;
 
@@ -414,8 +417,11 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 			/* Compute grid node positions once only */
 
-			x = gmt_grd_coord (GMT, G->header, GMT_X);
-			y = gmt_grd_coord (GMT, G->header, GMT_Y);
+			if (H->var_spacing[GMT_X]) GMT_Report (API, GMT_MSG_WARNING, "Grid %s has non-equidistant x-coordinates (see grd2xyz docs for discussion)\n", opt->arg);
+			if (H->var_spacing[GMT_Y]) GMT_Report (API, GMT_MSG_WARNING, "Grid %s has non-equidistant y-coordinates (see grd2xyz docs for discussion)\n", opt->arg);
+
+			x = (H->var_spacing[GMT_X] && G->x) ? G->x : gmt_grd_coord (GMT, G->header, GMT_X);
+			y = (H->var_spacing[GMT_Y] && G->y) ? G->y : gmt_grd_coord (GMT, G->header, GMT_Y);
 			Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 			if (Ctrl->C.active) {	/* Replace x,y with col,row */
 				if (Ctrl->C.mode < 2) {
@@ -467,8 +473,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, Out);		/* Write this to output */
 				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
-			gmt_M_free (GMT, x);
-			gmt_M_free (GMT, y);
+			if (G->x == NULL) gmt_M_free (GMT, x);
+			if (G->y == NULL) gmt_M_free (GMT, y);
 			gmt_M_free (GMT, Out);
 			if (W) gmt_free_grid (GMT, &W, true);
 		}
