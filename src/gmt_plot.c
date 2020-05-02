@@ -4972,7 +4972,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				else
 					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[nx1-1]);	/* Get annotation string */
 				PSL_deftextdim (PSL, "-w", font.size, string);	/* Compute the width */
-				PSL_command (PSL, " %g mul def\n", sin_a);	/* Multiply this width by sine of the angle to get the y-component */
+				PSL_command (PSL, " %.12g mul def\n", sin_a);	/* Multiply this width by sine of the angle to get the y-component */
 			}
 			if (annot_pos == 0)
 				PSL_command (PSL, "/PSL_A0_y PSL_A0_y %d add ", PSL_IZ (PSL, GMT->current.setting.map_annot_offset[annot_pos]));
@@ -4991,9 +4991,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", PSL_IZ (PSL, x), annot_pos);
 				if (angled) {	/* Must compensate for rotated textbox sticking too close to axis */
 					if (below) /* S axis */
-						PSL_command (PSL, "0 PSL_AH%d 1 %g sub mul G\n", annot_pos, cos_a);
+						PSL_command (PSL, "0 PSL_AH%d 1 %.12g sub mul G\n", annot_pos, cos_a);
 					else /* N axis */
-						PSL_command (PSL, "0 PSL_AH%d %g mul G\n", annot_pos, cos_a);
+						PSL_command (PSL, "0 PSL_AH%d %.12g mul G\n", annot_pos, cos_a);
 				}
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (string, label_c[i], GMT_LEN256-1);
@@ -5542,7 +5542,7 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 			gmt_xyz_to_xy (GMT, nesw[(quadrant/2*2+1)%4], nesw[((quadrant+1)/2*2)%4], GMT->common.R.wesn[ZLO], &xx, &yy);
 			/* Restrict reduced azimuth to -45 to 45 range */
 			az = GMT->current.proj.z_project.view_azimuth - 90.0 - floor ((GMT->current.proj.z_project.view_azimuth - 45.0) / 90.0) * 90.0;
-			PSL_command (PSL, "/PSL_GPP matrix currentmatrix def [%g %g %g %g %g %g] concat\n",
+			PSL_command (PSL, "/PSL_GPP matrix currentmatrix def [%.12g %.12g %.12g %.12g %.12g %.12g] concat\n",
 				cosd(az), sind(az) * GMT->current.proj.z_project.sin_el, 0.0, GMT->current.proj.z_project.cos_el, xx * PSL->internal.x2ix, yy * PSL->internal.y2iy);
 			gmt_xy_axis (GMT, 0.0, -GMT->common.R.wesn[ZLO], GMT->current.proj.zmax - GMT->current.proj.zmin, GMT->common.R.wesn[ZLO],
 				GMT->common.R.wesn[ZHI], &GMT->current.map.frame.axis[GMT_Z], true, GMT->current.map.frame.side[Z_SIDE]);
@@ -6192,7 +6192,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		}
 		PSL_command (PSL, "V ");
 		PSL_setorigin (PSL, x0-off, y0-fy*off, 0.0, PSL_FWD);
-		PSL_command (PSL, "%g dup scale ", size[0]);
+		PSL_command (PSL, "%.12g dup scale ", size[0]);
 		PSL_command (PSL, "Sk_%s U\n", symbol->name);
 		return (GMT_OK);
 	}
@@ -7738,7 +7738,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	}
 	if (!O_active) {	/* New plot, set GMT bounding box and reset layer counter */
 		/* Add GMT bounding box comment which gives dimensions of inner frame */
-		PSL_command (PSL, "%%GMTBoundingBox: %g %g %g %g\n",
+		PSL_command (PSL, "%%GMTBoundingBox: %.12g %.12g %.12g %.12g\n",
 			GMT->current.setting.map_origin[GMT_X] * 72.0, GMT->current.setting.map_origin[GMT_Y] * 72.0,
 			GMT->current.map.width * 72.0, GMT->current.map.height * 72.0);
 		GMT->current.ps.layer = 0;
@@ -7752,7 +7752,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			GMT->common.t.active = false;
 		}
 		else
-			PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value, GMT->current.setting.ps_transpmode);
+			PSL_command (PSL, "%.12g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value, GMT->current.setting.ps_transpmode);
 	}
 	/* If requested, place the timestamp */
 
@@ -9008,7 +9008,7 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 		}
 
 		/* First restore the old matrix or save the old one when that was not done before */
-		PSL_command (PSL, "%s [%g %g %g %g %g %g] concat\n",
+		PSL_command (PSL, "%s [%.12g %.12g %.12g %.12g %.12g %.12g] concat\n",
 			(GMT->current.proj.z_project.plane >= 0) ? "PSL_GPP setmatrix" : "/PSL_GPP matrix currentmatrix def",
 			a, b, c, d, e * PSL->internal.x2ix, f * PSL->internal.y2iy);
 	}

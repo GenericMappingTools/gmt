@@ -2285,7 +2285,7 @@ static int psl_mathrightangle (struct PSL_CTRL *PSL, double x, double y, double 
 	double size, xx[3], yy[3];
 
 	PSL_comment (PSL, "Start of Math right angle\n");
-	PSL_command (PSL, "V %d %d T %lg R\n", psl_ix (PSL, x), psl_iy (PSL, y), param[1]);
+	PSL_command (PSL, "V %d %d T %.12g R\n", psl_ix (PSL, x), psl_iy (PSL, y), param[1]);
 	size = param[0] / M_SQRT2;
 
 	xx[0] = xx[1] = size;	xx[2] = 0.0;
