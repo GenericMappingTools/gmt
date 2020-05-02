@@ -59,6 +59,7 @@ if [ $S_ver -ne 1 ]; then
 	echo "build-release.sh: Need Sphinx version 1 to build release" >&2
 	exit 1
 fi
+
 G_ver=$(gs --version)
 echo "build-release.sh: You will be including Ghostscript version $G_ver"
 echo "build-release.sh: Remember to run admin/gs-check.sh to ensure it passes our test" >&2
@@ -75,8 +76,21 @@ mkdir build
 # 2b. Build list of external programs and shared libraries
 admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
 cd build
+# 2c. Set CMake cache for MP build:
+cat << EOF > cache-mp-gcc.cmake
+# Cache settings for building the macOS release with GCC and OpenMP
+# This cache file is set for the binary paths of macports
+#
+SET ( CMAKE_C_COMPILER "/opt/local/bin/gcc-mp-9" CACHE STRING "GNU MP C compiler" )
+SET ( CMAKE_CXX_COMPILER "/opt/local/bin/g++-mp-9" CACHE STRING "GNU MP C++ compiler" )
+SET ( CMAKE_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS")
+SET ( CMAKE_C_FLAGS_DEBUG -flax-vector-conversions CACHE STRING "C FLAGS DEBUG")
+SET ( CMAKE_C_FLAGS_RELEASE -flax-vector-conversions CACHE STRING "C FLAGS RELEASE")
+SET ( OpenMP_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS OPENMP")
+EOF
+
 echo "build-release.sh: Configure and build tarballs" >&2
-cmake -G Ninja  -C ../admin/cache-mp-gcc.cmake ..
+cmake -G Ninja  -C cache-mp-gcc.cmake ..
 # 3. Build the release and the tarballs
 cmake --build . --target gmt_release
 cmake --build . --target gmt_release_tar
