@@ -515,7 +515,7 @@ GMT_LOCAL bool gmtapi_valid_input_family (unsigned int family) {
 
 GMT_LOCAL bool gmtapi_valid_actual_family (unsigned int family) {
 	/* Return true for the main actual family types */
-	return (family >= GMT_IS_DATASET && family < GMT_N_FAMILIES);
+	return (family < GMT_N_FAMILIES);
 }
 
 GMT_LOCAL bool gmtapi_valid_output_family (unsigned int family) {

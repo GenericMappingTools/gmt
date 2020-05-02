@@ -328,12 +328,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 
 	unsigned int n_errors = 0, ztype, n_files = 0;
 	int n;
-	bool three_D = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-
-	if ((opt = GMT_Find_Option (GMT->parent, 'p', options))) three_D = true;	/* Gave -p */
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
