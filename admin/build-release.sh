@@ -3,7 +3,7 @@
 # If run under macOS it also builds the macOS Bundle
 # Requirements in addition to libraries and tools to build GMT:
 #	1) pngquant for squeezing PNG files down in size
-#	2) GMT_GSHHG_SOURCE and GMT_DCW_SOURCE enviromental parameters set
+#	2) GMT_GSHHG_SOURCE and GMT_DCW_SOURCE environmental parameters set
 #	3) A ghostscript version we can include in the macOS bundle [MacPort]
 
 reset_config() {
@@ -54,6 +54,11 @@ if [ "X${GMT_DCW_SOURCE}" = "X" ]; then
 	exit 1
 fi
 
+if [ $(egrep -c '^set \(GMT_PUBLIC_RELEASE TRUE\)' cmake/ConfigDefault.cmake) -eq 0 ]; then
+	echo "build-release.sh: Need to edit cmake/ConfigDefaults.cmake and set GMT_PUBLIC_RELEASE to true" >&2
+	exit 1
+fi
+
 S_ver=$(sphinx-build --version | awk '{print substr($2,1,1)}')
 if [ $S_ver -ne 1 ]; then
 	echo "build-release.sh: Need Sphinx version 1 to build release" >&2
@@ -76,7 +81,7 @@ mkdir build
 admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
 cd build
 echo "build-release.sh: Configure and build tarballs" >&2
-cmake -G Ninja ..
+cmake -G Ninja  -C ../admin/cache-mp-gcc.cmake ..
 # 3. Build the release and the tarballs
 cmake --build . --target gmt_release
 cmake --build . --target gmt_release_tar
