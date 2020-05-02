@@ -7731,6 +7731,7 @@ uint64_t gmt_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 
 /*! . */
 int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int n_columns, unsigned int n_rows, unsigned int dpi, unsigned int offset) {
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_project_init: IN: Inc [%.12g/%.12g] n_columns/n_rows [%u/%u] dpi = %u offset = %u\n",
 		inc[0], inc[1], n_columns, n_rows, dpi, offset);
 
@@ -7773,7 +7774,7 @@ int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 
 	gmt_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set n_columns, n_rows */
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 1), "");
-	gmt_M_grd_setpad (GMT, header, GMT->current.io.pad);			/* Assign default pad */
+	if (!HH->reset_pad) gmt_M_grd_setpad (GMT, header, GMT->current.io.pad);			/* Assign default pad */
 	gmt_set_grddim (GMT, header);	/* Set all dimensions before returning */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Grid projection from size %dx%d to %dx%d\n", n_columns, n_rows, header->n_columns, header->n_rows);
@@ -7809,6 +7810,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	double x_proj = 0.0, y_proj = 0.0, z_int, inv_nz;
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
 	double *y_in = NULL, *y_out = NULL, *y_in_proj = NULL, *y_out_proj = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);
 
 	/* Only input grid MUST have at least 2 rows/cols padding */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
@@ -7822,7 +7824,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	/* Precalculate grid coordinates */
 
-	if (I->x) {	/* Reuse existing arrays */
+	if (I->x && HH->reset_pad == 0) {	/* Reuse existing arrays if present, but not if grid has had its pad adjusted to make subsets of read-only memory grids */
 		x_in = I->x;	y_in = I->y;	in = true;
 	}
 	else {	/* Must allocate here */
@@ -8019,6 +8021,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
 	double *y_in = NULL, *y_out = NULL, *y_in_proj = NULL, *y_out_proj = NULL;
 	unsigned char z_int[4], z_int_bg[4];
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);
 
 	/* Only input image MUST have at least 2 rows/cols padding */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
@@ -8028,7 +8031,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	/* Precalculate grid coordinates */
 
-	if (I->x) {	/* Reuse existing arrays */
+	if (I->x && HH->reset_pad == 0) {	/* Reuse existing arrays if present, but not if grid has had its pad adjusted to make subsets of read-only memory grids */
 		x_in = I->x;	y_in = I->y;	in = true;
 	}
 	else {	/* Must allocate here */
