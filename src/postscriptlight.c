@@ -4832,7 +4832,7 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 		PSL_command (PSL, "%d %d T ", PSL->internal.ix, PSL->internal.iy);
 	}
 
-	if (angle != 0.0) PSL_command (PSL, "%.3g R ", angle);
+	if (angle != 0.0) PSL_command (PSL, "%.12g R ", angle);
 	if (justify > 1) {			/* Move the new origin so (0,0) is lower left of box */
 		x_just = (justify + 3) % 4;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		y_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
@@ -5137,7 +5137,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		string = psl_prepare_text (PSL, PSL->current.string);	/* Check for escape sequences */
 	}
 
-	if (angle != 0.0) PSL_command (PSL, "V %.3g R ", angle);
+	if (angle != 0.0) PSL_command (PSL, "V %.12g R ", angle);
 
 	if (!strchr (string, '@')) {	/* Plain text ... this is going to be easy! */
 		PSL_command (PSL, "(%s) %s%s", string, justcmd[justify], op[mode]);
