@@ -115,7 +115,7 @@ extern "C" {
 #ifdef EXPORT_GMTLIB
 /* Used to export everything so external enviroments can do unit tests */
 #	define GMT_LOCAL EXTERN_MSC
-#	else
+#else
 /* Used to restrict the scope of a function to the file it was declared in */
 #	define GMT_LOCAL static
 #endif
