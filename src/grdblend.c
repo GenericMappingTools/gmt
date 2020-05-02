@@ -194,7 +194,7 @@ GMT_LOCAL bool grdblend_overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INF
 GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode, bool delayed, struct GMT_GRID *Grid) {
 	int type, status, not_supported = 0;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
-	bool srtm_job = false, common_inc = true, common_reg = true;
+	bool srtm_job = false, common_inc = true;
 	struct GRDBLEND_INFO *B = NULL;
 	struct GMT_GRID_HEADER *h = *h_ptr;	/* Input header may be NULL or preset */
 	struct GMT_GRID_HIDDEN *GH = NULL;
@@ -326,8 +326,6 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 				if (fabs((B[n].G->header->inc[GMT_X] - B[0].G->header->inc[GMT_X]) / B[0].G->header->inc[GMT_X]) > 0.002 ||
 					fabs((B[n].G->header->inc[GMT_Y] - B[0].G->header->inc[GMT_Y]) / B[0].G->header->inc[GMT_Y]) > 0.002)
 						common_inc = false;
-				if (B[n].G->header->registration != B[0].G->header->registration)
-					common_reg = false;
 			}
 		}
 		gmt_M_str_free (L[n].file);	/* Done with these now */

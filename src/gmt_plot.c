@@ -2113,7 +2113,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 	unsigned int i, nx = 0, ny = 0, first = 0, form, lonlat, justify;
 	bool do_minutes, do_seconds, do_grid = false;
 	char label[GMT_LEN256] = {""}, format[GMT_LEN64] = {""}, **label_c = NULL;
-	double *val = NULL, *tval = NULL, dx, dy, shift, x0, y0, x1, y1, L, ds, dc, line_angle, text_angle, angle, dyg, dxg, xa, xb, ya, yb, Sa, Ca;
+	double *val = NULL, *tval = NULL, dx, dy, x0, y0, x1, y1, L, ds, dc, line_angle, text_angle, angle, dyg, dxg, xa, xb, ya, yb, Sa, Ca;
 
 	if (GMT->current.map.frame.internal_annot == 0) return;	/* Not requested */
 
@@ -2204,7 +2204,6 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 				strncpy (label, label_c[i], GMT_LEN256-1);
 			else
 				gmtlib_get_annot_label (GMT, tval[i], label, do_minutes, do_seconds, 1, lonlat, GMT->current.map.is_world);
-			shift = gmtplot_shift_gridline (GMT, val[i], GMT_Y);
 			gmt_geo_to_xy (GMT, GMT->current.map.frame.internal_arg, val[i], &x0, &y0);
 			PSL_plottext (PSL, x0+dc, y0+ds, GMT->current.setting.font_annot[GMT_PRIMARY].size, label, text_angle, justify, form);
 			if (do_grid) {
@@ -2267,7 +2266,6 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 				strncpy (label, label_c[i], GMT_LEN256-1);
 			else
 				gmtlib_get_annot_label (GMT, val[i], label, do_minutes, do_seconds, 1, 0, GMT->current.map.is_world);
-			shift = gmtplot_shift_gridline (GMT, val[i], GMT_X);
 			gmt_geo_to_xy (GMT, val[i], GMT->current.map.frame.internal_arg, &x0, &y0);
 			gmt_geo_to_xy (GMT, val[i] + GMT->current.map.dlon, GMT->current.map.frame.internal_arg, &x1, &y1);
 			angle = d_atan2 (y1-y0, x1-x0);	/* Angle at longitude annotation */

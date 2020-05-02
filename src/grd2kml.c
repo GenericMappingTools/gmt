@@ -623,10 +623,9 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 		inc = 1.0;
 	}
 	else {	/* Make a square Ctrl->size region centered on the input grid center */
-		double range, tile_size = Ctrl->L.size * G->header->inc[GMT_X];	/* Dimension of highest-resolution tile in degrees */
+		double tile_size = Ctrl->L.size * G->header->inc[GMT_X];	/* Dimension of highest-resolution tile in degrees */
 		unsigned int width;
 
-		range = MAX (G->header->wesn[XHI] - G->header->wesn[XLO], G->header->wesn[YHI] - G->header->wesn[YLO]);	/* Largest data dimension in degrees */
 		width = pow (2.0, max_level);	/* Radix-2 number of the smallest tiles in both x and y */
 		step = width * tile_size;		/* Square dimension of extended grid in degrees */
 		col = G->header->n_columns / 2;	row = G->header->n_rows / 2;	/* Half-way point in grid */
