@@ -16693,7 +16693,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 			goto CROAK;
 		}
 		first = true;	/* Reset for each new C file */
-		while (fgets (line, BUFSIZ, fp)) {	/* This leaves the trailing linefeed intact */
+		while (fgets (line, GMT_BUFSIZ, fp)) {	/* This leaves the trailing linefeed intact */
 			if (strncmp (line, "#define THIS_MODULE_", 20U)) continue;	/* Not found our lines yet */
 			if (first) {	/* First time we passed the above if-test */
 				n++, first = false;
