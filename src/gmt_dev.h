@@ -158,7 +158,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_types.h"          /* GMT type declarations */
 
 #ifdef _OPENMP                  /* Using open MP parallelization */
-#include "omp.h"
+#include <omp.h>
 #endif
 
 #include "gmt_prototypes.h"     /* All GMT low-level API */
