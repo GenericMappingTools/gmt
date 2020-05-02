@@ -64,12 +64,6 @@ if [ $(egrep -c '^set \(GMT_PUBLIC_RELEASE TRUE\)' cmake/ConfigDefault.cmake) -e
 	exit 1
 fi
 
-S_ver=$(sphinx-build --version | awk '{print substr($2,1,1)}')
-if [ $S_ver -ne 1 ]; then
-	echo "build-release.sh: Need Sphinx version 1 to build release" >&2
-#	exit 1
-fi
-
 G_ver=$(gs --version)
 echo "build-release.sh: You will be including Ghostscript version $G_ver"
 echo "build-release.sh: Remember to run admin/gs-check.sh to ensure it passes our test" >&2
