@@ -83,9 +83,6 @@ extern "C" {
 #	pragma warning( disable : 4244 )	/* conversion from 'uint64_t' to '::size_t', possible loss of data */
 #endif
 
-/* Used to restrict the scope of a function to the file it was declared in */
-#define GMT_LOCAL static
-
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 
@@ -114,6 +111,14 @@ extern "C" {
 #include <errno.h>
 
 #include <time.h>
+
+#ifdef EXPORT_GMTLIB
+/* Used to export everything so external enviroments can do unit tests */
+#	define GMT_LOCAL EXTERN_MSC
+#	else
+/* Used to restrict the scope of a function to the file it was declared in */
+#	define GMT_LOCAL static
+#endif
 
 #include "gmt_common_math.h" /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */

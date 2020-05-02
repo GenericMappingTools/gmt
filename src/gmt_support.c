@@ -5769,8 +5769,7 @@ void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 
 #ifndef WIN32
 /*! . */
-GMT_LOCAL int gmtsupport_globerr (const char *path, int eerrno)
-{
+GMT_LOCAL int gmtsupport_globerr (const char *path, int eerrno) {
 	fprintf (stderr, "gmtlib_glob_list: %s: %s\n", path, strerror(eerrno));
 	return 0;	/* let glob() keep going */
 }

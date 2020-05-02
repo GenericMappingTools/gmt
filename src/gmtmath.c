@@ -5599,8 +5599,7 @@ GMT_LOCAL int gmtmath_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 #define GMTMATH_N_OPERATORS 197
 
-GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[])
-{
+GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[]) {
 	/* Operator function	# of operands	# of outputs */
 
 	ops[0] = gmtmath_ABS;	n_args[0] = 1;	n_out[0] = 1;
@@ -5934,8 +5933,8 @@ GMT_LOCAL char *gmtmath_setlabel (struct GMT_CTRL *GMT, char *arg) {
 	return (label);
 }
 
-GMT_LOCAL void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
-{	/* Handle backwards compatible operator names */
+GMT_LOCAL void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg) {
+	/* Handle backwards compatible operator names */
 	char *t = NULL, old[GMT_LEN16] = {""};
 	if (!gmt_M_compat_check (GMT, 6)) return;	/* No checking so we may fail later */
 	if (!strcmp (*arg, "CHIDIST"))      {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CDF");  }

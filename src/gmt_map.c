@@ -1892,7 +1892,7 @@ GMT_LOCAL uint64_t gmtmap_radial_boundary_arc (struct GMT_CTRL *GMT, int this_wa
 
 #ifdef DEBUG
 /* If we need to dump out clipped polygon then set clip_dump = 1 during execution */
-GMT_LOCAL int clip_dump = 0, clip_id = 0;
+static int clip_dump = 0, clip_id = 0;
 GMT_LOCAL void gmtmap_dumppol (uint64_t n, double *x, double *y, int *id) {
 	uint64_t i;
 	FILE *fp = NULL;
@@ -3910,14 +3910,13 @@ GMT_LOCAL bool gmtmap_init_ortho (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-GMT_LOCAL double gmtmap_left_genper (struct GMT_CTRL *GMT, double y)
-{	/* Windowed genper may need to consider the inner of circle and rectangle */
+GMT_LOCAL double gmtmap_left_genper (struct GMT_CTRL *GMT, double y) {
+	/* Windowed genper may need to consider the inner of circle and rectangle */
 	return (MAX (0.0, gmtmap_left_circle (GMT, y)));
 }
 
 /*! . */
-GMT_LOCAL double gmtmap_right_genper (struct GMT_CTRL *GMT, double y)
-{
+GMT_LOCAL double gmtmap_right_genper (struct GMT_CTRL *GMT, double y) {
 	return (MIN (GMT->current.map.width, gmtmap_right_circle (GMT, y)));
 }
 
@@ -9483,8 +9482,7 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	return (S);	/* Pass out the results */
 }
 
-GMT_LOCAL void gmtmap_ellipse_point (struct GMT_CTRL *GMT, double lon, double lat, double center, double sinp, double cosp, double major, double minor, double cos_azimuth, double sin_azimuth, double angle, double *plon, double *plat)
-{
+GMT_LOCAL void gmtmap_ellipse_point (struct GMT_CTRL *GMT, double lon, double lat, double center, double sinp, double cosp, double major, double minor, double cos_azimuth, double sin_azimuth, double angle, double *plon, double *plat) {
 	/* Lon, lat is center of ellipse, our point is making an angle with the major axis. */
 	double x, y, x_prime, y_prime, rho, c, sin_c, cos_c;
 	sincos (angle, &y, &x);

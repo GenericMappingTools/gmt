@@ -207,8 +207,8 @@ GMT_LOCAL bool gmtio_is_a_NaN_line (struct GMT_CTRL *GMT, char *line) {
 }
 
 /*! . */
-GMT_LOCAL unsigned int gmtio_is_segment_header (struct GMT_CTRL *GMT, char *line)
-{	/* Returns 1 if this record is a GMT segment header;
+GMT_LOCAL unsigned int gmtio_is_segment_header (struct GMT_CTRL *GMT, char *line) {
+	/* Returns 1 if this record is a GMT segment header;
 	 * Returns 2 if this record is a segment breaker;
 	 * Otherwise returns 0 */
 	if (GMT->current.setting.io_blankline[GMT_IN] && gmt_is_a_blank_line (line)) return (2);	/* Treat blank line as segment break */
@@ -3841,8 +3841,8 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 }
 
 /*! . */
-GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
-{	/* netCDF tables contain information about the number of records, so we can use a
+GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval) {
+	/* netCDF tables contain information about the number of records, so we can use a
 	 * faster strategy: When file is opened, determine number of rows and columns and
 	 * preallocate all the column vectors.  Then, when we ask for the first data record
 	 * we read the entire data set.  We then simply return the values corresponding to
@@ -4085,8 +4085,8 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 }
 
 /*! . */
-GMT_LOCAL bool gmtio_file_is_readable (struct GMT_CTRL *GMT, char *path)
-{	/* Returns true if readable, otherwise give error and return false */
+GMT_LOCAL bool gmtio_file_is_readable (struct GMT_CTRL *GMT, char *path) {
+	/* Returns true if readable, otherwise give error and return false */
 	if (!access (path, R_OK)) return (true);	/* Readable */
 	/* Get here when found, but not readable */
 	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to read %s (permissions?)\n", path);

@@ -42,7 +42,7 @@ struct GMT_DATA_HASH {	/* Holds file hashes (probably SHA256) */
 
 /* When making edits below, make sure string does not exceed 127 characters as indicated by the bars below:
  *                  |                                                                                                                              | */
-GMT_LOCAL struct GMT_DATA_INFO gmt_data_info[GMT_N_DATA_INFO_ITEMS] = {
+static struct GMT_DATA_INFO gmt_data_info[GMT_N_DATA_INFO_ITEMS] = {
 	{"60m", "106K", "Earth Relief at 60x60 arc minutes from Gaussian Cartesian filtering (111 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
 	{"01d", "106K", "Earth Relief at 1x1 arc degrees from Gaussian Cartesian filtering (111 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
 	{"30m", "363K", "Earth Relief at 30x30 arc minutes from Gaussian Cartesian filtering (55 km fullwidth) of SRTM15+V2.1 [Tozer et al., 2019]"},
