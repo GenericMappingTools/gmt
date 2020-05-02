@@ -5762,7 +5762,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 					sscanf (p, "%[^-]-%[^)])", name, origin);
 				else			/* Just (value), origin == 0.0 */
 					sscanf (p, "%[^)])", name);
-				if ((id = MGD77_Match_List (GMT, name, n_list, list)) == MGD77_NOT_SET) {;	/* Not a recognized column */
+				if ((id = MGD77_Match_List (GMT, name, n_list, list)) == MGD77_NOT_SET) {	/* Not a recognized column */
 					list[n_list] = strdup (name);
 					n_list++;
 					if (n_list == n_alloc) {
@@ -5920,7 +5920,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 					sscanf (p, "%[^)])", name);
 					c->origin = 0.0;
 				}
-				if ((c->id = MGD77_Match_List (GMT, name, n_fields, field_names)) == MGD77_NOT_SET) {;	/* Not a recognized column */
+				if ((c->id = MGD77_Match_List (GMT, name, n_fields, field_names)) == MGD77_NOT_SET) {	/* Not a recognized column */
 					for (i = 0; i < n_aux; i++) if (!strcmp (name, aux_names[i])) c->id = i;	/* check auxiliaries */
 					if (c->id == MGD77_NOT_SET) { /* Not an auxiliary column either */
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Column %s not found - requested by the correction table %s!\n", name, tablefile);
