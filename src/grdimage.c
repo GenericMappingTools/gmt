@@ -1202,15 +1202,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* Evaluate colors at least once (try = 0), or twice if -Q is active and we need to select another unique NaN color not used in the image */
 	for (try = 0, done = false; !done && try < 2; try++) {
 		if (rgb_from_z && !Ctrl->Q.active) {	/* Got a single grid and need to look up color via the CPT */
+		int srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Basic z(x,y) with optional illumination and no colormasking.\n");
 #ifdef _OPENMP
-#pragma omp parallel for private(row,byte,kk,col,node,index,rgb,k) shared(n_rows,header_work,actual_row,n_columns,step,GMT,P,Grid_proj,Ctrl,intensity_mode,Intens_proj,set_gray,bitimage_8,bitimage_24)
+#pragma omp parallel for private(srow,byte,kk,scol,node,index,rgb,k) shared(n_rows,header_work,actual_row,n_columns,step,GMT,P,Grid_proj,Ctrl,intensity_mode,Intens_proj,set_gray,bitimage_8,bitimage_24)
 #endif
-			for (row = 0; row < n_rows; row++) {	/* March along scanlines */
-				byte = colormask_offset + row * n_columns * step;
-				kk = gmt_M_ijpgi (header_work, actual_row[row], 0);	/* Start pixel of this row */
-				for (col = 0; col < n_columns; col++) {	/* Compute rgb for each pixel along this scanline */
-					node = kk + actual_col[col];
+			for (srow = 0; srow < (int)n_rows; srow++) {	/* March along scanlines */
+				byte = colormask_offset + srow * n_columns * step;
+				kk = gmt_M_ijpgi (header_work, actual_row[srow], 0);	/* Start pixel of this row */
+				for (scol = 0; scol < (int)n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
+					node = kk + actual_col[scol];
 					index = gmt_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
 					if (index != (GMT_NAN - 3)) has_content = true;
 					if (index != (GMT_NAN - 3) && Ctrl->I.active) {	/* Need to deal with illumination */
