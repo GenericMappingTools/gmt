@@ -7,9 +7,9 @@
 #	1) pngquant for squeezing PNG files down in size
 #	2) GMT_GSHHG_SOURCE and GMT_DCW_SOURCE environmental parameters set
 #	3) A ghostscript version we can include in the macOS bundle [MacPort]
-#   4) Version 1.* of build-sphinx
-#   5) grealpath (package coreutils)
-#   6) GNU tar (package gnutar)
+#	4) sphinx-build 
+#	5) grealpath (package coreutils)
+#	6) GNU tar (package gnutar)
 
 reset_config() {
 	rm -f ${TOPDIR}/cmake/ConfigUser.cmake
