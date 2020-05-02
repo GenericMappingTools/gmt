@@ -130,7 +130,7 @@ Optional Arguments
 **-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]
     Give *titlepage* script that creates a static title page for the movie [no title].
     Alternatively, *titlepage* can be a PostScript plot layer of dimensions exactly matching the cancas size.
-    Control how long it should be displayed with **+d** in number of frames (append *s** for duration in seconds instead) [4s].
+    Control how long it should be displayed with **+d** in number of frames (append **s** for duration in seconds instead) [4s].
     Optionally, supply *fade* **i**\ n and **o**\ ut durations (in frames or seconds [1s]) as well [no fading].
     Fading affects the beginning and end of the title page *duration*.
 
@@ -160,7 +160,7 @@ Optional Arguments
     the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
     try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
     much higher resolution than your final frame pixel dimensions.  The **-H** option may then be used to smooth the
-    result to avoid aliasing [no downsampling].  This effect is called `sub-pixel rendering <https://en.wikipedia.org/wiki/Subpixel_rendering>`.
+    result to avoid aliasing [no downsampling].  This effect is called `subpixel <https://en.wikipedia.org/wiki/Subpixel_rendering>`_ rendering.
 
 .. _-I:
 
@@ -348,8 +348,8 @@ from **-Sb** and computes needed data files and possibly a background layer), *m
 argument and builds the frame image), and *movie_cleanup* (removes temporary files at the end of the
 run). For each frame there is a separate *movie_params_######* script that provides frame-specific
 variables (e.g., frame number and anything given via **-T**).  The pre- and post-flight scripts have
-access to the information in *movie_init* while the frame script in addition has access to the frame-
-specific parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
+access to the information in *movie_init* while the frame script in addition has access to the frame-specific
+parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
 
 The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
