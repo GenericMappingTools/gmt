@@ -54,11 +54,6 @@ if [ "X${GMT_DCW_SOURCE}" = "X" ]; then
 	exit 1
 fi
 
-if [ $(egrep -c '^set \(GMT_PUBLIC_RELEASE TRUE\)' cmake/ConfigDefault.cmake) -eq 0 ]; then
-	echo "build-release.sh: Need to edit cmake/ConfigDefaults.cmake and set GMT_PUBLIC_RELEASE to true" >&2
-	exit 1
-fi
-
 S_ver=$(sphinx-build --version | awk '{print substr($2,1,1)}')
 if [ $S_ver -ne 1 ]; then
 	echo "build-release.sh: Need Sphinx version 1 to build release" >&2
