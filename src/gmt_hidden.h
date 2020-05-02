@@ -170,6 +170,7 @@ struct GMT_GRID_HEADER_HIDDEN {
 	unsigned int gn;                 /* true if top    edge will be set as N pole  */
 	unsigned int gs;                 /* true if bottom edge will be set as S pole  */
 	unsigned int is_netcdf4;         /* true if netCDF-4/HDF5 format */
+	unsigned int var_spacing[2];     /* true if a netcdf grid has non-equidistant x and/or y arrays */
 	enum GMT_enum_type orig_datatype; /* GMT_FLOAT, GMT_SHORT, etc how the source grid was represented */
 	size_t z_chunksize[2];           /* chunk size (lat,lon) */
 	unsigned int z_scale_given;	 /* 1 if +s was specified */

@@ -12,7 +12,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2xyz** *grid* [ |-C|\ [**f**\|\ **i**] ]
+**gmt grd2xyz** *grid*
+[ |-C|\ [**f**\|\ **i**] ]
+[ |-D| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**a**\|\ *weight*] ] [ |-Z|\ [*flags*] ]
@@ -56,6 +58,12 @@ Optional Arguments
     **f** to start at 1 (Fortran-style counting). Alternatively, append
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
+
+.. _-D:
+
+**-D**
+    Report original variable-spacing *x* and *y* coordinates from the grid (if available)
+    [Default computes equidistant coordinates from the grid region and spacing].
 
 .. _-R:
 

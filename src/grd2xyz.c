@@ -38,6 +38,10 @@ struct GRD2XYZ_CTRL {
 		bool active;
 		unsigned int mode;
 	} C;
+	struct GRD2XYZ_D {	/* -D */
+		bool active;
+		unsigned int mode;
+	} D;
 	struct GRD2XYZ_E {	/* -E[f][<nodata>] */
 		bool active;
 		bool floating;
@@ -74,7 +78,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[f|i]] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[f|i]] [-D] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[a|<weight>]] [-Z[<flags>]] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_qo_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -84,6 +88,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ci to write grid index instead of (x,y).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Use the grid x- and y-vectors (if present) [Default computes x,y arrays].\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Select -Wa to compute weights equal to the node areas\n");
@@ -141,6 +146,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				if (opt->arg[0] == 'c') Ctrl->C.mode = 0;
 				else if (opt->arg[0] == 'f') Ctrl->C.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->C.mode = 2;
+				break;
+			case 'D':	/* Use grid x,y if possible */
+				Ctrl->D.active = true;
 				break;
 			case 'E':	/* Old ESRI option */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -227,6 +235,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	double wesn[4], d_value, out[4], *x = NULL, *y = NULL;
 
 	struct GMT_GRID *G = NULL, *W = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *H = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_Z_IO io;
 	struct GMT_OPTION *opt = NULL;
@@ -304,6 +313,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, G) == NULL) {
 			Return (API->error);	/* Get subset */
 		}
+
+		H = gmt_get_H_hidden (G->header);
 
 		n_total += G->header->nm;
 
@@ -414,8 +425,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 			/* Compute grid node positions once only */
 
-			x = gmt_grd_coord (GMT, G->header, GMT_X);
-			y = gmt_grd_coord (GMT, G->header, GMT_Y);
+			x = (H->var_spacing[GMT_X] && G->x && Ctrl->D.active) ? G->x : gmt_grd_coord (GMT, G->header, GMT_X);
+			y = (H->var_spacing[GMT_Y] && G->y && Ctrl->D.active) ? G->y : gmt_grd_coord (GMT, G->header, GMT_Y);
 			Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 			if (Ctrl->C.active) {	/* Replace x,y with col,row */
 				if (Ctrl->C.mode < 2) {
@@ -467,8 +478,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, Out);		/* Write this to output */
 				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
-			gmt_M_free (GMT, x);
-			gmt_M_free (GMT, y);
+			if (G->x == NULL || !Ctrl->D.active) gmt_M_free (GMT, x);
+			if (G->y == NULL || !Ctrl->D.active) gmt_M_free (GMT, y);
 			gmt_M_free (GMT, Out);
 			if (W) gmt_free_grid (GMT, &W, true);
 		}

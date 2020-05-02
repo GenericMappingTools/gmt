@@ -307,11 +307,12 @@ GMT_LOCAL void gmtnc_put_units (int ncid, int varid, char *name_units) {
 	}
 }
 
-GMT_LOCAL void gmtnc_check_step (struct GMT_CTRL *GMT, uint32_t n, double *x, char *varname, char *file) {
-	/* Check if all steps in range are the same (within 0.1%) */
+GMT_LOCAL int gmtnc_check_step (struct GMT_CTRL *GMT, uint32_t n, double *x, char *varname, char *file, bool save_xy_array) {
+	/* Check if all steps in range are the same (within 0.1%). Returns 0 if OK and 1 if variable spacing */
 	double step, step_min, step_max;
 	uint32_t i;
-	if (n < 2) return;
+	unsigned int wlevel = (save_xy_array) ? GMT_MSG_INFORMATION : GMT_MSG_WARNING;
+	if (n < 2) return 0;
 	step_min = step_max = x[1]-x[0];
 	for (i = 2; i < n; i++) {
 		step = x[i]-x[i-1];
@@ -319,12 +320,14 @@ GMT_LOCAL void gmtnc_check_step (struct GMT_CTRL *GMT, uint32_t n, double *x, ch
 		if (step > step_max) step_max = step;
 	}
 	if (fabs (step_min-step_max)/(fabs (step_min)*0.5 + fabs (step_max)*0.5) > 0.001) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING,
+		GMT_Report (GMT->parent, wlevel,
 			"The step size of coordinate (%s) in grid %s is not constant.\n", varname, file);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING,
+		GMT_Report (GMT->parent, wlevel,
 			"GMT will use a constant step size of %g; the original ranges from %g to %g.\n",
 			(x[n-1]-x[0])/(n-1), step_min, step_max);
+		return 1;
 	}
+	return 0;
 }
 
 GMT_LOCAL void gmtnc_set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
@@ -390,11 +393,12 @@ GMT_LOCAL bool gmtnc_not_obviously_polar (double *se) {
 }
 
 GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job) {
-	int j, err, has_vector, has_range, registration;
+	int j, err, has_vector, has_range, registration, var_spacing = 0;
 	int old_fill_mode, status;
 	double dummy[2], *xy = NULL;
 	char dimname[GMT_GRID_UNIT_LEN80], coord[GMT_LEN8];
 	nc_type z_type;
+	bool save_xy_array = !strncmp (GMT->init.module_name, "grd2xyz", 7U);
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	/* Dimension ids, variable ids, etc.. */
@@ -615,7 +619,13 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Look for the x-coordinate vector */
 		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[0]], xy))) {
-			gmtnc_check_step (GMT, header->n_columns, xy, header->x_units, HH->name);
+			var_spacing = gmtnc_check_step (GMT, header->n_columns, xy, header->x_units, HH->name, save_xy_array);
+			if (save_xy_array) {
+				if (GMT->current.io.nc_xarray) gmt_M_free (GMT, GMT->current.io.nc_xarray);
+				GMT->current.io.nc_xarray = gmt_M_memory (GMT, NULL, header->n_columns, double);
+				gmt_M_memcpy (GMT->current.io.nc_xarray, xy, header->n_columns, double);
+				HH->var_spacing[GMT_X] = var_spacing;
+			}
 			dx = fabs (xy[1] - xy[0]);	/* Grid spacing in x */
 		}
 
@@ -697,7 +707,15 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Read the y-coordinate vector (if available), otherwise just look for range attributes */
 		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[1]], xy))) {
-			gmtnc_check_step (GMT, header->n_rows, xy, header->y_units, HH->name);
+			var_spacing = gmtnc_check_step (GMT, header->n_rows, xy, header->y_units, HH->name, save_xy_array);
+			if (save_xy_array) {
+				if (GMT->current.io.nc_yarray) gmt_M_free (GMT, GMT->current.io.nc_yarray);
+				GMT->current.io.nc_yarray = gmt_M_memory (GMT, NULL, header->n_rows, double);
+				gmt_M_memcpy (GMT->current.io.nc_yarray, xy, header->n_rows, double);
+				HH->var_spacing[GMT_Y] = var_spacing;
+				/* Flip-ud y-array since row = 0 is the last value */
+				gmt_grd_flip_vertical (GMT->current.io.nc_yarray, 1, header->n_rows, 0, sizeof(double));
+			}
 			dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
 			dy = fabs (xy[1] - xy[0]);	/* Grid spacing in y */
 		}
