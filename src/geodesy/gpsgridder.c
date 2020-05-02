@@ -1194,7 +1194,8 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 		else {
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p) shared(yp,Out,xp,X,Ctrl,GMT,f_x,f_y,norm,n_uv,normalize,geo)
+			int64_t row, col;	/* Windows demands signed integers for loop variables */
+#pragma omp parallel for private(row,V,col,ij,p,G) shared(Out,yp,xp,n_uv,GMT,X,par,geo,f_x,f_y,normalize,norm)
 #endif
 			for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {
 				V[GMT_Y] = yp[row];
