@@ -122,7 +122,7 @@ struct MOVIE_CTRL {
 	struct MOVIE_E {	/* -E[<title>[+d<duration>[s][+f[b|e]<fade>[s]] */
 		bool active;
 		bool PS;		/* true if we got a plot instead of a script */
-		char *file;		/* Name of include script */
+		char *file;		/* Name of title script */
 		unsigned int duration;	/* Total number of frames of title/fade sequence */
 		unsigned int fade[2];	/* Duration of fade title in, fade title out [none]*/
 		FILE *fp;			/* Open file pointer to title script */
@@ -190,8 +190,9 @@ struct MOVIE_CTRL {
 		bool active;
 		char *dir;	/* Alternative working directory than implied by -N */
 	} W;
-	struct MOVIE_Z {	/* -Z */
+	struct MOVIE_Z {	/* -Z[s] */
 		bool active;	/* Delete temporary files when completed */
+		bool delete;	/* Also delete all files including the mainscript and anything passed via -E, -I, -S */
 	} Z;
 	struct MOVIE_x {	/* -x[[-]<ncores>] */
 		bool active;
@@ -1066,6 +1067,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'Z':	/* Erase frames after movie has been made */
 				Ctrl->Z.active = true;
+				if (opt->arg[0] == 's') Ctrl->Z.delete = true;	/* Also delete input scripts */
 				break;
 
 			case 'x':
@@ -2421,6 +2423,29 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		if (error) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+
+	if (Ctrl->Z.delete) {	/* Delete the scripts since they apparently are temporary */
+		if (gmt_remove_file (GMT, Ctrl->In.file)) {	/* Delete the main script */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the main script %s.\n", Ctrl->In.file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (Ctrl->E.file && gmt_remove_file (GMT, Ctrl->E.file)) {	/* Delete the title script */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the title script %s.\n", Ctrl->E.file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (Ctrl->Ifile && gmt_remove_file (GMT, Ctrl->I.file)) {	/* Delete the include script */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the include script %s.\n", Ctrl->I.file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (Ctrl->S[MOVIE_PREFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[MOVIE_PREFLIGHT].file)) {	/* Delete the background script */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the background script %s.\n", Ctrl->S[MOVIE_PREFLIGHT].file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (Ctrl->S[MOVIE_POSTFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[MOVIE_POSTFLIGHT].file)) {	/* Delete the foreground script */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the foreground script %s.\n", Ctrl->S[MOVIE_POSTFLIGHT].file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
