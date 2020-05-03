@@ -453,7 +453,7 @@ int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter,
 			return (GMT_RUNTIME_ERROR);
 	}
 	else {	/* Filter the grid */
-		unsigned int k;
+		unsigned int k = 0;
 		char *kind[4] = {"Boxcar", "Cosine-taper", "Gaussian", "Median"};
 		switch (filter) {
 			case 'b':	k = 0; break;

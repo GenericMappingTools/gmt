@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
+[ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
 .. include:: grdimage_common.rst_
