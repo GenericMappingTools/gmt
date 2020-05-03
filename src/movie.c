@@ -31,7 +31,7 @@
  * Frame scripts are run in parallel without need for OpenMP etc.
  * Experimental.  Optionally, you can supply a title page script and
  * request fading of title page and/or the main animation.  The
- * fore-, back-gorund, and titlepage scripts can also just be ready-
+ * fore-, back-ground, and title page scripts can also just be ready-
  * to-use PostScripts plot of correct canvas size.
  */
 
@@ -53,7 +53,7 @@
 
 #define MOVIE_WAIT_TO_CHECK	10000	/* In microseconds, so 0.01 seconds */
 
-#define MOVIE_RASTER_FORMAT	"png"	/* Lossless transparent raster format */
+#define MOVIE_RASTER_FORMAT	"png"	/* Lossless opaque raster format */
 #define MOVIE_DEBUG_FORMAT	",ps"	/* Comma is intentional since we append to a list of formats */
 
 enum enum_script {BASH_MODE = 0,	/* Write Bash script */
@@ -178,7 +178,7 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of script or PostScript file */
 		FILE *fp;	/* Open file pointer to script */
 	} S[2];
-	struct MOVIE_T {	/* -T<n_frames>|<min>/<max?<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w] */
+	struct MOVIE_T {	/* -T<n_frames>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w] */
 		bool active;
 		bool split;		/* true means we must split any trailing text in to words */
 		unsigned int n_frames;	/* Total number of frames */
@@ -421,7 +421,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<titlepage>[+f[b|e]<fade>[s]] [-F<format>[+o<opts>]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-K[i|o]<fade>[s][+p]] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W<workdir>] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -523,8 +523,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give <workdir> where temporary files will be built [<workdir> = <prefix> set by -N].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to also delete all input scripts (mainscript and any files via -E, -I, -S)\n");
 	GMT_Option (API, "f");
-	/* Number of threads (repurposed from -x in GMT_Option since this local option is always available and not using OpenMP) */
+	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in frame generation [Default uses all cores = %d].\n", API->n_cores);
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x<n>  Select <n> cores (up to all available).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
@@ -855,7 +856,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
-			case 'F':	/* Set movie format and optional ffmpeg options */
+			case 'F':	/* Set movie format and optional FFmpeg options */
 				if ((c = strstr (opt->arg, "+o"))) {	/* Gave encoding options */
 					s = &c[2];	/* Retain start of encoding options for later */
 					c[0] = '\0';	/* Chop off options */
@@ -1313,15 +1314,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have ffmpeg installed */
+		if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have FFmpeg installed */
 			if (gmt_check_executable (GMT, "ffmpeg", "-version", "FFmpeg developers", line)) {
 				sscanf (line, "%*s %*s %s %*s", version);
 				GMT_Report (API, GMT_MSG_INFORMATION, "FFmpeg %s found.\n", version);
 				if (p_width % 2)	/* Don't like odd pixel widths */
-					GMT_Report (API, GMT_MSG_ERROR, "Your frame width is an odd number of pixels (%u). This may not work with ffmpeg...\n", p_width);
+					GMT_Report (API, GMT_MSG_ERROR, "Your frame width is an odd number of pixels (%u). This may not work with FFmpeg...\n", p_width);
 			}
 			else {
-				GMT_Report (API, GMT_MSG_ERROR, "ffmpeg is not installed - cannot build MP4 or WEbM movies.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "FFmpeg is not installed - cannot build MP4 or WEbM movies.\n");
 				movie_close_files (Ctrl);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -2338,7 +2339,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->A.skip) GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation reflects every %d frame only\n", Ctrl->A.stride);
 	}
 	if (Ctrl->F.active[MOVIE_MP4]) {
-		/* Set up system call to ffmpeg (which we know exists) */
+		/* Set up system call to FFmpeg (which we know exists) */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG))
 			sprintf (extra, "verbose");
 		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION))
@@ -2352,13 +2353,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_FORMAT, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
-			GMT_Report (API, GMT_MSG_ERROR, "Running ffmpeg conversion to MP4 returned error %d - exiting.\n", error);
+			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to MP4 returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "MP4 movie built: %s.mp4\n", Ctrl->N.prefix);
 	}
 	if (Ctrl->F.active[MOVIE_WEBM]) {
-		/* Set up system call to ffmpeg (which we know exists) */
+		/* Set up system call to FFmpeg (which we know exists) */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG))
 			sprintf (extra, "verbose");
 		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION))
@@ -2372,7 +2373,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_FORMAT, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
-			GMT_Report (API, GMT_MSG_ERROR, "Running ffmpeg conversion to webM returned error %d - exiting.\n", error);
+			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to webM returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "WebM movie built: %s.webm\n", Ctrl->N.prefix);
