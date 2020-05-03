@@ -164,6 +164,8 @@ Optional Arguments
 
 .. include:: explain_-t.rst_
 
+.. include:: explain_core.rst_
+
 .. include:: explain_help.rst_
 
 .. include:: explain_grd_inout_short.rst_
