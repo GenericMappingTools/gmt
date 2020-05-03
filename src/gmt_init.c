@@ -131,7 +131,8 @@ struct GMT5_params {
 
 /* These are the active GMT5+ keywords, containing no backwards-compatible variants.
  * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since they are not in gmt.conf.
- * If new keywords are added they need to be added here as well as to gmt_keywords.txt. */
+ * If new keywords are added they need to be added here as well as to gmt_keywords.txt, plus
+ * specific entries in both gmtlib_setparameter and gmtlib_putparameter, and gmt.conf.rst */
 
 static struct GMT5_params GMT5_keywords[]= {
 	{ 1, "COLOR Parameters"},
@@ -11819,6 +11820,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "none");
 			else
 				strcpy (value, "undefined");
+			break;
+		case GMTCASE_GMT_MAX_CORES:
+			sprintf (value, "%d", GMT->current.setting.max_cores);
 			break;
 		case GMTCASE_TIME_LANGUAGE:
 		case GMTCASE_GMT_LANGUAGE:
