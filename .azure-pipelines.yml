@@ -114,7 +114,7 @@ jobs:
   condition: ne(variables['Build.Reason'], 'Schedule')
 
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
 
   variables:
     BUILD_DOCS: false
@@ -132,7 +132,7 @@ jobs:
   condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
 
   variables:
     BUILD_DOCS: true
@@ -150,7 +150,7 @@ jobs:
   condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
-    vmImage: 'macOS-10.14'
+    vmImage: 'macOS-10.15'
 
   variables:
     BUILD_DOCS: false
