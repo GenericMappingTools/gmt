@@ -1209,6 +1209,31 @@ GMT_LOCAL bool movie_is_gmt_end_show (char *line) {
 	return false;	/* Not gmt end show */
 }
 
+GMT_LOCAL int movie_delete_scripts (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl) {
+	/* Delete the scripts since they apparently are temporary */
+	if (Ctrl->In.file && gmt_remove_file (GMT, Ctrl->In.file)) {	/* Delete the main script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the main script %s.\n", Ctrl->In.file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (Ctrl->E.file && gmt_remove_file (GMT, Ctrl->E.file)) {	/* Delete the title script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the title script %s.\n", Ctrl->E.file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (Ctrl->I.file && gmt_remove_file (GMT, Ctrl->I.file)) {	/* Delete the include script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the include script %s.\n", Ctrl->I.file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (Ctrl->S[MOVIE_PREFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[MOVIE_PREFLIGHT].file)) {	/* Delete the background script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the background script %s.\n", Ctrl->S[MOVIE_PREFLIGHT].file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (Ctrl->S[MOVIE_POSTFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[MOVIE_POSTFLIGHT].file)) {	/* Delete the foreground script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the foreground script %s.\n", Ctrl->S[MOVIE_POSTFLIGHT].file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	return (GMT_NOERROR);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -2152,6 +2177,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}
+			if (Ctrl->Z.delete) {	/* Delete input scripts */
+				if ((error = movie_delete_scripts (GMT, Ctrl)))
+					Return (error);
+			}
 			Return (GMT_NOERROR);
 		}
 	}
@@ -2428,27 +2457,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->Z.delete) {	/* Delete the scripts since they apparently are temporary */
-		if (Ctrl->In.file && gmt_remove_file (GMT, Ctrl->In.file)) {	/* Delete the main script */
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the main script %s.\n", Ctrl->In.file);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (Ctrl->E.file && gmt_remove_file (GMT, Ctrl->E.file)) {	/* Delete the title script */
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the title script %s.\n", Ctrl->E.file);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (Ctrl->I.file && gmt_remove_file (GMT, Ctrl->I.file)) {	/* Delete the include script */
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the include script %s.\n", Ctrl->I.file);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (Ctrl->S[MOVIE_PREFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[MOVIE_PREFLIGHT].file)) {	/* Delete the background script */
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the background script %s.\n", Ctrl->S[MOVIE_PREFLIGHT].file);
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (Ctrl->S[MOVIE_POSTFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[MOVIE_POSTFLIGHT].file)) {	/* Delete the foreground script */
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the foreground script %s.\n", Ctrl->S[MOVIE_POSTFLIGHT].file);
-			Return (GMT_RUNTIME_ERROR);
-		}
+	if (Ctrl->Z.delete) {	/* Delete input scripts */
+		if ((error = movie_delete_scripts (GMT, Ctrl)))
+			Return (error);
 	}
 
 	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
