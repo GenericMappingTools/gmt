@@ -1757,7 +1757,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->E.fp);
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 			movie_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
-			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
+			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c GMT_MAX_CORES 1\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 			fprintf (fp, "\tgmt figure ../%s %s", movie_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
 			fprintf (fp, " E%s,%s\n", movie_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
 			fprintf (fp, "\tgmt plot -R0/%g/0/%g -Jx1%c -X0 -Y0 -T\n", Ctrl->C.dim[GMT_X], Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
@@ -1828,8 +1828,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
 		movie_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 
-		if (Ctrl->K.active) {	/* Must stay on either first or last actual frame repeadely to fade in/out the first/last true frame plot */
-			if (i_frame < Ctrl->K.fade[GMT_IN]) { /* Must keep fixed first dataframe but change fading in */
+		if (Ctrl->K.active) {	/* Must stay on either first or last actual frame repeatedly to fade in/out the first/last true frame plot */
+			if (i_frame < Ctrl->K.fade[GMT_IN]) { /* Must keep fixed first data frame but change fading in */
 				if (Ctrl->K.preserve) data_frame = 0;	/* Keep plotting the first data frame */
 				fade_level = 50 * (1.0 + cos (M_PI * i_frame / Ctrl->K.fade[GMT_IN]));
 			}
@@ -2211,7 +2211,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			movie_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 			fprintf (fp, "\tgmt figure ../%s %s", movie_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
 			fprintf (fp, " E%s,%s\n", movie_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
-			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
+			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s GMT_MAX_CORES 1\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
 			if (movie_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
