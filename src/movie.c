@@ -2429,7 +2429,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->Z.delete) {	/* Delete the scripts since they apparently are temporary */
-		if (gmt_remove_file (GMT, Ctrl->In.file)) {	/* Delete the main script */
+		if (Ctrl->In.file && gmt_remove_file (GMT, Ctrl->In.file)) {	/* Delete the main script */
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the main script %s.\n", Ctrl->In.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -2437,7 +2437,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the title script %s.\n", Ctrl->E.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (Ctrl->Ifile && gmt_remove_file (GMT, Ctrl->I.file)) {	/* Delete the include script */
+		if (Ctrl->I.file && gmt_remove_file (GMT, Ctrl->I.file)) {	/* Delete the include script */
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the include script %s.\n", Ctrl->I.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
