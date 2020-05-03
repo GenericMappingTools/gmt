@@ -57,18 +57,19 @@ FORMAT_TIME_STAMP		# How to format time for GMT time-stamps
 #-------------------------------------------------------
 # GMT Group:	Misc. GMT settings
 #-------------------------------------------------------
-GMT_COMPATIBILITY		# Oldest GMT version syntax to parse without error [4 and up]
 GMT_AUTO_DOWNLOAD		# Download GMT-known files or not
+GMT_COMPATIBILITY		# Oldest GMT version syntax to parse without error [4 and up]
+GMT_CUSTOM_LIBS			# List of custom GMT-compliant shared libraries
 GMT_DATA_SERVER			# Where to download from [SOEST]
 GMT_DATA_SERVER_LIMIT		# Max file size to download remotely
+GMT_EXPORT_TYPE			# Default type when GMT exports data to external interfaces
+GMT_EXTRAPOLATE_VAL		# How to deal with 1D extrapolated values
 GMT_FFT				# Which FFT algorithm to use
 GMT_GRAPHICS_FORMAT		# Default graphics format in modern mode
 GMT_HISTORY			# Should we update the command history?
 GMT_INTERPOLANT			# Spline interpolant
 GMT_LANGUAGE			# Language used for annotations
-GMT_CUSTOM_LIBS			# List of custom GMT-compliant shared libraries
-GMT_EXPORT_TYPE			# Default type when GMT exports data to external interfaces
-GMT_EXTRAPOLATE_VAL		# How to deal with 1D extrapolated values
+GMT_MAX_CORES			# Maximum number of cores a multi-threaded module can use [0 = all available]
 GMT_TRIANGULATE			# Triangulation algorithm
 GMT_VERBOSE			# Verbosity level
 #-------------------------------------------------------
