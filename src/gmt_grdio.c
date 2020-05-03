@@ -519,8 +519,7 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	return (true);	/* Return true so the calling function can take appropriate action */
 }
 
-GMT_LOCAL void gmtgrdio_handle_pole_averaging (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, gmt_grdfloat f_value, int pole)
-{
+GMT_LOCAL void gmtgrdio_handle_pole_averaging (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, gmt_grdfloat f_value, int pole) {
 	uint64_t node;
 	unsigned int col = 0;
 	char *name[3] = {"south", "", "north"};

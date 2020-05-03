@@ -30,7 +30,7 @@ struct GMT_API_DICT {
 
 #define GMT_N_API_ENUMS 237
 
-GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
+static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
 	{"GMT_ADD_EXISTING", 16},
 	{"GMT_ADD_FILES_ALWAYS", 2},

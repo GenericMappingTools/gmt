@@ -55,7 +55,7 @@ struct GMT_API_DICT {
 
 #define GMT_N_API_ENUMS $n
 
-GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
+static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 EOF
 
 sort -k 1 ${TMPDIR}/junk2.txt | awk '{printf "\t{\"%s\", %d},\n", $1, $2}' >> gmt_enum_dict.h

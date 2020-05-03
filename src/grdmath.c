@@ -688,8 +688,7 @@ GMT_LOCAL double grdmath_stack_collapse_xor (struct GMT_CTRL *GMT, double *array
  *              Definitions of all operator functions
  * -----------------------------------------------------------------*/
 
-GMT_LOCAL int grdmath_collapse_stack (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last, char *OP)
-{
+GMT_LOCAL int grdmath_collapse_stack (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last, char *OP) {
 	/* Collapse stack will apply the given operator to all items on the stack, per node.
 	 * E.g., you may have 7 grids on the stack and you want to return the mean value per node
 	 * for all 7 grids, to be replaced by a single grid with those means.  You would do
@@ -5827,8 +5826,8 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, recall, &info); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
-{	/* Handle backwards compatible operator names */
+GMT_LOCAL void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg) {
+	/* Handle backwards compatible operator names */
 	char *t = NULL, old[GMT_LEN16] = {""};
 	if (!gmt_M_compat_check (GMT, 6)) return;	/* No checking so we may fail later */
 	if (!strcmp (*arg, "CHIDIST"))      {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CDF");  }

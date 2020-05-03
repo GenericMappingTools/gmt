@@ -34,7 +34,7 @@
 
 #include "gmt_gsformats.h"
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<prefix>] [<format(s)>] [<psconvertoptions] [%s]\n\n", name, GMT_V_OPT);
@@ -64,7 +64,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to begin */
 
@@ -90,7 +90,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL char * begin_get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, int *error) {
+static char * begin_get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, int *error) {
 	/* Extract session arguments (including optional graphics format) from options:
 	 * gmt begin [<sessionname>] [<formats>] [<psconvertopts>] [-V<arg>]  */
 	char buffer[GMT_LEN256] = {""};

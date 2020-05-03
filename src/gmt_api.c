@@ -8890,8 +8890,8 @@ int GMT_Destroy_Data_ (void *object) {
 }
 #endif
 
-GMT_LOCAL int gmtapi_destroy_grids (struct GMTAPI_CTRL *API, struct GMT_GRID ***obj, unsigned int n_items)
-{	/* Used to destroy a group of grids read via GMT_Read_Group */
+GMT_LOCAL int gmtapi_destroy_grids (struct GMTAPI_CTRL *API, struct GMT_GRID ***obj, unsigned int n_items) {
+	/* Used to destroy a group of grids read via GMT_Read_Group */
 	unsigned int k;
 	int error;
 	struct GMT_GRID **G = *obj;
@@ -8900,8 +8900,8 @@ GMT_LOCAL int gmtapi_destroy_grids (struct GMTAPI_CTRL *API, struct GMT_GRID ***
 	return_error (API, GMT_NOERROR);
 }
 
-GMT_LOCAL int gmtapi_destroy_datasets (struct GMTAPI_CTRL *API, struct GMT_DATASET ***obj, unsigned int n_items)
-{	/* Used to destroy a group of datasets read via GMT_Read_Group */
+GMT_LOCAL int gmtapi_destroy_datasets (struct GMTAPI_CTRL *API, struct GMT_DATASET ***obj, unsigned int n_items) {
+	/* Used to destroy a group of datasets read via GMT_Read_Group */
 	unsigned int k;
 	int error;
 	struct GMT_DATASET **D = *obj;
@@ -8910,8 +8910,8 @@ GMT_LOCAL int gmtapi_destroy_datasets (struct GMTAPI_CTRL *API, struct GMT_DATAS
 	return_error (API, GMT_NOERROR);
 }
 
-GMT_LOCAL int gmtapi_destroy_images (struct GMTAPI_CTRL *API, struct GMT_IMAGE ***obj, unsigned int n_items)
-{	/* Used to destroy a group of images read via GMT_Read_Group */
+GMT_LOCAL int gmtapi_destroy_images (struct GMTAPI_CTRL *API, struct GMT_IMAGE ***obj, unsigned int n_items) {
+	/* Used to destroy a group of images read via GMT_Read_Group */
 	unsigned int k;
 	int error;
 	struct GMT_IMAGE **I = *obj;
@@ -8920,8 +8920,7 @@ GMT_LOCAL int gmtapi_destroy_images (struct GMTAPI_CTRL *API, struct GMT_IMAGE *
 	return_error (API, GMT_NOERROR);
 }
 
-GMT_LOCAL int gmtapi_destroy_palettes (struct GMTAPI_CTRL *API, struct GMT_PALETTE ***obj, unsigned int n_items)
-{
+GMT_LOCAL int gmtapi_destroy_palettes (struct GMTAPI_CTRL *API, struct GMT_PALETTE ***obj, unsigned int n_items) {
 	unsigned int k;
 	int error;
 	struct GMT_PALETTE **C = *obj;
@@ -8930,8 +8929,8 @@ GMT_LOCAL int gmtapi_destroy_palettes (struct GMTAPI_CTRL *API, struct GMT_PALET
 	return_error (API, GMT_NOERROR);
 }
 
-GMT_LOCAL int gmtapi_destroy_postscripts (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT ***obj, unsigned int n_items)
-{	/* Used to destroy a group of palettes read via GMT_Read_Group */
+GMT_LOCAL int gmtapi_destroy_postscripts (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT ***obj, unsigned int n_items) {
+	/* Used to destroy a group of palettes read via GMT_Read_Group */
 	unsigned int k;
 	int error;
 	struct GMT_POSTSCRIPT **P = *obj;
@@ -8940,8 +8939,8 @@ GMT_LOCAL int gmtapi_destroy_postscripts (struct GMTAPI_CTRL *API, struct GMT_PO
 	return_error (API, GMT_NOERROR);
 }
 
-GMT_LOCAL int gmtapi_destroy_matrices (struct GMTAPI_CTRL *API, struct GMT_MATRIX ***obj, unsigned int n_items)
-{	/* Used to destroy a group of matrices read via GMT_Read_Group */
+GMT_LOCAL int gmtapi_destroy_matrices (struct GMTAPI_CTRL *API, struct GMT_MATRIX ***obj, unsigned int n_items) {
+	/* Used to destroy a group of matrices read via GMT_Read_Group */
 	unsigned int k;
 	int error;
 	struct GMT_MATRIX **M = *obj;
@@ -8950,8 +8949,8 @@ GMT_LOCAL int gmtapi_destroy_matrices (struct GMTAPI_CTRL *API, struct GMT_MATRI
 	return_error (API, GMT_NOERROR);
 }
 
-GMT_LOCAL int gmtapi_destroy_vectors (struct GMTAPI_CTRL *API, struct GMT_VECTOR ***obj, unsigned int n_items)
-{	/* Used to destroy a group of vectors read via GMT_Read_Group */
+GMT_LOCAL int gmtapi_destroy_vectors (struct GMTAPI_CTRL *API, struct GMT_VECTOR ***obj, unsigned int n_items) {
+	/* Used to destroy a group of vectors read via GMT_Read_Group */
 	unsigned int k;
 	int error;
 	struct GMT_VECTOR **V = *obj;

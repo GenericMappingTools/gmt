@@ -33,7 +33,7 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [show] [%s]\n\n", name, GMT_V_OPT);
@@ -47,7 +47,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *show) {
+static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *show) {
 
 	/* This parses the options provided to end and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.

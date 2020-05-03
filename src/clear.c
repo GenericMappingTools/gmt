@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "gmt_internals.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"clear"
 #define THIS_MODULE_MODERN_NAME	"clear"
@@ -33,10 +34,7 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"
 
-EXTERN_MSC uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***list);
-EXTERN_MSC void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
-
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data|sessions|settings [%s]\n\n", name, GMT_V_OPT);
@@ -55,7 +53,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to clear.
 	 */
@@ -70,13 +68,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int clear_cache (struct GMTAPI_CTRL *API) {
+static int clear_cache (struct GMTAPI_CTRL *API) {
 	if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, false))
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int clear_defaults (struct GMTAPI_CTRL *API) {
+static int clear_defaults (struct GMTAPI_CTRL *API) {
 	char file[PATH_MAX] = {""};
 	sprintf (file, "%s/gmt.conf", API->gwf_dir);
 	if (gmt_remove_file (API->GMT, file))
@@ -84,7 +82,7 @@ GMT_LOCAL int clear_defaults (struct GMTAPI_CTRL *API) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int clear_data (struct GMTAPI_CTRL *API) {
+static int clear_data (struct GMTAPI_CTRL *API) {
 	char dir[PATH_MAX] = {""};
 	sprintf (dir, "%s/server/srtm1", API->GMT->session.USERDIR);
 	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
@@ -98,7 +96,7 @@ GMT_LOCAL int clear_data (struct GMTAPI_CTRL *API) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int clear_sessions (struct GMTAPI_CTRL *API) {
+static int clear_sessions (struct GMTAPI_CTRL *API) {
 	unsigned int n_dirs, k;
 	char **dirlist = NULL, *here = NULL;
 	if (access (API->session_dir, F_OK)) {
