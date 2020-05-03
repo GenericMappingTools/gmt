@@ -183,6 +183,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "GMT_HISTORY"},
 	{ 0, "GMT_INTERPOLANT"},
 	{ 0, "GMT_LANGUAGE"},
+	{ 0, "GMT_MAX_CORES"},
 	{ 0, "GMT_TRIANGULATE"},
 	{ 0, "GMT_VERBOSE"},
 	{ 1, "I/O Parameters"},
@@ -2087,6 +2088,8 @@ GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.x.n_threads = 1;
 	else if (GMT->common.x.n_threads < 0)
 		GMT->common.x.n_threads = MAX(gmtlib_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
+	if (GMT->current.setting.max_cores)	/* Limit to max core defaults setting */
+		GMT->common.x.n_threads = GMT->current.setting.max_cores;
 	return (GMT_NOERROR);
 }
 #endif
@@ -5956,6 +5959,8 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
 	/* GMT_LANGUAGE */
 	strcpy (GMT->current.setting.language, "us");
+	/* GMTCASE_GMT_MAX_CORES */
+	GMT->current.setting.max_cores = 0;
 	/* GMT_TRIANGULATE */
 #ifdef TRIANGLE_D
 	GMT->current.setting.triangulate = GMT_TRIANGLE_SHEWCHUK;
@@ -10578,6 +10583,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_GMT_LANGUAGE:
 			strncpy (GMT->current.setting.language, lower_value, GMT_LEN64-1);
 			gmtinit_get_language (GMT);	/* Load in names and abbreviations in chosen language */
+			break;
+		case GMTCASE_GMT_MAX_CORES:
+			if ((ival = atoi (value)) < 0) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_MAX_CORES must be 0 or positive\n");
+				error = true;
+			}
+			else
+				GMT->current.setting.max_cores = ival;
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (!strcmp (lower_value, "watson"))
