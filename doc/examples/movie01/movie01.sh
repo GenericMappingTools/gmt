@@ -45,6 +45,6 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -NMOR_twist_annotated -D24 -H4 -Fmp4 -K -M2000,png -Gblack -Le+jTR -Lf -V -W/tmp/MOR -Z
+gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -Nmovie01 -D24 -H4 -Fmp4 -K -M2000,png -Gblack -Le+jTR -Lf -V -W/tmp/MOR -Z
 # Clean up
 rm -f include.sh pre.sh main.sh gmt.conf
