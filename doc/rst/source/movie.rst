@@ -371,6 +371,8 @@ run). For each frame there is a separate *movie_params_######* script that provi
 variables (e.g., frame number and anything given via **-T**).  The pre- and post-flight scripts have
 access to the information in *movie_init* while the frame script in addition has access to the frame-specific
 parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
+**Note**: The *mainscript* is duplicated per frame and each copy is run simultaneously on all available cores.
+ Multi-treaded GMT modules will therefore be limited to a single core as well.
 
 The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of

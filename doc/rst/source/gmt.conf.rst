@@ -422,6 +422,10 @@ GMT Miscellaneous Parameters
         or ~/.gmt. **Note**: Some of these languages may require you to also
         change the :term:`PS_CHAR_ENCODING` setting.
 
+    **GMT_MAX_CORES**
+        Sets the upper limit on the number of cores any multi-threaded module might
+        use (whether **-x** is selected or not) [0, i.e., as many as are available].
+
     **GMT_TRIANGULATE**
         Determines if we use the **Watson** [Default] or **Shewchuk**
         algorithm (if configured during installation) for triangulation.
