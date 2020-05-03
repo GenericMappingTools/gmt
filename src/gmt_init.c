@@ -5959,7 +5959,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
 	/* GMT_LANGUAGE */
 	strcpy (GMT->current.setting.language, "us");
-	/* GMTCASE_GMT_MAX_CORES */
+	/* GMT_MAX_CORES */
 	GMT->current.setting.max_cores = 0;
 	/* GMT_TRIANGULATE */
 #ifdef TRIANGLE_D
