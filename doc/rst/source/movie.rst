@@ -31,7 +31,7 @@ Synopsis
 [ **-Sb**\ *background* ]
 [ **-Sf**\ *foreground* ]
 [ |SYN_OPT-V| ]
-[ |-Z| ]
+[ |-Z|\ [**s**] ]
 [ |-W|\ *workdir* ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
@@ -265,9 +265,11 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**
+**-Z**\ [**s**]
     Erase the entire *prefix* directory after assembling the final movie [Default leaves directory with all images;
-    the script files, parameter files, and layer *PostScript* files are all removed (but see **-Q**)].
+    the temporary script files, parameter files, and layer *PostScript* files are all removed (but see **-Q**)].
+    If your *mainscript* and all input scripts via **-E**, **-I**, and **-S** should be deleted as well then
+    append **s**.
 
 .. _-cores:
 
