@@ -16,8 +16,7 @@
 # P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.
 # The finished movie is available in our YouTube channel as well (without fading):
 # https://www.youtube.com/watch?v=LTxlR5LuJ8g
-
-# Create a temp working directory for all intermediate files
+# The movie took ~6 hours to render on a 24-core MacPro 2013.
 
 cat << EOF > pre.sh
 #!/bin/bash
@@ -47,4 +46,5 @@ gmt end
 EOF
 # 3. Run the movie
 gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -NMOR_twist_annotated -D24 -H4 -Fmp4 -K -M2000,png -Gblack -Le+jTR -Lf -V -W/tmp/MOR -Z
+# Clean up
 rm -f include.sh pre.sh main.sh gmt.conf
