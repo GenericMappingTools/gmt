@@ -633,7 +633,7 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 	if (gmt_get_modifier (arg, 'g', I->fill) && I->fill[0]) {	/* Primary fill color */
 		if (gmt_getfill (GMT, I->fill, &fill)) n_errors++;
 	}
-	if (gmt_get_modifier (arg, 'j', placement)) {	/* Placement on cancas for this item */
+	if (gmt_get_modifier (arg, 'j', placement)) {	/* Placement on canvas for this item */
 		if (I->kind == 'L')	/* Default label placement is top left of canvas */
 			gmt_just_validate (GMT, placement, "TL");
 		else if (strchr ("abc", I->kind))	/* Default circular progress indicator placement is top right of canvas */
@@ -1093,7 +1093,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		if (n_used) Ctrl->T.split = true;	/* Necessary setting when labels address individual words */
 	}
 	n_errors += gmt_M_check_condition (GMT, gmt_set_length_unit (GMT, Ctrl->C.unit) == GMT_NOTSET,
-					"Option -C: Bad unit given for cancas dimensions\n");
+					"Option -C: Bad unit given for canvas dimensions\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_X] <= 0.0 || Ctrl->C.dim[GMT_Y] <= 0.0,
 					"Option -C: Zero or negative canvas dimensions given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_Z] <= 0.0,
