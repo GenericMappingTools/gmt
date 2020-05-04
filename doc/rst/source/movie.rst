@@ -19,7 +19,7 @@ Synopsis
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**+i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
-[ |-F|\ *format*\ [**+o**\ *options*]]
+[ |-F|\ *format*\ [**+t**]\ [**+o**\ *options*]]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *factor*]
 [ |-I|\ *includefile* ]
@@ -137,11 +137,11 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *format*\ [**+o**\ *options*]
+**-F**\ *format*\ [**+t**]\ [**+o**\ *options*]
     Set the format of the final video product.  Repeatable.  Choose either **mp4** (MPEG-4 movie) or
     **webm** (WebM movie).  You may optionally add additional FFmpeg encoding settings for this format
     via the **+o** modifier (in quotes if more than one word). If **none** is chosen then no PNGs will
-    be created at all; this requires **-M**.
+    be created at all; this requires **-M**.  Choose **+t** to generate transparent PNG images [opaque].
 
 .. _-G:
 
