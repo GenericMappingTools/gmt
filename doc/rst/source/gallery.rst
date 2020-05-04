@@ -53,3 +53,19 @@ Animations
 
    gallery/anim-introduction.rst
    gallery/anim*
+
+HD movies
+---------
+
+.. cssclass:: gmtmovie
+
+- .. youtube:: LTxlR5LuJ8g
+     :width: 100%
+
+  :ref:`movie01`
+
+.. toctree::
+   :hidden:
+   :glob:
+
+   gallery/movie*
