@@ -54,6 +54,7 @@
 #define MOVIE_WAIT_TO_CHECK	10000	/* In microseconds, so 0.01 seconds */
 
 #define MOVIE_RASTER_FORMAT	"png"	/* Lossless opaque raster format */
+#define MOVIE_RASTER_EXTENSION	"png"	/* Lossless transparent raster format */
 #define MOVIE_DEBUG_FORMAT	",ps"	/* Comma is intentional since we append to a list of formats */
 
 enum enum_script {BASH_MODE = 0,	/* Write Bash script */
@@ -2316,7 +2317,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (status[k].completed) continue;	/* Already finished with this frame */
 			if (!status[k].started) continue;	/* Not started this frame yet */
 			/* Here we can check if the frame job has completed by looking for the PNG product */
-			sprintf (png_file, "%s_%*.*d.%s", Ctrl->N.prefix, precision, precision, Ctrl->T.start_frame+k, MOVIE_RASTER_FORMAT);
+			sprintf (png_file, "%s_%*.*d.%s", Ctrl->N.prefix, precision, precision, Ctrl->T.start_frame+k, MOVIE_RASTER_EXTENSION);
 			if (access (png_file, F_OK)) continue;	/* Not found yet */
 			n_frames_completed++;		/* One more frame completed */
 			status[k].completed = true;	/* Flag this frame as completed */
@@ -2358,7 +2359,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			else if (Ctrl->A.stride > 10)
 				strcat (files, "0");
 		}
-		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.%s %s.gif", delay, Ctrl->A.loops, workdir, dir_sep, Ctrl->N.prefix, files, MOVIE_RASTER_FORMAT, Ctrl->N.prefix);
+		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.%s %s.gif", delay, Ctrl->A.loops, workdir, dir_sep, Ctrl->N.prefix, files, MOVIE_RASTER_EXTENSION, Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running GIF conversion returned error %d - exiting.\n", error);
@@ -2379,7 +2380,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
 		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
-			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_FORMAT, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
+			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to MP4 returned error %d - exiting.\n", error);
@@ -2399,7 +2400,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
 		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libvpx %s -pix_fmt yuv420p %s.webm",
-			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_FORMAT, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
+			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to webM returned error %d - exiting.\n", error);
