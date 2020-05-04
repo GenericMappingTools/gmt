@@ -1,5 +1,5 @@
-GMT Modules (Classic Mode)
-==========================
+Modules (Classic Mode)
+======================
 
 .. note::
 

@@ -15,7 +15,7 @@ Quick links
    - :doc:`std-opts`
    - :doc:`proj-codes`
    - :doc:`Default Settings (gmt.conf) <gmt.conf>`
-   - :doc:`GMT Colors <gmtcolors>`
+   - :doc:`Colors <gmtcolors>`
    - :doc:`35 Postscript Fonts </cookbook/postscript-fonts>`
    - :doc:`Built-in CPTs </cookbook/cpts>`
    - :doc:`Built-in patterns </cookbook/predefined-patterns>`

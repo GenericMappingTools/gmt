@@ -1,5 +1,5 @@
-GMT Modules
-===========
+Modules
+=======
 
 .. note::
 
