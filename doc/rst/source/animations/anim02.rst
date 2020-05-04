@@ -24,4 +24,3 @@ how to frame perspective views.
    :align: center
 
    Animation of a DEM using variable illumination.
-
