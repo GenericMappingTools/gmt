@@ -372,7 +372,7 @@ variables (e.g., frame number and anything given via **-T**).  The pre- and post
 access to the information in *movie_init* while the frame script in addition has access to the frame-specific
 parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
 **Note**: The *mainscript* is duplicated per frame and each copy is run simultaneously on all available cores.
- Multi-treaded GMT modules will therefore be limited to a single core as well.
+Multi-treaded GMT modules will therefore be limited to a single core as well.
 
 The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
@@ -490,7 +490,7 @@ all available cores.
 Longer Examples
 ---------------
 
-To explore more elaborate movies, see the Animations examples under our :doc:`Gallery <gallery>` or view
+To explore more elaborate movies, see the Animations examples under our :doc:`GMT Animations <animations>` or view
 high-resolution movies on the GMT `Youtube <https://www.youtube.com/channel/UCo1drOh0OZPcB7S8TmIyf8Q/>`_ channel.
 
 Other Movie Formats

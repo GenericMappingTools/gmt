@@ -38,6 +38,7 @@ Quick links
    :caption: Getting started
 
    gallery
+   animations
    tutorial
 
 .. toctree::
@@ -76,4 +77,3 @@ Quick links
    Debugging GMT <debug>
    GMT C API <api>
    PostScriptLight C API <postscriptlight>
-
