@@ -359,6 +359,15 @@ making a HD movie using the US unit dimensions then a background pink layer woul
 Note the canvas selection via :term:`PS_MEDIA`, the matching region and projection, and
 the zero location of the origin.
 
+Transparent images
+------------------
+
+By default, **movie** will build opaque PNG images which can then be assembled into an animation.
+Use **-F** modifier **+t** to instead make transparent PNG images.  Currently, few video codecs support
+transparency.  It is claimed both H.265 (HECV) and VP9 (Webm) offers this capability.
+Animated GIFs are able to build an animation from transparent PNGs.  Experts may create the transparent
+PNGs and take things from there.
+
 Technical Details
 -----------------
 
