@@ -401,7 +401,7 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 				break;
 		}
 	}
-
+	if (Ctrl->A.fade) Ctrl->A.paint = false;	/* With fading, the paint color is the terminal color */
 	if (Ctrl->A.rescale && Ctrl->A.resize) {
 		GMT_Report (Ctrl, GMT_MSG_ERROR, "Option -A+s|S: Cannot set both -A+s and -A+S\n");
 		error++;
@@ -553,6 +553,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<fade> (0-100) to fade entire plot to black (100%% fade)[no fading].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use +g<color> to change the fade color [black].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<paint> to paint the BoundingBox [no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +m<margin(s)> to enlarge the BoundingBox, with <margin(s)> being\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <off> for uniform margin for all 4 sides,\n");
@@ -2247,8 +2248,9 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->A.fade && !strncmp (line, "%%PageTrailer", 13) && Ctrl->A.fade_level > 0.0) {
 				/* Place a transparent black rectangle over everything, at level of transparency */
-				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to black at %d%%.\n", irint (100.0*Ctrl->A.fade_level));
-				fprintf (fpo, "gsave clippath 0 0 0 %g /Normal PSL_transp F N U\n", Ctrl->A.fade_level);
+				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->A.fill.rgb);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->A.fill.rgb), irint (100.0*Ctrl->A.fade_level));
+				fprintf (fpo, "V clippath %s %g /Normal PSL_transp F N U\n", ptr, Ctrl->A.fade_level);
 				transparency = true;
 			}
 #ifdef HAVE_GDAL

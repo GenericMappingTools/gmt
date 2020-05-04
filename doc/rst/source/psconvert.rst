@@ -89,7 +89,8 @@ Optional Arguments
     Use **-A+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
     Use **-A+g**\ *paint* to paint the BoundingBox behind the illustration and
     use **-A+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
-    the default pen of 0.25p,black).
+    the default pen of 0.25p,black).  **Note**: If both **+g** and **+f** are used
+    then we use *paint* as the fade color instead of black.
 
 .. _-C:
 
