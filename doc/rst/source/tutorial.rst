@@ -1,6 +1,6 @@
-############
-GMT Tutorial
-############
+########
+Tutorial
+########
 
 .. set default highlighting language for this document:
 

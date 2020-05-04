@@ -1,8 +1,5 @@
-GMT Animations
-==============
-
-Introduction
-------------
+Animations
+==========
 
 Here we will explore what is
 involved in creating animations (i.e., movies). Of course, an animation
@@ -24,9 +21,6 @@ examples have been purposefully made simpler by selecting lower frame rates
 and coarser grids so that the automatic building of the documentation (which
 includes the animations) does not take excessive time.
 
-Animations
-----------
-
 .. cssclass:: gmtgallary
 
 .. jinja::
@@ -45,9 +39,6 @@ Animations
    :glob:
 
    animations/anim*
-
-HD movies
----------
 
 .. cssclass:: gmtmovie
 
