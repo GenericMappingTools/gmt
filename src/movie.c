@@ -1333,6 +1333,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the movie main code ----------------------------*/
 
+	if (Ctrl->F.transparent) GMT_Report (API, GMT_MSG_WARNING, "Building transparent PNG images is an experimental feature\n");
 	/* Determine pixel dimensions of individual images */
 	p_width =  urint (ceil (Ctrl->C.dim[GMT_X] * Ctrl->C.dim[GMT_Z]));
 	p_height = urint (ceil (Ctrl->C.dim[GMT_Y] * Ctrl->C.dim[GMT_Z]));
