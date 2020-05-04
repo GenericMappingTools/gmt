@@ -362,12 +362,13 @@ the zero location of the origin.
 Transparent images
 ------------------
 
-By default, **movie** will build opaque PNG images which can then be assembled into an animation.
-Use **-F** experimental modifier **+t** to instead make transparent PNG images.  Currently, few video codecs support
-transparency.  It is claimed both H.265 (HECV) and VP9 (Webm) offers this capability; I have only been
-able to verify the latter by viewing the webm movie in Chrome.
-Animated GIFs can be built from transparent PNGs and here each frame accumulate in the final movie.
-Experts may create the transparent PNGs and take things from there.
+By default, **movie** will build *opaque* PNG images which can then be assembled into an animation.
+The vast majority of movies is likely to be made that way. Use the **-F** option's experimental modifier
+**+t** to make *transparent* PNG images.  Currently, very few video codecs support
+transparency.  It is claimed both H.265 (HECV) and VP9 (Webm) offer this capability; we have only been
+able to verify the latter by viewing a transparent webm movie in Chrome. Animated GIFs can be built from
+transparent PNGs as well and here each additional frame accumulate in the final movie. Experts may create
+transparent PNGs and create movies in professional tools that support a movie alpha channel.
 
 Technical Details
 -----------------
