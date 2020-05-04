@@ -7928,7 +7928,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (NULL);
 		}
 		if (zmax <= zmin) {	/* Safety valve 2 */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Passing max <= zmin prevents automatic CPT generation!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Passing zmax <= zmin prevents automatic CPT generation!\n");
 			return (NULL);
 		}
 
