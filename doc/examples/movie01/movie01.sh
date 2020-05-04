@@ -18,6 +18,7 @@
 # https://www.youtube.com/watch?v=LTxlR5LuJ8g
 # The movie took ~6 hours to render on a 24-core MacPro 2013.
 
+gmt set PROJ_LENGTH_UNIT inch FONT_TAG 20p,Helvetica,white
 cat << EOF > pre.sh
 #!/bin/bash
 # Pre-script: Runs once to produce files needed for all frames
@@ -26,7 +27,6 @@ gmt begin
 	gmt makecpt -Cgeo -H > MOR_topo.cpt
 gmt end
 EOF
-gmt set PROJ_LENGTH_UNIT inch FONT_TAG 20p,Helvetica,white
 cat << EOF > include.sh
 # A set of parameters needed by all frames
 ALTITUDE=1000
@@ -45,6 +45,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -Nmovie01 -D24 -H4 -Fmp4 -K -M2000,png -Gblack -Le+jTR -Lf -V -W/tmp/MOR -Z
-# Clean up
-rm -f include.sh pre.sh main.sh gmt.conf
+gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -Nmovie01 -D24 -H4 -Fnone -K -M2000,png -Gblack -Le+jTR -Lf -V -W/tmp/MOR -Zs
+rm -f gmt.conf

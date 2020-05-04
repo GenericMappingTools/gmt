@@ -9,3 +9,6 @@ share/dcw
 src/newsuppl*
 **/gmt.history
 .DS_Store
+doc/examples/**/*.mp4
+doc/examples/**/*.png
+doc/examples/**/*.gif

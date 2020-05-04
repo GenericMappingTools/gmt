@@ -34,5 +34,4 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C4ix2ix125 -Tsin_point.txt -Z -Nanim01 -D5 $opt
-rm -rf main.sh pre.sh
+gmt movie main.sh -Sbpre.sh -C4ix2ix125 -Tsin_point.txt -Zs -Nanim01 -D5 $opt

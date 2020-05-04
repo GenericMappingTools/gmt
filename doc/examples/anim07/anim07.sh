@@ -41,5 +41,4 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Tlongitudes.txt -Nanim07 -H2 -Pa -Z $opt
-rm -rf main.sh pre.sh
+gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Tlongitudes.txt -Nanim07 -H2 -Pa -Zs $opt
