@@ -6,8 +6,10 @@ steps:
     set -x -e
     sudo apt-get update
     sudo apt-get install -y --no-install-recommends --no-install-suggests \
-        cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev libgdal-dev \
-        libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl
+        build-essential cmake ninja-build \
+        libcurl4-gnutls-dev libnetcdf-dev libgdal-dev \
+        libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev \
+        ghostscript curl git
   displayName: Install dependencies
 
 - bash: |
