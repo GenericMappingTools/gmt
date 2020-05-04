@@ -97,12 +97,15 @@ if (UNIX AND DO_ANIMATIONS)
 endif (UNIX AND DO_ANIMATIONS)
 
 # run examples (test)
+file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/ex*/*.sh")
+file (GLOB _anims RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim*/*.sh")
+message (${_examples} ${_anims})
 if (DO_EXAMPLES AND BASH)
 	# this file takes care of setting up the test environment
 	configure_file (gmtest.in gmtest @ONLY)
-	foreach (_job ${_examples})
+	foreach (_job ${_examples} ${_anims})
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			COMMAND ${BASH} gmtest ${_job})
-	endforeach (_job ${_examples})
+	endforeach (_job ${_examples} ${_anims})
 endif (DO_EXAMPLES AND BASH)
