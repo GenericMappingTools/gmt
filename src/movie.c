@@ -31,7 +31,7 @@
  * Frame scripts are run in parallel without need for OpenMP etc.
  * Experimental.  Optionally, you can supply a title page script and
  * request fading of title page and/or the main animation.  The
- * fore-, back-gorund, and titlepage scripts can also just be ready-
+ * fore-, back-ground, and title page scripts can also just be ready-
  * to-use PostScripts plot of correct canvas size.
  */
 
@@ -53,7 +53,7 @@
 
 #define MOVIE_WAIT_TO_CHECK	10000	/* In microseconds, so 0.01 seconds */
 
-#define MOVIE_RASTER_FORMAT	"png"	/* Lossless transparent raster format */
+#define MOVIE_RASTER_FORMAT	"png"	/* Lossless opaque raster format */
 #define MOVIE_DEBUG_FORMAT	",ps"	/* Comma is intentional since we append to a list of formats */
 
 enum enum_script {BASH_MODE = 0,	/* Write Bash script */
@@ -122,7 +122,7 @@ struct MOVIE_CTRL {
 	struct MOVIE_E {	/* -E[<title>[+d<duration>[s][+f[b|e]<fade>[s]] */
 		bool active;
 		bool PS;		/* true if we got a plot instead of a script */
-		char *file;		/* Name of include script */
+		char *file;		/* Name of title script */
 		unsigned int duration;	/* Total number of frames of title/fade sequence */
 		unsigned int fade[2];	/* Duration of fade title in, fade title out [none]*/
 		FILE *fp;			/* Open file pointer to title script */
@@ -178,7 +178,7 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of script or PostScript file */
 		FILE *fp;	/* Open file pointer to script */
 	} S[2];
-	struct MOVIE_T {	/* -T<n_frames>|<min>/<max?<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w] */
+	struct MOVIE_T {	/* -T<n_frames>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w] */
 		bool active;
 		bool split;		/* true means we must split any trailing text in to words */
 		unsigned int n_frames;	/* Total number of frames */
@@ -190,8 +190,9 @@ struct MOVIE_CTRL {
 		bool active;
 		char *dir;	/* Alternative working directory than implied by -N */
 	} W;
-	struct MOVIE_Z {	/* -Z */
+	struct MOVIE_Z {	/* -Z[s] */
 		bool active;	/* Delete temporary files when completed */
+		bool delete;	/* Also delete all files including the mainscript and anything passed via -E, -I, -S */
 	} Z;
 	struct MOVIE_x {	/* -x[[-]<ncores>] */
 		bool active;
@@ -420,7 +421,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<titlepage>[+f[b|e]<fade>[s]] [-F<format>[+o<opts>]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-K[i|o]<fade>[s][+p]] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W<workdir>] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W<workdir>] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -522,8 +523,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give <workdir> where temporary files will be built [<workdir> = <prefix> set by -N].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to also delete all input scripts (mainscript and any files via -E, -I, -S)\n");
 	GMT_Option (API, "f");
-	/* Number of threads (repurposed from -x in GMT_Option since this local option is always available and not using OpenMP) */
+	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in frame generation [Default uses all cores = %d].\n", API->n_cores);
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x<n>  Select <n> cores (up to all available).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
@@ -854,7 +856,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
-			case 'F':	/* Set movie format and optional ffmpeg options */
+			case 'F':	/* Set movie format and optional FFmpeg options */
 				if ((c = strstr (opt->arg, "+o"))) {	/* Gave encoding options */
 					s = &c[2];	/* Retain start of encoding options for later */
 					c[0] = '\0';	/* Chop off options */
@@ -1066,6 +1068,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'Z':	/* Erase frames after movie has been made */
 				Ctrl->Z.active = true;
+				if (opt->arg[0] == 's') Ctrl->Z.delete = true;	/* Also delete input scripts */
 				break;
 
 			case 'x':
@@ -1206,6 +1209,31 @@ GMT_LOCAL bool movie_is_gmt_end_show (char *line) {
 	return false;	/* Not gmt end show */
 }
 
+GMT_LOCAL int movie_delete_scripts (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl) {
+	/* Delete the scripts since they apparently are temporary */
+	if (Ctrl->In.file && gmt_remove_file (GMT, Ctrl->In.file)) {	/* Delete the main script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the main script %s.\n", Ctrl->In.file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (Ctrl->E.file && gmt_remove_file (GMT, Ctrl->E.file)) {	/* Delete the title script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the title script %s.\n", Ctrl->E.file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (Ctrl->I.file && gmt_remove_file (GMT, Ctrl->I.file)) {	/* Delete the include script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the include script %s.\n", Ctrl->I.file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (Ctrl->S[MOVIE_PREFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[MOVIE_PREFLIGHT].file)) {	/* Delete the background script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the background script %s.\n", Ctrl->S[MOVIE_PREFLIGHT].file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (Ctrl->S[MOVIE_POSTFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[MOVIE_POSTFLIGHT].file)) {	/* Delete the foreground script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the foreground script %s.\n", Ctrl->S[MOVIE_POSTFLIGHT].file);
+		return (GMT_RUNTIME_ERROR);
+	}
+	return (GMT_NOERROR);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1311,15 +1339,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have ffmpeg installed */
+		if (Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) {	/* Ensure we have FFmpeg installed */
 			if (gmt_check_executable (GMT, "ffmpeg", "-version", "FFmpeg developers", line)) {
 				sscanf (line, "%*s %*s %s %*s", version);
 				GMT_Report (API, GMT_MSG_INFORMATION, "FFmpeg %s found.\n", version);
 				if (p_width % 2)	/* Don't like odd pixel widths */
-					GMT_Report (API, GMT_MSG_ERROR, "Your frame width is an odd number of pixels (%u). This may not work with ffmpeg...\n", p_width);
+					GMT_Report (API, GMT_MSG_ERROR, "Your frame width is an odd number of pixels (%u). This may not work with FFmpeg...\n", p_width);
 			}
 			else {
-				GMT_Report (API, GMT_MSG_ERROR, "ffmpeg is not installed - cannot build MP4 or WEbM movies.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "FFmpeg is not installed - cannot build MP4 or WEbM movies.\n");
 				movie_close_files (Ctrl);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -2149,6 +2177,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}
+			if (Ctrl->Z.delete) {	/* Delete input scripts */
+				if ((error = movie_delete_scripts (GMT, Ctrl)))
+					Return (error);
+			}
 			Return (GMT_NOERROR);
 		}
 	}
@@ -2336,7 +2368,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->A.skip) GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation reflects every %d frame only\n", Ctrl->A.stride);
 	}
 	if (Ctrl->F.active[MOVIE_MP4]) {
-		/* Set up system call to ffmpeg (which we know exists) */
+		/* Set up system call to FFmpeg (which we know exists) */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG))
 			sprintf (extra, "verbose");
 		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION))
@@ -2350,13 +2382,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_FORMAT, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
-			GMT_Report (API, GMT_MSG_ERROR, "Running ffmpeg conversion to MP4 returned error %d - exiting.\n", error);
+			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to MP4 returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "MP4 movie built: %s.mp4\n", Ctrl->N.prefix);
 	}
 	if (Ctrl->F.active[MOVIE_WEBM]) {
-		/* Set up system call to ffmpeg (which we know exists) */
+		/* Set up system call to FFmpeg (which we know exists) */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG))
 			sprintf (extra, "verbose");
 		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION))
@@ -2370,7 +2402,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_FORMAT, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
-			GMT_Report (API, GMT_MSG_ERROR, "Running ffmpeg conversion to webM returned error %d - exiting.\n", error);
+			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to webM returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "WebM movie built: %s.webm\n", Ctrl->N.prefix);
@@ -2423,6 +2455,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
 			Return (GMT_RUNTIME_ERROR);
 		}
+	}
+
+	if (Ctrl->Z.delete) {	/* Delete input scripts */
+		if ((error = movie_delete_scripts (GMT, Ctrl)))
+			Return (error);
 	}
 
 	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
