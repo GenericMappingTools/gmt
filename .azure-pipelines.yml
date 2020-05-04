@@ -217,3 +217,37 @@ jobs:
 
   steps:
   - template: ci/azure-pipelines-windows.yml
+
+# Docker
+########################################################################################
+- job:
+  displayName: 'Docker | '
+  condition: ne(variables['Build.Reason'], 'Schedule')
+
+  variables:
+    BUILD_DOCS: false
+    DEPLOY_DOCS: false
+    PACKAGE: false
+    TEST: false
+
+  strategy:
+    matrix:
+      Ubuntu1404:   # CMake 2.8.12 + GNU 4.8.4
+        containerImage: ubuntu:14.04
+      Ubuntu1604:   # CMake 3.5.1 + GNU 5.4.0
+        containerImage: ubuntu:16.04
+      Ubuntu1804:   # CMake 3.10.2 + GNU 7.4.0
+        containerImage: ubuntu:18.04
+
+  container:
+    image: $[ variables['containerImage'] ]
+    # See https://github.com/microsoft/azure-pipelines-agent/issues/2043#issuecomment-500451567
+    # for docker sudo workaround
+    options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
+
+  steps:
+  - script: |
+      /tmp/docker exec -t -u 0 ci-container \
+      sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+    displayName: Set up sudo
+  - template: ci/azure-pipelines-linux.yml
