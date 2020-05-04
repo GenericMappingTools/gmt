@@ -363,10 +363,11 @@ Transparent images
 ------------------
 
 By default, **movie** will build opaque PNG images which can then be assembled into an animation.
-Use **-F** modifier **+t** to instead make transparent PNG images.  Currently, few video codecs support
-transparency.  It is claimed both H.265 (HECV) and VP9 (Webm) offers this capability.
-Animated GIFs are able to build an animation from transparent PNGs.  Experts may create the transparent
-PNGs and take things from there.
+Use **-F** experimental modifier **+t** to instead make transparent PNG images.  Currently, few video codecs support
+transparency.  It is claimed both H.265 (HECV) and VP9 (Webm) offers this capability; I have only been
+able to verify the latter by viewing the webm movie in Chrome.
+Animated GIFs can be built from transparent PNGs and here each frame accumulate in the final movie.
+Experts may create the transparent PNGs and take things from there.
 
 Technical Details
 -----------------
