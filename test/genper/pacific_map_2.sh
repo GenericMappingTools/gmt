@@ -23,6 +23,5 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${vp_longitud
 
 gmt makecpt -Cglobe > t.cpt
 gmt grdcut @earth_relief_02m -R189/210/10/33 -Getopo2-hawaii.nc=ns
-gmt grdimage etopo2-hawaii.nc ${GMT_VERBOSE} -P -Xc -Yc -E200 $REGION $PROJ -Ct.cpt -K > $ps
-gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5 -B+t${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
-
+gmt grdimage etopo2-hawaii.nc ${GMT_VERBOSE} -P -Xc -Yc $REGION $PROJ -Ct.cpt -K > $ps
+gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5 -B+t${TITLE} -Wfaint -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
