@@ -489,6 +489,7 @@ endif (HAVE_DLADDR AND HAVE_LIBDL)
 set_target_properties (pslib
 	PROPERTIES
 	OUTPUT_NAME postscriptlight
+	RUNTIME_OUTPUT_NAME postscriptlight
 	PREFIX "${LIB_PREFIX}"
 	IMPORT_PREFIX "${LIB_PREFIX}"
 	VERSION ${GMT_LIB_VERSION}

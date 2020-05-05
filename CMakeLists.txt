@@ -145,32 +145,18 @@ set (_lib_suffix ${CMAKE_SHARED_LIBRARY_SUFFIX})
 # Get name of GMT core library
 get_target_property (_name gmtlib RUNTIME_OUTPUT_NAME)
 get_target_property (_prefix gmtlib PREFIX)
-if (WIN32 AND GMT_DLL_RENAME)
-	set (GMT_CORE_LIB_NAME ${GMT_DLL_RENAME}.dll)
-else (WIN32 AND GMT_DLL_RENAME)
-	set (GMT_CORE_LIB_NAME ${_prefix}${_name}${_lib_suffix})
-endif (WIN32 AND GMT_DLL_RENAME)
+set (GMT_CORE_LIB_NAME ${_prefix}${_name}${_lib_suffix})
 
 # Get name of PSL library
-get_target_property (_name pslib OUTPUT_NAME)
+get_target_property (_name pslib RUNTIME_OUTPUT_NAME)
 get_target_property (_prefix pslib PREFIX)
-if (WIN32 AND PSL_DLL_RENAME)
-	set (PSL_LIB_NAME ${PSL_DLL_RENAME}.dll)
-else (WIN32 AND PSL_DLL_RENAME)
-	set (PSL_LIB_NAME ${_prefix}${_name}${_lib_suffix})
-endif (WIN32 AND PSL_DLL_RENAME)
+set (PSL_LIB_NAME ${_prefix}${_name}${_lib_suffix})
 
 # Get name of shared supplemental library
 if (BUILD_SUPPLEMENTS)
-	get_target_property (_name ${GMT_SUPPL_LIB_NAME} OUTPUT_NAME)
+	get_target_property (_name ${GMT_SUPPL_LIB_NAME} RUNTIME_OUTPUT_NAME)
 	get_target_property (_prefix ${GMT_SUPPL_LIB_NAME} PREFIX)
-
-	if (WIN32 AND SUPP_DLL_RENAME)
-		set (GMT_SUPPL_LIBRARY ${SUPP_DLL_RENAME}.dll)
-	else (WIN32 AND SUPP_DLL_RENAME)
-		set (GMT_SUPPL_LIBRARY ${_prefix}${_name}${CMAKE_SHARED_MODULE_SUFFIX})
-	endif (WIN32 AND SUPP_DLL_RENAME)
-
+	set (GMT_SUPPL_LIBRARY ${_prefix}${_name}${CMAKE_SHARED_MODULE_SUFFIX})
 	set (SUPPL "yes [${GMT_SUPPL_LIBRARY}]")
 else (BUILD_SUPPLEMENTS)
 	set (SUPPL "no")
