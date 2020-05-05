@@ -10,10 +10,6 @@ set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 
 set (GMT_ENABLE_OPENMP TRUE)
-
-set (GMT_DLL_RENAME "gmt_w64")
-set (PSL_DLL_RENAME "postscriptlight_w64")
-set (SUPP_DLL_RENAME "supplements_w64")
 EOF
 
 if [[ "$TEST" == "true" ]]; then
