@@ -18,12 +18,12 @@ Synopsis
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
-[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**+i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
+[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
 [ |-F|\ *format*\ [**+t**]\ [**+o**\ *options*]]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *factor*]
 [ |-I|\ *includefile* ]
-[ |-K|\ [**+f**\ [**+i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
+[ |-K|\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
 [ |-P|\ *progress* ]
@@ -127,7 +127,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**+i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]
+**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]
     Give *titlepage* script that creates a static title page for the movie [no title].
     Alternatively, *titlepage* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
     Control how long it should be displayed with **+d** in number of frames (append **s** for duration in seconds instead) [4s].
@@ -173,14 +173,14 @@ Optional Arguments
 .. _-K:
 
 
-**-K**\ [**+f**\ [**+i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
+**-K**\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
     Add fading in and out for the main animation sequence [no fading]. Append
     the length of the fading in number of frames (or seconds by appending **s**) [1s].
     For different lengths of fading in and out you can repeat the **-K** option
     by appending the **i** or **o** directives to **+f**.  Normally, fading will affect the
     first and last animation frames.  Append **+p** to preserve these by instead
     fading in and out on only the first and last (repeated) animation frames.
-    We fade from and to black by default; aappend **+g**\ *fill* to use another terminal fade color.
+    We fade from and to black by default; append **+g**\ *fill* to use another terminal fade color.
 
 .. _-L:
 
