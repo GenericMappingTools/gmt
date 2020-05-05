@@ -52,8 +52,9 @@
 #define MOVIE_POSTFLIGHT	1
 
 #define MOVIE_WAIT_TO_CHECK	10000	/* In microseconds, so 0.01 seconds */
+#define MOVIE_PAUSE_A_SEC	1000000	/* In microseconds, so 1 seconds */
 
-#define MOVIE_RASTER_EXTENSION	"png"	/* Fixed raster format */
+#define MOVIE_RASTER_EXTENSION	"png"	/* Fixed raster format extension */
 #define MOVIE_DEBUG_FORMAT	",ps"	/* Comma is intentional since we append to a list of formats */
 
 enum enum_script {BASH_MODE = 0,	/* Write Bash script */
@@ -119,7 +120,7 @@ struct MOVIE_CTRL {
 		bool active;
 		double framerate;
 	} D;
-	struct MOVIE_E {	/* -E[<title>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>] */
+	struct MOVIE_E {	/* -E<title>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>] */
 		bool active;
 		bool PS;		/* true if we got a plot instead of a script */
 		char *file;		/* Name of title script */
@@ -151,7 +152,7 @@ struct MOVIE_CTRL {
 	} I;
 	struct MOVIE_K {	/* -K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]] */
 		bool active;
-		bool preserve[2];
+		bool preserve[2];	/* Preserve first and last frames */
 		char *fill;		/* Fade color [black] */
 		unsigned int fade[2];	/* Duration of movie in and movie out fades [none]*/
 	} K;
@@ -694,6 +695,7 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 }
 
 GMT_LOCAL unsigned int movie_get_n_frames (struct GMT_CTRL *GMT, char *txt, double framerate, char *def) {
+	/* Convert user argument in frames or seconds to frames */
 	char *p = (!txt || !txt[0]) ? def : txt;	/* Get frames or times in seconds */
 	double fval = atof (p);	/* Get frames or times in seconds */
 	gmt_M_unused (GMT);
@@ -845,11 +847,11 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 							case 'f':	/* In/out fades */
 								k = (p[1] && strchr ("io", p[1])) ? 2 : 1;	/* Did we get a common fade or different for in/out? */
 								frames = movie_get_n_frames (GMT, &p[k], Ctrl->D.framerate, "1s");	/* Get fade length in number of frames */
-								if (k == 1) /* Set equal fade times */
+								if (k == 1) /* Set equal fade frames */
 									Ctrl->E.fade[GMT_IN] = Ctrl->E.fade[GMT_OUT] = frames;
-								else if (p[1] == 'i') /* Set input fade */
+								else if (p[1] == 'i') /* Set input fade frames */
 									Ctrl->E.fade[GMT_IN] = frames;
-								else 	/* Set output ga */
+								else 	/* Set output fade frames */
 									Ctrl->E.fade[GMT_OUT] = frames;
 								break;
 							case 'g':	/* Change fade color */
@@ -967,9 +969,9 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 								frames = movie_get_n_frames (GMT, &p[k], Ctrl->D.framerate, "1s");	/* Get duration in frames */
 								if (k == 1) /* Set equal length in and out fades */
 									Ctrl->K.fade[GMT_IN] = Ctrl->K.fade[GMT_OUT] = frames;
-								else if (p[1] == 'i') /* Set input fade */
+								else if (p[1] == 'i') /* Set input fade frames */
 									Ctrl->K.fade[GMT_IN] = frames;
-								else 	/* Set output fade */
+								else 	/* Set output fade frames */
 									Ctrl->K.fade[GMT_OUT] = frames;
 								break;
 							case 'g':	/* Change fade color */
@@ -980,7 +982,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 								break;
 							case 'p':	/* Persistent fade frame */
 								k = (p[1] && strchr ("io", p[1])) ? 2 : 1;	/* Did we get a common persistence setting or different for in/out? */
-								if (k == 1) /* Set preserve for start and end of movie */
+								if (k == 1) /* Set preserve frames for both start and end of movie */
 									Ctrl->K.preserve[GMT_IN] = Ctrl->K.preserve[GMT_OUT] = true;
 								else if (p[1] == 'i') /* Set start frame preserve */
 									Ctrl->K.preserve[GMT_IN] = true;
@@ -1892,14 +1894,14 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Create parameter include files, one for each frame */
 
-	if (Ctrl->K.active) {	/* Must make room for the extra frame need for fading in and out */
-		if (!Ctrl->K.preserve[GMT_OUT])	/* No extra frames are created - just fading being applied to some of them */
-			first_fade_out_frame = n_frames - Ctrl->K.fade[GMT_IN] - 1;
-		else {
-			GMT_Report (API, GMT_MSG_INFORMATION, "Parameter files for fade in/out of main animation: %d\n", n_fade_frames);
-			first_fade_out_frame = Ctrl->K.fade[GMT_IN] + n_frames;
-			n_frames += n_fade_frames;
-		}
+	if (Ctrl->K.active) {	/* Must make room for the extra frames need for fading in and out, unless preserve is true */
+		unsigned int pre_fade = (Ctrl->K.preserve[GMT_IN]) ? Ctrl->K.fade[GMT_IN] : 0;	/* Extra frames added due to preserve at the beginning */
+		if (Ctrl->K.preserve[GMT_OUT])	/* Extra frames are created at the end, so we start fading after the last frame */
+			first_fade_out_frame = pre_fade + n_frames;
+		else	/* No extra frames are created - just fading being applied to some of them */
+			first_fade_out_frame = pre_fade + n_frames - Ctrl->K.fade[GMT_OUT] - 1;
+		n_frames += n_fade_frames;
+		GMT_Report (API, GMT_MSG_INFORMATION, "Parameter files for fade in/out of main animation: %d\n", n_fade_frames);
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Parameter files for main animation: %d\n", n_frames);
@@ -2302,7 +2304,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 	else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
 		movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
-	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if scrip has gmt end show */
+	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if script has gmt end show */
 	movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 	movie_set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
@@ -2432,6 +2434,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				strcat (files, "0");
 		}
 		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.%s %s.gif", delay, Ctrl->A.loops, workdir, dir_sep, Ctrl->N.prefix, files, MOVIE_RASTER_EXTENSION, Ctrl->N.prefix);
+		movie_gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running GIF conversion returned error %d - exiting.\n", error);
@@ -2453,6 +2456,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (png_file, "%%0%dd", precision);
 		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
+		movie_gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to MP4 returned error %d - exiting.\n", error);
@@ -2475,6 +2479,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec %s %s -pix_fmt %s %s.webm",
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, vpx[Ctrl->F.transparent],
 			(Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", pix_fmt[Ctrl->F.transparent], Ctrl->N.prefix);
+		movie_gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to webM returned error %d - exiting.\n", error);

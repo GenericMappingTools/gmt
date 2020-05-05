@@ -178,10 +178,11 @@ Optional Arguments
 **-K**\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
     Add fading in and out for the main animation sequence [no fading]. Append
     the length of the fading in number of frames (or seconds by appending **s**) [1s].
-    For different lengths of in and out fading you can repeat the **+f** modifier
-    by appending the **i** or **o** directives.  Normally, fading will be overlaid on the
-    first and last few seconds of the main animation frames.  Append **+p** to preserve
-    these frames by instead fading over only the first and last (repeated) animation frames.
+    Use **+fi** and/or **+fo** to specify one-sided fading or to give unequal fade
+    intervals [Default is same duration for both].  Normally, fading will be overlaid on the
+    first and last *fade* frames of the main animation.  Append **+p** to *preserve*
+    these frames by fading over only the first and last (repeated) animation frames instead.
+    Append **i** or **o** to only preserve the frame involved during the fade in or fade out instead.
     We fade from and to black by default; append **+g**\ *fill* to use another terminal fade color.
 
 .. _-L:
