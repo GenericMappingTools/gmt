@@ -20,6 +20,7 @@ if (DO_TESTS)
 	# Automatically detect all subdirectories for testing
 	include (GmtHelperMacros)
 	get_subdir_list (GMT_TEST_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+	list (REMOVE_ITEM GMT_TEST_DIRS animation)
 
 	if (NOT DO_API_TESTS)
 		list (REMOVE_ITEM GMT_TEST_DIRS api)
