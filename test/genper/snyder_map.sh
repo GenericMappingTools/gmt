@@ -22,4 +22,4 @@ Height=30.0
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
 
-gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g1 -B+t${TITLE} -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
+gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -P -Yc -Xc -B5g1 -B+t${TITLE} -W -Dl --MAP_ANNOT_MIN_SPACING=0.5i > $ps
