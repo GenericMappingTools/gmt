@@ -143,7 +143,7 @@ endif (GIT_FOUND AND HAVE_GIT_VERSION)
 set (_lib_suffix ${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 # Get name of GMT core library
-get_target_property (_name gmtlib OUTPUT_NAME)
+get_target_property (_name gmtlib RUNTIME_OUTPUT_NAME)
 get_target_property (_prefix gmtlib PREFIX)
 set (GMT_CORE_LIB_NAME ${_prefix}${_name}${_lib_suffix})
 
