@@ -149,9 +149,9 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of include script */
 		FILE *fp;	/* Open file pointer to include script */
 	} I;
-	struct MOVIE_K {	/* -K[+f[i|o]<fade>[s]][+g<fill>][+p] */
+	struct MOVIE_K {	/* -K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]] */
 		bool active;
-		bool preserve;
+		bool preserve[2];
 		char *fill;		/* Fade color [black] */
 		unsigned int fade[2];	/* Duration of movie in and movie out fades [none]*/
 	} K;
@@ -843,9 +843,9 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 								Ctrl->E.duration = movie_get_n_frames (GMT, &p[1], Ctrl->D.framerate, "4s");
 								break;
 							case 'f':	/* In/out fades */
-								k = (p[1] && strchr ("io", p[1])) ? 2 : 1;	/* Did we get a common fade or different for in/out */
-								frames = movie_get_n_frames (GMT, &p[k], Ctrl->D.framerate, "1s");
-								if (k == 1) /* Set both fades */
+								k = (p[1] && strchr ("io", p[1])) ? 2 : 1;	/* Did we get a common fade or different for in/out? */
+								frames = movie_get_n_frames (GMT, &p[k], Ctrl->D.framerate, "1s");	/* Get fade length in number of frames */
+								if (k == 1) /* Set equal fade times */
 									Ctrl->E.fade[GMT_IN] = Ctrl->E.fade[GMT_OUT] = frames;
 								else if (p[1] == 'i') /* Set input fade */
 									Ctrl->E.fade[GMT_IN] = frames;
@@ -867,6 +867,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				if (Ctrl->E.duration == 0) Ctrl->E.duration = movie_get_n_frames (GMT, NULL, Ctrl->D.framerate, "4s");
 				if (opt->arg[0])
 					Ctrl->E.file = strdup (opt->arg);
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: No title script or PostScript file given\n");
+					n_errors++;					
+				}
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
@@ -897,12 +901,12 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					k = MOVIE_MP4;
 				else if (!strcmp (opt->arg, "webm"))	/* Make a WebM movie */
 					k = MOVIE_WEBM;
-				else if (opt->arg[0]) {
+				else if (opt->arg[0]) {	/* Gave another argument which is invalid */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Unrecognized format %s\n", opt->arg);
 					n_errors++;
 					break;
 				}
-				if (opt->arg[0]) {	/* Gave an argument */
+				if (opt->arg[0]) {	/* Gave a valid argument */
 					if (Ctrl->F.active[k]) {	/* Can only select a format once */
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Format %s already selected\n", opt->arg);
 						n_errors++;
@@ -951,7 +955,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 
-			case 'K':	/* Fade from/to a black background -K[i|o][+d<duration>[s]][+g<fill>][+p] */
+			case 'K':	/* Fade from/to a black background -K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]] */
 				Ctrl->K.active = true;
 				frames = 0;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "fgp"))) {	/* Process any modifiers */
@@ -959,13 +963,13 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					while (gmt_getmodopt (GMT, 'K', c, "fgp", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'f':	/* In/out fades */
-								k = (p[1] && strchr ("io", p[1])) ? 2 : 1;	/* Did we get a common fade or different for in/out */
-								frames = movie_get_n_frames (GMT, &p[k], Ctrl->D.framerate, "1s");
-								if (k == 1) /* Set both fades */
+								k = (p[1] && strchr ("io", p[1])) ? 2 : 1;	/* Did we get a common fade or different for in/out? */
+								frames = movie_get_n_frames (GMT, &p[k], Ctrl->D.framerate, "1s");	/* Get duration in frames */
+								if (k == 1) /* Set equal length in and out fades */
 									Ctrl->K.fade[GMT_IN] = Ctrl->K.fade[GMT_OUT] = frames;
 								else if (p[1] == 'i') /* Set input fade */
 									Ctrl->K.fade[GMT_IN] = frames;
-								else 	/* Set output ga */
+								else 	/* Set output fade */
 									Ctrl->K.fade[GMT_OUT] = frames;
 								break;
 							case 'g':	/* Change fade color */
@@ -975,9 +979,15 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 									Ctrl->K.fill = strdup (&p[1]);
 								break;
 							case 'p':	/* Persistent fade frame */
-								Ctrl->K.preserve = true;
+								k = (p[1] && strchr ("io", p[1])) ? 2 : 1;	/* Did we get a common persistence setting or different for in/out? */
+								if (k == 1) /* Set preserve for start and end of movie */
+									Ctrl->K.preserve[GMT_IN] = Ctrl->K.preserve[GMT_OUT] = true;
+								else if (p[1] == 'i') /* Set start frame preserve */
+									Ctrl->K.preserve[GMT_IN] = true;
+								else 	/* Set end frame preserve */
+									Ctrl->K.preserve[GMT_OUT] = true;
 								break;
-						default:
+							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
@@ -1623,12 +1633,14 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	if (Ctrl->K.active) {
 		n_fade_frames = Ctrl->K.fade[GMT_IN] + Ctrl->K.fade[GMT_OUT];	/* Extra frames if preserving */
-		if (!Ctrl->K.preserve && n_fade_frames > n_data_frames) {
+		if (!(Ctrl->K.preserve[GMT_IN] || Ctrl->K.preserve[GMT_OUT]) && n_fade_frames > n_data_frames) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -K: Combined fading duration cannot exceed animation duration\n");
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (!Ctrl->K.preserve) n_fade_frames = 0;	/* We are clobbering, not preserving */
+		n_fade_frames = 0;	/* If clobbering */
+		if (Ctrl->K.preserve[GMT_IN])  n_fade_frames += Ctrl->K.fade[GMT_IN];	/* We are preserving, not clobbering */
+		if (Ctrl->K.preserve[GMT_OUT]) n_fade_frames += Ctrl->K.fade[GMT_OUT];	/* We are preserving, not clobbering */
 	}
 
 	for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
@@ -1881,7 +1893,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	/* Create parameter include files, one for each frame */
 
 	if (Ctrl->K.active) {	/* Must make room for the extra frame need for fading in and out */
-		if (!Ctrl->K.preserve)	/* No extra frames are created - just fading being applied to some */
+		if (!Ctrl->K.preserve[GMT_OUT])	/* No extra frames are created - just fading being applied to some of them */
 			first_fade_out_frame = n_frames - Ctrl->K.fade[GMT_IN] - 1;
 		else {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Parameter files for fade in/out of main animation: %d\n", n_fade_frames);
@@ -1892,7 +1904,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Parameter files for main animation: %d\n", n_frames);
 	for (i_frame = 0; i_frame < n_frames; i_frame++) {
-		frame = data_frame = i_frame + Ctrl->T.start_frame;	/* Actual frame is normally same as data_frame number */
+		frame = data_frame = i_frame + Ctrl->T.start_frame;	/* The frame is normally same as data_frame number */
 		if (one_frame && (frame + Ctrl->E.duration) != Ctrl->M.frame) continue;	/* Just doing a single frame for debugging */
 		sprintf (state_tag, "%*.*d", precision, precision, frame + Ctrl->E.duration);
 		sprintf (state_prefix, "movie_params_%s", state_tag);
@@ -1909,16 +1921,16 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 		if (Ctrl->K.active) {	/* Must stay on either first or last actual frame repeatedly to fade in/out the first/last true frame plot */
 			if (i_frame < Ctrl->K.fade[GMT_IN]) { /* Must keep fixed first data frame but change fading in */
-				if (Ctrl->K.preserve) data_frame = 0;	/* Keep plotting the first data frame */
+				if (Ctrl->K.preserve[GMT_IN]) data_frame = 0;	/* Keep plotting the first data frame */
 				fade_level = 50 * (1.0 + cos (M_PI * i_frame / Ctrl->K.fade[GMT_IN]));
 			}
 			else if (i_frame >= first_fade_out_frame) { /* Must keep fixed plot but change fading out */
-				if (Ctrl->K.preserve) data_frame = n_data_frames - 1;	/* Keep plotting the last data frame */
+				if (Ctrl->K.preserve[GMT_OUT]) data_frame = n_data_frames - 1;	/* Keep plotting the last data frame */
 				fade_level = 50 * (1.0 - cos (M_PI * (i_frame - first_fade_out_frame) / Ctrl->K.fade[GMT_OUT]));
 			}
 			else {
 				fade_level = 0.0;	/* No fading */
-				if (Ctrl->K.preserve) data_frame = i_frame - Ctrl->K.fade[GMT_IN];
+				if (Ctrl->K.preserve[GMT_IN]) data_frame = i_frame - Ctrl->K.fade[GMT_IN];
 			}
 			movie_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
 		}

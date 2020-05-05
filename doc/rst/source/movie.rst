@@ -128,12 +128,14 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]
-    Give *titlepage* script that creates a static title page for the movie [no title].
-    Alternatively, *titlepage* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
-    Control how long it should be displayed with **+d** in number of frames (append **s** for duration in seconds instead) [4s].
-    Optionally, supply **+f**\ *fade* **i**\ n and **o**\ ut durations [Default is both] (in frames or seconds [1s]) as well [no fading].
-    Fading affects the beginning and end of the title page *duration*. We fade from and to black by default;
-    append **+g**\ *fill* to use another terminal fade color.
+    Give a *titlepage* script that creates a static title page for the movie [no title].
+    Alternatively, *titlepage* can be a *PostScript* plot (file extension .ps) of dimensions exactly matching
+    the canvas size set in **-C**. You control the duration of the title sequence with **+d** and specify
+    the number of frames (or append **s** for a duration in seconds instead) [4s].
+    Optionally, supply the fade length via **+f**\ *fade* (in frames or seconds [1s]) as well [no fading];
+    Use **+fi** and/or **+fo** to specify one-sided fading or to give unequal fade intervals [Default is same
+    duration for both]. The fading affects the beginning and end of the title page *duration*. We fade from and
+    to black by default; append **+g**\ *fill* to use another terminal fade color.
 
 .. _-F:
 
@@ -176,10 +178,10 @@ Optional Arguments
 **-K**\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
     Add fading in and out for the main animation sequence [no fading]. Append
     the length of the fading in number of frames (or seconds by appending **s**) [1s].
-    For different lengths of fading in and out you can repeat the **-K** option
-    by appending the **i** or **o** directives to **+f**.  Normally, fading will affect the
-    first and last animation frames.  Append **+p** to preserve these by instead
-    fading in and out on only the first and last (repeated) animation frames.
+    For different lengths of in and out fading you can repeat the **+f** modifier
+    by appending the **i** or **o** directives.  Normally, fading will be overlaid on the
+    first and last few seconds of the main animation frames.  Append **+p** to preserve
+    these frames by instead fading over only the first and last (repeated) animation frames.
     We fade from and to black by default; append **+g**\ *fill* to use another terminal fade color.
 
 .. _-L:
@@ -459,11 +461,11 @@ Title Sequence and Fading
    The fade-level (0 means black, 100 means normal visibility) for the complete movie, including
    an optional title sequence.
 
-The complete movie may have a leading title sequence (**-E**) of given *duration*. A short section
-at the beginning and end may be designated to fade in/out via black.  The main animation
-sequence may also have fade in/out (**-K**). Here, you can choose to fade in/out during the beginning and end section of
-the animation or you can "freeze" the first and last animation frame and only fade in/out using
-those static images (via modifier **+p** to preserve the whole animation sequence).
+The complete movie may have an optional leading title sequence (**-E**) of a given *duration*. A short section
+at the beginning and/or end of this duration may be designated to fade in/out via the designated fade
+color [black].  The main animation sequence may also have an optional fade in and/or out section (**-K**). Here, you
+can choose to fade on top of the animation or you can "freeze" the first and/or last animation frame and only fade over
+those static images (via modifier **+p**) in order to preserve the whole animation sequence.
 
 Examples
 --------
