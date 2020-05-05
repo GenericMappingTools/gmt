@@ -1001,7 +1001,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		}
 		dlerror (); /* Clear any existing error */
 	}
-	GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # 0 (core). Path = %s\n", API->lib[0].path);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Shared Library # 0 (core). Path = %s\n", API->lib[0].path);
 
 	/* 3. Add any plugins installed in <installdir>/lib/gmt/plugins */
 
