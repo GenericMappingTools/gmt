@@ -978,13 +978,15 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	/* 1. Load the GMT core library by default [unless libgmt is used externally] */
 	/* Note: To extract symbols from the currently executing process we need to load it as a special library.
 	 * This is done by passing NULL under Linux and by calling GetModuleHandleEx under Windows, hence we
-	 * use the dlopen_special call which is defined in gmt_sharedlibs.c */
+	 * use the dlopen_special call which is defined in gmt_sharedlibs.c.  If the gmt core and supplemental
+	 * libraries are being used by 3rd party externals then no library is special and they are all opened
+	 * the first time we need access. */
 
 	API->lib[0].name = strdup ("core");
 	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
 	GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # 0 (core). Path = %s\n", API->lib[0].path);
 	++n_custom_libs;
-	if (!API->external) {
+	if (!API->external) {	/* The handling of the core library is only special when gmt.c is used. */
 		GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 		if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());
