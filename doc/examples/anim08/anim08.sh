@@ -8,7 +8,6 @@
 
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 100
 	opt="-M100,ps -Fnone"
-	ps=anim08.ps
 else    # Make movie in MP4 format and a thumbnail animated GIF using every 5th frame
 	opt="-Fmp4 -A+l+s5"
 fi
