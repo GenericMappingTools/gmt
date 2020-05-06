@@ -98,7 +98,7 @@ endif (UNIX AND DO_ANIMATIONS)
 
 # run examples (test)
 file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/ex*/*.sh")
-file (GLOB _anims RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim*/*.sh")
+file (GLOB _anims RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim0[1-8]/*.sh")
 if (DO_EXAMPLES AND BASH)
 	# this file takes care of setting up the test environment
 	configure_file (gmtest.in gmtest @ONLY)

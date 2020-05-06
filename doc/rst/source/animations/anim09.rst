@@ -1,6 +1,6 @@
-.. _movie01:
+.. _anim09:
 
-(1) Flying over the Antarctic Ridge and the East Pacific Rise
+(9) Flying over the Antarctic Ridge and the East Pacific Rise
 =============================================================
 
 Animation of a simulated fly-over of the Pacific basin mid-ocean ridge system.
@@ -21,7 +21,7 @@ The resulting movie was presented at the Fall 2019 AGU meeting in an eLighting t
 P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.
 The movie took ~6 hours to render on a 24-core MacPro 2013.
 
-.. literalinclude:: /_verbatim/movie01.txt
+.. literalinclude:: /_verbatim/anim09.txt
    :language: bash
 
 ..  youtube:: LTxlR5LuJ8g
