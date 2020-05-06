@@ -45,10 +45,10 @@ includes the animations) does not take excessive time.
 - .. youtube:: LTxlR5LuJ8g
      :width: 100%
 
-  :ref:`movie01`
+  :ref:`anim09`
 
 .. toctree::
    :hidden:
    :glob:
 
-   animations/movie*
+   animations/anim09

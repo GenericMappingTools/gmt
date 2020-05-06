@@ -7,8 +7,6 @@
 #
 # To run all the animation scripts, run do_animations.sh.
 #
-# To make all the full animations (each may take hours), run do_movies.sh.
-#
 # It is possible that the output you may generate with these
 # script will differ in subtle ways from the figures shown
 # in the GMT documentation.  This is most likely caused by
