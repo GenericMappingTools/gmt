@@ -8,7 +8,6 @@
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
-	ps=anim02.ps
 else	# Make animated GIF
 	opt="-A+l"
 fi
