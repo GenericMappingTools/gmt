@@ -334,7 +334,7 @@ GMT_LOCAL void movie_set_script (FILE *fp, int mode) {
 	/* Writes the script's incantation line (or a comment for DOS, turning off default echo) */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "#!/usr/bin/env bash\n"); break;
-		case CSH_MODE:  fprintf (fp, "#!/usr/bin/env csh\n"); break;
+		case CSH_MODE:  fprintf (fp, "#!/usr/bin/env csh -f\n"); break;
 		case DOS_MODE:  fprintf (fp, "@echo off\nREM Start of script\n"); break;
 	}
 }
@@ -1311,7 +1311,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"};
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
-	char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
+	char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh -f ", "start /B"};
 	char var_token[4] = "$$%", spacer;
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
