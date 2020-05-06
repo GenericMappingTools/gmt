@@ -83,8 +83,9 @@ Optional Arguments
     duration of the rise phase, **+p** to set the duration of the plateau phase, **+d**
     to specify the duration of the decay phase, and **+f** to set the duration of the
     fade phase.  These are all optional [and default to zero], and can be set separately for symbols and texts.
-    If neither **s** or **t** is given then we set the time knots for both features. Note that **+l** is
+    If neither **s** or **t** is given then we set the time knots for both features. **Note**: The **+l** modifier is
     restricted to **-Et** and specifies an alternative duration (visibility) of the text [same duration as symbol].
+    Furthermore, the **+p** and **+d** periods do not apply to text labels.
 
 .. _-F:
 
@@ -231,13 +232,18 @@ Figure below illustrates how transparency may vary through time.
 
    Here we show how a symbol may go from being invisible to reaching full opaqueness
    at the event begin time, finally fading to a near-invisible stage after reaching
-   its length.
+   its length. For text labels, the plateau and decay periods do not apply.
 
 While shown in these examples, the rise, plateau, fade, and coda periods are all optional
 and can be selected or ignored as you wish via **-E**.  You can choose to specify any or none
 of the three time histories.  By default the symbol size is constant, there is no intensity
-variation, and all symbols are opaque.  If trailing text is plotted (requires **-Et**) then
-only a transparency time-function is used.
+variation, and all symbols are opaque.
+
+If trailing text is plotted (i.e., by selecting **-Et**) then only the transparency time-function
+is used and neither the plateau nor decay periods apply.  The appearance and disappearance of a
+label is thus dictated by an initial (and optional) rise time (during which the label slowly
+becomes fully visible), an normal period (where it remains visible), followed by the optional
+fade period (where the text fades out).
 
 Sorting the data
 ----------------
