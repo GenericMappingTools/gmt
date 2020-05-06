@@ -10,7 +10,7 @@ wish to accentuate the symbol attributes in ways to draw attention to an event w
 it first happens and perhaps tone it down after a while to reduce clutter and focus
 on more recent events. This module is typically used in conjunction with :doc:`movie`
 where the implicit loop over time is used to call it over a time-sequence and
-thus plot symbols as events unfold.
+thus plot symbols as events unfold. 
 
 Required Arguments
 ------------------
@@ -42,7 +42,9 @@ Required Arguments
 .. _-T:
 
 **-T**\ *now*
-    Set the current plot time.  If absolute times are used you must also use **-fT**.
+    Set the current plot time. The time shifts and increments set in **-E** are all relative to this
+    current time.  If an absolute time is given you may need to  use :term:`TIME_UNIT` to indicate
+    the unit of the values given in options like **-E** and **-L**.
 
 Optional Arguments
 ------------------
@@ -164,6 +166,22 @@ Optional Arguments
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
+
+The meaning of time
+-------------------
+
+While normally the meaning of "time" (e.g., such as in the argument to **-T**)
+is in fact the time of the phenomenon being plotted, it may also be any other monotonically
+increasing quantity of convenience, such as elapsed time, model time, frame number, or other physical
+quantities such as distance.  It all depends on the context of the movie.  The values
+given for delays, fades, etc. in **-E** are assumed to be in the same unit as the
+given *time* argument to **-T**.  Thus, if *time* is a monotonically increasing frame
+counter then the values in **-E** and **-L** refer to number of frames.  A special
+situation occurs when *time* is in fact actual calendar time given by date/clock markers.
+Here, the unit of the arguments in **-E** and **-L** is determined by the :term:`TIME_UNIT`
+setting [second].  You will need to specify the desired time unit that should be used when
+interpreting your **-E** and **-L** arguments.  The example below for seismicity uses
+actual earthquake times but we use days as the unit as second is too small.
 
 The three time-functions
 ------------------------
