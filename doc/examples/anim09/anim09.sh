@@ -6,7 +6,7 @@
 # path to simulate a constant velocity at the given altitude, with synthetic
 # banking as we turn to follow the path.  We use the 30 arc second global relief
 # grid and overlay a few labels for named features.
-# Grid:   @earth_relief_30s.grd
+# DEM:   @earth_relief_30s.grd
 # Path:   MOR_PAC_twist_path.txt
 # Labels: MOR_names.txt
 # We create a global intensity grid using shading from East and a CPT file; these are
@@ -45,5 +45,5 @@ gmt end
 EOF
 # 3. Run the movie
 gmt set PROJ_LENGTH_UNIT inch FONT_TAG 20p,Helvetica,white
-gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -Nanim09 -D24 -H4 -Fnone -K -M2000,png -Gblack -Le+jTR -Lf -V -W/tmp/MOR -Zs
+gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -Nanim09 -D24 -H4 -Fnone -K -M2000,png -Gblack -Le+jTR -Lf -V -W -Zs
 rm -f gmt.conf

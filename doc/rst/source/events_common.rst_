@@ -3,14 +3,15 @@
 Description
 -----------
 
-Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*]) data from *table* [or standard
+Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*] [, *label*]) data from *table* [or standard
 input] and plots how the symbol for each event should look for the specified *now* time.
 The reason they may differ is that events may have different lengths and we may
 wish to accentuate the symbol attributes in ways to draw attention to an event when
 it first happens and perhaps tone it down after a while to reduce clutter and focus
-on more recent events. This module is typically used in conjunction with :doc:`movie`
+on more recent events. Optionally, each symbol may have a label that can be displayed at the
+same time or delayed with respect to the symbol. This module is typically used in conjunction with :doc:`movie`
 where the implicit loop over time is used to call it over a time-sequence and
-thus plot symbols as events unfold. 
+thus plot symbols as events unfold.
 
 Required Arguments
 ------------------
@@ -37,7 +38,8 @@ Required Arguments
     are available in :doc:`psxy` can be used here.  At the moment we only support the basic
     symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
     be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
-    by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.
+    by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.  If you are only
+    plotting labels then **-S** is not required.
 
 .. _-T:
 
@@ -85,7 +87,8 @@ Optional Arguments
     fade phase.  These are all optional [and default to zero], and can be set separately for symbols and texts.
     If neither **s** or **t** is given then we set the time knots for both features. **Note**: The **+l** modifier is
     restricted to **-Et** and specifies an alternative duration (visibility) of the text [same duration as symbol].
-    Furthermore, the **+p** and **+d** periods do not apply to text labels.
+    Furthermore, the **+p** and **+d** periods do not apply to text labels.  **Note**: The **-Et** option is
+    required if you wish to plot labels [plot symbols only].
 
 .. _-F:
 
