@@ -59,7 +59,7 @@ add_depend_to_target (docs_depends _docs_html_examples_fig _docs_examples_verbat
 if (UNIX AND DO_ANIMATIONS)
 	configure_file (animate.in animate @ONLY)
 
-	foreach (_num 01 02 03 04 05 06 07 08)
+	foreach (_num 01 02 03 04 05 06)
 		add_custom_command (
 			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif
 			COMMAND ${BASH} animate anim${_num}/anim${_num}.sh
@@ -74,7 +74,7 @@ if (UNIX AND DO_ANIMATIONS)
 		list (APPEND _animations ${RST_BINARY_DIR}/_images/anim${_num}.gif)
 	endforeach ()
 
-	# copy video files from anim 04, 06, 07, 08
+	# copy video files from anim 04, 06
 	foreach (_num 04 06 07 08)
 		add_custom_command (
 			OUTPUT ${RST_STATIC_DIR}/anim${_num}.mp4
@@ -87,7 +87,7 @@ if (UNIX AND DO_ANIMATIONS)
 	add_custom_target (animation DEPENDS ${_animations})
 
 	# clean target
-	foreach (_num 01 02 03 04 05 06 07 08)
+	foreach (_num 01 02 03 04 05 06)
 		add_custom_target (_anim_clean${_num}
 			COMMAND ${CMAKE_COMMAND} -E remove_directory
 			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}
