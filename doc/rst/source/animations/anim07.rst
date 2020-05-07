@@ -3,28 +3,22 @@
 (7) Spinning Earth showing crustal ages
 ----------------------------------------
 
-It is relatively simple to make a spinning Earth movie
-by using the frame number as view longitude.  Here we
-simulate sunlight to modulate the slopes of the global
-relief and color the seafloor using the crustal age
-grids from EarthByte.
+Animation of a spinning Earth showing the crustal ages from EarthByte for the oceans
+and topographic relief on land, with shading given by the global relief and modified
+by position relative to an artificial sun in the east.  A progress slice is added as well.
+We add a 1 second fade in and a 1 second fade out for the animation
+
+- DEM:   @earth_relief_02m.grd
+- Ages:  @earth_age_02m.grd
+
+The resulting movie was presented at the Fall 2019 AGU meeting in an eLighting talk:
+P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.
+The finished movie is available in our YouTube channel as well (without fading):
+https://youtu.be/KfBwQlyjz5w
+The movie took ~2.5 hours to render on a 24-core MacPro 2013.
 
 .. literalinclude:: /_verbatim/anim07.txt
    :language: bash
 
-.. Need to include the following 0 px wide dummy image for video poster
-
-.. only:: html
-
-   .. image:: /_images/anim07.png
-      :width: 0 px
-
-.. raw:: html
-
-   <div class="figure align-center">
-     <video width="720" height="480" poster="../_images/anim07.png" controls>
-       <source src="../_static/anim07.mp4" type="video/mp4">
-       Your browser does not support the video tag.
-     </video>
-     <p class="caption">Spinning Earth showing crustal ages.</p>
-   </div>
+..  youtube:: KfBwQlyjz5w
+    :width: 100%
