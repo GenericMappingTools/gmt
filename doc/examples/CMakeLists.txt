@@ -74,8 +74,8 @@ if (UNIX AND DO_ANIMATIONS)
 		list (APPEND _animations ${RST_BINARY_DIR}/_images/anim${_num}.gif)
 	endforeach ()
 
-	# copy video files from anim 04
-	foreach (_num 04 06)
+	# copy video files for anim04
+	foreach (_num 04)
 		add_custom_command (
 			OUTPUT ${RST_STATIC_DIR}/anim${_num}.mp4
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
