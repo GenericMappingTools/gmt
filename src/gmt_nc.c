@@ -1775,7 +1775,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 		static const uint32_t exp2_24 = 0x1000000; /* exp2 (24) */
 		unsigned int level;
 		if (fabs(header->z_min) >= exp2_24 || fabs(header->z_max) >= exp2_24)
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "The z-range, [%g,%g], might exceed the significand's precision of 24 bits; round-off errors may occur.\n", header->z_min, header->z_max);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "The z-range, [%g,%g], might exceed the significand's precision of 24 bits; round-off errors may occur.\n", header->z_min, header->z_max);
 
 		/* Report z-range of grid (with scale and offset applied): */
 #ifdef NC4_DEBUG
