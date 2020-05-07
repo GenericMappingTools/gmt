@@ -4166,8 +4166,8 @@ GMT_LOCAL bool gmtmap_init_azeqdist (struct GMT_CTRL *GMT) {
 		if (GMT->current.proj.polar && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) < 180.0) {	/* Polar aspect */
 			if (!GMT->current.proj.north_pole && GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 			if (GMT->current.proj.north_pole && GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
-			if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])
-					|| doubleAlmostEqualZero (GMT->common.R.wesn[XHI], GMT->common.R.wesn[XLO]))
+			GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+			if (GMT->current.map.is_world || doubleAlmostEqualZero (GMT->common.R.wesn[XHI], GMT->common.R.wesn[XLO]))
 				GMT->current.proj.edge[1] = GMT->current.proj.edge[3] = false;
 			GMT->current.map.outside = &gmtmap_polar_outside;
 			GMT->current.map.crossing = &gmtmap_wesn_crossing;
@@ -4179,6 +4179,7 @@ GMT_LOCAL bool gmtmap_init_azeqdist (struct GMT_CTRL *GMT) {
 		}
 		else {	/* Global view only, force wesn = 0/360/-90/90  */
 			/* No annotations or tickmarks in global mode */
+			GMT->current.map.is_world = true;
 			for (i = 0; i < GMT_GRID_UPPER; i++)
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
@@ -8302,6 +8303,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 		work_x[1] = work_x[2] = GMT->current.proj.rect[XHI];	work_y[2] = work_y[3] = GMT->current.proj.rect[YHI];
 	}
 	else {
+		if (gmt_M_is_azimuthal (GMT)) do_circle = GMT->current.map.is_world;
 		switch (GMT->current.proj.projection_GMT) {	/* Fill in clip path */
 			case GMT_LINEAR:
 			case GMT_MERCATOR:
@@ -8410,7 +8412,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 						j++;
 					}
 				}
-				else {
+				else {	/* Just need to create a circular closed path */
 					da = TWO_PI / np;
 					for (i = 0; i < np; i++) {
 						sincos (i * da, &s, &c);
