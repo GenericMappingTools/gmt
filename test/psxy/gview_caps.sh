@@ -21,7 +21,7 @@ gmt pstext -R0/8.5/0/11 -Jx1i -P -Xa0 -Ya0 -K -F+f10+j -N << EOF > $ps
 0.45	1.25	RM	55W
 EOF
 while read x y lon lat; do
-	gmt pscoast -Rd -JG${lon}/${lat}/1.45i -Glightgray -Xa${x}i -Ya${y}i -O -K -Dc >> $ps
+	gmt pscoast -Rd -JG${lon}/${lat}/1.45i -Glightgray -Xa${x}i -Ya${y}i -O -K -A50000 -Dc >> $ps
 	gmt psxy pol_S.txt -Rd -J -Gred -Xa${x}i -Ya${y}i -O -K >> $ps
 	gmt psxy pol_N.txt -Rd -J -Gblue -Bg30 -Xa${x}i -Ya${y}i -O -K >> $ps
 done < tmp.txt
