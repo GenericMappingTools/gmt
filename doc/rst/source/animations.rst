@@ -25,7 +25,7 @@ includes the animations) does not take excessive time.
 
 .. jinja::
 
-    {% for i in range(1, 9) %}
+    {% for i in range(1, 7) %}
     {% set i = '%02d' % i %}
     -  .. figure:: /_images/anim{{i}}.*
           :target: ./animations/anim{{i}}.html
@@ -34,13 +34,17 @@ includes the animations) does not take excessive time.
 
     {% endfor %}
 
-.. toctree::
-   :hidden:
-   :glob:
-
-   animations/anim*
-
 .. cssclass:: gmtmovie
+
+- .. youtube:: KfBwQlyjz5w
+     :width: 100%
+
+  :ref:`anim07`
+
+- .. youtube:: H0RyjHRhJ3g
+     :width: 100%
+
+  :ref:`anim08`
 
 - .. youtube:: LTxlR5LuJ8g
      :width: 100%
@@ -51,4 +55,4 @@ includes the animations) does not take excessive time.
    :hidden:
    :glob:
 
-   animations/anim09
+   animations/anim*

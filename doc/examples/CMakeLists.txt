@@ -75,7 +75,7 @@ if (UNIX AND DO_ANIMATIONS)
 	endforeach ()
 
 	# copy video files from anim 04, 06
-	foreach (_num 04 06 07 08)
+	foreach (_num 04 06)
 		add_custom_command (
 			OUTPUT ${RST_STATIC_DIR}/anim${_num}.mp4
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -98,7 +98,7 @@ endif (UNIX AND DO_ANIMATIONS)
 
 # run examples (test)
 file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/ex*/*.sh")
-file (GLOB _anims RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim0[1-8]/*.sh")
+file (GLOB _anims RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim0[1-6]/*.sh")
 if (DO_EXAMPLES AND BASH)
 	# this file takes care of setting up the test environment
 	configure_file (gmtest.in gmtest @ONLY)
