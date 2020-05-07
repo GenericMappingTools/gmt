@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Animation of a simulated fly-over of the Pacific basin mid-ocean ridge system.
 # It uses a premade flight path that originally was derived from a data file

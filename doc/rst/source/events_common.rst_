@@ -232,7 +232,7 @@ Figure below illustrates how transparency may vary through time.
 
    Here we show how a symbol may go from being invisible to reaching full opaqueness
    at the event begin time, finally fading to a near-invisible stage after reaching
-   its length. For text labels, the plateau and decay periods do not apply.
+   its length.
 
 While shown in these examples, the rise, plateau, fade, and coda periods are all optional
 and can be selected or ignored as you wish via **-E**.  You can choose to specify any or none
@@ -243,7 +243,17 @@ If trailing text is plotted (i.e., by selecting **-Et**) then only the transpare
 is used and neither the plateau nor decay periods apply.  The appearance and disappearance of a
 label is thus dictated by an initial (and optional) rise time (during which the label slowly
 becomes fully visible), an normal period (where it remains visible), followed by the optional
-fade period (where the text fades out).
+fade period (where the text fades out).  The figure below illustrate the setup:
+
+.. figure:: /_images/psevents_labels.*
+   :width: 400 px
+   :align: center
+
+   Here we show how a label may go from being invisible to reaching full opaqueness
+   at the event begin time, staying visible for the given duration, and then finally
+   fade away completely. For labels, the plateau and decay periods do not apply.
+
+
 
 Sorting the data
 ----------------
