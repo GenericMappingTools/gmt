@@ -420,8 +420,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			if (H->var_spacing[GMT_X]) GMT_Report (API, GMT_MSG_WARNING, "Grid %s has non-equidistant x-coordinates (see grd2xyz docs for discussion)\n", opt->arg);
 			if (H->var_spacing[GMT_Y]) GMT_Report (API, GMT_MSG_WARNING, "Grid %s has non-equidistant y-coordinates (see grd2xyz docs for discussion)\n", opt->arg);
 
-			x = (H->var_spacing[GMT_X] && G->x) ? G->x : gmt_grd_coord (GMT, G->header, GMT_X);
-			y = (H->var_spacing[GMT_Y] && G->y) ? G->y : gmt_grd_coord (GMT, G->header, GMT_Y);
+			x = (G->x) ? G->x : gmt_grd_coord (GMT, G->header, GMT_X);
+			y = (G->y) ? G->y : gmt_grd_coord (GMT, G->header, GMT_Y);
 			Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 			if (Ctrl->C.active) {	/* Replace x,y with col,row */
 				if (Ctrl->C.mode < 2) {
