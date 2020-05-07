@@ -39,17 +39,17 @@ includes the animations) does not take excessive time.
 - .. youtube:: KfBwQlyjz5w
      :width: 100%
 
-  :ref:`anim07`
+  :doc:`/animations/anim07`
 
 - .. youtube:: H0RyjHRhJ3g
      :width: 100%
 
-  :ref:`anim08`
+  :doc:`/animations/anim08`
 
 - .. youtube:: LTxlR5LuJ8g
      :width: 100%
 
-  :ref:`anim09`
+  :doc:`/animations/anim09`
 
 .. toctree::
    :hidden:
