@@ -21,7 +21,7 @@ The finished movie is available in our YouTube channel as well:
 https://youtu.be/H0RyjHRhJ3g
 The movie took ~1 hour to render on a 24-core MacPro 2013.
 
-.. literalinclude:: /_verbatim/anim09.txt
+.. literalinclude:: /_verbatim/anim08.txt
    :language: bash
 
 ..  youtube:: H0RyjHRhJ3g
