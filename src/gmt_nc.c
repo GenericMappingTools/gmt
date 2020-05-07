@@ -620,7 +620,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		/* Look for the x-coordinate vector */
 		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[0]], xy))) {
 			var_spacing = gmtnc_check_step (GMT, header->n_columns, xy, header->x_units, HH->name, save_xy_array);
-			if (save_xy_array) {
+			if (save_xy_array && var_spacing) {
 				if (GMT->current.io.nc_xarray) gmt_M_free (GMT, GMT->current.io.nc_xarray);
 				GMT->current.io.nc_xarray = gmt_M_memory (GMT, NULL, header->n_columns, double);
 				gmt_M_memcpy (GMT->current.io.nc_xarray, xy, header->n_columns, double);
@@ -708,7 +708,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		/* Read the y-coordinate vector (if available), otherwise just look for range attributes */
 		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[1]], xy))) {
 			var_spacing = gmtnc_check_step (GMT, header->n_rows, xy, header->y_units, HH->name, save_xy_array);
-			if (save_xy_array) {
+			if (save_xy_array && var_spacing) {
 				if (GMT->current.io.nc_yarray) gmt_M_free (GMT, GMT->current.io.nc_yarray);
 				GMT->current.io.nc_yarray = gmt_M_memory (GMT, NULL, header->n_rows, double);
 				gmt_M_memcpy (GMT->current.io.nc_yarray, xy, header->n_rows, double);
