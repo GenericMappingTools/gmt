@@ -244,7 +244,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	DENAN      2  1    Replace NaNs in A with values from B\n"
 		"	DILOG      1  1    dilog (A)\n"
 		"	DIV        2  1    A / B\n"
-		"	DOT        2  1    Dot product (2-D Cartesian or 3-D geographic) of vector (A,B) with grid nodes locations"
+		"	DOT        2  1    Dot product (2-D Cartesian or 3-D geographic) of vector (A,B) with grid nodes locations\n"
 		"	DUP        1  2    Places duplicate of A on the stack\n"
 		"	ECDF       2  1    Exponential cumulative distribution function for x = A and lambda = B\n"
 		"	ECRIT      2  1    Exponential distribution critical value for alpha = A and lambda = B\n"
