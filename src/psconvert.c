@@ -1448,7 +1448,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	uint64_t pos = 0;
 	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false;
 	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false, delete = false, file_processing = true;
-	bool transparency = false, look_for_transparency, BeginPageSetup_here = false, add_grestore = false;
+	bool transparency = false, look_for_transparency, BeginPageSetup_here = false, has_transparency, add_grestore = false;
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
@@ -2027,12 +2027,13 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
-		transparency = add_grestore = false;
+		has_transparency = transparency = add_grestore = false;
 		set_background = (Ctrl->A.paint || Ctrl->A.outline);
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
-				if (look_for_transparency && strstr (line, " PSL_transp")) {
+				has_transparency = (strstr (line, " PSL_transp") != NULL);
+				if (look_for_transparency && has_transparency) {
 					transparency = true;		/* Yes, found transparency */
 					look_for_transparency = false;	/* No need to check anymore */
 				}
@@ -2313,12 +2314,11 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		fclose (fpo);	fpo = NULL;
 		fclose (fp);	fp  = NULL;
 
-		if (transparency) {
-			if (gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
-				GMT_Report (API, GMT_MSG_WARNING, "The file %s specifies transparency but your gs version 9.%d has a bug preventing it - please downgrade to 9.50\n", ps_file, gsVersion.minor);
-			if (Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
+
+		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
+				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version 9.%d has a bug preventing it - please downgrade to 9.50\n", ps_file, gsVersion.minor);
+		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
 				gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
-		}
 
 		/* Build the converting Ghostscript command and execute it */
 
