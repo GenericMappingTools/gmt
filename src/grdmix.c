@@ -29,7 +29,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdmix"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Transparency-blending of grids or images"
-#define THIS_MODULE_KEYS	"<G{2,GG}"
+#define THIS_MODULE_KEYS	"<G{2,GG}"	/* Not ready for external use since could be images instead of grids */
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-Vf"
 
@@ -37,13 +37,14 @@ struct GRDMIX_CTRL {
 	struct GRDMIX_In {
 		bool active;
 		unsigned int n_in;
+		int type[2];
 		char *file[2];
 	} In;
 	struct GRDMIX_A {
 		bool active;
 		unsigned int mode;	/* 0 a file, 1 a constant */
 		char *file;
-		double alpha;
+		double weight;
 	} A;
 	struct GRDMIX_G {	/* -G<output_grdfile> */
 		bool active;
@@ -102,8 +103,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 
 			case '<':	/* Input files */
 				if (Ctrl->In.n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->Ctrl->In.n_in.file[Ctrl->In.n_in++] = strdup (opt->arg);
-				else if (n_in == 1 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
+					Ctrl->In.file[Ctrl->In.n_in++] = strdup (opt->arg);
+				else if (Ctrl->In.n_in == 1 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[Ctrl->In.n_in++] = strdup (opt->arg);
 				else {
 					n_errors++;
@@ -118,7 +119,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 					Ctrl->A.file = strdup (opt->arg);
 					Ctrl->A.mode = 0;
 				}
-				else if ((Ctrl->A.alpha = atof (opt->arg)) < 0.0 || Ctrl->A.alpha > 1.0) {
+				else if ((Ctrl->A.weight = atof (opt->arg)) < 0.0 || Ctrl->A.weight > 1.0) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: A constant must be in the 0-1 range\n");
 					n_errors++;
 				}
@@ -170,9 +171,9 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	void *W = NULL;
 
-	struct GMT_GRID *GIn[2] = {NULL,  NULL}, *G = NULL, *Wg = NULL;
-	struct GMT_IMAGE *IIn[2] = {NULL,  NULL}, *I = NULL, *Wi = NULL;
-	struct GMT_GRIDHEADER *h[2] = {NULL, NULL};
+	struct GMT_GRID *Gin[2] = {NULL,  NULL}, *G = NULL, *Wg = NULL;
+	struct GMT_IMAGE *Iin[2] = {NULL,  NULL}, *I = NULL, *Wi = NULL;
+	struct GMT_GRID_HEADER *h[2] = {NULL, NULL};
 	struct GRDMIX_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -195,6 +196,8 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdmix main code ----------------------------*/
 
+	GMT_Report (API, GMT_MSG_NOTICE, "grdmix is experimental - caveat emptor\n\n");
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grids\n");
 	gmt_set_pad (GMT, 0); /* No padding */
 
@@ -215,7 +218,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			h[k] = Gin[k]->header;
 		}
 		else {
-			if ((Iin[k] = GMT_Read_Data (API, GMT_IS_IMAGE GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
+			if ((Iin[k] = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}
 			h[k] = Iin[k]->header;
@@ -233,35 +236,39 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->A.mode == 0) {
-		struct GMT_GRIDHEADER *ht = NULL;
+		struct GMT_GRID_HEADER *ht = NULL;
 		type = gmt_raster_type (GMT, Ctrl->A.file);
 		if (type == GMT_NOTSET) {
 			if ((Wg = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}
-			weights = Wg->data;
 			ht = Wg->header;
-			W = Wg;
+			weights = gmt_M_memory (GMT, NULL, ht->size, float);
+			gmt_M_memcpy (weights, Wg->data, ht->size, float);
 		}
 		else {	/* Read image header */
-			if ((Wi = GMT_Read_Data (API, GMT_IS_IMAGE GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
+			if ((Wi = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}
-			ht = Wt->header;
+			ht = Wi->header;
 			if (ht->n_bands != 1) {
 				GMT_Report (API, GMT_MSG_ERROR, "The blend image must be grayscale only!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			weights = gmt_M_memory (GMT, NULL, ht->size, float);
-			gmt_M_img_loop (GMT, Wi, row, col, node) {
+			gmt_M_grd_loop (GMT, Wi, row, col, node) {
 				weights[node] = gmt_M_is255 (Wi->data[node]);
 			}
-			W = Wi;
 		}
 		if (h[0]->registration != ht->registration || (h[0]->n_rows != ht->n_rows) || (h[0]->n_columns != ht->n_columns)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Dimension/registrations are not compatible with blend grid/image!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
+	}
+	else {	/* Make a constant array */
+			weights = gmt_M_memory (GMT, NULL, h[0]->size, float);
+			for (node = 0; node < h[0]->size; node++)
+				weights[node] = Ctrl->A.weight;
 	}
 
 	if (Ctrl->In.type[0] == GMT_NOTSET) {	/* Create output grid */
@@ -286,7 +293,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 		}
 		else {
-			if (GMT_Read_Data (API, GMT_IS_IMAGE GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], Iin[k]) == NULL) {	/* Get data only */
+			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], Iin[k]) == NULL) {	/* Get data only */
 				Return (API->error);
 			}
 		}
@@ -296,19 +303,23 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	if (Ctrl->In.n_in == 1) {	/* Add transparency from -A to the input image */
 		/* Create alpha array for I and copy from A grid */
+		if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate alpha layer\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		for (node = 0; node < h[0]->size; node++)
+			I->alpha[node] = gmt_M_u255 (weights[node]);
+
 		/* Write out image */
 		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
 	else {	/* Blend two grids or images using the weights given via -A */
-		w1 = Ctrl->A.alpha;	w2 = 1.0 - w1;	/* Initialize in case we were given a constant */
 		if (Ctrl->In.type[k] == GMT_NOTSET) {	/* Two grids, just do the blend loop */
 			gmt_M_grd_loop (GMT, G, row, col, node) {
-				if (Ctrl->A.mode == 0) {
-					w1 = weights[node];
-					w2 = 1.0 - w1;
-				}
+				w1 = weights[node];
+				w2 = 1.0 - w1;
 				G->data[node] = Gin[0]->data[node] * w1 + Gin[1]->data[node] * w2;
 			}
 			/* Write out grid */
@@ -320,11 +331,9 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* Images, do the r,g,b blend */
-			gmt_M_grd_loop (GMT, W, row, col, node) {
-				if (Ctrl->A.mode == 0) {
-					w1 = weights[node];
-					w2 = 1.0 - w1;
-				}
+			gmt_M_grd_loop (GMT, I, row, col, node) {
+				w1 = weights[node];
+				w2 = 1.0 - w1;
 				for (k = 0; k < 3; k++)
 					I->data[node+k] = (unsigned char)urint(Iin[0]->data[node+k] * w1 + Iin[1]->data[node+k] * w2);
 			}
@@ -335,6 +344,6 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (type != GMT_NOTSET) gmt_M_free (GMT, weights);
+	gmt_M_free (GMT, weights);
 	Return (GMT_NOERROR);
 }
