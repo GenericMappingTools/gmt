@@ -754,6 +754,11 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 			in = In->data;	/* Only need to process numerical part here */
 
 			if (gmt_M_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */

@@ -596,6 +596,11 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 			assert (In->text != NULL);						/* Should never get here */
 		}
 
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		/* Data record to process */
 		in = In->data;
 

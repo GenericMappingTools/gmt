@@ -475,6 +475,11 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 				break;
 			continue;
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		in = In->data;
 		if (In->text) {
 			if ((ks = sscanf (In->text, "%s %s", trk[0], trk[1])) != 2) {

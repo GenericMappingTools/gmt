@@ -859,6 +859,10 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, cake);
 			Return (API->error);
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
 
 		/* Clean data record to process */
 

@@ -330,6 +330,11 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 				continue;
 			}
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		in = In->data;	/* Only need to process numerical part here */
 
 		/* Convert to geocentric, load parameters  */

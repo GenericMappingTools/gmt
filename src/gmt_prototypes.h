@@ -256,6 +256,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC void gmt_quit_bad_record (struct GMTAPI_CTRL *API, struct GMT_RECORD *In);
 EXTERN_MSC int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 EXTERN_MSC bool gmt_is_float (struct GMT_CTRL *GMT, char *text);
 EXTERN_MSC void gmt_replace_backslash_in_path (char *dir);

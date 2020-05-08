@@ -403,6 +403,11 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 				continue;	/* Go back and read the next record */
 			}
 
+			if (In->data == NULL) {
+				gmt_quit_bad_record (API, In);
+				Return (API->error);
+			}
+
 			/* Data record to process - avoid duplicate points as gmt_stripack_lists cannot handle that */
 			in = In->data;	/* Only need to process numerical part here */
 

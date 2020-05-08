@@ -548,6 +548,11 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 			}
 		}
 
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
 		in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric latitude */

@@ -796,6 +796,12 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 
+		/* We get here once we have read a data record */
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		if (n_output == 0) {
 			GMT_Set_Columns (API, GMT_OUT, (unsigned int)gmt_get_cols (GMT, GMT_IN), (In->text) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT);
 			n_output = gmt_get_cols (GMT, GMT_OUT);

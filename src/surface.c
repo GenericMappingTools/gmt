@@ -749,6 +749,11 @@ GMT_LOCAL int surface_read_data (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 			continue;	/* Go back and read the next record */
 		}
 
+		if (In->data == NULL) {
+			gmt_quit_bad_record (GMT->parent, In);
+			return (GMT->parent->error);
+		}
+
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
 
