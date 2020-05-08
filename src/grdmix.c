@@ -63,6 +63,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->In.file[GMT_IN]);
 	gmt_M_str_free (C->In.file[GMT_OUT]);
@@ -72,16 +73,13 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid1> <grid2> -G<outgrid> [%s] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid|img1> [<grid|img2>] -A<wgrid|img> -G<outgrid|img> [%s] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\twhere grids <grid1> and <grid2> are to be combined into <outgrid>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\twhere items <grid1> and <grid2> are to be combined into <outgrid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid1> and <grid2> must have same dx,dy and one edge in common.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tIf in doubt, run grdinfo first and check your files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tUse grdmix and/or grdsample to adjust files as necessary.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tIf grids are geographic and adds to full 360-degree range then grid1\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tdetermines west.  Use grdedit -S to rotate grid to another -Rw/e/s/n.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file.\n");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "V,f,.");
@@ -96,7 +94,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_in = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -168,10 +166,12 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	char format[GMT_BUFSIZ];
 
-	float *weights = NULL;
+	float *weights = NULL, w1, w2;
 
-	struct GMT_GRID *GIn[2] = {NULL,  NULL}, *G = NULL;
-	struct GMT_IMAGE *IIn[2] = {NULL,  NULL}, *I = NULL;
+	void *W = NULL;
+
+	struct GMT_GRID *GIn[2] = {NULL,  NULL}, *G = NULL, *Wg = NULL;
+	struct GMT_IMAGE *IIn[2] = {NULL,  NULL}, *I = NULL, *Wi = NULL;
 	struct GMT_GRIDHEADER *h[2] = {NULL, NULL};
 	struct GRDMIX_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -236,25 +236,27 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		struct GMT_GRIDHEADER *ht = NULL;
 		type = gmt_raster_type (GMT, Ctrl->A.file);
 		if (type == GMT_NOTSET) {
-			if ((Tg = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
+			if ((Wg = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}
-			weights = Tg->data;
-			ht = Tg->header;
+			weights = Wg->data;
+			ht = Wg->header;
+			W = Wg;
 		}
 		else {	/* Read image header */
-			if ((Ti = GMT_Read_Data (API, GMT_IS_IMAGE GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
+			if ((Wi = GMT_Read_Data (API, GMT_IS_IMAGE GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}
-			ht = At->header;
+			ht = Wt->header;
 			if (ht->n_bands != 1) {
 				GMT_Report (API, GMT_MSG_ERROR, "The blend image must be grayscale only!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			weights = gmt_M_memory (GMT, NULL, ht->size, float);
-			gmt_M_img_loop (GMT, Ti, row, col, node) {
-				weights[node] = gmt_M_is255 (At->data[node]);
+			gmt_M_img_loop (GMT, Wi, row, col, node) {
+				weights[node] = gmt_M_is255 (Wi->data[node]);
 			}
+			W = Wi;
 		}
 		if (h[0]->registration != ht->registration || (h[0]->n_rows != ht->n_rows) || (h[0]->n_columns != ht->n_columns)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Dimension/registrations are not compatible with blend grid/image!\n");
@@ -300,7 +302,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Blend two grids or images using the weights given via -A */
-		w1 = Ctrl->A.alpha;	w2 = 1.0 - w1;
+		w1 = Ctrl->A.alpha;	w2 = 1.0 - w1;	/* Initialize in case we were given a constant */
 		if (Ctrl->In.type[k] == GMT_NOTSET) {	/* Two grids, just do the blend loop */
 			gmt_M_grd_loop (GMT, G, row, col, node) {
 				if (Ctrl->A.mode == 0) {
@@ -318,7 +320,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* Images, do the r,g,b blend */
-			gmt_M_img_loop (GMT, G, row, col, node) {
+			gmt_M_grd_loop (GMT, W, row, col, node) {
 				if (Ctrl->A.mode == 0) {
 					w1 = weights[node];
 					w2 = 1.0 - w1;
