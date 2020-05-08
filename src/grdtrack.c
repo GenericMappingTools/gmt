@@ -1178,12 +1178,13 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 					break;
 				continue;	/* Go back and read the next record */
 			}
+			if (In->data == NULL) {
+				gmt_quit_bad_record (API, In);
+				Return (API->error);
+			}
 
 			/* Data record to process */
-			if ((in = In->data) == NULL) {	/* Only need to process numerical part here */
-				GMT_Report (API, GMT_MSG_ERROR, "Record %" PRIu64 " did not have two coordinates - skipped.\n", n_read);
-				continue;
-			}
+			in = In->data;
 			if (n_out == 0) {	/* First time we need to determine # of columns and allocate output vector */
 				n_lead = (unsigned int)gmt_get_cols (GMT, GMT_IN);	/* Get total # of input cols */
 				n_out = n_lead + Ctrl->G.n_grids;	/* Get total # of output cols */

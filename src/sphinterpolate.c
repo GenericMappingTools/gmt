@@ -277,6 +277,11 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 			continue;	/* Go back and read the next record */
 		}
 
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
 

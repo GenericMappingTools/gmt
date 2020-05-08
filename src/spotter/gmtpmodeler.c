@@ -354,6 +354,11 @@ EXTERN_MSC int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 			}
 		}
 
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		/* Data record to process */
 		in = In->data;
 		Out->text = In->text;

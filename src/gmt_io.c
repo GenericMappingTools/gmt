@@ -8775,3 +8775,9 @@ int gmt_mkdir (const char *path)
 
 	return 0;
 }
+
+void gmt_quit_bad_record (struct GMTAPI_CTRL *API, struct GMT_RECORD *In) {
+	GMT_Report (API, GMT_MSG_ERROR, "No data columns to work with - exiting\n");
+	if (In->text) GMT_Report (API, GMT_MSG_ERROR, "Data file only has trailing text. GMT expects numerical columns followed by optional trailing text\n");
+	API->error = GMT_DIM_TOO_SMALL;
+}

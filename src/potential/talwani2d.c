@@ -645,6 +645,11 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 				continue;
 			}
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		/* Clean data record to process.  Add point unless duplicate */
 		in = In->data;	/* Only need to process numerical part here */
 		if (Ctrl->A.active) in[GMT_Y] = -in[GMT_Y];

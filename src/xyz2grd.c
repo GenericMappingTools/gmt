@@ -404,6 +404,11 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				assert (false);						/* Should never get here */
 			}
 
+			if (In->data == NULL) {
+				gmt_quit_bad_record (API, In);
+				Return (API->error);
+			}
+
 			/* Data record to process */
 
 			GMT_Put_Record (API, GMT_WRITE_DATA, In);
@@ -605,6 +610,11 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 			continue;	/* Go back and read the next record */
+		}
+
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
 		}
 
 		/* Data record to process */

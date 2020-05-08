@@ -612,6 +612,10 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
 
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */

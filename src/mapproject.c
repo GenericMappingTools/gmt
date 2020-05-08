@@ -1207,6 +1207,10 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input pointer is NULL where it should not be, aborting\n");
 			Return (GMT_PTR_IS_NULL);
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
 		if (first) {
 			unsigned int n_in_cols = (unsigned int)gmt_get_cols (GMT, GMT_IN);
 			if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {
