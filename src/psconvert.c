@@ -2316,7 +2316,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
-				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version 9.%d has a bug preventing it - please downgrade to 9.50\n", ps_file, gsVersion.minor);
+				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version 9.%d has a bug preventing it - please downgrade to 9.50\n", gsVersion.minor);
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
 				gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 
