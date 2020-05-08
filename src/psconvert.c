@@ -2032,7 +2032,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
-				has_transparency = (strstr (line, " PSL_transp") != NULL);
+				if (!has_transparency) has_transparency = (strstr (line, " PSL_transp") != NULL);
 				if (look_for_transparency && has_transparency) {
 					transparency = true;		/* Yes, found transparency */
 					look_for_transparency = false;	/* No need to check anymore */
