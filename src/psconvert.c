@@ -48,22 +48,6 @@
 #	endif
 #	endif
 
-#ifdef _WIN32
-#	define dup2 _dup2
-	/* Various shared-library functions declared in gmt_sharedlibs.c */
-	EXTERN_MSC void *dlopen (const char *module_name, int mode);
-	EXTERN_MSC int dlclose (void *handle);
-	EXTERN_MSC void *dlsym (void *handle, const char *name);
-	EXTERN_MSC char *dlerror (void);
-#	ifndef RTLD_LAZY
-#		define RTLD_LAZY 1
-#	endif
-#else	/* Standard Unix things */
-#	include <dlfcn.h>
-#endif
-
-EXTERN_MSC void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned way);
-
 #ifdef WIN32	/* Special for Windows */
 #	include <windows.h>
 #	include <process.h>
@@ -2841,4 +2825,3 @@ FOUNDGS:		/* Arrive directly here when we found a ghost in GMT/bin */
 }
 
 #endif		/* WIN32 */
-
