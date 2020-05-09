@@ -3636,7 +3636,7 @@ The full definition of the ``GMT_GRID_HEADER`` structure.  Most of these members
 										                       grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
        unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
        size_t       nm;                 /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
-       size_t       size;               /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
+       size_t       size;               /* Actual number of items (not bytes) required to hold this grid (= mx * my), per band */
        size_t       n_alloc;            /* Bytes allocated for this grid */
        unsigned int n_bands;            /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
        unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */
@@ -3654,6 +3654,8 @@ An image is similar to a grid except it may have more than one layer (i.e., band
 It is represented by a :ref:`GMT_IMAGE <struct-image>` structure that consists of the
 :ref:`GMT_GRID_HEADER <struct-gridheader>` structure and an char array ``data`` that
 contains the image values.  The type of the array is determined by the value of ``type``.
+**Note**: The header *size* value reflects number of nodes per band, so the actual memory
+allocated will be *size * n_bands*.
 
 .. _struct-image:
 
