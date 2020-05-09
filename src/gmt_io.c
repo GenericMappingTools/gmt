@@ -8055,6 +8055,7 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	Inew->header = save;	/* Reset to correct header pointer */
 	Inew->hidden = IH;	/* Reset to correct hidden pointer */
 	Inew->data = NULL;	/* Reset to NULL data pointer */
+	Inew->alpha = NULL;	/* Reset to NULL alpha pointer */
 	Inew->x = NULL;		/* Reset to NULL x pointer */
 	Inew->y = NULL;		/* Reset to NULL y pointer */
 	gmt_copy_gridheader (GMT, Inew->header, I->header);
