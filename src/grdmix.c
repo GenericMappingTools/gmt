@@ -321,12 +321,18 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		else {	/* Images, do the r,g,b blend */
-			gmt_M_grd_loop (GMT, I, row, col, node) {
-				w1 = weights[node];
+		else {	/* Two images, do the r,g,b blend, watch out for any input transparency value to skip */
+			uint64_t pix = 0, rgb[2] = {0, 0}, skip_A[2] = {0, 0};
+			for (k = 0; k < 2; k++)
+				if (h[k]->n_bands == 4) skip_A[k] = 1;	/* Must skip the alpha transparency byte in this image */
+
+			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel here, so we loop inside over RGB */
+				w1 = weights[node];	/* Set up the two weights that sum to 1 */
 				w2 = 1.0 - w1;
-				for (k = 0; k < 3; k++)
-					I->data[node+k] = (unsigned char)urint(Iin[0]->data[node+k] * w1 + Iin[1]->data[node+k] * w2);
+				for (k = 0; k < 3; k++, rgb[0]++, rgb[1]++, pix++)	/* March across the RGB values in both images and increment counters */
+					I->data[pix] = (unsigned char)urint(Iin[0]->data[rgb[0]] * w1 + Iin[1]->data[rgb[1]] * w2);
+				for (k = 0; k < 2; k++)
+					rgb[k] += skip_A[k];	/* Advance past any A in RGBA */
 			}
 			/* Write out image */
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
