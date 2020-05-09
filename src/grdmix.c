@@ -335,7 +335,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 			//gmt_M_memcpy (I->data, Iin[0]->data, h[0]->size * h[0]->n_bands, char);
 			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel here, so we loop inside over RGB */
-				fprintf (stderr, "Pixel %4d is %3.3d/%3.3d/%3.3d\n", node, Iin[0]->data[pix], Iin[0]->data[pix+1], Iin[0]->data[pix+2]);
+				//fprintf (stderr, "Pixel %4d is %3.3d/%3.3d/%3.3d\n", node, Iin[0]->data[pix], Iin[0]->data[pix+1], Iin[0]->data[pix+2]);
 				w1 = weights[node];	/* Set up the two weights that sum to 1 */
 				w2 = 1.0 - w1;
 				for (k = 0; k < 3; k++, rgb[0]++, rgb[1]++, pix++)	/* March across the RGB values in both images and increment counters */
