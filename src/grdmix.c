@@ -228,6 +228,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.mode == 0) {	/* Read in the weights grid or image */
 		struct GMT_GRID_HEADER *ht = NULL;
+		void *W = NULL;
 		type = gmt_raster_type (GMT, Ctrl->A.file);
 		if (type == GMT_NOTSET) {
 			if ((Wg = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
@@ -236,6 +237,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			ht = Wg->header;	/* Pointer to grid header */
 			weights = gmt_M_memory (GMT, NULL, ht->size, float);
 			gmt_M_memcpy (weights, Wg->data, ht->size, float);
+			W = Wg;
 		}
 		else {	/* Read image header */
 			if ((Wi = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
@@ -250,9 +252,14 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			gmt_M_grd_loop (GMT, Wi, row, col, node) {
 				weights[node] = gmt_M_is255 (Wi->data[node]);
 			}
+			W = Wi;
 		}
 		if (h[0]->registration != ht->registration || (h[0]->n_rows != ht->n_rows) || (h[0]->n_columns != ht->n_columns)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Dimension/registrations are not compatible with blend grid/image!\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (GMT_Destroy_Data (API, &W) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid or image from -A!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
