@@ -4477,20 +4477,32 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot decode PPM magic key (%s) from file %s\n", text, fname);
 		return -1;
 	}
-	if (c == '#') {	/* Wind to next comment */
-		while ((c = fgetc (fp)) != '\n' ) k++;
+	c = fgetc (fp);	/* Need to peak ahead to know what record we are dealing with.  PPM can have comments */
+	while (c == '#') {	/* Wind past comment */
+		while ((c = fgetc (fp)) != '\n' ) k++;	/* Ends when c is newline */
+		c = fgetc (fp);	/* Peak ahead again */
 	}
+	/* Put back last read character to the stream */
+	ungetc (c, fp);
 	k = 0;
 	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN64) text[k++] = c;	text[k] = '\0';	/* Get next record up to newline */
 	n = sscanf (text, "%d %d %d", &I->header->n_rows, &I->header->n_columns, &max);
-	if (n == 2) {	/* Separate record with the max pixel value */
+	if (n == 2) {	/* Must skip past a separate record with the max pixel value */
 		while ((c = fgetc (fp)) != '\n' ) k++;		
 	}
-	I->header->wesn[XLO] = I->header->wesn[YLO] = 0.0;
-	I->header->wesn[XHI] = I->header->n_columns;
-	I->header->wesn[YHI] = I->header->n_rows;
-	I->header->inc[GMT_X] = I->header->inc[GMT_Y] = 1.0;
+	/* Any read now would start reading the image pixels; done in gmtapi_import_ppm */
 	I->header->registration = GMT_GRID_PIXEL_REG;
+	if (GMT->common.R.active[RSET]) {	/* Got -Rw/e/s/n, we use that as the region for this image */
+		gmt_M_memcpy (I->header->wesn, GMT->common.R.wesn, 4, double);
+		I->header->inc[GMT_X] = gmt_M_get_inc (GMT, I->header->wesn[XLO], I->header->wesn[XHI], I->header->n_columns, GMT_GRID_PIXEL_REG);
+		I->header->inc[GMT_Y] = gmt_M_get_inc (GMT, I->header->wesn[YLO], I->header->wesn[YHI], I->header->n_rows, GMT_GRID_PIXEL_REG);
+	}
+	else {	/* Must just use dimensions to set a dummy -R -I */
+		I->header->wesn[XLO] = I->header->wesn[YLO] = 0.0;
+		I->header->wesn[XHI] = I->header->n_columns;
+		I->header->wesn[YHI] = I->header->n_rows;
+		I->header->inc[GMT_X] = I->header->inc[GMT_Y] = 1.0;
+	}
 	gmt_M_memset (I->header->pad, 4, unsigned int);
 	gmt_set_grddim (GMT, I->header);	/* Update all header dimensions */
 	strcpy (I->header->mem_layout, "TRP");
