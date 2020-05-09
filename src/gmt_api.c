@@ -4709,7 +4709,8 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 GMT_LOCAL int gmtapi_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	/* Write a Portable Pixel Map (PPM) file if fname extension is .ppm, else returns */
 	//uint32_t row, col, band;
-	char *ext = gmt_get_ext (fname), *magic = "P6\n# Produced by GMT\n", dim[GMT_LEN32] = {""};
+	static char *comment = "# Produced by GMT\n";
+	char *ext = gmt_get_ext (fname), dim[GMT_LEN32] = {""};
 	FILE *fp = NULL;
 	if (strcmp (ext, "ppm")) return 1;	/* Not requesting a PPM file - return 1 and let GDAL take over */
 
@@ -4717,7 +4718,11 @@ GMT_LOCAL int gmtapi_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot create file %s\n", fname);
 		return -1;
 	}
-	fwrite (magic, sizeof (char), strlen (magic), fp);	/* Write magic number, linefeed, comment, and another linefeed */
+	if (I->header->n_bands == 1) /* Use P5 for grayscale image */
+		fwrite ("P5\n", sizeof (char), 3U, fp);	/* Write magic number, linefeed */
+	else	/* Use P6 for rgb image */
+		fwrite ("P6\n", sizeof (char), 3U, fp);	/* Write magic number, linefeed */
+	fwrite (comment, sizeof (char), strlen (comment), fp);	/* Write magic number, linefeed, comment, and another linefeed */
 	snprintf (dim, GMT_LEN32, "%d %d\n255\n", I->header->n_rows, I->header->n_columns);
 	fwrite (dim, sizeof (char), strlen (dim), fp);	/* Write dimensions and max color value + linefeeds */
 	/* Now dump the image in scaneline order, with each pixel as (R, G, B) */
