@@ -212,6 +212,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	BITRIGHT   2  1    A >> B (bitwise right-shift operator)\n"
 		"	BITTEST    2  1    1 if bit B of A is set, else 0 (bitwise TEST operator)\n"
 		"	BITXOR     2  1    A ^ B (bitwise XOR operator)\n"
+		"	BLEND      3  1    Blend A and B using weights in C (0-1 range) as A*C + B*(1-C)\n"
 		"	CAZ        2  1    Cartesian azimuth from grid nodes to stack x,y\n"
 		"	CBAZ       2  1    Cartesian back-azimuth from grid nodes to stack x,y\n"
 		"	CDIST      2  1    Cartesian distance between grid nodes and stack x,y\n"
@@ -1300,6 +1301,31 @@ GMT_LOCAL void grdmath_BITXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 		}
 	}
 	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_WARNING, "BITXOR resulted in %" PRIu64 " values truncated to fit in the 24 available bits\n");
+}
+
+GMT_LOCAL void grdmath_BLEND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BLEND 3 1 Blend A and B using weights in C (0-1 range) as A*C+B*(1-C).  */
+{
+	uint64_t node, n_warn = 0;
+	int nu1, nu2;
+	unsigned int prev1, prev2, row, col;
+	double z1, z2, w;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant && stack[prev2]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for BLEND!\n");
+	if (stack[prev1]->constant && stack[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for BLEND!\n");
+	if (stack[last]->constant  && stack[last]->factor  == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand three == 0 for BLEND!\n");
+	for (row = 0; row < info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+			z1 = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+			z2 = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
+			w  = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
+			stack[prev2]->G->data[node] = (float)(w * (z1 - z2) + z2);	/* This is same as w*z1 + (1-w)*z2 but one less multiply */
+			if (w < 0.0 || w > 1.0) n_warn++;
+		}
+	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_WARNING, "BLEND encountered %" PRIu64 " weights that were outside the 0-1 range\n", n_warn);
 }
 
 GMT_LOCAL void grdmath_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -5592,7 +5618,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 222
+#define GRDMATH_N_OPERATORS 223
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -5820,6 +5846,7 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[219] = grdmath_XYZ2LAB;	n_args[219] = 3;	n_out[219] = 3;
 	ops[220] = grdmath_XYZ2RGB;	n_args[220] = 3;	n_out[220] = 3;
 	ops[221] = grdmath_DOT;	n_args[221] = 2;	n_out[221] = 1;
+	ops[222] = grdmath_BLEND;	n_args[222] = 3;	n_out[222] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6234,6 +6261,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"XYZ2LAB",	/* id = 219 */
 		"XYZ2RGB",	/* id = 220 */
 		"DOT",	/* id = 221 */
+		"BLEND",	/* id = 222 */
 		"" /* last element is intentionally left blank */
 	};
 
