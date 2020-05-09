@@ -402,7 +402,7 @@ struct GMT_GRID_HEADER {
 
 	/* Items not stored in the data file for grids but explicitly used in macros computing node numbers */
 	size_t nm;                       /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
-	size_t size;                     /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
+	size_t size;                     /* Actual number of items (not bytes) required to hold this grid (= mx * my), per band (for images) */
 	unsigned int bits;               /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
 	unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
 	unsigned int type;               /* Grid format */

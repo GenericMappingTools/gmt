@@ -8060,8 +8060,12 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	gmt_copy_gridheader (GMT, Inew->header, I->header);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
-		Inew->data = gmt_M_memory_aligned (GMT, NULL, I->header->size, char);
-		if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Inew->data, I->data, I->header->size, char);
+		Inew->data = gmt_M_memory_aligned (GMT, NULL, I->header->size * I->header->n_bands, char);
+		if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Inew->data, I->data, I->header->size * I->header->n_bands, char);
+		if (I->alpha) {	/* Also deal with the alpha layer */
+			Inew->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char);
+			if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Inew->alpha, I->alpha, I->header->size, unsigned char);
+		}
 		Inew->x = gmt_grd_coord (GMT, Inew->header, GMT_X);	/* Get array of x coordinates */
 		Inew->y = gmt_grd_coord (GMT, Inew->header, GMT_Y);	/* Get array of y coordinates */
 	}
