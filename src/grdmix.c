@@ -151,6 +151,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+void dump_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, char *file) {
+	uint64_t row, col, node, pix = 0;
+	fprintf (stderr, "\nImage = %s [%s]\n", file, I->header->mem_layout);
+	if (I->header->n_bands == 1) {
+		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel here */
+			fprintf (stderr, "Pixel %4d is %3.3d\n", (int)node, I->data[node]);
+		}
+	}
+	else {
+		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is three per pixel here */
+			fprintf (stderr, "Pixel %4d is %3.3d/%3.3d/%3.3d\n", (int)node, I->data[pix], I->data[pix+1], I->data[pix+2]);
+			pix += 3;
+		}
+	}
+}
+
 EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	int error = 0, type;
 	uint64_t row, col, node, k;
@@ -253,6 +269,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				weights[node] = gmt_M_is255 (Wi->data[node]);
 			}
 			W = Wi;
+			dump_image (GMT, Wi, Ctrl->A.file);
 		}
 		if (h[0]->registration != ht->registration || (h[0]->n_rows != ht->n_rows) || (h[0]->n_columns != ht->n_columns)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Dimension/registrations are not compatible with blend grid/image!\n");
@@ -294,6 +311,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], Iin[k]) == NULL) {	/* Get data only */
 				Return (API->error);
 			}
+			dump_image (GMT, Iin[k], Ctrl->In.file[k]);
 		}
 	}
 
