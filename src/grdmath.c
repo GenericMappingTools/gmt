@@ -5844,7 +5844,7 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[219] = grdmath_XYZ2LAB;	n_args[219] = 3;	n_out[219] = 3;
 	ops[220] = grdmath_XYZ2RGB;	n_args[220] = 3;	n_out[220] = 3;
 	ops[221] = grdmath_DOT;	n_args[221] = 2;	n_out[221] = 1;
-	ops[221] = grdmath_BLEND;	n_args[222] = 3;	n_out[222] = 1;
+	ops[222] = grdmath_BLEND;	n_args[222] = 3;	n_out[222] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
