@@ -767,7 +767,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if ((Grid_orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}
-			if ((API->error = gmt_img_sanitycheck (GMT, Grid_orig[k]->header))) {	/* Used map projection on a Mercator (cartesian) grid */
+			if ((API->error = gmt_img_sanitycheck (GMT, Grid_orig[k]->header))) {	/* Used map projection on a Mercator (Cartesian) grid */
 				Return (API->error);
 			}
 		}
