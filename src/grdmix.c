@@ -291,7 +291,6 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset to previous memory layout */
 
 	/* Load in the grids or images */
 
