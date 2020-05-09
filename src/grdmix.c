@@ -165,7 +165,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	int error = 0, type;
 	uint64_t row, col, node, k;
 
-	char format[GMT_BUFSIZ];
+	char mem_layout[5] = {""};
 
 	float *weights = NULL, w1, w2;
 
@@ -271,6 +271,14 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				weights[node] = Ctrl->A.weight;
 	}
 
+#ifdef HAVE_GDAL
+		if (GMT->current.gdal_read_in.O.mem_layout[0])
+			strcpy (mem_layout, GMT->current.gdal_read_in.O.mem_layout);	/* Backup current layout */
+		else
+#endif
+			gmt_strncpy (mem_layout, "TRPa", 4);					/* Don't let it be empty (may it screw?) */
+		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* Set grdimage's image memory layout */
+
 	if (Ctrl->In.type[0] == GMT_NOTSET) {	/* Create output grid */
 		if ((G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Gin[0])) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate a grid for output!\n");
@@ -283,6 +291,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
+	GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset to previous memory layout */
 
 	/* Load in the grids or images */
 
@@ -293,7 +302,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 		}
 		else {
-			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], Iin[k]) == NULL) {	/* Get data only */
+			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], Iin[k]) == NULL) {	/* Get data only */
 				Return (API->error);
 			}
 		}
