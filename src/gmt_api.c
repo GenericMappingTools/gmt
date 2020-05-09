@@ -4458,7 +4458,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 }
 
 GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool close, FILE **fp_ppm, struct GMT_IMAGE *I) {
-	/* Reads a Portable Pixel Map (PPM) file header if fname extension is .ppm, else returns  1*/
+	/* Reads a Portable Pixel Map (PPM) file header if fname extension is .ppm, else returns  1 */
 	char *ext = gmt_get_ext (fname), dim[GMT_LEN32] = {""}, text[GMT_LEN64] = {""}, c;
 	int k = 0, max, n;
 	FILE *fp = NULL;
@@ -4473,8 +4473,10 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 		I->header->n_bands = 1;
 	else if (text[1] == '6')	/* Used P6 for rgb image */
 		I->header->n_bands = 3;
-	else
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot decode PPM magic key (%s) from file %s\n", text, fname);
 		return -1;
+	}
 	if (c == '#') {	/* Wind to next comment */
 		while ((c = fgetc (fp)) != '\n' ) k++;
 	}
@@ -4490,13 +4492,13 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 	I->header->inc[GMT_X] = I->header->inc[GMT_Y] = 1.0;
 	I->header->registration = GMT_GRID_PIXEL_REG;
 	gmt_M_memset (I->header->pad, 4, unsigned int);
-	gmt_set_grddim (GMT, I->header);
+	gmt_set_grddim (GMT, I->header);	/* Update all header dimensions */
 	strcpy (I->header->mem_layout, "TRP");
-	if (close)
+	if (close)	/* Close file, we only wanted the header information */
 		gmt_fclose (GMT, fp);
-	else
+	else	/* Pass back FILE pointers since we want to read the rest as well */
 		*fp_ppm = fp;
-		return GMT_NOERROR;
+	return GMT_NOERROR;
 }
 
 GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
@@ -4505,9 +4507,9 @@ GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 	size_t size;
 
 	if (gmtapi_import_ppm_header (GMT, fname, false, &fp, I)) return 1;	/* Not a PPM */
-	/* Now read the image in scaneline order, with each pixel as (R, G, B) */
+	/* Now read the image in scanline order, with each pixel as (R, G, B) or (gray) */
 	size = I->header->nm * I->header->n_bands;
-	if (fread (I->data, sizeof(char), I->header->nm * I->header->n_bands, fp) != size) {
+	if (fread (I->data, sizeof(char), size, fp) != size) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read the image from %s\n", fname);
 		gmt_fclose (GMT, fp);
 		return -1;
@@ -4516,7 +4518,6 @@ GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 	gmt_fclose (GMT, fp);
 	return GMT_NOERROR;
 }
-
 
 /*! . */
 GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
