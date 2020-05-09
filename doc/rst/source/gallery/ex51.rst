@@ -3,9 +3,11 @@
 (51) OpenStreetMap coastlines in GMT
 ------------------------------------
 
-**Note:** *This example makes use of data provided by third parties outside the GMT universe. As the internet is constantly changing, the source of this data might move or vanish altogether.*
-
 This example shows how to use coastlines derived from the `OpenStreetMap (OSM) project <https://www.openstreetmap.org/>`_ in GMT. When working with the high resolution SRTM :doc:`/datasets` provided by GMT, the GSHHG coastlines might not be precise enough on small scales. Here comes the OSM project to the rescue as it provides high resolution coastlines in the WGS84 datum. Not as convenient and fast as GSHHG but easy enough to give it a try – as long as you have GDAL installed, space on your hard drive and some processor cycles to spare.
+
+.. note::
+
+    This example makes use of data provided by third parties outside the GMT universe. As the internet is constantly changing, the source of this data might move or vanish altogether.
 
 First we need to download the appropriate shape file. The `OSM Wiki <https://wiki.openstreetmap.org/wiki/Shapefiles#Obtaining_shapefiles_from_OSM_data>`_ has some sources, `this <https://osmdata.openstreetmap.de/data/land-polygons.html>`_ is the one we are going to use. The nice people of the `German FOSSGIS society <https://www.fossgis.de>`_ already did some of the heavylifting and converted the OSM coastlines to a shape file for us. Make sure to get the *Land Polygon* in the *Large polygons not split* version with WGS84 datum from their `download page <https://osmdata.openstreetmap.de/data/land-polygons.html>`_. It’s a ~630 MB download.
 
