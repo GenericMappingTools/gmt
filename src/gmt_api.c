@@ -4457,6 +4457,67 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool close, FILE **fp_ppm, struct GMT_IMAGE *I) {
+	/* Reads a Portable Pixel Map (PPM) file header if fname extension is .ppm, else returns  1*/
+	char *ext = gmt_get_ext (fname), dim[GMT_LEN32] = {""}, text[GMT_LEN64] = {""}, c;
+	int k = 0, max, n;
+	FILE *fp = NULL;
+	if (strcmp (ext, "ppm")) return 1;	/* Not requesting a PPM file - return 1 and let GDAL take over */
+
+	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.r_mode)) == NULL) {	/* Return -1 to signify failure */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open file %s\n", fname);
+		return -1;
+	}
+	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN64) text[k++] = c;	text[k] = '\0';	/* Get first record up to newline */
+	if (text[1] == '5') /* Used P5 for grayscale image */
+		I->header->n_bands = 1;
+	else if (text[1] == '6')	/* Used P6 for rgb image */
+		I->header->n_bands = 3;
+	else
+		return -1;
+	if (c == '#') {	/* Wind to next comment */
+		while ((c = fgetc (fp)) != '\n' ) k++;
+	}
+	k = 0;
+	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN64) text[k++] = c;	text[k] = '\0';	/* Get next record up to newline */
+	n = sscanf (text, "%d %d %d", &I->header->n_rows, &I->header->n_columns, &max);
+	if (n == 2) {	/* Separate record with the max pixel value */
+		while ((c = fgetc (fp)) != '\n' ) k++;		
+	}
+	I->header->wesn[XLO] = I->header->wesn[YLO] = 0.0;
+	I->header->wesn[XHI] = I->header->n_columns;
+	I->header->wesn[YHI] = I->header->n_rows;
+	I->header->inc[GMT_X] = I->header->inc[GMT_Y] = 1.0;
+	I->header->registration = GMT_GRID_PIXEL_REG;
+	gmt_M_memset (I->header->pad, 4, unsigned int);
+	gmt_set_grddim (GMT, I->header);
+	strcpy (I->header->mem_layout, "TRP");
+	if (close)
+		gmt_fclose (GMT, fp);
+	else
+		*fp_ppm = fp;
+		return GMT_NOERROR;
+}
+
+GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
+	/* Reads a Portable Pixel Map (PPM) file if fname extension is .ppm, else returns 1 */
+	FILE *fp = NULL;
+	size_t size;
+
+	if (gmtapi_import_ppm_header (GMT, fname, false, &fp, I)) return 1;	/* Not a PPM */
+	/* Now read the image in scaneline order, with each pixel as (R, G, B) */
+	size = I->header->nm * I->header->n_bands;
+	if (fread (I->data, sizeof(char), I->header->nm * I->header->n_bands, fp) != size) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read the image from %s\n", fname);
+		gmt_fclose (GMT, fp);
+		return -1;
+	}
+	strncmp (I->header->mem_layout, "TRP", 3U);
+	gmt_fclose (GMT, fp);
+	return GMT_NOERROR;
+}
+
+
 /*! . */
 GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
 	/* Handles the reading of a 2-D grid given in one of several ways.
@@ -4519,7 +4580,9 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 			I_obj->header->complex_mode = mode;		/* Pass on any bitflags */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {		/* Must init header and read the header information from file */
-				if (gmt_M_err_pass (GMT, gmtlib_read_image_info (GMT, S_obj->filename, must_be_image, I_obj), S_obj->filename)) {
+				if (gmtapi_import_ppm_header (GMT, S_obj->filename, true, NULL, I_obj) == 0)
+					d = 0.0;	/* Placeholder */
+				else if (gmt_M_err_pass (GMT, gmtlib_read_image_info (GMT, S_obj->filename, must_be_image, I_obj), S_obj->filename)) {
 					if (new) gmtlib_free_image (GMT, &I_obj, false);
 					return_null (API, GMT_IMAGE_READ_ERROR);
 				}
@@ -4536,7 +4599,9 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 				if (size > I_obj->header->size) return_null (API, GMT_IMAGE_READ_ERROR);
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Reading image from file %s\n", S_obj->filename);
-			if (gmt_M_err_pass (GMT, gmtlib_read_image (GMT, S_obj->filename, I_obj, S_obj->wesn,
+			if (gmtapi_import_ppm (GMT, S_obj->filename, I_obj) == 0)
+				d = 0.0;	/* Placeholder */
+			else if (gmt_M_err_pass (GMT, gmtlib_read_image (GMT, S_obj->filename, I_obj, S_obj->wesn,
 				I_obj->header->pad, mode), S_obj->filename))
 				return_null (API, GMT_IMAGE_READ_ERROR);
 			if (gmt_M_err_pass (GMT, gmtlib_image_BC_set (GMT, I_obj), S_obj->filename))
