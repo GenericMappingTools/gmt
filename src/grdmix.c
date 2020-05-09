@@ -153,16 +153,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 
 void dump_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, char *file) {
 	uint64_t row, col, node, pix = 0;
-	fprintf (stderr, "\nImage = %s [%s]\n", file, I->header->mem_layout);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Image = %s [%s]\n", file, I->header->mem_layout);
 	if (I->header->n_bands == 1) {
 		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel here */
-			fprintf (stderr, "Pixel %4d is %3.3d\n", (int)node, I->data[node]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pixel %4d is %3.3d\n", (int)node, I->data[node]);
 		}
 	}
-	else {
+	else if (I->header->n_bands == 3) {
 		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is three per pixel here */
-			fprintf (stderr, "Pixel %4d is %3.3d/%3.3d/%3.3d\n", (int)node, I->data[pix], I->data[pix+1], I->data[pix+2]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pixel %4d is %3.3d/%3.3d/%3.3d\n", (int)node, I->data[pix], I->data[pix+1], I->data[pix+2]);
 			pix += 3;
+		}
+	}
+	else {	/* RGBA */
+		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is three per pixel here */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pixel %4d is %3.3d/%3.3d/%3.3d (%3.3%d)\n", (int)node, I->data[pix], I->data[pix+1], I->data[pix+2], I->data[pix+3]);
+			pix += 4;
 		}
 	}
 }
@@ -204,7 +210,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_NOTICE, "grdmix is experimental - caveat emptor\n\n");
 
-	GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* Set GMT image memory layout */
+	GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRB ");			/* Set GMT image memory layout */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grids\n");
 	gmt_set_pad (GMT, 0); /* No padding */
 
@@ -269,7 +275,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				weights[node] = gmt_M_is255 (Wi->data[node]);
 			}
 			W = Wi;
-			dump_image (GMT, Wi, Ctrl->A.file);
+			if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) dump_image (GMT, Wi, Ctrl->A.file);
 		}
 		if (h[0]->registration != ht->registration || (h[0]->n_rows != ht->n_rows) || (h[0]->n_columns != ht->n_columns)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Dimension/registrations are not compatible with blend grid/image!\n");
@@ -311,11 +317,19 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], Iin[k]) == NULL) {	/* Get data only */
 				Return (API->error);
 			}
-			dump_image (GMT, Iin[k], Ctrl->In.file[k]);
+			if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) dump_image (GMT, Iin[k], Ctrl->In.file[k]);
 		}
 	}
 
 	/* Now do the work which depends on whether we have 1 or 2 input items */
+
+/* Turn off the automatic creation of aux files by GDAL */
+#ifdef WIN32
+	if (_putenv ("GDAL_PAM_ENABLED=NO"))
+#else
+	if (setenv ("GDAL_PAM_ENABLED", "NO", 0))
+#endif
+		GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 
 	if (Ctrl->In.n_in == 1) {	/* Add transparency from -A to the input image */
 		/* Create alpha array for I and copy from A grid */

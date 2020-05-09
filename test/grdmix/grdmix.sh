@@ -16,6 +16,9 @@ gmt grdimage w.grd -Ct.cpt -Jx1 -Aalpha.png
 gdal_translate red.png red.ppm
 gdal_translate blue.png blue.ppm
 gdal_translate alpha.png alpha.ppm
-gmt grdmix red.ppm blue.ppm -Agray.ppm -Gmix.ppm
-gdal_transpate mix.ppm mix.png
-gmt psimage mix.png -Dx0/0+w4i -P -B0 > $ps
+gmt grdmix red.ppm blue.ppm -Aalpha.ppm -Gmix.ppm
+gdal_translate mix.ppm mix.png
+gmt psimage mix.png -Dx0/0+w5i -P -B0 -K -X1.75i > $ps
+gmt psimage red.png -Dx0/0+w1.5i -O -K -B0 -Y5.5i >> $ps
+gmt psimage blue.png -Dx0/0+w1.5i -O -K -B0 -X1.75i >> $ps
+gmt psimage alpha.png -Dx0/0+w1.5i -O -B0 -X1.75i >> $ps
