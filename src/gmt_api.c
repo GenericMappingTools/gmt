@@ -951,7 +951,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	/* At the end of GMT_Create_Session we are done with processing gmt.conf.
 	 * We can now determine how many shared libraries and plugins to consider, and open the core lib */
 	struct GMT_CTRL *GMT = API->GMT;
-	unsigned int n_custom_libs = 0, k, e, n_alloc = GMT_TINY_CHUNK;
+	unsigned int n_custom_libs, k, e, n_alloc = GMT_TINY_CHUNK;
 	char text[PATH_MAX] = {""}, plugindir[PATH_MAX] = {""}, path[PATH_MAX] = {""};
 	char *libname = NULL, **list = NULL;
 #ifdef WIN32
@@ -975,21 +975,33 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 
 	API->lib = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_LIBINFO);
 
-	/* 1. Load the GMT core library by default [unless static build] */
+	/* 1. Load the GMT core library by default [unless libgmt is used externally] */
 	/* Note: To extract symbols from the currently executing process we need to load it as a special library.
 	 * This is done by passing NULL under Linux and by calling GetModuleHandleEx under Windows, hence we
-	 * use the dlopen_special call which is defined in gmt_sharedlibs.c */
+	 * use the dlopen_special call which is defined in gmt_sharedlibs.c.  If the gmt core and supplemental
+	 * libraries are being used by 3rd party externals then no library is special and they are all opened
+	 * the first time we need access. */
 
 	API->lib[0].name = strdup ("core");
-	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
-	GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # 0 (core). Path = %s\n", API->lib[0].path);
-	++n_custom_libs;
-	GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
-	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());
-		gmtapi_exit (API, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+	n_custom_libs = 1;	/* Always have at least one shared gmt library */
+	if (API->external) {	/* Determine the path to this library */
+		if (GMT->init.runtime_libdir) {	/* Successfully determined runtime dir for shared libs */
+			sprintf (path, "%s/%s", GMT->init.runtime_libdir, GMT_CORE_LIB_NAME);
+			API->lib[0].path = strdup (path);
+		}
+		else	/* Rely on the OS to find it */
+			API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
 	}
-	dlerror (); /* Clear any existing error */
+	else {	/* The handling of the core library is only special when gmt.c is used. */
+		API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
+		GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
+		if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());
+			gmtapi_exit (API, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		}
+		dlerror (); /* Clear any existing error */
+	}
+	GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # 0 (core). Path = %s\n", API->lib[0].path);
 
 	/* 3. Add any plugins installed in <installdir>/lib/gmt/plugins */
 
