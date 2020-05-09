@@ -1306,7 +1306,7 @@ GMT_LOCAL void grdmath_BITXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 GMT_LOCAL void grdmath_BLEND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BLEND 3 1 Blend A and B using weights in C (0-1 range) as A*C+B*(1-C).  */
 {
-	uint64_t node;
+	uint64_t node, n_warn = 0;
 	int nu1, nu2;
 	unsigned int prev1, prev2, row, col;
 	double z1, z2, w;
@@ -1322,8 +1322,10 @@ GMT_LOCAL void grdmath_BLEND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 			z2 = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
 			w  = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
 			stack[prev2]->G->data[node] = (float)(w * (z1 - z2) + z2);	/* This is same as w*z1 + (1-w)*z2 but one less multiply */
+			if (w < 0.0 || w > 1.0) n_warn++;
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_WARNING, "BLEND encountered %" PRIu64 " weights that were outside the 0-1 range\n", n_warn);
 }
 
 GMT_LOCAL void grdmath_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
