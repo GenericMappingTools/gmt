@@ -54,7 +54,7 @@ gmt begin ex51
   # is the area of the plot. -W defines the pen and -B the style of the plot
   # borders, gridlines and annotations. 
   
-  gmt coast -JL-24.9/16.55/16.3/16.7/20c -R-25.14/16.75/-24.8/16.95r \
+  gmt coast -JL-24.9/16.55/16.3/16.7/20c -R-25.14/16.75/-24.8/16.95+r \
     -Wred -Ba10mg10m
   
   # Time to use the OSM coastlines we prepared earlier. Straightforward we
