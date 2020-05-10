@@ -1307,7 +1307,6 @@ GMT_LOCAL void grdmath_BLEND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: BLEND 3 1 Blend A and B using weights in C (0-1 range) as A*C+B*(1-C).  */
 {
 	uint64_t node, n_warn = 0;
-	int nu1, nu2;
 	unsigned int prev1, prev2, row, col;
 	double z1, z2, w;
 
