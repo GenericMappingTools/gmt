@@ -33,7 +33,7 @@ useful on the fly. Neither very fast nor very efficient if you want to use the
 file multiple times and have to deal with large file sizes as we do here. So we
 use GDALs ``ogr2ogr`` and convert the shape file to a native GMT format.
 
-As the resulting raw ASCII file is very large (>1 GB), GMTs :doc:`/gmtconvert`
+As the resulting raw ASCII file is very large (>1 GB), GMT's :doc:`/gmtconvert`
 is used to reduce the file size to a third by converting it to a
 single-precision binary file. The resulting file is smaller than the initial
 download while still maintaining precision in the range of centimeters.
