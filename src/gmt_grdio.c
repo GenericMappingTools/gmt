@@ -3075,6 +3075,8 @@ GMT_LOCAL int gmtgrdio_get_extension_period (char *file) {
 	return (pos_ext);
 }
 
+#define GMT_VF_TYPE_POS	13	/* Character in the virtual file name that indicates data family */
+
 int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	/* Returns the type of the file (either grid or image).
 	 * We use the file extension to make these decisions:
