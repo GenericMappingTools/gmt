@@ -4,6 +4,7 @@
 # Refer to http://www.sphinx-doc.org/en/master/usage/configuration.html for details.
 #
 import sys, os
+import glob
 sys.path.append(os.path.abspath('_extensions'))
 
 # -- General configuration -----------------------------------------------------
@@ -80,6 +81,15 @@ from sphinx.builders.html import StandaloneHTMLBuilder
 StandaloneHTMLBuilder.supported_image_types = [
   'image/gif', 'image/jpeg', 'image/png', 'image/svg+xml'
 ]
+
+# context for the jinja extension
+## Count number of examples (.rst) in the source/gallery directory
+no_of_examples = len(glob.glob("source/gallery/ex*.rst"))
+jinja_contexts = {
+    'jinja_ctx': {
+        'no_of_examples': no_of_examples,
+    }
+}
 
 # -- Options for manual page output --------------------------------------------
 # One entry per manual page. List of tuples

@@ -1,0 +1,52 @@
+.. _example_51:
+
+(51) OpenStreetMap coastlines in GMT
+------------------------------------
+
+This example shows how to use coastlines derived from the `OpenStreetMap (OSM)
+project <https://www.openstreetmap.org/>`_ in GMT. When working with the high
+resolution SRTM :doc:`/datasets` provided by GMT, the GSHHG coastlines might
+not be precise enough on small scales. Here comes the OSM project to the rescue
+as it provides high resolution coastlines in the WGS84 datum. Not as convenient
+and fast as GSHHG but easy enough to give it a try – as long as you have GDAL
+installed, space on your hard drive and some processor cycles to spare.
+
+.. note::
+
+    This example makes use of data provided by third parties outside the GMT
+    universe. As the internet is constantly changing, the source of this data
+    might move or vanish altogether.
+
+First we need to download the appropriate shape file. The `OSM Wiki
+<https://wiki.openstreetmap.org/wiki/Shapefiles#Obtaining_shapefiles_from_OSM_data>`_
+has some sources, `this <https://osmdata.openstreetmap.de/data/land-polygons.html>`_
+is the one we are going to use. The nice people of the `German FOSSGIS society
+<https://www.fossgis.de>`_ already did some of the heavylifting and converted
+the OSM coastlines to a shape file for us. Make sure to get the *Land Polygon*
+in the *Large polygons not split* version with WGS84 datum from their `download
+page <https://osmdata.openstreetmap.de/data/land-polygons.html>`_. It’s a
+~630 MB download.
+
+If your GMT installation comes with GDAL support then you are able to make use
+of this file right away as GMT converts it under the hood to something more
+useful on the fly. Neither very fast nor very efficient if you want to use the
+file multiple times and have to deal with large file sizes as we do here. So we
+use GDAL's ``ogr2ogr`` and convert the shape file to a native GMT format.
+
+As the resulting raw ASCII file is very large (>1 GB), GMT's :doc:`/gmtconvert`
+is used to reduce the file size to a third by converting it to a
+single-precision binary file. The resulting file is smaller than the initial
+download while still maintaining precision in the range of centimeters.
+
+To speed up the plotting process even more, we extract the region of interest
+with :doc:`/gmtselect`. Finally we are all set to use the coastlines with
+:doc:`/plot` to get nice, precise coastlines in our illustrations.
+
+.. literalinclude:: /_verbatim/ex51.txt
+   :language: bash
+
+.. figure:: /_images/ex51.*
+   :width: 500 px
+   :align: center
+
+   Comparison of GSHHG and OSM coastlines.

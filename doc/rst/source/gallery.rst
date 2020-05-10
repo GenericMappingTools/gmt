@@ -3,7 +3,7 @@
 Example Gallery
 ===============
 
-The 50 Examples
+The 51 Examples
 ----------------
 
 In this section we will be giving numerous examples of typical usage of
@@ -15,9 +15,9 @@ complex illustration.
 
 .. cssclass:: gmtgallary
 
-.. jinja::
+.. jinja:: jinja_ctx
 
-   {% for i in range(1, 51) %}
+   {% for i in range(1, no_of_examples + 1) %}
    {% set i = '%02d' % i %}
    -  .. figure:: /_images/ex{{i}}.*
          :target: ./gallery/ex{{i}}.html
