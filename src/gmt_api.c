@@ -4462,7 +4462,7 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 	char *ext = gmt_get_ext (fname), text[GMT_LEN64] = {""}, c;
 	int k = 0, max, n;
 	FILE *fp = NULL;
-	if (strcmp (ext, "ppm")) return GMT_NOT_A_VALID_FAMILY;	/* Not requesting a PPM file - return GMT_NOT_A_VALID_FAMILY and let GDAL take over */
+	if (ext == NULL || strcmp (ext, "ppm")) return GMT_NOT_A_VALID_FAMILY;	/* Not requesting a PPM file - return GMT_NOT_A_VALID_FAMILY and let GDAL take over */
 
 	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.r_mode)) == NULL) {	/* Return GMT_ERROR_ON_FOPEN to signify failure */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open file %s\n", fname);
@@ -4804,7 +4804,7 @@ GMT_LOCAL int gmtapi_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 	char *ext = gmt_get_ext (fname), dim[GMT_LEN32] = {""};
 	size_t n;
 	FILE *fp = NULL;
-	if (strcmp (ext, "ppm")) return GMT_NOT_A_VALID_FAMILY;	/* Not requesting a PPM file - return GMT_NOT_A_VALID_FAMILY and let GDAL take over */
+	if (ext == NULL || strcmp (ext, "ppm")) return GMT_NOT_A_VALID_FAMILY;	/* Not requesting a PPM file - return GMT_NOT_A_VALID_FAMILY and let GDAL take over */
 
 	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {	/* Return GMT_ERROR_ON_FOPEN to signify failure */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot create PPM file %s\n", fname);
