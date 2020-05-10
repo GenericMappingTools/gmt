@@ -90,6 +90,8 @@
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
 #define GMT_PAPER_MARGIN	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) */
 
+#define GMT_VF_TYPE_POS	14	/* Character in the virtual file name that indicates data family */
+
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {
 	/*! 0 */	GMT_HISTORY_OFF = 0,
