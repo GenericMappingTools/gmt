@@ -396,34 +396,35 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	/* Set up the blend weights */
-	weights = gmt_M_memory (GMT, NULL, h[0]->size, float);
-	if (Ctrl->A.mode == 0) {	/* Got a weights grid or image */
-		void *W = Gin[BLEND];	/* Pointer to the blend grid (or NULL) */
-		if (Ctrl->In.type[BLEND] == GMT_NOTSET) {	/* Got a grid */
-			uint64_t n_bad = 0;
-			gmt_M_grd_loop (GMT, Gin[BLEND], row, col, node) {
-				weights[node] = Gin[BLEND]->data[node];
-				if (weights[node] < 0.0 || weights[node] > 1.0) n_bad++;
+	if (Ctrl->A.active) {	/* Set up the blend weights */
+		weights = gmt_M_memory (GMT, NULL, h[0]->size, float);
+		if (Ctrl->A.mode == 0) {	/* Got a weights grid or image */
+			void *W = Gin[BLEND];	/* Pointer to the blend grid (or NULL) */
+			if (Ctrl->In.type[BLEND] == GMT_NOTSET) {	/* Got a grid */
+				uint64_t n_bad = 0;
+				gmt_M_grd_loop (GMT, Gin[BLEND], row, col, node) {
+					weights[node] = Gin[BLEND]->data[node];
+					if (weights[node] < 0.0 || weights[node] > 1.0) n_bad++;
+				}
+				if (n_bad) {
+					GMT_Report (API, GMT_MSG_ERROR, "Blend grid not in 0-1 range!\n");
+					Return (GMT_RUNTIME_ERROR);
+				}
 			}
-			if (n_bad) {
-				GMT_Report (API, GMT_MSG_ERROR, "Blend grid not in 0-1 range!\n");
+			else {	/* Got an image */
+				gmt_M_grd_loop (GMT, Iin[BLEND], row, col, node)
+					weights[node] = gmt_M_is255 (Iin[BLEND]->data[node]);
+				W = Iin[BLEND];
+			}
+			if (GMT_Destroy_Data (API, &W) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid or image from -A!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		else {	/* Got an image */
-			gmt_M_grd_loop (GMT, Iin[BLEND], row, col, node)
-				weights[node] = gmt_M_is255 (Iin[BLEND]->data[node]);
-			W = Iin[BLEND];
+		else {	/* Make a constant array of weights */
+			for (node = 0; node < h[0]->size; node++)
+				weights[node] = Ctrl->A.weight;
 		}
-		if (GMT_Destroy_Data (API, &W) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid or image from -A!\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-	}
-	else {	/* Make a constant array of weights */
-		for (node = 0; node < h[0]->size; node++)
-			weights[node] = Ctrl->A.weight;
 	}
 
 	if (Ctrl->In.type[0] == GMT_NOTSET) {	/* Create output grid for the blend */
@@ -441,15 +442,28 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	/* Now do the work which depends on whether we have 1 or 2 input items */
 
-	if (Ctrl->In.n_in == 1) {	/* Pass transparency from -A to the input image */
+	if (Ctrl->In.n_in == 1) {	/* Pass intensity and/or transparency from -A to the input image */
 		gmt_M_memcpy (I->data, Iin[0]->data, I->header->size * I->header->n_bands, char);	/* Duplicate the input image */
 		/* Create alpha array for I and copy from A grid/image */
-		if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate alpha layer\n");
-			Return (GMT_RUNTIME_ERROR);
+		if (Ctrl->A.active) { 	/* Add transparency layer */
+			if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate alpha layer\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			for (node = 0; node < h[0]->size; node++)	/* Scale to 0-255 range */
+				I->alpha[node] = gmt_M_u255 (weights[node]);
 		}
-		for (node = 0; node < h[0]->size; node++)	/* Scale to 0-255 range */
-			I->alpha[node] = gmt_M_u255 (weights[node]);
+		if (Ctrl->I.active) {	/* Modify colors by the intensity */
+			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+				for (band = 0; band < h[0]->n_bands; band++)	/* Get the normalized r,g,b triplet */
+					rgb[band] = gmt_M_is255 (I->data[node+band*h[0]->size]);
+				if (h[0]->n_bands == 1)	/* Duplicate grays so illuminate can work */
+					rgb[1] = rgb[2] = rgb[0];
+				gmt_illuminate (GMT, Gin[INTENS]->data[node], rgb);
+				for (band = 0, pix = node; band < h[0]->n_bands; band++, pix += h[0]->size)	/* March across the RGB values */
+					I->data[pix] = gmt_M_u255 (rgb[band]);
+			}
+		}
 	}
 	else {	/* Blend two grids or images using the weights given via -A */
 		if (Ctrl->In.type[0] == GMT_NOTSET) {	/* Two grids, just do the blend loop */
@@ -478,7 +492,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	gmt_M_free (GMT, weights);
+	if (Ctrl->A.active) gmt_M_free (GMT, weights);
 
 	if (write_image) {	/* Write image here - any grid output was written earlier */
 /* Turn off the automatic creation of aux files by GDAL */
