@@ -15,7 +15,7 @@
 
 ogr2ogr -f OGR_GMT land_polygons_osm_planet.gmt land_polygons.shp
 
-# Resorting to GMTs convert program we take our very large ASCII file and
+# Resorting to GMT's convert program we take our very large ASCII file and
 # reduce it to about a third of its original size by converting it to a binary
 # file. Lets have a closer look at -bo2f: 
 # -bo selects native binary output
