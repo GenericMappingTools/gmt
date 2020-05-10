@@ -12491,14 +12491,14 @@ GMT_LOCAL int gmtapi_change_gridlayout (struct GMTAPI_CTRL *API, char *code, uns
 }
 
 GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_IMAGE *I, unsigned char *out1, unsigned char *out2) {
-	/* code: The new memory layout code
-	   mode:
-	   out1:  Array with the data converted to the new layout.
-	   out2:  Array with the transparencies converted to the new layout.
-	         If NULL on input the necessary memory is allocated in this function, otherwise
+	/* code: The new memory layout code, e.g "TRB"
+	   mode: Currentlu unused (for future expansion)
+	   out1: Array with the image data converted to the requested layout.
+	   out2: Array with the transparencies converted to the requested layout.
+	         If NULL on input the necessary memory is allocated inside this function, otherwise
 	         it is ASSUMED that it points a memory chunk big enough to hold the reshuffled data.
-	         PW: Looks like we assume there are 3 bands but this should depend on n_bands.
 	*/
+	bool changed = true;
 	unsigned char *tmp = NULL, *alpha = NULL;
 	enum GMT_enum_family family;
 	unsigned int old_layout, new_layout;
@@ -12510,8 +12510,6 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 	new_layout = gmtapi_decode_layout(API, code, &family);
 	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
 
-	/* Images may be column vs row oriented, from top or from bottom and may be Band|Line|Pixel interleaved
-	   That sums up to a lot of combinations. We will add them on a by-need basis. */
 	if ((tmp = out1) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->n_bands * I->header->size, unsigned char)) == NULL)
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
 	if (I->alpha && (alpha = out2) == NULL && (alpha = gmt_M_memory_aligned (API->GMT, NULL, I->header->size, unsigned char)) == NULL) {
@@ -12520,26 +12518,35 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
 	}
 
+	/* Images may be column vs row oriented, from top or from bottom and may be Band|Line|Pixel interleaved
+	   That sums up to a lot of combinations. We will add them on a by-need basis. */
+
 	if (old_layout == 8 && new_layout == 2) {	/* Change from TRP to TCB */
-		strncpy (I->header->mem_layout, code, strlen(code));
-		for (row = from_node = 0; row < I->header->n_rows; row++)
-			for (col = 0; col < I->header->n_columns; col++)
+		for (row = from_node = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < I->header->n_bands; band++) {
-					to_node = row + col*I->header->n_rows + band * I->header->size;
+					to_node = row + col*I->header->my + band * I->header->size;
 					tmp[to_node] = (uint8_t)I->data[from_node++];
 				}
+		if (I->alpha) {
+			for (row = from_node = 0; row < I->header->my; row++)
+				for (col = 0; col < I->header->mx; col++) {
+					to_node = row + col*I->header->my;
+					alpha[to_node] = (uint8_t)I->alpha[from_node++];
+				}
+		}
 	}
 	else if (old_layout == 0 && new_layout == 8) {	/* Change from TRB to TRP */
-		strncpy (I->header->mem_layout, code, strlen(code));
 		for (row = to_node = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < I->header->n_bands; band++, to_node++) {
 					from_node = col + row*I->header->mx + band * I->header->size;
 					tmp[to_node] = (uint8_t)I->data[from_node];
 				}
+		if (I->alpha)	/* Same since only one band of alpha */
+			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
 	}
 	else if (old_layout == 9 && new_layout == 0) {	/* Change from BRP to TRB */
-		strncpy (I->header->mem_layout, code, strlen(code));
 		for (row = from_node = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < I->header->n_bands; band++) {
@@ -12547,13 +12554,21 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 					to_node = col + row*I->header->my + band * I->header->size;
 					tmp[to_node] = (uint8_t)I->data[from_node++];
 				}
+		if (I->alpha) {
+			for (row = from_node = 0; row < I->header->my; row++)
+				for (col = 0; col < I->header->mx; col++) {
+					to_node = col + row*I->header->my;
+					alpha[to_node] = (uint8_t)I->alpha[from_node++];
+				}
+		}
 	}
 	//else if (old_layout == 2 && new_layout == 0) {}	/* Change from TCB to TRB */
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_WARNING, "gmtapi_change_imagelayout: reordering function for case %s -> %s not yet written. Doing nothing.\n",
-		            I->header->mem_layout, code);
+			I->header->mem_layout, code);
 		for (from_node = 0; from_node < I->header->size; from_node++)
 			tmp[from_node] = I->data[from_node];
+		changed = false;
 	}
 
 	if (out1 == NULL) {	/* Means we must update the Image data */
@@ -12567,6 +12582,8 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 			gmt_M_free_aligned (API->GMT, I->alpha);		/* Free previous aligned image transparency */
 		I->alpha = alpha;
 	}
+
+	if (changed) strncpy (I->header->mem_layout, code, strlen(code));
 
 	return (GMT_NOERROR);
 }
