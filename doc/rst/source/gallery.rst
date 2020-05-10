@@ -15,9 +15,9 @@ complex illustration.
 
 .. cssclass:: gmtgallary
 
-.. jinja::
+.. jinja:: jinja_ctx
 
-   {% for i in range(1, 52) %}
+   {% for i in range(1, no_of_examples + 1) %}
    {% set i = '%02d' % i %}
    -  .. figure:: /_images/ex{{i}}.*
          :target: ./gallery/ex{{i}}.html
