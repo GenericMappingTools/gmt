@@ -12524,7 +12524,7 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		strncpy (I->header->mem_layout, code, strlen(code));
 		for (row = from_node = 0; row < I->header->n_rows; row++)
 			for (col = 0; col < I->header->n_columns; col++)
-				for (band = 0; band < 3; band++) {
+				for (band = 0; band < I->header->n_bands; band++) {
 					to_node = row + col*I->header->n_rows + band * I->header->size;
 					tmp[to_node] = (uint8_t)I->data[from_node++];
 				}
@@ -12533,7 +12533,7 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		strncpy (I->header->mem_layout, code, strlen(code));
 		for (row = to_node = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
-				for (band = 0; band < 3; band++, to_node++) {
+				for (band = 0; band < I->header->n_bands; band++, to_node++) {
 					from_node = col + row*I->header->mx + band * I->header->size;
 					tmp[to_node] = (uint8_t)I->data[from_node];
 				}
@@ -12542,7 +12542,7 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		strncpy (I->header->mem_layout, code, strlen(code));
 		for (row = from_node = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
-				for (band = 0; band < 3; band++) {
+				for (band = 0; band < I->header->n_bands; band++) {
 					//to_node = col + (I->header->my - 1 - row)*I->header->my + band*I->header->size;
 					to_node = col + row*I->header->my + band * I->header->size;
 					tmp[to_node] = (uint8_t)I->data[from_node++];
@@ -12556,14 +12556,15 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 			tmp[from_node] = I->data[from_node];
 	}
 
-	if (out1 == 0) {	/* Means we must update the Image data */
+	if (out1 == NULL) {	/* Means we must update the Image data */
 		IH = gmt_get_I_hidden (I);
 		if (IH->alloc_mode != GMT_ALLOC_EXTERNALLY)
 			gmt_M_free_aligned (API->GMT, I->data);			/* Free previous aligned image memory */
 		I->data = tmp;
 	}
-	if (out2 == 0 && alpha) {	/* Means we must update the alpha data */
-		gmt_M_free_aligned (API->GMT, I->alpha);		/* Free previous aligned image transparency */
+	if (out2 == NULL && alpha) {	/* Means we must update the alpha data */
+		if (IH->alloc_mode != GMT_ALLOC_EXTERNALLY)
+			gmt_M_free_aligned (API->GMT, I->alpha);		/* Free previous aligned image transparency */
 		I->alpha = alpha;
 	}
 
