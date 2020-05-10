@@ -67,6 +67,9 @@ struct GRDMIX_CTRL {
 		char *file;
 		double weight;
 	} I;
+	struct GRDMIX_N {	/* -N */
+		bool active;
+	} N;
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -92,7 +95,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	static char *type[2] = {"grid or image", "image"};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<grid|image|value>] [-C] [-D] [-I<intens>] [%s] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<grid|image|value>] [-C] [-D] [-I<intens>] [-N] [%s] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -104,6 +107,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct image from i1 or 3 input component grids, plus optional transparency (-A).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Deconstruct image into 1 or 3 output component grids, plus optional transparency.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply intensities to final image colors.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grids from 0-255 to 0-1 [input grids already normalized]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<raster?> are optional second/third %s to be used.\n", type[API->external]);
 	GMT_Option (API, "V,f,.");
 
@@ -173,6 +177,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 				}
 				else	/* Got a valid constant */
 					Ctrl->A.mode = 1;
+				break;
+
+			case 'N':
+				Ctrl->N.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -317,6 +325,10 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], Gin[k]) == NULL) {	/* Get data only */
 				Return (API->error);
 			}
+			if (Ctrl->N.active) {	/* Normalize the grid */
+				gmt_M_grd_loop (GMT, Gin[k], row, col, node)
+					Gin[k]->data[node] /= 255.0;
+			}
 		}
 		else {	/* Read the image */
 			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], Iin[k]) == NULL) {	/* Get data only */
@@ -330,7 +342,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	/* Deal with operations -C and -D up front, then exit */
 
-	if (Ctrl->C.active) {	/* Combine grinds into a new single image */
+	if (Ctrl->C.active) {	/* Combine 1 or 3 grids into a new single image, while handling the optional -A -I information */
 		uint64_t dim[GMT_DIM_SIZE] = {h[0]->n_columns, h[0]->n_rows, Ctrl->In.n_in, 0};
 		if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
@@ -364,7 +376,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	if (Ctrl->D.active) {	/* De-construct single image */
+	if (Ctrl->D.active) {	/* De-construct single image into its gray or R,G,B [plus optional A] layers */
 		char code[4] = {'R', 'G', 'B', 'A'}, file[PATH_MAX] = {""};
 		uint64_t off = 0;
 		double wesn[4], inc[2] = {1.0, 1.0};

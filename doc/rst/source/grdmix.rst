@@ -19,6 +19,7 @@ Synopsis
 [ |-C| ]
 [ |-D| ]
 [ |-I|\ *intens* ]
+[ |-N| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -43,17 +44,15 @@ Required Arguments
 ------------------
 
 *raster?*
-    Grid or image. If only one is given then *raster1* must be an image.
+    If only one is given and **-C** is not set then *raster1* must be an image.
+    If two are given then *raster1* and *raster2* must both be either
+    images or grids.  If three are given then they must all be grids and
+    **-C** must be set.
 
 .. _-G:
 
 **-G**\ *outfile*
     The name for the output raster.
-
-.. _-I:
-
-**-I*\ *intens*
-    A constant intensity or grid (-1/+1 range) to modify output image colors.
 
 Optional Arguments
 ------------------
@@ -83,6 +82,16 @@ Optional Arguments
     The output names uses the name template given by **-G** which must contain the
     C-format code "%c".  This code is replaced by the codes R, G, B and A for color
     images and g, A for grayscale images.
+
+.. _-I:
+
+**-I*\ *intens*
+    A constant intensity or grid (-1/+1 range) to modify final output image colors.
+
+.. _-N:
+
+**-N**
+    Normalize all input grids from 0-255 to 0-1 [All input grids already in 0-1 range].
 
 .. _-V:
 
