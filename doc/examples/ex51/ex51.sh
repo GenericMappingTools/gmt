@@ -7,7 +7,7 @@
 
 
 # First we convert the shapefile to something more GMT friendly. Here we make it
-# into a large ASCII file. Human-readable but not very efficient. GDALs ogr2ogr
+# into a large ASCII file. Human-readable but not very efficient. GDAL's ogr2ogr
 # is used with the "-f OGR_GMT" option indicating that the output should have
 # the native GMT format. Input is the downloaded land_polygons.shp, and the
 # output is named land_polygons_osm_planet.gmt. The resulting file is very
