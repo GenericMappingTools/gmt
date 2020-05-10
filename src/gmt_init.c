@@ -12425,6 +12425,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_begin_module_sub (struct GMTAPI_CTRL *API, co
 	/* GMT_IO */
 	Csave->current.io.OGR = gmtlib_duplicate_ogr (GMT, GMT->current.io.OGR);	/* Duplicate OGR struct, if set */
 	gmtlib_free_ogr (GMT, &(GMT->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
+	GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;
 
 	gmt_M_memset (Csave->current.io.o_format, GMT_MAX_COLUMNS, char *);
 	for (i = 0; i < GMT_MAX_COLUMNS; i++)
@@ -14021,6 +14022,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		gmt_getdefaults (GMT, NULL);	// Re-read local GMT default settings (if any)
 	}
 	*/
+	GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;
 
 	gmt_M_str_free (Ccopy);	/* Good riddance */
 }
