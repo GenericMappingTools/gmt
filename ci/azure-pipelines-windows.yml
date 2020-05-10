@@ -106,7 +106,7 @@ steps:
 - task: Cache@2
   inputs:
     key: cachedata | 20200409
-    path: $(HOME)/.gmt
+    path: $(HOMEPATH)/.gmt
     cacheHitVar: CACHE_CACHEDATA_RESTORED
   displayName: Cache GMT remote data for testing
 

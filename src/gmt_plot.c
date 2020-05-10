@@ -5112,7 +5112,7 @@ GMT_LOCAL double gmtplot_get_border_angle (struct GMT_CTRL *GMT, double xc, doub
 
 #if 0
 /* Saving this for now in case something blows */
-GMT_LOCAL void gmtplot_gmtplot_get_outside_point_extension_orig (struct GMT_CTRL *GMT, double x_on, double y_on, double x_in, double y_in, double *x_off, double *y_off) {
+GMT_LOCAL void gmtplot_get_outside_point_extension_orig (struct GMT_CTRL *GMT, double x_on, double y_on, double x_in, double y_in, double *x_off, double *y_off) {
 	/* The point (x_on, y_on) is known to sit on a rectangular map border, and the point (x_in, y_in) is either inside or is on another border point.
 	 * A line will be drawn between the two points, but given the finite pen width we must adjust the starting and|or end point so that
 	 * the pen is not clipped, resulting in a gap between the end and the border. */
