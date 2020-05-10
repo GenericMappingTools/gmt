@@ -4459,7 +4459,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 
 GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool close, FILE **fp_ppm, struct GMT_IMAGE *I) {
 	/* Reads a Portable Pixel Map (PPM) file header if fname extension is .ppm, else returns  1 */
-	char *ext = gmt_get_ext (fname), dim[GMT_LEN32] = {""}, text[GMT_LEN64] = {""}, c;
+	char *ext = gmt_get_ext (fname), text[GMT_LEN64] = {""}, c;
 	int k = 0, max, n;
 	FILE *fp = NULL;
 	if (strcmp (ext, "ppm")) return 1;	/* Not requesting a PPM file - return 1 and let GDAL take over */
@@ -4488,7 +4488,7 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN64) text[k++] = c;	text[k] = '\0';	/* Get next record up to newline */
 	n = sscanf (text, "%d %d %d", &I->header->n_rows, &I->header->n_columns, &max);
 	if (n == 2) {	/* Must skip past a separate record with the max pixel value */
-		while ((c = fgetc (fp)) != '\n' ) k++;		
+		while ((c = fgetc (fp)) != '\n' ) k++;
 	}
 	/* Any read now would start reading the image pixels; done in gmtapi_import_ppm */
 	I->header->registration = GMT_GRID_PIXEL_REG;
@@ -6533,7 +6533,7 @@ GMT_LOCAL int gmtapi_encode_id (struct GMTAPI_CTRL *API, unsigned int module_inp
 	gmt_M_memset (filename, GMT_VF_LEN, char);	/* Wipe any trace of previous text */
 	sprintf (filename, "@GMTAPI@-%c-%c-%s-%s-%c-%c-%06d", (module_input) ? 'P' : 'S', (direction == GMT_IN) ? 'I' : 'O', GMT_family_abbrev[family], GMT_family_abbrev[actual_family], gmtapi_debug_geometry_code (geometry), (messenger) ? 'Y' : 'N', object_ID);
 	GMT_Report (API, GMT_MSG_DEBUG, "VirtualFile name created: %s\n", filename);
-	
+
 	return_error (API, GMT_NOERROR);	/* No error encountered */
 }
 
