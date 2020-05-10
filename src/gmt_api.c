@@ -12438,7 +12438,7 @@ int GMT_Set_Columns_ (unsigned int *direction, unsigned int *n_cols, unsigned in
 GMT_LOCAL int gmtapi_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_GRID *G, gmt_grdfloat *out) {
 	enum GMT_enum_family family;
 	unsigned int row, col, pad[4], old_layout, new_layout;
-	uint64_t in_node, out_node;
+	uint64_t from_node, to_node;
 	gmt_grdfloat *tmp = NULL;
 	gmt_M_unused(mode);
 
@@ -12456,30 +12456,30 @@ GMT_LOCAL int gmtapi_change_gridlayout (struct GMTAPI_CTRL *API, char *code, uns
 
 	gmt_grd_pad_off (API->GMT, G);	/* Simplify working with no pad */
 	if (old_layout == 0 && new_layout == 2) { /* Change from TR to TC */
-		for (row = 0, in_node = 0; row < G->header->n_rows; row++)
-			for (col = 0; col < G->header->n_columns; col++, in_node++)
-				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + row] = G->data[in_node];
+		for (row = 0, from_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, from_node++)
+				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + row] = G->data[from_node];
 	}
 	else if (old_layout == 0 && new_layout == 3) {	/* Change from TR to BC */
-		for (row = 0, in_node = 0; row < G->header->n_rows; row++)
-			for (col = 0; col < G->header->n_columns; col++, in_node++)
-				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)] = G->data[in_node];
+		for (row = 0, from_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, from_node++)
+				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)] = G->data[from_node];
 	}
 	else if (old_layout == 2 && new_layout == 0) {	/* Change from TC to TR */
-		for (row = 0, out_node = 0; row < G->header->n_rows; row++)
-			for (col = 0; col < G->header->n_columns; col++, out_node++)
-				tmp[out_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + row];
+		for (row = 0, to_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, to_node++)
+				tmp[to_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + row];
 	}
 	else if (old_layout == 3 && new_layout == 0) {	/* Change from BC to TR */
-		for (row = 0, out_node = 0; row < G->header->n_rows; row++)
-			for (col = 0; col < G->header->n_columns; col++, out_node++)
-				tmp[out_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)];
+		for (row = 0, to_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, to_node++)
+				tmp[to_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)];
 	}
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_WARNING, "gmtapi_change_gridlayout: reordering function for case %s -> %s not yet written. Doing nothing\n",
 		            G->header->mem_layout, code);
-		for (out_node = 0; out_node < G->header->size; out_node++)
-			tmp[out_node] = G->data[out_node];
+		for (to_node = 0; to_node < G->header->size; to_node++)
+			tmp[to_node] = G->data[to_node];
 	}
 
 	if (out == 0) {	/* Means we must update the grid data */
@@ -12497,16 +12497,16 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 	   out2:  Array with the transparencies converted to the new layout.
 	         If NULL on input the necessary memory is allocated in this function, otherwise
 	         it is ASSUMED that it points a memory chunk big enough to hold the reshuffled data.
+	         PW: Looks like we assume there are 3 bands but this should depend on n_bands.
 	*/
 	unsigned char *tmp = NULL, *alpha = NULL;
 	enum GMT_enum_family family;
 	unsigned int old_layout, new_layout;
-	uint64_t band, row, col, in_node, out_node;
+	uint64_t band, row, col, to_node, from_node;
 	struct GMT_IMAGE_HIDDEN *IH = NULL;
 	gmt_M_unused(mode);
 
 	old_layout = gmtapi_decode_layout (API, I->header->mem_layout, &family);
-	if (family != GMT_IS_IMAGE) return GMT_NOT_A_VALID_FAMILY;
 	new_layout = gmtapi_decode_layout(API, code, &family);
 	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
 
@@ -12521,30 +12521,39 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 	}
 
 	if (old_layout == 8 && new_layout == 2) {	/* Change from TRP to TCB */
-		out_node = 0;
-		for (row = 0; row < I->header->n_rows; row++)
+		strncpy (I->header->mem_layout, code, strlen(code));
+		for (row = from_node = 0; row < I->header->n_rows; row++)
 			for (col = 0; col < I->header->n_columns; col++)
 				for (band = 0; band < 3; band++) {
-					in_node = row + col*I->header->n_rows + band * I->header->nm;
-					tmp[in_node] = (uint8_t)I->data[out_node++];
+					to_node = row + col*I->header->n_rows + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node++];
 				}
 	}
-	if (old_layout == 9 && new_layout == 0) {	/* Change from BRP to TRB */
-		out_node = 0;
-		for (row = 0; row < I->header->my; row++)
+	else if (old_layout == 0 && new_layout == 8) {	/* Change from TRB to TRP */
+		strncpy (I->header->mem_layout, code, strlen(code));
+		for (row = to_node = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < 3; band++, to_node++) {
+					from_node = col + row*I->header->mx + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node];
+				}
+	}
+	else if (old_layout == 9 && new_layout == 0) {	/* Change from BRP to TRB */
+		strncpy (I->header->mem_layout, code, strlen(code));
+		for (row = from_node = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < 3; band++) {
-					//in_node = col + (I->header->my - 1 - row)*I->header->my + band*I->header->size;
-					in_node = col + row*I->header->my + band * I->header->size;
-					tmp[in_node] = (uint8_t)I->data[out_node++];
+					//to_node = col + (I->header->my - 1 - row)*I->header->my + band*I->header->size;
+					to_node = col + row*I->header->my + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node++];
 				}
 	}
 	//else if (old_layout == 2 && new_layout == 0) {}	/* Change from TCB to TRB */
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_WARNING, "gmtapi_change_imagelayout: reordering function for case %s -> %s not yet written. Doing nothing.\n",
 		            I->header->mem_layout, code);
-		for (out_node = 0; out_node < I->header->size; out_node++)
-			tmp[out_node] = I->data[out_node];
+		for (from_node = 0; from_node < I->header->size; from_node++)
+			tmp[from_node] = I->data[from_node];
 	}
 
 	if (out1 == 0) {	/* Means we must update the Image data */
@@ -12599,7 +12608,7 @@ int GMT_Change_Layout_ (unsigned int *family, char *code, unsigned int *mode, vo
 
 int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector) {
 	/* Hooks a users custom vector onto V's column array and sets the type.
-	 * It is the user's respondibility to pass correct type for the given vector.
+	 * It is the user's responsibility to pass correct type for the given vector.
 	 * We also check that the number of rows have been set earlier. */
 	struct GMT_VECTOR_HIDDEN *VH = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);

@@ -174,6 +174,8 @@ void dump_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, char *file) {
 }
 
 EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
+	bool write_image = true;
+
 	int error = 0, type;
 	uint64_t row, col, node, k;
 
@@ -210,7 +212,8 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_NOTICE, "grdmix is experimental - caveat emptor\n\n");
 
-	GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRB ");			/* Set GMT image memory layout */
+	GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRB ");			/* Do everything with separate band layers */
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grids\n");
 	gmt_set_pad (GMT, 0); /* No padding */
 
@@ -246,6 +249,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Both inputs must either be images or grids, not a mix\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
+		if (Ctrl->In.type[0] == GMT_NOTSET) write_image = false;	/* Dealing with grids */
 	}
 
 	if (Ctrl->A.mode == 0) {	/* Read in the weights grid or image */
@@ -323,14 +327,6 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	/* Now do the work which depends on whether we have 1 or 2 input items */
 
-/* Turn off the automatic creation of aux files by GDAL */
-#ifdef WIN32
-	if (_putenv ("GDAL_PAM_ENABLED=NO"))
-#else
-	if (setenv ("GDAL_PAM_ENABLED", "NO", 0))
-#endif
-		GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
-
 	if (Ctrl->In.n_in == 1) {	/* Add transparency from -A to the input image */
 		/* Create alpha array for I and copy from A grid */
 		if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
@@ -339,11 +335,6 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		}
 		for (node = 0; node < h[0]->size; node++)
 			I->alpha[node] = gmt_M_u255 (weights[node]);
-
-		/* Write out image */
-		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
-			Return (API->error);
-		}
 	}
 	else {	/* Blend two grids or images using the weights given via -A */
 		if (Ctrl->In.type[k] == GMT_NOTSET) {	/* Two grids, just do the blend loop */
@@ -365,9 +356,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			for (k = 0; k < 2; k++)
 				if (h[k]->n_bands == 4) skip_A[k] = 1;	/* Must skip the alpha transparency byte in this image */
 
-			//gmt_M_memcpy (I->data, Iin[0]->data, h[0]->size * h[0]->n_bands, char);
 			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel here, so we loop inside over RGB */
-				//fprintf (stderr, "Pixel %4d is %3.3d/%3.3d/%3.3d\n", node, Iin[0]->data[pix], Iin[0]->data[pix+1], Iin[0]->data[pix+2]);
 				w1 = weights[node];	/* Set up the two weights that sum to 1 */
 				w2 = 1.0 - w1;
 				for (k = 0; k < 3; k++, rgb[0]++, rgb[1]++, pix++)	/* March across the RGB values in both images and increment counters */
@@ -375,10 +364,22 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				for (k = 0; k < 2; k++)
 					rgb[k] += skip_A[k];	/* Advance past any A in RGBA */
 			}
-			/* Write out image */
-			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
-				Return (API->error);
-			}
+		}
+	}
+
+	if (write_image) {
+/* Turn off the automatic creation of aux files by GDAL */
+#ifdef WIN32
+		if (_putenv ("GDAL_PAM_ENABLED=NO"))
+#else
+		if (setenv ("GDAL_PAM_ENABLED", "NO", 0))
+#endif
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
+
+		GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);		/* Convert from TRB to TRP */
+		/* Write out image */
+		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
+			Return (API->error);
 		}
 	}
 
