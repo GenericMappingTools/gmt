@@ -4459,7 +4459,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 
 GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool close, FILE **fp_ppm, struct GMT_IMAGE *I) {
 	/* Reads a Portable Pixel Map (PPM) file header if fname extension is .ppm, else returns nonzero value */
-	char *ext = gmt_get_ext (fname), text[GMT_LEN64] = {""}, c;
+	char *ext = gmt_get_ext (fname), text[GMT_LEN128] = {""}, c;
 	int k = 0, max, n;
 	FILE *fp = NULL;
 	if (ext == NULL || strcmp (ext, "ppm")) return GMT_NOT_A_VALID_FAMILY;	/* Not requesting a PPM file - return GMT_NOT_A_VALID_FAMILY and let GDAL take over */
@@ -4468,7 +4468,8 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open file %s\n", fname);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN64) text[k++] = c;	text[k] = '\0';	/* Get first record up to newline */
+	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN128) text[k++] = c;	/* Get first record up to newline */
+	text[k] = '\0';	/* Terminate line */
 	if (text[1] == '5') /* Used P5 for grayscale image */
 		I->header->n_bands = 1;
 	else if (text[1] == '6')	/* Used P6 for rgb image */
@@ -4485,7 +4486,8 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 	/* Put back last read character to the stream */
 	ungetc (c, fp);
 	k = 0;
-	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN64) text[k++] = c;	text[k] = '\0';	/* Get next record up to newline */
+	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN128) text[k++] = c;	/* Get next record up to newline */
+	text[k] = '\0';	/* Terminate line */
 	n = sscanf (text, "%d %d %d", &I->header->n_rows, &I->header->n_columns, &max);
 	if (n == 2) {	/* Must skip past a separate record with the max pixel value */
 		while ((c = fgetc (fp)) != '\n' ) k++;
@@ -4505,7 +4507,7 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 	}
 	gmt_M_memset (I->header->pad, 4, unsigned int);
 	gmt_set_grddim (GMT, I->header);	/* Update all header dimensions */
-	strcpy (I->header->mem_layout, "TRP");
+	strcpy (I->header->mem_layout, "TRP");	/* Layout use in all PPM files */
 	if (close)	/* Close file, we only wanted the header information */
 		gmt_fclose (GMT, fp);
 	else	/* Pass back FILE pointers since we want to read the rest as well */
@@ -4526,7 +4528,6 @@ GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 		gmt_fclose (GMT, fp);
 		return GMT_IMAGE_READ_ERROR;
 	}
-	strncmp (I->header->mem_layout, "TRP", 3U);
 	gmt_fclose (GMT, fp);
 	return GMT_NOERROR;
 }
