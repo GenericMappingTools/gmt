@@ -15,11 +15,13 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: grdmix.c reads two grid files and writes a new file with
- * the first two pasted together along their common edge.
+ * Brief synopsis: grdmix.c reads either one or two rasters and a third
+ * blend raster.  If one raster was given we use the blend raster to set
+ * transparency, else we blend the two rasters using the blend as the weight
+ * for raster1 and (1-weight) for raster two.
  *
- * Author:	Walter Smith
- * Date:	1-JAN-2010
+ * Author:	Paul Wessel
+ * Date:	9-MAY-2020
  * Version:	6 API
  */
 
@@ -38,17 +40,17 @@
 struct GRDMIX_CTRL {
 	struct GRDMIX_In {
 		bool active;
-		unsigned int n_in;	/* 1 or 2, we don't count the -A file placed in file[BLEND] */
-		int type[3];
+		unsigned int n_in;	/* Either 1 or 2; we don't count the -A file placed in file[BLEND] */
+		int type[3];	/* GMT_IS_IMAGE or GMT_NOTSET (grid) */
 		char *file[3];
 	} In;
-	struct GRDMIX_A {
+	struct GRDMIX_A {	/* Blend weight raster */
 		bool active;
 		unsigned int mode;	/* 0 a file, 1 a constant */
 		char *file;
 		double weight;
 	} A;
-	struct GRDMIX_G {	/* -G<output_grdfile> */
+	struct GRDMIX_G {	/* -G<output_raster> */
 		bool active;
 		char *file;
 	} G;
@@ -102,7 +104,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input files */
+			case '<':	/* Input rasters */
 				if (Ctrl->In.n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[Ctrl->In.n_in++] = strdup (opt->arg);
 				else if (Ctrl->In.n_in == 1 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
@@ -116,9 +118,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 			/* Processes program-specific parameters */
 
  			case 'A':
-				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0) {
-					Ctrl->A.file = Ctrl->In.file[BLEND] = strdup (opt->arg);	/* Place it in In.file[BLEND] */
-					Ctrl->A.mode = 0;
+ 				Ctrl->A.active = true;
+				if (!gmt_access (GMT, opt->arg, R_OK)) {
+					Ctrl->A.file = Ctrl->In.file[BLEND] = strdup (opt->arg);	/* Place this in In.file[BLEND] for convenience later */
+					Ctrl->A.mode = 0;	/* Flag we got a file */
 				}
 				else if ((Ctrl->A.weight = atof (opt->arg)) < 0.0 || Ctrl->A.weight > 1.0) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: A constant blend must be in the 0-1 range\n");
@@ -128,7 +131,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 					Ctrl->A.mode = 1;
 				break;
 
- 			case 'G':
+ 			case 'G':	/* Does not matter if we pass GMT_IS_GRID or GMT_IS_IMAGE */
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
@@ -141,9 +144,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Must specify at least one input raster\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Must specify at least one input raster file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active, "Option -A: Must specify blend grid, image or constant\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output raster file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -210,8 +213,8 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdmix main code ----------------------------*/
 
-	GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRB ");	/* Do everything with separate image band layers */
-	gmt_set_pad (GMT, 0); /* No padding needed here */
+	GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRB ");	/* Easiest to manipulate images with separate bands */
+	gmt_set_pad (GMT, 0); /* No padding needed in this module */
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input rasters\n");
 
@@ -225,7 +228,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);		
 	}
 
-	for (k = 0; k < 3; k++) {	/* Read the headers (2 or 3 files) */
+	for (k = 0; k < 3; k++) {	/* Read the headers (1-3 files) */
 		if (Ctrl->In.file[k] == NULL) continue;
 		if (Ctrl->In.type[k] == GMT_NOTSET) {	/* Got a grid */
 			if ((Gin[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
@@ -243,7 +246,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	if (Ctrl->In.n_in == 2) {	/* Make sure the two rasters have matching dimensions */
 		if (h[0]->registration != h[1]->registration || (h[0]->n_rows != h[1]->n_rows) || (h[0]->n_columns != h[1]->n_columns)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Dimension/registrations are not compatible for the two rasters!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Dimensions/registrations are not compatible for the two rasters!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->In.type[0] != Ctrl->In.type[1]) {
@@ -259,25 +262,23 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	/* Also make sure any given blend image/grid has the same dimensions */
 	if (h[BLEND]) {	/* Got a blend grid/image */
 		if (h[0]->registration != h[BLEND]->registration || (h[0]->n_rows != h[BLEND]->n_rows) || (h[0]->n_columns != h[BLEND]->n_columns)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Dimension/registrations are not compatible with blend grid/image!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Dimensions/registrations are not compatible with blend grid/image!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (h[BLEND]->n_bands != 1) {
-			GMT_Report (API, GMT_MSG_ERROR, "The blend image must be grayscale only!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "The blend image must be gray-scale only!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
-	/* Load in the 2-3 grid(s) or image(s) */
-
-	for (k = 0; k < 3; k++) {	/* Read data */
+	for (k = 0; k < 3; k++) {	/* Read data from the 1-3 files */
 		if (Ctrl->In.file[k] == NULL) continue;
-		if (Ctrl->In.type[k] == GMT_NOTSET) {	/* Not an image */
+		if (Ctrl->In.type[k] == GMT_NOTSET) {	/* Read the grid */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], Gin[k]) == NULL) {	/* Get data only */
 				Return (API->error);
 			}
 		}
-		else {
+		else {	/* Read the image */
 			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], Iin[k]) == NULL) {	/* Get data only */
 				Return (API->error);
 			}
@@ -288,7 +289,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	}
 
 	/* Set up the blend weights */
-	weights = gmt_M_memory (GMT, NULL, h[BLEND]->size, float);
+	weights = gmt_M_memory (GMT, NULL, h[0]->size, float);
 	if (Ctrl->A.mode == 0) {	/* Got a weights grid or image */
 		void *W = Gin[BLEND];	/* Pointer to the blend grid (or NULL) */
 		if (Ctrl->In.type[BLEND] == GMT_NOTSET) {	/* Got a grid */
@@ -332,7 +333,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	/* Now do the work which depends on whether we have 1 or 2 input items */
 
-	if (Ctrl->In.n_in == 1) {	/* Add transparency from -A to the input image */
+	if (Ctrl->In.n_in == 1) {	/* Pass transparency from -A to the input image */
 		gmt_M_memcpy (I->data, Iin[0]->data, I->header->size * I->header->n_bands, char);	/* Duplicate the input image */
 		/* Create alpha array for I and copy from A grid/image */
 		if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
@@ -356,14 +357,15 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* Two images, do the r,g,b blend, watch out for any input transparency value to skip */
-			char p0, p1;
+			int p0, p1, v;
 			uint64_t pix = 0;
 			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
 				pix = node;	/* Index to the red (or gray) pixel location */
 				for (k = 0; k < I->header->n_bands; k++) {	/* March across the RGB values in both images and increment counters */
 					p0 = (k < Iin[0]->header->n_bands) ? Iin[0]->data[pix] : Iin[0]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
 					p1 = (k < Iin[1]->header->n_bands) ? Iin[1]->data[pix] : Iin[1]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
-					I->data[pix] = MIN (255, (unsigned char)urint(weights[node] * (p0 - p1) + p1));
+					v = irint(weights[node] * (p0 - p1) + p1);
+					I->data[pix] = (unsigned char)v;
 					pix += I->header->size;	/* Next band */
 				}
 			}
@@ -371,7 +373,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, weights);
 
-	if (write_image) {
+	if (write_image) {	/* Write image here - any grid output was written earlier */
 /* Turn off the automatic creation of aux files by GDAL */
 #ifdef WIN32
 		if (_putenv ("GDAL_PAM_ENABLED=NO"))
@@ -380,7 +382,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 #endif
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 
-		GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);		/* Convert from TRB to TRP */
+		GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);		/* Convert from TRB to TRP (TRPa if there is alpha) */
 		/* Write out image */
 		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
 			Return (API->error);
