@@ -19,6 +19,7 @@ Synopsis
 [ |-C| ]
 [ |-D| ]
 [ |-I|\ *intens* ]
+[ |-M| ]
 [ |-N| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
@@ -88,6 +89,11 @@ Optional Arguments
 **-I*\ *intens*
     A constant intensity or grid (-1/+1 range) to modify final output image colors.
 
+.. _-M:
+
+**-M**
+    Force conversion to monochrome image using the (television) YIQ
+    transformation.
 .. _-N:
 
 **-N**

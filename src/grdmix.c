@@ -15,10 +15,14 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: grdmix.c reads either one or two rasters and a third
- * blend raster.  If one raster was given we use the blend raster to set
- * transparency, else we blend the two rasters using the blend as the weight
- * for raster1 and (1-weight) for raster two.
+ * Brief synopsis: grdmix.c reads either one, two or three rasters, an optionally
+ * a blend raster and an intensity raster.  What we do depends on options:
+ * If -C then we combine grids into a single image
+ * If -D then we decompose an image into grid layers.
+ * Else, if one raster was given we use the blend raster to set
+ * transparency and possibly use intensities to modulate the colors,
+ # else we blend the two rasters using the blend as the weight
+ * for raster1 and (1-weight) for raster two. with optional intensity modulation.
  *
  * Author:	Paul Wessel
  * Date:	9-MAY-2020
@@ -30,8 +34,8 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdmix"
 #define THIS_MODULE_MODERN_NAME	"grdmix"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Transparency-blending of grids or images"
-#define THIS_MODULE_KEYS	"<I{2,A?(,GI},I?("	/* For external use we are limited to images */
+#define THIS_MODULE_PURPOSE	"Blending and transforming of grids or images"
+#define THIS_MODULE_KEYS	"<I{3,A?(,GI},I?("	/* For external use we are limited to images */
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-Vf"
 
@@ -41,7 +45,7 @@
 struct GRDMIX_CTRL {
 	struct GRDMIX_In {
 		bool active;
-		unsigned int n_in;	/* Either 1 or 2; we don't count the -A file placed in file[BLEND] */
+		unsigned int n_in;	/* Range 1-3; we don't count the -A file placed in file[BLEND], nor -I file in file[INTENS] */
 		int type[5];	/* GMT_IS_IMAGE or GMT_NOTSET (grid) */
 		char *file[5];
 	} In;
@@ -49,7 +53,7 @@ struct GRDMIX_CTRL {
 		bool active;
 		unsigned int mode;	/* 0 a file, 1 a constant */
 		char *file;
-		double weight;
+		double value;
 	} A;
 	struct GRDMIX_C {	/* -C */
 		bool active;
@@ -65,8 +69,11 @@ struct GRDMIX_CTRL {
 		bool active;
 		unsigned int mode;	/* 0 a file, 1 a constant */
 		char *file;
-		double weight;
+		double value;
 	} I;
+	struct GRDMIX_M {	/* -M */
+		bool active;
+	} M;
 	struct GRDMIX_N {	/* -N */
 		bool active;
 	} N;
@@ -86,6 +93,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *C) {	/* Dealloc
 	if (!C) return;
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->I.file);
 	gmt_M_str_free (C->In.file[GMT_IN]);
 	gmt_M_str_free (C->In.file[GMT_OUT]);
 	gmt_M_free (GMT, C);
@@ -95,7 +103,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	static char *type[2] = {"grid or image", "image"};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<grid|image|value>] [-C] [-D] [-I<intens>] [-N] [%s] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<grid|image|value>] [-C] [-D]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] [-M] [-N] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -104,9 +113,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is used the name is a template and must contain %%c for layer code\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify a grid file, image file, or a constant blend value (0-1).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct image from i1 or 3 input component grids, plus optional transparency (-A).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Deconstruct image into 1 or 3 output component grids, plus optional transparency.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct image from 1 (gray) or 3 (r, g, b) input component grids.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   You may optionally supply transparency (-A) and/or intensity (-I).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Deconstruct image into 1 or 3 output component grids, plus any transparency.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply intensities to final image colors.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome final image [same as input].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grids from 0-255 to 0-1 [input grids already normalized]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<raster?> are optional second/third %s to be used.\n", type[API->external]);
 	GMT_Option (API, "V,f,.");
@@ -142,7 +153,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 					Ctrl->A.file = Ctrl->In.file[BLEND] = strdup (opt->arg);	/* Place this in In.file[BLEND] for convenience later */
 					Ctrl->A.mode = 0;	/* Flag we got a file */
 				}
-				else if ((Ctrl->A.weight = atof (opt->arg)) < 0.0 || Ctrl->A.weight > 1.0) {
+				else if ((Ctrl->A.value = atof (opt->arg)) < 0.0 || Ctrl->A.value > 1.0) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: A constant blend must be in the 0-1 range\n");
 					n_errors++;
 				}
@@ -171,12 +182,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 					Ctrl->I.file = Ctrl->In.file[INTENS] = strdup (opt->arg);	/* Place this in In.file[INTENS] for convenience later */
 					Ctrl->I.mode = 0;	/* Flag we got a file */
 				}
-				else if ((Ctrl->I.weight = atof (opt->arg)) < -1.0 || Ctrl->I.weight > 1.0) {
+				else if ((Ctrl->I.value = atof (opt->arg)) < -1.0 || Ctrl->I.value > 1.0) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -I: A constant intensity must be in the +-1 range\n");
 					n_errors++;
 				}
 				else	/* Got a valid constant */
-					Ctrl->A.mode = 1;
+					Ctrl->I.mode = 1;
+				break;
+
+			case 'M':
+				Ctrl->M.active = true;
 				break;
 
 			case 'N':
@@ -237,7 +252,10 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	unsigned int img = 0, k, band;
 	uint64_t row, col, node, pix;
 
-	float *weights = NULL;
+	void *W = NULL;	/* Pointer to a grid or an image */
+
+
+	float *weights = NULL, *intens = NULL;
 
 	double rgb[4];
 
@@ -340,6 +358,62 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (Ctrl->A.active) {	/* Set up the blend weights */
+		weights = gmt_M_memory (GMT, NULL, h[0]->size, float);
+		if (Ctrl->A.mode == 0) {	/* Got a weights grid or image */
+			if (Ctrl->In.type[BLEND] == GMT_NOTSET) {	/* Got a grid */
+				uint64_t n_bad = 0;
+				gmt_M_grd_loop (GMT, Gin[BLEND], row, col, node) {
+					weights[node] = Gin[BLEND]->data[node];
+					if (weights[node] < 0.0 || weights[node] > 1.0) n_bad++;
+				}
+				if (n_bad) {
+					GMT_Report (API, GMT_MSG_ERROR, "Blend grid not in 0-1 range!\n");
+					Return (GMT_RUNTIME_ERROR);
+				}
+				if (GMT_Destroy_Data (API, &Gin[BLEND]) != GMT_NOERROR) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid from -A!\n");
+					Return (GMT_RUNTIME_ERROR);
+				}
+			}
+			else {	/* Got an image */
+				gmt_M_grd_loop (GMT, Iin[BLEND], row, col, node)
+					weights[node] = gmt_M_is255 (Iin[BLEND]->data[node]);
+				if (GMT_Destroy_Data (API, &Iin[BLEND]) != GMT_NOERROR) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to free image from -A!\n");
+					Return (GMT_RUNTIME_ERROR);
+				}
+			}
+		}
+		else {	/* Make a constant array of weights */
+			for (node = 0; node < h[0]->size; node++)
+				weights[node] = Ctrl->A.value;
+		}
+	}
+
+	if (Ctrl->I.active) {	/* Set up the intensities */
+		intens = gmt_M_memory (GMT, NULL, h[0]->size, float);
+		if (Ctrl->I.mode == 0) {	/* Got a weights grid */
+			uint64_t n_bad = 0;
+			gmt_M_grd_loop (GMT, Gin[INTENS], row, col, node) {
+				intens[node] = Gin[INTENS]->data[node];
+				if (intens[node] < -1.0 || intens[node] > 1.0) n_bad++;
+			}
+			if (n_bad) {
+				GMT_Report (API, GMT_MSG_ERROR, "Intens grid not in -1/+1 range!\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			if (GMT_Destroy_Data (API, &Gin[INTENS]) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid from -I!\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+		else {	/* Make a constant array of intensities */
+			for (node = 0; node < h[0]->size; node++)
+				intens[node] = Ctrl->I.value;
+		}
+	}
+
 	/* Deal with operations -C and -D up front, then exit */
 
 	if (Ctrl->C.active) {	/* Combine 1 or 3 grids into a new single image, while handling the optional -A -I information */
@@ -354,7 +428,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (Ctrl->I.active)	{	/* Modify colors based on intensity */
 				if (Ctrl->In.n_in == 1)	/* Duplicate grays so illuminate can work */
 				rgb[1] = rgb[2] = rgb[0];
-				gmt_illuminate (GMT, Gin[INTENS]->data[node], rgb);
+				gmt_illuminate (GMT, intens[node], rgb);
 			}
 			pix = node;	/* Index to the red (or gray) pixel location */
 			for (band = 0; band < I->header->n_bands; band++, pix += I->header->size)	/* March across the RGB values */
@@ -366,14 +440,9 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			for (node = 0; node < h[0]->size; node++)	/* Scale transparency from 0-1 to 0-255 range */
-				I->alpha[node] = gmt_M_u255 (Gin[BLEND]->data[node]);
+				I->alpha[node] = gmt_M_u255 (weights[node]);
 		}
-		GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);		/* Convert from TRB to TRP (TRPa if there is alpha) */
-		/* Write out image */
-		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
-			Return (API->error);
-		}
-		Return (GMT_NOERROR);
+		goto write_the_image;
 	}
 
 	if (Ctrl->D.active) {	/* De-construct single image into its gray or R,G,B [plus optional A] layers */
@@ -408,37 +477,6 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	if (Ctrl->A.active) {	/* Set up the blend weights */
-		weights = gmt_M_memory (GMT, NULL, h[0]->size, float);
-		if (Ctrl->A.mode == 0) {	/* Got a weights grid or image */
-			void *W = Gin[BLEND];	/* Pointer to the blend grid (or NULL) */
-			if (Ctrl->In.type[BLEND] == GMT_NOTSET) {	/* Got a grid */
-				uint64_t n_bad = 0;
-				gmt_M_grd_loop (GMT, Gin[BLEND], row, col, node) {
-					weights[node] = Gin[BLEND]->data[node];
-					if (weights[node] < 0.0 || weights[node] > 1.0) n_bad++;
-				}
-				if (n_bad) {
-					GMT_Report (API, GMT_MSG_ERROR, "Blend grid not in 0-1 range!\n");
-					Return (GMT_RUNTIME_ERROR);
-				}
-			}
-			else {	/* Got an image */
-				gmt_M_grd_loop (GMT, Iin[BLEND], row, col, node)
-					weights[node] = gmt_M_is255 (Iin[BLEND]->data[node]);
-				W = Iin[BLEND];
-			}
-			if (GMT_Destroy_Data (API, &W) != GMT_NOERROR) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid or image from -A!\n");
-				Return (GMT_RUNTIME_ERROR);
-			}
-		}
-		else {	/* Make a constant array of weights */
-			for (node = 0; node < h[0]->size; node++)
-				weights[node] = Ctrl->A.weight;
-		}
-	}
-
 	if (Ctrl->In.type[0] == GMT_NOTSET) {	/* Create output grid for the blend */
 		if ((G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Gin[0])) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate a grid for output!\n");
@@ -471,7 +509,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 					rgb[band] = gmt_M_is255 (I->data[node+band*h[0]->size]);
 				if (h[0]->n_bands == 1)	/* Duplicate grays so illuminate can work */
 					rgb[1] = rgb[2] = rgb[0];
-				gmt_illuminate (GMT, Gin[INTENS]->data[node], rgb);
+				gmt_illuminate (GMT, intens[node], rgb);
 				for (band = 0, pix = node; band < h[0]->n_bands; band++, pix += h[0]->size)	/* March across the RGB values */
 					I->data[pix] = gmt_M_u255 (rgb[band]);
 			}
@@ -497,14 +535,30 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				for (band = 0; band < I->header->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
 					p0 = (band < Iin[0]->header->n_bands) ? Iin[0]->data[pix] : Iin[0]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
 					p1 = (band < Iin[1]->header->n_bands) ? Iin[1]->data[pix] : Iin[1]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
-					v = irint(weights[node] * (p0 - p1) + p1);
-					I->data[pix] = (unsigned char)v;
+					rgb[band] = gmt_M_is255 (weights[node] * (p0 - p1) + p1);
 					pix += I->header->size;	/* Next band */
 				}
+				if (Ctrl->I.active)	/* Modify colors by the intensity */
+					gmt_illuminate (GMT, intens[node], rgb);
+				for (band = 0, pix = node; band < I->header->n_bands; band++, pix += I->header->size)	/* Place final r,g,b values */
+					I->data[pix] = gmt_M_u255 (rgb[band]);
 			}
 		}
 	}
+	
+write_the_image:
+
 	if (Ctrl->A.active) gmt_M_free (GMT, weights);
+	if (Ctrl->I.active) gmt_M_free (GMT, intens);
+
+	for (k = 0; k < 3; k++) {	/* Free up memory no longer needed here */
+		W = (Ctrl->In.type[k] == GMT_NOTSET) ? (void *)Gin[k] : (void *)Iin[k];
+		if (W == NULL) continue;
+		if (GMT_Destroy_Data (API, &W) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid or image associated with file %s\n", Ctrl->In.file[k]);
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
 
 	if (write_image) {	/* Write image here - any grid output was written earlier */
 /* Turn off the automatic creation of aux files by GDAL */
@@ -515,6 +569,21 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 #endif
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 
+		if (Ctrl->M.active) {	/* Convert to monochrome image using the YIQ transformation */
+			unsigned char *data = NULL;
+			if ((data = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate gray image layer\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+				for (band = 0, pix = node; band < I->header->n_bands; band++, pix += band*I->header->size)	/* Get the normalized r,g,b triplet */
+					rgb[band] = gmt_M_is255 (I->data[pix]);
+				data[node] = gmt_M_u255 (gmt_M_yiq (rgb));
+			}
+			gmt_M_free_aligned (GMT, I->data);	/* Free old rgb image and add gray image */
+			I->data = data;
+			I->header->n_bands = 1;
+		}
 		GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);		/* Convert from TRB to TRP (TRPa if there is alpha) */
 		/* Write out image */
 		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
