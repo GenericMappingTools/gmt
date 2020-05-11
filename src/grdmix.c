@@ -313,7 +313,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	int error = 0;
 	unsigned int img = 0, k, band;
-	uint64_t row, col, node, pix;
+	int64_t row, col, node, pix;
 
 	float *weights = NULL, *intens = NULL, *alpha = NULL;
 
@@ -461,17 +461,18 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		if (H->n_bands == 1) code[0] = 'g';	/* Grayscale */
 		if (gmt_M_360_range (H->wesn[XLO], H->wesn[XHI]) && gmt_M_180_range (H->wesn[YHI], H->wesn[YLO]))
 			gmt_set_geographic (GMT, GMT_IN);	/* If exactly fitting the Earth then we assume geographic image */
-#ifdef _OPENMP
-#pragma omp parallel for private(band,G,off,row,col,node,file) shared(API,GMT,H,I_in,code)
-#endif
 		for (band = 0; band < H->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, H->wesn, H->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a grid for output!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 			off = band * H->size;
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node) shared(GMT,G,off,scale,I_in)
+#endif
 			gmt_M_grd_loop (GMT, G, row, col, node)
 				G->data[node] = scale * I_in[0]->data[node+off];
+
 			sprintf (file, Ctrl->G.file, code[band]);
 			/* Write out grid */
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
