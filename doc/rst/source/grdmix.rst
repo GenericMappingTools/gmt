@@ -127,7 +127,7 @@ Optional Arguments
 **-W**\ *weights*
     A constant weight (0-1), or a grid (0-1) or image (0-255) with weights.
     When two input rasters are given, the weights are applied to *raster1* and
-    (*1-weights*) are applied to *raster2*, then summed.
+    (*1-weights*) are applied to *raster2*, then the products are summed.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
