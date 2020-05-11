@@ -487,17 +487,17 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 		/* Need to convert between GMT and GDAL ellipsoid names. But all are available in both sides. */
 		k = GMT->current.setting.proj_ellipsoid;
 		if (!strcmp (GMT->current.setting.ref_ellipsoid[k].name, "Sphere"))
-			sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+			sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
 			         GMT->current.setting.ref_ellipsoid[k].eq_radius);
 		else {
 			gmtlib_ellipsoid_name_convert (GMT->current.setting.ref_ellipsoid[k].name, gdal_ellipsoid_name);
 			if (strcmp (gdal_ellipsoid_name, "unknown") != 0)
 				sprintf (buf, "+proj=longlat +ellps=%s +no_defs", gdal_ellipsoid_name);
 			else if (!strcmp (gdal_ellipsoid_name, "Web-Mercator"))
-				sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
 				         GMT->current.setting.ref_ellipsoid[k].eq_radius);
 			else {
-				sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
 				         GMT->current.setting.ref_ellipsoid[k].eq_radius);
 				GMT_Report (API, GMT_MSG_WARNING, "Unknown conversion between GMT and GDAL ellipsoid names. Using a generic spherical body.");
 			}

@@ -1150,12 +1150,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 
 		/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
-		if (Out->header->ProjRefWKT != NULL)
+		if (header_work->ProjRefWKT != NULL)
 			Out->header->ProjRefWKT = strdup (header_work->ProjRefWKT);
 		else if (header_work->ProjRefPROJ4 != NULL)
 			Out->header->ProjRefPROJ4 = strdup (header_work->ProjRefPROJ4);
-		else if (header_work->ProjRefWKT != NULL)
-			Out->header->ProjRefWKT = strdup (header_work->ProjRefWKT);
+		else if (header_work->ProjRefEPSG)
+			Out->header->ProjRefWKT = header_work->ProjRefEPSG;
 		else {
 			for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++)
 				if (GMT->current.proj.proj4[k].id == this_proj) id = k;
