@@ -37,7 +37,7 @@
 #define THIS_MODULE_PURPOSE	"Blending and transforming grids and images"
 #define THIS_MODULE_KEYS	"<I{3,A?(,GI},I?("	/* For external use we are limited to images */
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-Vf"
+#define THIS_MODULE_OPTIONS "-VRf"
 
 #define BLEND	3
 #define INTENS	4
@@ -104,7 +104,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<grid|image|value>] [-C] [-D]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] [-M] [-N] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] [-M] [-N] [%s] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -119,8 +119,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply intensities to final image colors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome final image [same as input].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grids from 0-255 to 0-1 [input grids already normalized]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<raster?> are optional second/third %s to be used.\n", type[API->external]);
-	GMT_Option (API, "V,f,.");
+	GMT_Option (API, "R,V,f,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -565,6 +564,11 @@ write_the_image:
 #endif
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 
+		if (GMT->common.R.active[RSET]) {	/* Override whatever wesn and incs are in the header */
+			gmt_M_memcpy (I->header->wesn, GMT->common.R.wesn, 4, double);
+			I->header->inc[GMT_X] = gmt_M_get_inc (GMT, I->header->wesn[XLO], I->header->wesn[XHI], I->header->n_columns, I->header->registration);
+			I->header->inc[GMT_Y] = gmt_M_get_inc (GMT, I->header->wesn[YLO], I->header->wesn[YHI], I->header->n_rows,    I->header->registration);
+		}
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {
 			char buf[GMT_LEN128] = {""};
 			/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */

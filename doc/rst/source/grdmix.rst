@@ -21,6 +21,7 @@ Synopsis
 [ |-I|\ *intens* ]
 [ |-M| ]
 [ |-N| ]
+[ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -99,6 +100,11 @@ Optional Arguments
 
 **-N**
     Normalize all input grids from 0-255 to 0-1 [All input grids already in 0-1 range].
+
+.. _-R:
+
+|Add_-R| replace:: If the input images do not have proper geographic regions then specify that here.
+.. include:: explain_-R.rst_
 
 .. _-V:
 
