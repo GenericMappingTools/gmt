@@ -15,14 +15,16 @@ Synopsis
 **gmt grdmix**
 *raster1* [ *raster2* [ *raster3*]]
 |-G|\ *outfile*
-[ |-A|\ *weights* ]
+[ |-A|\ *alpha* ]
 [ |-C| ]
 [ |-D| ]
 [ |-I|\ *intens* ]
 [ |-M| ]
 [ |-N| ]
+[ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
+[ |-W|\ *weights* ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 
@@ -38,9 +40,9 @@ the two *raster1* and *raster2* (grids or images) using the *weights* for
 *raster1* and the complementary *1 - weights* for *raster2* and save to
 *outfile*. Alternatively, we will deconstruct an image into its component
 grids or construct an image from its normalized component grids.
-All *raster?*, *weights* and *intens* files must have the same 
-dimensions. The optional *weights* and *intens* files may be replaced by
-constant values instead.
+All *raster?*, *alpha*, *intens* and *weights* files must have the same 
+dimensions. The optional *alpha*, *intens* and *weights* files may be
+replaced by constant values instead.
 
 Required Arguments
 ------------------
@@ -62,11 +64,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *weights*
-    A constant weight (0-1), or a grid (0-1) or image (0-255) with weights.
-    When two input rasters are given, the weights are applied to *raster1* and
-    (*1-weights*) are applied to *raster2*, then summed.  For other operations
-    the *weights* will be interpreted as the alpha (transparency) values.
+**-A**\ *alpha*
+    A constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
+    The final grid will have a transparency layer with these values.
 
 .. _-C:
 
@@ -96,10 +96,16 @@ Optional Arguments
 **-M**
     Force conversion to monochrome image using the (television) YIQ
     transformation.
+
 .. _-N:
 
 **-N**
     Normalize all input grids from 0-255 to 0-1 [All input grids already in 0-1 range].
+
+.. _-Q:
+
+**-Q**
+    Make the final image opaque by removing any alpha layer.
 
 .. _-R:
 
@@ -110,6 +116,13 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
+
+**-W**\ *weights*
+    A constant weight (0-1), or a grid (0-1) or image (0-255) with weights.
+    When two input rasters are given, the weights are applied to *raster1* and
+    (*1-weights*) are applied to *raster2*, then summed.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -123,20 +136,20 @@ Examples
 
 .. include:: explain_example.rst_
 
-To blend the night and day views of the Earth using an alpha image computed for
+To blend the night and day views of the Earth using a weight image computed for
 a particular day/night terminus, try::
 
-    gmt grdmix @BlueMarble_06m.tif @BlackMarble_06m.tif -A@alpha.png -Gnewmap.png
+    gmt grdmix @BlueMarble_06m.tif @BlackMarble_06m.tif -W@weight.png -Gnewmap.png
 
 Suppose map1.png and map2.png are overlapping maps of different quantities, but we wish
 to use the image visible.png to blend them into a single image.  We try::
 
     gmt grdmix map1.png map2.png -Avisible.png -Gnewmap.png -V
 
-To insert the values from the grid weights.grd into the image gravity.tif as an alpha
+To insert the values from the grid transparency.grd into the image gravity.tif as an alpha
 (transparency) layer, and write out a transparent PNG image, try::
 
-    gmt grdmix gravity.tif -Aweights.grd -Gmap.png
+    gmt grdmix gravity.tif -Atransparency.grd -Gmap.png
 
 To break the color image layers.png into separate, normalized red, green blue grids (and possibly an alpha grid),
 we run::
