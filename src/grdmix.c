@@ -303,7 +303,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	struct GMT_GRID *G_in[N_ITEMS], *G = NULL;
 	struct GMT_IMAGE *I_in[N_ITEMS], *I = NULL;
-	struct GMT_GRID_HEADER *h[N_ITEMS];
+	struct GMT_GRID_HEADER *h[N_ITEMS], *H = NULL;
 	struct GRDMIX_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -430,6 +430,9 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Deconstruct image into component grid layers\n", Ctrl->In.file[0]);
 		if (h[0]->n_bands == 1) code[0] = 'g';	/* Grayscale */
+#ifdef _OPENMP
+#pragma omp parallel for private(band,G,off,row,col,node,file) shared(API,GMT,h,I_in,code)
+#endif
 		for (band = 0; band < h[0]->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, I_in[0]->header->wesn, I_in[0]->header->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a grid for output!\n");
@@ -460,16 +463,32 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-			for (band = 0; band < I->header->n_bands; band++)	/* March across the RGB values in both images and increment counters */
-				rgb[band] = G_in[band]->data[node];
-			if (Ctrl->I.active)	{	/* Modify colors based on intensity */
-				if (Ctrl->In.n_in == 1)	/* Duplicate grays so illuminate can work */
-					rgb[1] = rgb[2] = rgb[0];
+		H = I->header;
+		if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H)
+#endif
+			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+				for (band = 0; band < 3; band++)	/* March across the RGB values in both images and increment counters */
+					rgb[band] = G_in[band]->data[node];
+				/* Modify colors based on intensity */
 				gmt_illuminate (GMT, intens[node], rgb);
+				for (band = 0, pix = node; band < 3; band++, pix += H->size)	/* March across the RGB values */
+					I->data[pix] = gmt_M_u255 (rgb[band]);
 			}
-			for (band = 0, pix = node; band < I->header->n_bands; band++, pix += I->header->size)	/* March across the RGB values */
-				I->data[pix] = gmt_M_u255 (rgb[band]);
+		}
+		else {
+			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+				for (band = 0; band < I->header->n_bands; band++)	/* March across the RGB values in both images and increment counters */
+					rgb[band] = G_in[band]->data[node];
+				if (Ctrl->I.active)	{	/* Modify colors based on intensity */
+					if (Ctrl->In.n_in == 1)	/* Duplicate grays so illuminate can work */
+						rgb[1] = rgb[2] = rgb[0];
+					gmt_illuminate (GMT, intens[node], rgb);
+				}
+				for (band = 0, pix = node; band < I->header->n_bands; band++, pix += I->header->size)	/* March across the RGB values */
+					I->data[pix] = gmt_M_u255 (rgb[band]);
+			}
 		}
 	}
 	else {	/* The remaining options */
@@ -484,6 +503,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
+			H = I->header;	/* Shorthand only */
 		}
 
 		/* Now do the work which depends on whether we have 1 or 2 input items */
@@ -508,10 +528,13 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				Return (GMT_NOERROR);
 			}
 			else {	/* Two images, do the r,g,b blend, watch out for any input transparency value to skip */
-				int p0, p1, v;
+				int p0, p1;
 				GMT_Report (API, GMT_MSG_INFORMATION, "Blend two images via weights\n");
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,band,pix,p0,p1) shared(GMT,I,I_in,H,weights)
+#endif
 				gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-					for (band = 0, pix = node; band < I->header->n_bands; band++, pix += I->header->size) {	/* March across the RGB values in both images and increment counters */
+					for (band = 0, pix = node; band < H->n_bands; band++, pix += H->size) {	/* March across the RGB values in both images and increment counters */
 						p0 = (band < I_in[0]->header->n_bands) ? I_in[0]->data[pix] : I_in[0]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
 						p1 = (band < I_in[1]->header->n_bands) ? I_in[1]->data[pix] : I_in[1]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
 						I->data[pix] = (unsigned char) urint (weights[node] * (p0 - p1) + p1);
@@ -532,27 +555,41 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->I.active) {	/* Modify colors via the intensities */
-		struct GMT_GRID_HEADER *H = I->header;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Modify colors via intensities\n");
-		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-			for (band = 0, pix = node; band < H->n_bands; band++, pix += H->size)	/* Get the normalized r,g,b triplet */
-				rgb[band] = gmt_M_is255 (I->data[pix]);
-			if (H->n_bands == 1)	/* Duplicate grays so illuminate can work */
-				rgb[1] = rgb[2] = rgb[0];
-			gmt_illuminate (GMT, intens[node], rgb);
-			for (band = 0, pix = node; band < H->n_bands; band++, pix += H->size)	/* March across the RGB values */
-				I->data[pix] = gmt_M_u255 (rgb[band]);
+		if (H->n_bands == 3) {
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,band,pix,rgb) shared(GMT,I,H,intens)
+#endif
+			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+				for (band = 0, pix = node; band < 3; band++, pix += H->size)	/* Get the normalized r,g,b triplet */
+					rgb[band] = gmt_M_is255 (I->data[pix]);
+				gmt_illuminate (GMT, intens[node], rgb);
+				for (band = 0, pix = node; band < 3; band++, pix += H->size)	/* March across the RGB values */
+					I->data[pix] = gmt_M_u255 (rgb[band]);
+			}
+		}
+		else {	/* Gray image */
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,rgb) shared(GMT,I,intens)
+#endif
+			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+				rgb[0] = rgb[1] = rgb[2] = gmt_M_is255 (I->data[node]);
+				gmt_illuminate (GMT, intens[node], rgb);
+				I->data[node] = gmt_M_u255 (rgb[0]);
+			}
 		}
 		gmt_M_free (GMT, intens);
 	}
 
 	if (Ctrl->A.active) { 	/* Add a transparency layer */
-		struct GMT_GRID_HEADER *H = I->header;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Add an alpha layer\n");
 		if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, H->size, unsigned char)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate alpha layer\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
+#ifdef _OPENMP
+#pragma omp parallel for private(node) shared(H,I,alpha)
+#endif
 		for (node = 0; node < H->size; node++)	/* Scale to 0-255 range */
 			I->alpha[node] = gmt_M_u255 (alpha[node]);
 		gmt_M_free (GMT, alpha);
@@ -577,18 +614,21 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {	/* Convert to monochrome image using the YIQ transformation */
 		unsigned char *data = NULL;
-		if ((data = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
+		if ((data = gmt_M_memory_aligned (GMT, NULL, H->size, unsigned char)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate gray image layer\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,band,pix,rgb) shared(GMT,I,H,data)
+#endif
 		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-			for (band = 0, pix = node; band < I->header->n_bands; band++, pix += band*I->header->size)	/* Get the normalized r,g,b triplet */
+			for (band = 0, pix = node; band < H->n_bands; band++, pix += band*H->size)	/* Get the normalized r,g,b triplet */
 				rgb[band] = gmt_M_is255 (I->data[pix]);
 			data[node] = gmt_M_u255 (gmt_M_yiq (rgb));
 		}
 		gmt_M_free_aligned (GMT, I->data);	/* Free old rgb image and add the new gray image */
 		I->data = data;
-		I->header->n_bands = 1;
+		H->n_bands = 1;
 	}
 
 	/* Write image here - any grid output was written earlier */
@@ -605,13 +645,17 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		I->header->inc[GMT_X] = gmt_M_get_inc (GMT, I->header->wesn[XLO], I->header->wesn[XHI], I->header->n_columns, I->header->registration);
 		I->header->inc[GMT_Y] = gmt_M_get_inc (GMT, I->header->wesn[YLO], I->header->wesn[YHI], I->header->n_rows,    I->header->registration);
 	}
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {
-		char buf[GMT_LEN128] = {""};
-		/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
-		sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
-			GMT->current.setting.ref_ellipsoid[k].eq_radius);
-		if (I->header->ProjRefPROJ4 == NULL)
+	/* Look for global images despite faulty metadata not flagging as geo */
+	if (I->header->ProjRefPROJ4 == NULL) {	/* No geographic meta-data present, examine region */
+		if (gmt_M_360_range (I->header->wesn[XLO], I->header->wesn[XHI]) && gmt_M_180_range (I->header->wesn[YHI], I->header->wesn[YLO]))
+			gmt_set_geographic (GMT, GMT_IN);	/* If exactly fitting the Earth then we assume geographic image */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* May be true due to -R or -fg */
+			char buf[GMT_LEN128] = {""};
+			/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
+			sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				GMT->current.setting.ref_ellipsoid[k].eq_radius);
 			I->header->ProjRefPROJ4 = strdup (buf);
+		}
 	}
 	/* Convert from TRB to TRP (TRPa if there is alpha) */
 	GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);	
