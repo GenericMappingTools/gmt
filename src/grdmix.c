@@ -123,6 +123,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct an image from 1 (gray) or 3 (r, g, b) input component grids.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   You may optionally supply transparency (-A) and/or intensity (-I).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Deconstruct an image into 1 or 3 output component grids, plus any transparency.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   These are normalized grids; use -N to use another normalizing factor than 255.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify an intensity grid file, or set a constant intensity value (-1/+1 range).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force a monochrome final image [same number of bands as the input].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grids from 0-255 to 0-1 [input grids assumed to be normalized].\n");
@@ -453,6 +454,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) {	/* De-construct single image into its gray or R,G,B [plus optional A] layers */
 		char code[4] = {'R', 'G', 'B', 'A'}, file[PATH_MAX] = {""};
 		uint64_t off = 0;
+		float scale = 1.0 / Ctrl->N.factor;	/* To avoid division */
 
 		H = I_in[0]->header;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Deconstruct image into component grid layers\n", Ctrl->In.file[0]);
@@ -469,7 +471,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 			off = band * H->size;
 			gmt_M_grd_loop (GMT, G, row, col, node)
-				G->data[node] = gmt_M_is255 (I_in[0]->data[node+off]);
+				G->data[node] = scale * I_in[0]->data[node+off];
 			sprintf (file, Ctrl->G.file, code[band]);
 			/* Write out grid */
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {

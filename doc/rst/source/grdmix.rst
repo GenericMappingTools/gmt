@@ -20,7 +20,7 @@ Synopsis
 [ |-D| ]
 [ |-I|\ *intensity* ]
 [ |-M| ]
-[ |-N|\ [*max*] ]
+[ |-N|\ [*factor*] ]
 [ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -67,7 +67,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *alpha*
-    Get s a constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
+    Get a constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
     The final image will have a transparency layer determined by these values.
 
 .. _-C:
@@ -75,16 +75,17 @@ Optional Arguments
 **-C**
     **C**\ onstruct an output image from one or three normalized input grids;
     these grids must all have values in the 0-1 range only (see **-N** if they don't).
-    Optionally, use **-A** to include transparency and **-I** to add intensity
+    Optionally, use **-A** to add transparency and **-I** to add intensity
     to the colors before writing the image. For three layers the input order must
-    be red grid, green grid, and blue grid.
+    be red grid first, then the green grid, and finally the blue grid.
 
 .. _-D:
 
 **-D**
     **D**\ econstruct a single image into one or three normalized output grids.
     An extra grid will be written if the image contains an alpha (transparency layer).
-    All grids written will have values in the 0-1 range exclusively.
+    All grids written will have values in the 0-1 range exclusively; however, you
+    can use **-N** to undo this implicit normalization.
     The output names uses the name template given by **-G** which must contain the
     C-format string "%c".  This code is replaced by the codes R, G, B and A for color
     images and g, A for gray-scale images.
@@ -102,9 +103,9 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [*max*] 
-    Normalize all input grids from 0-255 to 0-1 [All input grids already in 0-1 range].
-    To normalize by another value than 255, append an optional max* value.
+**-N**\ [*factor*] 
+    Normalize all input grids from 0-255 to 0-1 [All input grids are assumed to be in 0-1 range].
+    To normalize by another factor than 255, append an optional *factor* value.
 
 .. _-Q:
 
