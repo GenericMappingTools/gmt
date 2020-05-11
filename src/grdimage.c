@@ -1155,7 +1155,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		else if (header_work->ProjRefPROJ4 != NULL)
 			Out->header->ProjRefPROJ4 = strdup (header_work->ProjRefPROJ4);
 		else if (header_work->ProjRefEPSG)
-			Out->header->ProjRefWKT = header_work->ProjRefEPSG;
+			Out->header->ProjRefEPSG = header_work->ProjRefEPSG;
 		else {
 			for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++)
 				if (GMT->current.proj.proj4[k].id == this_proj) id = k;
