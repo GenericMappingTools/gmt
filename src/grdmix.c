@@ -73,8 +73,9 @@ struct GRDMIX_CTRL {
 	struct GRDMIX_M {	/* -M */
 		bool active;
 	} M;
-	struct GRDMIX_N {	/* -N */
+	struct GRDMIX_N {	/* -N[<factor>] */
 		bool active;
+		double factor;
 	} N;
 	struct GRDMIX_Q {	/* -Q */
 		bool active;
@@ -88,6 +89,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDMIX_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->N.factor = 255.0;	/* Default normalizing value */
 
 	return (C);
 }
@@ -97,6 +99,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *C) {	/* Dealloc
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->I.file);
+	gmt_M_str_free (C->W.file);
 	gmt_M_str_free (C->In.file[GMT_IN]);
 	gmt_M_str_free (C->In.file[GMT_OUT]);
 	gmt_M_free (GMT, C);
@@ -107,24 +110,26 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<transp>] [-C] [-D]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] [-M] [-N] [-Q] [%s] [%s] [-W<weight>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] [-M] [-N[<factor>]] [-Q] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W<weight>] [%s] [%s]\n\n", GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<raster1> is the main %s to be used.\n", type[API->external]);
+	GMT_Message (API, GMT_TIME_NONE, "\t<raster?> are the main %s to be used (1, 2, or 3).\n", type[API->external]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output %s file.\n", type[API->external]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   With -C the name is a template and must contain %%c for layer code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   With -C the name is a template and must contain %%c to hold the layer code.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify a grid, image, or a constant alpha value (0-1 range).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct image from 1 (gray) or 3 (r, g, b) input component grids.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify a transparency grid or image, or set a constant alpha value (0-1 range).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct an image from 1 (gray) or 3 (r, g, b) input component grids.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   You may optionally supply transparency (-A) and/or intensity (-I).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Deconstruct image into 1 or 3 output component grids, plus any transparency.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify a grid file, image, or a intensity alpha value (-1/+1 range).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome final image [same as input].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Normalize grids from 0-255 to 0-1 [input grids already normalized].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Make the final image opaque by removing any alpha layer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Deconstruct an image into 1 or 3 output component grids, plus any transparency.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify an intensity grid file, or set a constant intensity value (-1/+1 range).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Force a monochrome final image [same number of bands as the input].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grids from 0-255 to 0-1 [input grids assumed to be normalized].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append <factor> to use another factor in the normalization [255].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Make the final image opaque by removing any alpha layer.\n");
 	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify a blend weight grid, image, or a constant weight (0-1 range).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify a blend weight grid or image, or set a constant weight (0-1 range).\n");
 	GMT_Option (API, "f,.");
 
 	return (GMT_MODULE_USAGE);
@@ -200,6 +205,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 
 			case 'N':
 				Ctrl->N.active = true;
+				if (opt->arg[0]) Ctrl->N.factor = atof (opt->arg);
+
 				break;
 
 			case 'Q':
@@ -225,6 +232,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->In.n_in != 1, "Option -D: Only a single raster can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->D.active, "Option -I: Not available when -D is selected\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output raster file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.factor == 0.0, "Option -N: Normalization factor cannot be zero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->A.active, "Option -A: Not available when -A is selected\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->G.file && strstr (Ctrl->G.file, "%c") == NULL, "Option -G: With -D, output name must be template name containing %%c\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.mode && (Ctrl->I.value < -1.0 || Ctrl->I.value > 1.0), "Option -I: A constant intensity must be in the +/- 1 range\n");
@@ -370,6 +378,11 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (Ctrl->In.file[INTENS] && I_in[INTENS]) {
+			GMT_Report (API, GMT_MSG_ERROR, "The intensity information must be a grid with values in the -1 to +1 range, not an image!\n");
+			Return (GMT_RUNTIME_ERROR);		
+	}
+
 	if (Ctrl->In.n_in == 2 && Ctrl->In.type[0] != Ctrl->In.type[1]) {
 		GMT_Report (API, GMT_MSG_ERROR, "Both inputs must either be images or grids, not a mix\n");
 		Return (GMT_RUNTIME_ERROR);
@@ -401,7 +414,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (Ctrl->N.active) {	/* Normalize the grid */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Normalizing grid %s\n", Ctrl->In.file[k]);
 				gmt_M_grd_loop (GMT, G_in[k], row, col, node)
-					G_in[k]->data[node] /= 255.0;
+					G_in[k]->data[node] /= Ctrl->N.factor;
 			}
 		}
 		else {	/* Read the image */

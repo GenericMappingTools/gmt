@@ -18,9 +18,9 @@ Synopsis
 [ |-A|\ *alpha* ]
 [ |-C| ]
 [ |-D| ]
-[ |-I|\ *intens* ]
+[ |-I|\ *intensity* ]
 [ |-M| ]
-[ |-N| ]
+[ |-N|\ [*max*] ]
 [ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -34,14 +34,16 @@ Description
 -----------
 
 **grdmix** will perform various operations involving images and grids.
-We either use a *weights* grid, image, or constant to add a new alpha
+We either use a *alpha* grid, image, or constant to add a new alpha
 (transparency) layer to the image given as *raster1*, or we will blend
 the two *raster1* and *raster2* (grids or images) using the *weights* for
 *raster1* and the complementary *1 - weights* for *raster2* and save to
 *outfile*. Alternatively, we will deconstruct an image into its component
-grids or construct an image from its normalized component grids.
-All *raster?*, *alpha*, *intens* and *weights* files must have the same 
-dimensions. The optional *alpha*, *intens* and *weights* files may be
+grid layers or we construct an image from its normalized component grids.
+All operations support adjusting the final color image via an *intensity*
+grid, converting a color image to monochrome, or strip off the alpha layer.
+All *raster?*, *alpha*, *intensity* and *weights* files must have the same 
+dimensions. The optional *alpha*, *intensity* and *weights* files may be
 replaced by constant values instead.
 
 Required Arguments
@@ -65,30 +67,31 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *alpha*
-    A constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
-    The final grid will have a transparency layer with these values.
+    Get s a constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
+    The final image will have a transparency layer determined by these values.
 
 .. _-C:
 
 **-C**
     **C**\ onstruct an output image from one or three normalized input grids;
-    these grids must all have values in the 0-1 range only.
+    these grids must all have values in the 0-1 range only (see **-N** if they don't).
     Optionally, use **-A** to include transparency and **-I** to add intensity
-    to the colors before writing the image.
+    to the colors before writing the image. For three layers the input order must
+    be red grid, green grid, and blue grid.
 
 .. _-D:
 
 **-D**
-    **D**\ eonstruct a single image into one or three normalized output grids.
+    **D**\ econstruct a single image into one or three normalized output grids.
     An extra grid will be written if the image contains an alpha (transparency layer).
     All grids written will have values in the 0-1 range exclusively.
     The output names uses the name template given by **-G** which must contain the
-    C-format code "%c".  This code is replaced by the codes R, G, B and A for color
+    C-format string "%c".  This code is replaced by the codes R, G, B and A for color
     images and g, A for gray-scale images.
 
 .. _-I:
 
-**-I**\ *intens*
+**-I**\ *intensity*
     A constant intensity or grid (-1/+1 range) to modify final output image colors.
 
 .. _-M:
@@ -99,17 +102,18 @@ Optional Arguments
 
 .. _-N:
 
-**-N**
+**-N**\ [*max*] 
     Normalize all input grids from 0-255 to 0-1 [All input grids already in 0-1 range].
+    To normalize by another value than 255, append an optional max* value.
 
 .. _-Q:
 
 **-Q**
-    Make the final image opaque by removing any alpha layer.
+    Make the final image opaque by removing the alpha layer (if present).
 
 .. _-R:
 
-|Add_-R| replace:: If the input images do not have proper geographic regions then specify that here.
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 .. _-V:
