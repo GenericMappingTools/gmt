@@ -674,6 +674,8 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			H->ProjRefPROJ4 = strdup (buf);
 		}
 	}
+	if (H->ProjRefPROJ4 && strstr (Ctrl->G.file, ".tif") == NULL)
+		GMT_Report (API, GMT_MSG_WARNING, "The geographical metadata for you image will be lost unless you use TIF\n");
 	/* Convert from TRB to TRP (TRPa if there is alpha) */
 	GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);	
 	/* Write out image */
