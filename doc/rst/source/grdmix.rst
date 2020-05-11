@@ -117,6 +117,11 @@ Examples
 
 .. include:: explain_example.rst_
 
+To blend the night and day views of the Earth using an alpha image computed for
+a particular day/night terminus, try::
+
+    gmt grdmix @BlueMarble_06m.tif @BlackMarble_06m.tif -A@alpha.png -Gnewmap.png
+
 Suppose map1.png and map2.png are overlapping maps of different quantities, but we wish
 to use the image visible.png to blend them into a single image.  We try::
 
