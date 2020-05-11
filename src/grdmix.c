@@ -130,14 +130,18 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL char *grdmix_parseitem (struct GMT_CTRL *GMT, char *arg, struct GRDMIX_AIW *X) {
+GMT_LOCAL char *grdmix_parseitem (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, struct GRDMIX_AIW *X) {
 	X->active = true;
-	if (!gmt_access (GMT, arg, R_OK)) {
-		X->file = strdup (arg);	/* Place this in In.file[??] for convenience later */
+	if (!gmt_access (GMT, opt->arg, R_OK)) {
+		X->file = strdup (opt->arg);	/* Place this in In.file[??] for convenience later */
 		X->mode = 0;	/* Flag we got a file */
 	}
+	else if (gmt_not_numeric (GMT, opt->arg)) {	/* Bad value or missing file */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Bad value or a file that was not found: %s\n", opt->option, opt->arg);
+		X->mode = 2;
+	}
 	else {
-		X->value = atof (arg);
+		X->value = atof (opt->arg);
 		X->mode = 1;
 	}
 	return (X->file);
@@ -166,7 +170,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->In.file[ALPHA] = grdmix_parseitem (GMT, opt->arg, &(Ctrl->A));
+				Ctrl->In.file[ALPHA] = grdmix_parseitem (GMT, opt, &(Ctrl->A));
+				if (Ctrl->A.mode == 2) n_errors++;
 				break;
 
 			case 'C':
@@ -185,7 +190,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			case 'I':
-				Ctrl->In.file[INTENS] = grdmix_parseitem (GMT, opt->arg, &(Ctrl->I));
+				Ctrl->In.file[INTENS] = grdmix_parseitem (GMT, opt, &(Ctrl->I));
+				if (Ctrl->I.mode == 2) n_errors++;
 			break;
 
 			case 'M':
@@ -201,7 +207,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			case 'W':
-				Ctrl->In.file[BLEND] = grdmix_parseitem (GMT, opt->arg, &(Ctrl->W));
+				Ctrl->In.file[BLEND] = grdmix_parseitem (GMT, opt, &(Ctrl->W));
+				if (Ctrl->W.mode == 2) n_errors++;
 				break;
 
 			default:	/* Report bad options */
@@ -214,8 +221,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Option -A: A constant transparency must be in the 0-1 range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Can only use one of -C and -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->A.active, "Option -A: Not used with -D\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !(Ctrl->In.n_in == 1 || Ctrl->In.n_in == 3), "Option -C: Requires one or three rasters");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->In.n_in != 1, "Option -D: Only a single raster can be specified");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !(Ctrl->In.n_in == 1 || Ctrl->In.n_in == 3), "Option -C: Requires one or three rasters\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->In.n_in != 1, "Option -D: Only a single raster can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->D.active, "Option -I: Not available when -D is selected\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output raster file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->A.active, "Option -A: Not available when -A is selected\n");
@@ -267,6 +274,8 @@ GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, i
 			}
 			if (n_bad) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "The %s grid not in the %g to %g range; %" PRIu64 " nodes were outside the range!\n", name, min, max, n_bad);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "If the grid is in 0-255 range, please use -N to normalized the values.\n");
+				gmt_M_free (GMT, array);
 				return NULL;
 			}
 			if (GMT_Destroy_Data (GMT->parent, G) != GMT_NOERROR) {
@@ -390,6 +399,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (Ctrl->N.active) {	/* Normalize the grid */
+				GMT_Report (API, GMT_MSG_INFORMATION, "Normalizing grid %s\n", Ctrl->In.file[k]);
 				gmt_M_grd_loop (GMT, G_in[k], row, col, node)
 					G_in[k]->data[node] /= 255.0;
 			}
@@ -412,12 +422,15 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	if (Ctrl->I.active) {	/* Set up the intensities, then free the grid/image struct */
 		if ((intens = grdmix_get_array (GMT, &(Ctrl->I), Ctrl->In.type[INTENS], &G_in[INTENS], &I_in[INTENS], h[0], -1.0, 1.0, "intensity")) == NULL) {
+			if (alpha) gmt_M_free (GMT, alpha);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 
 	if (Ctrl->W.active) {	/* Set up the blend weights, then free the grid/image struct */
 		if ((weights = grdmix_get_array (GMT, &(Ctrl->W), Ctrl->In.type[BLEND], &G_in[BLEND], &I_in[BLEND], h[0], 0.0, 1.0, "blend weight")) == NULL) {
+			if (alpha) gmt_M_free (GMT, alpha);
+			if (intens) gmt_M_free (GMT, intens);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
@@ -428,17 +441,20 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		char code[4] = {'R', 'G', 'B', 'A'}, file[PATH_MAX] = {""};
 		uint64_t off = 0;
 
+		H = I_in[0]->header;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Deconstruct image into component grid layers\n", Ctrl->In.file[0]);
-		if (h[0]->n_bands == 1) code[0] = 'g';	/* Grayscale */
+		if (H->n_bands == 1) code[0] = 'g';	/* Grayscale */
+		if (gmt_M_360_range (H->wesn[XLO], H->wesn[XHI]) && gmt_M_180_range (H->wesn[YHI], H->wesn[YLO]))
+			gmt_set_geographic (GMT, GMT_IN);	/* If exactly fitting the Earth then we assume geographic image */
 #ifdef _OPENMP
-#pragma omp parallel for private(band,G,off,row,col,node,file) shared(API,GMT,h,I_in,code)
+#pragma omp parallel for private(band,G,off,row,col,node,file) shared(API,GMT,H,I_in,code)
 #endif
-		for (band = 0; band < h[0]->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
-			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, I_in[0]->header->wesn, I_in[0]->header->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
+		for (band = 0; band < H->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
+			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, H->wesn, H->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a grid for output!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
-			off = band * h[0]->size;
+			off = band * H->size;
 			gmt_M_grd_loop (GMT, G, row, col, node)
 				G->data[node] = gmt_M_is255 (I_in[0]->data[node+off]);
 			sprintf (file, Ctrl->G.file, code[band]);
@@ -458,8 +474,9 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->C.active) {	/* Combine 1 or 3 grids into a new single image, while handling the optional -A -I information */
+		uint64_t dim[3] = {0,0,3};
 		GMT_Report (API, GMT_MSG_INFORMATION, "Construct image from %d component grid layers\n", Ctrl->In.n_in);
-		if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, G_in[0]->header->wesn, G_in[0]->header->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
+		if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, G_in[0]->header->wesn, G_in[0]->header->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -479,14 +496,14 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		}
 		else {
 			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-				for (band = 0; band < I->header->n_bands; band++)	/* March across the RGB values in both images and increment counters */
+				for (band = 0; band < H->n_bands; band++)	/* March across the RGB values in both images and increment counters */
 					rgb[band] = G_in[band]->data[node];
 				if (Ctrl->I.active)	{	/* Modify colors based on intensity */
 					if (Ctrl->In.n_in == 1)	/* Duplicate grays so illuminate can work */
 						rgb[1] = rgb[2] = rgb[0];
 					gmt_illuminate (GMT, intens[node], rgb);
 				}
-				for (band = 0, pix = node; band < I->header->n_bands; band++, pix += I->header->size)	/* March across the RGB values */
+				for (band = 0, pix = node; band < H->n_bands; band++, pix += H->size)	/* March across the RGB values */
 					I->data[pix] = gmt_M_u255 (rgb[band]);
 			}
 		}
@@ -622,7 +639,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 #pragma omp parallel for private(row,col,node,band,pix,rgb) shared(GMT,I,H,data)
 #endif
 		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-			for (band = 0, pix = node; band < H->n_bands; band++, pix += band*H->size)	/* Get the normalized r,g,b triplet */
+			for (band = 0, pix = node; band < H->n_bands; band++, pix += H->size)	/* Get the normalized r,g,b triplet */
 				rgb[band] = gmt_M_is255 (I->data[pix]);
 			data[node] = gmt_M_u255 (gmt_M_yiq (rgb));
 		}
@@ -641,20 +658,20 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 
 	if (GMT->common.R.active[RSET]) {	/* Override whatever wesn and incs are in the header */
-		gmt_M_memcpy (I->header->wesn, GMT->common.R.wesn, 4, double);
-		I->header->inc[GMT_X] = gmt_M_get_inc (GMT, I->header->wesn[XLO], I->header->wesn[XHI], I->header->n_columns, I->header->registration);
-		I->header->inc[GMT_Y] = gmt_M_get_inc (GMT, I->header->wesn[YLO], I->header->wesn[YHI], I->header->n_rows,    I->header->registration);
+		gmt_M_memcpy (H->wesn, GMT->common.R.wesn, 4, double);
+		H->inc[GMT_X] = gmt_M_get_inc (GMT, H->wesn[XLO], H->wesn[XHI], H->n_columns, H->registration);
+		H->inc[GMT_Y] = gmt_M_get_inc (GMT, H->wesn[YLO], H->wesn[YHI], H->n_rows,    H->registration);
 	}
 	/* Look for global images despite faulty metadata not flagging as geo */
-	if (I->header->ProjRefPROJ4 == NULL) {	/* No geographic meta-data present, examine region */
-		if (gmt_M_360_range (I->header->wesn[XLO], I->header->wesn[XHI]) && gmt_M_180_range (I->header->wesn[YHI], I->header->wesn[YLO]))
+	if (H->ProjRefPROJ4 == NULL) {	/* No geographic meta-data present, examine region */
+		if (gmt_M_360_range (H->wesn[XLO], H->wesn[XHI]) && gmt_M_180_range (H->wesn[YHI], H->wesn[YLO]))
 			gmt_set_geographic (GMT, GMT_IN);	/* If exactly fitting the Earth then we assume geographic image */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* May be true due to -R or -fg */
 			char buf[GMT_LEN128] = {""};
 			/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
 			sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
 				GMT->current.setting.ref_ellipsoid[k].eq_radius);
-			I->header->ProjRefPROJ4 = strdup (buf);
+			H->ProjRefPROJ4 = strdup (buf);
 		}
 	}
 	/* Convert from TRB to TRP (TRPa if there is alpha) */
