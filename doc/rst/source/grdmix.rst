@@ -87,7 +87,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I*\ *intens*
+**-I**\ *intens*
     A constant intensity or grid (-1/+1 range) to modify final output image colors.
 
 .. _-M:
