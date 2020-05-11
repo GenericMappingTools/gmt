@@ -13203,15 +13203,25 @@ GMT_LOCAL int gmtinit_set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, stru
 				return GMT_NOTSET;
 			}
 		}
-		if (opt->next && opt->next->option == GMT_OPT_INFILE) {	/* Found a -ext[,ext,ext,...] <prefix> pair */
-			if (strchr (opt->next->arg, ' '))	/* File name has spaces, must surround it in single quotes */
-				snprintf (session, GMT_LEN128, "\'%s\' %s", opt->next->arg, figure);
-			else
-				snprintf (session, GMT_LEN128, "%s %s", opt->next->arg, figure);
-			/* Remove the one-liner options before the parser chokes on them */
-			if (GMT_Delete_Option (API, opt->next, options) || GMT_Delete_Option (API, opt, options)) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove -ext <prefix> options in gmtinit_set_modern_mode_if_oneliner.\n");
-				return GMT_NOTSET;
+		if (opt->next == NULL || (opt->next && opt->next->option == GMT_OPT_INFILE)) {	/* Found a -ext[,ext,ext,...] <prefix> pair */
+			if (opt->next == NULL) {	/* Forgot to give prefix, we supply gmtsession */
+				GMT_Report (API, GMT_MSG_WARNING, "Modern mode oneliner syntax given but no file prefix provided - using %s\n", GMT_SESSION_NAME);
+				snprintf (session, GMT_LEN128, "%s %s", GMT_SESSION_NAME, figure);
+				if (GMT_Delete_Option (API, opt, options)) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to remove -ext option in gmtinit_set_modern_mode_if_oneliner.\n");
+					return GMT_NOTSET;
+				}
+			}
+			else {	/* Gave the file prefix */
+				if (strchr (opt->next->arg, ' '))	/* File name has spaces, must surround it in single quotes */
+					snprintf (session, GMT_LEN128, "\'%s\' %s", opt->next->arg, figure);
+				else
+					snprintf (session, GMT_LEN128, "%s %s", opt->next->arg, figure);
+				/* Remove the one-liner options before the parser chokes on them */
+				if (GMT_Delete_Option (API, opt->next, options) || GMT_Delete_Option (API, opt, options)) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to remove -ext <prefix> options in gmtinit_set_modern_mode_if_oneliner.\n");
+					return GMT_NOTSET;
+				}
 			}
 			API->GMT->hidden.func_level++;	/* Must do this here since it has not yet been increased by gmtinit_begin_module_sub ! */
 			gmt_reset_history (API->GMT);	/* A one-liner should have no history */
@@ -13225,6 +13235,10 @@ GMT_LOCAL int gmtinit_set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, stru
 			API->GMT->current.ps.oneliner = true;	/* Special flag */
 			API->GMT->hidden.func_level--;	/* Restore to what we had */
 			return GMT_NOERROR;	/* All set */
+		}
+		else {
+			GMT_Report (API, GMT_MSG_ERROR, "Modern mode oneliner syntax given but no file prefix provided?\n");
+			return GMT_NOTSET;
 		}
 	}
 	return GMT_NOERROR;
