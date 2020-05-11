@@ -130,7 +130,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL void grdmix_parseitem (struct GMT_CTRL *GMT, char *arg, struct GRDMIX_AIW *X) {
+GMT_LOCAL char * grdmix_parseitem (struct GMT_CTRL *GMT, char *arg, struct GRDMIX_AIW *X) {
 	X->active = true;
 	if (!gmt_access (GMT, arg, R_OK)) {
 		X->file = strdup (arg);	/* Place this in In.file[??] for convenience later */
@@ -140,6 +140,7 @@ GMT_LOCAL void grdmix_parseitem (struct GMT_CTRL *GMT, char *arg, struct GRDMIX_
 		X->value = atof (arg);
 		X->mode = 1;
 	}
+	return (X->file);
 }
 
 static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -165,8 +166,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 			/* Processes program-specific parameters */
 
 			case 'A':
-				grdmix_parseitem (GMT, opt->arg, &(Ctrl->A));
-				Ctrl->In.file[ALPHA] = Ctrl->A.file;
+				Ctrl->In.file[ALPHA] = grdmix_parseitem (GMT, opt->arg, &(Ctrl->A));
 				break;
 
 			case 'C':
@@ -185,8 +185,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			case 'I':
-				grdmix_parseitem (GMT, opt->arg, &(Ctrl->I));
-				Ctrl->In.file[INTENS] = Ctrl->I.file;
+				Ctrl->In.file[INTENS] = grdmix_parseitem (GMT, opt->arg, &(Ctrl->I));
 			break;
 
 			case 'M':
@@ -202,8 +201,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			case 'W':
-				grdmix_parseitem (GMT, opt->arg, &(Ctrl->W));
-				Ctrl->In.file[BLEND] = Ctrl->W.file;
+				Ctrl->In.file[BLEND] = grdmix_parseitem (GMT, opt->arg, &(Ctrl->W));
 				break;
 
 			default:	/* Report bad options */
@@ -256,29 +254,30 @@ GMT_LOCAL void grdmix_dump_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, cha
 }
 #endif
 
-GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, int type, struct GMT_GRID *G, struct GMT_IMAGE *I, struct GMT_GRID_HEADER *h, float min, float max, char *name) {
+GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, int type, struct GMT_GRID **G, struct GMT_IMAGE **I, struct GMT_GRID_HEADER *h, float min, float max, char *name) {
+	/* Function to either read a grid, and image, or use a constant; then build and return the array with the information */
 	uint64_t row, col, node;
 	float *array = gmt_M_memory (GMT, NULL, h->size, float);
 	if (X->mode == 0) {	/* Got a grid or image */
 		if (type == GMT_NOTSET) {	/* Got a grid */
 			uint64_t n_bad = 0;
-			gmt_M_grd_loop (GMT, G, row, col, node) {
-				array[node] = G->data[node];
+			gmt_M_grd_loop (GMT, (*G), row, col, node) {
+				array[node] = (*G)->data[node];
 				if (array[node] < min || array[node] > max) n_bad++;
 			}
 			if (n_bad) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "The %s grid not in the %g to %g range!\n", name, min, max);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "The %s grid not in the %g to %g range; %" PRIu64 " nodes were outside the range!\n", name, min, max, n_bad);
 				return NULL;
 			}
-			if (GMT_Destroy_Data (GMT->parent, &G) != GMT_NOERROR) {
+			if (GMT_Destroy_Data (GMT->parent, G) != GMT_NOERROR) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to free %s grid!\n", name);
 				return NULL;
 			}
 		}
 		else {	/* Got an image */
-			gmt_M_grd_loop (GMT, I, row, col, node)
-				array[node] = gmt_M_is255 (I->data[node]);
-			if (GMT_Destroy_Data (GMT->parent, &I) != GMT_NOERROR) {
+			gmt_M_grd_loop (GMT, (*I), row, col, node)
+				array[node] = gmt_M_is255 ((*I)->data[node]);
+			if (GMT_Destroy_Data (GMT->parent, I) != GMT_NOERROR) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to free %s image!\n", name);
 				return NULL;
 			}
@@ -292,8 +291,6 @@ GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, i
 }
 
 EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
-	bool write_image = true;
-
 	char *type[N_ITEMS] = {NULL, NULL, NULL, "alpha", "blend", "intens"};
 
 	int error = 0;
@@ -374,9 +371,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Dimensions/registrations of %s are not compatible for the other rasters!\n", Ctrl->In.file[k]);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (Ctrl->In.type[0] == GMT_NOTSET)
-			write_image = false;	/* Dealing with grids, so set a flag for our output */
-		else	/* Get the array index to the image with the largest number of bands (should they differ) */
+		if (Ctrl->In.type[0] != GMT_NOTSET)	/* Get the array index to the image with the largest number of bands (should they differ) */
 			if (h[k]->n_bands >= h[img]->n_bands) img = k;
 	}
 
@@ -409,41 +404,34 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->A.active) {	/* Set up the transparencies */
-		if ((alpha = grdmix_get_array (GMT, &(Ctrl->A), Ctrl->In.type[ALPHA], G_in[ALPHA], I_in[ALPHA], h[0], 0.0, 1.0, "alpha")) == NULL) {
+	if (Ctrl->A.active) {	/* Set up the transparencies, then free the grid/image struct */
+		if ((alpha = grdmix_get_array (GMT, &(Ctrl->A), Ctrl->In.type[ALPHA], &G_in[ALPHA], &I_in[ALPHA], h[0], 0.0, 1.0, "alpha")) == NULL) {
 			Return (GMT_RUNTIME_ERROR);
 		}
-		G_in[ALPHA] = NULL; I_in[ALPHA] = NULL;
 	}
 
-	if (Ctrl->I.active) {	/* Set up the intensities  */
-		if ((intens = grdmix_get_array (GMT, &(Ctrl->I), Ctrl->In.type[INTENS], G_in[INTENS], I_in[INTENS], h[0], -1.0, 1.0, "intensity")) == NULL) {
+	if (Ctrl->I.active) {	/* Set up the intensities, then free the grid/image struct */
+		if ((intens = grdmix_get_array (GMT, &(Ctrl->I), Ctrl->In.type[INTENS], &G_in[INTENS], &I_in[INTENS], h[0], -1.0, 1.0, "intensity")) == NULL) {
 			Return (GMT_RUNTIME_ERROR);
 		}
-		G_in[INTENS] = NULL; I_in[INTENS] = NULL;
 	}
 
-	if (Ctrl->W.active) {	/* Set up the blend weights  */
-		if ((weights = grdmix_get_array (GMT, &(Ctrl->W), Ctrl->In.type[BLEND], G_in[BLEND], I_in[BLEND], h[0], 0.0, 1.0, "blend weight")) == NULL) {
+	if (Ctrl->W.active) {	/* Set up the blend weights, then free the grid/image struct */
+		if ((weights = grdmix_get_array (GMT, &(Ctrl->W), Ctrl->In.type[BLEND], &G_in[BLEND], &I_in[BLEND], h[0], 0.0, 1.0, "blend weight")) == NULL) {
 			Return (GMT_RUNTIME_ERROR);
 		}
-		G_in[BLEND] = NULL; I_in[BLEND] = NULL;
 	}
 
-	/* Deal with operations -C and -D up front, then exit */
+	/* Deal with operation -D up front, then exit */
 
 	if (Ctrl->D.active) {	/* De-construct single image into its gray or R,G,B [plus optional A] layers */
 		char code[4] = {'R', 'G', 'B', 'A'}, file[PATH_MAX] = {""};
 		uint64_t off = 0;
-		double wesn[4], inc[2] = {1.0, 1.0};
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Deconstruct image into component grid layers\n", Ctrl->In.file[0]);
-		wesn[XLO] = wesn[YLO] = 0.0;
-		wesn[XHI] = h[0]->n_columns;
-		wesn[YHI] = h[0]->n_rows;
 		if (h[0]->n_bands == 1) code[0] = 'g';	/* Grayscale */
 		for (band = 0; band < h[0]->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
-			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
+			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, I_in[0]->header->wesn, I_in[0]->header->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a grid for output!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -467,10 +455,8 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->C.active) {	/* Combine 1 or 3 grids into a new single image, while handling the optional -A -I information */
-		uint64_t dim[GMT_DIM_SIZE] = {h[0]->n_columns, h[0]->n_rows, Ctrl->In.n_in, 0};
-
-		GMT_Report (API, GMT_MSG_INFORMATION, "Construct image from component grid layers\n");
-		if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "Construct image from %d component grid layers\n", Ctrl->In.n_in);
+		if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, G_in[0]->header->wesn, G_in[0]->header->inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -479,66 +465,63 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				rgb[band] = G_in[band]->data[node];
 			if (Ctrl->I.active)	{	/* Modify colors based on intensity */
 				if (Ctrl->In.n_in == 1)	/* Duplicate grays so illuminate can work */
-				rgb[1] = rgb[2] = rgb[0];
+					rgb[1] = rgb[2] = rgb[0];
 				gmt_illuminate (GMT, intens[node], rgb);
 			}
-			pix = node;	/* Index to the red (or gray) pixel location */
-			for (band = 0; band < I->header->n_bands; band++, pix += I->header->size)	/* March across the RGB values */
+			for (band = 0, pix = node; band < I->header->n_bands; band++, pix += I->header->size)	/* March across the RGB values */
 				I->data[pix] = gmt_M_u255 (rgb[band]);
 		}
-		goto complete_the_image;
 	}
-
-	if (Ctrl->In.type[0] == GMT_NOTSET) {	/* Create output grid for the blend */
-		if ((G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G_in[0])) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate a grid for output!\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-	}
-	else {	/* Create output image for the blend or for the transparent image */
-		if ((I = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_ALLOC, I_in[img])) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-	}
-
-	/* Now do the work which depends on whether we have 1 or 2 input items */
-
-	if (Ctrl->In.n_in == 1) {	/* Pass intensity and/or transparency from -A to the input image */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Adjust image via transparency and/or alpha\n");
-		gmt_M_memcpy (I->data, I_in[0]->data, I->header->size * I->header->n_bands, unsigned char);	/* Duplicate the input image */
-	}
-	else {	/* Blend two grids or images using the weights given via -A */
-		if (Ctrl->In.type[0] == GMT_NOTSET) {	/* Two grids, just do the blend loop */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Blend two grids via weights\n");
-			gmt_M_grd_loop (GMT, G, row, col, node)
-				G->data[node] = weights[node] * (G_in[0]->data[node] - G_in[1]->data[node]) + G_in[1]->data[node];
-			/* Write out grid */
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
-				Return (API->error);
-			}
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
-				Return (API->error);
+	else {	/* The remaining options */
+		if (Ctrl->In.type[0] == GMT_NOTSET) {	/* Create output grid for the blend */
+			if ((G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G_in[0])) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate a grid for output!\n");
+				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		else {	/* Two images, do the r,g,b blend, watch out for any input transparency value to skip */
-			int p0, p1, v;
-			GMT_Report (API, GMT_MSG_INFORMATION, "Blend two images via weights\n");
-			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-				pix = node;	/* Index to the red (or gray) pixel location */
-				for (band = 0; band < I->header->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
-					p0 = (band < I_in[0]->header->n_bands) ? I_in[0]->data[pix] : I_in[0]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
-					p1 = (band < I_in[1]->header->n_bands) ? I_in[1]->data[pix] : I_in[1]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
-					I->data[pix] = (unsigned char) urint (weights[node] * (p0 - p1) + p1);
-					pix += I->header->size;	/* Next band */
+		else {	/* Create output image for the blend or for the transparent image */
+			if ((I = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_ALLOC, I_in[img])) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+
+		/* Now do the work which depends on whether we have 1 or 2 input items */
+
+		if (Ctrl->In.n_in == 1) {	/* Pass intensity and/or transparency from -A to the input image */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Adjust image via transparency and/or alpha\n");
+			gmt_M_memcpy (I->data, I_in[0]->data, I->header->size * I->header->n_bands, unsigned char);	/* Duplicate the input image */
+		}
+		else {	/* Blend two grids or images using the weights given via -A */
+			if (Ctrl->In.type[0] == GMT_NOTSET) {	/* Two grids, just do the blend loop */
+				GMT_Report (API, GMT_MSG_INFORMATION, "Blend two grids via weights\n");
+				gmt_M_grd_loop (GMT, G, row, col, node)
+					G->data[node] = weights[node] * (G_in[0]->data[node] - G_in[1]->data[node]) + G_in[1]->data[node];
+				gmt_M_free (GMT, weights);
+				/* Write out grid */
+				if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
+					Return (API->error);
 				}
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
+					Return (API->error);
+				}
+				Return (GMT_NOERROR);
+			}
+			else {	/* Two images, do the r,g,b blend, watch out for any input transparency value to skip */
+				int p0, p1, v;
+				GMT_Report (API, GMT_MSG_INFORMATION, "Blend two images via weights\n");
+				gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+					for (band = 0, pix = node; band < I->header->n_bands; band++, pix += I->header->size) {	/* March across the RGB values in both images and increment counters */
+						p0 = (band < I_in[0]->header->n_bands) ? I_in[0]->data[pix] : I_in[0]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
+						p1 = (band < I_in[1]->header->n_bands) ? I_in[1]->data[pix] : I_in[1]->data[node];	/* Get corresponding r,g,b or just duplicate gray three times */
+						I->data[pix] = (unsigned char) urint (weights[node] * (p0 - p1) + p1);
+					}
+				}
+				gmt_M_free (GMT, weights);
 			}
 		}
-		gmt_M_free (GMT, weights);
 	}
 	
-complete_the_image:
-
 	for (k = 0; k < ALPHA; k++) {	/* Free up memory no longer needed here */
 		void *W = (Ctrl->In.type[k] == GMT_NOTSET) ? (void *)G_in[k] : (void *)I_in[k];
 		if (W == NULL) continue;
@@ -548,7 +531,7 @@ complete_the_image:
 		}
 	}
 
-	if (Ctrl->I.active) {	/* Modify colors by the intensity */
+	if (Ctrl->I.active) {	/* Modify colors via the intensities */
 		struct GMT_GRID_HEADER *H = I->header;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Modify colors via intensities\n");
 		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
@@ -563,7 +546,7 @@ complete_the_image:
 		gmt_M_free (GMT, intens);
 	}
 
-	if (Ctrl->A.active) { 	/* Add transparency layer */
+	if (Ctrl->A.active) { 	/* Add a transparency layer */
 		struct GMT_GRID_HEADER *H = I->header;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Add an alpha layer\n");
 		if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, H->size, unsigned char)) == NULL) {
@@ -575,7 +558,7 @@ complete_the_image:
 		gmt_M_free (GMT, alpha);
 	}
 
-	if (Ctrl->Q.active) {	/* Make image opaque */
+	if (Ctrl->Q.active) {	/* Remove transparency payer (make image opaQue) */
 		if (I->header->n_bands == 2 || I->header->n_bands == 4) {	/* Gray or color image with alpha layer */
 			unsigned char *data = NULL;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Remove alpha layer\n");
@@ -588,11 +571,11 @@ complete_the_image:
 			I->data = data;
 			I->header->n_bands--;
 		}
-		else
+		else	/* No alpha layer found */
 			GMT_Report (API, GMT_MSG_INFORMATION, "No alpha layer to remove\n");
 	}
 
-	if (Ctrl->M.active) {	/* Convert to monochrome image using the YIQ transformation first */
+	if (Ctrl->M.active) {	/* Convert to monochrome image using the YIQ transformation */
 		unsigned char *data = NULL;
 		if ((data = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate gray image layer\n");
@@ -603,39 +586,38 @@ complete_the_image:
 				rgb[band] = gmt_M_is255 (I->data[pix]);
 			data[node] = gmt_M_u255 (gmt_M_yiq (rgb));
 		}
-		gmt_M_free_aligned (GMT, I->data);	/* Free old rgb image and add gray image */
+		gmt_M_free_aligned (GMT, I->data);	/* Free old rgb image and add the new gray image */
 		I->data = data;
 		I->header->n_bands = 1;
 	}
 
-	if (write_image) {	/* Write image here - any grid output was written earlier */
-		/* Turn off the automatic creation of aux files by GDAL */
+	/* Write image here - any grid output was written earlier */
+	/* Turn off the automatic creation of aux files by GDAL */
 #ifdef WIN32
-		if (_putenv ("GDAL_PAM_ENABLED=NO"))
+	if (_putenv ("GDAL_PAM_ENABLED=NO"))
 #else
-		if (setenv ("GDAL_PAM_ENABLED", "NO", 0))
+	if (setenv ("GDAL_PAM_ENABLED", "NO", 0))
 #endif
-			GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 
-		if (GMT->common.R.active[RSET]) {	/* Override whatever wesn and incs are in the header */
-			gmt_M_memcpy (I->header->wesn, GMT->common.R.wesn, 4, double);
-			I->header->inc[GMT_X] = gmt_M_get_inc (GMT, I->header->wesn[XLO], I->header->wesn[XHI], I->header->n_columns, I->header->registration);
-			I->header->inc[GMT_Y] = gmt_M_get_inc (GMT, I->header->wesn[YLO], I->header->wesn[YHI], I->header->n_rows,    I->header->registration);
-		}
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {
-			char buf[GMT_LEN128] = {""};
-			/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
-			sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
-				GMT->current.setting.ref_ellipsoid[k].eq_radius);
-			if (I->header->ProjRefPROJ4 == NULL)
-				I->header->ProjRefPROJ4 = strdup (buf);
-		}
-		/* Convert from TRB to TRP (TRPa if there is alpha) */
-		GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);	
-		/* Write out image */
-		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
-			Return (API->error);
-		}
+	if (GMT->common.R.active[RSET]) {	/* Override whatever wesn and incs are in the header */
+		gmt_M_memcpy (I->header->wesn, GMT->common.R.wesn, 4, double);
+		I->header->inc[GMT_X] = gmt_M_get_inc (GMT, I->header->wesn[XLO], I->header->wesn[XHI], I->header->n_columns, I->header->registration);
+		I->header->inc[GMT_Y] = gmt_M_get_inc (GMT, I->header->wesn[YLO], I->header->wesn[YHI], I->header->n_rows,    I->header->registration);
+	}
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {
+		char buf[GMT_LEN128] = {""};
+		/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
+		sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+			GMT->current.setting.ref_ellipsoid[k].eq_radius);
+		if (I->header->ProjRefPROJ4 == NULL)
+			I->header->ProjRefPROJ4 = strdup (buf);
+	}
+	/* Convert from TRB to TRP (TRPa if there is alpha) */
+	GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);	
+	/* Write out image */
+	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
+		Return (API->error);
 	}
 
 	Return (GMT_NOERROR);
