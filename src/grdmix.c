@@ -130,7 +130,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL char * grdmix_parseitem (struct GMT_CTRL *GMT, char *arg, struct GRDMIX_AIW *X) {
+GMT_LOCAL char *grdmix_parseitem (struct GMT_CTRL *GMT, char *arg, struct GRDMIX_AIW *X) {
 	X->active = true;
 	if (!gmt_access (GMT, arg, R_OK)) {
 		X->file = strdup (arg);	/* Place this in In.file[??] for convenience later */
@@ -608,7 +608,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {
 		char buf[GMT_LEN128] = {""};
 		/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
-		sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+		sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
 			GMT->current.setting.ref_ellipsoid[k].eq_radius);
 		if (I->header->ProjRefPROJ4 == NULL)
 			I->header->ProjRefPROJ4 = strdup (buf);
