@@ -31,8 +31,8 @@ Description
 -----------
 
 **grdmix** will perform various operations involving images and grids.
-We either use a *weights* grid, image, or constant to add a new
-transparency layer to the image given as *raster1*, or we will blend
+We either use a *weights* grid, image, or constant to add a new alpha
+(transparency) layer to the image given as *raster1*, or we will blend
 the two *raster1* and *raster2* (grids or images) using the *weights* for
 *raster1* and the complementary *1 - weights* for *raster2* and save to
 *outfile*. Alternatively, we will deconstruct an image into its component
@@ -82,7 +82,7 @@ Optional Arguments
     All grids written will have values in the 0-1 range exclusively.
     The output names uses the name template given by **-G** which must contain the
     C-format code "%c".  This code is replaced by the codes R, G, B and A for color
-    images and g, A for grayscale images.
+    images and g, A for gray-scale images.
 
 .. _-I:
 

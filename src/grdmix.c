@@ -34,7 +34,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdmix"
 #define THIS_MODULE_MODERN_NAME	"grdmix"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Blending and transforming of grids or images"
+#define THIS_MODULE_PURPOSE	"Blending and transforming grids and images"
 #define THIS_MODULE_KEYS	"<I{3,A?(,GI},I?("	/* For external use we are limited to images */
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-Vf"
@@ -208,11 +208,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Can only use one of -C and -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->A.active, "Option -A: Not used with -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !(Ctrl->In.n_in == 1 || Ctrl->In.n_in == 3), "Option -C: Requires one or three rasters");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->In.n_in != 1, "Option -A: Only a single raster can be specified");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active && !(Ctrl->C.active || Ctrl->D.active || Ctrl->I.active), "Option -A: Must specify blend grid, image or constant\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->D.active, "Option -I: Requires image output\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->In.n_in != 1, "Option -D: Only a single raster can be specified");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->D.active, "Option -I: Not available when -D is selected\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output raster file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->G.file && strstr (Ctrl->G.file, "%c") == NULL, "Option -G: With -D, output name must be template image name containing %%c\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->G.file && strstr (Ctrl->G.file, "%c") == NULL, "Option -G: With -D, output name must be template name containing %%c\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -251,9 +250,6 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int img = 0, k, band;
 	uint64_t row, col, node, pix;
-
-	void *W = NULL;	/* Pointer to a grid or an image */
-
 
 	float *weights = NULL, *intens = NULL;
 
@@ -552,7 +548,7 @@ write_the_image:
 	if (Ctrl->I.active) gmt_M_free (GMT, intens);
 
 	for (k = 0; k < 3; k++) {	/* Free up memory no longer needed here */
-		W = (Ctrl->In.type[k] == GMT_NOTSET) ? (void *)Gin[k] : (void *)Iin[k];
+		void *W = (Ctrl->In.type[k] == GMT_NOTSET) ? (void *)Gin[k] : (void *)Iin[k];
 		if (W == NULL) continue;
 		if (GMT_Destroy_Data (API, &W) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid or image associated with file %s\n", Ctrl->In.file[k]);
@@ -561,7 +557,7 @@ write_the_image:
 	}
 
 	if (write_image) {	/* Write image here - any grid output was written earlier */
-/* Turn off the automatic creation of aux files by GDAL */
+		/* Turn off the automatic creation of aux files by GDAL */
 #ifdef WIN32
 		if (_putenv ("GDAL_PAM_ENABLED=NO"))
 #else
@@ -569,7 +565,7 @@ write_the_image:
 #endif
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 
-		if (Ctrl->M.active) {	/* Convert to monochrome image using the YIQ transformation */
+		if (Ctrl->M.active) {	/* Convert to monochrome image using the YIQ transformation first */
 			unsigned char *data = NULL;
 			if ((data = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate gray image layer\n");
@@ -584,7 +580,8 @@ write_the_image:
 			I->data = data;
 			I->header->n_bands = 1;
 		}
-		GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);		/* Convert from TRB to TRP (TRPa if there is alpha) */
+		else
+			GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);		/* Convert from TRB to TRP (TRPa if there is alpha) */
 		/* Write out image */
 		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
 			Return (API->error);
