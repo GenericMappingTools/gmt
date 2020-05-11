@@ -53,7 +53,8 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outfile*
-    The name for the output raster.
+    The name for the output raster.  For images, use one of these extensions:
+    tif (GeoTIFF), gif, png, jpg, bmp, or ppm.
 
 Optional Arguments
 ------------------

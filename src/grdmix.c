@@ -565,6 +565,15 @@ write_the_image:
 #endif
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {
+			char buf[GMT_LEN128] = {""};
+			/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
+			sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				GMT->current.setting.ref_ellipsoid[k].eq_radius);
+			if (I->header->ProjRefPROJ4 == NULL)
+				I->header->ProjRefPROJ4 = strdup (buf);
+		}
+
 		if (Ctrl->M.active) {	/* Convert to monochrome image using the YIQ transformation first */
 			unsigned char *data = NULL;
 			if ((data = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) {
