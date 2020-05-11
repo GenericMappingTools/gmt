@@ -13,7 +13,7 @@ gmt grdimage y.grd -Ct.cpt -Jx1 -Ablue.png
 gmt grdmath -R0/5/0/5 -I0.1 -r Y X MUL DUP UPPER DIV = w.grd
 echo "0 black 1 white" > t.cpt
 gmt grdimage w.grd -Ct.cpt -Jx1 -Aalpha.png
-gmt grdmix red.png blue.png -Aalpha.png -Gmix.png
+gmt grdmix red.png blue.png -Walpha.png -Gmix.png
 gmt psimage mix.png -Dx0/0+w5i -P -B0 -K -X1.75i > $ps
 gmt psimage red.png -Dx0/0+w1.5i -O -K -B0 -Y5.5i >> $ps
 gmt psimage blue.png -Dx0/0+w1.5i -O -K -B0 -X1.75i >> $ps
