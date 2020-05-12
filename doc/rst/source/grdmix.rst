@@ -39,7 +39,8 @@ We either use a *alpha* grid, image, or constant to add a new alpha
 the two *raster1* and *raster2* (grids or images) using the *weights* for
 *raster1* and the complementary *1 - weights* for *raster2* and save to
 *outfile*. Alternatively, we will deconstruct an image into its component
-grid layers or we construct an image from its normalized component grids.
+(red, green, blue or gray) grid layers or we construct an image from its
+normalized component grids.
 All operations support adjusting the final color image via an *intensity*
 grid, converting a color image to monochrome, or strip off the alpha layer.
 All *raster?*, *alpha*, *intensity* and *weights* files must have the same 
