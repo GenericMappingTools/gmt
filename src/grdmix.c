@@ -226,6 +226,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Must specify at least one input raster file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 1 && !(Ctrl->A.active || Ctrl->D.active || Ctrl->I.active || Ctrl->M.active || Ctrl->Q.active),
+		"For one input image you must specify one or more of -A, -D, -I, -M, -Q\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 2 && !Ctrl->W.active, "For two input images you must provide weights in -W\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 3 && !Ctrl->C.active, "For three input images you must select -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Option -A: A constant transparency must be in the 0-1 range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Can only use one of -C and -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->A.active, "Option -A: Not used with -D\n");
