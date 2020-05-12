@@ -148,7 +148,10 @@ a particular day/night terminus, try::
     gmt grdmix @BlueMarble_06m.tif @BlackMarble_06m.tif -W@weight.png -Gnewmap.png
 
 Suppose map1.png and map2.png are overlapping maps of different quantities, but we wish
-to use the image visible.png to blend them into a single image.  We try::
+to use the image visible.png to blend them into a single image: Where visible.png has
+values close to 255 we will see predominantly the map1.png contents while for values
+closer to zero we will mostly see map2.png - values in between these extremes will
+lead to a weighted average.  We try::
 
     gmt grdmix map1.png map2.png -Avisible.png -Gnewmap.png -V
 
