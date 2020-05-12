@@ -350,7 +350,7 @@ set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 set (GMT_COMPAT_MODULES minmax gmtstitch gmtdp grdreformat ps2raster originator PARENT_SCOPE)
 
 # gmt core modules
-set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c filter1d.c grd2kml.c
+set (GMT_PROGS_SRCS batch.c blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c filter1d.c grd2kml.c
 	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
 	gmtspatial.c gmtconnect.c grdgdal.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfill.c grdfilter.c
