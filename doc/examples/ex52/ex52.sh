@@ -24,6 +24,6 @@ gmt begin ex52
 
   # Plot this image on an Earth with view from over Mexico
   gmt grdimage view.tif -JG80W/30N/18c -Bafg
-  # Clean up after us
+  # Clean up after use
   rm -f w.grd intens.grd view.tif
 gmt end show
