@@ -87,6 +87,26 @@ must adapt them to your module's specific purpose.
    have specific include files and setups.  Including the new supplemental module in the build
    process is automatic (done by CMake).
 
+Using OpenMP pragmas
+--------------------
+
+Many algorithms in GMT can be sped up considerably by using OpenMP.  This scheme is deceptively
+simple and one only needs to add a set of three comments and great speed is attained.  This
+section discusses our experiences with the "#pragma omp parallel for" statements in GMT.
+Here are some simple rules to live by; see actual examples in the modules.
+
+#. Due to cross-platform compatibility, we must for now always used signed for-loop variables
+   in places where OpenMP is used.  We hope this will go away one day.
+#. Every variable addressed by the for-loop must be listed in either the *private* or *shared*
+   groups in the pragma statement.  Be vary careful when doing this as pretty much all failures
+   to get it to work has to do with making mistakes here.  This simple rule should help: If a
+   variable is *assigned* inside the for-loop then it must go in *private*, all else must go in
+   *shared*.  None can be left out.
+#. Try to avoid having if-tests inside the for-loop.  It may be much faster to move the if-test
+   outside the loop and possibly do a near-duplication of the loop.
+#. At this point, the OpenMP builds work well on all platforms, but not well integrated with
+   the XCode framework on macOS.  Building  with gcc works well.
+
 Compiling supplements
 ---------------------
 
