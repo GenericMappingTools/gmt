@@ -45,7 +45,7 @@ must adapt them to your module's specific purpose.
    with the new module uppercase name, and do the same for the lowercase name. This will ensure that
    your Ctrl structures and local static functions are named correctly (you may still need to
    delete some of them and add others).  All functions local to this module shall have names
-   starting with the module name and an underscores (e.g., grdinfo_report_tiles*) and they shall
+   starting with the module name and an underscores (e.g., *grdinfo_report_tiles*) and they shall
    be stated as GMT_LOCAL instead of static (GMT_LOCAL is normally defined to mean static but
    in certain debugging cases we may wish to change that). The exceptions to this rule are the
    functions* New_Ctrl*, *Free_Ctrl*, *usage*, and *parse*; they are all static and have the
