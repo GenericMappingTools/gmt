@@ -48,7 +48,7 @@ must adapt them to your module's specific purpose.
    starting with the module name and an underscores (e.g., *grdinfo_report_tiles*) and they shall
    be stated as GMT_LOCAL instead of static (GMT_LOCAL is normally defined to mean static but
    in certain debugging cases we may wish to change that). The exceptions to this rule are the
-   functions* New_Ctrl*, *Free_Ctrl*, *usage*, and *parse*; they are all static and have the
+   functions *New_Ctrl*, *Free_Ctrl*, *usage*, and *parse*; they are all static and have the
    same names in all modules.
 
 #. After listing all local variables inside the main GMT_module function, all modules start with
