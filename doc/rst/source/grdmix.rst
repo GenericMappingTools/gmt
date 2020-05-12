@@ -165,7 +165,7 @@ we run::
 To recombine the three normalized grids red.grd, green.grd, and blue.grd into a TIFF file, but
 applying intensities from intens.grd and add transprency from transp.grd grids, try::
 
-    gmt grdmix red.grd green.grd and blue.grd -Glayer.png -Atransp.grd -Iintens.grd
+    gmt grdmix red.grd green.grd and blue.grd -Glayer.tif -Atransp.grd -Iintens.grd
 
 
 See Also
