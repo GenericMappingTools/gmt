@@ -1858,8 +1858,20 @@ GMT_LOCAL void grdmath_DAYNIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 			}
 		}
 	}
-	else {
-		if (stack[last]->constant) iw = 1.0 / stack[last]->factor;	/* To avoid division */
+	else if (stack[last]->constant && !gmt_M_is_zero (stack[last]->factor)) {	/* Fixed nonzero transition width */
+		iw = 1.0 / stack[last]->factor;	/* To avoid division */
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,d) shared(info,stack,prev2,last,GMT,x0,y0,iw)
+#endif
+		for (row = 0; row < info->G->header->my; row++) {
+			node = row * info->G->header->mx;
+			for (col = 0; col < info->G->header->mx; col++, node++) {
+				d = gmt_distance (GMT, x0, y0, info->d_grd_x[col], info->d_grd_y[row]);	/* Distance in degrees from (A,B) */
+				stack[prev2]->G->data[node] = (float) (0.5 + atan ((90.0 - d) * iw) / M_PI);
+			}
+		}
+	}
+	else {	/* Variable width */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,d,iw) shared(info,stack,prev2,last,GMT,x0,y0)
 #endif
@@ -1867,7 +1879,7 @@ GMT_LOCAL void grdmath_DAYNIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 			node = row * info->G->header->mx;
 			for (col = 0; col < info->G->header->mx; col++, node++) {
 				d = gmt_distance (GMT, x0, y0, info->d_grd_x[col], info->d_grd_y[row]);	/* Distance in degrees from (A,B) */
-				if (!stack[last]->constant) iw = 1.0 / (double)stack[last]->G->data[node];	/* Allowed to have variable width */
+				iw = 1.0 / (double)stack[last]->G->data[node];	/* Allowed to have variable width */
 				stack[prev2]->G->data[node] = (float) (0.5 + atan ((90.0 - d) * iw) / M_PI);
 			}
 		}
