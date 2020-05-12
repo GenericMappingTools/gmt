@@ -1861,7 +1861,7 @@ GMT_LOCAL void grdmath_DAYNIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 	else {
 		if (stack[last]->constant) iw = 1.0 / stack[last]->factor;	/* To avoid division */
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,node,d,w) shared(info,stack,prev2,last,GMT,x0,y0)
+#pragma omp parallel for private(row,col,node,d,iw) shared(info,stack,prev2,last,GMT,x0,y0)
 #endif
 		for (row = 0; row < info->G->header->my; row++) {
 			node = row * info->G->header->mx;
