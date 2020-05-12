@@ -59,6 +59,9 @@
 #define gmt_nc_put_varm_grdfloat nc_put_varm_float
 #endif
 
+/* This macro is called via each modules "Return" macro so API and options are available */
+#define gmt_M_free_options(mode) {if (GMT_Destroy_Options (API, &options) != GMT_OK) return (GMT_MEMORY_ERROR);}
+
 /*! Safe math macros that check arguments */
 
 #define d_log2(C,x) ((x) <= 0.0f ? C->session.f_NaN : log2 (x))
