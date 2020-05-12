@@ -5,7 +5,7 @@
 # GMT modules: grdgradient, grdimage, grdmath, grdmix, grdsample, solar
 
 
-gmt begin ex52 ps
+gmt begin ex52
   
   # Get the location of the Sun at noon on Jun 22, 2000, Hawaii Standard Time
   slon=$(gmt solar -C -o0 -I+d2000-06-22T24:00+z-10)
