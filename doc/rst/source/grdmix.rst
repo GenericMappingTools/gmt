@@ -160,7 +160,7 @@ To insert the values from the grid transparency.grd into the image gravity.tif a
 To break the color image layers.png into separate, normalized red, green, and blue grids (and possibly an alpha grid),
 we run::
 
-    gmt grdmix layers.png -Glayer_%c.grd
+    gmt grdmix layers.png -D -Glayer_%c.grd
 
 To recombine the three normalized grids red.grd, green.grd, and blue.grd into a TIFF file, but
 applying intensities from intens.grd and add transprency from transp.grd grids, try::
