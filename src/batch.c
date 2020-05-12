@@ -110,7 +110,7 @@ struct BATCH_CTRL {
 struct BATCH_STATUS {
 	/* Used to monitor the start, running, and completion of job jobs running in parallel */
 	bool started;	/* true if job job has started */
-	bool completed;	/* true if PNG has been successfully produced */
+	bool completed;	/* true if the completion file has been successfully produced */
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -148,7 +148,7 @@ GMT_LOCAL int batch_parse_x_option (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctr
 }
 
 GMT_LOCAL int batch_gmt_sleep (unsigned int microsec) {
-	/* Waiting before checking if the PNG has been completed */
+	/* Waiting before checking if the completion file has been generated */
 #ifdef WIN32
 	Sleep ((uint32_t)microsec/1000);	/* msec are microseconds but Sleep wants millisecs */
 	return 0;
@@ -471,7 +471,7 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 					"Option -N: Must specify a batch prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
 					"Option -T: Must specify number of jobs or a time file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->Q.active || Ctrl->animate || Ctrl->M.active),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->Q.active || Ctrl->M.active),
 					"Option -Z: Cannot be used without specifying a GIF (-A), master (-M) or batch (-F) product\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->M.job < Ctrl->T.start_job,
 					"Option -M: Cannot specify a job before the first job number set via -T\n");
@@ -592,12 +592,12 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	int error = 0, precision, scol, srow;
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 
-	unsigned int n_values = 0, n_jobs = 0, n_data_jobs, first_fade_out_job = 0, job, i_job, col, k, T;
-	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_job = 0, data_job, n_cores_unused, n_fade_jobs = 0;
+	unsigned int n_values = 0, n_jobs = 0, n_data_jobs, job, i_job, col, k, T;
+	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_job = 0, data_job, n_cores_unused;
 	unsigned int dd, hh, mm, ss, start, flavor[2] = {0, 0};
 
 	bool done = false,  one_job = false, upper_case[2] = {false, false};
-	bool n_written = false, has_text = false, is_classic = false, place_post-run = false;
+	bool n_written = false, has_text = false, is_classic = false;
 
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
@@ -606,7 +606,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
-	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, job_products[GMT_LEN32] = {""};
+	char done_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, job_products[GMT_LEN32] = {""};
 	char intro_file[PATH_MAX] = {""}, *script_file =  NULL, dir_sep = '/', which[2] = {"LP"};
 	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0;
 
@@ -800,7 +800,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		place_post-run = (!access ("batch_post-run.ps", R_OK));	/* Need to place a post-run layer in the main jobs */
 	}
 
 	/* Now we can complete the -T parsing since any given file has now been created by pre_file */
@@ -857,7 +856,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
 	else	/* Compute width from largest job number */
-		precision = irint (ceil (log10 ((double)(Ctrl->T.start_job+n_jobs+Ctrl->E.duration+n_fade_jobs))));	/* Width needed to hold largest job number */
+		precision = irint (ceil (log10 ((double)(Ctrl->T.start_job+n_jobs))));	/* Width needed to hold largest job number */
 
 	if (Ctrl->S[BATCH_POSTFLIGHT].active) {	/* Prepare the postflight script */
 		sprintf (post_file, "batch_postflight.%s", extension[Ctrl->In.mode]);
@@ -914,9 +913,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
-	}
-
-	if (Ctrl->Q.active) strcat (job_products, BATCH_DEBUG_FORMAT);	/* Want to save original PS file for debug */
 
 #ifndef WIN32
 		/* Set executable bit if not Windows */
@@ -1150,13 +1146,13 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			n_jobs_not_started--;		/* One less job remaining */
 			n_cores_unused--;		/* This core is now busy */
 		}
-		batch_gmt_sleep (BATCH_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for completion of the PNG images */
+		batch_gmt_sleep (BATCH_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for completion of the completion file */
 		for (k = first_job; k < i_job; k++) {	/* Only loop over the range of jobs that we know are currently in play */
 			if (status[k].completed) continue;	/* Already finished with this job */
 			if (!status[k].started) continue;	/* Not started this job yet */
-			/* Here we can check if the job job has completed by looking for the PNG product */
-			sprintf (png_file, "%s_%*.*d.%s", Ctrl->N.prefix, precision, precision, Ctrl->T.start_job+k, BATCH_RASTER_EXTENSION);
-			if (access (png_file, F_OK)) continue;	/* Not found yet */
+			/* Here we can check if the job job has completed by looking for the completion file */
+			sprintf (done_file, "%s_%*.*d.done", Ctrl->N.prefix, precision, precision, Ctrl->T.start_job+k);
+			if (access (done_file, F_OK)) continue;	/* Not found yet */
 			n_jobs_completed++;		/* One more job completed */
 			status[k].completed = true;	/* Flag this job as completed */
 			n_cores_unused++;		/* Free up the core */
@@ -1187,7 +1183,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	batch_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
 	if (Ctrl->Z.active) {	/* Want to delete the entire job directory */
 		batch_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], workdir);	/* Delete the entire working directory with PNG jobs and tmp files */
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], workdir);	/* Delete the entire working directory with batch jobs and tmp files */
 	}
 	else {	/* Just delete the remaining scripts and PS files */
 #ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
