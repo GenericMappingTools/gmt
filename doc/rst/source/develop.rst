@@ -1,121 +1,90 @@
-.. index:: ! debug
+.. index:: ! develop
 
-************************
-Debugging for Developers
-************************
+**********************************
+Developing Modules and Supplements
+**********************************
 
-GMT developers may need to run GMT in a debugger to figure out the problem reported by
-an issue.  Often there is a bit of detective work involved to find out where a module
-crashes and then step carefully through that section, examining variables etc., to learn
-why something fails.  This process depends on the particular debug tool one uses.  This page
-will explain the steps a developer must take to build gmt so it is suitable for your debug
-tool and how to use that tool.
+GMT developers do from time to time need to add new modules to the core library,
+and occasionally they add an entire new supplement to the official distribution.  In
+addition, there are unofficial supplements that are not part of the GMT code base
+but needs to be built with GMT (or piggyback off the GMT build process), and then
+there are supplements that need to be built by themselves that have dependencies
+of various kinds on GMT.  This document discusses the mechanics around those issues.
 
-Xcode on macOS
---------------
+Adding a new module
+-------------------
 
-Developers on macOS are most likely to want to use Xcode for this purpose. Chances are they
-are already using the command-line tools from Xcode (gcc, linker) anyway.  To use the GUI
-part of Xcode you must have installed the full Xcode (you most likely did, but there are
-ways to *only* install the command-line tools, so make sure you have an Xcode icon under
-Applications).  Xcode may change as versions change; the images below is for Xcode 10-11.
+To add a new module, the starting point is to duplicate the most similar module you can think
+of.  It is not essential to get this right, but if your new module deals with grids then
+start with one of the grd modules such as :doc:`grd2xyz`, and if it needs to deal with tables
+then maybe something like :doc:`gmtselect`.  If plotting is involved then start with one that
+makes plots, and so on.  Obviously, there will be lots of changes to your starting point and
+those are completely dependent on what the new module will do.  Yet, here are some steps
+you are likely to encounter and some of them are required exactly as is and for others you
+must adapt them to your module's specific purpose.
 
-#. You will need to make some changes to your *cmake/ConfigUserAdvanced.cmake* file. Scroll down to the
-   section that says "# Extra debugging for developers:" and uncomment the ~6 lines that has
-   the if-test on "Xcode".  This will pass a few flags that are used when debugging via Xcode.
-   Also uncomment the two "add_definitions" lines that contain the word "DEBUG" in it somewhere.
+#. The first C code lines below the initial comments list a set of seven define statements
+   that start with **THIS_MODULE_**. Most of them are fairly easy to update, such as stating
+   the new module's name and purpose. Then there is the **THIS_MODULE_OPTIONS* parameter which
+   is just a listing of all the common GMT options this module can use.  The next item is
+   **THIS_MODULE_NEEDS** and it tells GMT if this module requires a region (e.g., via **-R**)
+   and a projection (via **-J**).  Modules that must set a region to operate will either have
+   the codes **R** (must take **-R**), **d** (can determine the region from given data sets),
+   or **g** (can determine the region from a given grid).  There is also the mode **r** which
+   means 'not normally required' but may be required depending on module options.  As an example,
+   consider :doc:`pslegend` which does not need **-R** if **-Dx** is used but *does* need **-R** if
+   other selections are made. For the same reason there is the **j** code for projections when
+   it depends on other options whether **-J** is needed or not.  Most plot modules NEEDS will
+   include **J**.  Finally, there is the very cryptic **THIS_MODULE_KEYS** setting. At this point,
+   please read all the comments in the code for *GMT_Encode_Options* in gmt_api.c.  The **KEYS**
+   are not used by the command line modules and only enters for some external interfaces, such
+   as MATLAB and Julia.  You should have a discussion with those maintainers about what those
+   **KEYS** should be.
 
-#. You will need to build GMT again.  I recommend you do this in a separate build directory (I
-   call mine *xbuild*, and while at it I use *rbuild* for "Release Builds" and *dbuild* for regular
-   debug command line builds, and *build* for the final build for the releases).  If you are in
-   the *xbuild* directory, these two commands will do the build::
+#. Do some global replacements of strings: Replace the uppercase name of the template module
+   with the new module uppercase name, and do the same for the lowercase name. This will ensure that
+   your Ctrl structures and local static functions are named correctly (you may still need to
+   delete some of them and add others).  All functions local to this module shall have names
+   starting with the module name and an underscores (e.g., grdinfo_report_tiles*) and they shall
+   be stated as GMT_LOCAL instead of static (GMT_LOCAL is normally defined to mean static but
+   in certain debugging cases we may wish to change that). The exceptions to this rule are the
+   functions* New_Ctrl*, *Free_Ctrl*, *usage*, and *parse*; they are all static and have the
+   same names in all modules.
 
-    cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..
-    xcodebuild
+#. After listing all local variables inside the main GMT_module function, all modules start with
+   a section labeled *Standard module initialization and parsing*.  It is extremely unlikely
+   you will need to make any changes in this section.  Ask for help if you think you do.
 
-#. After this step you can launch the Xcode application and then use the File->Open menu to
-   open the project file *xbuild/GMT.xcodeproj*.  After it opens it may looks something like
-   this (click on the figure to enlarge it):
+#. For style, argument checking, usage layout, use of built-in constants for the synopsis line,
+   just follow the module template and draw inspiration from other modules.
 
-   .. figure:: /_images/xcode-1.*
-      :width: 100%
-      :align: center
+#. Make sure you create a separate git branch and add your new code to that branch. New modules
+   should never go into master and will have to undergo much scrutiny before the branch may
+   be merged into master.
 
-#. Pull down the tab that says "@ ALL_BUILD" and select "gmt" about 35 lines down, then in the
-   left sidebar open the folder called gmt->Source Files and select gmt.c. Now you may wish
-   to drag the window to be a bit wider so the lines don't wrap around so much.  After that step
-   your screen may look more like this:
+#. Try to compile GMT with your new module.  We automatically detect all the modules in the *src*
+   directory (as well as supplemental source directories) and various needed "glue" functions
+   are automatically created and compiled as part of the process.  You are likely to get some
+   compilation errors.  Keep addressing them until the module compiles.  Running gmt *modulename*
+   should print the full usage message.
 
-   .. figure:: /_images/xcode-2.*
-      :width: 100%
-      :align: center
+#. The documentation of the module should be carefully designed.  You will need to add at least a
+   module.rst file in the doc/rst/source directory that explains what the module does.  Again,
+   start with a copy of another suitable module's RST file and make suitable changes.  Make sure
+   you add some examples that others can try without getting data (e.g., use remote files as much
+   as possible).
 
-#. Scroll down to the part around line 119 and click the line number to place a stop point; it
-   will add a blue fat arrow at that line:
+#. You must also edit the *modules.rst* file and add your new module and its purpose in two
+   separate places.  Just search for a known module to see what is expected.  With these edits
+   you should be able to build the full documentation and have your module show up under the
+   Modules page.
 
-   .. figure:: /_images/xcode-3.*
-      :width: 100%
-      :align: center
+#. Adding a new module to one of the official supplements pretty much follows the same steps.
+   It is best to start from one of the other modules in that supplement since some of them
+   have specific include files and setups.  Including the new supplemental module in the build
+   process is automatic (done by CMake).
 
-   This is *usually* the first stop you want in Xcode.  The exception would be if you are debugging
-   gmt.c itself or you need to examine the code that creates the session via a call to GMT_Create_Session
-   earlier in the program.
+Compiling supplements
+---------------------
 
-#. Now we need to specify the particular command we wish to debug.  Let's pretend that :doc:`pstext`
-   crashes when we run the command::
-
-    gmt pstext my_text.txt -R0/30/-10/20 -JM15c -Baf -F+f16p > text.ps
-
-   Copy that command minus the initial "gmt " part.  Now pull down the menu item "Product->Scheme->Edit Scheme",
-   then make sure "Arguments" is highlighted in blue in the top table, then click the "+" symbol beneath the
-   section that says "Arguments Passed on Launch" and paste in our command; it should result in this display:
-
-   .. figure:: /_images/xcode-4.*
-      :width: 100%
-      :align: center
-
-   Normally you do not need to set any "Environmental Variables", but if you are debugging a module that
-   calls an external program (e.g., gs, gdal_translate, etc.) then you may need to add the name PATH and
-   place the path to that program under "Value".  Likewise, if the module needs to find a particular environmental
-   setting like $X2SYS_HOME, then you must set those here as well.
-
-#. Any data files your command will read must either be placed in the *xbuild/src/Debug* subdirectory or you must
-   change the command you pasted above to use the full path instead.  In other words, when Xcode runs
-   your command, your current directory becomes *xbuild/src/Debug*.
-
-#. Click close and hit the "Play" button next to the green circle in the top left corner.  It may do some
-   building and indexing before it starts and then stops at your highlighted line, opening up a display console
-   below the source code:
-
-   .. figure:: /_images/xcode-5.*
-      :width: 100%
-      :align: center
-
-   You will see the current line is highlighted light greenish and the execution is stopped.  Below the code is a new window that
-   lists some of the variables in the current scope.  You can examine that window to see what the variables are set
-   to, you can type "print variable" in the lldb command window on the right (e.g., "print argc"), or you can place
-   the cursor over a variable and a pop-up box will display its value.  Below I placed the cursor on the variable
-   "module" on line 119 and this is what it looks like (minus the cursor which is not screen-grabbed!).
-
-   .. figure:: /_images/xcode-6.*
-      :width: 100%
-      :align: center
-
-#. The tool bar below the source code has a pause-play button (continue to next stop point), a step-over button (execute
-   next step but do not go *into* a function, the step-into button (execute next step which may be going into a function)
-   and the step-out button (finish running current function then step back out).  Step into the GMT_Call_Module function
-   using the step-into button, then scroll down to around line 10094 and place another stop point there like I did.  Press
-   the pause-play button and you are now about to call your actual C function that correspond to the module (here pstext):
-
-   .. figure:: /_images/xcode-7.*
-      :width: 100%
-      :align: center
-
-#. Click the step-into button and find yourself at the first executable line of code in GMT_pstext, the underlying
-   C function at the heart of the pstext module.  You can now step your way down the code, using step-over to avoid going
-   into the details of GMT sub-functions (or step-into it if that is the problem), set stop points and push pause-play to
-   advance to the next stop point, examine variables, and so on.
-
-   .. figure:: /_images/xcode-8.*
-      :width: 100%
-      :align: center
+For the purpose of this discussion, we will distinguish be
