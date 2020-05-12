@@ -674,6 +674,10 @@ MAP Parameters
         draw ticks away from Equator and Greenwich, while a positive size will
         draw symmetric ticks [0p].
 
+    **MAP_GRID_PEN**
+        Sets both :term:`MAP_GRID_PEN_PRIMARY` and :term:`MAP_GRID_PEN_SECONDARY` to
+        the value specified. This setting is not include in the **gmt.conf** file.
+
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
         points (append p) [default,black].
