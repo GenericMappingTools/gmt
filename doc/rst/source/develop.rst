@@ -25,7 +25,7 @@ must adapt them to your module's specific purpose.
 
 #. The first C code lines below the initial comments list a set of seven define statements
    that start with **THIS_MODULE_**. Most of them are fairly easy to update, such as stating
-   the new module's name and purpose. Then there is the **THIS_MODULE_OPTIONS* parameter which
+   the new module's name and purpose. Then there is the **THIS_MODULE_OPTIONS** parameter which
    is just a listing of all the common GMT options this module can use.  The next item is
    **THIS_MODULE_NEEDS** and it tells GMT if this module requires a region (e.g., via **-R**)
    and a projection (via **-J**).  Modules that must set a region to operate will either have
@@ -98,4 +98,3 @@ For the purpose of this discussion, we will distinguish between several types of
    example are the MB-System src/gmt tools.
 #. External supplements not part of the GMT distribution but has their own build setup.
    THe modules only depend on (and include) gmt.h, the official GMT API.
-
