@@ -229,8 +229,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	COT        1  1    cot (A) (A in radians)\n"
 		"	COTD       1  1    cot (A) (A in degrees)\n"
 		"	COTH       1  1    coth (A)\n"
-		"	PCDF       2  1    Poisson cumulative distribution function x = A and lambda = B\n"
-		"	PPDF       2  1    Poisson probability density function for x = A and lambda = B\n"
 		"	CSC        1  1    csc (A) (A in radians)\n"
 		"	CSCD       1  1    csc (A) (A in degrees)\n"
 		"	CSCH       1  1    csch (A)\n"
@@ -239,6 +237,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	D2DY2      1  1    d^2(A)/dy^2 2nd derivative\n"
 		"	D2DXY      1  1    d^2(A)/dxdy 2nd derivative\n"
 		"	D2R        1  1    Converts Degrees to Radians\n"
+		"	DAYNIGHT   3  1    1 where sun at (A, B) shines and 0 elsewhere, with C transition width\n"
 		"	DDX        1  1    d(A)/dx Central 1st derivative\n"
 		"	DDY        1  1    d(A)/dy Central 1st derivative\n"
 		"	DEG2KM     1  1    Converts Spherical Degrees to Kilometers\n"
@@ -328,6 +327,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	NOT        1  1    NaN if A == NaN, 1 if A == 0, else 0\n"
 		"	NRAND      2  1    Normal, random values with mean A and std. deviation B\n"
 		"	OR         2  1    NaN if B == NaN, else A\n"
+		"	PCDF       2  1    Poisson cumulative distribution function x = A and lambda = B\n"
+		"	PPDF       2  1    Poisson probability density function for x = A and lambda = B\n"
 		"	PDIST      1  1    Compute minimum distance (in km if -fg) from points in ASCII file A\n"
 		"	PDIST2     2  1    As PDIST, from points in ASCII file B but only to nodes where A != 0\n"
 		"	PERM       2  1    Permutations n_P_r, with n = A and r = B\n"
@@ -1826,6 +1827,51 @@ GMT_LOCAL void grdmath_D2R (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant) a = stack[last]->factor * D2R;
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : (stack[last]->G->data[node] * D2R));
+}
+
+GMT_LOCAL void grdmath_DAYNIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
+/*OPERATOR: DAYNIGHT 3 1 Return 1 where sun at (A, B) shines and 0 elsewhere, with C transition width.  */
+	int64_t node, row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
+	unsigned int prev1, prev2;
+	double x0, y0, iw, d;
+
+	if (gmt_M_is_geographic (GMT, GMT_IN))
+		gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "DAYNIGHT: Grid must be geographic.\n");
+		return;
+	}
+	prev1 = last - 1;	prev2 = last - 2;
+	if (!stack[prev2]->constant) { GMT_Report (GMT->parent, GMT_MSG_ERROR, "Operand one must be constant for DAYNIGHT!\n"); return; }
+	if (!stack[prev1]->constant) { GMT_Report (GMT->parent, GMT_MSG_ERROR, "Operand two must be constant for DAYNIGHT!\n"); return; }
+	x0 = stack[prev2]->factor;	y0 = stack[prev1]->factor;
+
+	if (stack[last]->constant && gmt_M_is_zero (stack[last]->factor)) {	/* No transition width */
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,d) shared(info,stack,prev2,GMT,x0,y0)
+#endif
+		for (row = 0; row < info->G->header->my; row++) {
+			node = row * info->G->header->mx;
+			for (col = 0; col < info->G->header->mx; col++, node++) {
+				d = gmt_distance (GMT, x0, y0, info->d_grd_x[col], info->d_grd_y[row]);	/* Distance in degrees from (A,B) */
+				stack[prev2]->G->data[node] = (d > 90.0) ? 0.0f : 1.0f;
+			}
+		}
+	}
+	else {
+		if (stack[last]->constant) iw = 1.0 / stack[last]->factor;	/* To avoid division */
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,d,w) shared(info,stack,prev2,last,GMT,x0,y0)
+#endif
+		for (row = 0; row < info->G->header->my; row++) {
+			node = row * info->G->header->mx;
+			for (col = 0; col < info->G->header->mx; col++, node++) {
+				d = gmt_distance (GMT, x0, y0, info->d_grd_x[col], info->d_grd_y[row]);	/* Distance in degrees from (A,B) */
+				if (!stack[last]->constant) iw = 1.0 / (double)stack[last]->G->data[node];	/* Allowed to have variable width */
+				stack[prev2]->G->data[node] = (float) (0.5 + atan ((90.0 - d) * iw) / M_PI);
+			}
+		}
+	}
 }
 
 GMT_LOCAL void grdmath_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -5617,7 +5663,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 223
+#define GRDMATH_N_OPERATORS 224
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -5846,6 +5892,7 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[220] = grdmath_XYZ2RGB;	n_args[220] = 3;	n_out[220] = 3;
 	ops[221] = grdmath_DOT;	n_args[221] = 2;	n_out[221] = 1;
 	ops[222] = grdmath_BLEND;	n_args[222] = 3;	n_out[222] = 1;
+	ops[223] = grdmath_DAYNIGHT;	n_args[223] = 3;	n_out[223] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6261,6 +6308,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"XYZ2RGB",	/* id = 220 */
 		"DOT",	/* id = 221 */
 		"BLEND",	/* id = 222 */
+		"DAYNIGHT",	/* id = 223 */
 		"" /* last element is intentionally left blank */
 	};
 

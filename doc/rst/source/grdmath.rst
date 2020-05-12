@@ -151,7 +151,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 223 operators. "args" are the number of input
+Choose among the following 224 operators. "args" are the number of input
 and output arguments.
 
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -256,6 +256,8 @@ and output arguments.
 | **D2R**       | 1 1   | Converts Degrees to Radians                                                                            |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DDX**       | 1 1   | d(A)/dx Central 1st derivative                                                                         |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **DAYNIGHT**  | 3 1   | 1 where sun at (A, B) shines and 0 elsewhere, with C transition width                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DDY**       | 1 1   | d(A)/dy Central 1st derivative                                                                         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -730,6 +732,12 @@ Notes On Operators
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
    only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
    sRGB (x, y, z) conversions between all four color spaces.
+
+#. The DAYNIGHT operator returns a grid with ones on the side facing the given
+   sun location at (A,B).  If the transition width (C) is zero then we get
+   either 1 or 0, but if C is nonzero then we approximate the step function
+   using an atan-approximation instead.  Thus, the values are never exactly
+   0 or 1, but close, and the smaller C the closer we get.
 
 .. include:: explain_float.rst_
 
