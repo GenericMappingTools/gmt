@@ -69,7 +69,7 @@ Optional Arguments
 
 **-A**\ *alpha*
     Get a constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
-    The final image will have a transparency layer determined by these values.
+    The final image will have a transparency layer add based on these values.
 
 .. _-C:
 
