@@ -87,4 +87,15 @@ must adapt them to your module's specific purpose.
 Compiling supplements
 ---------------------
 
-For the purpose of this discussion, we will distinguish be
+For the purpose of this discussion, we will distinguish between several types of supplements:
+
+#. Regular supplements included in the GMT distribution (e.g., *seis*, *spotter*).
+#. External supplements not part of the GMT distribution but the developer wish to
+   piggyback off the GMT build process instead of having a full-blown CMakeLists.txt setup.
+   The  modules depend on (and include) gmt_dev.h, just like the core modules.
+#. External supplements not part of the GMT distribution but has their own build setup.
+   The  modules depend on (and include) gmt_dev.h, just like the core modules. One such
+   example are the MB-System src/gmt tools.
+#. External supplements not part of the GMT distribution but has their own build setup.
+   THe modules only depend on (and include) gmt.h, the official GMT API.
+
