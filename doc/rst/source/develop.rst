@@ -98,7 +98,7 @@ Here are some simple rules to live by; see actual examples in the modules.
 #. Due to cross-platform compatibility, we must for now always used signed for-loop variables
    in places where OpenMP is used.  We hope this will go away one day.
 #. Every variable addressed by the for-loop must be listed in either the *private* or *shared*
-   groups in the pragma statement.  Be vary careful when doing this as pretty much all failures
+   groups in the pragma statement.  Be very careful when doing this as pretty much all failures
    to get it to work has to do with making mistakes here.  This simple rule should help: If a
    variable is *assigned* inside the for-loop then it must go in *private*, all else must go in
    *shared*.  None can be left out.
