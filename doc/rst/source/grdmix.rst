@@ -153,7 +153,7 @@ values close to 255 we will see predominantly the map1.png contents while for va
 closer to zero we will mostly see map2.png - values in between these extremes will
 lead to a weighted average.  We try::
 
-    gmt grdmix map1.png map2.png -Avisible.png -Gnewmap.png -V
+    gmt grdmix map1.png map2.png -Wvisible.png -Gnewmap.png -V
 
 To insert the values from the grid transparency.grd into the image gravity.tif as an alpha
 (transparency) layer, and write out a transparent PNG image, try::
@@ -166,7 +166,7 @@ we run::
     gmt grdmix layers.png -D -Glayer_%c.grd
 
 To recombine the three normalized grids red.grd, green.grd, and blue.grd into a TIFF file, but
-applying intensities from intens.grd and add transprency from transp.grd grids, try::
+applying intensities from intens.grd and add transparency from transp.grd grids, try::
 
     gmt grdmix red.grd green.grd and blue.grd -Glayer.tif -Atransp.grd -Iintens.grd
 
