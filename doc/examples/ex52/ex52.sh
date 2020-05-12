@@ -10,7 +10,6 @@ gmt begin ex52
 
   # Use the location of the Sun at noon on Jun 22, 2000, Hawaii Standard Time
   # Make a global grid with a smooth 2-degree transition across day/night boundary.
-  # We take advantage of the ATAN function to relatively quickly ramp from 0 to 1
   gmt grdmath -Rd -I${res} -r $(gmt solar -C -o0:1 -I+d2000-06-22T24:00+z-10) 2 DAYNIGHT = w.grd
 
   # We will create an intensity grid based on a DEM so that we can see structures in the oceans
