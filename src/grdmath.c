@@ -1831,7 +1831,7 @@ GMT_LOCAL void grdmath_D2R (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 
 GMT_LOCAL void grdmath_DAYNIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: DAYNIGHT 3 1 Return 1 where sun at (A, B) shines and 0 elsewhere, with C transition width.  */
-	int64_t node, row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
+	int64_t node, row, col, k;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
 	unsigned int prev1, prev2;
 	double x0, y0, iw, d;
 
@@ -1842,9 +1842,34 @@ GMT_LOCAL void grdmath_DAYNIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 		return;
 	}
 	prev1 = last - 1;	prev2 = last - 2;
-	if (!stack[prev2]->constant) { GMT_Report (GMT->parent, GMT_MSG_ERROR, "Operand one must be constant for DAYNIGHT!\n"); return; }
-	if (!stack[prev1]->constant) { GMT_Report (GMT->parent, GMT_MSG_ERROR, "Operand two must be constant for DAYNIGHT!\n"); return; }
-	x0 = stack[prev2]->factor;	y0 = stack[prev1]->factor;
+	k = gmt_M_ijp (info->G->header, 0, 0);	/* Valid grid node index for NW node */
+	if (stack[prev2]->constant)	/* Single longitude */
+		x0 = stack[prev2]->factor;
+	else {	/* Must check if this is a constant longitude grid or not */
+		x0 = stack[prev2]->G->data[k];
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			if (!doubleAlmostEqualZero ((double)stack[prev2]->G->data[node], x0)) goto dn_error_x;
+		}
+		goto dn_next1;
+dn_error_x:
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Operand one (longitude) must be constant for DAYNIGHT!\n");
+		return;
+	}
+dn_next1:
+	if (stack[prev1]->constant)	/* Single latitude */
+		y0 = stack[prev1]->factor;
+	else {	/* Must check if this is a constant latitude grid or not */
+		y0 = stack[prev1]->G->data[k];
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			if (!doubleAlmostEqualZero ((double)stack[prev1]->G->data[node], y0)) goto dn_error_y;
+		}
+		goto dn_next2;
+dn_error_y:
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Operand two (latitude) must be constant for DAYNIGHT!\n");
+		return;
+	}
+
+dn_next2:
 
 	if (stack[last]->constant && gmt_M_is_zero (stack[last]->factor)) {	/* No transition width */
 #ifdef _OPENMP
