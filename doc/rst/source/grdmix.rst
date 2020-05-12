@@ -157,7 +157,7 @@ To insert the values from the grid transparency.grd into the image gravity.tif a
 
     gmt grdmix gravity.tif -Atransparency.grd -Gmap.png
 
-To break the color image layers.png into separate, normalized red, green blue grids (and possibly an alpha grid),
+To break the color image layers.png into separate, normalized red, green, and blue grids (and possibly an alpha grid),
 we run::
 
     gmt grdmix layers.png -Glayer_%c.grd
