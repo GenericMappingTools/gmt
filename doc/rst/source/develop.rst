@@ -62,6 +62,9 @@ must adapt them to your module's specific purpose.
    should never go into master and will have to undergo much scrutiny before the branch may
    be merged into master.
 
+#. To let CMake know about the new module, edit src/CMakeLists.txt and search for **GMT_PROGS_SRCS**.
+   Add your new module to the list.
+
 #. Try to compile GMT with your new module.  We automatically detect all the modules in the *src*
    directory (as well as supplemental source directories) and various needed "glue" functions
    are automatically created and compiled as part of the process.  You are likely to get some
