@@ -79,6 +79,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    grdlandmask
    grdmask
    grdmath
+   grdmix
    grdpaste
    grdproject
    grdsample
@@ -239,6 +240,7 @@ Core Modules
     - :doc:`grdlandmask`
     - :doc:`grdmask`
     - :doc:`grdmath`
+    - :doc:`grdmix`
     - :doc:`grdpaste`
     - :doc:`grdproject`
     - :doc:`grdsample`
@@ -581,6 +583,8 @@ Grid operations
 | :doc:`grdmask`        | |grdmask_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`grdmath`        | |grdmath_purpose|     |
++-----------------------+-----------------------+
+| :doc:`grdmix`         | |grdmix_purpose|      |
 +-----------------------+-----------------------+
 | :doc:`grdvolume`      | |grdvolume_purpose|   |
 +-----------------------+-----------------------+
