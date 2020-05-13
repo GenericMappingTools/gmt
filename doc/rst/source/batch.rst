@@ -236,30 +236,31 @@ long to see the result.  Once things are working you can beef up number of jobs 
 Examples
 --------
 
-We extract a subset of bathymetry for the Gulf of Guinea at 2x2 arc minute resolution and compute median filtered
-grids using filter widths ranging from 10 to 200 km in steps of 10 km. When the grids are completed we determine
+We extract a subset of bathymetry for the Gulf of Guinea at 2x2 arc minute resolution and compute Gaussian filtered
+high-pass grids using filter widths ranging from 10 to 200 km in steps of 10 km. When the grids are completed we determine
 the standard deviation in the result per node and make a plot to see where the filtering is very sensitive to the
 filter width, try::
 
     cat << EOF > pre.sh
     gmt begin
         gmt math -o0 -T10/200/10 T = widths.txt
-        gmt grdcut -R0/30/0/30 @earth_relief_02m -Gdata.grd
+        gmt grdcut -R-10/20/-10/20 @earth_relief_02m -Gdata.grd
     gmt end
     EOF
     cat << EOF > main.sh
     gmt begin
-        gmt grdfilter data.grd -Fm\${BATCH_COL0} -G\${BATCH_NAME}.grd -D2
+        gmt grdfilter data.grd -Fg\${BATCH_COL0}+h -G\${BATCH_NAME}.grd -D2
     gmt end
     EOF
     cat << EOF > post.sh
-    gmt begin map pdf
+    gmt begin \${BATCH_PREFIX} pdf
         gmt grdmath \${BATCH_PREFIX}_*.grd -S STD = \${BATCH_PREFIX}_std.grd
-        gmt grdimage \${BATCH_PREFIX}_std.grd -B -B+t"STD of Medians" -Chot
+        gmt grdimage \${BATCH_PREFIX}_std.grd -B -B+t"STD of Gaussians residuals" -Chot
+        gmt coast -Wthin,white
     gmt end show
     EOF
-    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nmedtopo -V
-
+    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nfilter -V
+    
 Of course, the syntax of how variables are used vary according to the scripting language. At the
 end of the execution we find 20 grids (e.g., medtopo_007.grd) as well as the medtopo_std.grd file.
 The information needed to do all of this is hidden from the user;
