@@ -729,7 +729,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	sprintf (string, "Static parameters set for processing sequence %s", Ctrl->N.prefix);
 	batch_set_comment (fp, Ctrl->In.mode, string);
-	movie_set_tvalue (fp, Ctrl->In.mode, true, "BATCH_PREFIX", Ctrl->N.prefix);
+	batch_set_tvalue (fp, Ctrl->In.mode, true, "BATCH_PREFIX", Ctrl->N.prefix);
 	if (n_written) batch_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_data_jobs);	/* Total jobs (write to init since known) */
 	if (Ctrl->I.active) {	/* Append contents of an include file */
 		batch_set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
@@ -994,6 +994,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
 		if (batch_is_gmt_module (line, "begin")) {
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are not building plots */
+			fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
 			if (batch_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
@@ -1073,7 +1074,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			status[k].completed = true;	/* Flag this job as completed */
 			n_cores_unused++;		/* Free up the core */
 			percent = 100.0 * n_jobs_completed / n_jobs;
-			GMT_Report (API, GMT_MSG_INFORMATION, "Frame %*.*d of %d completed [%5.1f %%]\n", precision, precision, k, n_jobs, percent);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Job %*.*d of %d completed [%5.1f %%]\n", precision, precision, k, n_jobs, percent);
 		}
 		/* Adjust first_job, if needed */
 		while (first_job < n_jobs && status[first_job].completed) first_job++;
