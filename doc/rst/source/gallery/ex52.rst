@@ -1,0 +1,24 @@
+.. _example_52:
+
+(52) Image and grid manipulation
+--------------------------------
+
+This example highlights how GMT can be used to manipulate images
+in conjunction with grids, using :doc:`grdmix </grdmix>` (as well
+as :doc:`grdmath </grdmath>`).  We start with two geotiff images for the
+day (BlueMarble) and night (BlackMarble) Earth views and compute
+a day/night smoothed grid to reflect the state on June 22, 2000
+at midnight in Hawaii.  The day/night grid is used to blend between
+the two images with :doc:`grdmix </grdmix>`, and we add more life
+to the plot by modifying the colors based on intensities computed
+from a co-registered DEM.  The final image is then overlaid on an
+Earth viewed from a point near Florida.
+
+.. literalinclude:: /_verbatim/ex52.txt
+   :language: bash
+
+.. figure:: /_images/ex52.*
+   :width: 500 px
+   :align: center
+
+   Image and grid manipulation.

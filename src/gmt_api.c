@@ -4458,24 +4458,25 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 }
 
 GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool close, FILE **fp_ppm, struct GMT_IMAGE *I) {
-	/* Reads a Portable Pixel Map (PPM) file header if fname extension is .ppm, else returns  1 */
-	char *ext = gmt_get_ext (fname), text[GMT_LEN64] = {""}, c;
+	/* Reads a Portable Pixel Map (PPM) file header if fname extension is .ppm, else returns nonzero value */
+	char *ext = gmt_get_ext (fname), text[GMT_LEN128] = {""}, c;
 	int k = 0, max, n;
 	FILE *fp = NULL;
-	if (strcmp (ext, "ppm")) return 1;	/* Not requesting a PPM file - return 1 and let GDAL take over */
+	if (ext == NULL || strcmp (ext, "ppm")) return GMT_NOT_A_VALID_FAMILY;	/* Not requesting a PPM file - return GMT_NOT_A_VALID_FAMILY and let GDAL take over */
 
-	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.r_mode)) == NULL) {	/* Return -1 to signify failure */
+	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.r_mode)) == NULL) {	/* Return GMT_ERROR_ON_FOPEN to signify failure */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open file %s\n", fname);
-		return -1;
+		return GMT_ERROR_ON_FOPEN;
 	}
-	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN64) text[k++] = c;	text[k] = '\0';	/* Get first record up to newline */
+	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN128) text[k++] = c;	/* Get first record up to newline */
+	text[k] = '\0';	/* Terminate line */
 	if (text[1] == '5') /* Used P5 for grayscale image */
 		I->header->n_bands = 1;
 	else if (text[1] == '6')	/* Used P6 for rgb image */
 		I->header->n_bands = 3;
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot decode PPM magic key (%s) from file %s\n", text, fname);
-		return -1;
+		return GMT_NOT_A_VALID_TYPE;
 	}
 	c = fgetc (fp);	/* Need to peak ahead to know what record we are dealing with.  PPM can have comments */
 	while (c == '#') {	/* Wind past comment */
@@ -4485,7 +4486,8 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 	/* Put back last read character to the stream */
 	ungetc (c, fp);
 	k = 0;
-	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN64) text[k++] = c;	text[k] = '\0';	/* Get next record up to newline */
+	while ((c = fgetc (fp)) != '\n' && k < GMT_LEN128) text[k++] = c;	/* Get next record up to newline */
+	text[k] = '\0';	/* Terminate line */
 	n = sscanf (text, "%d %d %d", &I->header->n_rows, &I->header->n_columns, &max);
 	if (n == 2) {	/* Must skip past a separate record with the max pixel value */
 		while ((c = fgetc (fp)) != '\n' ) k++;
@@ -4505,7 +4507,7 @@ GMT_LOCAL int gmtapi_import_ppm_header (struct GMT_CTRL *GMT, char *fname, bool 
 	}
 	gmt_M_memset (I->header->pad, 4, unsigned int);
 	gmt_set_grddim (GMT, I->header);	/* Update all header dimensions */
-	strcpy (I->header->mem_layout, "TRP");
+	strcpy (I->header->mem_layout, "TRP");	/* Layout use in all PPM files */
 	if (close)	/* Close file, we only wanted the header information */
 		gmt_fclose (GMT, fp);
 	else	/* Pass back FILE pointers since we want to read the rest as well */
@@ -4518,15 +4520,14 @@ GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 	FILE *fp = NULL;
 	size_t size;
 
-	if (gmtapi_import_ppm_header (GMT, fname, false, &fp, I)) return 1;	/* Not a PPM */
+	if (gmtapi_import_ppm_header (GMT, fname, false, &fp, I)) return GMT_NOT_A_VALID_FAMILY;	/* Not a PPM */
 	/* Now read the image in scanline order, with each pixel as (R, G, B) or (gray) */
 	size = I->header->nm * I->header->n_bands;
 	if (fread (I->data, sizeof(char), size, fp) != size) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read the image from %s\n", fname);
 		gmt_fclose (GMT, fp);
-		return -1;
+		return GMT_IMAGE_READ_ERROR;
 	}
-	strncmp (I->header->mem_layout, "TRP", 3U);
 	gmt_fclose (GMT, fp);
 	return GMT_NOERROR;
 }
@@ -4593,7 +4594,7 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 			I_obj->header->complex_mode = mode;		/* Pass on any bitflags */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {		/* Must init header and read the header information from file */
-				if (gmtapi_import_ppm_header (GMT, S_obj->filename, true, NULL, I_obj) == 0)
+				if (gmtapi_import_ppm_header (GMT, S_obj->filename, true, NULL, I_obj) == GMT_NOERROR)
 					d = 0.0;	/* Placeholder */
 				else if (gmt_M_err_pass (GMT, gmtlib_read_image_info (GMT, S_obj->filename, must_be_image, I_obj), S_obj->filename)) {
 					if (new) gmtlib_free_image (GMT, &I_obj, false);
@@ -4612,7 +4613,7 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 				if (size > I_obj->header->size) return_null (API, GMT_IMAGE_READ_ERROR);
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Reading image from file %s\n", S_obj->filename);
-			if (gmtapi_import_ppm (GMT, S_obj->filename, I_obj) == 0)
+			if (gmtapi_import_ppm (GMT, S_obj->filename, I_obj) == GMT_NOERROR)
 				d = 0.0;	/* Placeholder */
 			else if (gmt_M_err_pass (GMT, gmtlib_read_image (GMT, S_obj->filename, I_obj, S_obj->wesn,
 				I_obj->header->pad, mode), S_obj->filename))
@@ -4797,38 +4798,51 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 }
 
 GMT_LOCAL int gmtapi_export_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
-	/* Write a Portable Pixel Map (PPM) file if fname extension is .ppm, else returns */
+	/* Write a Portable Pixel Map (PPM) file if fname extension is .ppm, else returns 1.
+	 * We assume there is no pad, otherwise the pad will be part of the image on output. */
 	//uint32_t row, col, band;
 	static char *comment = "# Produced by GMT\n";
 	char *ext = gmt_get_ext (fname), dim[GMT_LEN32] = {""};
+	size_t n;
 	FILE *fp = NULL;
-	if (strcmp (ext, "ppm")) return 1;	/* Not requesting a PPM file - return 1 and let GDAL take over */
+	if (ext == NULL || strcmp (ext, "ppm")) return GMT_NOT_A_VALID_FAMILY;	/* Not requesting a PPM file - return GMT_NOT_A_VALID_FAMILY and let GDAL take over */
 
-	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {	/* Return -1 to signify failure */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot create file %s\n", fname);
-		return -1;
+	if ((fp = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {	/* Return GMT_ERROR_ON_FOPEN to signify failure */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot create PPM file %s\n", fname);
+		return GMT_ERROR_ON_FOPEN;
 	}
 	if (I->header->n_bands == 1) /* Use P5 for grayscale image */
-		fwrite ("P5\n", sizeof (char), 3U, fp);	/* Write magic number, linefeed */
+		n = fwrite ("P5\n", sizeof (char), 3U, fp);	/* Write magic number, linefeed */
 	else	/* Use P6 for rgb image */
-		fwrite ("P6\n", sizeof (char), 3U, fp);	/* Write magic number, linefeed */
-	fwrite (comment, sizeof (char), strlen (comment), fp);	/* Write magic number, linefeed, comment, and another linefeed */
-	snprintf (dim, GMT_LEN32, "%d %d\n255\n", I->header->n_rows, I->header->n_columns);
-	fwrite (dim, sizeof (char), strlen (dim), fp);	/* Write dimensions and max color value + linefeeds */
-	/* Now dump the image in scaneline order, with each pixel as (R, G, B) */
-	if (!strncmp (I->header->mem_layout, "TRP", 3U)) /* Easy street! */
-		fwrite (I->data, sizeof(char), I->header->nm * I->header->n_bands, fp);
-#if 0
-	else
-	for (row = 0; row < I->header->n_rows; row++) {
-		for (col = 0; col < I->header->n_columns; col++) {
-			for (band = 0; band < I->header->n_bands; band++) {
-				fwrite (&(I->data[row+col*I->header->n_rows+band*I->header->nm]), sizeof(char), 1, fp);
-			}
+		n = fwrite ("P6\n", sizeof (char), 3U, fp);	/* Write magic number, linefeed */
+	if (n != 3U) return GMT_IMAGE_WRITE_ERROR;
+	n = strlen (comment);
+	if (fwrite (comment, sizeof (char), n, fp) != n) return GMT_IMAGE_WRITE_ERROR;	/* Write comment and linefeed */
+	snprintf (dim, GMT_LEN32, "%d %d\n255\n", I->header->mx, I->header->my);
+	n = strlen (dim);
+	if (fwrite (dim, sizeof (char), n, fp) != n) return GMT_IMAGE_WRITE_ERROR;	/* Write dimensions and max color value + linefeeds */
+	/* Now dump the image in scanline order, with each pixel as (R, G, B) */
+	if (I->alpha)
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Alpha-channel not supported by PPM format - ignored\n");
+	n = I->header->size * I->header->n_bands;
+	if (!strncmp (I->header->mem_layout, "TRP", 3U)) { /* Easy street! */
+		if (fwrite (I->data, sizeof(char), n, fp) != n) return GMT_IMAGE_WRITE_ERROR;
+	}
+	else {	/* Must change image layout first as PPM is strictly TRP */
+		char *data = NULL;
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Must convert image from %s to TRP in order to write PPM file\n", I->header->mem_layout);
+		if ((data = gmt_M_memory_aligned (GMT, NULL, n, char)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to allocate image memory in gmtapi_export_ppm to force TRP format - written as is\n");
+			if (fwrite (I->data, sizeof(char), n, fp) != n) return GMT_IMAGE_WRITE_ERROR;
+		}
+		else {	/* Convert from TRB to TRP */
+			GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, "TRP", 0, I, data, NULL);
+			if (fwrite (data, sizeof(char), n, fp) != n) return GMT_IMAGE_WRITE_ERROR;
+			gmt_M_free_aligned (GMT, data);
 		}
 	}
-#endif
 	gmt_fclose (GMT, fp);
+
 	return GMT_NOERROR;
 }
 
@@ -4853,9 +4867,9 @@ GMT_LOCAL int gmtapi_export_image (struct GMTAPI_CTRL *API, int object_ID, unsig
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of an image file on disk */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Writing image to file %s\n", S_obj->filename);
-			if ((error = gmtapi_export_ppm (API->GMT, S_obj->filename, I_obj)) == 0)
+			if ((error = gmtapi_export_ppm (API->GMT, S_obj->filename, I_obj)) == GMT_NOERROR)
 				break;	/* OK, wrote a PPM and we are done */
-			else if (error == -1) {	/* Failed to open file */
+			else if (error == GMT_ERROR_ON_FOPEN) {	/* Failed to open file */
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to export image\n");
 				return (gmtlib_report_error (API, GMT_ERROR_ON_FOPEN));
 			}
@@ -12438,7 +12452,7 @@ int GMT_Set_Columns_ (unsigned int *direction, unsigned int *n_cols, unsigned in
 GMT_LOCAL int gmtapi_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_GRID *G, gmt_grdfloat *out) {
 	enum GMT_enum_family family;
 	unsigned int row, col, pad[4], old_layout, new_layout;
-	uint64_t in_node, out_node;
+	uint64_t from_node, to_node;
 	gmt_grdfloat *tmp = NULL;
 	gmt_M_unused(mode);
 
@@ -12456,30 +12470,30 @@ GMT_LOCAL int gmtapi_change_gridlayout (struct GMTAPI_CTRL *API, char *code, uns
 
 	gmt_grd_pad_off (API->GMT, G);	/* Simplify working with no pad */
 	if (old_layout == 0 && new_layout == 2) { /* Change from TR to TC */
-		for (row = 0, in_node = 0; row < G->header->n_rows; row++)
-			for (col = 0; col < G->header->n_columns; col++, in_node++)
-				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + row] = G->data[in_node];
+		for (row = 0, from_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, from_node++)
+				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + row] = G->data[from_node];
 	}
 	else if (old_layout == 0 && new_layout == 3) {	/* Change from TR to BC */
-		for (row = 0, in_node = 0; row < G->header->n_rows; row++)
-			for (col = 0; col < G->header->n_columns; col++, in_node++)
-				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)] = G->data[in_node];
+		for (row = 0, from_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, from_node++)
+				tmp[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)] = G->data[from_node];
 	}
 	else if (old_layout == 2 && new_layout == 0) {	/* Change from TC to TR */
-		for (row = 0, out_node = 0; row < G->header->n_rows; row++)
-			for (col = 0; col < G->header->n_columns; col++, out_node++)
-				tmp[out_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + row];
+		for (row = 0, to_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, to_node++)
+				tmp[to_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + row];
 	}
 	else if (old_layout == 3 && new_layout == 0) {	/* Change from BC to TR */
-		for (row = 0, out_node = 0; row < G->header->n_rows; row++)
-			for (col = 0; col < G->header->n_columns; col++, out_node++)
-				tmp[out_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)];
+		for (row = 0, to_node = 0; row < G->header->n_rows; row++)
+			for (col = 0; col < G->header->n_columns; col++, to_node++)
+				tmp[to_node] = G->data[(uint64_t)col * (uint64_t)G->header->n_rows + (G->header->n_rows - row - 1)];
 	}
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_WARNING, "gmtapi_change_gridlayout: reordering function for case %s -> %s not yet written. Doing nothing\n",
 		            G->header->mem_layout, code);
-		for (out_node = 0; out_node < G->header->size; out_node++)
-			tmp[out_node] = G->data[out_node];
+		for (to_node = 0; to_node < G->header->size; to_node++)
+			tmp[to_node] = G->data[to_node];
 	}
 
 	if (out == 0) {	/* Means we must update the grid data */
@@ -12491,27 +12505,25 @@ GMT_LOCAL int gmtapi_change_gridlayout (struct GMTAPI_CTRL *API, char *code, uns
 }
 
 GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsigned int mode, struct GMT_IMAGE *I, unsigned char *out1, unsigned char *out2) {
-	/* code: The new memory layout code
-	   mode:
-	   out1:  Array with the data converted to the new layout.
-	   out2:  Array with the transparencies converted to the new layout.
-	         If NULL on input the necessary memory is allocated in this function, otherwise
+	/* code: The new memory layout code, e.g "TRB"
+	   mode: Currently unused (for future expansion)
+	   out1: Array with the image data converted to the requested layout.
+	   out2: Array with the transparencies converted to the requested layout.
+	         If NULL on input the necessary memory is allocated inside this function, otherwise
 	         it is ASSUMED that it points a memory chunk big enough to hold the reshuffled data.
 	*/
+	bool changed = true;
 	unsigned char *tmp = NULL, *alpha = NULL;
 	enum GMT_enum_family family;
 	unsigned int old_layout, new_layout;
-	uint64_t band, row, col, in_node, out_node;
+	uint64_t band, row, col, to_node, from_node;
 	struct GMT_IMAGE_HIDDEN *IH = NULL;
 	gmt_M_unused(mode);
 
 	old_layout = gmtapi_decode_layout (API, I->header->mem_layout, &family);
-	if (family != GMT_IS_IMAGE) return GMT_NOT_A_VALID_FAMILY;
 	new_layout = gmtapi_decode_layout(API, code, &family);
 	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
 
-	/* Images may be column vs row oriented, from top or from bottom and may be Band|Line|Pixel interleaved
-	   That sums up to a lot of combinations. We will add them on a by-need basis. */
 	if ((tmp = out1) == NULL && (tmp = gmt_M_memory_aligned (API->GMT, NULL, I->header->n_bands * I->header->size, unsigned char)) == NULL)
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
 	if (I->alpha && (alpha = out2) == NULL && (alpha = gmt_M_memory_aligned (API->GMT, NULL, I->header->size, unsigned char)) == NULL) {
@@ -12520,42 +12532,106 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		return (GMT_MEMORY_ERROR);		/* Something went wrong */
 	}
 
+	/* Images may be column vs row oriented, from top or from bottom and may be Band|Line|Pixel interleaved
+	   That sums up to a lot of combinations. We will add them on a by-need basis. */
+
 	if (old_layout == 8 && new_layout == 2) {	/* Change from TRP to TCB */
-		out_node = 0;
-		for (row = 0; row < I->header->n_rows; row++)
-			for (col = 0; col < I->header->n_columns; col++)
-				for (band = 0; band < 3; band++) {
-					in_node = row + col*I->header->n_rows + band * I->header->nm;
-					tmp[in_node] = (uint8_t)I->data[out_node++];
+		for (row = from_node = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < I->header->n_bands; band++, from_node++) {
+					to_node = row + col*I->header->my + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node];
 				}
+		if (I->alpha) {
+			for (row = from_node = 0; row < I->header->my; row++, from_node++)
+				for (col = 0; col < I->header->mx; col++) {
+					to_node = row + col*I->header->my;
+					alpha[to_node] = (uint8_t)I->alpha[from_node];
+				}
+		}
 	}
-	if (old_layout == 9 && new_layout == 0) {	/* Change from BRP to TRB */
-		out_node = 0;
+	else if (old_layout == 0 && new_layout == 4) {	/* Change from TRB to TRL [UNTESTED] */
 		for (row = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
-				for (band = 0; band < 3; band++) {
-					//in_node = col + (I->header->my - 1 - row)*I->header->my + band*I->header->size;
-					in_node = col + row*I->header->my + band * I->header->size;
-					tmp[in_node] = (uint8_t)I->data[out_node++];
+				for (band = 0; band < I->header->n_bands; band++) {
+					from_node = col + row*I->header->mx + band * I->header->size;
+					to_node = col + (band + row * I->header->n_bands) * I->header->mx;
+					tmp[to_node] = (uint8_t)I->data[from_node];
 				}
+		if (I->alpha)	/* Same since only one band of alpha */
+			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
+	}
+	else if (old_layout == 4 && new_layout == 0) {	/* Change from TRL to TRB [UNTESTED] */
+		for (row = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < I->header->n_bands; band++) {
+					to_node = col + row*I->header->mx + band * I->header->size;
+					from_node = col + (band + row * I->header->n_bands) * I->header->mx;
+					tmp[to_node] = (uint8_t)I->data[from_node];
+				}
+		if (I->alpha)	/* Same since only one band of alpha */
+			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
+	}
+	else if (old_layout == 0 && new_layout == 8) {	/* Change from TRB to TRP [NOT WORKING] */
+		for (row = to_node = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < I->header->n_bands; band++, to_node++) {
+					from_node = col + row*I->header->mx + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node];
+				}
+		if (I->alpha)	/* Same since only one band of alpha */
+			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
+	}
+	else if (old_layout == 8 && new_layout == 0) {	/* Change from TRP to TRB [UNTESTED] */
+		for (row = from_node = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < I->header->n_bands; band++, from_node++) {
+					to_node = col + row*I->header->mx + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node];
+				}
+		if (I->alpha)	/* Same since only one band of alpha */
+			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
+	}
+	else if (old_layout == 9 && new_layout == 0) {	/* Change from BRP to TRB */
+		for (row = from_node = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < I->header->n_bands; band++, from_node++) {
+					//to_node = col + (I->header->my - 1 - row)*I->header->my + band*I->header->size;  /* PW: This was always like this - commented out, so where is the B->T happening? */
+					to_node = col + row*I->header->my + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node];
+				}
+		if (I->alpha) {
+			for (row = from_node = 0; row < I->header->my; row++)
+				for (col = 0; col < I->header->mx; col++, from_node++) {
+					to_node = col + row*I->header->my;
+					alpha[to_node] = (uint8_t)I->alpha[from_node];
+				}
+		}
 	}
 	//else if (old_layout == 2 && new_layout == 0) {}	/* Change from TCB to TRB */
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_WARNING, "gmtapi_change_imagelayout: reordering function for case %s -> %s not yet written. Doing nothing.\n",
-		            I->header->mem_layout, code);
-		for (out_node = 0; out_node < I->header->size; out_node++)
-			tmp[out_node] = I->data[out_node];
+			I->header->mem_layout, code);
+		for (from_node = 0; from_node < I->header->size; from_node++)
+			tmp[from_node] = I->data[from_node];
+		changed = false;
 	}
 
-	if (out1 == 0) {	/* Means we must update the Image data */
+	if (out1 == NULL) {	/* Means we must update the Image data */
 		IH = gmt_get_I_hidden (I);
 		if (IH->alloc_mode != GMT_ALLOC_EXTERNALLY)
 			gmt_M_free_aligned (API->GMT, I->data);			/* Free previous aligned image memory */
 		I->data = tmp;
 	}
-	if (out2 == 0 && alpha) {	/* Means we must update the alpha data */
-		gmt_M_free_aligned (API->GMT, I->alpha);		/* Free previous aligned image transparency */
+	if (out2 == NULL && alpha) {	/* Means we must update the alpha data */
+		if (IH->alloc_mode != GMT_ALLOC_EXTERNALLY)
+			gmt_M_free_aligned (API->GMT, I->alpha);		/* Free previous aligned image transparency */
 		I->alpha = alpha;
+	}
+
+	if (changed) {	/* Update the mem_layout for this image */
+		strncpy (I->header->mem_layout, code, strlen(code));
+		if (I->alpha) I->header->mem_layout[3] = 'a';	/* Flag that we have transparency */
 	}
 
 	return (GMT_NOERROR);
@@ -12599,7 +12675,7 @@ int GMT_Change_Layout_ (unsigned int *family, char *code, unsigned int *mode, vo
 
 int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector) {
 	/* Hooks a users custom vector onto V's column array and sets the type.
-	 * It is the user's respondibility to pass correct type for the given vector.
+	 * It is the user's responsibility to pass correct type for the given vector.
 	 * We also check that the number of rows have been set earlier. */
 	struct GMT_VECTOR_HIDDEN *VH = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);

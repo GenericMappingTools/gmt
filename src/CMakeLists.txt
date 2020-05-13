@@ -355,7 +355,7 @@ set (GMT_PROGS_SRCS batch.c blockmean.c blockmedian.c blockmode.c docs.c dimfilt
 	gmtspatial.c gmtconnect.c grdgdal.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfill.c grdfilter.c
 	grdgradient.c grdhisteq.c grdinfo.c grdinterpolate.c grdlandmask.c grdmask.c grdmath.c
-	grdpaste.c grdproject.c grdsample.c grdconvert.c grdtrack.c movie.c
+	grdmix.c grdpaste.c grdproject.c grdsample.c grdconvert.c grdtrack.c movie.c
 	grdtrend.c grdvolume.c greenspline.c kml2gmt.c makecpt.c mapproject.c
 	gmtinfo.c nearneighbor.c project.c psconvert.c sample1d.c spectrum1d.c
 	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c

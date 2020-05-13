@@ -3075,6 +3075,8 @@ GMT_LOCAL int gmtgrdio_get_extension_period (char *file) {
 	return (pos_ext);
 }
 
+#define GMT_VF_TYPE_POS	13	/* Character in the virtual file name that indicates data family */
+
 int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	/* Returns the type of the file (either grid or image).
 	 * We use the file extension to make these decisions:
@@ -3097,6 +3099,9 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	int j, code, pos_ext;
 
 	if (!file) return (GMT_ARG_IS_NULL);	/* Gave nothing */
+	if (gmt_M_file_is_memory (file)) {
+		return (file[GMT_VF_TYPE_POS] == 'G') ? GMT_NOTSET : GMT_IS_IMAGE;
+	}
 	if (gmt_M_file_is_cache (file) || gmt_M_file_is_url (file)) {	/* Must download, then modify the name */
 		j = gmt_download_file_if_not_found (GMT, file, 0);
 		F = strdup (&file[j]);

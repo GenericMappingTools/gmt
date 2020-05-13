@@ -110,6 +110,8 @@
 
 .. |grdmath_purpose| replace:: Reverse Polish Notation (RPN) calculator for grids (element by element)
 
+.. |grdmix_purpose| replace:: Blending and transforming grids and images
+
 .. |grdpaste_purpose| replace:: Join two grids along their common edge
 
 .. |grdproject_purpose| replace:: Forward and inverse map transformation of grids
