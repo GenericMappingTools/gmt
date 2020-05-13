@@ -261,7 +261,7 @@ filter width, try::
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nmedtopo -V
 
 Of course, the syntax of how variables are used vary according to the scripting language. At the
-end of the execution we find 20 grids called medtopo_???.grd as well as the medtopo_std.grd file.
+end of the execution we find 20 grids (e.g., medtopo_007.grd) as well as the medtopo_std.grd file.
 The information needed to do all of this is hidden from the user;
 the actual batch scripts that execute are derived from the user-provided main.sh script and supply
 the extra machinery. The **batch** module automatically manages the parallel execution loop over all

@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
- * Date:	1-Jan-2018
+ * Date:	12-May-2020
  * Version:	6 API
  *
  * Brief synopsis: gmt batch automates batch processing

@@ -28,6 +28,7 @@ All modules are requested via a call to the :doc:`gmt` program.
 .. toctree::
     :hidden:
 
+    batch
     blockmean
     blockmedian
     blockmode
@@ -181,6 +182,7 @@ Core Modules
 .. hlist::
     :columns: 6
 
+    - :doc:`batch`
     - :doc:`blockmean`
     - :doc:`blockmedian`
     - :doc:`blockmode`
@@ -557,6 +559,8 @@ Grid operations
 Miscellaneous
 -------------
 
++-----------------------+-----------------------+
+| :doc:`batch`          | |batch_purpose|       |
 +-----------------------+-----------------------+
 | :doc:`docs`           | |docs_purpose|        |
 +-----------------------+-----------------------+

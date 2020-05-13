@@ -23,16 +23,16 @@
  *
  * movie automates the main frame loop and much of the machinery needed
  * to script a movie sequence.  It allows for an optional background
- * and foreground layer to be specified via separate modern scripts and
- * a single frame-script that uses special variables to mode slightly
+ * and foreground layer to be specified via separate modern mode scripts and
+ * a single frame-script that uses special variables to make slightly
  * different plots for each frame.  The user only needs to compose these
  * simple one-plot scripts and then movie takes care of the automation,
- * processing to PNG, assembly to a movie or animated GIF, and cleanup.
- * Frame scripts are run in parallel without need for OpenMP etc.
- * Experimental.  Optionally, you can supply a title page script and
- * request fading of title page and/or the main animation.  The
- * fore-, back-ground, and title page scripts can also just be ready-
- * to-use PostScripts plot of correct canvas size.
+ * processing to PNG, assembly of a movie or animated GIF, and cleanup.
+ * Frame scripts are run in parallel without need for OpenMP, etc.
+ * Optionally, you can supply a title page script and request fading of
+ * the title page and/or the main animation.  The fore-, back-ground, and
+ * title page scripts can also just be ready-to-use PostScripts plot of
+ * correct canvas size.
  */
 
 #include "gmt_dev.h"
@@ -709,7 +709,7 @@ GMT_LOCAL unsigned int movie_get_n_frames (struct GMT_CTRL *GMT, char *txt, doub
 
 static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	/* This parses the options provided to grdcut and sets parameters in CTRL.
+	/* This parses the options provided to movie and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 */
 
@@ -728,7 +728,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		Ctrl->C.unit = 'i';
 	}
 
-	for (opt = options; opt; opt = opt->next) {	/* Look for -D first since framerate is needed when parsing -E */
+	for (opt = options; opt; opt = opt->next) {	/* Look for -D first since frame rate is needed when parsing -E */
 		if (opt->option == 'D') {	/* Display frame rate of movie */
 			Ctrl->D.active = true;
 			Ctrl->D.framerate = atof (opt->arg);
@@ -1310,16 +1310,17 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	bool n_written = false, has_text = false, is_classic = false, place_background = false;
 
 	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"};
-	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
-	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
-	char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
-	char var_token[4] = "$$%", spacer;
+	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
+	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
+	static char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"}, var_token[4] = "$$%";
+	static char *LP_name[2] = {"LABEL", "PROG_INDICATOR"};
+
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {""};
-	char intro_file[PATH_MAX] = {""}, *script_file =  NULL, dir_sep = '/', which[2] = {"LP"};
-	static char *LP_name[2] = {"LABEL", "PROG_INDICATOR"};
+	char intro_file[PATH_MAX] = {""}, *script_file =  NULL, dir_sep = '/', which[2] = {"LP"}, spacer;
+
 	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0;
 
 	FILE *fp = NULL;
@@ -1544,7 +1545,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			movie_set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
 			movie_set_comment (fp, Ctrl->In.mode, "Preflight script");
-			fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since subshells may mess things up */
+			fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since sub-shells may mess things up */
 			if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
 				fprintf (fp, "set GMT_SESSION_NAME=1\n");
 			else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
@@ -1657,7 +1658,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		/* Make sure we have the information requested if data columns or trailing text is needed */
 		for (T = 0; T < Ctrl->n_items[k]; T++) {
 			I = &Ctrl->item[k][T];	/* Shorthand for this item */
-			if ((I->mode == MOVIE_LABEL_IS_COL_C || I->mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floatingpoint number */
+			if ((I->mode == MOVIE_LABEL_IS_COL_C || I->mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floating point number */
 				GMT_Report (API, GMT_MSG_ERROR, "No table given via -T for data-based labels in %c - exiting\n", which[k]);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -1697,7 +1698,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			movie_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 			movie_set_comment (fp, Ctrl->In.mode, "Postflight script");
-			fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since subshells may mess things up */
+			fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since sub-shells may mess things up */
 			if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
 				fprintf (fp, "set GMT_SESSION_NAME=1\n");
 			else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
@@ -1764,7 +1765,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				I->ne = 1, strcpy (I->format, "%2.2d");
 		}
 		format = (GMT->current.map.frame.primary) ? GMT->current.setting.format_time[GMT_PRIMARY] : GMT->current.setting.format_time[GMT_SECONDARY];
-		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
+		switch (format[0]) {	/* This parameter controls which version of month/day text strings we use for plotting */
 			case 'F':	/* Full name, upper case */
 				upper_case[k] = true;
 				/* Intentionally fall through - to 'f' */
@@ -1842,7 +1843,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		movie_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		movie_set_comment (fp, Ctrl->In.mode, "Movie intro frame loop script");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since subshells may mess things up */
+		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since sub-shells may mess things up */
 		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
 			fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 		else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
@@ -2144,7 +2145,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		movie_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		movie_set_comment (fp, Ctrl->In.mode, "Master frame loop script");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since subshells may mess things up */
+		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since sub-shells may mess things up */
 		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
 			fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 		else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
@@ -2307,7 +2308,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	movie_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 	movie_set_comment (fp, Ctrl->In.mode, "Main frame loop script");
-	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since subshells may mess things up */
+	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since sub-shells may mess things up */
 	if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
 		fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 	else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
