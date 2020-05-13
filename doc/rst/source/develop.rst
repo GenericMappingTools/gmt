@@ -77,7 +77,8 @@ must adapt them to your module's specific purpose.
    you add some examples that others can try without getting data (e.g., use remote files as much
    as possible).
 
-#. You must also edit the *modules.rst* and *modules-classic.rst* files and add your new module and its purpose in three
+#. You must also edit the *modules.rst*, *modules-classic.rst* and *module_core_purpose.rst_*
+   files and add your new module and its purpose in three
    separate places.  Just search for a known module to see what is expected.  With these edits
    you should be able to build the full documentation and have your module show up under the
    Modules page.
