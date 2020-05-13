@@ -219,13 +219,12 @@ Keep in mind that Ubuntu 16.04 LTS for mysterious reasons does not
 include the [supplemental modules](https://docs.generic-mapping-tools.org/latest/modules.html#supplemental-modules),
 but you can obtain them by [building from source](BUILDING.md) or upgrading to Ubuntu 18.04 LTS (or newer).
 
-
 Install other GMT dependencies (some are optional) via:
 
     # required
     sudo apt-get install ghostscript
     # optional
-    sudo apt-get install gdal-bin
+    sudo apt-get install gdal-bin graphicsmagick ffmpeg
 
 ### ArchLinux
 
