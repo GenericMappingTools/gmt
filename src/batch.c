@@ -322,7 +322,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the batch_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all batch scripts.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master job as well and run just this one for testing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Run just the indicated job number [0] for testing [run all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directories behind for inspection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for postflight script).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional postflight and preflight GMT scripts [none]:\n");
@@ -588,7 +588,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	int error = 0, precision;
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 
-	unsigned int n_values = 0, n_jobs = 0, job, i_job, col, k, n_cores_unused;
+	unsigned int n_values = 0, n_jobs = 0, job, i_job, col, k, n_cores_unused, n_to_run;
 	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_job = 0, data_job;
 
 	bool done = false, n_written = false, has_text = false, is_classic = false;
@@ -846,7 +846,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Number of main processing jobs: %d\n", n_jobs);
+	n_to_run = (Ctrl->M.active) ? 1 : n_jobs;
+	GMT_Report (API, GMT_MSG_INFORMATION, "Number of main processing jobs: %d\n", n_to_run);
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
 	else	/* Compute width from largest job number */
@@ -901,7 +902,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	/* Create parameter include files, one for each job */
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Parameter files for main processing: %d\n", n_jobs);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Parameter files for main processing: %d\n", n_to_run);
 	for (i_job = 0; i_job < n_jobs; i_job++) {
 		job = data_job = i_job + Ctrl->T.start_job;	/* The job is normally same as data_job number */
 		if (Ctrl->M.active && job != Ctrl->M.job) continue;	/* Just doing a single job for debugging */
@@ -999,9 +1000,25 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	}
 #endif
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Total jobs to process: %u\n", n_jobs);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Total jobs to process: %u\n", n_to_run);
 
 	if (Ctrl->Q.scripts) {	/* No processing executed */
+		Return (GMT_NOERROR);	/* We are done */
+	}
+
+	if (Ctrl->M.active) {	/* Just run that one job */
+		if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
+			sprintf (cmd, "cmd /C %s %s", main_file, state_tag);
+		else
+			sprintf (cmd, "%s %s %s", sc_call[Ctrl->In.mode], main_file, state_tag);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Run master script %s %s\n", main_file, state_tag);
+		if ((error = run_script (cmd))) {
+			GMT_Report (API, GMT_MSG_ERROR, "Running master script %s for argument %s returned error %d - exiting.\n", main_file, state_tag, error);
+			fclose (Ctrl->In.fp);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		sprintf (completion_file, "%s.___", state_prefix);
+		(void) gmt_remove_file (GMT, completion_file);	/* Delete the completion file */
 		Return (GMT_NOERROR);	/* We are done */
 	}
 

@@ -90,7 +90,8 @@ Optional Arguments
 
 **-M**\ [*job*],[*format*]
     Instead of making the full processing sequence, select a single master job [0] for testing.  The master job
-    be run and its product(s) placed in the top directory.
+    will be run and its product(s) placed in the top directory. While any *preflight* script will be run prior
+    to the master job, the *postflight* script will not be executed (but it will be created).
 
 .. _-Q:
 
@@ -111,7 +112,8 @@ Optional Arguments
 **-Sf**\ *postflight*
     The optional GMT modern mode *postflight* (written in the same scripting language as *mainscript*) can be
     used to perform final processing after all the individual jobs have completed, such as assembling data sets
-    into a single larger file.
+    into a single larger file.  The script may also map illustrations using the products or stacked data from
+    the processing.
 
 .. _batch-V:
 
@@ -208,7 +210,9 @@ variables (e.g., job number and anything given via **-T**).  The pre- and post-f
 access to the information in *batch_init* while the job script in addition has access to the job-specific
 parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
 **Note**: The *mainscript* is duplicated per job and each copy is run simultaneously on all available cores.
-Multi-treaded GMT modules will therefore be limited to a single core as well.
+Multi-treaded GMT modules will therefore be limited to a single core as well.  Because we do not know how
+many products each batch job makes, we make each job create a unique file when it is done.  Checkint for these
+files is how **batch** learns that a particular job has completed.
 
 
 Hints for Movie Makers
@@ -232,8 +236,10 @@ long to see the result.  Once things are working you can beef up number of jobs 
 Examples
 --------
 
-To extract a region section of bathymetry at 2x2 arc minute and compute high-pass, median filtered
-residual grids for filter widths ranging from 10 to 200 km in steps of 10 km, try::
+We extract a subset of bathymetry for the Gulf of Guinea at 2x2 arc minute resolution and compute median filtered
+grids using filter widths ranging from 10 to 200 km in steps of 10 km. When the grids are completed we determine
+the standard deviation in the result per node and make a plot to see where the filtering is very sensitive to the
+filter width, try::
 
     cat << EOF > pre.sh
     gmt begin
@@ -246,15 +252,20 @@ residual grids for filter widths ranging from 10 to 200 km in steps of 10 km, tr
         gmt grdfilter data.grd -Fm\${BATCH_COL0} -G\${BATCH_NAME}.grd -D2
     gmt end
     EOF
-    gmt batch main.sh -Sbpre.sh -Twidths.txt -Nmedtopo -V
-    
+    cat << EOF > post.sh
+    gmt begin map pdf
+        gmt grdmath \${BATCH_PREFIX}_*.grd -S STD = \${BATCH_PREFIX}_std.grd
+        gmt grdimage \${BATCH_PREFIX}_std.grd -B -B+t"STD of Medians" -Chot
+    gmt end show
+    EOF
+    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nmedtopo -V
 
-iOf course, the syntax of how variables are used vary according to the scripting language. At the
-end of the execution we find 20 grids called medtopo_???.grd.
-The information needed to do all this is hidden from the user;
-the actual batch scripts that execute are derived from the user-provided scripts and supply
-the extra machinery. The **batch** module automatically manages the parallel execution loop over all jobs using
-all available cores.
+Of course, the syntax of how variables are used vary according to the scripting language. At the
+end of the execution we find 20 grids called medtopo_???.grd as well as the medtopo_std.grd file.
+The information needed to do all of this is hidden from the user;
+the actual batch scripts that execute are derived from the user-provided main.sh script and supply
+the extra machinery. The **batch** module automatically manages the parallel execution loop over all
+jobs using all available cores.
 
 See Also
 --------
