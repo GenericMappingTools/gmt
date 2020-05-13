@@ -74,6 +74,7 @@ Quick links
    Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
    Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
    reStructuredText Cheatsheet <rst-cheatsheet>
+   New Modules and Supplements <develop>
    Debugging GMT <debug>
    GMT C API <api>
    PostScriptLight C API <postscriptlight>
