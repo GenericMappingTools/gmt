@@ -21,8 +21,8 @@ Synopsis
 [ **-Sb**\ *preflight* ]
 [ **-Sf**\ *postflight* ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [**s**] ]
 [ |-W|\ [*workdir*] ]
+[ |-Z| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -53,7 +53,7 @@ Required Arguments
 .. _-N:
 
 **-N**\ *prefix*
-    Determines the prefix of the batch file products and the sub-directory with job products (but see **-W**).
+    Determines the prefix of the batch file products and the sub-directory with all job products.
 
 .. _-T:
 
@@ -126,13 +126,13 @@ Optional Arguments
     You can override that selection by giving another *workdir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
-    problems related to low space in the main directory.
+    problems related to low space in the main directory.  The product files are still placed in the *prefix* directory.
+    The *workdir* is removed unless **-Q** is used for debugging.
 
 .. _-Z:
 
-**-Z**\ [**s**]
-    Erase the entire *prefix* directory after completing all processing [Default leaves directory with all files;
-    teAppend **s** if your *mainscript* and all input scripts via **-I** and **-S** should be deleted as well.
+**-Z**
+    Erase the *mainscript* and all input scripts given via **-I** and **-S** upon completion (except when **-Q** is used).
 
 .. _-cores:
 

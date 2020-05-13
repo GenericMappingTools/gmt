@@ -97,9 +97,8 @@ struct BATCH_CTRL {
 		bool active;
 		char *dir;	/* Alternative working directory than implied by -N */
 	} W;
-	struct BATCH_Z {	/* -Z[s] */
-		bool active;	/* Delete temporary files when completed */
-		bool delete;	/* Also delete all files including the mainscript and anything passed via  -I, -S */
+	struct BATCH_Z {	/* -Z[ */
+		bool active;	//* Delete all files including the mainscript and anything passed via -I, -S */
 	} Z;
 	struct BATCH_x {	/* -x[[-]<ncores>] */
 		bool active;
@@ -307,7 +306,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-M[<job>,]] [-Q[s]] [-Sb<postflight>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<preflight>] [%s] [-W[<workdir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<preflight>] [%s] [-W[<workdir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -333,8 +332,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give <workdir> where temporary files will be built [<workdir> = <prefix> set by -N].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <workdir> is not given we create one in the system temp directory named <prefix> (from -N).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to batch [leave directory alone].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to also delete all input scripts (mainscript and any files via -I, -S)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase input scripts (mainscript and any files via -I, -S [leave input scripts alone].\n");
 	GMT_Option (API, "f");
 	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in job generation [Default uses all cores = %d].\n", API->n_cores);
@@ -445,9 +443,8 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 				if (opt->arg[0]) Ctrl->W.dir = strdup (opt->arg);
 				break;
 
-			case 'Z':	/* Erase jobs after batch has been made */
+			case 'Z':	/* Delete input scripts */
 				Ctrl->Z.active = true;
-				if (opt->arg[0] == 's') Ctrl->Z.delete = true;	/* Also delete input scripts */
 				break;
 
 			case 'x':
@@ -462,17 +459,14 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 	}
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Must specify a main script file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Cannot use -Z if -Q is also set\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active || (Ctrl->N.prefix == NULL || strlen (Ctrl->N.prefix) == 0),
 					"Option -N: Must specify a batch prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
 					"Option -T: Must specify number of jobs or a time file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->Q.active || Ctrl->M.active),
-					"Option -Z: Cannot be used without specifying a GIF (-A), master (-M) or batch (-F) product\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->M.job < Ctrl->T.start_job,
 					"Option -M: Cannot specify a job before the first job number set via -T\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->W.active && Ctrl->W.dir && !strcmp (Ctrl->W.dir, "/tmp"),
-					"Option -Z: Cannot delete working directory %s\n", Ctrl->W.dir);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.dir && !strcmp (Ctrl->W.dir, "/tmp"),
+					"Option -W: Cannot delete working directory %s\n", Ctrl->W.dir);
 
 	if (n_errors) return (GMT_PARSE_ERROR);	/* No point going further */
 
@@ -570,12 +564,12 @@ GMT_LOCAL int batch_delete_scripts (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctr
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the include script %s.\n", Ctrl->I.file);
 		return (GMT_RUNTIME_ERROR);
 	}
-	if (Ctrl->S[BATCH_PREFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[BATCH_PREFLIGHT].file)) {	/* Delete the postflight script */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the postflight script %s.\n", Ctrl->S[BATCH_PREFLIGHT].file);
+	if (Ctrl->S[BATCH_PREFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[BATCH_PREFLIGHT].file)) {	/* Delete the background script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the preflight script %s.\n", Ctrl->S[BATCH_PREFLIGHT].file);
 		return (GMT_RUNTIME_ERROR);
 	}
-	if (Ctrl->S[BATCH_POSTFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[BATCH_POSTFLIGHT].file)) {	/* Delete the preflight script */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the preflight script %s.\n", Ctrl->S[BATCH_POSTFLIGHT].file);
+	if (Ctrl->S[BATCH_POSTFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[BATCH_POSTFLIGHT].file)) {	/* Delete the foreground script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the postflight script %s.\n", Ctrl->S[BATCH_POSTFLIGHT].file);
 		return (GMT_RUNTIME_ERROR);
 	}
 	return (GMT_NOERROR);
@@ -869,14 +863,13 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 		batch_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		batch_set_comment (fp, Ctrl->In.mode, "Postflight script");
+		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
+		fprintf (fp, "cd %s\n", topdir);		/* cd to the starting directory */
 		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since subshells may mess things up */
 		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
 			batch_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if scrip has gmt end show */
-		batch_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
-		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_POSTFLIGHT].fp)) {	/* Read the preflight script and copy to postflight script with some exceptions */
 			if (batch_is_gmt_module (line, "begin")) {
 				fprintf (fp, "%s", line);	/* Allow args here since the script may make a plot */
@@ -888,6 +881,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 		}
+		fprintf (fp, "cd %s\n", workdir);		/* cd back to the working directory */
 		fclose (Ctrl->S[BATCH_POSTFLIGHT].fp);	/* Done reading the preflight script */
 		fclose (fp);	/* Done writing the postflight script */
 #ifndef WIN32
@@ -979,7 +973,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
 	/* Move job products up to main directory */
-	fprintf (fp, "%s %s.* ..\n", mvfile[Ctrl->In.mode], batch_place_var (Ctrl->In.mode, "BATCH_NAME"));
+	fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], batch_place_var (Ctrl->In.mode, "BATCH_NAME"), topdir);
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	/* Create completion file */
 	fprintf (fp, "%s %s.___\n", createfile[Ctrl->In.mode], batch_place_var (Ctrl->In.mode, "BATCH_NAME"));
@@ -996,6 +990,41 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	/* Set executable bit if not Windows */
 	if (chmod (main_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", main_file);
+		Return (GMT_RUNTIME_ERROR);
+	}
+#endif
+
+	/* Prepare the cleanup script */
+	sprintf (cleanup_file, "batch_cleanup.%s", extension[Ctrl->In.mode]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Create cleanup script %s\n", cleanup_file);
+	if ((fp = fopen (cleanup_file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
+		Return (GMT_ERROR_ON_FOPEN);
+	}
+	batch_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
+	if (Ctrl->W.active) {	/* Want to delete the entire work directory */
+		batch_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], workdir);	/* Delete the entire working directory with batch jobs and tmp files */
+	}
+	else {	/* Just delete the remaining scripts and PS files */
+#ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
+		char dir_sep_ = '\\';
+#else
+		char dir_sep_ = '/';
+#endif
+		GMT_Report (API, GMT_MSG_INFORMATION, "%u job files saved in directory: %s\n", n_jobs, workdir);
+		if (Ctrl->S[BATCH_PREFLIGHT].active)	/* Remove the preflight script */
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, pre_file);
+		if (Ctrl->S[BATCH_POSTFLIGHT].active)	/* Remove the postflight script */
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, post_file);
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, init_file);	/* Delete the init script */
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, main_file);	/* Delete the main script */
+	}
+	fclose (fp);
+#ifndef _WIN32
+	/* Set executable bit if not on Windows */
+	if (chmod (cleanup_file, S_IRWXU)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 #endif
@@ -1089,46 +1118,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 	}
 
-	/* Cd back up to the parent directory */
-	if (chdir (topdir)) {	/* Should never happen but we should check */
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to starting directory - exiting.\n");
-		perror (topdir);
-		Return (GMT_RUNTIME_ERROR);
-	}
-
-	/* Prepare the cleanup script */
-	sprintf (cleanup_file, "batch_cleanup.%s", extension[Ctrl->In.mode]);
-	if ((fp = fopen (cleanup_file, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
-		Return (GMT_ERROR_ON_FOPEN);
-	}
-	batch_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
-	if (Ctrl->Z.active) {	/* Want to delete the entire job directory */
-		batch_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], workdir);	/* Delete the entire working directory with batch jobs and tmp files */
-	}
-	else {	/* Just delete the remaining scripts and PS files */
-#ifdef WIN32		/* On Windows to do remove a file in a subdir one need to use back slashes */
-		char dir_sep_ = '\\';
-#else
-		char dir_sep_ = '/';
-#endif
-		GMT_Report (API, GMT_MSG_INFORMATION, "%u job files saved in directory: %s\n", n_jobs, workdir);
-		if (Ctrl->S[BATCH_PREFLIGHT].active)	/* Remove the preflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, pre_file);
-		if (Ctrl->S[BATCH_POSTFLIGHT].active)	/* Remove the postflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, post_file);
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, init_file);	/* Delete the init script */
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], workdir, dir_sep_, main_file);	/* Delete the main script */
-	}
-	fclose (fp);
-#ifndef _WIN32
-	/* Set executable bit if not on Windows */
-	if (chmod (cleanup_file, S_IRWXU)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
-		Return (GMT_RUNTIME_ERROR);
-	}
-#endif
 	if (!Ctrl->Q.active) {
 		/* Run cleanup script at the end */
 		if (Ctrl->In.mode == DOS_MODE)
@@ -1143,15 +1132,22 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->Z.delete) {	/* Delete input scripts */
-		if ((error = batch_delete_scripts (GMT, Ctrl)))
-			Return (error);
-	}
-
 	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
 	if (!Ctrl->Q.active && gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the cleanup script %s.\n", cleanup_file);
 		Return (GMT_RUNTIME_ERROR);
+	}
+
+	/* Cd back up to the parent directory */
+	if (chdir (topdir)) {	/* Should never happen but we should check */
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to starting directory - exiting.\n");
+		perror (topdir);
+		Return (GMT_RUNTIME_ERROR);
+	}
+
+	if (Ctrl->Z.active) {	/* Delete input scripts */
+		if ((error = batch_delete_scripts (GMT, Ctrl)))
+			Return (error);
 	}
 
 	Return (GMT_NOERROR);
