@@ -49,16 +49,12 @@
 #define BATCH_WAIT_TO_CHECK	10000	/* In microseconds, so 0.01 seconds */
 #define BATCH_PAUSE_A_SEC	1000000	/* In microseconds, so 1 seconds */
 
-enum enum_script {BASH_MODE = 0,	/* Write Bash script */
-	CSH_MODE,			/* Write C-shell script */
-	DOS_MODE};			/* Write DOS script */
-
 /* Control structure for batch */
 
 struct BATCH_CTRL {
 	struct BATCH_In {	/* mainscript (Bourne, Bourne Again, csh, or DOS (bat) script) */
 		bool active;
-		enum enum_script mode;
+		enum GMT_enum_script mode;
 		char *file;	/* Name of main script */
 		FILE *fp;	/* Open file pointer to main script */
 	} In;
@@ -146,159 +142,31 @@ GMT_LOCAL int batch_parse_x_option (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctr
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL int batch_gmt_sleep (unsigned int microsec) {
-	/* Waiting before checking if the completion file has been generated */
-#ifdef WIN32
-	Sleep ((uint32_t)microsec/1000);	/* msec are microseconds but Sleep wants milliseconds */
-	return 0;
-#else
-	return (usleep ((useconds_t)microsec));
-#endif
+GMT_LOCAL void batch_close_files (struct BATCH_CTRL *Ctrl) {
+	/* Close all files when an error forces us to quit */
+	fclose (Ctrl->In.fp);
+	if (Ctrl->I.active) fclose (Ctrl->I.fp);
 }
 
-GMT_LOCAL void batch_set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, char *name, double value) {
-	/* Assigns a single named data floating point variable given the script mode
-	 * Here, col indicates which input column in case special formatting is implied via -f */
-	char string[GMT_LEN64] = {""};
-	gmt_ascii_format_one (GMT, string, value, gmt_M_type (GMT, GMT_IN, col));
-	switch (mode) {
-		case BASH_MODE: fprintf (fp, "%s=%s", name, string);       break;
-		case CSH_MODE:  fprintf (fp, "set %s = %s", name, string); break;
-		case DOS_MODE:  fprintf (fp, "set %s=%s", name, string);   break;
+GMT_LOCAL int batch_delete_scripts (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl) {
+	/* Delete the scripts since they apparently are temporary */
+	if (Ctrl->In.file && gmt_remove_file (GMT, Ctrl->In.file)) {	/* Delete the main script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the main script %s.\n", Ctrl->In.file);
+		return (GMT_RUNTIME_ERROR);
 	}
-	fprintf (fp, "\n");
-}
-
-GMT_LOCAL void batch_set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
-	/* Assigns a single named Cartesian floating point variable given the script mode */
-	switch (mode) {
-		case BASH_MODE: fprintf (fp, "%s=%.12g", name, value);       break;
-		case CSH_MODE:  fprintf (fp, "set %s = %.12g", name, value); break;
-		case DOS_MODE:  fprintf (fp, "set %s=%.12g", name, value);   break;
+	if (Ctrl->I.file && gmt_remove_file (GMT, Ctrl->I.file)) {	/* Delete the include script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the include script %s.\n", Ctrl->I.file);
+		return (GMT_RUNTIME_ERROR);
 	}
-	if (unit) fprintf (fp, "%c", unit);	/* Append the unit [c|i|p] unless 0 */
-	fprintf (fp, "\n");
-}
-
-GMT_LOCAL void batch_set_ivalue (FILE *fp, int mode, bool env, char *name, int value) {
-	/* Assigns a single named integer variable given the script mode */
-	switch (mode) {
-		case BASH_MODE: fprintf (fp, "%s=%d\n", name, value);       break;
-		case CSH_MODE:  if (env)
-					fprintf (fp, "%s %d\n", name, value);
-				else
-					fprintf (fp, "set %s = %d\n", name, value);
-				break;
-		case DOS_MODE:  fprintf (fp, "set %s=%d\n", name, value);   break;
+	if (Ctrl->S[BATCH_PREFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[BATCH_PREFLIGHT].file)) {	/* Delete the background script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the preflight script %s.\n", Ctrl->S[BATCH_PREFLIGHT].file);
+		return (GMT_RUNTIME_ERROR);
 	}
-}
-
-GMT_LOCAL void batch_set_tvalue (FILE *fp, int mode, bool env, char *name, char *value) {
-	/* Assigns a single named text variable given the script mode */
-	if (strchr (value, ' ') || strchr (value, '\t') || strchr (value, '|')) {	/* String has spaces, tabs, or bar */
-		switch (mode) {
-			case BASH_MODE: fprintf (fp, "%s=\"%s\"\n", name, value);       break;
-			case CSH_MODE:  if (env)
-						fprintf (fp, "%s \"%s\"\n", name, value);
-					else
-						fprintf (fp, "set %s = \"%s\"\n", name, value);
-					break;
-			case DOS_MODE:  fprintf (fp, "set %s=\"%s\"\n", name, value);   break;
-		}
+	if (Ctrl->S[BATCH_POSTFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[BATCH_POSTFLIGHT].file)) {	/* Delete the foreground script */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the postflight script %s.\n", Ctrl->S[BATCH_POSTFLIGHT].file);
+		return (GMT_RUNTIME_ERROR);
 	}
-	else {	/* Single word */
-		switch (mode) {
-			case BASH_MODE: fprintf (fp, "%s=%s\n", name, value);       break;
-			case CSH_MODE:  if (env)
-						fprintf (fp, "%s %s\n", name, value);
-					else
-						fprintf (fp, "set %s = %s\n", name, value);
-					break;
-			case DOS_MODE:  fprintf (fp, "set %s=%s\n", name, value);   break;
-		}
-	}
-}
-
-GMT_LOCAL void batch_set_script (FILE *fp, int mode) {
-	/* Writes the script's incantation line (or a comment for DOS, turning off default echo) */
-	switch (mode) {
-		case BASH_MODE: fprintf (fp, "#!/usr/bin/env bash\n"); break;
-		case CSH_MODE:  fprintf (fp, "#!/usr/bin/env csh\n"); break;
-		case DOS_MODE:  fprintf (fp, "@echo off\nREM Start of script\n"); break;
-	}
-}
-
-GMT_LOCAL void batch_set_comment (FILE *fp, int mode, char *comment) {
-	/* Write a comment line given the script mode */
-	switch (mode) {
-		case BASH_MODE: case CSH_MODE:  fprintf (fp, "# %s\n", comment); break;
-		case DOS_MODE:  fprintf (fp, "REM %s\n", comment); break;
-	}
-}
-
-GMT_LOCAL char *batch_place_var (int mode, char *name) {
-	/* Prints a single variable to stdout where needed in the script via the string static variable.
-	 * PS!  Only one call per printf statement since static string cannot hold more than one item at the time */
-	static char string[GMT_LEN128] = {""};	/* So max length of variable name is 127 */
-	if (mode == DOS_MODE)
-		sprintf (string, "%%%s%%", name);
-	else
-		sprintf (string, "${%s}", name);
-	return (string);
-}
-
-GMT_LOCAL int batch_dry_run_only (const char *cmd) {
-	/* Dummy function to not actually run the loop script when -Q is used */
-	gmt_M_unused (cmd);
-	return 0;
-}
-
-GMT_LOCAL unsigned int batch_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k) {
-	unsigned int n_errors = 0;
-	/* Examines file extension and compares to known mode from mainscript */
-
-	switch (mode) {
-		case BASH_MODE:
-			if (!(strstr (file, ".bash") || strstr (file, ".sh"))) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script is bash/sh but %s is not!\n", file);
-				n_errors++;
-			}
-			break;
-		case CSH_MODE:
-			if (!strstr (file, ".csh")) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script is csh but %s is not!\n", file);
-				n_errors++;
-			}
-			break;
-		case DOS_MODE:
-			if (!strstr (file, ".bat")) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script is bat but %s is not!\n", file);
-				n_errors++;
-			}
-			break;
-	}
-	return (n_errors);
-}
-
-GMT_LOCAL bool batch_script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
-	/* Read script to determine if it is in GMT classic mode or not, then rewind */
-	bool modern = false;
-	char line[PATH_MAX] = {""};
-	while (!modern && gmt_fgets (GMT, line, PATH_MAX, fp)) {
-		if (strstr (line, "gmt ") == NULL) continue;	/* Does not start with gmt */
-		if (strstr (line, " begin"))		/* A modern mode script */
-			modern = true;
-		else if (strstr (line, " figure"))	/* A modern mode script */
-			modern = true;
-		else if (strstr (line, " subplot"))	/* A modern mode script */
-			modern = true;
-		else if (strstr (line, " inset"))	/* A modern mode script */
-			modern = true;
-		else if (strstr (line, " end"))		/* A modern mode script */
-			modern = true;
-	}
-	rewind (fp);	/* Go back to beginning of file */
-	return (!modern);
+	return (GMT_NOERROR);
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
@@ -341,15 +209,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
-}
-
-GMT_LOCAL unsigned int batch_get_n_jobs (struct GMT_CTRL *GMT, char *txt, double jobrate, char *def) {
-	/* Convert user argument in jobs or seconds to jobs */
-	char *p = (!txt || !txt[0]) ? def : txt;	/* Get jobs or times in seconds */
-	double fval = atof (p);	/* Get jobs or times in seconds */
-	gmt_M_unused (GMT);
-	if (strchr (p, 's')) fval *= jobrate;	/* Convert from seconds to nearest number of jobs */
-	return (urint (fval));
 }
 
 static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -474,11 +333,11 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 
 	if (n_files == 1) {	/* Determine scripting language from file extension and open the main script file */
 		if (strstr (Ctrl->In.file, ".bash") || strstr (Ctrl->In.file, ".sh"))	/* Treat both as bash since sh is subset of bash */
-			Ctrl->In.mode = BASH_MODE;
+			Ctrl->In.mode = GMT_BASH_MODE;
 		else if (strstr (Ctrl->In.file, ".csh"))
-			Ctrl->In.mode = CSH_MODE;
+			Ctrl->In.mode = GMT_CSH_MODE;
 		else if (strstr (Ctrl->In.file, ".bat"))
-			Ctrl->In.mode = DOS_MODE;
+			Ctrl->In.mode = GMT_DOS_MODE;
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine script language from the extension of your script %s\n", Ctrl->In.file);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Allowable extensions are: *.sh, *.bash, *.csh, and *.bat\n");
@@ -487,10 +346,10 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 		/* Armed with script language we check that any back/fore-ground scripts are of the same kind */
 		for (k = BATCH_PREFLIGHT; !n_errors && k <= BATCH_POSTFLIGHT; k++) {
 			if (!Ctrl->S[k].active) continue;	/* Not provided */
-			n_errors += batch_check_language (GMT, Ctrl->In.mode, Ctrl->S[k].file, k);
+			n_errors += gmtlib_check_language (GMT, Ctrl->In.mode, Ctrl->S[k].file, k, NULL);
 		}
 		if (!n_errors && Ctrl->I.active) {	/* Must also check the include file, and open it for reading */
-			n_errors += batch_check_language (GMT, Ctrl->In.mode, Ctrl->I.file, 3);
+			n_errors += gmtlib_check_language (GMT, Ctrl->In.mode, Ctrl->I.file, 3, NULL);
 			if (n_errors == 0 && ((Ctrl->I.fp = fopen (Ctrl->I.file, "r")) == NULL)) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open include script file %s\n", Ctrl->I.file);
 				n_errors++;
@@ -501,78 +360,13 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open main script file %s\n", Ctrl->In.file);
 			n_errors++;
 		}
-		if (n_errors == 0 && batch_script_is_classic (GMT, Ctrl->In.fp)) {
+		if (n_errors == 0 && gmtlib_script_is_classic (GMT, Ctrl->In.fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your main script file %s is not in GMT modern mode\n", Ctrl->In.file);
 			n_errors++;
 		}
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
-}
-
-GMT_LOCAL void batch_close_files (struct BATCH_CTRL *Ctrl) {
-	/* Close all files when an error forces us to quit */
-	fclose (Ctrl->In.fp);
-	if (Ctrl->I.active) fclose (Ctrl->I.fp);
-}
-
-GMT_LOCAL bool batch_line_is_a_comment (char *line) {
-	unsigned int k = 0;
-	while (line[k] && isspace (line[k])) k++;	/* Wind past leading whitespace */
-	return (line[k] == '#' || !strncasecmp (&line[k], "rem", 3U)) ? true : false;	/* Will return true for lines starting with some tabs, then comment */
-}
-
-GMT_LOCAL bool batch_is_gmt_module (char *line, char *module) {
-	/* Robustly identify the command "gmt begin" */
-	char word[GMT_LEN128] = {""};
-	unsigned int pos = 0;
-	size_t L;
-	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt begin */
-	/* To handle cases where there may be more than one space between gmt and module */
-	if (batch_line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get first word in the command or fail */
-	if (strcmp (word, "gmt")) return false;		/* Not starting with gmt so we are done */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get second word or fail */
-	L = strlen (module);				/* How many characters to compare against */
-	if (!strncmp (word, module, L)) return true;	/* Command starting with gmt <module> found */
-	return false;	/* Not gmt <module> */
-}
-
-GMT_LOCAL bool batch_is_gmt_end_show (char *line) {
-	char word[GMT_LEN128] = {""};
-	unsigned int pos = 0;
-	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt end show */
-	/* Robustly identify the command "gmt end show" */
-	/* To handle cases where there may be more than one space between gmt and module */
-	if (batch_line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get first word in the command or fail */
-	if (strcmp (word, "gmt")) return false;		/* Not starting with gmt so we are done */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get second word or fail */
-	if (strcmp (word, "end")) return false;		/* Not continuing with end so we are done */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get third word or fail */
-	if (!strcmp (word, "show")) return true;	/* Yes, found gmt end show */
-	return false;	/* Not gmt end show */
-}
-
-GMT_LOCAL int batch_delete_scripts (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl) {
-	/* Delete the scripts since they apparently are temporary */
-	if (Ctrl->In.file && gmt_remove_file (GMT, Ctrl->In.file)) {	/* Delete the main script */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the main script %s.\n", Ctrl->In.file);
-		return (GMT_RUNTIME_ERROR);
-	}
-	if (Ctrl->I.file && gmt_remove_file (GMT, Ctrl->I.file)) {	/* Delete the include script */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the include script %s.\n", Ctrl->I.file);
-		return (GMT_RUNTIME_ERROR);
-	}
-	if (Ctrl->S[BATCH_PREFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[BATCH_PREFLIGHT].file)) {	/* Delete the background script */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the preflight script %s.\n", Ctrl->S[BATCH_PREFLIGHT].file);
-		return (GMT_RUNTIME_ERROR);
-	}
-	if (Ctrl->S[BATCH_POSTFLIGHT].file && gmt_remove_file (GMT, Ctrl->S[BATCH_POSTFLIGHT].file)) {	/* Delete the foreground script */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to delete the postflight script %s.\n", Ctrl->S[BATCH_POSTFLIGHT].file);
-		return (GMT_RUNTIME_ERROR);
-	}
-	return (GMT_NOERROR);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -628,7 +422,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.scripts) {	/* No batch, but scripts will be produced */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Dry-run enabled - Processing scripts will be created and any pre/post-flight scripts will be executed.\n");
 		if (Ctrl->M.active) GMT_Report (API, GMT_MSG_INFORMATION, "A single script for job %d will be created and executed\n", Ctrl->M.job);
-		run_script = batch_dry_run_only;	/* This prevents the main job loop from executing the script */
+		run_script = gmtlib_dry_run_only;	/* This prevents the main job loop from executing the script */
 	}
 	else	/* Will run scripts and may even need to make a batch */
 		run_script = system;	/* The standard system function will be used */
@@ -714,14 +508,14 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	}
 
 	sprintf (string, "Static parameters set for processing sequence %s", Ctrl->N.prefix);
-	batch_set_comment (fp, Ctrl->In.mode, string);
-	batch_set_tvalue (fp, Ctrl->In.mode, true, "BATCH_PREFIX", Ctrl->N.prefix);
-	if (n_written) batch_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_jobs);	/* Total jobs (write to init since known) */
+	gmtlib_set_comment (fp, Ctrl->In.mode, string);
+	gmtlib_set_tvalue (fp, Ctrl->In.mode, true, "BATCH_PREFIX", Ctrl->N.prefix);
+	if (n_written) gmtlib_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_jobs);	/* Total jobs (write to init since known) */
 	if (Ctrl->I.active) {	/* Append contents of an include file */
-		batch_set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
+		gmtlib_set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
-			if (batch_is_gmt_module (line, "begin")) continue;		/* Skip gmt begin */
-			if (batch_is_gmt_module (line, "end")) continue;		/* Skip gmt end */
+			if (gmtlib_is_gmt_module (line, "begin")) continue;		/* Skip gmt begin */
+			if (gmtlib_is_gmt_module (line, "end")) continue;		/* Skip gmt end */
 			if (strstr (line, "#!/")) continue;			/* Skip any leading shell incantation */
 			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 			fprintf (fp, "%s", line);				/* Just copy the line as is */
@@ -734,7 +528,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		/* The postflight script must be modern mode */
 		unsigned int rec = 0;
 		sprintf (pre_file, "batch_preflight.%s", extension[Ctrl->In.mode]);
-		is_classic = batch_script_is_classic (GMT, Ctrl->S[BATCH_PREFLIGHT].fp);
+		is_classic = gmtlib_script_is_classic (GMT, Ctrl->S[BATCH_PREFLIGHT].fp);
 		if (is_classic) {
 			GMT_Report (API, GMT_MSG_ERROR, "Your preflight file %s is not in GMT modern node - exiting\n", pre_file);
 			fclose (Ctrl->In.fp);
@@ -746,23 +540,23 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		batch_set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
-		batch_set_comment (fp, Ctrl->In.mode, "Preflight script");
+		gmtlib_set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
+		gmtlib_set_comment (fp, Ctrl->In.mode, "Preflight script");
 		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since subshells may mess things up */
-		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
-			batch_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+			gmtlib_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Turn off auto-display of figures if scrip has gmt end show */
-		batch_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
+		gmtlib_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_PREFLIGHT].fp)) {	/* Read the postflight script and copy to preflight script with some exceptions */
-			if (batch_is_gmt_module (line, "begin")) {
+			if (gmtlib_is_gmt_module (line, "begin")) {
 				fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 			}
-			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by batch_set_script */
-				if (batch_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by gmtlib_set_script */
+				if (gmtlib_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
 				else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
@@ -779,7 +573,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T */
-		if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
 			sprintf (cmd, "cmd /C %s", pre_file);
 		else
 			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
@@ -849,7 +643,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S[BATCH_POSTFLIGHT].active) {	/* Prepare the postflight script */
 		sprintf (post_file, "batch_postflight.%s", extension[Ctrl->In.mode]);
-		is_classic = batch_script_is_classic (GMT, Ctrl->S[BATCH_POSTFLIGHT].fp);
+		is_classic = gmtlib_script_is_classic (GMT, Ctrl->S[BATCH_POSTFLIGHT].fp);
 		if (is_classic) {
 			GMT_Report (API, GMT_MSG_ERROR, "Your postflight file %s is not in GMT modern node - exiting\n", post_file);
 			fclose (Ctrl->In.fp);
@@ -861,22 +655,22 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		batch_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
-		batch_set_comment (fp, Ctrl->In.mode, "Postflight script");
+		gmtlib_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+		gmtlib_set_comment (fp, Ctrl->In.mode, "Postflight script");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		fprintf (fp, "cd %s\n", topdir);		/* cd to the starting directory */
 		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since subshells may mess things up */
-		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
 		else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
-			batch_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+			gmtlib_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_POSTFLIGHT].fp)) {	/* Read the preflight script and copy to postflight script with some exceptions */
-			if (batch_is_gmt_module (line, "begin")) {
+			if (gmtlib_is_gmt_module (line, "begin")) {
 				fprintf (fp, "%s", line);	/* Allow args here since the script may make a plot */
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
-				if (batch_is_gmt_end_show (line)) sprintf (line, "%s", line);		/* Allow show in gmt end here */
+				if (gmtlib_is_gmt_end_show (line)) sprintf (line, "%s", line);		/* Allow show in gmt end here */
 				else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
@@ -909,18 +703,18 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		sprintf (state_prefix, "Parameter file for job %s", state_tag);
-		batch_set_comment (fp, Ctrl->In.mode, state_prefix);
+		gmtlib_set_comment (fp, Ctrl->In.mode, state_prefix);
 		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
-		batch_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_NAME", state_prefix);	/* Current job name prefix (e.g., my_job_0003) */
-		batch_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_JOB", data_job);		/* Current job number (e.g., 3) */
-		if (!n_written) batch_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_jobs);	/* Total jobs (write here since n_jobs was not yet known when init was written) */
-		batch_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_ITEM", state_tag);		/* Current job tag (formatted job number, e.g, 0003) */
+		gmtlib_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_NAME", state_prefix);	/* Current job name prefix (e.g., my_job_0003) */
+		gmtlib_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_JOB", data_job);		/* Current job number (e.g., 3) */
+		if (!n_written) gmtlib_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_jobs);	/* Total jobs (write here since n_jobs was not yet known when init was written) */
+		gmtlib_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_ITEM", state_tag);		/* Current job tag (formatted job number, e.g, 0003) */
 		for (col = 0; col < n_values; col++) {	/* Derive job variables from <timefile> in each parameter file */
 			sprintf (string, "BATCH_COL%u", col);
-			batch_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_job]);
+			gmtlib_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_job]);
 		}
 		if (has_text) {	/* Also place any string parameter as a single string variable */
-			batch_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_TEXT", D->table[0]->segment[0]->text[data_job]);
+			gmtlib_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_TEXT", D->table[0]->segment[0]->text[data_job]);
 			if (Ctrl->T.split) {	/* Also split the string into individual words BATCH_WORD1, BATCH_WORD2, etc. */
 				char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[data_job]);
 				col = 0;
@@ -928,7 +722,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				while ((word = strsep (&trail, " \t")) != NULL) {
 					if (*word != '\0') {	/* Skip empty strings */
 						sprintf (string, "BATCH_WORD%u", col++);
-						batch_set_tvalue (fp, Ctrl->In.mode, false, string, word);
+						gmtlib_set_tvalue (fp, Ctrl->In.mode, false, string, word);
 					}
 				}
 				gmt_M_str_free (orig);
@@ -946,43 +740,43 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		fclose (Ctrl->In.fp);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
-	batch_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
-	batch_set_comment (fp, Ctrl->In.mode, "Main job loop script");
+	gmtlib_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+	gmtlib_set_comment (fp, Ctrl->In.mode, "Main job loop script");
 	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since sub-shells may mess things up */
-	if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the job number */
+	if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the job number */
 		fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 	else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
-		batch_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+		gmtlib_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if script has gmt end show */
-	batch_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
-	batch_set_comment (fp, Ctrl->In.mode, "Include static and job-specific parameters");
+	gmtlib_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
+	gmtlib_set_comment (fp, Ctrl->In.mode, "Include static and job-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 	fprintf (fp, "%s batch_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the job parameters */
-	fprintf (fp, "mkdir %s\n", batch_place_var (Ctrl->In.mode, "BATCH_NAME"));	/* Make a temp directory for this job */
-	fprintf (fp, "cd %s\n", batch_place_var (Ctrl->In.mode, "BATCH_NAME"));		/* cd to the temp directory */
+	fprintf (fp, "mkdir %s\n", gmtlib_place_var (Ctrl->In.mode, "BATCH_NAME"));	/* Make a temp directory for this job */
+	fprintf (fp, "cd %s\n", gmtlib_place_var (Ctrl->In.mode, "BATCH_NAME"));		/* cd to the temp directory */
 	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
-		if (batch_is_gmt_module (line, "begin")) {
+		if (gmtlib_is_gmt_module (line, "begin")) {
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are not building plots */
 			fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
-			if (batch_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+			if (gmtlib_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
 			else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 			fprintf (fp, "%s", line);	/* Just copy the line as is */
 		}
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
 	/* Move job products up to main directory */
-	fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], batch_place_var (Ctrl->In.mode, "BATCH_NAME"), topdir);
+	fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmtlib_place_var (Ctrl->In.mode, "BATCH_NAME"), topdir);
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	/* Create completion file */
-	fprintf (fp, "%s %s.___\n", createfile[Ctrl->In.mode], batch_place_var (Ctrl->In.mode, "BATCH_NAME"));
+	fprintf (fp, "%s %s.___\n", createfile[Ctrl->In.mode], gmtlib_place_var (Ctrl->In.mode, "BATCH_NAME"));
 	if (!Ctrl->Q.active) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single job only */
-		batch_set_comment (fp, Ctrl->In.mode, "Remove job directory and job parameter file");
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], batch_place_var (Ctrl->In.mode, "BATCH_NAME"));	/* Remove the work dir and any files in it */
+		gmtlib_set_comment (fp, Ctrl->In.mode, "Remove job directory and job parameter file");
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], gmtlib_place_var (Ctrl->In.mode, "BATCH_NAME"));	/* Remove the work dir and any files in it */
 		fprintf (fp, "%s batch_params_%c1.%s\n", rmfile[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Remove the parameter file for this job */
 	}
-	if (Ctrl->In.mode == DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
+	if (Ctrl->In.mode == GMT_DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
 		fprintf (fp, "exit\n");
 	fclose (fp);	/* Done writing loop script */
 
@@ -1001,9 +795,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
-	batch_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
+	gmtlib_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
 	if (Ctrl->W.active) {	/* Want to delete the entire work directory */
-		batch_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
+		gmtlib_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
 		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], workdir);	/* Delete the entire working directory with batch jobs and tmp files */
 	}
 	else {	/* Just delete the remaining scripts and PS files */
@@ -1036,7 +830,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->M.active) {	/* Just run that one job */
-		if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
 			sprintf (cmd, "cmd /C %s %s", main_file, state_tag);
 		else
 			sprintf (cmd, "%s %s %s", sc_call[Ctrl->In.mode], main_file, state_tag);
@@ -1082,7 +876,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			n_jobs_not_started--;		/* One less job remaining */
 			n_cores_unused--;		/* This core is now busy */
 		}
-		batch_gmt_sleep (BATCH_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for completion of the completion file */
+		gmtlib_gmt_sleep (BATCH_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for completion of the completion file */
 		for (k = first_job; k < i_job; k++) {	/* Only loop over the range of jobs that we know are currently in play */
 			if (status[k].completed) continue;	/* Already finished with this job */
 			if (!status[k].started) continue;	/* Not started this job yet */
@@ -1106,7 +900,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S[BATCH_POSTFLIGHT].active) {	/* Prepare the postflight script */
 		/* Run post-flight now since all processing has completed */
-		if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
 			sprintf (cmd, "cmd /C %s", post_file);
 		else
 			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
@@ -1120,7 +914,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->Q.active) {
 		/* Run cleanup script at the end */
-		if (Ctrl->In.mode == DOS_MODE)
+		if (Ctrl->In.mode == GMT_DOS_MODE)
 			error = system (cleanup_file);
 		else {
 			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], cleanup_file);

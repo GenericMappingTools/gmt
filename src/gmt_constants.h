@@ -153,6 +153,11 @@ enum GMT_swap_direction {
 	k_swap_in,
 	k_swap_out};
 
+/*! Scripting languages */
+enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
+	GMT_CSH_MODE,			/* Write C-shell script */
+	GMT_DOS_MODE};			/* Write DOS script */
+
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
 #define GMT_LEN_UNITS2	"efkMnu"	/* Distances in meter, foot, survey foot, km, Mile, nautical mile */
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
