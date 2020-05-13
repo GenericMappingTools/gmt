@@ -255,7 +255,7 @@ filter width, try::
         gmt coast -Wthin,white
     gmt end show
     EOF
-    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nfilter -V
+    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nfilter -V -Z
     
 Of course, the syntax of how variables are used vary according to the scripting language. At the
 end of the execution we find 20 grids (e.g., filter_07.grd) as well as the filter_std.grd file.
