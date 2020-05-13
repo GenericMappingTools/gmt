@@ -34,8 +34,9 @@ Description
 The **batch** module can generate GMT processing jobs using a single master script
 that is repeated for all jobs, with some variation using specific job variables.  The
 module simplifies (and hides) most of the steps normally needed to set up a full-blown
-processing job.  Instead, the user can focus on composing the main processing script and let the
-parallel execution of jobs and assembly of data output take place in the preflight.
+processing sequence.  Instead, the user can focus on composing the main processing script and let the
+parallel execution of jobs be automatic.  After completion we can assemble the data output
+and make sumamry plots in the postflight script.
 
 
 Required Arguments
@@ -52,9 +53,7 @@ Required Arguments
 .. _-N:
 
 **-N**\ *prefix*
-    Determines the name of the final batch file and a sub-directory with job products (but see **-W**).
-    **Note**: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
-    old directory by that name first.  This is done to prevent the accidental loss of valuable data.
+    Determines the prefix of the batch file products and the sub-directory with job products (but see **-W**).
 
 .. _-T:
 
@@ -88,7 +87,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*job*],[*format*]
+**-M**\ [*job*]
     Instead of making the full processing sequence, select a single master job [0] for testing.  The master job
     will be run and its product(s) placed in the top directory. While any *preflight* script will be run prior
     to the master job, the *postflight* script will not be executed (but it will be created).
@@ -112,7 +111,7 @@ Optional Arguments
 **-Sf**\ *postflight*
     The optional GMT modern mode *postflight* (written in the same scripting language as *mainscript*) can be
     used to perform final processing after all the individual jobs have completed, such as assembling data sets
-    into a single larger file.  The script may also map illustrations using the products or stacked data from
+    into a single larger file.  The script may also make illustrations using the products or stacked data from
     the processing.
 
 .. _batch-V:
@@ -132,10 +131,8 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ [**s**]
-    Erase the entire *prefix* directory after assembling the final batch [Default leaves directory with all images;
-    the temporary script files, parameter files are all removed (but see **-Q**)].
-    If your *mainscript* and all input scripts via **-E**, **-I**, and **-S** should be deleted as well then
-    append **s**.
+    Erase the entire *prefix* directory after completing all processing [Default leaves directory with all files;
+    teAppend **s** if your *mainscript* and all input scripts via **-I** and **-S** should be deleted as well.
 
 .. _-cores:
 
@@ -163,8 +160,7 @@ In addition, the *mainscript* also has access to parameters that vary with the j
 **BATCH_NAME**\ : The name prefix for the current job (i.e., *prefix*\ _\ **BATCH_TAG**),
 Furthermore, if a *timefile* was given then variables **BATCH_COL0**\ , **BATCH_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **BATCH_TEXT**, and if word-splitting was explicitly requested by **-T+w** or
-implicitly by selecting word labels in **-F** or **-P**) then
+be accessed via the variable **BATCH_TEXT**, and if word-splitting was explicitly requested by **-T+w** then
 the trailing text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc.
 **Note**: Any product(s) made by the processing scripts should be named using **BATCH_NAME** as their prefix
 as these will be automatically moved up to the starting directory upon completion.
@@ -210,12 +206,12 @@ variables (e.g., job number and anything given via **-T**).  The pre- and post-f
 access to the information in *batch_init* while the job script in addition has access to the job-specific
 parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
 **Note**: The *mainscript* is duplicated per job and each copy is run simultaneously on all available cores.
-Multi-treaded GMT modules will therefore be limited to a single core as well.  Because we do not know how
-many products each batch job makes, we make each job create a unique file when it is done.  Checkint for these
+Multi-treaded GMT modules will therefore be limited to a single core.  Because we do not know how
+many products each batch job makes, we make each job create a unique file when it is done.  Checking for these
 files is how **batch** learns that a particular job has completed.
 
 
-Hints for Movie Makers
+Hints for Batch Makers
 ----------------------
 
 Composing batch jobs is relatively simple but you have to think in terms of variables.
@@ -227,7 +223,7 @@ then have all the values you need, per job (i.e., row), with values across all t
 If you need to assign various fixed variables that do not change with time then your *mainscript*
 will look shorter and cleaner if you offload those assignments to a separate *includefile* (**-I**).
 To test your batch, start by using options **-Q -M** to ensure your master job results are correct.
-The **-M(** simply runs one job of your batch sequence (you can select which job via the **-M** arguments [0]).  Fix any
+The **-M** option simply runs one job of your batch sequence (you can select which job via the **-M** arguments [0]).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove **-Q**.
 We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) batch sequence so you don't have to wait very
 long to see the result.  Once things are working you can beef up number of jobs and batch quality.
@@ -238,7 +234,7 @@ Examples
 
 We extract a subset of bathymetry for the Gulf of Guinea at 2x2 arc minute resolution and compute Gaussian filtered
 high-pass grids using filter widths ranging from 10 to 200 km in steps of 10 km. When the grids are completed we determine
-the standard deviation in the result per node and make a plot to see where the filtering is very sensitive to the
+the standard deviation in the result per node and make a plot to see where the filtering is most sensitive to the
 filter width, try::
 
     cat << EOF > pre.sh
@@ -262,7 +258,7 @@ filter width, try::
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nfilter -V
     
 Of course, the syntax of how variables are used vary according to the scripting language. At the
-end of the execution we find 20 grids (e.g., medtopo_007.grd) as well as the medtopo_std.grd file.
+end of the execution we find 20 grids (e.g., filter_07.grd) as well as the filter_std.grd file.
 The information needed to do all of this is hidden from the user;
 the actual batch scripts that execute are derived from the user-provided main.sh script and supply
 the extra machinery. The **batch** module automatically manages the parallel execution loop over all

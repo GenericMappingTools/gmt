@@ -1,5 +1,7 @@
 .. |basemap_purpose| replace:: Plot base maps and frames
 
+.. |batch_purpose| replace:: Automate batch job processing
+
 .. |begin_purpose| replace:: Initiate a new GMT modern mode session
 
 .. |blockmean_purpose| replace:: Block average (x,y,z) data tables by mean estimation
