@@ -503,7 +503,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		H = I->header;
 		if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H)
+#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H,intens)
 #endif
 			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
 				for (band = 0; band < 3; band++)	/* March across the RGB values in both images and increment counters */
