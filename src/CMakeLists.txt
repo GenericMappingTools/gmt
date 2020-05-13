@@ -394,7 +394,7 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c gmt_parse.c inset.c
 	gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c gmt_common_math.c
 	gmt_common_runpath.c gmt_common_sighandler.c gmt_common_string.c compat/qsort.c
-	gmt_sharedlibs.c  gmt_init.c gmt_map.c gmt_plot.c gmt_gdal_librarified.c
+	gmt_sharedlibs.c  gmt_init.c gmt_map.c gmt_plot.c gmt_gdalcall.c
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_moduleinfo.h
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_sharedlibs.h
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c
