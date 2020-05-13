@@ -639,7 +639,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the batch main code ----------------------------*/
 
 	if (Ctrl->Q.scripts) {	/* No batch, but scripts will be produced */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Dry-run enabled - Processing scripts will be created and any pre/post-flight scripts will be executed.\n");
 		if (Ctrl->M.active) GMT_Report (API, GMT_MSG_INFORMATION, "A single script for job %d will be created and executed\n", Ctrl->M.job);
 		run_script = batch_dry_run_only;	/* This prevents the main job loop from executing the script */
 	}
@@ -729,6 +729,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	sprintf (string, "Static parameters set for processing sequence %s", Ctrl->N.prefix);
 	batch_set_comment (fp, Ctrl->In.mode, string);
+	movie_set_tvalue (fp, Ctrl->In.mode, true, "BATCH_PREFIX", Ctrl->N.prefix);
 	if (n_written) batch_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_data_jobs);	/* Total jobs (write to init since known) */
 	if (Ctrl->I.active) {	/* Append contents of an include file */
 		batch_set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
