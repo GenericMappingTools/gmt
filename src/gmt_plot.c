@@ -2828,7 +2828,7 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		n_tick = gmtlib_linear_array (GMT, 0.0, 360.0, mr->g_int[level], 0.0, &val);
 		PSL_comment (PSL, "Draw %d tickmarks for magnetic rose %s circle\n", n_tick, type[level]);
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of fine tickmarks (-1 to avoid repeating 360) */
-			angle = offset + val[i];
+			angle = 90.0 - (offset + val[i]);	/* Since val is azimuth */
 			k = (gmt_M_is_zero (fmod (val[i], mr->a_int[level]))) ? 2 : ((gmt_M_is_zero (fmod (val[i], mr->f_int[level]))) ? 1 : 0);
 			sincosd (ew_angle + angle, &s, &c);
 			x[0] = mr->refpoint->x + R[level] * c, y[0] = mr->refpoint->y + R[level] * s;
