@@ -75,7 +75,7 @@ struct GRDFLEXURE_CTRL {
 		unsigned int mode;
 		double nu_a, nu_m, h_a;
 	} F;
-	struct GRDFLEXURE_G {	/* -G<outfile> */
+	struct GRDFLEXURE_G {	/* -G<outfile>|+d */
 		bool active;
 		char *file;
 	} G;
@@ -110,9 +110,7 @@ struct GRDFLEXURE_CTRL {
 		bool active;
 		double zm;	/* Reference depth to flexed surface [0] */
 	} Z;
-#ifdef DEBUG
-	bool test;
-#endif
+	bool write_transfer_function;
 };
 
 struct GRDFLEXURE_RHEOLOGY {	/* Used to pass parameters in/out of functions */
@@ -388,8 +386,11 @@ GMT_LOCAL double grdflexure_relax_time_2 (double k, struct GRDFLEXURE_RHEOLOGY *
 	S = sinh (lambda);
 	C = cosh (lambda);
 	CS = C * S;	S2 = S * S;	C2 = C * C;
-	tau = R->cv * (k * (2.0 * R->nu_ratio * CS + (1.0 - R->nu_ratio) * lambda * lambda + R->nu_ratio * S2 + C2))
-		/ ((R->nu_ratio + R->nu_ratio1) * CS + (R->nu_ratio - R->nu_ratio1) * lambda + S2 + C2);
+	//tau = R->cv * (k * (2.0 * R->nu_ratio * CS + (1.0 - R->nu_ratio) * lambda * lambda + R->nu_ratio * S2 + C2))
+	//	/ ((R->nu_ratio + R->nu_ratio1) * CS + (R->nu_ratio - R->nu_ratio1) * lambda + S2 + C2);
+	tau = R->cv * ((R->nu_ratio + R->nu_ratio1) * CS + (R->nu_ratio - R->nu_ratio1) * lambda + S2 + C2)
+		/ ((k * (2.0 * R->nu_ratio * CS + (1.0 - R->nu_ratio) * lambda * lambda + R->nu_ratio * S2 + C2)));
+	if (gmt_M_is_dnan (tau)) tau = 0.0;	/* Blew up due to lambda being too large */
 	return (tau);
 }
 
@@ -403,7 +404,8 @@ GMT_LOCAL void grdflexure_setup_fv2 (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTR
 	R->nu_ratio = Ctrl->F.nu_a / Ctrl->F.nu_m;
 	assert (R->nu_ratio > 0.0);
 	R->nu_ratio1 = 1.0 / R->nu_ratio;
-	R->cv = (2.0 * Ctrl->F.nu_m) / (Ctrl->D.rhom * NORMAL_GRAVITY);
+	//R->cv = (2.0 * Ctrl->F.nu_m) / (Ctrl->D.rhom * NORMAL_GRAVITY);
+	R->cv = (Ctrl->D.rhom * NORMAL_GRAVITY) / (2.0 * Ctrl->F.nu_m);
 	R->dens_ratio = (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom;
 	assert (R->dens_ratio > 0.0);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "FV2 setup: R->t0 = %g R->dens_ratio = %g R->nu_ratio = %g  R->nu_ratio1 = %g R->cv = %g\n",
@@ -415,7 +417,8 @@ GMT_LOCAL double grdflexure_transfer_fv2 (double *k, struct GRDFLEXURE_RHEOLOGY 
 	double phi_e, phi_fv2, tau;
 	phi_e = R->tr_elastic_sub (k, R);
 	tau = grdflexure_relax_time_2 (k[GMT_FFT_K_IS_KR], R);
-	phi_fv2 = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio / (tau * phi_e)));
+	//phi_fv2 = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio / (tau * phi_e)));
+	phi_fv2 = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio * tau / phi_e));
 	return (R->scale * phi_fv2);
 }
 
@@ -427,7 +430,8 @@ GMT_LOCAL void grdflexure_setup_fv (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL
 	assert (R->t0 >= 0.0);
 	R->dens_ratio = (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom;
 	assert (R->dens_ratio > 0.0);
-	R->cv = (2.0 * Ctrl->F.nu_m) / (Ctrl->D.rhom * NORMAL_GRAVITY);
+	//R->cv = (2.0 * Ctrl->F.nu_m) / (Ctrl->D.rhom * NORMAL_GRAVITY);
+	R->cv = (Ctrl->D.rhom * NORMAL_GRAVITY) / (2.0 * Ctrl->F.nu_m);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "FV Setup: R->t0 = %g R->dens_ratio = %g R->cv = %g\n", R->t0, R->dens_ratio, R->cv);
 }
 
@@ -444,11 +448,12 @@ GMT_LOCAL double grdflexure_transfer_fv (double *k, struct GRDFLEXURE_RHEOLOGY *
  */
 	double phi_e, phi_fv, tau;
 	phi_e = R->tr_elastic_sub (k, R);
-	tau = k[GMT_FFT_K_IS_KR] * R->cv;
+	//tau = k[GMT_FFT_K_IS_KR] * R->cv;
+	tau =  R->cv / k[GMT_FFT_K_IS_KR];
 	if (k[GMT_FFT_K_IS_KR] == 0.0)
 		phi_fv = phi_e;
 	else
-		phi_fv = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio / (tau * phi_e)));
+		phi_fv = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio * tau / phi_e));
 	return (R->scale * phi_fv);
 }
 
@@ -581,7 +586,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'G':	/* Output file name or template */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
+				if (strcmp (opt->arg, "+d") == 0)	/* Want to just dump the transfer functions */
+					Ctrl->write_transfer_function = true;
+				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -616,11 +623,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				Ctrl->Z.active = true;
 				Ctrl->Z.zm = atof (opt->arg);
 				break;
-#ifdef DEBUG
-			case '+':
-				Ctrl->test = true;
-				break;
-#endif
 			default:
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -632,18 +634,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file,  "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D: Must set density values\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -E: Must set elastic plate thickness regardless of rheology\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.beta < 0.0 || Ctrl->S.beta > 1.0),
-	                                 "Option -S: beta value must be in 0-1 range\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->T.active, "Option -F: Requires time information via -T\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !Ctrl->T.active, "Option -L: Requires time information via -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.active, "Option -M: Cannot mix with -F\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'),
+	if (!Ctrl->write_transfer_function) {
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file,  "Option -G: Must specify output file\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E: Must set elastic plate thickness regardless of rheology\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.beta < 0.0 || Ctrl->S.beta > 1.0),
+	                                 "Option -S: beta value must be in 0-1 range\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->T.active, "Option -F: Requires time information via -T\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !Ctrl->T.active, "Option -L: Requires time information via -T\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'),
 	                                 "Option -G: Filename template must contain format specified\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Load template given but -T not specified\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Load template given but -T not specified\n");
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -651,7 +655,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid> [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid>|+d [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<list>] [-M<tm>] [-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>]|<file>|<n>[+l]]]\n\t[%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n\n", GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -668,6 +672,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   must be a filename template that contains a floating point format (C syntax) and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If the floating point format is followed by %%c then we scale time to unit in -T and append the unit.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, just give -G+d and we just write the chosen response functions Q(k[,t]) for parameters\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   lambda = 1-3000 km, Te = 1,2,5,10,20,50 km, and t = 1k,2k,5k,10k,20k,50k,100k,200k,500k,1M,2M,5M years\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Sets in-plane force components Nx, Ny and shear force Nxy [isotropic deformation].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Negative values mean compression, positive values mean extensional forces.\n");
@@ -675,10 +681,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets upper mantle viscosity, and optionally its thickness and lower mantle viscosity.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Viscosity units in Pa s; thickness in meter (append k for km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Give filename for output table with names of all grids (and model times) produced.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename is given then we write the list to stdout.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename is given then we write the list to standard output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Set Maxwell time for visco-elastic flexure (in years; append k for kyr and M for Myr).\n");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify starved moat fraction in 0-1 range (1 = fully filled, 0 = no infill) [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Specify water depth in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start> (in years; append k for kyr and M for Myr).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, append +l and specify n steps instead of time increment.\n");
@@ -733,7 +739,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 				n_subaerial++;
 			}
 		}
-		if (n_subaerial) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " nodes were subarial so heights were scaled for the equivalent submerged case\n", n_subaerial);
+		if (n_subaerial) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " nodes were subaerial so heights were scaled for the equivalent submerged case\n", n_subaerial);
 	}
 	/* From here we address the grid via Grid; we are done with using the address Orig directly. */
 	G = gmt_M_memory (GMT, NULL, 1, struct GRDFLEXURE_GRID);	/* Allocate a Flex structure */
@@ -799,56 +805,64 @@ GMT_LOCAL int grdflexure_compare_loads (const void *load_1v, const void *load_2v
 	return (0);
 }
 
-#ifdef DEBUG
-EXTERN_MSC unsigned int gmtlib_linear_array (struct GMT_CTRL *GMT, double min, double max, double delta, double phase, double **array);
+GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
+	/* Write a table with six segments (one each for Te = 1, 2, 5, 10, 20, 50, and 100 km).
+	 * Each segment has leading columns of wavelength and wavenumber corresponding to wavelengths 1:5000 km.
+	 * The next 13 columns has the chosen transfer function evaluated for times 1k, 2k, 5k, 10k, 20k, 50k, 100k, 200k, 500k, 70k, 1M, 2M, and 5M years.
+	 * Each segment is written to a separate file. Obviously, if no -F or -M are given then all columns are the same since elastic */
+	int k, t, s, n_times;
+	char file[GMT_LEN64] = {""};
+	uint64_t dim[4] = {1, 7, 0, 0};
+	double *kr, K[3], te[7] = {1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0};
+	double times[13] = {1.0, 3.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0};	/* Times in kiloyears */
+	struct GRDFLEXURE_RHEOLOGY *R = NULL;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
+	struct GMT_ARRAY T;
 
-GMT_LOCAL int grdflexure_dump_transfer (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl) {
-	/* Write a table with three segments (one each for Te = 10, 20, and 30 km).
-	 * Each segment has a leading column of wavenumber corresponding to wavelengths 1:3000 km.
-	 * The next 5 columns has the chosen transfer function evaluated for times 10k, 20k, 30k, 70k, and 1M years.
-	 * Each segment is written to a separate file */
-	int n, k, t, s;
-	char file[32] = {""};
-	uint64_t dim[4] = {1, 3, 0, 6};
-	double *kr, K[3], te[3] = {10000.0, 20000.0, 30000.0}, times[5] = {3000.0, 10000.0, 30000.0, 70000.0, 1000000.0};	/* Times in years */
-	struct GRDFLEXURE_RHEOLOGY *R;
-	struct GMT_DATASET *D;
-	struct GMT_DATASEGMENT *S;
-	struct GMT_DATASEGMENT_HIDDEN *SH;
-
-	dim[GMT_ROW] = n = gmtlib_linear_array (GMT, 1.0, 3000.0, 1.0, 0.0, &kr);	/* In km */
-	for (k = 0; k < n; k++) kr[k] = 2.0 * M_PI / (kr[k] * 1000.0);	/* Radial wavenumber in 1/m */
+	gmt_parse_array (GMT, 'T', "1/5000/1", &T, GMT_ARRAY_RANGE, 0);	/* In km */
+	gmt_create_array (GMT, 'T', &T, NULL, NULL);
+	dim[GMT_ROW] = T.n;
+	n_times = (Ctrl->F.active || Ctrl->M.active) ? 13 : 1;	/* No point repeating 13 identical results for the elastic case */
+	dim[GMT_COL] = 2 + n_times;
+	kr = gmt_M_memory (GMT, NULL, T.n, double);
+	for (k = 0; k < T.n; k++) kr[k] = 2.0 * M_PI / (T.array[k] * 1000.0);	/* Radial wavenumber in 1/m */
 
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 		return GMT_RUNTIME_ERROR;
+	GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D);
+	gmt_set_tableheader (GMT, GMT_OUT, true);
 
 	R = grdflexure_select_rheology (GMT, Ctrl);
 	R->relative = true;	/* Relative times are given */
 
-	for (s = 0; s < 3; s++) {
+	for (s = 0; s < 7; s++) {
 		S = D->table[0]->segment[s];
-		sprintf (file, "flex_te%gk_t_fv2.txt", te[s]*0.001);
+		sprintf (file, "grdflexure_transfer_function_te_%3.3d_km.txt", irint (te[s]));
 		SH = gmt_get_DS_hidden (S);
 		SH->file[GMT_OUT] = strdup (file);
-		gmt_M_memcpy (S->data[0], kr, n, double);
+		gmt_M_memcpy (S->data[0], T.array, T.n, double);
+		gmt_M_memcpy (S->data[1], kr, T.n, double);
 		Ctrl->E.te = te[s] * 1000;	/* Te in meters */
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Transfer function for Te = %g km written to %s\n", te[s]*0.001, SH->file[GMT_OUT]);
-		for (t = 0; t < 5; t++) {	/* For each time step (i.e., at least once) */
-			R->eval_time_yr = times[t];		/* In years */
-			R->setup (GMT, Ctrl, R);	/* Set up parameters */
-			for (k = 0; k < n; k++) {
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Transfer function for Te = %g km written to %s\n", te[s], SH->file[GMT_OUT]);
+		for (t = 0; t < n_times; t++) {	/* For each time step (i.e., at least once) */
+			R->eval_time_yr = times[t] * 1000.0;		/* In years */
+			R->setup (GMT, Ctrl, R);		/* Set up parameters */
+			R->scale = 1.0;	/* We want these to go 0-1 only */
+			for (k = 0; k < T.n; k++) {	/* Evaluate transfer functions */
 				K[GMT_FFT_K_IS_KR] = kr[k];
-				S->data[t+1][k] = R->transfer (K, R);
+				S->data[t+2][k] = R->transfer (K, R);
 			}
 		}
 	}
+	gmt_free_array (GMT, &T);
 	gmt_M_free (GMT, kr);
 	gmt_M_free (GMT, R);
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SEGMENT, NULL, file, D) != GMT_NOERROR)
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
 }
-#endif
 
 EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	unsigned int t_eval, t_load, n_load_times = 0;
@@ -883,12 +897,10 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
-#ifdef DEBUG
-	if (Ctrl->test) {	/* Just write transfer function and return */
-		error = grdflexure_dump_transfer (GMT, Ctrl);
+	if (Ctrl->write_transfer_function) {	/* Just write transfer function and return */
+		error = grdflexure_write_transfer_function (GMT, Ctrl, options);
 		Return (error);
 	}
-#endif
 
 	/*---------------------------- This is the grdflexure main code ----------------------------*/
 

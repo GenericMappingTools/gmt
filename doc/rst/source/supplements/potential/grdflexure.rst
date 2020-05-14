@@ -12,13 +12,13 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te* |-G|\ *outgrid*
+**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te* |-G|\ *outgrid*\ \|\ **+d**
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
 [ |-L|\ *list* ]
-[ |-M|\ **\ *tm*
-[ |-N|\ [**a**\|\ **f**\|\ **m**\|\ **r**\|\ **s**\|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\|\ **n**\|\ **m**][**+t**\ *width*][**+v**][**+w**\ [*suffix*]][**+z**\ [**p**]] ]
+[ |-M|\ *tm*
+[ |-N|\ *params* ]
 [ |-S|\ *beta* ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**] ]
 [ |SYN_OPT-V| ]
@@ -72,12 +72,15 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outfile*
+**-G**\ *outfile*\ \|\ **+d**
     If **-T** is set then *grdfile* must be a filename template that contains
     a floating point format (C syntax).  If the filename template also contains
     either %s (for unit name) or %c (for unit letter) then we use the corresponding time
     (in units specified in **-T**) to generate the individual file names, otherwise
-    we use time in years with no unit.
+    we use time in years with no unit. Alternatively, if you use **-G+d** we do not
+    make any flexure calculations but instead we take the chosen transfer function
+    given the parameters you selected and evaluate it for a range of wavenumbers.
+    See the note on transfer functions below.
 
 Optional Arguments
 ------------------
@@ -184,6 +187,17 @@ meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject </grdproject>`.
 
+Transfer Functions
+------------------
+
+If **-G+d** is given we write the transfer functions T(k,t) to 7 separate files for
+7 different Te values (1, 2, 5, 10, 20, 50, and 100 km). The first two columns are
+always wavelength in km and wavenumber (in 1/m) for a 1:1:3000 km range. The transfer
+functions are evaluated for 13 different response times: 1k, 2k, 5k, 10k, 20, 50k,
+100k, 200k, 500k, 1M, 2M, 10M years; the exception is for a purely elastic response function
+which is only written once per elastic thickness in column 3.  The 7 files are named
+grdflexure_transfer_function_te_\ *te*\ _km.txt where *te* is replaced by the 7 elastic thicknesses in km.
+
 Plate Flexure Notes
 -------------------
 
@@ -216,10 +230,17 @@ specified rheological values, try
 
     gmt grdflexure -T1M =l.lis -D3300/2800/2800/1000 -E5k -Gflx/smt_fv_%03.1f_%s.nc -F2e20 -Nf+a
 
+To just compute the firmoviscous response functions using the specified rheological values, try::
+
+    gmt grdflexure -D3300/2800/2800/1000 -G+d -F2e20
+
 References
 ----------
 
 Cathles, L. M., 1975, *The viscosity of the earth's mantle*, Princeton University Press.
+
+Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
+structure of the earth's mantle, *Tectonophysics, 121*, 263–276.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
