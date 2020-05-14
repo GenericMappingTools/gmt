@@ -399,6 +399,7 @@ GMT_LOCAL void grdflexure_setup_fv2 (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTR
 	R->t0 = (R->relative) ?  R->eval_time_yr : R->load_time_yr - R->eval_time_yr;	/* Either relative to load time or both are absolute times */
 	R->t0 *= (86400*365.25);	/* Convert to seconds */
 	assert (R->t0 >= 0.0);
+	R->h_a = Ctrl->F.h_a;
 	R->nu_ratio = Ctrl->F.nu_a / Ctrl->F.nu_m;
 	assert (R->nu_ratio > 0.0);
 	R->nu_ratio1 = 1.0 / R->nu_ratio;
@@ -842,7 +843,7 @@ GMT_LOCAL int grdflexure_dump_transfer (struct GMT_CTRL *GMT, struct GRDFLEXURE_
 		}
 	}
 	gmt_M_free (GMT, kr);
-	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SEGMENT, NULL, NULL, D) != GMT_NOERROR)
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SEGMENT, NULL, file, D) != GMT_NOERROR)
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
 }
