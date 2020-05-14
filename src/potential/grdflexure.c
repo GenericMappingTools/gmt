@@ -39,6 +39,8 @@
 #define FLX_VE	1	/* Viscoelastic */
 #define FLX_FV1	2	/* Firmoviscous 1-layer */
 #define FLX_FV2	3	/* Firmoviscous 2-layer */
+#define FLX_V1	4	/* Viscous 1-layer */
+#define FLX_V2	5	/* Viscous 2-layer */
 
 
 struct GMT_MODELTIME {	/* Hold info about time */
@@ -114,6 +116,7 @@ struct GRDFLEXURE_CTRL {
 };
 
 struct GRDFLEXURE_RHEOLOGY {	/* Used to pass parameters in/out of functions */
+	unsigned int mode;	/* Which rheological model is in effect (FLX_?) */
 	double eval_time_yr;	/* Time in years of evaluation or relative time since loading */
 	double load_time_yr;	/* Time in years of loading, or zero */
 	double t0;		/* Time in seconds since loading */
@@ -124,7 +127,7 @@ struct GRDFLEXURE_RHEOLOGY {	/* Used to pass parameters in/out of functions */
 	double Nx_e;		/* A constant for --"-- that is nonzero when Nx is nonzero */
 	double Ny_e;		/* A constant for --"-- that is nonzero when Ny is nonzero */
 	double Nxy_e;		/* A constant for --"-- that is nonzero when Nxy is nonzero */
-	double cv;		/* A constant for visous transfer functions */
+	double cv;		/* A constant for viscous transfer functions */
 	double scale;		/* Overall scale (e.g., Airy scale) */
 	double dens_ratio;	/* (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom */
 	bool relative;		/* eval_time_yr is relative to load time [at 0] */
@@ -386,8 +389,6 @@ GMT_LOCAL double grdflexure_relax_time_2 (double k, struct GRDFLEXURE_RHEOLOGY *
 	S = sinh (lambda);
 	C = cosh (lambda);
 	CS = C * S;	S2 = S * S;	C2 = C * C;
-	//tau = R->cv * (k * (2.0 * R->nu_ratio * CS + (1.0 - R->nu_ratio) * lambda * lambda + R->nu_ratio * S2 + C2))
-	//	/ ((R->nu_ratio + R->nu_ratio1) * CS + (R->nu_ratio - R->nu_ratio1) * lambda + S2 + C2);
 	tau = R->cv * ((R->nu_ratio + R->nu_ratio1) * CS + (R->nu_ratio - R->nu_ratio1) * lambda + S2 + C2)
 		/ ((k * (2.0 * R->nu_ratio * CS + (1.0 - R->nu_ratio) * lambda * lambda + R->nu_ratio * S2 + C2)));
 	if (gmt_M_is_dnan (tau)) tau = 0.0;	/* Blew up due to lambda being too large */
@@ -404,7 +405,6 @@ GMT_LOCAL void grdflexure_setup_fv2 (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTR
 	R->nu_ratio = Ctrl->F.nu_a / Ctrl->F.nu_m;
 	assert (R->nu_ratio > 0.0);
 	R->nu_ratio1 = 1.0 / R->nu_ratio;
-	//R->cv = (2.0 * Ctrl->F.nu_m) / (Ctrl->D.rhom * NORMAL_GRAVITY);
 	R->cv = (Ctrl->D.rhom * NORMAL_GRAVITY) / (2.0 * Ctrl->F.nu_m);
 	R->dens_ratio = (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom;
 	assert (R->dens_ratio > 0.0);
@@ -417,7 +417,6 @@ GMT_LOCAL double grdflexure_transfer_fv2 (double *k, struct GRDFLEXURE_RHEOLOGY 
 	double phi_e, phi_fv2, tau;
 	phi_e = R->tr_elastic_sub (k, R);
 	tau = grdflexure_relax_time_2 (k[GMT_FFT_K_IS_KR], R);
-	//phi_fv2 = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio / (tau * phi_e)));
 	phi_fv2 = phi_e * (1.0 - exp (-R->t0 * R->dens_ratio * tau / phi_e));
 	return (R->scale * phi_fv2);
 }
@@ -430,14 +429,12 @@ GMT_LOCAL void grdflexure_setup_fv (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL
 	assert (R->t0 >= 0.0);
 	R->dens_ratio = (Ctrl->D.rhom - Ctrl->D.rhoi) / Ctrl->D.rhom;
 	assert (R->dens_ratio > 0.0);
-	//R->cv = (2.0 * Ctrl->F.nu_m) / (Ctrl->D.rhom * NORMAL_GRAVITY);
 	R->cv = (Ctrl->D.rhom * NORMAL_GRAVITY) / (2.0 * Ctrl->F.nu_m);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "FV Setup: R->t0 = %g R->dens_ratio = %g R->cv = %g\n", R->t0, R->dens_ratio, R->cv);
 }
 
 GMT_LOCAL double grdflexure_transfer_fv (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
-/*	Firmoviscous response function for elastic plate over
- *	viscous half-space.  Give:
+/*	Transfer function for elastic plate over viscous half-space.  Give:
  *
  *	k	- wavenumbers (1/m)
  *	rhom	- density of mantle (kg/m^3)
@@ -464,7 +461,7 @@ GMT_LOCAL void grdflexure_setup_ve (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL
 }
 
 GMT_LOCAL double grdflexure_transfer_ve (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
-/*	Viscoelastic response function for VE plate.  Give:
+/*	Transfer function for VE plate.  Give:
  *
  *	k	- wavenumbers (1/m)
  *	rhom	- density of mantle (kg/m^3)
@@ -478,6 +475,32 @@ GMT_LOCAL double grdflexure_transfer_ve (double *k, struct GRDFLEXURE_RHEOLOGY *
 	phi_e = R->tr_elastic_sub (k, R);
 	phi_ve = 1.0 - (1.0 - phi_e) * exp (-tau * phi_e);
 	return (R->scale * phi_ve);
+}
+
+GMT_LOCAL double grdflexure_transfer_v (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
+/*	Transfer function for viscous half-space.  Give:
+ *
+ *	k	- wavenumbers (1/m)
+ *	rhom	- density of mantle (kg/m^3)
+ *	rhoi	- density of infill material (kg/m^3)
+ *	nu_m	- mantle viscosity (Pa s)
+ *	t0	- time since loading (yr)
+ */
+	double phi_v, tau;
+	tau =  R->cv / k[GMT_FFT_K_IS_KR];
+	if (k[GMT_FFT_K_IS_KR] == 0.0)
+		phi_v = 1.0;
+	else
+		phi_v = 1.0 - exp (-R->t0 * R->dens_ratio * tau);
+	return (R->scale * phi_v);
+}
+
+GMT_LOCAL double grdflexure_transfer_v2 (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
+	/* Transfer function for 2-layer viscous mantle */
+	double phi_v2, tau;
+	tau = grdflexure_relax_time_2 (k[GMT_FFT_K_IS_KR], R);
+	phi_v2 = 1.0 - exp (-R->t0 * R->dens_ratio * tau);
+	return (R->scale * phi_v2);
 }
 
 GMT_LOCAL void grdflexure_apply_transfer_function (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, struct GRDFLEXURE_RHEOLOGY *R) {
@@ -563,9 +586,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':	/* Set elastic thickness */
 				Ctrl->E.active = true;
-				GMT_Get_Values (API, opt->arg, &Ctrl->E.te, 1);
-				if (Ctrl->E.te > 1e10) { /* Given flexural rigidity, compute Te from D */
-					Ctrl->E.te = pow ((12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)) * Ctrl->E.te / Ctrl->C.E, 1.0/3.0);
+				if (opt->arg[0]) {
+					GMT_Get_Values (API, opt->arg, &Ctrl->E.te, 1);
+					if (Ctrl->E.te > 1e10) { /* Given flexural rigidity, compute Te from D */
+						Ctrl->E.te = pow ((12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)) * Ctrl->E.te / Ctrl->C.E, 1.0/3.0);
+					}
 				}
 				break;
 			case 'F':	/* Firmoviscous response selected */
@@ -635,12 +660,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D: Must set density values\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E: Must set elastic plate thickness\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.active, "Option -M: Cannot mix with -F\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.beta < 0.0 || Ctrl->S.beta > 1.0),
 	                                 "Option -S: beta value must be in 0-1 range\n");
 	if (!Ctrl->write_transfer_function) {	/* Unless just writing transfer function we must insist on some more tests */
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file,  "Option -G: Must specify output file\n");
-		n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E: Must set elastic plate thickness regardless of rheology\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->T.active, "Option -F: Requires time information via -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !Ctrl->T.active, "Option -L: Requires time information via -T\n");
@@ -655,7 +680,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -G<outgrid>|+d [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>] -G<outgrid>|+d [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<list>] [-M<tm>] [-N%s] [-S<beta>] [-T<t0>[/<t1>/<dt>]|<file>|<n>[+l]]]\n\t[%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n\n", GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -668,6 +693,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density values for mantle, load(crust), optional moat infill [same as load], and water|air in kg/m^3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default of 0 km may be used with -F for a pure viscous response (no plate rigidity).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grdfile with flexed surface.  If -T is set then <outgrid>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   must be a filename template that contains a floating point format (C syntax) and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file name.\n");
@@ -764,8 +790,10 @@ GMT_LOCAL struct GRDFLEXURE_RHEOLOGY *grdflexure_select_rheology (struct GMT_CTR
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	/* Select the transfer function to use */
-	if (Ctrl->F.active)		/* One of two firmoviscous functions */
+	if (Ctrl->F.active) {		/* One of two firmoviscous functions */
 		fmode = Ctrl->F.mode;
+		if (gmt_M_is_zero (Ctrl->E.te)) fmode += 2;
+	}
 	else if (Ctrl->M.active)	/* Viscoelastic */
 		fmode = FLX_VE;
 	else				/* Elastic */
@@ -786,7 +814,15 @@ GMT_LOCAL struct GRDFLEXURE_RHEOLOGY *grdflexure_select_rheology (struct GMT_CTR
 		case FLX_FV2:
 			GMT_Report (API, GMT_MSG_INFORMATION, "Selected Firmoviscous transfer function for elastic plate over viscous layer over viscous half-space\n");
 			R->setup = grdflexure_setup_fv2;		R->transfer = grdflexure_transfer_fv2;		break;
+		case FLX_V1:
+			GMT_Report (API, GMT_MSG_INFORMATION, "Selected Viscous transfer function for viscous half-space\n");
+			R->setup = grdflexure_setup_fv;		R->transfer = grdflexure_transfer_v;		break;
+		case FLX_V2:
+			GMT_Report (API, GMT_MSG_INFORMATION, "Selected Viscous transfer function for viscous layer over viscous half-space\n");
+			R->setup = grdflexure_setup_fv2;		R->transfer = grdflexure_transfer_v2;		break;
 	}
+	R->mode = fmode;
+
 	return (R);
 }
 
@@ -810,9 +846,9 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 	 * Each segment has leading columns of wavelength and wavenumber corresponding to wavelengths 1:5000 km.
 	 * The next 13 columns has the chosen transfer function evaluated for times 1k, 2k, 5k, 10k, 20k, 50k, 100k, 200k, 500k, 70k, 1M, 2M, and 5M years.
 	 * Each segment is written to a separate file. Obviously, if no -F or -M are given then all columns are the same since elastic */
-	int k, t, s, n_times;
+	int k, t, s, n_times, n_te;
 	char file[GMT_LEN64] = {""};
-	uint64_t dim[4] = {1, 7, 0, 0};
+	uint64_t dim[4] = {1, 0, 0, 0};
 	double *kr, K[3], te[7] = {1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0};
 	double times[13] = {1.0, 3.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0};	/* Times in kiloyears */
 	struct GRDFLEXURE_RHEOLOGY *R = NULL;
@@ -821,10 +857,14 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_ARRAY T;
 
+	R = grdflexure_select_rheology (GMT, Ctrl);	/* INitialize the rheology and transfer functions */
+	R->relative = true;	/* Relative times are given */
+	n_te = (R->mode > FLX_FV2) ? 1 : 7;	/* For purely viscous we don't need to loop over plate thickness */
 	gmt_parse_array (GMT, 'T', "1/5000/1", &T, GMT_ARRAY_RANGE, 0);	/* In km */
 	gmt_create_array (GMT, 'T', &T, NULL, NULL);
 	dim[GMT_ROW] = T.n;
 	n_times = (Ctrl->F.active || Ctrl->M.active) ? 13 : 1;	/* No point repeating 13 identical results for the elastic case */
+	dim[GMT_SEG] = n_te;
 	dim[GMT_COL] = 2 + n_times;
 	kr = gmt_M_memory (GMT, NULL, T.n, double);
 	for (k = 0; k < T.n; k++) kr[k] = 2.0 * M_PI / (T.array[k] * 1000.0);	/* Radial wavenumber in 1/m */
@@ -834,18 +874,16 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 	GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D);
 	gmt_set_tableheader (GMT, GMT_OUT, true);
 
-	R = grdflexure_select_rheology (GMT, Ctrl);
-	R->relative = true;	/* Relative times are given */
 
-	for (s = 0; s < 7; s++) {
+	for (s = 0; s < n_te; s++) {
 		S = D->table[0]->segment[s];
-		sprintf (file, "grdflexure_transfer_function_te_%3.3d_km.txt", irint (te[s]));
+		Ctrl->E.te = (Ctrl->E.active) ? te[s] * 1000 : 0.0;	/* Te in meters, zero for viscous only */
+		sprintf (file, "grdflexure_transfer_function_te_%3.3d_km.txt", irint (Ctrl->E.te * 0.001));
 		SH = gmt_get_DS_hidden (S);
 		SH->file[GMT_OUT] = strdup (file);
 		gmt_M_memcpy (S->data[0], T.array, T.n, double);
 		gmt_M_memcpy (S->data[1], kr, T.n, double);
-		Ctrl->E.te = te[s] * 1000;	/* Te in meters */
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Transfer function for Te = %g km written to %s\n", te[s], SH->file[GMT_OUT]);
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Transfer function for Te = %g km written to %s\n", Ctrl->E.te * 0.001, SH->file[GMT_OUT]);
 		for (t = 0; t < n_times; t++) {	/* For each time step (i.e., at least once) */
 			R->eval_time_yr = times[t] * 1000.0;		/* In years */
 			R->setup (GMT, Ctrl, R);		/* Set up parameters */

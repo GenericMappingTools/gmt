@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te* |-G|\ *outgrid*\ \|\ **+d**
+**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ [*Te*] |-G|\ *outgrid*\ \|\ **+d**
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
@@ -64,11 +64,13 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ *Te*
+**-E**\ [*Te*]
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity D (by default D is computed from *Te*, Young's
     modulus, and Poisson's ratio; see **-C** to change these values).
+    If just **-E** is given and **-F** is used we will return a purely viscous
+    response with or without asthenospheric layer.
 
 .. _-G:
 
