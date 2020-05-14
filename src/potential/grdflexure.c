@@ -802,6 +802,10 @@ GMT_LOCAL int grdflexure_compare_loads (const void *load_1v, const void *load_2v
 EXTERN_MSC unsigned int gmtlib_linear_array (struct GMT_CTRL *GMT, double min, double max, double delta, double phase, double **array);
 
 GMT_LOCAL int grdflexure_dump_transfer (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl) {
+	/* Write a table with three segments (one each for Te = 10, 20, and 30 km).
+	 * Each segment has a leading column of wavenumber corresponding to wavelengths 1:3000 km.
+	 * The next 5 columns has the chosen transfer function evaluated for times 10k, 20k, 30k, 70k, and 1M years.
+	 * Each segment is written to a separate file */
 	int n, k, t, s;
 	char file[32] = {""};
 	uint64_t dim[4] = {1, 3, 0, 6};
@@ -827,6 +831,7 @@ GMT_LOCAL int grdflexure_dump_transfer (struct GMT_CTRL *GMT, struct GRDFLEXURE_
 		SH->file[GMT_OUT] = strdup (file);
 		gmt_M_memcpy (S->data[0], kr, n, double);
 		Ctrl->E.te = te[s] * 1000;	/* Te in meters */
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Transfer function for Te = %g km written to %s\n", te[s]*0.001, SH->file[GMT_OUT]);
 		for (t = 0; t < 5; t++) {	/* For each time step (i.e., at least once) */
 			R->eval_time_yr = times[t];		/* In years */
 			R->setup (GMT, Ctrl, R);	/* Set up parameters */
@@ -836,6 +841,7 @@ GMT_LOCAL int grdflexure_dump_transfer (struct GMT_CTRL *GMT, struct GRDFLEXURE_
 			}
 		}
 	}
+	gmt_M_free (GMT, kr);
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SEGMENT, NULL, NULL, D) != GMT_NOERROR)
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
