@@ -876,7 +876,10 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 #ifdef DEBUG
-	if (Ctrl->test) Return (grdflexure_dump_transfer (GMT, Ctrl));	/* Just write transfer function and return */
+	if (Ctrl->test) {	/* Just write transfer function and return */
+		error = grdflexure_dump_transfer (GMT, Ctrl);
+		Return (error);
+	}
 #endif
 
 	/*---------------------------- This is the grdflexure main code ----------------------------*/
