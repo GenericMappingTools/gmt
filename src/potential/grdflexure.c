@@ -843,6 +843,7 @@ GMT_LOCAL int grdflexure_dump_transfer (struct GMT_CTRL *GMT, struct GRDFLEXURE_
 		}
 	}
 	gmt_M_free (GMT, kr);
+	gmt_M_free (GMT, R);
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SEGMENT, NULL, file, D) != GMT_NOERROR)
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
