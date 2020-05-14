@@ -827,10 +827,10 @@ GMT_LOCAL int grdflexure_dump_transfer (struct GMT_CTRL *GMT, struct GRDFLEXURE_
 		SH->file[GMT_OUT] = strdup (file);
 		gmt_M_memcpy (S->data[0], kr, n, double);
 		Ctrl->E.te = te[s] * 1000;	/* Te in meters */
-		for (t = 0; t < Ctrl->T.n_eval_times; t++) {	/* For each time step (i.e., at least once) */
+		for (t = 0; t < 5; t++) {	/* For each time step (i.e., at least once) */
 			R->eval_time_yr = times[t];		/* In years */
 			R->setup (GMT, Ctrl, R);	/* Set up parameters */
-			for (k = 0; k > n; k++) {
+			for (k = 0; k < n; k++) {
 				K[GMT_FFT_K_IS_KR] = kr[k];
 				S->data[t+1][k] = R->transfer (K, R);
 			}
