@@ -877,7 +877,7 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 
 	for (s = 0; s < n_te; s++) {
 		S = D->table[0]->segment[s];
-		Ctrl->E.te = (Ctrl->E.active) ? te[s] * 1000 : 0.0;	/* Te in meters, zero for viscous only */
+		Ctrl->E.te = (n_te > 1) ? te[s] * 1000 : 0.0;	/* Te in meters, zero for viscous only */
 		sprintf (file, "grdflexure_transfer_function_te_%3.3d_km.txt", irint (Ctrl->E.te * 0.001));
 		SH = gmt_get_DS_hidden (S);
 		SH->file[GMT_OUT] = strdup (file);
