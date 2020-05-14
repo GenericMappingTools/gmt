@@ -195,10 +195,11 @@ Transfer Functions
 If **-G+d** is given we write the transfer functions T(k,t) to 7 separate files for
 7 different Te values (1, 2, 5, 10, 20, 50, and 100 km). The first two columns are
 always wavelength in km and wavenumber (in 1/m) for a 1:1:3000 km range. The transfer
-functions are evaluated for 13 different response times: 1k, 2k, 5k, 10k, 20, 50k,
-100k, 200k, 500k, 1M, 2M, 10M years; the exception is for a purely elastic response function
-which is only written once per elastic thickness in column 3.  The 7 files are named
-grdflexure_transfer_function_te_\ *te*\ _km.txt where *te* is replaced by the 7 elastic thicknesses in km.
+functions are evaluated for 12 different response times: 1k, 2k, 5k, 10k, 20k, 50k,
+100k, 200k, 500k, 1M, 2M, and 10M years. For a purely elastic response function
+we only write the transfer function once per elastic thickness in column 3.  The 7 files are named
+grdflexure_transfer_function_te_\ *te*\ _km.txt where *te* is replaced by the 7 elastic thicknesses
+in km (and 0 if **-E**\ 0 was uset for a viscous response only).
 
 Plate Flexure Notes
 -------------------

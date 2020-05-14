@@ -844,13 +844,13 @@ GMT_LOCAL int grdflexure_compare_loads (const void *load_1v, const void *load_2v
 GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* Write a table with six segments (one each for Te = 1, 2, 5, 10, 20, 50, and 100 km).
 	 * Each segment has leading columns of wavelength and wavenumber corresponding to wavelengths 1:5000 km.
-	 * The next 13 columns has the chosen transfer function evaluated for times 1k, 2k, 5k, 10k, 20k, 50k, 100k, 200k, 500k, 70k, 1M, 2M, and 5M years.
+	 * The next 12 columns has the chosen transfer function evaluated for times 1k, 2k, 5k, 10k, 20k, 50k, 100k, 200k, 500k, 1M, 2M, and 5M years.
 	 * Each segment is written to a separate file. Obviously, if no -F or -M are given then all columns are the same since elastic */
 	int k, t, s, n_times, n_te;
 	char file[GMT_LEN64] = {""};
 	uint64_t dim[4] = {1, 0, 0, 0};
 	double *kr, K[3], te[7] = {1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0};
-	double times[13] = {1.0, 3.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0};	/* Times in kiloyears */
+	double times[12] = {1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0};	/* Times in kiloyears */
 	struct GRDFLEXURE_RHEOLOGY *R = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -863,7 +863,7 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 	gmt_parse_array (GMT, 'T', "1/5000/1", &T, GMT_ARRAY_RANGE, 0);	/* In km */
 	gmt_create_array (GMT, 'T', &T, NULL, NULL);
 	dim[GMT_ROW] = T.n;
-	n_times = (Ctrl->F.active || Ctrl->M.active) ? 13 : 1;	/* No point repeating 13 identical results for the elastic case */
+	n_times = (Ctrl->F.active || Ctrl->M.active) ? 12 : 1;	/* No point repeating 12 identical results for the elastic case */
 	dim[GMT_SEG] = n_te;
 	dim[GMT_COL] = 2 + n_times;
 	kr = gmt_M_memory (GMT, NULL, T.n, double);
