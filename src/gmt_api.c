@@ -4015,12 +4015,12 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, V_obj->n_rows, n_columns, NULL, NULL);
 				for (col = 1, diff_types = false; !diff_types && col < V_obj->n_columns; col++) if (V_obj->type[col] != V_obj->type[col-1]) diff_types = true;
-				api_get_val = gmtapi_select_get_function (API, V_obj->type[0]);
+				if (!diff_types) api_get_val = gmtapi_select_get_function (API, V_obj->type[0]);
 				for (row = seg = n_records = 0; row < V_obj->n_rows; row++) {	/* This loop may include NaN-records and data records */
 					n_use = gmtapi_n_cols_needed_for_gaps (GMT, V_obj->n_columns);
 					gmtapi_update_prev_rec (GMT, n_use);
 					for (col = 0; col < V_obj->n_columns; col++) {	/* Process a single record into curr_rec */
-						if (diff_types && col) api_get_val = gmtapi_select_get_function (API, V_obj->type[col]);
+						if (diff_types) api_get_val = gmtapi_select_get_function (API, V_obj->type[col]);
 						api_get_val (&(V_obj->data[col]), row, &(GMT->current.io.curr_rec[col]));
 					}
 					if ((status = gmtapi_bin_input_memory (GMT, V_obj->n_columns, n_use)) < 0) {	/* Segment header found, finish the one we had and add more */
@@ -4367,7 +4367,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				V_obj->n_rows = n_rows;
 				if ((error = gmtlib_alloc_vectors (GMT, V_obj, n_rows)) != GMT_NOERROR) return (gmtlib_report_error (API, error));	/* Allocate space for all columns */
 			}
-			else {	/* Got a preallocated contrainer */
+			else {	/* Got a preallocated container */
 				if (V_obj->n_rows < n_rows || V_obj->n_columns < n_columns)
 					return (gmtlib_report_error (API, GMT_DIM_TOO_SMALL));
 				for (col = 1, diff_types = false; !diff_types && col < V_obj->n_columns; col++) if (V_obj->type[col] != V_obj->type[col-1]) diff_types = true;
@@ -4380,7 +4380,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			}
 
 			/* Set up put-value functions for this vector */
-			api_put_val = gmtapi_select_put_function (API, V_obj->type[0]);	/* Get function to write 1st column (possibly all columns) */
+			if (!diff_types) api_put_val = gmtapi_select_put_function (API, V_obj->type[0]);	/* Get function to write 1st column (possibly all columns) */
 			for (tbl = row_out = 0; tbl < D_obj->n_tables; tbl++) {	/* Loop over all tables and segments */
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					S = D_obj->table[tbl]->segment[seg];	/* Shorthand for this segment */
@@ -4391,7 +4391,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 					}
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Copy the data records */
 						for (col = 0; col < V_obj->n_columns; col++) {
-							if (diff_types && col) api_put_val = gmtapi_select_put_function (API, V_obj->type[col]);
+							if (diff_types) api_put_val = gmtapi_select_put_function (API, V_obj->type[col]);
 							value = gmtapi_select_dataset_value (GMT, S, (unsigned int)row, (unsigned int)col);
 							api_put_val (&(V_obj->data[col]), row_out, value);
 						}
