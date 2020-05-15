@@ -12,13 +12,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te* |-G|\ *outgrid*
+**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ [*Te*] |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
 [ |-L|\ *list* ]
-[ |-M|\ **\ *tm*
-[ |-N|\ [**a**\|\ **f**\|\ **m**\|\ **r**\|\ **s**\|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\|\ **n**\|\ **m**][**+t**\ *width*][**+v**][**+w**\ [*suffix*]][**+z**\ [**p**]] ]
+[ |-M|\ *tm* ]
+[ |-N|\ *params* ]
+[ |-Q| ]
 [ |-S|\ *beta* ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**] ]
 [ |SYN_OPT-V| ]
@@ -64,11 +65,13 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ *Te*
+**-E**\ [*Te*]
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity D (by default D is computed from *Te*, Young's
     modulus, and Poisson's ratio; see **-C** to change these values).
+    If just **-E** is given and **-F** is used we will return a purely viscous
+    response with or without an asthenospheric layer.
 
 .. _-G:
 
@@ -108,15 +111,15 @@ Optional Arguments
     the asthenosphere. Give viscosities in Pa*s. If used, give the
     thickness of the asthenosphere in meter; append **k** for km.
 
-.. _-N:
-
-.. include:: ../../explain_fft.rst_
-
 .. _-L:
 
 **-L**\ *list*
     Write the names and evaluation times of all grids that were created
     to the text file *list*. Requires **-T**.
+
+.. _-N:
+
+.. include:: ../../explain_fft.rst_
 
 .. _-M:
 
@@ -124,6 +127,13 @@ Optional Arguments
     Specify a viscoelastic model in conjunction with an elastic plate
     thickness specified via **-E**.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
+
+.. _-Q:
+
+**-Q**
+    Do not make any flexure calculations but instead take the chosen transfer function
+    given the parameters you selected and evaluate it for a range of wavenumbers and
+    times; see the note on transfer functions below.
 
 .. _-S:
 
@@ -184,6 +194,18 @@ meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject </grdproject>`.
 
+Transfer Functions
+------------------
+
+If **-Q** is given we write the transfer functions T(k,t) to 7 separate files for
+7 different Te values (1, 2, 5, 10, 20, 50, and 100 km). The first two columns are
+always wavelength in km and wavenumber (in 1/m) for a 1:1:3000 km range. The transfer
+functions are evaluated for 12 different response times: 1k, 2k, 5k, 10k, 20k, 50k,
+100k, 200k, 500k, 1M, 2M, and 5M years. For a purely elastic response function
+we only write the transfer function once per elastic thickness in column 3.  The 7 files are named
+grdflexure_transfer_function_te\ _\ *te*\ _km.txt where *te* is replaced by the 7 elastic thicknesses
+in km (and 0 if **-E**\ 0 was used for a viscous response only).
+
 Plate Flexure Notes
 -------------------
 
@@ -196,7 +218,8 @@ the plate flexure is solved for using the infill density as the effective load d
 the amplitudes are adjusted by the factor *A* = sqrt ((rm - ri)/(rm - rl)), which is
 the theoretical difference in amplitude due to a point load using the two different
 load densities.  The approximation is very good but breaks down for large
-loads on weak plates, a fairy uncommon situation.
+loads on weak plates, a fairy uncommon situation.  The firmoviscous solutions were
+derived following Nakada [1986] and Cathles [1975].
 
 Examples
 --------
@@ -216,10 +239,18 @@ specified rheological values, try
 
     gmt grdflexure -T1M =l.lis -D3300/2800/2800/1000 -E5k -Gflx/smt_fv_%03.1f_%s.nc -F2e20 -Nf+a
 
+To just compute the firmoviscous response functions using the specified rheological values, try::
+
+    gmt grdflexure -D3300/2800/2800/1000 -Q -F2e20
+
 References
 ----------
 
 Cathles, L. M., 1975, *The viscosity of the earth's mantle*, Princeton University Press.
+
+Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
+structure of the Earth's mantle, *Tectonophysics, 121*, 263–276,
+`http://dx.doi.org/10.1016/0040-1951(86)90047-8 <http://dx.doi.org/10.1016/0040-1951(86)90047-8>`_.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
@@ -233,7 +264,9 @@ of Hawaii plume flux, *Geophys. J. Int., 204(2)*, 932-947,
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`grdfft </grdfft>`,
+:doc:`gmt </gmt>`,
+:doc:`gmtflexure </supplements/potential/gmtflexure>`,
+:doc:`grdfft </grdfft>`,
 :doc:`gravfft </supplements/potential/gravfft>`
 :doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`,
 :doc:`grdseamount </supplements/potential/grdseamount>`
