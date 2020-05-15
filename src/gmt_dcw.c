@@ -549,6 +549,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 	/* List available countries [and optionally states]; then make program exit */
 	unsigned int list_mode, i, j, k, kk, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[3] = {0, 0, 0};
+	bool search = false;
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	struct GMT_DCW_COUNTRY_STATE *GMT_DCW_country_with_state = NULL;
@@ -560,11 +561,15 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 	GMT_DCW_STATES = n_bodies[1];
 	GMT_DCW_N_COUNTRIES_WITH_STATES = n_bodies[2];
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "List of ISO 3166-1 alpha-2 codes for DCW supported countries:\n\n");
+	for (k = 0; k < F->n_items; k++) {
+		if (!F->item[k]->codes || F->item[k]->codes[0] == '\0') continue;
+		search = true;	/* Gave some codes */
+	}
 	for (i = k = 0; i < GMT_DCW_COUNTRIES; i++) {
-		if (F->n_items) {	/* Listed continent(s) */
+		if (search) {	/* Listed continent(s) */
 			bool found = false;
 			for (kk = 0; kk < F->n_items; kk++) {
-				if (F->item[kk]->codes[0] == '=' && strstr (GMT_DCW_country[i].continent, &F->item[kk]->codes[1]))
+				if (F->item[kk]->codes[0] == '=' && strstr (F->item[kk]->codes, GMT_DCW_country[i].continent))
 					found = true;
 			}
 			if (!found) continue;
