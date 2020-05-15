@@ -173,8 +173,8 @@ as well as any new files produced by *mainscript* or the optional scripts set vi
 No path specification is needed to access these files.  Other files may
 require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
 
-Plotting Temporal Changes
--------------------------
+Constructing the Main Script
+----------------------------
 
 A batch sequence is not very interesting if nothing changes between calls.  For the process to change you need to have your *mainscript*
 either access a *different* data set as the job number changes, or you need to access only a varying *subset* of a data set,
