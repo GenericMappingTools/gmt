@@ -440,7 +440,7 @@ GMT_LOCAL double grdflexure_transfer_fv (double *k, struct GRDFLEXURE_RHEOLOGY *
  *	rhoi	- density of infill material (kg/m^3)
  *	te	- elastic plate thickness (km)
  *	nu_m	- mantle viscosity (Pa s)
- *	t0	- time since loading (yr)
+ *	t0	- time since loading (s)
  */
 	double phi_e, phi_fv, tau;
 	phi_e = R->tr_elastic_sub (k, R);
@@ -455,7 +455,9 @@ GMT_LOCAL double grdflexure_transfer_fv (double *k, struct GRDFLEXURE_RHEOLOGY *
 
 GMT_LOCAL void grdflexure_setup_ve (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GRDFLEXURE_RHEOLOGY *R) {
 	grdflexure_setup_elastic (GMT, Ctrl, R);	/* Both firmoviscous setups rely on the elastic setup */
+	R->t0 = (R->relative) ?  R->eval_time_yr : R->load_time_yr - R->eval_time_yr;	/* Either relative to load time or both are absolute times */
 	R->cv = 1.0 / (Ctrl->M.maxwell_t * (86400*365.25));	/* Convert to seconds */
+	R->t0 *= (86400*365.25);	/* Convert to seconds */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "VE Setup: R->cv = %g, t_maxwell = %g%c\n", R->cv, Ctrl->M.maxwell_t * Ctrl->M.scale, Ctrl->M.unit);
 }
 
@@ -466,8 +468,8 @@ GMT_LOCAL double grdflexure_transfer_ve (double *k, struct GRDFLEXURE_RHEOLOGY *
  *	rhom	- density of mantle (kg/m^3)
  *	rhoi	- density of infill material (kg/m^3)
  *	te	- elastic plate thickness (km)
- *	T	- Maxwell time (Myt)
- *	t0	- time since loading (yr)
+ *	T	- Maxwell time (s)
+ *	t0	- time since loading (s)
  */
 	double phi_e, phi_ve, tau;
 	tau = R->t0 * R->cv;
@@ -657,13 +659,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D: Must set density values\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E: Must set elastic plate thickness\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.active, "Option -M: Cannot mix with -F\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.beta < 0.0 || Ctrl->S.beta > 1.0),
 	                                 "Option -S: beta value must be in 0-1 range\n");
 	if (!Ctrl->write_transfer_function) {	/* Unless just writing transfer function we must insist on some more tests */
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file,  "Option -G: Must specify output file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->T.active, "Option -F: Requires time information via -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
@@ -884,7 +886,7 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 		SH->file[GMT_OUT] = strdup (file);
 		gmt_M_memcpy (S->data[0], T.array, T.n, double);
 		gmt_M_memcpy (S->data[1], kr, T.n, double);
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s transfer function for Te = %g km written to %s\n", FLX_response[R->mode], Ctrl->E.te * 0.001, SH->file[GMT_OUT]);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%s transfer function for Te = %g km written to %s\n", FLX_response[R->mode], Ctrl->E.te * 0.001, SH->file[GMT_OUT]);
 		for (t = 0; t < n_times; t++) {	/* For each time step (i.e., at least once) */
 			R->eval_time_yr = times[t] * 1000.0;	/* In years */
 			R->setup (GMT, Ctrl, R);		/* Set up parameters */
