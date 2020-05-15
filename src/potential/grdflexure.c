@@ -42,7 +42,6 @@
 #define FLX_V1	4	/* Viscous 1-layer */
 #define FLX_V2	5	/* Viscous 2-layer */
 
-
 struct GMT_MODELTIME {	/* Hold info about time */
 	double value;	/* Time as given by user (e.g., 1, 1k, 1M are all 1) */
 	double scale;	/* Scale factor from user time to year */
@@ -841,24 +840,25 @@ GMT_LOCAL int grdflexure_compare_loads (const void *load_1v, const void *load_2v
 	return (0);
 }
 
-GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GRDFLEXURE_RHEOLOGY *R, struct GMT_OPTION *options) {
 	/* Write a table with six segments (one each for Te = 1, 2, 5, 10, 20, 50, and 100 km).
 	 * Each segment has leading columns of wavelength and wavenumber corresponding to wavelengths 1:5000 km.
 	 * The next 12 columns has the chosen transfer function evaluated for times 1k, 2k, 5k, 10k, 20k, 50k, 100k, 200k, 500k, 1M, 2M, and 5M years.
 	 * Each segment is written to a separate file. Obviously, if no -F or -M are given then all columns are the same since elastic */
 	int k, t, s, n_times, n_te;
 	char file[GMT_LEN64] = {""};
+	static char *FLX_response[6] = {"Elastic", "Viscoelastic", "Firmoviscous (1 layer)", "Firmoviscous (2 layer)", "Viscous (1 layer)", "Viscous (2 layer)"};
 	uint64_t dim[4] = {1, 0, 0, 0};
 	double *kr, K[3], te[7] = {1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0};
 	double times[12] = {1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0};	/* Times in kiloyears */
-	struct GRDFLEXURE_RHEOLOGY *R = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_ARRAY T;
 
-	R = grdflexure_select_rheology (GMT, Ctrl);	/* INitialize the rheology and transfer functions */
-	R->relative = true;	/* Relative times are given */
+	gmt_M_memset (&T, 1, struct GMT_ARRAY);	/* Wipe clean the structure */
+
+	R->relative = true;	/* Relative times are implicitly given */
 	n_te = (R->mode > FLX_FV2) ? 1 : 7;	/* For purely viscous we don't need to loop over plate thickness */
 	gmt_parse_array (GMT, 'T', "1/5000/1", &T, GMT_ARRAY_RANGE, 0);	/* In km */
 	gmt_create_array (GMT, 'T', &T, NULL, NULL);
@@ -866,6 +866,7 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 	n_times = (Ctrl->F.active || Ctrl->M.active) ? 12 : 1;	/* No point repeating 12 identical results for the elastic case */
 	dim[GMT_SEG] = n_te;
 	dim[GMT_COL] = 2 + n_times;
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Write transfer functions\n");
 	kr = gmt_M_memory (GMT, NULL, T.n, double);
 	for (k = 0; k < T.n; k++) kr[k] = 2.0 * M_PI / (T.array[k] * 1000.0);	/* Radial wavenumber in 1/m */
 
@@ -883,9 +884,9 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 		SH->file[GMT_OUT] = strdup (file);
 		gmt_M_memcpy (S->data[0], T.array, T.n, double);
 		gmt_M_memcpy (S->data[1], kr, T.n, double);
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Transfer function for Te = %g km written to %s\n", Ctrl->E.te * 0.001, SH->file[GMT_OUT]);
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s transfer function for Te = %g km written to %s\n", FLX_response[R->mode], Ctrl->E.te * 0.001, SH->file[GMT_OUT]);
 		for (t = 0; t < n_times; t++) {	/* For each time step (i.e., at least once) */
-			R->eval_time_yr = times[t] * 1000.0;		/* In years */
+			R->eval_time_yr = times[t] * 1000.0;	/* In years */
 			R->setup (GMT, Ctrl, R);		/* Set up parameters */
 			R->scale = 1.0;	/* We want these to go 0-1 only */
 			for (k = 0; k < T.n; k++) {	/* Evaluate transfer functions */
@@ -896,7 +897,6 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 	}
 	gmt_free_array (GMT, &T);
 	gmt_M_free (GMT, kr);
-	gmt_M_free (GMT, R);
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SEGMENT, NULL, file, D) != GMT_NOERROR)
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
@@ -935,16 +935,17 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
-	if (Ctrl->write_transfer_function) {	/* Just write transfer function and return */
-		error = grdflexure_write_transfer_function (GMT, Ctrl, options);
-		Return (error);
-	}
-
 	/*---------------------------- This is the grdflexure main code ----------------------------*/
 
 	/* 1. SELECT THE TRANSFER FUNCTION TO USE */
 
 	R = grdflexure_select_rheology (GMT, Ctrl);
+
+	if (Ctrl->write_transfer_function) {	/* Just write transfer function and return */
+		error = grdflexure_write_transfer_function (GMT, Ctrl, R, options);
+		gmt_M_free (GMT, R);
+		Return (error);
+	}
 
 	/* 2. READ ALL INPUT LOAD GRIDS, DETREND, AND TAKE FFT */
 
