@@ -27,6 +27,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    :hidden:
 
    basemap
+   batch
    begin
    blockmean
    blockmedian
@@ -188,6 +189,7 @@ Core Modules
     :columns: 6
 
     - :doc:`basemap`
+    - :doc:`batch`
     - :doc:`begin`
     - :doc:`blockmean`
     - :doc:`blockmedian`
@@ -592,6 +594,8 @@ Grid operations
 Miscellaneous
 -------------
 
++-----------------------+-----------------------+
+| :doc:`batch`          | |batch_purpose|       |
 +-----------------------+-----------------------+
 | :doc:`gmt2kml`        | |gmt2kml_purpose|     |
 +-----------------------+-----------------------+

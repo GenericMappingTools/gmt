@@ -347,22 +347,21 @@ set (SHARED_LIB_PURPOSE "GMT ${SHARED_LIB_NAME}: The main modules of the Generic
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 
 # Legacy modules for which to install compatibility links via install_module_symlink
-set (GMT_COMPAT_MODULES minmax gmtstitch gmtdp grdreformat ps2raster originator PARENT_SCOPE)
+set (GMT_COMPAT_MODULES minmax gmtdp gmtstitch grdreformat ps2raster originator PARENT_SCOPE)
 
 # gmt core modules
-set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c filter1d.c grd2kml.c
-	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
-	gmtspatial.c gmtconnect.c grdgdal.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
-	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfill.c grdfilter.c
-	grdgradient.c grdhisteq.c grdinfo.c grdinterpolate.c grdlandmask.c grdmask.c grdmath.c
-	grdmix.c grdpaste.c grdproject.c grdsample.c grdconvert.c grdtrack.c movie.c
-	grdtrend.c grdvolume.c greenspline.c kml2gmt.c makecpt.c mapproject.c
-	gmtinfo.c nearneighbor.c project.c psconvert.c sample1d.c spectrum1d.c
-	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c
-	surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
-	gmtset.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c
-	pscoast.c pscontour.c psevents.c pshistogram.c psimage.c psmask.c psrose.c psscale.c
-	pssolar.c psternary.c pstext.c pswiggle.c psxy.c psxyz.c pslegend.c)
+set (GMT_PROGS_SRCS batch.c blockmean.c blockmedian.c blockmode.c dimfilter.c docs.c filter1d.c
+	fitcircle.c gmt2kml.c gmtconnect.c gmtconvert.c gmtdefaults.c gmtget.c gmtinfo.c gmtlogo.c
+	gmtmath.c gmtselect.c gmtsimplify.c gmtspatial.c gmtregress.c gmtset.c gmtvector.c gmtwhich.c
+	grd2cpt.c grd2kml.c grd2xyz.c grdblend.c grdclip.c grdcontour.c grdconvert.c grdcut.c grdedit.c
+	grdfft.c grdfill.c grdfilter.c grdgdal.c grdgradient.c grdhisteq.c grdimage.c grdinfo.c
+	grdinterpolate.c grdlandmask.c grdmask.c grdmath.c grdmix.c grdpaste.c grdproject.c grdsample.c
+	grdtrack.c grdtrend.c grdvector.c grdview.c grdvolume.c greenspline.c kml2gmt.c makecpt.c
+	mapproject.c movie.c nearneighbor.c project.c psbasemap.c psclip.c pscoast.c pscontour.c
+	psconvert.c psevents.c pshistogram.c psimage.c pslegend.c psmask.c psrose.c psscale.c
+	pssolar.c psternary.c pstext.c pswiggle.c psxy.c psxyz.c sample1d.c spectrum1d.c sph2grd.c
+	sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c surface.c trend1d.c trend2d.c
+	triangulate.c xyz2grd.c)
 
 # libpslib
 set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h

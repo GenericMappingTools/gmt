@@ -16803,3 +16803,212 @@ CROAK:	/* We are done or premature return due to error */
 
 	return (error);
 }
+
+
+/* This set of 14 functions are used by both movie.c and batch.c to deal with understanding
+ * input script types and to write shell commands in various syntax variants.
+ */
+
+int gmtlib_gmt_sleep (unsigned int microsec) {
+	/* Waiting before checking if the completion file has been generated */
+#ifdef WIN32
+	Sleep ((uint32_t)microsec/1000);	/* msec are microseconds but Sleep wants milliseconds */
+	return 0;
+#else
+	return (usleep ((useconds_t)microsec));
+#endif
+}
+
+void gmtlib_set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, char *name, double value) {
+	/* Assigns a single named data floating point variable given the script mode
+	 * Here, col indicates which input column in case special formatting is implied via -f */
+	char string[GMT_LEN64] = {""};
+	gmt_ascii_format_one (GMT, string, value, gmt_M_type (GMT, GMT_IN, col));
+	switch (mode) {
+		case GMT_BASH_MODE: fprintf (fp, "%s=%s", name, string);       break;
+		case GMT_CSH_MODE:  fprintf (fp, "set %s = %s", name, string); break;
+		case GMT_DOS_MODE:  fprintf (fp, "set %s=%s", name, string);   break;
+	}
+	fprintf (fp, "\n");
+}
+
+void gmtlib_set_ivalue (FILE *fp, int mode, bool env, char *name, int value) {
+	/* Assigns a single named integer variable given the script mode */
+	switch (mode) {
+		case GMT_BASH_MODE: fprintf (fp, "%s=%d\n", name, value);       break;
+		case GMT_CSH_MODE:  if (env)
+					fprintf (fp, "%s %d\n", name, value);
+				else
+					fprintf (fp, "set %s = %d\n", name, value);
+				break;
+		case GMT_DOS_MODE:  fprintf (fp, "set %s=%d\n", name, value);   break;
+	}
+}
+
+void gmtlib_set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
+	/* Assigns a single named Cartesian floating point variable given the script mode */
+	switch (mode) {
+		case GMT_BASH_MODE: fprintf (fp, "%s=%.12g", name, value);       break;
+		case GMT_CSH_MODE:  fprintf (fp, "set %s = %.12g", name, value); break;
+		case GMT_DOS_MODE:  fprintf (fp, "set %s=%.12g", name, value);   break;
+	}
+	if (unit) fprintf (fp, "%c", unit);	/* Append the unit [c|i|p] unless 0 */
+	fprintf (fp, "\n");
+}
+
+void gmtlib_set_tvalue (FILE *fp, int mode, bool env, char *name, char *value) {
+	/* Assigns a single named text variable given the script mode */
+	if (strchr (value, ' ') || strchr (value, '\t') || strchr (value, '|')) {	/* String has spaces, tabs, or bar */
+		switch (mode) {
+			case GMT_BASH_MODE: fprintf (fp, "%s=\"%s\"\n", name, value);       break;
+			case GMT_CSH_MODE:  if (env)
+						fprintf (fp, "%s \"%s\"\n", name, value);
+					else
+						fprintf (fp, "set %s = \"%s\"\n", name, value);
+					break;
+			case GMT_DOS_MODE:  fprintf (fp, "set %s=\"%s\"\n", name, value);   break;
+		}
+	}
+	else {	/* Single word */
+		switch (mode) {
+			case GMT_BASH_MODE: fprintf (fp, "%s=%s\n", name, value);       break;
+			case GMT_CSH_MODE:  if (env)
+						fprintf (fp, "%s %s\n", name, value);
+					else
+						fprintf (fp, "set %s = %s\n", name, value);
+					break;
+			case GMT_DOS_MODE:  fprintf (fp, "set %s=%s\n", name, value);   break;
+		}
+	}
+}
+
+void gmtlib_set_script (FILE *fp, int mode) {
+	/* Writes the script's incantation line (or a comment for DOS, turning off default echo) */
+	switch (mode) {
+		case GMT_BASH_MODE: fprintf (fp, "#!/usr/bin/env bash\n"); break;
+		case GMT_CSH_MODE:  fprintf (fp, "#!/usr/bin/env csh\n"); break;
+		case GMT_DOS_MODE:  fprintf (fp, "@echo off\nREM Start of script\n"); break;
+	}
+}
+
+void gmtlib_set_comment (FILE *fp, int mode, char *comment) {
+	/* Write a comment line given the script mode */
+	switch (mode) {
+		case GMT_BASH_MODE: case GMT_CSH_MODE:  fprintf (fp, "# %s\n", comment); break;
+		case GMT_DOS_MODE:  fprintf (fp, "REM %s\n", comment); break;
+	}
+}
+
+char *gmtlib_place_var (int mode, char *name) {
+	/* Prints a single variable to stdout where needed in the script via the string static variable.
+	 * PS!  Only one call per printf statement since static string cannot hold more than one item at the time */
+	static char string[GMT_LEN128] = {""};	/* So max length of variable name is 127 */
+	if (mode == GMT_DOS_MODE)
+		sprintf (string, "%%%s%%", name);
+	else
+		sprintf (string, "${%s}", name);
+	return (string);
+}
+
+int gmtlib_dry_run_only (const char *cmd) {
+	/* Dummy function to not actually run the loop script when -Q is used */
+	gmt_M_unused (cmd);
+	return 0;
+}
+
+unsigned int gmtlib_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k, bool *PS) {
+	unsigned int n_errors = 0;
+	/* Examines file extension and compares to known mode from mainscript */
+
+	if (PS) {	/* Only used in movie.c so far */
+		size_t L;
+		*PS = false;
+		if (k < 3 && (L = strlen (file)) > 3 && !strncmp (&file[L-3], ".ps", 3U)) {
+			static char *layer[3] = {"background", "foreground", "title"};
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "PostScript %s layer %s detected\n", layer[k], file);
+			*PS = true;	/* Got a PostScript file */
+			return GMT_NOERROR;
+		}
+	}
+
+	switch (mode) {
+		case GMT_BASH_MODE:
+			if (!(strstr (file, ".bash") || strstr (file, ".sh"))) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script is bash/sh but %s is not!\n", file);
+				n_errors++;
+			}
+			break;
+		case GMT_CSH_MODE:
+			if (!strstr (file, ".csh")) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script is csh but %s is not!\n", file);
+				n_errors++;
+			}
+			break;
+		case GMT_DOS_MODE:
+			if (!strstr (file, ".bat")) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script is bat but %s is not!\n", file);
+				n_errors++;
+			}
+			break;
+	}
+	return (n_errors);
+}
+
+bool gmtlib_script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
+	/* Read script to determine if it is in GMT classic mode or not, then rewind */
+	bool modern = false;
+	char line[PATH_MAX] = {""};
+	while (!modern && gmt_fgets (GMT, line, PATH_MAX, fp)) {
+		if (strstr (line, "gmt ") == NULL) continue;	/* Does not start with gmt */
+		if (strstr (line, " begin"))		/* A modern mode script */
+			modern = true;
+		else if (strstr (line, " figure"))	/* A modern mode script */
+			modern = true;
+		else if (strstr (line, " subplot"))	/* A modern mode script */
+			modern = true;
+		else if (strstr (line, " inset"))	/* A modern mode script */
+			modern = true;
+		else if (strstr (line, " end"))		/* A modern mode script */
+			modern = true;
+	}
+	rewind (fp);	/* Go back to beginning of file */
+	return (!modern);
+}
+
+GMT_LOCAL bool gmtsupport_line_is_a_comment (char *line) {
+	unsigned int k = 0;
+	while (line[k] && isspace (line[k])) k++;	/* Wind past leading whitespace */
+	return (line[k] == '#' || !strncasecmp (&line[k], "rem", 3U)) ? true : false;	/* Will return true for lines starting with some tabs, then comment */
+}
+
+bool gmtlib_is_gmt_module (char *line, char *module) {
+	/* Robustly identify the command "gmt begin" */
+	char word[GMT_LEN128] = {""};
+	unsigned int pos = 0;
+	size_t L;
+	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt begin */
+	/* To handle cases where there may be more than one space between gmt and module */
+	if (gmtsupport_line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get first word in the command or fail */
+	if (strcmp (word, "gmt")) return false;		/* Not starting with gmt so we are done */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get second word or fail */
+	L = strlen (module);				/* How many characters to compare against */
+	if (!strncmp (word, module, L)) return true;	/* Command starting with gmt <module> found */
+	return false;	/* Not gmt <module> */
+}
+
+bool gmtlib_is_gmt_end_show (char *line) {
+	char word[GMT_LEN128] = {""};
+	unsigned int pos = 0;
+	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt end show */
+	/* Robustly identify the command "gmt end show" */
+	/* To handle cases where there may be more than one space between gmt and module */
+	if (gmtsupport_line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get first word in the command or fail */
+	if (strcmp (word, "gmt")) return false;		/* Not starting with gmt so we are done */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get second word or fail */
+	if (strcmp (word, "end")) return false;		/* Not continuing with end so we are done */
+	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get third word or fail */
+	if (!strcmp (word, "show")) return true;	/* Yes, found gmt end show */
+	return false;	/* Not gmt end show */
+}
