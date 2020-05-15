@@ -12,13 +12,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ [*Te*] |-G|\ *outgrid*\ \|\ **+d**
+**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ [*Te*] |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
 [ |-L|\ *list* ]
 [ |-M|\ *tm* ]
 [ |-N|\ *params* ]
+[ |-Q| ]
 [ |-S|\ *beta* ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**] ]
 [ |SYN_OPT-V| ]
@@ -74,15 +75,12 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outfile*\ \|\ **+d**
+**-G**\ *outfile*
     If **-T** is set then *grdfile* must be a filename template that contains
     a floating point format (C syntax).  If the filename template also contains
     either %s (for unit name) or %c (for unit letter) then we use the corresponding time
     (in units specified in **-T**) to generate the individual file names, otherwise
-    we use time in years with no unit. Alternatively, if you use **-G+d** we do not
-    make any flexure calculations but instead we take the chosen transfer function
-    given the parameters you selected and evaluate it for a range of wavenumbers and
-    times; see the note on transfer functions below.
+    we use time in years with no unit.
 
 Optional Arguments
 ------------------
@@ -113,15 +111,15 @@ Optional Arguments
     the asthenosphere. Give viscosities in Pa*s. If used, give the
     thickness of the asthenosphere in meter; append **k** for km.
 
-.. _-N:
-
-.. include:: ../../explain_fft.rst_
-
 .. _-L:
 
 **-L**\ *list*
     Write the names and evaluation times of all grids that were created
     to the text file *list*. Requires **-T**.
+
+.. _-N:
+
+.. include:: ../../explain_fft.rst_
 
 .. _-M:
 
@@ -129,6 +127,13 @@ Optional Arguments
     Specify a viscoelastic model in conjunction with an elastic plate
     thickness specified via **-E**.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
+
+.. _-Q:
+
+**-Q**
+    Do not make any flexure calculations but instead take the chosen transfer function
+    given the parameters you selected and evaluate it for a range of wavenumbers and
+    times; see the note on transfer functions below.
 
 .. _-S:
 
@@ -236,7 +241,7 @@ specified rheological values, try
 
 To just compute the firmoviscous response functions using the specified rheological values, try::
 
-    gmt grdflexure -D3300/2800/2800/1000 -G+d -F2e20
+    gmt grdflexure -D3300/2800/2800/1000 -Q -F2e20
 
 References
 ----------
