@@ -244,7 +244,7 @@ Cathles, L. M., 1975, *The viscosity of the earth's mantle*, Princeton Universit
 
 Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
 structure of the Earth's mantle, *Tectonophysics, 121*, 263–276,
-`http://dx.doi.org/10.1016/0040-1951(86)90047-8 <http://dx.doi.org/10.1016/0040-1951(86)90047-8>`_
+`http://dx.doi.org/10.1016/0040-1951(86)90047-8 <http://dx.doi.org/10.1016/0040-1951(86)90047-8>`_.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
