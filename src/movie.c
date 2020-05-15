@@ -1978,8 +1978,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 					}
 					else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
-						if (gmtlib_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
-						else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+						if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 						fprintf (fp, "%s", line);	/* Just copy the line as is */
 					}
 				}
