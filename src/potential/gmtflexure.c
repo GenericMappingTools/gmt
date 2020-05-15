@@ -39,7 +39,7 @@
 
 /*
  * gmtflexure computes the flexure produced by an arbitrary varying load
- * on a variable rigidity plate. One of four possible boundary contditions
+ * on a variable rigidity plate. One of four possible boundary conditions
  * can be imposed on each end of the profiles. The user may [optionally] provide 2
  * input files. 1) Load file having x and load, and 2) Rigidity file
  * having x and rigidity. If both files are present, they must list load and
@@ -47,8 +47,8 @@
  * the deflections to standard output. Z axis is positive DOWN, so
  * positive loads, moments, and forces will all generate positive deflections.
  * The load file is optional, whereas the rigidity file OR a uniform plate
- * thickness (-E) must be supplied. If no inputfiles are given, then the min/max
- * distance and increment must be given on the commandline using the -T option.
+ * thickness (-E) must be supplied. If no input files are given, then the min/max
+ * distance and increment must be given on the command line using the -T option.
  * An arbitrary horizontal stress may be imposed with the -F option. If rho_infill
  * and rho_water is different, a variable restoring force scheme is used (gmtflexure_flx1dk)
  * rather than the fixed k(x) solution (gmtflexure_flx1d). If there is pre-existing deformation
@@ -681,7 +681,7 @@ GMT_LOCAL int gmtflexure_flx1d (struct GMT_CTRL *GMT, double *w, double *d, doub
  *	rho_l	: load density [2800]
  *	rho_i	: infill density [2300]
  *	rho_w	: water density [1000]
- *	stress	: Horisontal stress T in the plate (input). Positive = compression.
+ *	stress	: Horizontal stress T in the plate (input). Positive = compression.
  *	bc_left : value 0 - 3. See above (input)
  *	bc_right: value 0 - 3. See above (input)
  *
@@ -783,7 +783,7 @@ GMT_LOCAL int gmtflexure_flx1dk (struct GMT_CTRL *GMT, double w[], double d[], d
  *	dx	: Distance between points (input)
  *	k	: Restoring force term k(x) = delta_rho (x) * gravity (input)
  *	k_flag	: 0 means k[0] applies for entire profile, 1 means k[x] is an array
- *	stress	: Horisontal stress T in the plate (input). Positive = compression.
+ *	stress	: Horizontal stress T in the plate (input). Positive = compression.
  *	bc_left : value 0 - 3. See above (input)
  *	bc_right: value 0 - 3. See above (input)
  *
@@ -1275,7 +1275,7 @@ EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.mode == T_LOAD) {
 			uint64_t n_subaerial = 0;
 			double scale = (Ctrl->D.rhol - Ctrl->D.rhow) * NORMAL_GRAVITY;	/* Convert load height to pressure */
-			double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);	/* Boost factor for subarial load */
+			double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);	/* Boost factor for subaerial load */
 			for (tbl = 0; tbl < Q->n_tables; tbl++) {
 				for (seg = 0; seg < Q->table[tbl]->n_segments; seg++) {
 					S = Q->table[tbl]->segment[seg];	/* Current segment */
@@ -1289,7 +1289,7 @@ EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			if (n_subaerial) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points were subarial so heights were scaled to the equivalent submerged case\n", n_subaerial);
+			if (n_subaerial) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " points were subaerial so heights were scaled to the equivalent submerged case\n", n_subaerial);
 		}
 	}
 	if (Ctrl->E.file) {	/* Gave file with elastic thicknesses or rigidities */
@@ -1381,7 +1381,7 @@ EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	}
 
 	restore = (Ctrl->D.rhom - Ctrl->D.rhoi) * NORMAL_GRAVITY;
-	n_columns = (Ctrl->S.active) ? 3 : 2;	/* Duplicate Q but posibly add 1 more column */
+	n_columns = (Ctrl->S.active) ? 3 : 2;	/* Duplicate Q but possibly add 1 more column */
 	W = gmt_alloc_dataset (GMT, Q, 0, n_columns, GMT_ALLOC_NORMAL);
 
 	for (tbl = 0; tbl < W->n_tables; tbl++) {
