@@ -2,7 +2,7 @@
 # Testing firmoviscous flexure code by dumping all the various transfer functions
 gmt set GMT_FFT kiss FONT_TAG 7p FONT_ANNOT_PRIMARY 10p
 
-gmt begin transfer
+gmt begin transfer ps
 	gmt subplot begin 6x3 -Fs5.5c/3c -SRl -SCb -JX5.5cl/3.25c -R1/5000/0/1.1 -Bxaf+ukm -Byafg1 -Bwesn -M3p -Y2c -T"Transfer Functions" -A
 		# Elastic
 		gmt grdflexure -D3300/2700/2700/1000 -Q -E
