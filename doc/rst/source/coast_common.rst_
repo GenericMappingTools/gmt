@@ -80,6 +80,8 @@ Optional Arguments
     NA (North America), or SA (South America).  Append **+l** to
     just list the countries and their codes [no data extraction or plotting takes place].
     Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
+    Finally, you can append **+l**\|\ **+L** to **-E**\ =*continent* to only list countries in that continent;
+    repeat if more than one continent is requested.
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
     specified unless **-M** is in effect, in which case only one **-E** option can be given.
