@@ -518,7 +518,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
-	if (gmt_DCW_list (GMT, Ctrl->E.info.mode)) return 1;	/* If +l|L was given we list countries and return */
+	if (gmt_DCW_list (GMT, &(Ctrl->E.info))) return 1;	/* If +l|L was given we list countries and return */
 
 	if (!GMT->common.J.active) {	/* So without -J we can only do -M or report region only */
 		if (Ctrl->M.active) Ctrl->E.info.mode = GMT_DCW_DUMP;
