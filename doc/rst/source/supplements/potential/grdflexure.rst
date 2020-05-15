@@ -213,7 +213,8 @@ the plate flexure is solved for using the infill density as the effective load d
 the amplitudes are adjusted by the factor *A* = sqrt ((rm - ri)/(rm - rl)), which is
 the theoretical difference in amplitude due to a point load using the two different
 load densities.  The approximation is very good but breaks down for large
-loads on weak plates, a fairy uncommon situation.
+loads on weak plates, a fairy uncommon situation.  The firmoviscous solutions were
+derived following Nakada [1986] and Cathles [1975].
 
 Examples
 --------
