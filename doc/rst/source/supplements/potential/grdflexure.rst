@@ -197,7 +197,7 @@ using :doc:`grdproject </grdproject>`.
 Transfer Functions
 ------------------
 
-If **-G+d** is given we write the transfer functions T(k,t) to 7 separate files for
+If **-Q** is given we write the transfer functions T(k,t) to 7 separate files for
 7 different Te values (1, 2, 5, 10, 20, 50, and 100 km). The first two columns are
 always wavelength in km and wavenumber (in 1/m) for a 1:1:3000 km range. The transfer
 functions are evaluated for 12 different response times: 1k, 2k, 5k, 10k, 20k, 50k,
