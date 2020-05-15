@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
 [ |-L|\ *list* ]
-[ |-M|\ *tm*
+[ |-M|\ *tm* ]
 [ |-N|\ *params* ]
 [ |-S|\ *beta* ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**] ]
@@ -81,8 +81,8 @@ Required Arguments
     (in units specified in **-T**) to generate the individual file names, otherwise
     we use time in years with no unit. Alternatively, if you use **-G+d** we do not
     make any flexure calculations but instead we take the chosen transfer function
-    given the parameters you selected and evaluate it for a range of wavenumbers.
-    See the note on transfer functions below.
+    given the parameters you selected and evaluate it for a range of wavenumbers and
+    times; see the note on transfer functions below.
 
 Optional Arguments
 ------------------
@@ -196,7 +196,7 @@ If **-G+d** is given we write the transfer functions T(k,t) to 7 separate files 
 7 different Te values (1, 2, 5, 10, 20, 50, and 100 km). The first two columns are
 always wavelength in km and wavenumber (in 1/m) for a 1:1:3000 km range. The transfer
 functions are evaluated for 12 different response times: 1k, 2k, 5k, 10k, 20k, 50k,
-100k, 200k, 500k, 1M, 2M, and 10M years. For a purely elastic response function
+100k, 200k, 500k, 1M, 2M, and 5M years. For a purely elastic response function
 we only write the transfer function once per elastic thickness in column 3.  The 7 files are named
 grdflexure_transfer_function_te\ _\ *te*\ _km.txt where *te* is replaced by the 7 elastic thicknesses
 in km (and 0 if **-E**\ 0 was used for a viscous response only).
@@ -243,7 +243,8 @@ References
 Cathles, L. M., 1975, *The viscosity of the earth's mantle*, Princeton University Press.
 
 Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
-structure of the earth's mantle, *Tectonophysics, 121*, 263–276.
+structure of the Earth's mantle, *Tectonophysics, 121*, 263–276,
+`http://dx.doi.org/10.1016/0040-1951(86)90047-8 <http://dx.doi.org/10.1016/0040-1951(86)90047-8>`_
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
@@ -257,7 +258,9 @@ of Hawaii plume flux, *Geophys. J. Int., 204(2)*, 932-947,
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`grdfft </grdfft>`,
+:doc:`gmt </gmt>`,
+:doc:`gmtflexure </supplements/potential/gmtflexure>`,
+:doc:`grdfft </grdfft>`,
 :doc:`gravfft </supplements/potential/gravfft>`
 :doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`,
 :doc:`grdseamount </supplements/potential/grdseamount>`
