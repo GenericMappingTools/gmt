@@ -785,8 +785,7 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 		else {
 			unsigned int user = 0; /* default using user0 */
 			/* determine X0 */
-			if (!Ctrl->C.active) x0 = hd.b - tref;
-			else                 x0 = Ctrl->C.t0;
+			x0 = hd.b - tref;	/* the new begin time may not exactly match t1 */
 
 			/* determine Y0 */
 			if (Ctrl->E.active) {
