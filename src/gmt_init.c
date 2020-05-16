@@ -185,6 +185,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "GMT_INTERPOLANT"},
 	{ 0, "GMT_LANGUAGE"},
 	{ 0, "GMT_MAX_CORES"},
+	{ 0, "GMT_THEME"},
 	{ 0, "GMT_TRIANGULATE"},
 	{ 0, "GMT_VERBOSE"},
 	{ 1, "I/O Parameters"},
@@ -5962,6 +5963,8 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.language, "us");
 	/* GMT_MAX_CORES */
 	GMT->current.setting.max_cores = 0;
+	/* GMT_THEME */
+	strcpy (GMT->current.setting.theme, "classic");
 	/* GMT_TRIANGULATE */
 #ifdef TRIANGLE_D
 	GMT->current.setting.triangulate = GMT_TRIANGLE_SHEWCHUK;
@@ -9193,8 +9196,16 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 			if (case_val >= 0) GMT_keywords_updated[case_val] = true;		/* Leave a record that this keyword is no longer a default one */
 		}
 	}
-
 	fclose (fp);
+
+	if (GMT->current.settings.update_theme) {	/* Got a GMT_THEME setting, take action */
+		char theme_file[PATH_MAX] = {""};
+		GMT->current.settings.update_theme = false;
+		if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {
+			error = gmtinit_loaddefaults (GMT, theme_file);
+		}
+	}
+
 	gmtinit_verify_encodings (GMT);
 
 	if (error) gmt_message (GMT, "%d GMT Defaults conversion errors in file %s!\n", error, file);
@@ -10601,6 +10612,16 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			break;
+		case GMTCASE_GMT_THEME:
+			if (strlen (value) < GMT_LEN64) {
+				strncpy (GMT->current.setting.theme, value, GMT_LEN64-1);
+				GMT->current.setting.update_theme = true;
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_THEME must be less than %d characters\n", GMT_LEN64);
+				error = true;
+			}
+			break;
 		case GMTCASE_VERBOSE:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_CHANGE ("GMT_VERBOSE");
@@ -11828,6 +11849,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_GMT_LANGUAGE:
 			strncpy (value, GMT->current.setting.language, GMT_LEN64-1);
 			gmtinit_get_language (GMT);	/* Load in names and abbreviations in chosen language */
+			break;
+		case GMTCASE_GMT_THEME:
+			snprintf (value, GMT_LEN256, GMT->current.setting.theme);
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON)
