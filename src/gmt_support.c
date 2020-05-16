@@ -16809,7 +16809,7 @@ CROAK:	/* We are done or premature return due to error */
  * input script types and to write shell commands in various syntax variants.
  */
 
-int gmtlib_gmt_sleep (unsigned int microsec) {
+int gmt_sleep (unsigned int microsec) {
 	/* Waiting before checking if the completion file has been generated */
 #ifdef WIN32
 	Sleep ((uint32_t)microsec/1000);	/* msec are microseconds but Sleep wants milliseconds */
@@ -16819,7 +16819,7 @@ int gmtlib_gmt_sleep (unsigned int microsec) {
 #endif
 }
 
-void gmtlib_set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, char *name, double value) {
+void gmt_set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, char *name, double value) {
 	/* Assigns a single named data floating point variable given the script mode
 	 * Here, col indicates which input column in case special formatting is implied via -f */
 	char string[GMT_LEN64] = {""};
@@ -16832,7 +16832,7 @@ void gmtlib_set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, char *
 	fprintf (fp, "\n");
 }
 
-void gmtlib_set_ivalue (FILE *fp, int mode, bool env, char *name, int value) {
+void gmt_set_ivalue (FILE *fp, int mode, bool env, char *name, int value) {
 	/* Assigns a single named integer variable given the script mode */
 	switch (mode) {
 		case GMT_BASH_MODE: fprintf (fp, "%s=%d\n", name, value);       break;
@@ -16845,7 +16845,7 @@ void gmtlib_set_ivalue (FILE *fp, int mode, bool env, char *name, int value) {
 	}
 }
 
-void gmtlib_set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
+void gmt_set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
 	/* Assigns a single named Cartesian floating point variable given the script mode */
 	switch (mode) {
 		case GMT_BASH_MODE: fprintf (fp, "%s=%.12g", name, value);       break;
@@ -16856,7 +16856,7 @@ void gmtlib_set_dvalue (FILE *fp, int mode, char *name, double value, char unit)
 	fprintf (fp, "\n");
 }
 
-void gmtlib_set_tvalue (FILE *fp, int mode, bool env, char *name, char *value) {
+void gmt_set_tvalue (FILE *fp, int mode, bool env, char *name, char *value) {
 	/* Assigns a single named text variable given the script mode */
 	if (strchr (value, ' ') || strchr (value, '\t') || strchr (value, '|')) {	/* String has spaces, tabs, or bar */
 		switch (mode) {
@@ -16882,7 +16882,7 @@ void gmtlib_set_tvalue (FILE *fp, int mode, bool env, char *name, char *value) {
 	}
 }
 
-void gmtlib_set_script (FILE *fp, int mode) {
+void gmt_set_script (FILE *fp, int mode) {
 	/* Writes the script's incantation line (or a comment for DOS, turning off default echo) */
 	switch (mode) {
 		case GMT_BASH_MODE: fprintf (fp, "#!/usr/bin/env bash\n"); break;
@@ -16891,7 +16891,7 @@ void gmtlib_set_script (FILE *fp, int mode) {
 	}
 }
 
-void gmtlib_set_comment (FILE *fp, int mode, char *comment) {
+void gmt_set_comment (FILE *fp, int mode, char *comment) {
 	/* Write a comment line given the script mode */
 	switch (mode) {
 		case GMT_BASH_MODE: case GMT_CSH_MODE:  fprintf (fp, "# %s\n", comment); break;
@@ -16899,7 +16899,7 @@ void gmtlib_set_comment (FILE *fp, int mode, char *comment) {
 	}
 }
 
-char *gmtlib_place_var (int mode, char *name) {
+char *gmt_place_var (int mode, char *name) {
 	/* Prints a single variable to stdout where needed in the script via the string static variable.
 	 * PS!  Only one call per printf statement since static string cannot hold more than one item at the time */
 	static char string[GMT_LEN128] = {""};	/* So max length of variable name is 127 */
@@ -16910,13 +16910,13 @@ char *gmtlib_place_var (int mode, char *name) {
 	return (string);
 }
 
-int gmtlib_dry_run_only (const char *cmd) {
+int gmt_dry_run_only (const char *cmd) {
 	/* Dummy function to not actually run the loop script when -Q is used */
 	gmt_M_unused (cmd);
 	return 0;
 }
 
-unsigned int gmtlib_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k, bool *PS) {
+unsigned int gmt_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k, bool *PS) {
 	unsigned int n_errors = 0;
 	/* Examines file extension and compares to known mode from mainscript */
 
@@ -16954,7 +16954,7 @@ unsigned int gmtlib_check_language (struct GMT_CTRL *GMT, unsigned int mode, cha
 	return (n_errors);
 }
 
-bool gmtlib_script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
+bool gmt_script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
 	/* Read script to determine if it is in GMT classic mode or not, then rewind */
 	bool modern = false;
 	char line[PATH_MAX] = {""};
@@ -16975,13 +16975,46 @@ bool gmtlib_script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
 	return (!modern);
 }
 
+int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int mode) {
+	/* Read main script to determine any *prefix*_*** variables
+	 * are found with a missing %,$ token, then rewind */
+	int n_errors = 0, e;
+	char line[PATH_MAX] = {""}, *p = NULL, *prev = NULL, *start = NULL;
+	static char var_token[4] = "$$%";
+	while (gmt_fgets (GMT, line, PATH_MAX, fp)) {
+		start = line;
+		if (mode != GMT_DOS_MODE && strchr (line, '`')) {	/* sub-shell call using back-ticks */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead\n");
+		}
+		else if (mode == GMT_BASH_MODE && strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
+			prev = p - 1;	/* Previous character */
+			if (prev < start || prev[0] != '$') {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a sub-shell call $(...) without the leading $\n");
+			}
+		}
+		else if ((p = strstr (line, prefix))) {
+			/* Got a MOVIE_ or BATCH_ variable here. Check if it is missing the token */
+			prev = p - 1;	/* Previous character position */
+			if (prev < start || prev[0] != var_token[mode]) {	/* Nothing before or the previous char is not the token */
+				e = p-start;	/* Try to find the end of variable to make message clearer */
+				while (line[e] && strchr (" \t,/:", line[e]) == NULL) e++;
+				line[e] = '\0';
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script uses %s but without the required leading %c\n", p, var_token[mode]);
+				n_errors++;
+			}
+		}
+	}
+	rewind (fp);	/* Go back to beginning of file */
+	return (n_errors);
+}
+
 GMT_LOCAL bool gmtsupport_line_is_a_comment (char *line) {
 	unsigned int k = 0;
 	while (line[k] && isspace (line[k])) k++;	/* Wind past leading whitespace */
 	return (line[k] == '#' || !strncasecmp (&line[k], "rem", 3U)) ? true : false;	/* Will return true for lines starting with some tabs, then comment */
 }
 
-bool gmtlib_is_gmt_module (char *line, char *module) {
+bool gmt_is_gmtmodule (char *line, char *module) {
 	/* Robustly identify the command "gmt begin" */
 	char word[GMT_LEN128] = {""};
 	unsigned int pos = 0;
@@ -16997,7 +17030,7 @@ bool gmtlib_is_gmt_module (char *line, char *module) {
 	return false;	/* Not gmt <module> */
 }
 
-bool gmtlib_is_gmt_end_show (char *line) {
+bool gmt_is_gmt_end_show (char *line) {
 	char word[GMT_LEN128] = {""};
 	unsigned int pos = 0;
 	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt end show */

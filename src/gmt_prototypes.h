@@ -352,19 +352,20 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
-EXTERN_MSC bool gmtlib_is_gmt_module (char *line, char *module);
-EXTERN_MSC bool gmtlib_is_gmt_end_show (char *line);
-EXTERN_MSC int gmtlib_gmt_sleep (unsigned int microsec);
-EXTERN_MSC void gmtlib_set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, char *name, double value);
-EXTERN_MSC void gmtlib_set_ivalue (FILE *fp, int mode, bool env, char *name, int value);
-EXTERN_MSC void gmtlib_set_dvalue (FILE *fp, int mode, char *name, double value, char unit);
-EXTERN_MSC void gmtlib_set_tvalue (FILE *fp, int mode, bool env, char *name, char *value);
-EXTERN_MSC void gmtlib_set_script (FILE *fp, int mode);
-EXTERN_MSC void gmtlib_set_comment (FILE *fp, int mode, char *comment);
-EXTERN_MSC char *gmtlib_place_var (int mode, char *name);
-EXTERN_MSC int gmtlib_dry_run_only (const char *cmd);
-EXTERN_MSC unsigned int gmtlib_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k, bool *PS);
-EXTERN_MSC bool gmtlib_script_is_classic (struct GMT_CTRL *GMT, FILE *fp);
+EXTERN_MSC int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int mode);
+EXTERN_MSC bool gmt_is_gmtmodule (char *line, char *module);
+EXTERN_MSC bool gmt_is_gmt_end_show (char *line);
+EXTERN_MSC int gmt_sleep (unsigned int microsec);
+EXTERN_MSC void gmt_set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, char *name, double value);
+EXTERN_MSC void gmt_set_ivalue (FILE *fp, int mode, bool env, char *name, int value);
+EXTERN_MSC void gmt_set_dvalue (FILE *fp, int mode, char *name, double value, char unit);
+EXTERN_MSC void gmt_set_tvalue (FILE *fp, int mode, bool env, char *name, char *value);
+EXTERN_MSC void gmt_set_script (FILE *fp, int mode);
+EXTERN_MSC void gmt_set_comment (FILE *fp, int mode, char *comment);
+EXTERN_MSC char *gmt_place_var (int mode, char *name);
+EXTERN_MSC int gmt_dry_run_only (const char *cmd);
+EXTERN_MSC unsigned int gmt_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k, bool *PS);
+EXTERN_MSC bool gmt_script_is_classic (struct GMT_CTRL *GMT, FILE *fp);
 EXTERN_MSC int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library);
 EXTERN_MSC unsigned int gmt_polygon_orientation (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo);
 EXTERN_MSC struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, char *file, bool inner_ticks, unsigned int *type, unsigned int *n_contours);
