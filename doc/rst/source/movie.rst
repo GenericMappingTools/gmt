@@ -296,8 +296,8 @@ Parameters
 Several parameters are automatically assigned and can be used when composing *mainscript* and the optional
 *background* and *foreground* scripts. There are two sets of parameters: Those that are constants
 and those that change with the frame number.  The constants are accessible by all the scripts:
-**MOVIE_WIDTH**\ : The width of the canvas,
-**MOVIE_HEIGHT**\ : The height of the canvas,
+**MOVIE_WIDTH**\ : The width of the canvas (the full movie frame),
+**MOVIE_HEIGHT**\ : The height of the canvas (the full movie frame),
 **MOVIE_DPU**\ : The current dots-per-unit,
 **MOVIE_RATE**\ : The current number of frames per second,
 **MOVIE_NFRAMES**\ : The total number of frames.
@@ -365,7 +365,15 @@ making a HD movie using the US unit dimensions then a background pink layer woul
 Note the canvas selection via :term:`PS_MEDIA`, the matching region and projection, and
 the zero location of the origin.
 
-Transparent images
+Basemap Frames
+--------------
+
+Some map projections will by default draw a *fancy* map frame; this feature is under the control of :term:`MAP_FRAME_TYPE`.
+However, whether a *fancy* or *plain* frame is actually drawn also depends on the projection center *latitude*.
+Thus, if your movie varies the projection center latitude by changing the view, you should set the frame
+setting to *plain* as part of your setup.
+
+Transparent Images
 ------------------
 
 By default, **movie** will build *opaque* PNG images which can then be assembled into an animation.
