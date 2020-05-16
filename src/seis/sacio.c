@@ -368,8 +368,8 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 	nt2 = nt1 + nn;
 	npts = hd->npts;
 	hd->npts = nn;
-	hd->b   = t1;
-	hd->e   = t1 + nn * hd->delta;
+	hd->b = hd->b + hd->delta * nt1;  /* the new begin time may not exactly match t1 */
+	hd->e = hd->b + (nn - 1) * hd->delta;
 
 	if (nt1 > npts || nt2 < 0) {
 		fclose(strm);
