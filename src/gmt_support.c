@@ -16979,28 +16979,46 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 	/* Read main script to determine any *prefix*_*** variables
 	 * are found with a missing %,$ token, then rewind */
 	int n_errors = 0, e;
-	char line[PATH_MAX] = {""}, *p = NULL, *prev = NULL, *start = NULL;
+	char line[GMT_LEN256] = {""}, record[GMT_LEN256] = {""}, *p = NULL, *prev = NULL, *start = NULL;
 	static char var_token[4] = "$$%";
-	while (gmt_fgets (GMT, line, PATH_MAX, fp)) {
+	while (gmt_fgets (GMT, line, GMT_LEN256, fp)) {
 		start = line;
-		if (mode != GMT_DOS_MODE && strchr (line, '`')) {	/* sub-shell call using back-ticks */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead\n");
+		while (strchr (" \t", start[0])) start++;	/* Skip any leading whitespace */
+		if (start[0] == '\n' || start[0] == '\r')  continue;	/* Blank line */
+		if (mode == GMT_DOS_MODE) {	/* Some DOS-specific checks */
+			if (!strcmp (start, "REM") || !strcmp (start, "rem")) continue;	/* DOS comment */
 		}
-		else if (mode == GMT_BASH_MODE && strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
-			prev = p - 1;	/* Previous character */
-			if (prev < start || prev[0] != '$') {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a sub-shell call $(...) without the leading $\n");
+		else {	/* UNIX shells */
+			if (start[0] == '#') continue;	/* Shell comment */
+			if (mode == GMT_BASH_MODE) {	/* Some bash-specific checks */
+				if (strchr (line, '`'))	/* sub-shell call using back-ticks */
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead: %s", start);
+				else if (strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
+					prev = p - 1;	/* Get previous character */
+					if (prev < start || prev[0] != '$')
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);
+				}
 			}
 		}
-		else if ((p = strstr (line, prefix))) {
+		if ((p = strstr (line, prefix))) {
 			/* Got a MOVIE_ or BATCH_ variable here. Check if it is missing the token */
-			prev = p - 1;	/* Previous character position */
-			if (prev < start || prev[0] != var_token[mode]) {	/* Nothing before or the previous char is not the token */
-				e = p-start;	/* Try to find the end of variable to make message clearer */
+			strcpy (record, start);
+			prev = p - 1;	/* Get previous character */
+			if (prev >= start && prev[0] == '{') prev--, p--;	/* Found {prefix} */
+			if (prev < start || prev[0] != var_token[mode]) {	/* Start of line or the previous char is not the token */
+				start = line;	/* Reset pointer */
+				e = (int)(p - start);	/* Try to find the end of the variable name to make message below clearer */
 				while (line[e] && strchr (" \t,/:", line[e]) == NULL) e++;
 				line[e] = '\0';
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script uses %s but without the required leading %c\n", p, var_token[mode]);
+				while (strchr (" \t", start[0])) start++;	/* Skip any leading whitespace */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script uses %s but missing the required leading %c: %s", p, var_token[mode], record);
 				n_errors++;
+			}
+			else if (mode != GMT_DOS_MODE) {
+				if (strchr (start, '{') && !strchr (start, '}'))
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing  in variable name: %s", record), n_errors++;
+				else if (!strchr (start, '{') && strchr (start, '}'))
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing { in variable name: %s", record), n_errors++;
 			}
 		}
 	}
