@@ -42,7 +42,7 @@
  *	gmtlib_putcmyk			Encode color argument into c/m/y/k textstring
  *	gmtlib_putfill
  *	gmtlib_setparameter		Sets a default value given keyword,value-pair\n
- *	gmtlib_putparameter
+ *	gmtlib_getparameter
  *	gmt_GSHHG_syntax
  *	gmt_label_syntax
  *	gmt_cont_syntax
@@ -132,7 +132,7 @@ struct GMT5_params {
 /* These are the active GMT5+ keywords, containing no backwards-compatible variants.
  * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since they are not in gmt.conf.
  * If new keywords are added they need to be added here as well as to gmt_keywords.txt, plus
- * specific entries in both gmtlib_setparameter and gmtlib_putparameter, and gmt.conf.rst */
+ * specific entries in both gmtlib_setparameter and gmtlib_getparameter, and gmt.conf.rst */
 
 static struct GMT5_params GMT5_keywords[]= {
 	{ 1, "COLOR Parameters"},
@@ -2575,7 +2575,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 			fprintf (fpo, "#\n# %s\n#\n", GMT5_keywords[current_group].name);
 			header = true;
 		}
-		fprintf (fpo, "%-30s = %s\n", GMT5_keywords[k].name, gmtlib_putparameter (GMT, GMT5_keywords[k].name));
+		fprintf (fpo, "%-30s = %s\n", GMT5_keywords[k].name, gmtlib_getparameter (GMT, GMT5_keywords[k].name));
 		k++;
 	}
 
@@ -5667,7 +5667,46 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-void gmt_conf (struct GMT_CTRL *GMT) {
+GMT_LOCAL void gmtinit_conf_classic_US (struct GMT_CTRL *GMT) {
+	int i, case_val;
+	/* Update the settings to US where they differ from standard SI settings:
+	 *     Setting			SI			US
+	 * --------------------------------------------
+	 * PROJ_LENGTH_UNIT		cm	 		inch
+	 * PS_CHAR_ENCODING		ISOLatin1+	Standard+
+	 * PS_MEDIA				a4			letter
+	 * TIME_WEEK_START		Monday		Sunday
+	 */
+
+	/* PROJ_LENGTH_UNIT */
+	case_val = gmt_hash_lookup (GMT, "PROJ_LENGTH_UNIT", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
+	GMT->current.setting.proj_length_unit = GMT_INCH;
+	/* PS_CHAR_ENCODING */
+	case_val = gmt_hash_lookup (GMT, "PS_CHAR_ENCODING", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
+	strcpy (GMT->current.setting.ps_encoding.name, "Standard+");
+	gmtinit_load_encoding (GMT);
+	/* PS_MEDIA */
+	if (GMT->current.setting.run_mode == GMT_MODERN)
+		gmtinit_setautopagesize (GMT);
+	else {
+		case_val = gmt_hash_lookup (GMT, "PS_MEDIA", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+		if (case_val >= 0) GMT_keywords_updated[case_val] = true;
+		i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
+		/* Use the specified standard format */
+		GMT->current.setting.ps_media = i;
+		GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
+		GMT->current.setting.ps_page_size[1] = GMT_media[i].height;
+	}
+	/* TIME_WEEK_START */
+	case_val = gmt_hash_lookup (GMT, "TIME_WEEK_START", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
+	GMT->current.setting.time_week_start = gmtinit_key_lookup ("Sunday", GMT_weekdays, 7);
+}
+
+/*! . */
+GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	int i, error = 0;
 	double const pt = 1.0/72.0;	/* points to inch */
 	/* Initialize all the settings to standard SI settings */
@@ -6015,46 +6054,35 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized value during gmtdefaults initialization.\n");
 
 	if (!strncmp (GMT_DEF_UNITS, "US", 2U))
-		gmt_conf_US (GMT);	/* Override with US settings */
+		gmtinit_conf_classic_US (GMT);	/* Override with US settings */
+}
+
+/*! . */
+GMT_LOCAL void gmtinit_conf_modern_US (struct GMT_CTRL *GMT) {
+	/* REPLACE WITH gmtinit_conf_modern_US when ready */
+	gmtinit_conf_classic_US (GMT);	/* Override with US settings */
+}
+
+/*! . */
+GMT_LOCAL void gmtinit_conf_modern (struct GMT_CTRL *GMT) {
+	/* REPLACE WITH gmtinit_conf_modern when ready */
+	gmtinit_conf_classic (GMT);
 }
 
 /*! . */
 void gmt_conf_US (struct GMT_CTRL *GMT) {
-	int i, case_val;
-	/* Update the settings to US where they differ from standard SI settings:
-	 *     Setting			SI			US
-	 * --------------------------------------------
-	 * PROJ_LENGTH_UNIT		cm	 		inch
-	 * PS_CHAR_ENCODING		ISOLatin1+	Standard+
-	 * PS_MEDIA				a4			letter
-	 * TIME_WEEK_START		Monday		Sunday
-	 */
-
-	/* PROJ_LENGTH_UNIT */
-	case_val = gmt_hash_lookup (GMT, "PROJ_LENGTH_UNIT", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
-	GMT->current.setting.proj_length_unit = GMT_INCH;
-	/* PS_CHAR_ENCODING */
-	case_val = gmt_hash_lookup (GMT, "PS_CHAR_ENCODING", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
-	strcpy (GMT->current.setting.ps_encoding.name, "Standard+");
-	gmtinit_load_encoding (GMT);
-	/* PS_MEDIA */
 	if (GMT->current.setting.run_mode == GMT_MODERN)
-		gmtinit_setautopagesize (GMT);
-	else {
-		case_val = gmt_hash_lookup (GMT, "PS_MEDIA", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-		if (case_val >= 0) GMT_keywords_updated[case_val] = true;
-		i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
-		/* Use the specified standard format */
-		GMT->current.setting.ps_media = i;
-		GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
-		GMT->current.setting.ps_page_size[1] = GMT_media[i].height;
-	}
-	/* TIME_WEEK_START */
-	case_val = gmt_hash_lookup (GMT, "TIME_WEEK_START", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
-	GMT->current.setting.time_week_start = gmtinit_key_lookup ("Sunday", GMT_weekdays, 7);
+		gmtinit_conf_modern_US (GMT);
+	else
+		gmtinit_conf_classic_US (GMT);
+}
+
+/*! . */
+void gmt_conf_SI (struct GMT_CTRL *GMT) {
+	if (GMT->current.setting.run_mode == GMT_MODERN)
+		gmtinit_conf_modern (GMT);	/* REPLACE WITH gmtinit_conf_modern when ready */
+	else
+		gmtinit_conf_classic (GMT);
 }
 
 /*! . */
@@ -9178,18 +9206,17 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 			return (GMT_NOERROR);
 		}
 
-		if (rec != 2) { /* Nothing */ }
-		else if (strlen (line) < 7 || (ver = strtol (&line[6], NULL, 10)) < 5 )
+		if (rec == 2 && strstr (line, "# GMT ") && (strlen (line) < 7 || (ver = strtol (&line[6], NULL, 10)) < 5))
 			gmt_message (GMT, "Your gmt.conf file (%s) may not be GMT %d compatible\n", file, gmt_version_major);
 		else if (!strncmp (&line[6], "5.0.0", 5))
-			gmt_message (GMT, "Your gmt.conf file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", file, file);
+			gmt_message (GMT, "Your gmt.conf file (%s) is of version 5.0.0 and may need to be updated. Use \"gmt set -G%s\"\n", file, file);
 		if (line[0] == '#') continue;	/* Skip comments */
 		if (line[0] == '\0') continue;	/* Skip Blank lines */
 
 		keyword[0] = value[0] = '\0';	/* Initialize */
 		sscanf (line, "%s = %[^\n]", keyword, value);
 
-		if (gmtlib_setparameter (GMT, keyword, value, false))
+		if (gmtlib_setparameter (GMT, keyword, value, true))
 			error++;
 		else {
 			int case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
@@ -9198,9 +9225,9 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 	}
 	fclose (fp);
 
-	if (GMT->current.settings.update_theme) {	/* Got a GMT_THEME setting, take action */
+	if (GMT->current.setting.update_theme) {	/* Got a GMT_THEME setting, take delayed action now */
 		char theme_file[PATH_MAX] = {""};
-		GMT->current.settings.update_theme = false;
+		GMT->current.setting.update_theme = false;
 		if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {
 			error = gmtinit_loaddefaults (GMT, theme_file);
 		}
@@ -9247,6 +9274,14 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 		}
 	}
 
+	if (GMT->current.setting.update_theme) {	/* Got a --GMT_THEME=theme setting, take delayed action now */
+		char theme_file[PATH_MAX] = {""};
+		GMT->current.setting.update_theme = false;
+		if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {
+			n_errors += gmtinit_loaddefaults (GMT, theme_file);
+		}
+	}
+
 	if (param != NULL)	/* param should be NULL unless no value were added */
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Last GMT Defaults parameter from command options had no value\n");
 
@@ -9256,6 +9291,11 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 
 /*! . */
 unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core) {
+	/* core is true if we are calling gmtlib_setparameter from gmtinit_loaddefaults, while it is
+	 * false when just called once, such as via --PAR=value on the comment line.  The reason is
+	 * that when GMT_THEME=theme is given we want to wait to address the theme change until all the items
+	 * in gmt.conf has been read, but must act right away if a single entry. */
+
 	unsigned int pos;
 	size_t len;
 	int i, ival, case_val, manual, limit;
@@ -9263,7 +9303,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, lower_value[GMT_BUFSIZ] = {""};
 
 	double dval;
-	gmt_M_unused(core);
 
 	if (!value) return (1);		/* value argument missing */
 	strncpy (lower_value, value, GMT_BUFSIZ-1);	/* Get a lower case version */
@@ -10615,7 +10654,18 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_GMT_THEME:
 			if (strlen (value) < GMT_LEN64) {
 				strncpy (GMT->current.setting.theme, value, GMT_LEN64-1);
-				GMT->current.setting.update_theme = true;
+				if (core == false) {	/* Must deal with this right away */
+					char theme_file[PATH_MAX] = {""};
+					if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {	/* File exist */
+						error = gmtinit_loaddefaults (GMT, theme_file);
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to fine file %s selected by GMT_THEME\n", theme_file);
+						error = true;
+					}
+				}
+				else	/* Do it when all of gmt.conf has been processed */
+					GMT->current.setting.update_theme = true;
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_THEME must be less than %d characters\n", GMT_LEN64);
@@ -10803,7 +10853,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 }
 
 /*! . */
-char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
+char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	/* value must hold at least GMT_BUFSIZ chars */
 	static char value[GMT_BUFSIZ] = {""}, txt[GMT_LEN8], *PRE[3] = {"", "-", "+"};
 	int case_val;
@@ -11851,7 +11901,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			gmtinit_get_language (GMT);	/* Load in names and abbreviations in chosen language */
 			break;
 		case GMTCASE_GMT_THEME:
-			snprintf (value, GMT_LEN256, GMT->current.setting.theme);
+			strncpy (value, GMT->current.setting.theme, GMT_LEN256-1);
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON)
@@ -11975,7 +12025,7 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 		if (lines) record[0] = '\0';	/* Start over */
 		if (!lines && n)
 			strcat (record, " ");	/* Separate by spaces */
-		param = gmtlib_putparameter (GMT, opt->arg);
+		param = gmtlib_getparameter (GMT, opt->arg);
 		if (*param == '\0') {
 			/* if keyword unknown */
 			error = GMT_OPTION_NOT_FOUND;
@@ -14056,7 +14106,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	/*
 	if (GMT->parent->external) {
-		gmt_conf (GMT);
+		gmt_conf_SI (GMT);
 		gmt_getdefaults (GMT, NULL);	// Re-read local GMT default settings (if any)
 	}
 	*/
@@ -16217,7 +16267,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmt_hash_init (GMT, GMT->session.rgb_hashnode, gmt_M_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
-	gmt_conf (GMT);	/* Initialize the standard GMT system default settings */
+	gmt_conf_SI (GMT);	/* Initialize the standard GMT system default SI settings */
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_getdefaults\n");
 	gmt_getdefaults (GMT, NULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
@@ -17260,7 +17310,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				}
 			}
 			if (error) return (error);			/* Bail at this point */
-			gmt_conf (API->GMT);				/* Get the original system defaults */
+			gmt_conf_SI (API->GMT);				/* Get the original system defaults */
 			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			snprintf (dir, PATH_MAX, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */

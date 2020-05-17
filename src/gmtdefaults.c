@@ -144,7 +144,7 @@ EXTERN_MSC int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmtdefaults main code ----------------------------*/
 
 	if (Ctrl->D.active) {	/* Start with default params using SI settings */
-		gmt_conf (GMT);		/* Get SI defaults */
+		gmt_conf_SI (GMT);		/* Get SI defaults */
 		if (Ctrl->D.mode == 'u')
 			gmt_conf_US (GMT);	/* Change a few to US defaults */
 	}
