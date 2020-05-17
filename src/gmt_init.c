@@ -9189,6 +9189,8 @@ int GMT_get_V (char arg) {
 	return gmt_get_V (arg);
 }
 
+GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT);
+
 /*! . */
 GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 	static int gmt_version_major = GMT_PACKAGE_VERSION_MAJOR;
@@ -9225,19 +9227,31 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 	}
 	fclose (fp);
 
-	if (GMT->current.setting.update_theme) {	/* Got a GMT_THEME setting, take delayed action now */
-		char theme_file[PATH_MAX] = {""};
-		GMT->current.setting.update_theme = false;
-		if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {
-			error = gmtinit_loaddefaults (GMT, theme_file);
-		}
-	}
+	error += gmtinit_update_theme (GMT);	/* If we got a GMT_THEME setting, take delayed action now */
 
 	gmtinit_verify_encodings (GMT);
 
 	if (error) gmt_message (GMT, "%d GMT Defaults conversion errors in file %s!\n", error, file);
 
 	return (GMT_NOERROR);
+}
+
+GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT) {
+	int error = GMT_NOERROR;
+	char theme_file[PATH_MAX] = {""};
+
+	if (!GMT->current.setting.update_theme) return GMT_NOERROR;	/* Nothing to do */
+
+	/* Got a GMT_THEME setting, take delayed action now */
+	GMT->current.setting.update_theme = false;
+	if (!strcmp (GMT->current.setting.theme, "classic"))	/* Just reload the classic defaults */
+		gmtinit_conf_classic (GMT);
+	else if (!strcmp (GMT->current.setting.theme, "modern"))	/* Just reload the modern defaults */
+		gmtinit_conf_modern (GMT);
+	else if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {	/* Load given theme */
+		error = gmtinit_loaddefaults (GMT, theme_file);
+	}
+	return (error);
 }
 
 void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg) {
@@ -9274,13 +9288,7 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 		}
 	}
 
-	if (GMT->current.setting.update_theme) {	/* Got a --GMT_THEME=theme setting, take delayed action now */
-		char theme_file[PATH_MAX] = {""};
-		GMT->current.setting.update_theme = false;
-		if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {
-			n_errors += gmtinit_loaddefaults (GMT, theme_file);
-		}
-	}
+	n_errors += gmtinit_update_theme (GMT);	/* If we got a GMT_THEME setting, take delayed action now */
 
 	if (param != NULL)	/* param should be NULL unless no value were added */
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Last GMT Defaults parameter from command options had no value\n");
@@ -10654,18 +10662,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_GMT_THEME:
 			if (strlen (value) < GMT_LEN64) {
 				strncpy (GMT->current.setting.theme, value, GMT_LEN64-1);
-				if (core == false) {	/* Must deal with this right away */
-					char theme_file[PATH_MAX] = {""};
-					if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {	/* File exist */
-						error = gmtinit_loaddefaults (GMT, theme_file);
-					}
-					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to fine file %s selected by GMT_THEME\n", theme_file);
-						error = true;
-					}
-				}
-				else	/* Do it when all of gmt.conf has been processed */
-					GMT->current.setting.update_theme = true;
+				GMT->current.setting.update_theme = true;
+				if (core == false)	/* Must deal with this right away */
+					error = gmtinit_update_theme (GMT);
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_THEME must be less than %d characters\n", GMT_LEN64);
