@@ -9246,8 +9246,8 @@ GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT) {
 	GMT->current.setting.update_theme = false;
 	if (!strcmp (GMT->current.setting.theme, "classic"))	/* Just reload the classic defaults */
 		gmtinit_conf_classic (GMT);
-	else if (!strcmp (GMT->current.setting.theme, "modern"))	/* Just reload the modern defaults */
-		gmtinit_conf_modern (GMT);
+	//else if (!strcmp (GMT->current.setting.theme, "modern"))	/* Just reload the modern defaults TESTING VIA MODERN.CONF FOR NOW */
+	//	gmtinit_conf_modern (GMT);
 	else if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {	/* Load given theme */
 		error = gmtinit_loaddefaults (GMT, theme_file);
 	}
