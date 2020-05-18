@@ -579,6 +579,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: must give 3-4 density values\n");
 					n_errors++;
 				}
+				if (Ctrl->D.rhom < 10.0) Ctrl->D.rhom *= 1000;	/* Gave units of g/cm^3 */
+				if (Ctrl->D.rhol < 10.0) Ctrl->D.rhol *= 1000;	/* Gave units of g/cm^3 */
+				if (Ctrl->D.rhoi < 10.0) Ctrl->D.rhoi *= 1000;	/* Gave units of g/cm^3 */
+				if (Ctrl->D.rhow < 10.0) Ctrl->D.rhow *= 1000;	/* Gave units of g/cm^3 */
 				if (n == 3) {	/* Assume no rhoi given, shuffle args */
 					Ctrl->D.rhow = Ctrl->D.rhoi;
 					Ctrl->D.rhoi = Ctrl->D.rhol;
@@ -693,7 +697,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   a different load file name will be set and loaded for each time step.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Time steps with no corresponding load file are allowed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give =<flist> where <flist> contains a list of load grids and load times.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density values for mantle, load(crust), optional moat infill [same as load], and water|air in kg/m^3.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density of mantle, load(crust), optional moat infill [same as load], and water|air in kg/m^3 or g/cm^3.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default of 0 km may be used with -F for a pure viscous response (no plate rigidity).\n");
@@ -714,6 +718,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q No flexure. Evaluate and write the chosen response functions Q(k[,t]) for parameters lambda =\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1-3000 km, Te = 1,2,5,10,20,50 km, and t = 1k,2k,5k,10k,20k,50k,100k,200k,500k,1M,2M,5M years.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Starved moat fraction ranging from 0 (no infill) to 1 (fully filled) [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start> (in years; append k for kyr and M for Myr).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, append +l and specify n steps instead of time increment.\n");

@@ -12,10 +12,13 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ [*Te*] |-G|\ *outgrid*
+**gmt grdflexure** *topogrd*
+|-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*
+|-E|\ [*Te*\ [**k**]]
+|-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
-[ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
+[ |-F|\ *nu_a*\ [/*h_a*\ [**k**]/*nu_m*] ]
 [ |-L|\ *list* ]
 [ |-M|\ *tm* ]
 [ |-N|\ *params* ]
@@ -41,14 +44,14 @@ for four different types of rheological foundations, all involving *constant thi
 #. An elastic plate overlying a viscous layer over a viscous half-space,
 #. A viscoelastic plate overlying an inviscid half-space.
 
-These conditions will give rise to the *elastic* [1; :math:`\Phi_e(\mathbf{k})`],
+These conditions will require the *elastic* [1; :math:`\Phi_e(\mathbf{k})`],
 *firmoviscous* [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
-and *viscoelastic*8 [4, :math:`\Phi_{ve}(\mathbf{k},t)`] response functions.
+and *viscoelastic* [4, :math:`\Phi_{ve}(\mathbf{k},t)`] response functions.
 If the (visco)elastic plate vanishes (zero thickness) then we obtain Airy isostasy
 (1,4) or a purely *viscous* response (2,3).  Temporal evolution can
-also be modeled by providing incremental load grids and specifying a
-range of model output times.  A wide range of options allows specifying the desired
-rheology and related constants, plus in-plate forces.
+also be modeled by providing incremental load grids for select times and specifying a
+range of model output times.  A wide range of options allow specifying the desired
+rheology and related constants, including in-plate forces.
 
 
 Required Arguments
@@ -70,10 +73,9 @@ Required Arguments
 .. _-D:
 
 **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
-    Sets density for mantle, load, infill (optional, otherwise it is
-    assumed to equal the load density), and water or air.  If *ri* differs from
+    Sets density for mantle, load, infill, and water (or air).  If *ri* differs from
     *rl* then an approximate solution will be found.  If *ri* is not given
-    then it defaults to *rl*.  Units must be km/m^3.
+    then it defaults to *rl*.  Values may be given in km/m^3 or g/cm^3.
 
 .. _-E:
 
@@ -287,7 +289,7 @@ solution is not valid. We avoid these complications by letting :math:`\rho_l = \
 
     \gamma = \sqrt{\frac{\rho_m - \rho_i}{\rho_m - \rho_l}}.
 
-The approximation is good except for very large loads on thin plates (Wessel, 2001).
+The approximation is good except for very large loads on thin plates (*Wessel*, 2001).
 The *firmoviscous response function* :math:`\Phi(\mathbf{k},t)` scales the magnitude of the deformation at a given wavenumber and time
 and depends on rheological parameters and in-plane stresses:
 
@@ -322,7 +324,7 @@ and :math:`\Phi_{fv}(\mathbf{k},t) = \Phi_e(\mathbf{k})`. Otherwise, it is given
     \tau(k_r) = \frac{\rho_m g}{2 \eta_m k_r} \beta(k_r),
 
 where :math:`\beta(k_r)` depends on whether we have a finite-thickness layer of thickness :math:`T_a` and viscosity
-:math:`\eta_a` above the half-space of viscosity :math:`\eta_m` (Cathles, 1975; Nakada, 1986).
+:math:`\eta_a` above the half-space of viscosity :math:`\eta_m` (*Cathles*, 1975; *Nakada*, 1986).
 If no finite layer exists then :math:`\beta(k_r) = 1`, otherwise
 
 .. math::
@@ -335,7 +337,7 @@ where
 
     \theta = \eta_a/\eta_m, \quad S = \sinh (k_r T_a), \quad S = \cosh (k_r T_a).
 
-For case (4), the viscoelastic response function (only available for an inviscid substratum) is instead
+For case (4), the viscoelastic response function (only available for an inviscid substratum) is instead (*Watts*, 2001)
 
 .. math::
 
