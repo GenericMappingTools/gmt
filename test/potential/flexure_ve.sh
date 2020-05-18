@@ -12,5 +12,5 @@ cat << EOF > t.txt
 EOF
 gmt grdseamount -R0/600/0/400+uk -I1000 -Gsmt.nc t.txt -Dk -E -F$f -C$m
 gmt grdcontour smt.nc+Uk -Jx0.01i -Xc -P -A1 -GlLM/RM -Bafg -K -Z+s0.001 > $ps
-gmt grdflexure smt.nc -D3300/2700/2400/1030 -E30k -M100k -Gflex_ve_%g.nc -T50k -V
-gmt grdcontour flex_ve_50000.nc+Uk -J -O -C0.2 -A1 -Z+s0.001 -GlLM/RM -Bafg -BWsNE+t"Viscoelastic Plate Flexure, T@-e@- = 10 km, t/t@-m@- = 0.5" -Y4.4i >> $ps
+gmt grdflexure smt.nc -D3300/2700/2400/1030 -E10k -M50k -Gflex_ve_%g.nc -T100k
+gmt grdcontour flex_ve_100000.nc+Uk -J -O -C0.2 -A1 -Z+s0.001 -GlLM/RM -Bafg -BWsNE+t"Viscoelastic Plate Flexure, T@-e@- = 10 km, t/t@-m@- = 2" -Y4.4i >> $ps
