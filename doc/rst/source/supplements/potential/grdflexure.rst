@@ -47,7 +47,8 @@ for five different types of rheological foundations, all involving *constant thi
 
 These conditions will require the *elastic* [1; :math:`\Phi_e(\mathbf{k})`],
 *firmoviscous* [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
-and *viscoelastic* [4; :math:`\Phi_{ve}(\mathbf{k},t)`], and *general linear* response functions. [5; ]
+*viscoelastic* [4; :math:`\Phi_{ve}(\mathbf{k},t)`],
+and *general linear* (viscoelastic) response functions [5; :math:`\Phi_{gl}(\mathbf{k},t)`]
 If the (visco)elastic plate vanishes (zero thickness) then we obtain Airy isostasy
 (1,4) or a purely *viscous* response (2,3).  Temporal evolution can
 also be modeled by providing incremental load grids for select times and specifying a
@@ -87,7 +88,7 @@ Required Arguments
     modulus, and Poisson's ratio; see **-C** to change these values).
     If just **-E** is given and **-F** is used it means no plate is given
     and we will return a purely viscous response with or without an asthenospheric layer.
-    Select a general linear viscoelastic response by supplying the initial and
+    Select a general linear viscoelastic response by supplying both an initial and
     final elastic thickness; this response also requires **-M**.
 
 .. _-G:
@@ -121,7 +122,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *nu_a*\ [\ /*h_a*/*nu_m*]
+**-F**\ *nu_a*\ [\ /*h_a*\ [**k**]/*nu_m*]
     Specify a firmoviscous model in conjunction with an elastic plate
     thickness specified via **-E**.  Just give one viscosity (*nu_a*)
     for an elastic plate over a viscous half-space, or also append
@@ -370,9 +371,10 @@ For case (5), the general linear viscoelastic response function (with an invisci
 
 .. math::
 
-    \Phi_{ve}(\mathbf{k},t) = \Phi_f(\mathbf{k}) + \left [ \Phi_i(\mathbf{k}) - \Phi_f(\mathbf{k}) \right ] \exp \left \{ - \frac{t}{t_m} \frac{D_i \Phi_i(\mathbf{k})}{D_f \Phi_f(\mathbf{k})} \right \},
+    \Phi_{gl}(\mathbf{k},t) = \Phi_f(\mathbf{k}) + \left [ \Phi_i(\mathbf{k}) - \Phi_f(\mathbf{k}) \right ] \exp \left \{ - \frac{t}{t_m} \frac{D_i \Phi_i(\mathbf{k})}{D_f \Phi_f(\mathbf{k})} \right \},
 
-where subscripts *i* and *f* refers to the initial (*t = 0*) and final (:math:`t = \infty`) values for rigidities.
+where subscripts *i* and *f* refers to the initial (*t = 0*) and final (:math:`t = \infty`) values for rigidities (:math:`D_i, D_f`)
+and the elastic response functions (:math:`\Phi_i, \Phi_f`).
 
 References
 ----------
