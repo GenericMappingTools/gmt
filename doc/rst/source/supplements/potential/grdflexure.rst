@@ -122,7 +122,7 @@ Optional Arguments
     for an elastic plate over a viscous half-space, or also append
     the thickness of the asthenosphere (*h_a*) and the lower mantle
     viscosity (*nu_m*), with the first viscosity now being that of
-    the asthenosphere. Give viscosities in Pa*s. If used, give the
+    the asthenosphere. Give viscosities in Pa·s. If used, give the
     thickness of the asthenosphere in meter; append **k** for km.
 
 .. _-L:
