@@ -341,7 +341,7 @@ For case (4), the viscoelastic response function (only available for an inviscid
 
 .. math::
 
-    \Phi_{ve}(\mathbf{k},t) = 1 - \left [ 1 - \Phi_e(\mathbf{k}) \right ] \exp \left \{ - \frac{t }{t_m \Phi_e(\mathbf{k})} \right \},
+    \Phi_{ve}(\mathbf{k},t) = 1 - \left [ 1 - \Phi_e(\mathbf{k}) \right ] \exp \left \{ - \frac{t}{t_m} \Phi_e(\mathbf{k}) \right \},
 
 where :math:`t_m` is the *Maxwell relaxation time*.
 
