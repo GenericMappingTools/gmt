@@ -475,7 +475,7 @@ GMT_LOCAL double grdflexure_transfer_ve (double *k, struct GRDFLEXURE_RHEOLOGY *
 	double phi_e, phi_ve, tau;
 	tau = R->t0 * R->cv;
 	phi_e = R->tr_elastic_sub (k, R);
-	phi_ve = 1.0 - (1.0 - phi_e) * exp (-tau / phi_e);
+	phi_ve = 1.0 - (1.0 - phi_e) * exp (-tau * phi_e);
 	return (R->scale * phi_ve);
 }
 
