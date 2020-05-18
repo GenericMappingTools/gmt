@@ -91,6 +91,8 @@ Optional Arguments
     Specify in-plane compressional or extensional forces in the x- and y-directions,
     as well as any shear force [no in-plane forces].  Compression is indicated by
     negative values, while extensional forces are specified using positive values.
+    Values are expected in Pa·m since **$NN is the depth-integrated horizontal
+    stresses.
 
 .. _-C:
 

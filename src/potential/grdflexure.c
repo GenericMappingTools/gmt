@@ -703,7 +703,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If the floating point format is followed by %%c then we scale time to unit in -T and append the unit.\n");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Sets in-plane force components Nx, Ny and shear force Nxy [isotropic deformation].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Sets in-plane force components Nx, Ny and shear force Nxy in Pa*m [isotropic deformation].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Negative values mean compression, positive values mean extensional forces.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%g] or Poisson's ratio [%g].\n", YOUNGS_MODULUS, POISSONS_RATIO);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets upper mantle viscosity, and optionally its thickness and lower mantle viscosity.\n");
