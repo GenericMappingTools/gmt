@@ -33,11 +33,22 @@ Synopsis
 Description
 -----------
 
-**grdflexure** computes the flexural response to loads using a range
-of user-selectable rheologies.  User may select from elastic, viscoelastic,
-or firmoviscous (with one or two viscous layers).  Temporal evolution can
+**grdflexure** computes the deformation due to a topographic load :math:`h(\mathbf{x})`
+for four different types of rheology scenarios, all involving *constant thickness thin plates*:
+
+#. An elastic plate overlying an inviscid half-space,
+#. An elastic plate overlying a viscous half-space,
+#. An elastic plate overlying a viscous layer over a viscous half-space,
+#. A viscoelastic plate overlying an inviscid half-space.
+
+These conditions will give rise to the elastic [1; :math:`\Phi_e(\mathbf{k})`],
+firmoviscous [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
+and viscoelastic [4, :math:`\Phi_{ve}(\mathbf{k},t)`] response functions.
+If the (visco)elastic plate vanishes (zero thickness) then we obtain Airy isostasy
+(1,4) or a purely viscous response (2,3).  Temporal evolution can
 also be modeled by providing incremental load grids and specifying a
 range of model output times.
+
 
 Required Arguments
 ------------------
@@ -91,7 +102,7 @@ Optional Arguments
     Specify in-plane compressional or extensional forces in the x- and y-directions,
     as well as any shear force [no in-plane forces].  Compression is indicated by
     negative values, while extensional forces are specified using positive values.
-    Values are expected in Pa·m since **$NN is the depth-integrated horizontal
+    Values are expected in Pa·m since **N** is the depth-integrated horizontal
     stresses.
 
 .. _-C:
@@ -245,6 +256,80 @@ To just compute the firmoviscous response functions using the specified rheologi
 
     gmt grdflexure -D3300/2800/2800/1000 -Q -F2e20
 
+Theory
+------
+
+Deformation caused by :math:`h(\mathbf{x})` applied instantaneously to the
+rheological foundation in case (1) and evaluated at time *t* is given in the Fourier domain as
+
+.. math::
+
+    W(\mathbf{k},t) = \gamma \left (\frac{\rho_l - \rho_w}{\rho_m - \rho_l} \right ) H(\mathbf{k}) \Phi(\mathbf{k},t)
+    = \gamma A H(\mathbf{k}) \Phi(\mathbf{k},t),
+
+where :math:`\mathbf{k} = (k_x, k_y)` is the wavenumber vector, :math:`k_r` its magnitude, *A*
+the Airy density ratio, and :math:`\gamma` a constant that depends on infill density: If
+:math:`\rho_i = \rho_l` then :math:`\gamma = 1`, otherwise infill density varies spatially and the Fourier
+solution is not valid. We avoid trouble by letting :math:`\rho_l = \rho_i` and increase deformation amplitude by
+
+.. math::
+
+    \gamma = \sqrt{\frac{\rho_m - \rho_i}{\rho_m - \rho_l}}.
+
+The approximation is good except for very large loads on thin plates (Wessel, 2001, 2016).
+The *firmoviscous response function* :math:`\Phi(\mathbf{k},t)` scales deformation at given wavenumber and time
+and depends on rheological parameters and in-plane stresses:
+
+.. math::
+
+    \Phi_{fv}(\mathbf{k},t) = \Phi_e(\mathbf{k}) \left [ 1 - \exp \left \{ - \frac{(\rho_m - \rho_l) \tau(k_r)}{\rho_m\Phi_e(\mathbf{k})} t \right \} \right ].
+
+
+Here, the time-independent {\it elastic response function} is
+
+.. math::
+
+    \Phi_e(\mathbf{k}) = \left [ 1 + \alpha_r^4 + \epsilon_x \alpha_x^2 + \epsilon_y \alpha_y^2 + \epsilon_{xy} \alpha_{xy}^2 \right ]^{-1}, \quad \alpha_s = k_s / k,
+
+
+where *flexural wavenumber k* and constants :math:`\epsilon_s` via in-plane stresses :math:`N_x, N_y, N_{xy}` are
+
+.. math::
+
+    k = \left [ \frac{(\rho_m - \rho_i)g}{D} \right ]^{\frac{1}{4}}, \quad \epsilon_s = \left [ \frac{N_s}{(\rho_m - \rho_i)g} \right ]^{\frac{1}{2}},
+
+
+for subscripts :math:`s = \left (x, y, xy \right )`.
+In the most common scenario, :math:`N_s` are all zero and the elastic response function becomes isotropic:
+
+.. math::
+
+    \Phi_e(k_r) = \left [ 1 + \alpha_r^4 \right ]^{-1}.
+
+
+If the foundation is an inviscid half-space, then the *relaxation parameter* :math:`\tau(k_r) = 0`, there is no time-dependence,
+and :math:`\Phi_{fv}(\mathbf{k},t) = \Phi_e(\mathbf{k})`. Otherwise, it is given by
+
+.. math::
+
+    \tau(k_r) = \frac{\rho_m g}{2 \eta_m k_r} \beta(k_r),
+
+
+where :math:`\beta(k_r)` depends on whether we have a finite-thickness layer of thickness :math:`T_a` and viscosity
+:math:`\eta_a` above the half-space of viscosity :math:`\eta_m` (Cathles, 1975; Nakada, 1986).
+If no finite layer exists then :math:`\beta(k_r) = 1`, otherwise
+
+.. math::
+
+    \beta(k_r) = \frac{(\theta + \theta^{-1}) CS + k_r T_a (\theta - \theta^{-1}) + S^2 + C^2}{2CS\theta + (1-\theta)k_r^2 T_a^2 + \theta S^2 + C^2},
+
+
+where
+
+.. math::
+
+    \theta = \eta_a/\eta_m, \quad S = \sinh (k_r T_a), \quad S = \cosh (k_r T_a).
+
 References
 ----------
 
@@ -253,6 +338,8 @@ Cathles, L. M., 1975, *The viscosity of the earth's mantle*, Princeton Universit
 Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
 structure of the Earth's mantle, *Tectonophysics, 121*, 263–276,
 `http://dx.doi.org/10.1016/0040-1951(86)90047-8 <http://dx.doi.org/10.1016/0040-1951(86)90047-8>`_.
+
+Watts, A. B., 2001, *Isostasy and Flexure of the Lithosphere*, 458 pp., Cambridge University Press.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
