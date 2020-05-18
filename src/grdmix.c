@@ -315,17 +315,20 @@ GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, i
 EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	char *type[N_ITEMS] = {NULL, NULL, NULL, "alpha", "blend", "intens"};
 
+	bool got_R = false;
+
 	int error = 0;
 	unsigned int img = 0, k, band;
 	int64_t row, col, node, pix;
 
 	float *weights = NULL, *intens = NULL, *alpha = NULL;
 
-	double rgb[4];
+	double rgb[4], wesn[4] = {0.0, 0.0, 0.0, 0.0};
 
 	struct GMT_GRID *G_in[N_ITEMS], *G = NULL;
 	struct GMT_IMAGE *I_in[N_ITEMS], *I = NULL;
 	struct GMT_GRID_HEADER *h[N_ITEMS], *H = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH[N_ITEMS];
 	struct GRDMIX_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -350,10 +353,14 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (G_in, N_ITEMS, struct GMT_GRID *);
 	gmt_M_memset (I_in, N_ITEMS, struct GMT_IMAGE *);
+	gmt_M_memset (HH, N_ITEMS, struct GMT_GRID_HEADER_HIDDEN *);
 	gmt_M_memset (h, N_ITEMS, struct GMT_GRID_HEADER *);
 
 	GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRB ");	/* Easiest to manipulate images with separate bands */
 	gmt_set_pad (GMT, 0); /* No padding needed in this module */
+
+	if ((got_R = GMT->common.R.active[RSET]))	/* Got -Rw/e/s/n */
+		gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input rasters\n");
 
@@ -381,6 +388,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 			h[k] = I_in[k]->header;	/* Pointer to image header */
 		}
+		HH[k] = gmt_get_H_hidden (h[k]);
 	}
 
 	if (Ctrl->In.file[INTENS] && I_in[INTENS]) {
@@ -420,6 +428,11 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_INFORMATION, "Normalizing grid %s\n", Ctrl->In.file[k]);
 				gmt_M_grd_loop (GMT, G_in[k], row, col, node)
 					G_in[k]->data[node] /= Ctrl->N.factor;
+			}
+			if (HH[k]->grdtype) {	/* Got a geographic grid */
+				gmt_set_geographic (GMT, GMT_IN);
+				gmt_M_memcpy (wesn, h[k]->wesn, 4, double);
+				got_R = true;
 			}
 		}
 		else {	/* Read the image */
@@ -677,8 +690,8 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 #endif
 		GMT_Report (API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
 
-	if (GMT->common.R.active[RSET]) {	/* Override whatever wesn and incs are in the header */
-		gmt_M_memcpy (H->wesn, GMT->common.R.wesn, 4, double);
+	if (got_R) {	/* Override whatever wesn and incs are in the header */
+		gmt_M_memcpy (H->wesn, wesn, 4, double);
 		H->inc[GMT_X] = gmt_M_get_inc (GMT, H->wesn[XLO], H->wesn[XHI], H->n_columns, H->registration);
 		H->inc[GMT_Y] = gmt_M_get_inc (GMT, H->wesn[YLO], H->wesn[YHI], H->n_rows,    H->registration);
 	}
