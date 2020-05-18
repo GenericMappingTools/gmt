@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdflexure** *topogrd*
 |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*
-|-E|\ [*Te*\ [**k**]]
+|-E|\ [*Te*\ [**k**][/*Te2*\ [**k**]]]
 |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
@@ -37,16 +37,17 @@ Description
 -----------
 
 **grdflexure** computes the deformation due to a topographic load :math:`h(\mathbf{x})`
-for four different types of rheological foundations, all involving *constant thickness thin plates*:
+for five different types of rheological foundations, all involving *constant thickness thin plates*:
 
 #. An elastic plate overlying an inviscid half-space,
 #. An elastic plate overlying a viscous half-space,
 #. An elastic plate overlying a viscous layer over a viscous half-space,
 #. A viscoelastic plate overlying an inviscid half-space.
+#. A general linear viscoelastic model with an initial and final plate thickness overlying an inviscid half-space.
 
 These conditions will require the *elastic* [1; :math:`\Phi_e(\mathbf{k})`],
 *firmoviscous* [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
-and *viscoelastic* [4, :math:`\Phi_{ve}(\mathbf{k},t)`] response functions.
+and *viscoelastic* [4; :math:`\Phi_{ve}(\mathbf{k},t)`], and *general linear* response functions. [5; ]
 If the (visco)elastic plate vanishes (zero thickness) then we obtain Airy isostasy
 (1,4) or a purely *viscous* response (2,3).  Temporal evolution can
 also be modeled by providing incremental load grids for select times and specifying a
@@ -79,14 +80,15 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ [*Te*]
+**-E**\ [*Te*\ [**k**][/*Te2*\ [**k**]]
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity *D* (by default, *D* is computed from *Te*, Young's
     modulus, and Poisson's ratio; see **-C** to change these values).
     If just **-E** is given and **-F** is used it means no plate is given
-    and we will return a purely viscous
-    response with or without an asthenospheric layer.
+    and we will return a purely viscous response with or without an asthenospheric layer.
+    Select a general linear viscoelastic response by supplying the initial and
+    final elastic thickness; this response also requires **-M**.
 
 .. _-G:
 
@@ -258,6 +260,11 @@ for a 15 km thick plate with typical densities overlying a viscous mantle with v
 
     gmt grdflexure smt.nc -Gflex.nc -E15k -D2700/3300/1035 -F2e21
 
+To compute the general linear viscoelastic plate flexure from the load *smt.nc*,
+for an initial Te of 40 km and a final Te of 15 km  with typical densities and a Maxwell time of 100 kyr, try::
+
+    gmt grdflexure smt.nc -Gflex.nc -E40k/15k -D2700/3300/1035 -M100k
+
 To just compute the firmoviscous response functions using the specified rheological values, try::
 
     gmt grdflexure -D3300/2800/2800/1000 -Q -F2e20
@@ -359,11 +366,20 @@ Otherwise, if the plate has no strength (**-E**\ 0), then :math:`\Phi_e(\mathbf{
 
 For :math:`t \rightarrow \infty` (or an inviscid half-space) we approach Airy isostasy, :math:`w(\mathbf{x}) = A h(\mathbf{x})`.
 
+For case (5), the general linear viscoelastic response function (with an inviscid substratum) is instead (*Karner*, 1982)
+
+.. math::
+
+    \Phi_{ve}(\mathbf{k},t) = \Phi_f(\mathbf{k}) + \left [ \Phi_i(\mathbf{k}) - \Phi_f(\mathbf{k}) \right ] \exp \left \{ - \frac{t}{t_m} \frac{D_i \Phi_i(\mathbf{k})}{D_f \Phi_f(\mathbf{k})} \right \},
+
+where subscripts *i* and *f* refers to the initial (*t = 0*) and final (:math:`t = \infty`) values for rigidities.
 
 References
 ----------
 
 Cathles, L. M., 1975, *The viscosity of the earth's mantle*, Princeton University Press.
+
+Karner, G. D., 1982, Spectral representation of isostatic models, *BMR J. Australian Geology & Geophysics, 7*, 55-62.
 
 Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
 structure of the Earth's mantle, *Tectonophysics, 121*, 263–276,
