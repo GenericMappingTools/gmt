@@ -47,7 +47,8 @@ and viscoelastic [4, :math:`\Phi_{ve}(\mathbf{k},t)`] response functions.
 If the (visco)elastic plate vanishes (zero thickness) then we obtain Airy isostasy
 (1,4) or a purely viscous response (2,3).  Temporal evolution can
 also be modeled by providing incremental load grids and specifying a
-range of model output times.
+range of model output times.  A wide range of options allows specifying the desired
+rheology and related constants.
 
 
 Required Arguments
@@ -140,6 +141,7 @@ Optional Arguments
     Specify a viscoelastic model in conjunction with an elastic plate
     thickness specified via **-E**.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
+    Cannot be used in conjunctions with **-F**.
 
 .. _-Q:
 
@@ -219,21 +221,6 @@ we only write the transfer function once per elastic thickness in column 3.  The
 grdflexure_transfer_function_te\ _\ *te*\ _km.txt where *te* is replaced by the 7 elastic thicknesses
 in km (and 0 if **-E**\ 0 was used for a viscous response only).
 
-Plate Flexure Notes
--------------------
-
-The FFT solution to plate flexure requires the infill density to equal
-the load density.  This is typically only true directly beneath the load; beyond the load
-the infill tends to be lower-density sediments or even water (or air).  Wessel [2001, 2016]
-proposed an approximation that allows for the specification of an infill density
-different from the load density while still allowing for an FFT solution. Basically,
-the plate flexure is solved for using the infill density as the effective load density but
-the amplitudes are adjusted by the factor *A* = sqrt ((rm - ri)/(rm - rl)), which is
-the theoretical difference in amplitude due to a point load using the two different
-load densities.  The approximation is very good but breaks down for large
-loads on weak plates, a fairy uncommon situation.  The firmoviscous solutions were
-derived following Nakada [1986] and Cathles [1975].
-
 Examples
 --------
 
@@ -256,11 +243,11 @@ To just compute the firmoviscous response functions using the specified rheologi
 
     gmt grdflexure -D3300/2800/2800/1000 -Q -F2e20
 
-Theory
-------
+Theory on Response Functions
+----------------------------
 
 Deformation caused by :math:`h(\mathbf{x})` applied instantaneously to the
-rheological foundation in case (1) and evaluated at time *t* is given in the Fourier domain as
+rheological foundation in case (1) and evaluated at time *t* is given in the Fourier domain by
 
 .. math::
 
@@ -268,36 +255,33 @@ rheological foundation in case (1) and evaluated at time *t* is given in the Fou
     = \gamma A H(\mathbf{k}) \Phi(\mathbf{k},t),
 
 where :math:`\mathbf{k} = (k_x, k_y)` is the wavenumber vector, :math:`k_r` its magnitude, *A*
-the Airy density ratio, and :math:`\gamma` a constant that depends on infill density: If
-:math:`\rho_i = \rho_l` then :math:`\gamma = 1`, otherwise infill density varies spatially and the Fourier
-solution is not valid. We avoid trouble by letting :math:`\rho_l = \rho_i` and increase deformation amplitude by
+the Airy density ratio, and :math:`\gamma` a constant that depends on the infill density: If
+:math:`\rho_i = \rho_l` then :math:`\gamma = 1`, otherwise the infill density varies spatially and the Fourier
+solution is not valid. We avoid these complications by letting :math:`\rho_l = \rho_i` and increasing the deformation amplitude by
 
 .. math::
 
     \gamma = \sqrt{\frac{\rho_m - \rho_i}{\rho_m - \rho_l}}.
 
 The approximation is good except for very large loads on thin plates (Wessel, 2001, 2016).
-The *firmoviscous response function* :math:`\Phi(\mathbf{k},t)` scales deformation at given wavenumber and time
+The *firmoviscous response function* :math:`\Phi(\mathbf{k},t)` scales the magnitude of the deformation at a given wavenumber and time
 and depends on rheological parameters and in-plane stresses:
 
 .. math::
 
     \Phi_{fv}(\mathbf{k},t) = \Phi_e(\mathbf{k}) \left [ 1 - \exp \left \{ - \frac{(\rho_m - \rho_l) \tau(k_r)}{\rho_m\Phi_e(\mathbf{k})} t \right \} \right ].
 
-
-Here, the time-independent {\it elastic response function} is
+Here, the time-independent *elastic response function* is
 
 .. math::
 
     \Phi_e(\mathbf{k}) = \left [ 1 + \alpha_r^4 + \epsilon_x \alpha_x^2 + \epsilon_y \alpha_y^2 + \epsilon_{xy} \alpha_{xy}^2 \right ]^{-1}, \quad \alpha_s = k_s / k,
 
-
-where *flexural wavenumber k* and constants :math:`\epsilon_s` via in-plane stresses :math:`N_x, N_y, N_{xy}` are
+where the *flexural wavenumber k* and constants :math:`\epsilon_s` via in-plane stresses :math:`N_x, N_y, N_{xy}` are
 
 .. math::
 
     k = \left [ \frac{(\rho_m - \rho_i)g}{D} \right ]^{\frac{1}{4}}, \quad \epsilon_s = \left [ \frac{N_s}{(\rho_m - \rho_i)g} \right ]^{\frac{1}{2}},
-
 
 for subscripts :math:`s = \left (x, y, xy \right )`.
 In the most common scenario, :math:`N_s` are all zero and the elastic response function becomes isotropic:
@@ -306,14 +290,12 @@ In the most common scenario, :math:`N_s` are all zero and the elastic response f
 
     \Phi_e(k_r) = \left [ 1 + \alpha_r^4 \right ]^{-1}.
 
-
 If the foundation is an inviscid half-space, then the *relaxation parameter* :math:`\tau(k_r) = 0`, there is no time-dependence,
 and :math:`\Phi_{fv}(\mathbf{k},t) = \Phi_e(\mathbf{k})`. Otherwise, it is given by
 
 .. math::
 
     \tau(k_r) = \frac{\rho_m g}{2 \eta_m k_r} \beta(k_r),
-
 
 where :math:`\beta(k_r)` depends on whether we have a finite-thickness layer of thickness :math:`T_a` and viscosity
 :math:`\eta_a` above the half-space of viscosity :math:`\eta_m` (Cathles, 1975; Nakada, 1986).
@@ -323,12 +305,34 @@ If no finite layer exists then :math:`\beta(k_r) = 1`, otherwise
 
     \beta(k_r) = \frac{(\theta + \theta^{-1}) CS + k_r T_a (\theta - \theta^{-1}) + S^2 + C^2}{2CS\theta + (1-\theta)k_r^2 T_a^2 + \theta S^2 + C^2},
 
-
 where
 
 .. math::
 
     \theta = \eta_a/\eta_m, \quad S = \sinh (k_r T_a), \quad S = \cosh (k_r T_a).
+
+For case (4), the viscoelastic response function is instead
+
+.. math::
+
+    \Phi_{ve}(\mathbf{k},t) = 1 - \left [ 1 - \Phi_e(\mathbf{k}) \right ] \exp \left \{ - \frac{t }{t_m \Phi_e(\mathbf{k})} \right \},
+
+where :math:`t_m` is the Maxwell relaxation time.
+
+In the limit :math:`t \rightarrow \infty, \tau \rightarrow 0` and we approach the purely elastic solution
+
+.. math::
+
+    W(\mathbf{k}) = A \gamma H(\mathbf{k}) \Phi_e(\mathbf{k}).
+
+Otherwise, if the plate has no strength, then :math:`\Phi_e(\mathbf{k}) = 1` and the response function is {purely viscous}:
+
+.. math::
+
+    \Phi_v(k_r,t) = \left [ 1 - \exp \left \{ - \frac{(\rho_m - \rho_l) \tau(k_r)}{\rho_m} t \right \} \right ].
+
+For :math:`t \rightarrow \infty` (or an inviscid half-space) we approach Airy isostasy, :math:`w(\mathbf{x}) = A h(\mathbf{x})`.
+
 
 References
 ----------
