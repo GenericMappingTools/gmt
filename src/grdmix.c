@@ -429,11 +429,10 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				gmt_M_grd_loop (GMT, G_in[k], row, col, node)
 					G_in[k]->data[node] /= Ctrl->N.factor;
 			}
-			if (HH[k]->grdtype) {	/* Got a geographic grid */
+			gmt_M_memcpy (wesn, h[k]->wesn, 4, double);
+			got_R = true;
+			if (HH[k]->grdtype)	/* Got a geographic grid */
 				gmt_set_geographic (GMT, GMT_IN);
-				gmt_M_memcpy (wesn, h[k]->wesn, 4, double);
-				got_R = true;
-			}
 		}
 		else {	/* Read the image */
 			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], I_in[k]) == NULL) {	/* Get data only */
