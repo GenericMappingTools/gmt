@@ -34,21 +34,21 @@ Description
 -----------
 
 **grdflexure** computes the deformation due to a topographic load :math:`h(\mathbf{x})`
-for four different types of rheology scenarios, all involving *constant thickness thin plates*:
+for four different types of rheological foundations, all involving *constant thickness thin plates*:
 
 #. An elastic plate overlying an inviscid half-space,
 #. An elastic plate overlying a viscous half-space,
 #. An elastic plate overlying a viscous layer over a viscous half-space,
 #. A viscoelastic plate overlying an inviscid half-space.
 
-These conditions will give rise to the elastic [1; :math:`\Phi_e(\mathbf{k})`],
-firmoviscous [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
-and viscoelastic [4, :math:`\Phi_{ve}(\mathbf{k},t)`] response functions.
+These conditions will give rise to the *elastic* [1; :math:`\Phi_e(\mathbf{k})`],
+*firmoviscous* [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
+and *viscoelastic*8 [4, :math:`\Phi_{ve}(\mathbf{k},t)`] response functions.
 If the (visco)elastic plate vanishes (zero thickness) then we obtain Airy isostasy
-(1,4) or a purely viscous response (2,3).  Temporal evolution can
+(1,4) or a purely *viscous* response (2,3).  Temporal evolution can
 also be modeled by providing incremental load grids and specifying a
 range of model output times.  A wide range of options allows specifying the desired
-rheology and related constants.
+rheology and related constants, plus in-plate forces.
 
 
 Required Arguments
@@ -73,16 +73,17 @@ Required Arguments
     Sets density for mantle, load, infill (optional, otherwise it is
     assumed to equal the load density), and water or air.  If *ri* differs from
     *rl* then an approximate solution will be found.  If *ri* is not given
-    then it defaults to *rl*.
+    then it defaults to *rl*.  Units must be km/m^3.
 
 .. _-E:
 
 **-E**\ [*Te*]
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
-    a flexural rigidity D (by default D is computed from *Te*, Young's
+    a flexural rigidity *D* (by default, *D* is computed from *Te*, Young's
     modulus, and Poisson's ratio; see **-C** to change these values).
-    If just **-E** is given and **-F** is used we will return a purely viscous
+    If just **-E** is given and **-F** is used it means no plate is given
+    and we will return a purely viscous
     response with or without an asthenospheric layer.
 
 .. _-G:
@@ -100,7 +101,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *Nx*/*Ny*/*Nxy*
-    Specify in-plane compressional or extensional forces in the x- and y-directions,
+    Specify in-plane compressional or extensional forces in the *x*- and *y*-directions,
     as well as any shear force [no in-plane forces].  Compression is indicated by
     negative values, while extensional forces are specified using positive values.
     Values are expected in Pa·m since **N** is the depth-integrated horizontal
@@ -109,10 +110,10 @@ Optional Arguments
 .. _-C:
 
 **-Cp**\ *poisson*
-    Change the current value of Poisson's ratio [0.25].
+    Change the default value of Poisson's ratio [0.25].
 
 **-Cy**\ *Young*
-    Change the current value of Young's modulus [7.0e10 N/m^2].
+    Change the default value of Young's modulus [7.0e10 N/m^2].
 
 .. _-F:
 
@@ -124,6 +125,7 @@ Optional Arguments
     viscosity (*nu_m*), with the first viscosity now being that of
     the asthenosphere. Give viscosities in Pa·s. If used, give the
     thickness of the asthenosphere in meter; append **k** for km.
+    Cannot be used in conjunctions with **-M**.
 
 .. _-L:
 
@@ -138,7 +140,7 @@ Optional Arguments
 .. _-M:
 
 **-M**\ *tm*
-    Specify a viscoelastic model in conjunction with an elastic plate
+    Specify a viscoelastic model in conjunction with a plate
     thickness specified via **-E**.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
     Cannot be used in conjunctions with **-F**.
@@ -146,7 +148,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    Do not make any flexure calculations but instead take the chosen transfer function
+    Do not make any flexure calculations but instead take the chosen response function
     given the parameters you selected and evaluate it for a range of wavenumbers and
     times; see the note on transfer functions below.
 
@@ -160,25 +162,28 @@ Optional Arguments
 .. _-T:
 
 **-T**\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**]
-    Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
-    [Default is one step, with no time dependency].  For a single specific time, just
+    Specify *t0*, *t1*, and time increment (*dt*) for a sequence of calculations
+    [Default is one calculation, with no time dependency].  For a single specific time, just
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a *file* with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).
-    We then write a separate model grid file for each given time step.
+    We then write a separate model grid file for each given time step; see *-G** for output
+    file template format.
 
 .. _-W:
 
 **-W**\ *wd*\ [**k**]
-    Set reference depth to the undeformed flexed surface in m [0].  Append **k** to indicate
-    km.
+    Set reference water depth for the undeformed flexed surface in m.  Must be positive. [0].  Append **k** to indicate
+    km.  If **-W** is used and your load exceeds this depth then we scale the subaerial part of the
+    load to account for the change in surrounding density (air vs water).
 
 .. _-Z:
 
 **-Z**\ *zm*\ [**k**]
     Specify reference depth to flexed surface (e.g., Moho) in m; append **k** for km.
-    Must be positive. [0].
+    Must be positive. [0].  We subtract this value from the flexed surface before
+    writing the results.
 
 .. _-V:
 
@@ -196,54 +201,73 @@ Optional Arguments
 Grid Distance Units
 -------------------
 
-If the grid does not have meter as the horizontal unit, append **+u**\ *unit*
-to the input file name to convert from the specified unit to meter.  If your
+If a Cartesian grid does not have meter as the horizontal unit, append **+u**\ *unit*
+to the input file name to convert from the specified unit to meter.  E.g., appending
+**+uk** to the load file name will scale the grid x,y coordinates from km to meter.  If your
 grid is geographic, convert distances to meters by supplying |SYN_OPT-f| instead.
+netCDF COARDS geographic grids will automatically be recognized as geographic.
 
 Considerations
 --------------
 
-netCDF COARDS grids will automatically be recognized as geographic. For
-other grids geographical grids were you want to convert degrees into
-meters, select |SYN_OPT-f|. If the data are close to either pole, you should
-consider projecting the grid file onto a rectangular coordinate system
-using :doc:`grdproject </grdproject>`.
+The calculations are done using a rectangular Cartesian FFT operation. If your
+geographic region is close to either pole, you should consider using a Cartesian
+setup instead; you can always project it back to geographic using :doc:`grdproject </grdproject>`.
 
 Transfer Functions
 ------------------
 
-If **-Q** is given we write the transfer functions T(k,t) to 7 separate files for
+If **-Q** is given we perform no actual flexure calculations and no input data file is required.
+Instead, we write the chosen transfer functions :math:`\Phi(\mathbf{k},t)` to 7 separate files for
 7 different Te values (1, 2, 5, 10, 20, 50, and 100 km). The first two columns are
 always wavelength in km and wavenumber (in 1/m) for a 1:1:3000 km range. The transfer
 functions are evaluated for 12 different response times: 1k, 2k, 5k, 10k, 20k, 50k,
 100k, 200k, 500k, 1M, 2M, and 5M years. For a purely elastic response function
-we only write the transfer function once per elastic thickness in column 3.  The 7 files are named
-grdflexure_transfer_function_te\ _\ *te*\ _km.txt where *te* is replaced by the 7 elastic thicknesses
-in km (and 0 if **-E**\ 0 was used for a viscous response only).
+we only write the transfer function once per elastic thickness (in column 3).  The 7 files are named
+grdflexure_transfer_function_te\ _\ *te*\ _km.txt, where *te* is replaced by the 7 elastic thicknesses
+in km (and 0 if **-E**\ [0] was used for a viscous response only).
 
 Examples
 --------
 
-To compute elastic plate flexure from the load *topo.nc*,
-for a 10 km thick plate with typical densities, try
+We will use a Gaussian seamount load to demonstrate **grdflexure**.  First, we make
+a grid of for that shape by placing a Gaussian truncated seamount at position (300,300)
+with a radius of 50 km and height of 5000 m::
 
-   ::
+    echo 300 300 0  40  40  5000 | gmt grdseamount -R0/600/0/600+uk -I1000 -Gsmt.nc t.txt -Dk -E -F0.1 -Cg
 
-    gmt grdflexure topo.nc -Gflex.nc -E10k -D2700/3300/1035
+To compute elastic plate flexure from the load *smt.nc*,
+for a 10 km thick plate with typical densities, try::
 
-To compute the firmoviscous response to a series of incremental loads given by
-file name and load time in the table l.lis at the single time 1 Ma using the
-specified rheological values, try
+    gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035
 
-::
+To see how in-plane stresses affect the result, we use **-A**.  Remember that we need to depth-
+integrated forces, not pressures, hence we try::
 
-    gmt grdflexure -T1M =l.lis -D3300/2800/2800/1000 -E5k -Gflx/smt_fv_%03.1f_%s.nc -F2e20 -Nf+a
+    gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035 -A-4e11/2e11/-1e12
+
+To compute viscoelastic plate flexure from the load *smt.nc*,
+for a 20 km thick plate with typical densities and a Maxwell time of 40kyr, try::
+
+    gmt grdflexure smt.nc -Gflex.nc -E20k -D2700/3300/1035 -M40k
+
+To compute firmoviscous plate flexure from the load *smt.nc*,
+for a 15 km thick plate with typical densities overlying a viscous mantle with viscosity 2e21, try::
+
+    gmt grdflexure smt.nc -Gflex.nc -E15k -D2700/3300/1035 -F2e21
 
 To just compute the firmoviscous response functions using the specified rheological values, try::
 
     gmt grdflexure -D3300/2800/2800/1000 -Q -F2e20
 
-Theory on Response Functions
+The following are not user-reproducible but shows the kind of calculations that can be done.
+To compute the firmoviscous response to a series of incremental loads given by
+file name and load time in the table l.lis at the single time 1 Ma using the
+specified rheological values, try::
+
+    gmt grdflexure -T1M =l.lis -D3300/2800/2800/1000 -E5k -Gflx/smt_fv_%03.1f_%s.nc -F2e20 -Nf+a
+
+Theory of Response Functions
 ----------------------------
 
 Deformation caused by :math:`h(\mathbf{x})` applied instantaneously to the
@@ -263,7 +287,7 @@ solution is not valid. We avoid these complications by letting :math:`\rho_l = \
 
     \gamma = \sqrt{\frac{\rho_m - \rho_i}{\rho_m - \rho_l}}.
 
-The approximation is good except for very large loads on thin plates (Wessel, 2001, 2016).
+The approximation is good except for very large loads on thin plates (Wessel, 2001).
 The *firmoviscous response function* :math:`\Phi(\mathbf{k},t)` scales the magnitude of the deformation at a given wavenumber and time
 and depends on rheological parameters and in-plane stresses:
 
@@ -311,13 +335,13 @@ where
 
     \theta = \eta_a/\eta_m, \quad S = \sinh (k_r T_a), \quad S = \cosh (k_r T_a).
 
-For case (4), the viscoelastic response function is instead
+For case (4), the viscoelastic response function (only available for an inviscid substratum) is instead
 
 .. math::
 
     \Phi_{ve}(\mathbf{k},t) = 1 - \left [ 1 - \Phi_e(\mathbf{k}) \right ] \exp \left \{ - \frac{t }{t_m \Phi_e(\mathbf{k})} \right \},
 
-where :math:`t_m` is the Maxwell relaxation time.
+where :math:`t_m` is the *Maxwell relaxation time*.
 
 In the limit :math:`t \rightarrow \infty, \tau \rightarrow 0` and we approach the purely elastic solution
 
@@ -325,7 +349,7 @@ In the limit :math:`t \rightarrow \infty, \tau \rightarrow 0` and we approach th
 
     W(\mathbf{k}) = A \gamma H(\mathbf{k}) \Phi_e(\mathbf{k}).
 
-Otherwise, if the plate has no strength, then :math:`\Phi_e(\mathbf{k}) = 1` and the response function is {purely viscous}:
+Otherwise, if the plate has no strength (**-E**\ 0), then :math:`\Phi_e(\mathbf{k}) = 1` and the response function is {purely viscous} and isotropic:
 
 .. math::
 
@@ -348,11 +372,6 @@ Watts, A. B., 2001, *Isostasy and Flexure of the Lithosphere*, 458 pp., Cambridg
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
 `http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/10.1029/2000JB000083>`_.
-
-Wessel, P., 2016, Regional–residual separation of bathymetry and revised estimates
-of Hawaii plume flux, *Geophys. J. Int., 204(2)*, 932-947,
-`http://dx.doi.org/10.1093/gji/ggv472 <http://dx.doi.org/10.1093/gji/ggv472>`_.
-
 
 See Also
 --------
