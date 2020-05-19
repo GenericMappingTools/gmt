@@ -162,7 +162,7 @@ to parameters that vary with the job counter: **BATCH_JOB**\ : The current job n
 The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_TAG**), Furthermore, if a *timefile*
 was given then variables **BATCH_COL0**\ , **BATCH_COL1**\ , etc. are also set, yielding one variable per
 column in *timefile*.  If *timefile* has trailing text then that text can be accessed via the variable
-**BATCH_TEXT**, and if word-splitting was explicitly requested by **+w* modifier to **-T** then the trailing
+**BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to **-T** then the trailing
 text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc. **Note**: Any
 product(s) made by the processing scripts should be named using **BATCH_NAME** as their name prefix as these
 will be automatically moved up to the starting directory upon completion.
