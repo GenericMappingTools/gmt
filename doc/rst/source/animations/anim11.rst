@@ -1,6 +1,6 @@
 .. _anim11:
 
-(10) Wrapping the Marbles on a Sphere
+(11) Wrapping the Marbles on a Sphere
 =====================================
 
 Using grdmix, we are blending the NASA day and night views from the Blue and Black Marble mosaic
