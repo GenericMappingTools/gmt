@@ -547,12 +547,15 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 }
 
 unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
-	/* List available countries [and optionally states]; then make program exit */
-	unsigned int list_mode, i, j, k, kk, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[3] = {0, 0, 0};
+	/* Create dataset of available countries [and optionally states]; write to stdout, then make calling program exit */
+	unsigned int list_mode, i, j, k, kk, row, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[3] = {0, 0, 0};
 	bool search = false;
+	char string[GMT_LEN128] = {""};
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	struct GMT_DCW_COUNTRY_STATE *GMT_DCW_country_with_state = NULL;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
 	list_mode = F->mode;
 	if ((list_mode & GMT_DCW_LIST) == 0) return 0;
@@ -565,24 +568,56 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 		if (!F->item[k]->codes || F->item[k]->codes[0] == '\0') continue;
 		search = true;	/* Gave some codes */
 	}
-	for (i = k = 0; i < GMT_DCW_COUNTRIES; i++) {
-		if (search) {	/* Listed continent(s) */
-			bool found = false;
-			for (kk = 0; kk < F->n_items; kk++) {
-				if (F->item[kk]->codes[0] == '=' && strstr (F->item[kk]->codes, GMT_DCW_country[i].continent))
-					found = true;
+
+	for (int step = 0; step < 2; step++) {	/* First time through, D == NULL */
+		for (i = k = row = 0; i < GMT_DCW_COUNTRIES; i++) {
+			if (search) {	/* Listed continent(s) */
+				bool found = false;
+				for (kk = 0; kk < F->n_items; kk++) {
+					if (F->item[kk]->codes[0] == '=' && strstr (F->item[kk]->codes, GMT_DCW_country[i].continent))
+						found = true;
+				}
+				if (!found) continue;
 			}
-			if (!found) continue;
+			if (F->n_items == 0 && (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent)) ) {
+				if (S) {
+					sprintf (string, "%s [%s]", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
+					S->text[row] = strdup (string);
+				}
+				row++;
+			}
+			if (S) {
+				sprintf (string, "%s\t%s", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
+				S->text[row] = strdup (string);
+			}
+			row++;
+			if ((list_mode & 2) && gmtdcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_state, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
+				for (j = 0; j < GMT_DCW_STATES; j++) {
+					if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) {
+						if (S) {
+							sprintf (string, "%s.%s\t%s", GMT_DCW_country[i].code, GMT_DCW_state[j].code, GMT_DCW_state[j].name);
+							S->text[row] = strdup (string);
+						}
+						row++;
+					}
+				}
+			}
 		}
-		if (F->n_items == 0 && (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent)) )
-			printf ("%s [%s]:\n", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
-		printf ("  %s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
-		if ((list_mode & 2) && gmtdcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_state, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
-			for (j = 0; j < GMT_DCW_STATES; j++) {
-				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) printf ("\t\t%s.%s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_state[j].code, GMT_DCW_state[j].name);
+		if (step == 0) {	/* Tally up and allocate the dataset, then go back and populate it */
+			uint64_t dim[4] = {1, 1, row, 0};
+			if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_TEXT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to make data set for country listing!\n");
+				return GMT_RUNTIME_ERROR;
 			}
+			S = D->table[0]->segment[0];	/* The one and only segment in this table */
 		}
 	}
+
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, 0, NULL, NULL, D) != GMT_NOERROR) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to write data set for country listing to stdout!\n");
+		return GMT_RUNTIME_ERROR;
+	}
+
 	gmt_M_free (GMT, GMT_DCW_country);
 	gmt_M_free (GMT, GMT_DCW_state);
 	gmt_M_free (GMT, GMT_DCW_country_with_state);
