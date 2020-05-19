@@ -140,7 +140,7 @@ Math
 
 reST also supports LaTeX-style math.
 
-This is a inline math :math:`x^2+y^2=z^2`.
+This is an inline math :math:`x^2+y^2=z^2`.
 
 For long equations, use the ``math`` directive:
 
