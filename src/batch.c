@@ -636,6 +636,33 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	if (!n_written) {	/* Rewrite the init file to place the BATCH_NJOBS there */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Recreate parameter initiation script given njobs has been set %s\n", init_file);
+		(void) gmt_remove_file (GMT, init_file);	/* Delete the first init file */
+		if ((fp = fopen (init_file, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s - exiting\n", init_file);
+			batch_close_files (Ctrl);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+
+		sprintf (string, "Static parameters set for processing sequence %s", Ctrl->N.prefix);
+		gmtlib_set_comment (fp, Ctrl->In.mode, string);
+		gmtlib_set_tvalue (fp, Ctrl->In.mode, true, "BATCH_PREFIX", Ctrl->N.prefix);
+		gmtlib_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_jobs);	/* Total jobs (write to init since known) */
+		if (Ctrl->I.active) {	/* Append contents of an include file */
+			gmtlib_set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
+			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
+				if (gmtlib_is_gmt_module (line, "begin")) continue;		/* Skip gmt begin */
+				if (gmtlib_is_gmt_module (line, "end")) continue;		/* Skip gmt end */
+				if (strstr (line, "#!/")) continue;			/* Skip any leading shell incantation */
+				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+				fprintf (fp, "%s", line);				/* Just copy the line as is */
+			}
+			fclose (Ctrl->I.fp);	/* Done reading the include script */
+		}
+		fclose (fp);	/* Done writing the init script */
+	}
+
 	n_to_run = (Ctrl->M.active) ? 1 : n_jobs;
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of main processing jobs: %d\n", n_to_run);
 	if (Ctrl->T.precision)	/* Precision was prescribed */
@@ -709,7 +736,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
 		gmtlib_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_NAME", state_prefix);	/* Current job name prefix (e.g., my_job_0003) */
 		gmtlib_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_JOB", data_job);		/* Current job number (e.g., 3) */
-		if (!n_written) gmtlib_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_jobs);	/* Total jobs (write here since n_jobs was not yet known when init was written) */
 		gmtlib_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_ITEM", state_tag);		/* Current job tag (formatted job number, e.g, 0003) */
 		for (col = 0; col < n_values; col++) {	/* Derive job variables from this row in <timefile> and copy to each parameter file  as script variables */
 			sprintf (string, "BATCH_COL%u", col);
