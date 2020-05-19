@@ -14,7 +14,7 @@ Synopsis
 
 **gmt batch** *mainscript*
 |-N|\ *prefix*
-|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\|\ **W**]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
@@ -58,14 +58,15 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\|\ **W**]
     Either specify how many jobs to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of jobs instead), or supply a file with
     a set of parameters, one record (i.e., row) per job.  The values in the columns will be available to the
     *mainscript* as named variables **BATCH_COL0**, **BATCH_COL1**, etc., while any trailing text
     can be accessed via the variable **BATCH_TEXT**.  Append **+w** to split the trailing
     string into individual *words* that can be accessed via variables **BATCH_WORD0**, **BATCH_WORD1**,
-    etc. The number of records equals the number of jobs. Note that the *preflight* script is allowed to
+    etc. By default we use any white-space to separate words.  Use **+W** to strictly use TAB characters
+    as the only separator. The number of records equals the number of jobs. Note that the *preflight* script is allowed to
     create *timefile*, hence we check for its existence both before *and* after the *preflight* script has
     completed.  Normally, the job numbering starts at 0; you can change this by appending a different starting
     job number via **+s**\ *first*.  **Note**: All jobs are still included; this modifier only affects
@@ -259,6 +260,22 @@ are all completed we determine the standard deviation in the resul.  To replicat
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nfilter -V -Z
     
+As another example, we get a list of all European countries and make a simple coast plot of each of them,
+placing their name in the title and the 2-character ISO code in the upper left corner::
+
+    cat << EOF > pre.sh
+    gmt begin
+        gmt coast -E=EU+l > countries.txt
+    gmt end
+    EOF
+    cat << EOF > main.sh
+    gmt begin \${BATCH_NAME} pdf
+        gmt coast -R\${BATCH_WORD0}+r2 -JQ10c -Glightgray -B -B+t"\${BATCH_WORD1} -E\${BATCH_WORD0}+gred
+        echo \${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p
+    gmt end
+    EOF
+    gmt batch main.sh -Sbpre.sh -Tcountries.txt+W -Ncountries -V -Qs
+
 Of course, the syntax of how variables are used vary according to the scripting language. Here, we actuallly
 build the pre.sh, main.sh, and post.sh scripts on the fly, hence we need to escape any variables (since they
 start with a dollar sign that we need to be written verbatim). At the end of the execution we find 20 grids

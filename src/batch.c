@@ -49,6 +49,9 @@
 #define BATCH_WAIT_TO_CHECK	10000	/* In microseconds, so 0.01 seconds */
 #define BATCH_PAUSE_A_SEC	1000000	/* In microseconds, so 1 seconds */
 
+#define BATCH_SPLIT_WHITESPACE	1
+#define BATCH_SPLIT_TABSONLY	2
+
 /* Control structure for batch */
 
 struct BATCH_CTRL {
@@ -81,9 +84,9 @@ struct BATCH_CTRL {
 		char *file;	/* Name of script file */
 		FILE *fp;	/* Open file pointer to script */
 	} S[2];
-	struct BATCH_T {	/* -T<n_jobs>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<job>][+w] */
+	struct BATCH_T {	/* -T<n_jobs>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<job>][+w|W] */
 		bool active;
-		bool split;		/* true means we must split any trailing text in to words */
+		unsigned int split;		/* 1 means we must split any trailing text in to words, 2 means use TABs only */
 		unsigned int n_jobs;	/* Total number of jobs */
 		unsigned int start_job;	/* First job [0] */
 		unsigned int precision;	/* Decimals used in making unique job tags */
@@ -172,7 +175,7 @@ GMT_LOCAL int batch_delete_scripts (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctr
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-M[<job>,]] [-Q[s]] [-Sb<postflight>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<preflight>] [%s] [-W[<workdir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
@@ -186,6 +189,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<width> to set number of digits used in creating the job tags [automatic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first job [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into individual word variables.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   We use any white-space as separators; use +W to strictly use TABs only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the batch_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all batch scripts.\n");
@@ -274,9 +278,9 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'T':	/* Number of jobs or the name of file with job information (note: file may not exist yet) */
 				Ctrl->T.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "psw"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "pswW"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'T', c, "psw", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'T', c, "pswW", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'p':	/* Set a fixed precision in job naming ###### */
 								Ctrl->T.precision = atoi (&p[1]);
@@ -284,8 +288,11 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 							case 's':	/* Specify start job other than 0 */
 								Ctrl->T.start_job = atoi (&p[1]);
 								break;
-							case 'w':	/* Split trailing text into words. */
-								Ctrl->T.split = true;
+							case 'w':	/* Split trailing text into words using any white space. */
+								Ctrl->T.split = BATCH_SPLIT_WHITESPACE;
+								break;
+							case 'W':	/* Split trailing text into words using TABs only. */
+								Ctrl->T.split = BATCH_SPLIT_TABSONLY;
 								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -390,7 +397,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""};
-	char string[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
+	char string[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""}, sep[3] = {"\t "};
 	char completion_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
 
 	double percent = 0.0;
@@ -719,6 +726,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	/* Create parameter include files, one for each job */
 
+	if (Ctrl->T.split == BATCH_SPLIT_TABSONLY) sep[1] = '\0';	/* Only use TABs as word separators */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Parameter files for main processing: %d\n", n_to_run);
 	for (i_job = 0; i_job < n_jobs; i_job++) {
 		job = data_job = i_job + Ctrl->T.start_job;	/* The job is normally same as data_job number */
@@ -747,7 +755,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[data_job]);
 				col = 0;
 				trail = orig;
-				while ((word = strsep (&trail, " \t")) != NULL) {
+				while ((word = strsep (&trail, sep)) != NULL) {
 					if (*word != '\0') {	/* Skip empty strings */
 						sprintf (string, "BATCH_WORD%u", col++);
 						gmtlib_set_tvalue (fp, Ctrl->In.mode, false, string, word);
