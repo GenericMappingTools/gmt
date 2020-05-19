@@ -1,6 +1,6 @@
 .. _anim12:
 
-(10) Image and Grid Manipulations
+(12) Image and Grid Manipulations
 =================================
 
 We again use :doc:`/grdmix`, blending the NASA day and night views from the Blue and Black Marble mosaic
