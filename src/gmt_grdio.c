@@ -1377,6 +1377,9 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	gmtgrdio_round_off_patrol (GMT, header);	/* Ensure limit/inc consistency */
 	//gmtlib_clean_global_headers (GMT, header);
 
+	if (header->ProjRefPROJ4 && strstr (header->ProjRefPROJ4, "longlat"))	/* A geographic image perhaps */
+		gmt_set_geographic (GMT, GMT_IN);
+
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, header);
 
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 0), file);
@@ -3301,6 +3304,9 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		I->header->wesn[YHI] = I->header->wesn[YLO];
 		I->header->wesn[YLO] = dumb;
 	}
+	if (I->header->ProjRefPROJ4 && strstr (I->header->ProjRefPROJ4, "longlat"))	/* A geographic image */
+		gmt_set_geographic (GMT, GMT_IN);
+
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
 
 	gmt_set_grddim (GMT, I->header);		/* This recomputes n_columns|n_rows. Dangerous if -R is not compatible with inc */
