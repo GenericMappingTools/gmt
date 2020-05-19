@@ -40,10 +40,10 @@ Description
 for five different types of rheological foundations, all involving *constant thickness thin plates*:
 
 #. An elastic plate overlying an inviscid half-space,
-#. An elastic plate overlying a viscous half-space,
-#. An elastic plate overlying a viscous layer over a viscous half-space,
-#. A viscoelastic plate overlying an inviscid half-space.
-#. A general linear viscoelastic model with an initial and final plate thickness overlying an inviscid half-space.
+#. An elastic plate overlying a viscous half-space (Firmoviscous or Kelvin-Voigt),
+#. An elastic plate overlying a viscous layer over a viscous half-space (Firmoviscous or Kelvin-Voigt),
+#. A viscoelastic plate overlying an inviscid half-space (Maxwell solid),
+#. A general linear viscoelastic model with an initial and final elastic plate thickness overlying an inviscid half-space.
 
 These conditions will require the *elastic* [1; :math:`\Phi_e(\mathbf{k})`],
 *firmoviscous* [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
