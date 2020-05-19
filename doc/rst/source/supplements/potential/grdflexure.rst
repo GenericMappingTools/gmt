@@ -298,6 +298,19 @@ solution is not valid. We avoid these complications by letting :math:`\rho_l = \
     \gamma = \sqrt{\frac{\rho_m - \rho_i}{\rho_m - \rho_l}}.
 
 The approximation is good except for very large loads on thin plates (*Wessel*, 2001).
+
+.. figure:: /_images/grdflexure_approx.*
+   :width: 400 px
+   :align: center
+
+   a) Desired outcome is a flexural calculation that allows for different densities in the
+   moat and beneath the load; however, the Fourier method requires a constant density contrast.
+   b) Using the load density as a higher infill density gives an exact answer, but overestimates both the
+   flexural wavelength (:math:`\lambda_l`) and the amplitude of deflection (:math:`w_l`).
+   c) Using the infill density as a lower load density gives approximately the correct flexural wavelength but
+   it underestimates the amplitude; we compensate by scaling by the constant :math:`\gamma`.
+
+
 The *firmoviscous response function* :math:`\Phi(\mathbf{k},t)` scales the magnitude of the deformation at a given wavenumber and time
 and depends on rheological parameters and in-plane stresses:
 
