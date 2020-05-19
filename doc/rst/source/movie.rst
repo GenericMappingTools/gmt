@@ -345,13 +345,15 @@ Your Canvas
 As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
 or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the custom canvas sizes are just
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"); this has no effect on the size of the movie
-frames but allow us to use good sizes that work well with the dpu chosen.  You should compose your plots using
+frames but allow us to use good sizes that work well with the *dpu* chosen.  You should compose your plots using
 the given canvas size, and **movie** will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
 to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
 recommended that any static part of the movie be considered either a static background (to be made once by *background*) and/or
 a static foreground (to be made once by *foreground*); **movie** will then assemble these layers per frame.  Also, any computation of
 static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
-frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.
+frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.  **Note**: Using
+the variables **MOVIE_WIDTH** or **MOVIE_HIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
+exact canvas dimensions.
 
 External *PostScript* Layers
 ----------------------------

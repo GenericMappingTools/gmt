@@ -351,7 +351,7 @@ and depends on rheological parameters and in-plane stresses:
 
     \Phi_{fv}(\mathbf{k},t) = \Phi_e(\mathbf{k}) \left [ 1 - \exp \left \{ - \frac{(\rho_m - \rho_l) \tau(k_r)}{\rho_m\Phi_e(\mathbf{k})} t \right \} \right ].
 
-If the foundation is an inviscid half-space, then the *relaxation parameter* :math:`\tau(k_r) = 0`, there is no time-dependence,
+If the foundation is an inviscid half-space, then the *relaxation parameter* :math:`\tau(k_r) = \infty`, there is no time-dependence,
 and :math:`\Phi_{fv}(\mathbf{k},t) = \Phi_e(\mathbf{k})`. Otherwise, it is given by
 
 .. math::
@@ -370,7 +370,7 @@ where
 
 .. math::
 
-    \theta = \eta_a/\eta_m, \quad S = \sinh (k_r T_a), \quad S = \cosh (k_r T_a).
+    \theta = \eta_a/\eta_m, \quad S = \sinh (k_r T_a), \quad C = \cosh (k_r T_a).
 
 Airy and viscous response function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
