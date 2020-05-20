@@ -8629,6 +8629,7 @@ GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 				case 'f': strncpy (GMT->common.l.item.font, &txt[1], GMT_LEN32-1);		break;	/* Font to use for this -l entry */
 				case 'g': /* Frame fill */
 					if (&txt[1]) strncpy (GMT->common.l.item.fill, &txt[1], GMT_LEN32-1);
+					break;
 				case 'j': GMT->common.l.item.just = gmt_just_decode (GMT, &txt[1], PSL_TR);	break;	/* legend placement */
 				case 'o': /* Frame offset */
 					if (&txt[1]) strncpy (GMT->common.l.item.off, &txt[1], GMT_LEN32-1);
