@@ -186,7 +186,7 @@ typedef enum {
 } SwapWidth;
 
 /*! Macro to apply columns log/scale/offset conversion on the fly */
-#define gmt_convert_col(S,x) ((S.convert) ? ((S.convert & 2) ? log10 (x) : x) * S.scale + S.offset : x)
+#define gmt_M_convert_col(S,x) ((S.convert) ? ((S.convert & 2) ? log10 (x) : x) * S.scale + S.offset : x)
 
 /* These functions are defined and used below but not in any *.h file so we repeat them here */
 int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
@@ -417,7 +417,7 @@ GMT_LOCAL uint64_t gmtio_bin_colselect (struct GMT_CTRL *GMT) {
 	for (col = 0; col < GMT->common.i.n_cols; col++) {
 		S = &(GMT->current.io.col[GMT_IN][col]);
 		order = S->order;
-		tmp[order] = gmt_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[S->col]);
+		tmp[order] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[S->col]);
 		switch (gmt_M_type (GMT, GMT_IN, order)) {
 			case GMT_IS_LON:	/* Must account for periodicity in 360 as per current rule */
 				gmtio_adjust_periodic_lon (GMT, &tmp[order]);
@@ -907,7 +907,7 @@ GMT_LOCAL unsigned int gmtio_assign_aspatial_cols (struct GMT_CTRL *GMT) {
 		}
 		else {	/* Numerical adds to data columns */
 			double value = GMT->current.io.OGR->dvalue[GMT->common.a.ogr[k]];
-			GMT->current.io.curr_rec[GMT->common.a.col[k]] = gmt_convert_col (GMT->current.io.col[GMT_IN][GMT->common.a.col[k]], value);
+			GMT->current.io.curr_rec[GMT->common.a.col[k]] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][GMT->common.a.col[k]], value);
 			n++;
 		}
 	}
@@ -3610,7 +3610,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				col_no++;		/* Count up number of columns found */
 			}
 			else {					/* Successful decode, assign the value to the input array */
-				GMT->current.io.curr_rec[col_pos] = gmt_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
+				GMT->current.io.curr_rec[col_pos] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
 				if (col_pos == GMT_X && gmt_M_type (GMT, GMT_IN, col_pos) & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule */
 					gmtio_adjust_periodic_lon (GMT, &GMT->current.io.curr_rec[col_pos]);
 				col_no++;		/* Count up number of columns found */
@@ -3618,7 +3618,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				while (GMT->common.i.select && col_no < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col_no].col == GMT->current.io.col[GMT_IN][col_no-1].col) {
 					/* This input column is requested more than once */
 					col_pos = GMT->current.io.col[GMT_IN][col_no].order;	/* The data column that will receive this value */
-					GMT->current.io.curr_rec[col_pos] = gmt_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
+					GMT->current.io.curr_rec[col_pos] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
 					col_no++;
 					n_ok++;
 				}
@@ -3877,7 +3877,7 @@ GMT_LOCAL void * gmtio_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, in
 						GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
 					else	/* Regular translation */
 						GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][row] * GMT->current.io.scale_factor[v] + GMT->current.io.add_offset[v];
-					GMT->hidden.mem_coord[col][row] = gmt_convert_col (GMT->current.io.col[GMT_IN][v], GMT->hidden.mem_coord[col][row]);	/* Any additional user scalings */
+					GMT->hidden.mem_coord[col][row] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][v], GMT->hidden.mem_coord[col][row]);	/* Any additional user scalings */
 				}
 			}
 		}
@@ -4413,7 +4413,7 @@ void * gmt_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 		return (NULL);
 	}
 	if (GMT->common.i.select)	/* We need to scale this single item */
-		GMT->current.io.curr_rec[GMT_X] = gmt_convert_col (GMT->current.io.col[GMT_IN][GMT_X], GMT->current.io.curr_rec[GMT_X]);
+		GMT->current.io.curr_rec[GMT_X] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][GMT_X], GMT->current.io.curr_rec[GMT_X]);
 
 	return (&GMT->current.io.record);
 }
