@@ -195,16 +195,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all batch scripts.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Run just the indicated job number [0] for testing [run all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directories behind for inspection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for postflight script).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional postflight and preflight GMT scripts [none]:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append name of preflight GMT modern script that may download or compute\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by <mainscript>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of postflight GMT modern mode script which will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for <preflight> script).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional <postflight> and <preflight> GMT scripts [none]:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append name of <preflight> GMT modern script that may download or compute\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by the <mainscript>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of <postflight> script (which may not be a GMT script) which will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       take actions once all batch jobs have completed.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give <workdir> where temporary files will be built [<workdir> = <prefix> set by -N].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <workdir> is not given we create one in the system temp directory named <prefix> (from -N).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase input scripts (mainscript and any files via -I, -S [leave input scripts alone].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase input scripts (<mainscript> and any files via -I, -S [leave input scripts alone].\n");
 	GMT_Option (API, "f");
 	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in job generation [Default uses all cores = %d].\n", API->n_cores);
@@ -683,12 +683,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S[BATCH_POSTFLIGHT].active) {	/* Prepare the temporary postflight script */
 		sprintf (post_file, "batch_postflight.%s", extension[Ctrl->In.mode]);
-		is_classic = gmt_script_is_classic (GMT, Ctrl->S[BATCH_POSTFLIGHT].fp);
-		if (is_classic) {
-			GMT_Report (API, GMT_MSG_ERROR, "Your postflight file %s is not in GMT modern node - exiting\n", post_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
-		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Create postflight script %s\n", post_file);
 		if ((fp = fopen (post_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create postflight file %s - exiting\n", post_file);
