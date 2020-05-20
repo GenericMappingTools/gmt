@@ -6916,10 +6916,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'l':	/* -l option to set up auto-legend items*/
 
-			gmt_message (GMT, "\t-l Add symbol, line or polygon to the legend. Optionally, append label and add any of the legend codes\n");
-			gmt_message (GMT, "\t   +d<pen>, +f<font>, +g<gap>, +h<header>, +l[<just>/]<txt>, +n<cols>, +s<size>, +v[<pen>].\n");
-			gmt_message (GMT, "\t   You can also choose legend placement codes +j<just> and +x<scale>, corresponding\n");
-			gmt_message (GMT, "\t   to legend command line options -Dj|J<just> and -S<scale>.\n");
+			gmt_message (GMT, "\t-l Add symbol, line or polygon to the legend. Optionally, append label and any of the legend codes\n");
+			gmt_message (GMT, "\t   +D<pen>, +G<gap>, +H<header>, +L[<just>/]<txt>, +N<cols>, +S<size>, +V[<pen>].\n");
+			gmt_message (GMT, "\t   You may also use set +f<font> to override the font used for the label.\n");
+			gmt_message (GMT, "\t   Change frame fill, pen, offset with +g<fill> [white], +p<pen> [1p], +o<off> [0.2c].\n");
+			gmt_message (GMT, "\t   You can also choose legend placement codes +j<just> and +s<scale>, corresponding\n");
+			gmt_message (GMT, "\t   to legend command line options -Dj|J<just> and -S<scale>, respectively.\n");
 			break;
 
 		case 'm':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
@@ -8582,7 +8584,7 @@ int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg) {
 	return (err);
 }
 
-#define GMT_OPTION_L_MODIFIERS "dfghjlnsvwx"	/* All the modifiers available to -l */
+#define GMT_OPTION_L_MODIFIERS "DGHLNSVfgjopws"	/* All the modifiers available to -l */
 
 /*! Parse the legend-building option -l */
 GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
@@ -8599,15 +8601,13 @@ GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 		char txt[GMT_LEN128] = {""};
 		while (gmt_getmodopt (GMT, 'l', c, GMT_OPTION_L_MODIFIERS, &pos, txt, &n_errors) && n_errors == 0) {
 			switch (txt[0]) {
-				case 'd': /* Draw horizontal line */
+				case 'G': strncpy (GMT->common.l.item.gap, &txt[1], GMT_LEN32-1);		break;	/* Gap before next item */
+				case 'D': /* Draw horizontal line */
 					GMT->common.l.item.draw |= GMT_LEGEND_DRAW_D;
 					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_D], &txt[1], GMT_LEN32-1);
 					break;
-				case 'f': strncpy (GMT->common.l.item.font, &txt[1], GMT_LEN32-1);		break;	/* Font to use for this -l entry */
-				case 'g': strncpy (GMT->common.l.item.gap, &txt[1], GMT_LEN32-1);		break;	/* Gap before next item */
-				case 'h': strncpy (GMT->common.l.item.header, &txt[1], GMT_LEN128-1); 		break;	/* Legend header */
-				case 'j': GMT->common.l.item.just = gmt_just_decode (GMT, &txt[1], PSL_TR);	break;	/* legend placement */
-				case 'l': if (txt[2] == '/') {	/* Gave <code>/<label> */
+				case 'H': strncpy (GMT->common.l.item.header, &txt[1], GMT_LEN128-1); 		break;	/* Legend header */
+				case 'L': if (txt[2] == '/') {	/* Gave <code>/<label> */
 						if (!strchr ("LCRlcr", txt[1])) {
 							GMT_Report (GMT->parent, GMT_MSG_ERROR, "-l +l<just>/<label> has bad justification %c\n", txt[1]);
 							return GMT_PARSE_ERROR;
@@ -8620,14 +8620,24 @@ GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 						GMT->common.l.item.code = 'L';
 					}
 					break;
-				case 'n': GMT->common.l.item.ncols = atoi (&txt[1]);				break;	/* Number of columns */
-				case 's': GMT->common.l.item.size = gmt_M_to_inch (GMT, &txt[1]);		break;	/* Fixed size for a symbol */
-				case 'v': /* Draw vertical line(s) */
+				case 'N': GMT->common.l.item.ncols = atoi (&txt[1]);			break;	/* Number of columns */
+				case 'S': GMT->common.l.item.size = gmt_M_to_inch (GMT, &txt[1]);		break;	/* Fixed size for a symbol */
+				case 'V': /* Draw vertical line(s) */
 					GMT->common.l.item.draw |= GMT_LEGEND_DRAW_V;
 					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_V], &txt[1], GMT_LEN32-1);
 					break;
+				case 'f': strncpy (GMT->common.l.item.font, &txt[1], GMT_LEN32-1);		break;	/* Font to use for this -l entry */
+				case 'g': /* Frame fill */
+					if (&txt[1]) strncpy (GMT->common.l.item.fill, &txt[1], GMT_LEN32-1);
+				case 'j': GMT->common.l.item.just = gmt_just_decode (GMT, &txt[1], PSL_TR);	break;	/* legend placement */
+				case 'o': /* Frame offset */
+					if (&txt[1]) strncpy (GMT->common.l.item.off, &txt[1], GMT_LEN32-1);
+					break;
+				case 'p': /* Frame pen */
+					if (&txt[1]) strncpy (GMT->common.l.item.pen[GMT_LEGEND_PEN_P], &txt[1], GMT_LEN32-1);
+					break;
+				case 's': GMT->common.l.item.scale = atof (&txt[1]);			break;	/* Scale all symbols by this factor */
 				case 'w': GMT->common.l.item.width = gmt_M_to_inch (GMT, &txt[1]);		break;	/* Legend width */
-				case 'x': GMT->common.l.item.scale = atof (&txt[1]);				break;	/* Scale all symbols by this factor */
 				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 			}
 		}
@@ -13602,13 +13612,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (GMT->hidden.func_level == GMT_CONTROLLER && subplot_status & GMT_SUBPLOT_ACTIVE) {	/* Explore -c setting */
 				int row = 0, col = 0;
 				double gap[4], legend_width = 0.0, legend_scale = 1.0;
-				char legend_justification[4] = {""};
+				char legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
 				if ((opt = GMT_Find_Option (API, 'c', *options))) {	/* Got -c<row,col> for subplot so must update current gmt.panel */
-					if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
+					if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 						char cmd[GMT_LEN64] = {""};
 						int error;
 						/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-						snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
+						snprintf (cmd, GMT_LEN64, "-Dj%s+w%gi+o%s -F+p%s+g%s -S%g", legend_justification, legend_width, off, pen, fill, legend_scale);
 						if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 							GMT_Report (API, GMT_MSG_ERROR, "Failed to place legend on current subplot figure\n");
 							return NULL;
@@ -16642,6 +16652,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	 * If show is not NULL then we display them via gmt docs */
 
 	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, dir[PATH_MAX] = {""}, legend_justification[4] = {""}, mark, *c = NULL;
+	char pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
 	struct GMT_FIGURE *fig = NULL;
 	bool not_PS, auto_size;
 	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16];
@@ -16688,9 +16699,9 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 					continue;
 				}
 			}
-			if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
+			if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 				/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-				snprintf (cmd, GMT_BUFSIZ, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g", legend_justification, legend_width, legend_scale);
+				snprintf (cmd, GMT_BUFSIZ, "-Dj%s+w%gi+o%s -F+p%s+g%s -S%g", legend_justification, legend_width, off, pen, fill, legend_scale);
 				if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to place auto-legend on figure %s\n", fig[k].prefix);
 					gmt_M_free (API->GMT, fig);
@@ -17036,17 +17047,20 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	double size = 0.0;
 	FILE *fp = NULL;
 
-	/* -l[<label>][+d[<pen>]][+f<font>][+g<gap>][+h<header>][+<just>][+l[<code>/]<label>][+n<cols>][+s<size>][+v[<pen>]][+w<length>][+x<scale>]
+	/* -l[<label>][+D[<pen>]][+G<gap>][+H<header>][+L[<code>/]<label>][+N<cols>][+S<size>][+V[<pen>]][+f<font>][+g<fill>][+j<just>][+o<off>][+p<pen>][+w<length>][+s<scale>]
 	 *
-	 * +d corresponds to command D in the legend codes and draws a horizontal line.
+	 * +D corresponds to command D in the legend codes and draws a horizontal line.
+	 * +G corresponds to command G in the legend codes and adds a gap before current item.
+	 * +H corresponds to command H in the legend codes and places a legend header (see +f).
+	 * +L corresponds to command L in the legend codes and places a line subheader (see +f).
+	 * +N corresponds to command N in the legend codes and changes the number of columns.
+	 * +S sets symbol size or line length for symbols that otherwise won't have a dimension.
+	 * +V corresponds to command V in the legend codes and starts/ends a vertical line.
 	 * +f sets the font to use the header string [FONT_HEADER].
-	 * +g corresponds to command G in the legend codes and adds a gap before current item.
-	 * +h corresponds to command H in the legend codes and places a legend header (see +f).
+	 * +g sets the frame fill [white].
 	 * +j -Dj?? as to where to place legend
-	 * +l corresponds to command L in the legend codes and places a line subheader (see +f).
-	 * +n corresponds to command N in the legend codes and changes the number of columns.
-	 * +s sets symbol size or line length for symbols that otherwise won't have a dimension.
-	 * +v corresponds to command V in the legend codes and starts/ends a vertical line.
+	 * +o sets the frame offset [0.2c].
+	 * +p sets the frame pen [1p].
 	 * +w specifies the legend width, as in -D+w<width>.
 	 * +s specifies an overall symbol scaling factor, as in -S<factor> [1].
 	 *
@@ -17073,6 +17087,19 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		/* The next two legend comments will be parsed by gmt legend and acted upon */
 		fprintf (fp, "# LEGEND_JUSTIFICATION: %s\n", justcode);
 		fprintf (fp, "# LEGEND_SCALING: %g\n", item->scale);
+		fprintf (fp, "# LEGEND_FRAME: ");
+		if (item->pen[GMT_LEGEND_PEN_P]) 
+			fprintf (fp, " %s", item->pen[GMT_LEGEND_PEN_P]);
+		else
+			fprintf (fp, " 1p");
+		if (item->fill[0]) 
+			fprintf (fp, " %s", item->fill);
+		else
+			fprintf (fp, " white");
+		if (item->off[0]) 
+			fprintf (fp, " %s\n", item->off);
+		else
+			fprintf (fp, " 0.2c\n");
 		if (item->width > 0.0)	/* Specified legend width directly */
 			fprintf (fp, "# LEGEND_WIDTH: %gi\n", item->width);
 		if (item->ncols > 1)	/* Specified +n up front */
@@ -17146,7 +17173,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	fclose (fp);
 }
 
-bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale, char justification[]) {
+bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale, char justification[], char pen[], char fill[], char off[]) {
 	/* Determine if there is a hidden legend file that has not been placed */
 	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size[GMT_LEN32] = {""}, dim[GMT_LEN32] = {""};
 	size_t L, N_max = 0;
@@ -17168,6 +17195,8 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 			sscanf (&file[2], "%*s %s\n", justification);
 		else if (strstr (file, "# LEGEND_SCALING:"))	/* Need to override the default justification */
 			sscanf (&file[2], "%*s %lf\n", scale);
+		else if (strstr (file, "# LEGEND_FRAME:"))	/* Need to override the default frame settings */
+			sscanf (&file[2], "%s %s %s\n", pen, fill, off);
 		else if (strstr (file, "# LEGEND_WIDTH:")) {	/* Need to explicitly set legend width */
 			sscanf (&file[2], "%*s %s\n", dim);
 			*width = gmt_M_to_inch (API->GMT, dim);
