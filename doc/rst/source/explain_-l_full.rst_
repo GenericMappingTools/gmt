@@ -7,7 +7,7 @@
     when :doc:`legend` is called): Use **+D** to draw a horizontal line before the
     legend entry is placed [no line], **+G** to add some vertical space [0],
     **+H** to add a legend header [no header], **+L** to set a line text; prepend
-    a horizontal justification code **L**, **C**, or **R** [**C**], **+B**
+    a horizontal justification code **L**, **C**, or **R** [**C**], **+N**
     to change the number of columns used to set the following legend items [1],
     **+S** to override the size of the current symbol for the legend or set a
     length if plotting a line or contour [same as plotted], and

@@ -17088,7 +17088,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		fprintf (fp, "# LEGEND_JUSTIFICATION: %s\n", justcode);
 		fprintf (fp, "# LEGEND_SCALING: %g\n", item->scale);
 		fprintf (fp, "# LEGEND_FRAME: ");
-		if (item->pen[GMT_LEGEND_PEN_P]) 
+		if (item->pen[GMT_LEGEND_PEN_P][0]) 
 			fprintf (fp, " %s", item->pen[GMT_LEGEND_PEN_P]);
 		else
 			fprintf (fp, " 1p");
@@ -17121,7 +17121,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			return;
 		}
 		if (item->scale > 0.0)
-			GMT_Report (API, GMT_MSG_WARNING, "Your -l+x<scale> is ignored - only applicable to the first instance of -l.\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Your -l+s<scale> is ignored - only applicable to the first instance of -l.\n");
 		if (item->just)
 			GMT_Report (API, GMT_MSG_WARNING, "Your -l+j<just> is ignored - only applicable to the first instance of -l.\n");
 		if (item->width)
@@ -17196,7 +17196,7 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 		else if (strstr (file, "# LEGEND_SCALING:"))	/* Need to override the default justification */
 			sscanf (&file[2], "%*s %lf\n", scale);
 		else if (strstr (file, "# LEGEND_FRAME:"))	/* Need to override the default frame settings */
-			sscanf (&file[2], "%s %s %s\n", pen, fill, off);
+			sscanf (&file[2], "%*s %s %s %s\n", pen, fill, off);
 		else if (strstr (file, "# LEGEND_WIDTH:")) {	/* Need to explicitly set legend width */
 			sscanf (&file[2], "%*s %s\n", dim);
 			*width = gmt_M_to_inch (API->GMT, dim);
