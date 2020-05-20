@@ -17062,8 +17062,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	 * +j -Dj?? as to where to place legend
 	 * +o sets the frame offset [0.2c].
 	 * +p sets the frame pen [1p].
-	 * +w specifies the legend width, as in -D+w<width>.
 	 * +s specifies an overall symbol scaling factor, as in -S<factor> [1].
+	 * +w specifies the legend width, as in -D+w<width>.
 	 *
 	 * S can be given as NULL for lines but then item->size must be set (+size).
 	 */
