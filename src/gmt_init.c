@@ -2981,10 +2981,12 @@ GMT_LOCAL void gmtinit_trim_off_any_slash_at_end (char *dir) {
 GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	char *this_c = NULL, path[PATH_MAX+1];
 	static char *how[2] = {"detected", "created"};
+	static char *gmt_cmd = "gmt --show-sharedir";
 	unsigned int u = 0, c = 0;
 	int err;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	struct stat S;
+	FILE *fp = NULL;
 
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	/* If SUPPORT_EXEC_IN_BINARY_DIR is defined we try to set the share dir to
@@ -3013,8 +3015,15 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		GMT->session.SHAREDIR = gmt_strdup_noquote (GMT_SHARE_DIR_DEBUG);
 #endif
-	else if (!access (GMT_SHARE_DIR, F_OK|R_OK))		/* Found in hardcoded GMT_SHARE_DIR pointing to an existent directory */
+	else if (!access (GMT_SHARE_DIR, F_OK|R_OK))		/* Found in hard-coded GMT_SHARE_DIR pointing to an existent directory */
 		GMT->session.SHAREDIR = gmt_strdup_noquote (GMT_SHARE_DIR);
+	else if (GMT->parent->external && (fp = popen (gmt_cmd, "r"))) {	/* We are not getting here from gmt.c but from Python, Julia, Matlab */
+		/* There was such a command */
+		gmt_fgets (GMT, path, PATH_MAX, fp);	/* Read first and only line */
+		pclose (fp);
+		gmt_chop (path);	/* Get rid of \n \r */
+		GMT->session.SHAREDIR = gmt_strdup_noquote (path);
+	}
 	else {
 		/* SHAREDIR still not found, make a smart guess based on runpath: */
 		if (gmt_guess_sharedir (path, GMT->init.runtime_bindir))
