@@ -43,7 +43,9 @@
 
 #define DCW_GET_COUNTRY			1	/* Extract countries only */
 #define DCW_GET_COUNTRY_AND_STATE	2	/* Extract countries and states */
+#define DCW_ADD_ZCOUNTRY		4	/* Report -Z<countrycode> in segment header if -M */
 #define DCW_DO_OUTLINE			1	/* Draw outline of polygons */
+#define DCW_DO_FILL			2	/* Fill the polygons */
 #define DCW_DO_FILL			2	/* Fill the polygons */
 
 struct GMT_DCW_COUNTRY {	/* Information per country */
@@ -478,9 +480,14 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			P->data[GMT_X] = &lon[first];
 			P->data[GMT_Y] = &lat[first];
 			if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
-				snprintf (segment, GMT_LEN32, " Segment %" PRIu64, seg);
-				strcpy (GMT->current.io.segment_header, msg);
-				strcat (GMT->current.io.segment_header, segment);
+				snprintf (segment, GMT_LEN32, "Segment %" PRIu64, seg);
+				if (F->mode & GMT_DCW_ZHEADER) {
+					strcpy (GMT->current.io.segment_header, msg);
+					strcat (GMT->current.io.segment_header, " ");
+					strcat (GMT->current.io.segment_header, segment);
+				}
+				else
+					strcpy (GMT->current.io.segment_header, segment);
 				GMT_Put_Record (GMT->parent, GMT_WRITE_SEGMENT_HEADER, NULL);
 				for (kk = 0; kk < P->n_rows; kk++) {
 					out[GMT_X] = P->data[GMT_X][kk];
@@ -640,6 +647,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to just list the countries and their codes [no %s takes place].\n", action2[plot]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Select =<continent>+l|L to only list countries from that continent (repeatable).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z to add -Z<countrycode> to multisegment headers if extracting polygons.\n");
 	if (plot == 1) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to draw outline [none] and +g<fill> to fill [none].\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|g must be specified to plot; if -M is in effect we just get the data.\n");
@@ -708,6 +716,9 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					}
 					this_item->mode |= DCW_DO_FILL;
 					F->mode |= GMT_DCW_PLOT;
+					break;
+				case 'z':		/* Add country code to -Z<code> in segment header */
+					F->mode |= GMT_DCW_ZHEADER;
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unrecognized modifier +%s.\n", option, p);
