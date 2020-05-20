@@ -352,6 +352,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC char *gmt_get_strwithtab (const char *txt);
 EXTERN_MSC int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int mode);
 EXTERN_MSC bool gmt_is_gmtmodule (char *line, char *module);
 EXTERN_MSC bool gmt_is_gmt_end_show (char *line);

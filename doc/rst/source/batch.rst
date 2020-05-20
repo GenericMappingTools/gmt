@@ -14,7 +14,7 @@ Synopsis
 
 **gmt batch** *mainscript*
 |-N|\ *prefix*
-|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\|\ **W**]
+|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
@@ -58,15 +58,15 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\|\ **W**]
+**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
     Either specify how many jobs to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of jobs instead), or supply a file with
     a set of parameters, one record (i.e., row) per job.  The values in the columns will be available to the
     *mainscript* as named variables **BATCH_COL0**, **BATCH_COL1**, etc., while any trailing text
     can be accessed via the variable **BATCH_TEXT**.  Append **+w** to split the trailing
     string into individual *words* that can be accessed via variables **BATCH_WORD0**, **BATCH_WORD1**,
-    etc. By default we use any white-space to separate words.  Use **+W** to strictly use TAB characters
-    as the only separator. The number of records equals the number of jobs. Note that the *preflight* script is allowed to
+    etc. By default we use any white-space to separate words.  Append *str* to select another character(s)
+    as the valid separator(s). The number of records equals the number of jobs. Note that the *preflight* script is allowed to
     create *timefile*, hence we check for its existence both before *and* after the *preflight* script has
     completed.  Normally, the job numbering starts at 0; you can change this by appending a different starting
     job number via **+s**\ *first*.  **Note**: All jobs are still included; this modifier only affects
@@ -289,7 +289,7 @@ we combine all the individual PDFs into a single file and delete them::
     gs -dQUIET -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=\${BATCH_PREFIX}.pdf -dBATCH \${BATCH_PREFIX}_*.pdf
     rm -f \${BATCH_PREFIX}_*.pdf
     EOF
-    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+W -Ncountries -V -W -Zs
+    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
 
 Here, the postflight script is not even a GMT script; it simply runs gs and deletes what we don't want.
 
