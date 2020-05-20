@@ -59,7 +59,8 @@ Optional Arguments
     output only if the corresponding options **-M**, **-L1**, **-L2**,
     and **-M** are used, respectively. Use **-Ct** to place file *name*
     at the end of the output record or **-Cn** to only output numerical
-    columns.  If the **-I** option is used, the
+    columns.  The *registration* is either 0 (gridline) or 1 (pixel).
+    If the **-I** option is used, the
     output format is instead *NF w e s n z0 z1*, where *NF* is the total
     number of grids read and *w e s n* are rounded off (see **-I**).
 
