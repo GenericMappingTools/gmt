@@ -44,7 +44,7 @@
 #define DCW_GET_COUNTRY			1	/* Extract countries only */
 #define DCW_GET_COUNTRY_AND_STATE	2	/* Extract countries and states */
 #define DCW_DO_OUTLINE			1	/* Draw outline of polygons */
-#define DCW_DO_FILL			2	/* Fill the polygons */
+#define DCW_DO_FILL				2	/* Fill the polygons */
 
 struct GMT_DCW_COUNTRY {	/* Information per country */
 	char continent[4];	/* 2-char continent code (EU, NA, SA, AF, AU, AN) */
@@ -234,7 +234,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	bool done, new_set, want_state, outline, fill = false, is_Antarctica = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
-	char msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
+	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_RANGE *Z = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -385,11 +385,17 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				continue;
 			}
 			snprintf (TAG, GMT_LEN16, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[item].code);
-			snprintf (msg, GMT_BUFSIZ, "-Z%s %s (%s)\n", TAG, GMT_DCW_state[item].name, GMT_DCW_country[k].name);
+			if (F->mode & GMT_DCW_ZHEADER)
+				snprintf (msg, GMT_BUFSIZ, "-Z%s %s (%s)\n", TAG, GMT_DCW_state[item].name, GMT_DCW_country[k].name);
+			else
+				snprintf (msg, GMT_BUFSIZ, "%s (%s)\n", GMT_DCW_state[item].name, GMT_DCW_country[k].name);
 		}
 		else {
 			snprintf (TAG, GMT_LEN16, "%s", GMT_DCW_country[k].code);
-			snprintf (msg, GMT_BUFSIZ, "-Z%s %s\n", TAG, GMT_DCW_country[k].name);
+			if (F->mode & GMT_DCW_ZHEADER)
+				snprintf (msg, GMT_BUFSIZ, "-Z%s %s\n", TAG, GMT_DCW_country[k].name);
+			else
+				snprintf (msg, GMT_BUFSIZ, "%s\n", GMT_DCW_country[k].name);
 		}
 		if (!strncmp (GMT_DCW_country[k].code, "AQ", 2U)) is_Antarctica = true;
 
@@ -478,9 +484,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			P->data[GMT_X] = &lon[first];
 			P->data[GMT_Y] = &lat[first];
 			if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
-				snprintf (segment, GMT_LEN32, " Segment %" PRIu64, seg);
-				strcpy (GMT->current.io.segment_header, msg);
-				strcat (GMT->current.io.segment_header, segment);
+				snprintf (GMT->current.io.segment_header, GMT_BUFSIZ-1, "%s Segment %" PRIu64, msg, seg);
 				GMT_Put_Record (GMT->parent, GMT_WRITE_SEGMENT_HEADER, NULL);
 				for (kk = 0; kk < P->n_rows; kk++) {
 					out[GMT_X] = P->data[GMT_X][kk];
@@ -640,6 +644,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to just list the countries and their codes [no %s takes place].\n", action2[plot]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Select =<continent>+l|L to only list countries from that continent (repeatable).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z to add -Z<countrycode> to multisegment headers if extracting polygons.\n");
 	if (plot == 1) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to draw outline [none] and +g<fill> to fill [none].\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|g must be specified to plot; if -M is in effect we just get the data.\n");
@@ -708,6 +713,9 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					}
 					this_item->mode |= DCW_DO_FILL;
 					F->mode |= GMT_DCW_PLOT;
+					break;
+				case 'z':		/* Add country code to -Z<code> in segment header */
+					F->mode |= GMT_DCW_ZHEADER;
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unrecognized modifier +%s.\n", option, p);
