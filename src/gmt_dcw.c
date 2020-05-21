@@ -234,7 +234,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	bool done, new_set, want_state, outline, fill = false, is_Antarctica = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
-	char msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
+	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_RANGE *Z = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -385,11 +385,17 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				continue;
 			}
 			snprintf (TAG, GMT_LEN16, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[item].code);
-			snprintf (msg, GMT_BUFSIZ, "-Z%s %s (%s)\n", TAG, GMT_DCW_state[item].name, GMT_DCW_country[k].name);
+			if (F->mode & GMT_DCW_ZHEADER)
+				snprintf (msg, GMT_BUFSIZ, "-Z%s %s (%s)\n", TAG, GMT_DCW_state[item].name, GMT_DCW_country[k].name);
+			else
+				snprintf (msg, GMT_BUFSIZ, "%s (%s)\n", GMT_DCW_state[item].name, GMT_DCW_country[k].name);
 		}
 		else {
 			snprintf (TAG, GMT_LEN16, "%s", GMT_DCW_country[k].code);
-			snprintf (msg, GMT_BUFSIZ, "-Z%s %s\n", TAG, GMT_DCW_country[k].name);
+			if (F->mode & GMT_DCW_ZHEADER)
+				snprintf (msg, GMT_BUFSIZ, "-Z%s %s\n", TAG, GMT_DCW_country[k].name);
+			else
+				snprintf (msg, GMT_BUFSIZ, "%s\n", GMT_DCW_country[k].name);
 		}
 		if (!strncmp (GMT_DCW_country[k].code, "AQ", 2U)) is_Antarctica = true;
 
@@ -478,14 +484,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			P->data[GMT_X] = &lon[first];
 			P->data[GMT_Y] = &lat[first];
 			if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
-				snprintf (segment, GMT_LEN32, "Segment %" PRIu64, seg);
-				if (F->mode & GMT_DCW_ZHEADER) {
-					strcpy (GMT->current.io.segment_header, msg);
-					strcat (GMT->current.io.segment_header, " ");
-					strcat (GMT->current.io.segment_header, segment);
-				}
-				else
-					strcpy (GMT->current.io.segment_header, segment);
+				snprintf (GMT->current.io.segment_header, GMT_BUFSIZ-1, "%s Segment %" PRIu64, msg, seg);
 				GMT_Put_Record (GMT->parent, GMT_WRITE_SEGMENT_HEADER, NULL);
 				for (kk = 0; kk < P->n_rows; kk++) {
 					out[GMT_X] = P->data[GMT_X][kk];
