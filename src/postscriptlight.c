@@ -4306,6 +4306,9 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 			PSL->internal.fp = NULL;
 		}
 	}
+	PSL->internal.offset[0] = PSL->internal.prev_offset[0];
+	PSL->internal.offset[1] = PSL->internal.prev_offset[1];
+
 	PSL->internal.call_level--;	/* Done with this module call */
 	return (PSL_NO_ERROR);
 }
@@ -4386,6 +4389,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	right_now = time ((time_t *)0);
 	PSL->internal.landscape = !(overlay || orientation);	/* Only rotate if not overlay and not Portrait */
+	PSL->internal.prev_offset[0] = PSL->internal.offset[0];
+	PSL->internal.prev_offset[1] = PSL->internal.offset[1];
 	PSL->internal.offset[0] = offset[0];
 	PSL->internal.offset[1] = offset[1];
 
