@@ -180,7 +180,7 @@ struct MOVIE_CTRL {
 	} S[2];
 	struct MOVIE_T {	/* -T<n_frames>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w[<str>]] */
 		bool active;
-		bool split;		/* Mans we must split any trailing text in to words, using separators in <str> [" \t"] */
+		bool split;		/* true means we must split any trailing text in to words, using separators in <str> [" \t"] */
 		unsigned int n_frames;	/* Total number of frames */
 		unsigned int start_frame;	/* First frame [0] */
 		unsigned int precision;	/* Decimals used in making unique frame tags */
@@ -215,6 +215,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.unit = 'c';	/* c for SI units */
 	C->D.framerate = 24.0;	/* 24 frames/sec */
 	C->F.options[MOVIE_WEBM] = strdup ("-crf 10 -b:v 1.2M");	/* Default WebM options for now */
+	strcpy (C->T.sep, " \t");	/* White space */
 	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
 	return (C);
 }

@@ -83,7 +83,7 @@ struct BATCH_CTRL {
 	} S[2];
 	struct BATCH_T {	/* -T<n_jobs>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<job>][+w[<str>]] */
 		bool active;
-		bool split;		/* Mans we must split any trailing text in to words, using separators in <str> [" \t"] */
+		bool split;		/* true means we must split any trailing text in to words, using separators in <str> [" \t"] */
 		unsigned int n_jobs;	/* Total number of jobs */
 		unsigned int start_job;	/* First job [0] */
 		unsigned int precision;	/* Decimals used in making unique job tags */
@@ -114,7 +114,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = gmt_M_memory (GMT, NULL, 1, struct BATCH_CTRL);
 	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
-	strcpy (C->T.sep, " \t");	/* White spare */
+	strcpy (C->T.sep, " \t");	/* White space */
 	return (C);
 }
 
