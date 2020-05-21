@@ -43,10 +43,8 @@
 
 #define DCW_GET_COUNTRY			1	/* Extract countries only */
 #define DCW_GET_COUNTRY_AND_STATE	2	/* Extract countries and states */
-#define DCW_ADD_ZCOUNTRY		4	/* Report -Z<countrycode> in segment header if -M */
 #define DCW_DO_OUTLINE			1	/* Draw outline of polygons */
-#define DCW_DO_FILL			2	/* Fill the polygons */
-#define DCW_DO_FILL			2	/* Fill the polygons */
+#define DCW_DO_FILL				2	/* Fill the polygons */
 
 struct GMT_DCW_COUNTRY {	/* Information per country */
 	char continent[4];	/* 2-char continent code (EU, NA, SA, AF, AU, AN) */
