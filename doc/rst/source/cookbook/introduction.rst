@@ -24,7 +24,7 @@ Line drawings, bitmapped images, and text can be easily combined in one
 illustration. PostScript plot files are device-independent: The same
 file can be printed at 300 dots per inch (dpi) on a cheap
 printer or converted to a high-resolution PNG image for online usage.
-GMT software is written as a set of UNIX tools [3]_ and is
+GMT software is written as a set of command-line tools [3]_ and is
 totally self-contained and fully documented. The system is offered free
 of charge and is distributed over the Internet
 [*Wessel and Smith, 1991; 1995; 1998*; *Wessel et al., 2013*; *Wessel et al., 2019*].
@@ -249,7 +249,7 @@ Footnotes
    for terms on redistribution and modifications.
 
 .. [3]
-   The tools can also be installed on other platforms (see Chapter :doc:`non-unix-platforms`).
+   The tools can be installed on a variety of platforms - UNIX and non-UNIX alike (see Chapter :doc:`non-unix-platforms`).
 
 .. [4]
    One public-domain RIP is ghostscript, available from `<https://www.ghostscript.com/>`_.
