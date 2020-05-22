@@ -38,6 +38,8 @@ struct GMT_DATA_HASH {	/* Holds file hashes (probably SHA256) */
 	size_t size;		/* File size in bytes */
 };
 
+#define GMT_HASH_SERVER_FILE "gmt_hash_server.txt"
+
 #define GMT_N_DATA_INFO_ITEMS 16
 
 /* When making edits below, make sure string does not exceed 127 characters as indicated by the bars below:

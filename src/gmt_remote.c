@@ -308,7 +308,7 @@ GMT_LOCAL struct GMT_DATA_HASH *gmtremote_hash_load (struct GMT_CTRL *GMT, char 
 
 GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT) {
 	/* This function is called every time we are about to access a @remotefile.
-	 * First we check that we have gmt_hash_server.txt in the server directory.
+	 * First we check that we have the GMT_HASH_SERVER_FILE in the server directory.
 	 * If we don't then we download it and return since no old file to compare to.
 	 * If we do find the hash file then we get its creation time [st_mtime] as
 	 * well as the current system time.  If the file is < 1 day old we are done.
@@ -327,7 +327,7 @@ GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT) {
 
 	if (GMT->current.io.hash_refreshed) return 0;	/* Already been here */
 
-	snprintf (hashpath, PATH_MAX, "%s/server/gmt_hash_server.txt", GMT->session.USERDIR);
+	snprintf (hashpath, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, GMT_HASH_SERVER_FILE);
 
 	if (access (hashpath, R_OK)) {    /* Not found locally so need to download the first time */
 		char serverdir[PATH_MAX] = {""};
@@ -336,7 +336,7 @@ GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT server directory : %s\n", serverdir);
 			return 1;
 		}
-		snprintf (url, PATH_MAX, "%s/gmt_hash_server.txt", GMT->session.DATASERVER);
+		snprintf (url, PATH_MAX, "%s/%s", GMT->session.DATASERVER, GMT_HASH_SERVER_FILE);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmtremote_hash_get_url (GMT, url, hashpath, NULL)) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
@@ -376,7 +376,7 @@ GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT) {
 		strcat (new_hashpath, ".new");		/* Append .new to the copied path */
 		strcpy (old_hashpath, hashpath);	/* Duplicate path name */
 		strcat (old_hashpath, ".old");		/* Append .old to the copied path */
-		snprintf (url, PATH_MAX, "%s/gmt_hash_server.txt", GMT->session.DATASERVER);	/* Set remote path to new hash file */
+		snprintf (url, PATH_MAX, "%s/%s", GMT->session.DATASERVER, GMT_HASH_SERVER_FILE);	/* Set remote path to new hash file */
 		if (gmtremote_hash_get_url (GMT, url, new_hashpath, hashpath)) {	/* Get the new hash file from server */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", url);
 			if (!access (new_hashpath, F_OK)) gmt_remove_file (GMT, new_hashpath);	/* Remove hash file just in case it got corrupted or zero size */
