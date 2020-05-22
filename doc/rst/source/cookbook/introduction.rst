@@ -80,10 +80,11 @@ cookbook which explains the purpose of the package and its many
 features, and provides numerous examples to help new users quickly
 become familiar with the operation and philosophy of the system. The
 cookbook contains the shell scripts that were used for each example;
-PostScript files of each illustration are also provided. All programs
-have individual manual pages which can be installed as part of the
-on-line documentation under the UNIX **man** utility or as web
-pages. In addition, the programs offer friendly help messages which make
+PostScript files of each illustration are also provided. The extensive online 
+GMT Documentation is also home to the detailed technical reference for all programs. 
+All programs also have individual manual pages which can be installed as part of the
+on-line documentation under the UNIX **man** utility. 
+In addition, the programs offer friendly help messages which make
 them essentially self-teaching – if a user enters invalid or ambiguous
 command arguments, the program will print a warning to the screen with a
 synopsis of the valid arguments. All the documentation is available for
