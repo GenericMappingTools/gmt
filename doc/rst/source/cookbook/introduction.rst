@@ -79,8 +79,7 @@ GMT is thoroughly documented and comes with a technical reference and
 cookbook which explains the purpose of the package and its many
 features, and provides numerous examples to help new users quickly
 become familiar with the operation and philosophy of the system. The
-cookbook contains the shell scripts that were used for each example;
-PostScript files of each illustration are also provided. The online 
+cookbook contains the shell scripts that were used for each example. The online 
 GMT Documentation is also home to the extensive technical reference for all programs. 
 The programs also have individual manual pages which can be installed as part of the
 on-line documentation under the UNIX **man** utility. 
