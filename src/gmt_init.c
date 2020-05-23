@@ -12379,15 +12379,14 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	gmtinit_free_user_media (GMT);
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (GMT->PSL);
+	/* Free remote file information structure */
+	gmt_M_free (GMT, GMT->parent->remote_info);
 #ifdef MEMDEBUG
 	gmt_memtrack_report (GMT);
 	gmt_M_str_free (GMT->hidden.mem_keeper);
 #endif
-	/* Free remote file information structure */
-	gmt_M_free (GMT, GMT->parent->remote_info);
 
 	gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
-
 }
 
 /*! . */

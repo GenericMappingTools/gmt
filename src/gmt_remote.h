@@ -27,6 +27,7 @@
 #define GMT_REMOTE_H
 
 struct GMT_DATA_INFO {
+	int id;						/* Running number 0-(n-1) AFTER array is sorted */
 	char dir[GMT_LEN64];		/* Here, / means /export/gmtserver/gmt/data */
 	char file[GMT_LEN64];		/* E.g., earth_relief_20m_g.grd */
 	char tag[GMT_LEN8];			/* E.g., 30m */

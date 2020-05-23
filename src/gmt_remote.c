@@ -126,6 +126,13 @@ GMT_LOCAL size_t gmtremote_fwrite_callback (void *buffer, size_t size, size_t nm
 	return fwrite (buffer, size, nmemb, out->fp);
 }
 
+GMT_LOCAL int gmtremote_compare_names (const void *item_1, const void *item_2) {
+	const char *name_1 = ((struct GMT_DATA_INFO *)item_1)->file;
+	const char *name_2 = ((struct GMT_DATA_INFO *)item_2)->file;
+
+	return (strcmp (name_1, name_2));
+}
+
 GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *n) {
 	/* Read contents of the info file into an array of structs */
 	int k = 0;
@@ -163,9 +170,42 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s will be deleted.  Please try again\n", file);
 		*n = 0;	/* Flag that excrement hit the fan */
 	}
+	/* Soft alphabetically on file names */
+	qsort (I, *n, sizeof (struct GMT_DATA_INFO), gmtremote_compare_names);
 	return (I);
 };
 
+GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
+	const char *name_1 = (char *)item_1;
+	const char *name_2 = ((struct GMT_DATA_INFO *)item_2)->file;
+	size_t len = strlen (name_1) - 1;
+
+	return (strncmp (&name_1[1], name_2, len));
+}
+
+GMT_LOCAL int gmtremote_find_server_entry (struct GMTAPI_CTRL *API, char *file) {
+	/* Return the entry in the remote file table of file is found, else -1 */
+	struct GMT_DATA_INFO *key = bsearch (file, API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
+	return ((key == NULL) ? GMT_NOTSET : key->id);
+}
+
+GMT_LOCAL int gmtremote_give_data_attribution (struct GMTAPI_CTRL *API, char *file) {
+	/* Print attribution when the @remotefile is downloaded for the first time */
+	char *c = NULL;
+	int match;
+
+	if ((c = strstr (file, ".grd")))	/* Ignore extension in comparison */
+		c[0] = '\0';
+	match = gmtremote_find_server_entry (API, file);
+	if (match != GMT_NOTSET) {
+		GMT_Report (API, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", API->remote_info[match].file, API->remote_info[match].size);
+		GMT_Report (API, GMT_MSG_NOTICE, "%s.\n\n", API->remote_info[match].remark);
+	}
+	if (c) c[0] = '.';	/* Restore extension */
+	return (match);
+}
+
+#if 0
 GMT_LOCAL int gmtremote_give_data_attribution (struct GMTAPI_CTRL *API, char *file) {
 	/* Print attribution when the @remotefile is downloaded for the first time */
 	char *c = NULL;
@@ -184,27 +224,6 @@ GMT_LOCAL int gmtremote_give_data_attribution (struct GMTAPI_CTRL *API, char *fi
 	}
 	if (c) c[0] = '.';	/* Restore extension */
 	return (match);
-}
-
-#if 0
-GMT_LOCAL int gmtremote_give_data_attribution (struct GMT_CTRL *GMT, char *file) {
-	/* Print attribution when the @earth_relief_xxx.grd file is downloaded for the first time */
-	char tag[4] = {""};
-	int k, match = -1, len = (int)strlen(file);
-	if (strstr (file, ".grd")) len -= 4;		/* If .grd extension was provided we must skip that as well */
-	strncpy (tag, &file[len-3], 3U);	/* Get the xxy part of the file */
-	for (k = 0; k < GMT_N_DATA_INFO_ITEMS; k++) {
-		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {	/* Found the matching information */
-			char name[GMT_LEN32] = {""}, *c = NULL;
-			if ((c = strstr (file, ".grd"))) c[0] = '\0';	/* Chop off extension for this message */
-			(len == 3) ? snprintf (name, GMT_LEN32, "earth_relief_%s", file) : snprintf (name, GMT_LEN32, "%s", &file[1]);
-			if (len > 3) GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", name, gmt_data_info[k].size);
-			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s.\n\n", gmt_data_info[k].remark);
-			match = k;
-			if (c) c[0] = '.';	/* Restore extension */
-		}
-	}
-	return (match == -1);	/* Not found */
 }
 #endif
 
@@ -535,7 +554,6 @@ GMT_LOCAL bool gmtremote_is_not_a_valid_grid (char *file) {
 	return (strstr (file, ".grd") == NULL && strstr (file, ".tif"));
 }
 
-
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode) {
 	/* Downloads a file if not found locally.  Returns the position in file_name of the
  	 * start of the actual file (e.g., if given an URL). Values for mode:
@@ -554,7 +572,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
 	char srtmdir[PATH_MAX] = {""}, serverdir[PATH_MAX] = {""}, *srtm_local = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
-	struct GMT_DATA_INFO *info = NULL;
 
 	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
 
@@ -657,7 +674,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		if (k_data == -1)	/* Not a server grid/image, so likely cache */
 			snprintf (url, PATH_MAX, "%s%s/%s", GMT->session.DATASERVER, cache_dir[from], &file[pos]);
 		else {	/* Served grid or image */
-			snprintf (url, PATH_MAX, "%s%s%s", GMT->session.DATASERVER, info[k_data].dir, info[k_data].file);
+			snprintf (url, PATH_MAX, "%s%s%s", GMT->session.DATASERVER, GMT->parent->remote_info[k_data].dir, GMT->parent->remote_info[k_data].file);
 		}
 		len = strlen (url);
 		if (is_srtm && !strncmp (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
@@ -707,13 +724,13 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			snprintf (local_path, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
 			if (access (local_path, R_OK) && gmt_mkdir (local_path))
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
-			if (k_data == -1 || !strcmp (info[k_data].dir, "/"))	/* Not a server grid/image or probably one of the symbolic links in server */
+			if (k_data == -1 || !strcmp (GMT->parent->remote_info[k_data].dir, "/"))	/* Not a server grid/image or probably one of the symbolic links in server */
 				snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
 			else {
-				snprintf (local_path, PATH_MAX, "%s%s", user_dir[GMT_DATA_DIR], info[k_data].dir);
+				snprintf (local_path, PATH_MAX, "%s%s", user_dir[GMT_DATA_DIR], GMT->parent->remote_info[k_data].dir);
 				if (access (local_path, R_OK) && gmt_mkdir (local_path))
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
-				strcat (local_path, info[k_data].file);
+				strcat (local_path, GMT->parent->remote_info[k_data].file);
 			}
 		}
 		else if (is_url) {	/* Place in current dir */
@@ -1030,7 +1047,7 @@ struct GMT_GRID *gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, 
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	tag[1] = res;
-	//gmtremote_give_data_attribution (API->GMT, tag); /* Replace with something talking just about SRTM */
+	GMT_Report (API, GMT_MSG_NOTICE, "Earth Relief at %cx%c arc seconds tiles provided by SRTMGL3 (land only) [NASA/USGS].\n", res, res);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co- to override using negative earth_relief_15s values */
