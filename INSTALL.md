@@ -142,7 +142,6 @@ GMT 6 packages are available for **Fedora 31 or newer**. Install it via:
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    dnf install GraphicsMagick gdal
     dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
     dnf install ffmpeg
 
