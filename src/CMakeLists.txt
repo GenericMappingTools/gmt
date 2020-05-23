@@ -432,7 +432,7 @@ add_custom_command (OUTPUT gmt_dimensions.h
 	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
 	# depends on cached line numbers from these header files
 	DEPENDS gmt_media_name.h gmt_pennames.h gmt_unique.h gmt_ellipsoids.h
-	gmt_datums.h gmt_colornames.h gmt_cpt_masters.h gmt_datasets.h
+	gmt_datums.h gmt_colornames.h gmt_cpt_masters.h
 	gmt_keycases.h)
 
 # generate gmt_core_moduleinfo.h
