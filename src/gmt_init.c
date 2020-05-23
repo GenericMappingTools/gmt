@@ -12383,8 +12383,11 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	gmt_memtrack_report (GMT);
 	gmt_M_str_free (GMT->hidden.mem_keeper);
 #endif
+	/* Free remote file information structure */
+	gmt_M_free (GMT, GMT->parent->remote_info);
 
 	gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
+
 }
 
 /*! . */
@@ -16240,6 +16243,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmtinit_set_today (GMT);	/* Determine today's rata die value */
 
+	gmtlib_refresh_server (GMT);	/* Refresh hash and info tables if needed */
+
 	return (GMT);
 }
 
@@ -16327,6 +16332,55 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 		}
 		if (gmt_access (GMT, &file[pos], R_OK)) {	/* Cannot read this file (permissions?) */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot read file (%s) - check permissions %s\n", &file[pos], message);
+			return false;	/* Could not find this file */
+		}
+	}
+	return true;	/* Seems OK */
+}
+
+/*! . */
+bool gmt_check_and_get_path (struct GMT_CTRL *GMT, char option, char **arg, unsigned int direction, unsigned int family) {
+	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
+	 * exists and is readable, and update file to have the full path. Otherwise we return false. */
+	unsigned int pos = 0, kind = 0;
+	bool not_url = false;
+	char message[GMT_LEN16] = {""}, *file = *arg;
+	char path[PATH_MAX] = {""};
+	if (option == GMT_OPT_INFILE)
+		sprintf (message, "for input file");
+	else if (option == GMT_OPT_OUTFILE)
+		sprintf (message, "for output file");
+	else
+		snprintf (message, GMT_LEN16, "by option -%c", option);
+
+	if (!file || file[0] == '\0') {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No filename provided %s\n", message);
+		return false;	/* No file given */
+	}
+	if (direction == GMT_OUT) return true;		/* Cannot check any further */
+
+	if (file[0] == '=') pos = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
+	not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
+	if (kind == GMT_CACHE_FILE || kind == GMT_DATA_FILE) {
+		pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Has leading '@' in name so must skip that letter when checking if it exists locally */
+		if (gmt_getdatapath (GMT, &file[pos], path, R_OK)) {
+			/* Replace file name with full path */
+			gmt_M_str_free (*arg);
+			*arg = strdup (path);
+		}
+	}
+	else if (kind == GMT_URL_FILE)
+		pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
+	if (!not_url && kind == 0 && (family == GMT_IS_GRID || family == GMT_IS_IMAGE))	/* Only grid and images can be URLs so far */
+		not_url = !gmtlib_check_url_name (&file[pos]);
+	if (not_url) {
+		if (gmt_getdatapath (GMT, &file[pos], path, R_OK)) {
+			/* Replace file name with full path */
+			gmt_M_str_free (*arg);
+			*arg = strdup (path);
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No such file (%s) provided %s\n", &file[pos], message);
 			return false;	/* Could not find this file */
 		}
 	}

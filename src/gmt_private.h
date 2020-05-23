@@ -198,6 +198,9 @@ struct GMTAPI_CTRL {
 	GMT_getfunction *current_get_V_val;
 	/* These are used for -O -K -P -c and set to blank under modern/classic modes */
 	char *O_OPT, *K_OPT, *P_OPT, *c_OPT;
+	/* structure array of remote file information */
+	int n_remote_info;
+	struct GMT_DATA_INFO *remote_info;
 };
 
 /* Macro to test if filename is a special name indicating memory location */

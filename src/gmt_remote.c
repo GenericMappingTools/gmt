@@ -166,22 +166,19 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 	return (I);
 };
 
-GMT_LOCAL int gmtremote_give_data_attribution (struct GMT_CTRL *GMT, struct GMT_DATA_INFO *I, int n, char *file) {
+GMT_LOCAL int gmtremote_give_data_attribution (struct GMTAPI_CTRL *API, char *file) {
 	/* Print attribution when the @remotefile is downloaded for the first time */
-	char tag[4] = {""}, *c = NULL;
+	char *c = NULL;
 	int k, match = -1, len = (int)strlen(file);
 
-	if (strstr (file, ".grd")) len -= 4;		/* If .grd extension was provided we must skip that as well */
-	if (file[len-2] == '_' && strchr ("gp", file[len-1]))	/* Modern files with -<reg> registration embedded in the name */
-		strncpy (tag, &file[len-5], 3U);	/* Get the xxy part of the file */
-	else
-		strncpy (tag, &file[len-3], 3U);	/* Get the xxy part of the file */
-
-	if ((c = strstr (file, ".grd"))) c[0] = '\0';	/* Chop off extension for the message */
-	for (k = 0; match == -1 && k < n; k++) {
-		if (!strncmp (&file[1], I[k].file, len-1)) {	/* Found the matching file */
-			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", I[k].file, I[k].size);
-			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s.\n\n", I[k].remark);
+	if ((c = strstr (file, ".grd"))) {	/* Ignore extension in comparison */
+		c[0] = '\0';	/* Chop off extension for the message */
+		len -= 4;
+	}
+	for (k = 0; match == -1 && k < API->n_remote_info; k++) {
+		if (!strncmp (&file[1], API->remote_info[k].file, len-1)) {	/* Found the matching file */
+			GMT_Report (API, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", API->remote_info[k].file, API->remote_info[k].size);
+			GMT_Report (API, GMT_MSG_NOTICE, "%s.\n\n", API->remote_info[k].remark);
 			match = k;
 		}
 	}
@@ -367,7 +364,7 @@ GMT_LOCAL struct GMT_DATA_HASH *gmtremote_hash_load (struct GMT_CTRL *GMT, char 
 	return (L);
 };
 
-GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT, unsigned int index) {
+GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 	/* This function is called every time we are about to access a @remotefile.
 	 * It is called twice: Once for the hash table and once for the info table.
 	 * First we check that we have the GMT_HASH_SERVER_FILE in the server directory.
@@ -417,7 +414,7 @@ GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT, unsigned int index) 
 
 	GMT->current.io.refreshed[index] = true;	/* Done our job */
 
-	/* Here we have the existing index file and its path is in indexpath */
+	/* Here we have the existing index file and its path is in indexpath. Check how old it is */
 
 	if (stat (indexpath, &buf)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to get information about %s - abort\n", indexpath);
@@ -425,7 +422,7 @@ GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT, unsigned int index) 
 	}
 	/*  Get its modification (creation) time */
 #ifdef __APPLE__
-	mod_time = buf.st_mtimespec.tv_sec;	/* Apple even has tv_nsec for nan-seconds... */
+	mod_time = buf.st_mtimespec.tv_sec;	/* Apple even has tv_nsec for nano-seconds... */
 #else
 	mod_time = buf.st_mtime;
 #endif
@@ -459,6 +456,7 @@ GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT, unsigned int index) 
 			bool found;
 			int nO, nN, n, o;
 			struct GMT_DATA_HASH *O = NULL, *N = NULL;
+
 			if ((N = gmtremote_hash_load (GMT, indexpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
 				gmt_remove_file (GMT, indexpath);		/* Remove corrupted index file */
 				return 1;
@@ -508,6 +506,30 @@ GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT, unsigned int index) 
 	return 0;
 }
 
+void gmtlib_refresh_server (struct GMT_CTRL *GMT) {
+	/* Called once in gmt_begin from GMT_Create_Session,  The following actions take place:
+	 *
+	 * The data info table is refreshed if missing or older than 24 hours.
+	 * The hash table is refreshed if missing or older than 24 hours.
+	 *   If a new hash table is obtained and there is a previous one, we determine
+	 *   if there are entries that have changed (e.g., newer, different files, different
+	 *   sizes, or gone altogether).  In all these case we delete the file so that when the
+	 *   user requests it, it forces a download of the updated file.
+	 */
+
+	if (gmtremote_refresh (GMT, GMT_INFO_INDEX))	/* Watch out for changes on the server info once a day */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to obtain remote information file %s\n", GMT_INFO_SERVER_FILE);
+	else {	/* Get server file attribution info */
+		if ((GMT->parent->remote_info = gmtremote_data_load (GMT, &GMT->parent->n_remote_info)) == NULL) {	/* Failed to load the info file */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to read server information file\n");
+		}
+	}
+
+	if (gmtremote_refresh (GMT, GMT_HASH_INDEX)) {	/* Watch out for changes on the server hash once a day */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to obtain remote hash table %s\n", GMT_HASH_SERVER_FILE);
+	}
+}
+
 GMT_LOCAL bool gmtremote_is_not_a_valid_grid (char *file) {
 	/* Determine if file is among the valid datasets: PW: For now, just say .grd and .tif are valid */
 	return (strstr (file, ".grd") == NULL && strstr (file, ".tif"));
@@ -523,7 +545,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	 * Add 4 if the file may not be found and we should not complain about this here.
 	 */
 	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
-	int curl_err = 0, k_data = -1, n_info = 0;
+	int curl_err = 0, k_data = -1;
 	bool is_srtm = false, is_data = false, is_url = false;
 	size_t len, fsize;
 	CURL *Curl = NULL;
@@ -558,7 +580,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	else if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
 		pos = 1;
-		if ((c = strchr (file, '?')))	/* Netcdf directive since URL was handled above */
+		if ((c = strchr (file, '?')))	/* NetCDF directive since URL was handled above */
 			c[0] = '\0';
 		else if ((c = strchr (file, '=')))	/* Grid attributes */
 			c[0] = '\0';
@@ -572,7 +594,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			c[0] = '\0';
 		/* else we have both ? and = which is an URL query */
 	}
-	else if ((c = strchr (file, '?')))	/* Netcdf directive since URLs and caches were handled above */
+	else if ((c = strchr (file, '?')))	/* NetCDF directive since URLs and caches were handled above */
 		c[0] = '\0';	/* and pos = 0 */
 
 	/* Return immediately if cannot be downloaded (for various reasons) */
@@ -581,18 +603,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		return (pos);
 	}
 
-	if (gmtremote_hash_refresh (GMT, GMT_HASH_INDEX)) {	/* Watch out for changes on the server hash once a day */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to obtain remote file %s\n", file);
-		gmt_M_free (GMT, file);
-		return 1;
-	}
-	if (gmtremote_hash_refresh (GMT, GMT_INFO_INDEX)) {	/* Watch out for changes on the server info once a day */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to obtain remote file %s\n", file);
-		gmt_M_free (GMT, file);
-		return 1;
-	}
-
-	/* Any old files have now been replaced.  Now we can check if the file exists already */
+	/* Check if the file exists already */
 
 	if (kind != GMT_URL_QUERY) {	/* Regular file, see if we have it already */
 		bool found;
@@ -615,12 +626,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 
 	if (kind == GMT_DATA_FILE) {
-		if ((info = gmtremote_data_load (GMT, &n_info)) == NULL) {	/* Cannot even load or find the info file */
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to read server information file\n");
-			gmt_M_free (GMT, file);
-			return 1;
-		}
-		k_data = gmtremote_give_data_attribution (GMT, info, n_info, file);
+		k_data = gmtremote_give_data_attribution (GMT->parent, file);
 	}
 
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
@@ -663,7 +669,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_SERVER_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
 		gmt_M_free (GMT, file);
 		gmt_M_str_free (S);
-		gmt_M_free (GMT, info);
 		return 0;
 	}
 
@@ -672,25 +677,21 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
   	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", &file[pos]);
 		gmt_M_free (GMT, file);
-		gmt_M_free (GMT, info);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to not verify the peer\n");
 		gmt_M_free (GMT, file);
-		gmt_M_free (GMT, info);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to follow redirects\n");
 		gmt_M_free (GMT, file);
-		gmt_M_free (GMT, info);
 		return 0;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to fail for 4xx responses\n");
 		gmt_M_free (GMT, file);
-		gmt_M_free (GMT, info);
 		return 0;
 	}
 
@@ -734,7 +735,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
 		gmt_M_free (GMT, file);
 		if (is_srtm) gmt_M_str_free (srtm_local);
-		gmt_M_free (GMT, info);
 		return 0;
 	}
 	urlfile.filename = local_path;	/* Set pointer to local filename */
@@ -743,7 +743,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
 		gmt_M_free (GMT, file);
 		if (is_srtm) gmt_M_str_free (srtm_local);
-		gmt_M_free (GMT, info);
 		return 0;
 	}
 	/* Set a pointer to our struct to pass to the callback */
@@ -751,7 +750,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to write to %s\n", local_path);
 		gmt_M_free (GMT, file);
 		if (is_srtm) gmt_M_str_free (srtm_local);
-		gmt_M_free (GMT, info);
 		return 0;
 	}
 
@@ -790,7 +788,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			gmt_M_free (GMT, file);
 			gmt_M_free (GMT, cmd);
 			if (is_srtm) gmt_M_str_free (srtm_local);
-			gmt_M_free (GMT, info);
 			return 0;
 		}
 		gmt_M_free (GMT, cmd);
@@ -808,7 +805,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
 	}
 	gmt_M_free (GMT, file);
-	gmt_M_free (GMT, info);
 
 	return (pos);
 }

@@ -8680,6 +8680,7 @@ char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	}
 	list = gmt_M_memory (GMT, NULL, n_alloc, char *);
 	do {
+		if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;	/* Skip sub-directories */
 		if (strcmp(FindFileData.cFileName, ".") && strcmp(FindFileData.cFileName, "..")) {	/* Don't want the '.' and '..' names */
 			list[n++] = strdup(FindFileData.cFileName);	/* Save the file name */
 			if (n == n_alloc) {			/* Allocate more memory for list */

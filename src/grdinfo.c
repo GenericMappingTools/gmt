@@ -171,7 +171,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
+				if (gmt_check_and_get_path (GMT, '<', &(opt->arg), GMT_IN, GMT_IS_GRID))
 					n_files++;
 				else
 					n_errors++;
