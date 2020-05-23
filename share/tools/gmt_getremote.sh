@@ -6,6 +6,7 @@
 # This script downloads any missing cache or data sets from the remote server.
 #
 # Run this script on the command line with:
+#
 #   $(gmt --show-sharedir)/tools/gmt_getremote.sh [cache|data]
 #
 # It expects the GMT executable to be in the search path and that
@@ -34,18 +35,41 @@ fi
 
 # Get current remote data server
 SERVER=$(gmt get GMT_DATA_SERVER)
+
+# The "gmt which" command
+gmtwhich="gmt which -Gu"
+#Uncomment the line below for a dry-run
+# gmtwhich="printf %s\n"
+
+# Download the data hash table
 curl -sk ${SERVER}/gmt_hash_server.txt > /tmp/gmt_hash_server.txt
 if [ $? -ne 0 ]; then
 	echo "Error: curl failed with error $?" >&2
 	exit 1
 fi
+# Download the server data list
+curl -sk ${SERVER}/gmt_data_server.txt > /tmp/gmt_data_server.txt
+if [ $? -ne 0 ]; then
+	echo "Error: curl failed with error $?" >&2
+	exit 1
+fi
 
+# Download cache files
 if [ ${cache} -eq 1 ]; then
 	echo "Download all cache files from ${SERVER} not in ~/.gmt/cache (be patient)" >&2
-	awk 'NF==3 && $1!~/^earth_relief/ {print "@"$1}' /tmp/gmt_hash_server.txt | xargs gmt which -Gc
+	# Get list of data files
+	awk 'NR>=2 && !/^ *#/ {print $2}' /tmp/gmt_data_server.txt | sort -u > /tmp/gmt_sorted_server.txt
+	# Get list of all files (data + cache)
+	awk 'NR>=2 {print $1}' /tmp/gmt_hash_server.txt | sort -u > /tmp/gmt_sorted_all.txt
+	# Get list of cache files (i.e., files in gmt_hash_server.txt but not in gmt_data_server.txt)
+	comm -23 /tmp/gmt_sorted_all.txt /tmp/gmt_sorted_server.txt | awk '{print "@"$1}' | xargs ${gmtwhich}
 fi
+
+# Download data files
 if [ ${data} -eq 1 ]; then
-	echo "Download all remote DEM grids from ${SERVER} not in ~/.gmt/server (be very patient)" >&2
-	awk 'NF==3 && $1~/earth_relief/ {print "@"$1}' /tmp/gmt_hash_server.txt | xargs gmt which -Gu
+	echo "Download all remote data files from ${SERVER} not in ~/.gmt/server (be very patient)" >&2
+	# match all lines starting with '/server/'
+	awk '/^\/server\// {print "@"$2}' /tmp/gmt_data_server.txt | xargs ${gmtwhich}
 fi
-rm -f /tmp/gmt_hash_server.txt
+
+rm -f /tmp/gmt_hash_server.txt /tmp/gmt_data_server.txt
