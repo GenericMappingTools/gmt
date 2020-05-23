@@ -128,7 +128,7 @@ GMT_LOCAL size_t gmtremote_fwrite_callback (void *buffer, size_t size, size_t nm
 
 GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *n) {
 	/* Read contents of the info file into an array of structs */
-	int k;
+	int k = 0;
 	FILE *fp = NULL;
 	struct GMT_DATA_INFO *I = NULL;
 	char line[GMT_LEN256] = {""};
@@ -152,10 +152,10 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 		return NULL;
 
 	}
-	for (k = 0; k < *n; k++) {
-		if (fgets (line, GMT_LEN256, fp) == NULL) break;	/* Next record */
+	while (fgets (line, GMT_LEN256, fp) != NULL) {
 		if (line[0] == '#') continue;	/* Comments */
 		sscanf (line, "%s %s %s %c %s %[^\n]", I[k].dir, I[k].file, I[k].tag, &I[k].reg, I[k].size, I[k].remark);
+		k++;
 	}
 	fclose (fp);
 	if (k != *n) {
@@ -180,9 +180,7 @@ GMT_LOCAL int gmtremote_give_data_attribution (struct GMT_CTRL *GMT, struct GMT_
 	if ((c = strstr (file, ".grd"))) c[0] = '\0';	/* Chop off extension for the message */
 	for (k = 0; match == -1 && k < n; k++) {
 		if (!strncmp (&file[1], I[k].file, len-1)) {	/* Found the matching file */
-			char name[GMT_LEN32] = {""};
-			snprintf (name, GMT_LEN32, "%s", &file[1]);
-			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", name, I[k].size);
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", I[k].file, I[k].size);
 			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "%s.\n\n", I[k].remark);
 			match = k;
 		}
@@ -404,7 +402,7 @@ GMT_LOCAL int gmtremote_hash_refresh (struct GMT_CTRL *GMT, unsigned int index) 
 		}
 		snprintf (url, PATH_MAX, "%s/%s", GMT->session.DATASERVER, index_file);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
-		if (gmtremote_get_url (GMT, url, indexpath, NULL, GMT_HASH_INDEX)) {
+		if (gmtremote_get_url (GMT, url, indexpath, NULL, index)) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
 			if (!access (indexpath, F_OK)) gmt_remove_file (GMT, indexpath);	/* Remove index file just in case it got corrupted or zero size */
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;		/* Temporarily turn off auto download in this session only */
