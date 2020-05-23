@@ -4943,14 +4943,14 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	/* stem is the name of the file, e.g., grid.img
 	 * path is the full path to the file in question
 	 * Returns full pathname if a workable path was found
-	 * Looks for file stem in current directory and $GMT_{USER,DATA}DIR
+	 * Looks for file stem in current directory, $GMT_{USER,DATA,CACHE}DIR and server dir.
 	 * If the dir ends in / we traverse recursively [not under Windows].
 	 */
 	unsigned int d, pos;
 	size_t L;
 	bool found;
-	char *udir[6] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL, NULL, NULL}, dir[PATH_MAX];
-	char path_separator[2] = {',', '\0'}, serverdir[PATH_MAX] = {""}, srtm1dir[PATH_MAX] = {""}, srtm3dir[PATH_MAX] = {""};
+	char *udir[4] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL}, dir[PATH_MAX];
+	char path_separator[2] = {',', '\0'}, serverdir[PATH_MAX] = {""};
 #ifdef HAVE_DIRENT_H_
 	size_t N;
 #endif /* HAVE_DIRENT_H_ */
@@ -4983,17 +4983,14 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	if (stem[1] == ':') return (NULL);
 #endif
 
-	/* Not found, see if there is a file in the GMT_{USER,DATA}DIR directories [if set] */
+	/* Not found, see if there is a file in the GMT_{USER,DATA,CACHE}DIR directories [if set] plus GMT_USER/server dir */
 
 	snprintf (serverdir, PATH_MAX, "%s/server", GMT->session.USERDIR);	udir[3] = serverdir;
-	snprintf (srtm1dir, PATH_MAX, "%s/server/srtm1", GMT->session.USERDIR);	udir[4] = srtm1dir;
-	snprintf (srtm3dir, PATH_MAX, "%s/server/srtm3", GMT->session.USERDIR);	udir[5] = srtm3dir;
 
-	for (d = 0; d < 6; d++) {	/* Loop over USER, DATA and CACHE dirs */
+	for (d = 0; d < 4; d++) {	/* Loop over USER, DATA and CACHE dirs */
 		if (!udir[d]) continue;	/* This directory was not set */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Look for file %s in %s\n", stem, udir[d]);
-		found = false;
-		pos = 0;
+		found = false;	pos = 0;
 		while (!found && (gmt_strtok (udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
 
@@ -5018,7 +5015,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	}
 
 	if (udir[3]) {	/* Finally, try any subdirectory under the server */
-		char ** subdir = gmtlib_get_dirs (GMT, udir[3]);
+		char **subdir = gmtlib_get_dirs (GMT, udir[3]);
 		if (subdir == NULL) return (NULL);	/* No dirs found, give up */
 		d = 0;
 		while (subdir[d]) {

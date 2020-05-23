@@ -651,7 +651,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		if (k_data == -1)	/* Not a server grid/image, so likely cache */
 			snprintf (url, PATH_MAX, "%s%s/%s", GMT->session.DATASERVER, cache_dir[from], &file[pos]);
 		else {	/* Served grid or image */
-			snprintf (url, PATH_MAX, "%s%s/%s", GMT->session.DATASERVER, info[k_data].dir, info[k_data].file);
+			snprintf (url, PATH_MAX, "%s%s%s", GMT->session.DATASERVER, info[k_data].dir, info[k_data].file);
 		}
 		len = strlen (url);
 		if (is_srtm && !strncmp (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
@@ -709,7 +709,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			if (k_data == -1 || !strcmp (info[k_data].dir, "/"))	/* Not a server grid/image or probably one of the symbolic links in server */
 				snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
 			else {
-				strcat (local_path, info[k_data].dir);
+				snprintf (local_path, PATH_MAX, "%s%s", user_dir[GMT_DATA_DIR], info[k_data].dir);
 				if (access (local_path, R_OK) && gmt_mkdir (local_path))
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
 				strcat (local_path, info[k_data].file);
