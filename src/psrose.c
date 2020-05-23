@@ -305,7 +305,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 			case 'I':	/* Compute statistics only - no plot */
 				Ctrl->I.active = true;
 				break;
-			case 'L':	/* Overwride default labeling */
+			case 'L':	/* Override default labeling */
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					unsigned int n_comma = 0;

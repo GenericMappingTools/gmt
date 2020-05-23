@@ -55,7 +55,7 @@
  * GMT_Get_Status          : Examine current status of record-by-record i/o
  * GMT_Get_Matrix          : Get user matrix from GMT_MATRIX array
  * GMT_Get_Vector          : Get user vector from GMT_VECTOR column
- * GMT_Put_Strings         : Get user strings from GMT_VECTOR or MATRIX container
+ * GMT_Get_Strings         : Get user strings from GMT_VECTOR or MATRIX container
  * GMT_Init_IO             : Initialize rec-by-rec i/o machinery before program use
  * GMT_Init_VirtualFile    : Reset a virtual file for reuse
  * GMT_Inquire_VirtualFile : Determine family of a virtual file
