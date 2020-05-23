@@ -8605,6 +8605,7 @@ char ** gmtlib_get_dirs (struct GMT_CTRL *GMT, char *path) {
 	}
 	list = gmt_M_memory (GMT, NULL, n_alloc, char *);
 	do {
+		if ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) continue;
 		if (strcmp (FindFileData.cFileName, ".") && strcmp (FindFileData.cFileName, "..")) {	/* Don't want the '.' and '..' names */
 		if (strchr (FindFileData.cFileName, '.')) continue;	/* Our directories do not have a period in them */
 			list[n++] = strdup (FindFileData.cFileName);	/* Save the file name */
