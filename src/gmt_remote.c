@@ -706,9 +706,16 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			snprintf (local_path, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
 			if (access (local_path, R_OK) && gmt_mkdir (local_path))
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
-			snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
+			if (k_data == -1 || !strcmp (info[k_data].dir, "/"))	/* Not a server grid/image or probably one of the symbolic links in server */
+				snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
+			else {
+				strcat (local_path, info[k_data].dir);
+				if (access (local_path, R_OK) && gmt_mkdir (local_path))
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
+				strcat (local_path, info[k_data].file);
+			}
 		}
-		else if (is_url) {	/* Plaec in current dir */
+		else if (is_url) {	/* Place in current dir */
 			snprintf (local_path, PATH_MAX, "%s", &file[pos]);
 		}
 		else {	/* Goes to cache */

@@ -235,6 +235,7 @@ EXTERN_MSC struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint6
 EXTERN_MSC void gmtlib_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix);
 EXTERN_MSC int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n);
 EXTERN_MSC void gmtlib_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_columns);
+EXTERN_MSC char ** gmtlib_get_dirs (struct GMT_CTRL *GMT, char *path);
 EXTERN_MSC char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext);
 EXTERN_MSC void gmtlib_free_dir_list (struct GMT_CTRL *GMT, char ***list);
 EXTERN_MSC void gmtlib_assign_segment (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns);

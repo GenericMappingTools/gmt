@@ -5017,6 +5017,23 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 		}
 	}
 
+	if (udir[3]) {	/* Finally, try any subdirectory under the server */
+		char ** subdir = gmtlib_get_dirs (GMT, udir[3]);
+		if (subdir == NULL) return (NULL);	/* No dirs found, give up */
+		d = 0;
+		while (subdir[d]) {
+			sprintf (path, "%s/%s/%s", udir[3], subdir[d], stem);
+			found = (!access (path, F_OK));
+			if (found && gmtio_file_is_readable (GMT, path)) {	/* Yes, can read it */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+				gmtlib_free_dir_list (GMT, &subdir);
+				return (path);
+			}
+			d++;
+		}
+		gmtlib_free_dir_list (GMT, &subdir);
+	}
+
 	return (NULL);	/* No file found, give up */
 }
 
@@ -8544,6 +8561,78 @@ bool gmt_polygon_is_hole (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	gmt_M_unused (GMT);
 	return (SH->pol_mode == GMT_IS_HOLE || (SH->ogr && SH->ogr->pol_mode == GMT_IS_HOLE));
+}
+
+/*! . */
+char ** gmtlib_get_dirs (struct GMT_CTRL *GMT, char *path) {
+	/* Return an array of subdirectories found in the given directory, or NULL if path cannot be opened. */
+	size_t n = 0, n_alloc = GMT_TINY_CHUNK;
+	char **list = NULL;
+#ifdef HAVE_DIRENT_H_
+	DIR *D = NULL;
+	struct dirent *F = NULL;
+	size_t d_namlen = 0;
+
+	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
+	if ((D = opendir (path)) == NULL) {	/* Unable to open directory listing */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while opening directory %s\n", path);
+		return NULL;
+	}
+	list = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	/* Now read the contents of the dir and add each file to array */
+	while ((F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes true */
+		d_namlen = strlen (F->d_name);
+		if (d_namlen == 1U && F->d_name[0] == '.') continue;			/* Skip current dir */
+		if (d_namlen == 2U && F->d_name[0] == '.' && F->d_name[1] == '.') continue;	/* Skip parent dir */
+#ifdef HAVE_SYS_DIR_H_
+		if (F->d_type != DT_DIR) continue;	/* Entry is not a directory; skip it */
+#endif
+		if (strchr (F->d_name, '.')) continue;	/* Our directories do not have a period in them */
+		list[n++] = strdup (F->d_name);	/* Save the directory name */
+		if (n == n_alloc) {		/* Allocate more memory for list */
+			n_alloc <<= 1;
+			list = gmt_M_memory (GMT, list, n_alloc, char *);
+		}
+	}
+	(void)closedir (D);
+#elif defined(WIN32)
+	char text[PATH_MAX] = {""};
+	int left;
+	HANDLE hFind;
+	WIN32_FIND_DATA FindFileData;
+
+	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
+	snprintf (text, PATH_MAX, "%s/*", path);
+	left = PATH_MAX - (int)strlen (path) - 2;
+	left -= ((ext) ? (int)strlen (ext) : 2);
+	if (ext)
+		strncat (text, ext, left);	/* Look for files with given ending in this dir */
+	else
+		strncat (text, ".*", left);	/* Look for all files in this dir */
+	if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while opening directory %s\n", path);
+		return NULL;
+	}
+	list = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	do {
+		if (strcmp(FindFileData.cFileName, ".") && strcmp(FindFileData.cFileName, "..")) {	/* Don't want the '.' and '..' names */
+		if (strchr (FindFileData.cFileName, '.')) continue;	/* Our directories do not have a period in them */
+			list[n++] = strdup(FindFileData.cFileName);	/* Save the file name */
+			if (n == n_alloc) {			/* Allocate more memory for list */
+				n_alloc <<= 1;
+				list = gmt_M_memory (GMT, list, n_alloc, char *);
+			}
+		}
+	} while (FindNextFile(hFind, &FindFileData));
+	FindClose(hFind);
+#else
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your OS does not support directory listings\n");
+	return NULL;
+#endif /* HAVE_DIRENT_H_ */
+
+	list = gmt_M_memory (GMT, list, n + 1, char *);	/* The final entry is NULL, indicating end of list */
+	list[n] = NULL;	/* Since the realloc will not necessarily have set it to NULL */
+	return (list);
 }
 
 /*! . */
