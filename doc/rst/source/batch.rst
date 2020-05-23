@@ -237,7 +237,7 @@ Examples
 
 We extract a subset of bathymetry for the Gulf of Guinea from the 2x2 arc minute resolution Earth DEM and compute
 Gaussian filtered high-pass grids using filter widths ranging from 10 to 200 km in steps of 10 km. When the grids
-are all completed we determine the standard deviation in the resul.  To replicate our setup, try::
+are all completed we determine the standard deviation in the result.  To replicate our setup, try::
 
     cat << EOF > pre.sh
     gmt begin
@@ -258,7 +258,7 @@ are all completed we determine the standard deviation in the resul.  To replicat
     gmt end show
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nfilter -V -Z
-    
+
 Of course, the syntax of how variables are used vary according to the scripting language. Here, we actuallly
 build the pre.sh, main.sh, and post.sh scripts on the fly, hence we need to escape any variables (since they
 start with a dollar sign that we need to be written verbatim). At the end of the execution we find 20 grids
