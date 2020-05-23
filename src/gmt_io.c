@@ -8594,33 +8594,26 @@ char ** gmtlib_get_dirs (struct GMT_CTRL *GMT, char *path) {
 	(void)closedir (D);
 #elif defined(WIN32)
 	char text[PATH_MAX] = {""};
-	int left;
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
 
 	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
 	snprintf (text, PATH_MAX, "%s/*", path);
-	left = PATH_MAX - (int)strlen (path) - 2;
-	left -= ((ext) ? (int)strlen (ext) : 2);
-	if (ext)
-		strncat (text, ext, left);	/* Look for files with given ending in this dir */
-	else
-		strncat (text, ".*", left);	/* Look for all files in this dir */
-	if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
+	if ((hFind = FindFirstFile (text, &FindFileData)) == INVALID_HANDLE_VALUE) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while opening directory %s\n", path);
 		return NULL;
 	}
 	list = gmt_M_memory (GMT, NULL, n_alloc, char *);
 	do {
-		if (strcmp(FindFileData.cFileName, ".") && strcmp(FindFileData.cFileName, "..")) {	/* Don't want the '.' and '..' names */
+		if (strcmp (FindFileData.cFileName, ".") && strcmp (FindFileData.cFileName, "..")) {	/* Don't want the '.' and '..' names */
 		if (strchr (FindFileData.cFileName, '.')) continue;	/* Our directories do not have a period in them */
-			list[n++] = strdup(FindFileData.cFileName);	/* Save the file name */
+			list[n++] = strdup (FindFileData.cFileName);	/* Save the file name */
 			if (n == n_alloc) {			/* Allocate more memory for list */
 				n_alloc <<= 1;
 				list = gmt_M_memory (GMT, list, n_alloc, char *);
 			}
 		}
-	} while (FindNextFile(hFind, &FindFileData));
+	} while (FindNextFile (hFind, &FindFileData));
 	FindClose(hFind);
 #else
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your OS does not support directory listings\n");
