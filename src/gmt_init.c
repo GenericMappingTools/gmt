@@ -16277,7 +16277,7 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	}
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
 
-	if (GMT_Get_FilePath (GMT->parent, &file, GMT_FILE_REMOTE|GMT_FILE_CHECK))
+	if (GMT_Get_FilePath (GMT->parent, family, direction, GMT_FILE_REMOTE|GMT_FILE_CHECK, &file))
 		return false;	/* No file given */
 
 	return true;	/* Seems OK */

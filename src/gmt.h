@@ -144,7 +144,7 @@ EXTERN_MSC char * GMT_Create_Cmd                     (void *API, struct GMT_OPTI
 EXTERN_MSC int    GMT_Destroy_Options                (void *API, struct GMT_OPTION **head);
 EXTERN_MSC int    GMT_Destroy_Args                   (void *API, int argc, char **argv[]);
 EXTERN_MSC int    GMT_Destroy_Cmd                    (void *API, char **cmd);
-EXTERN_MSC int    GMT_Get_FilePath                   (void *API, char **file_ptr, unsigned int mode);
+EXTERN_MSC int    GMT_Get_FilePath                   (void *API, unsigned int family, unsigned int direction, unsigned int mode, char **file_ptr);
 EXTERN_MSC int    GMT_Update_Option                  (void *API, struct GMT_OPTION *current, const char *arg);
 EXTERN_MSC int    GMT_Free_Option                    (void *API, struct GMT_OPTION **current);
 EXTERN_MSC int    GMT_Delete_Option                  (void *API, struct GMT_OPTION *current, struct GMT_OPTION **head);

@@ -13011,7 +13011,7 @@ int GMT_Set_AllocMode_ (unsigned int *family, void *object) {
 #endif
 
 /*! . */
-int GMT_Get_FilePath (void *V_API, char **file_ptr, unsigned int mode) {
+int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, unsigned int mode, char **file_ptr) {
 	/* Replace file with its full path if that file exists, else return an error.
 	 * If mode &GMT_FILE_REMOTE then we try to download any remote files
 	 * given and not yet cached), and if the downloaded file is readable then
@@ -13019,16 +13019,52 @@ int GMT_Get_FilePath (void *V_API, char **file_ptr, unsigned int mode) {
 	 * If mode & GMT_FILE_CHECK then we only return error code and don't update path.
 	 * The explicit mode for only local files is GMT_FILE_LOCAL [0] */
 
-	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *file = NULL;
+	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, was, *file = NULL, *c = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
+	if (!gmtapi_valid_input_family (family)) return_error (API, GMT_NOT_A_VALID_FAMILY);
+	if (mode > (GMT_FILE_CHECK+GMT_FILE_REMOTE)) return_error (API, GMT_NOT_A_VALID_MODE);
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') {
 		GMT_Report (API, GMT_MSG_ERROR, "No filename provided\n");
 		return_error (V_API, GMT_ARG_IS_NULL);
+	}
+
+	if (direction == GMT_OUT) return GMT_NOERROR;
+
+	switch (family) {
+		case GMT_IS_GRID:
+			if ((c = strchr (file, '='))) {	/* Got filename=id[+modifiers] */
+				/* Nothing*/
+			}
+			else {	/* Check for modifiers */
+				if (gmt_validate_modifiers (API->GMT, file, '-', "onsuU")) {
+					GMT_Report (API, GMT_MSG_DEBUG, "Grid filename has invalid modifiers! (%s)\n", file);
+					return_error (V_API, GMT_NOT_A_VALID_MODIFIER);
+				}
+				else
+					c = gmt_first_modifier (API->GMT, file, "onsuU");
+			}
+			break;
+		case GMT_IS_PALETTE:
+			if (gmt_validate_modifiers (API->GMT, file, '-', "iuU")) {
+				GMT_Report (API, GMT_MSG_DEBUG, "CPT filename has invalid modifiers! (%s)\n", file);
+				return_error (V_API, GMT_NOT_A_VALID_MODIFIER);
+			}
+			else
+				c = gmt_first_modifier (API->GMT, file, "iuU");
+			break;
+		default:	/* No checks for the other families */
+			break;
+	}
+
+	if (c && !gmt_M_file_is_url (file)) {	/* Other that queries, we dont want to pass modifiers when copying files */
+		was = c[0];
+		c[0] = '\0';
 	}
 
 	if (gmt_set_remote_and_local_filenames (API->GMT, file, local_path, remote_path, GMT_AUTO_DIR)) {
@@ -13052,8 +13088,11 @@ int GMT_Get_FilePath (void *V_API, char **file_ptr, unsigned int mode) {
 		}
 	}
 
+	if (c) c[0] = was; /* Restore what we did*/
 	if ((mode & GMT_FILE_CHECK) == 0) {	/* Pass the local path back */
 		GMT_Report (API, GMT_MSG_DEBUG, "Replace file %s with %s\n", file, local_path);
+		if (c) /* Also append any file directives via modifiers */
+			strcat (local_path, c);
 		gmt_M_str_free (*file_ptr);
 		*file_ptr = strdup (local_path);
 	}
@@ -13062,9 +13101,9 @@ int GMT_Get_FilePath (void *V_API, char **file_ptr, unsigned int mode) {
 }
 
 #ifdef FORTRAN_API
-int GMT_Get_FilePath_ (char **file, unsigned int *mode, int len) {
+int GMT_Get_FilePath_ (unsigned int *family, unsigned int *direction, unsigned int *mode, char **file, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_FilePath (GMT_FORTRAN, file, *mode));
+	return (GMT_Get_FilePath (GMT_FORTRAN, *family, *direction, *mode, file));
 }
 #endif
 

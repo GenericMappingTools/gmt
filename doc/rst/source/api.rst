@@ -964,15 +964,17 @@ local path.  This is a job for GMT_Get_FilePath_, whose prototype is
 
   ::
 
-    int GMT_Get_FilePath (void *API, char **ptr, unsigned int mode);
+    int GMT_Get_FilePath (void *API, unsigned int family, unsigned int direction,
+      unsigned int mode, char **ptr);
 
-where ``*ptr`` is a pointer to a character string with the filename in
-question, and ``mode`` modifies the behavior of the function.  Normally,
+where :ref:`family <tbl-family>` and ``direction`` set the data file type and whether it is
+for input or output, ``mode`` modifies the behavior of the function, and
+``*ptr`` is a pointer to a character string with the filename in question.  Normally,
 we only look for local files (GMT_FILE_LOCAL [0]), but if ``mode`` contains
 the bit flag GMT_FILE_REMOTE [1] we will try to download any remote files given
 to the function.  By default, we will replace the filename with the full
 path.  Add the bit flag GMT_FILE_CHECK [2] to only check for the files and return
-error codes but leave ``ptr`` alone.
+error codes but leave ``*ptr`` alone.
 
 
 Register input or output resources
