@@ -16802,7 +16802,6 @@ CROAK:	/* We are done or premature return due to error */
 	return (error);
 }
 
-
 /* This set of 14 functions are used by both movie.c and batch.c to deal with understanding
  * input script types and to write shell commands in various syntax variants.
  */

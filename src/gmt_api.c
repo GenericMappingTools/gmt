@@ -13013,11 +13013,26 @@ int GMT_Set_AllocMode_ (unsigned int *family, void *object) {
 /*! . */
 int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, unsigned int mode, char **file_ptr) {
 	/* Replace file with its full path if that file exists, else return an error.
-	 * If mode &GMT_FILE_REMOTE then we try to download any remote files
+	 * If (mode & GMT_FILE_REMOTE) then we try to download any remote files
 	 * given and not yet cached), and if the downloaded file is readable then
 	 * we update file with the local path, otherwise return an error.
-	 * If mode & GMT_FILE_CHECK then we only return error code and don't update path.
-	 * The explicit mode for only local files is GMT_FILE_LOCAL [0] */
+	 * If (mode & GMT_FILE_CHECK) then we only return error code and don't update path.
+	 * The explicit mode for only local files is GMT_FILE_LOCAL [0].
+	 *
+	 * Filename complications.  Both grid and CPT filenames may have modifers or format identifiers
+	 * appended to their names.  Thus, as given, file may name be a valid filename until we have
+	 * chopped off these strings.  Here is a summary of what GMT allows:
+	 *
+	 * grdfile[=<id>][+o<offset>][+n<invalid>][+s<scale>][+u|U<unit>]
+	 * cptfile[+h<hinge>][+u|U<unit>]
+	 * grdimage/view also allows cptfile[+h<hinge>][+u|U<unit>][i<dz>] but it is taken care of in each module.
+	 *
+	 * gridfiles may also have strings to select specific layers of nigher-dimension netCDFfiles, using
+	 * grdfile?<variable..
+	 *
+	 * URL queries also use ? as in http://<address>?<par1>=<val1>... or modifiers on remote grids
+	 * https://<address>/grdfile[=<id>][+o<offset>][+n<invalid>][+s<scale>][+u|U<unit>]
+	 */
 
 	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, was, *file = NULL, *c = NULL;
 	struct GMTAPI_CTRL *API = NULL;
