@@ -305,13 +305,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 
 			case 'C':	/* CPT */
 				Ctrl->C.active = true;
-				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
-					Ctrl->C.dz = atof (&c[2]);
-					c[0] = '\0';	/* Temporarily chop off the modifier */
-				}
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if (c) c[0] = '+';	/* Restore */
+				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 #ifdef HAVE_GDAL
 			case 'D':	/* Get an image via GDAL */
