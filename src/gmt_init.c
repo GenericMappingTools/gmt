@@ -96,6 +96,7 @@
 #include <stdarg.h>
 #include "gmt_internals.h"
 #include "gmt_common_runpath.h"
+#include "gmt_remote.h"
 
 #ifdef GMT_MATLAB
 #	include <mex.h>
@@ -4512,7 +4513,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		}
 	}
 
-	n_slashes = gmt_count_char (GMT, args, '/');	/* Count slashes to distinguis args */
+	n_slashes = gmt_count_char (GMT, args, '/');	/* Count slashes to distinguish args */
 
 	/* Differentiate between general perspective and orthographic projection based on number of slashes */
 	if (project == GMT_GENPER || project == GMT_ORTHO) {
@@ -16340,9 +16341,9 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 /*! . */
 bool gmt_check_and_get_path (struct GMT_CTRL *GMT, char option, char **arg, unsigned int direction, unsigned int family) {
 	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
-	 * exists and is readable, and update file to have the full path. Otherwise we return false. */
-	unsigned int pos = 0, kind = 0;
-	bool not_url = false;
+	 * exists and is readable, and then replace file with the full path. Otherwise we return false. */
+	unsigned int pos = 0;
+	int k_data = GMT_NOTSET;
 	char message[GMT_LEN16] = {""}, *file = *arg;
 	char path[PATH_MAX] = {""};
 	if (option == GMT_OPT_INFILE)
@@ -16356,34 +16357,80 @@ bool gmt_check_and_get_path (struct GMT_CTRL *GMT, char option, char **arg, unsi
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No filename provided %s\n", message);
 		return false;	/* No file given */
 	}
-	if (direction == GMT_OUT) return true;		/* Cannot check any further */
+	if (direction == GMT_OUT) return true;		/* No need to check any further */
+
+	/* 1. First handle full paths as given */
+#ifdef WIN32
+	if (file[0] == '/' || file[1] == ':')
+#else
+	if (file[0] == '/')
+#endif
+	{	/* Got a full path, can we read it? */
+		if (access (file, F_OK)) {	/* No such file  */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot find file %s\n", file);
+			return false;
+		}
+		if (access (file, R_OK)) {	/* Insufficient permissions */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Do not have permissions to read file %s\n", file);
+			return false;	/* No file given */
+		}
+		return true;
+	}
+
+	/* 2. Look for remote data or cache files we already have locally  */
+
+	if (file[0] == '@') {	/* Either cache file or a remote data set */
+		if ((k_data = gmtlib_get_serverfile_index (GMT->parent, file)) != GMT_NOTSET) {
+			/* Got a valid remote server data filename and we know the local path to those */
+			if (GMT->session.USERDIR == NULL) goto not_local;	/* Cannot have server data if no user directory created yet */
+			snprintf (path, PATH_MAX, "%s/server", GMT->session.USERDIR);	/* This is the required subdir for server data */
+			if (access (path, R_OK)) goto not_local;	/* Have not made a server directory yet, so cannot have the file yet either */
+			strcat (path, GMT->parent->remote_info[k_data].dir);	/* Append the subdir (/ or /earth_relief/, etc) */
+			strcat (path, GMT->parent->remote_info[k_data].file);	/* Append filename */
+			if (access (path, R_OK)) goto not_local;	/* No such file yet */
+		}
+		else {	/* Must be cache file */
+			if (GMT->session.CACHEDIR == NULL) goto not_local;	/* Cannot have cache data if no cache directory created yet */
+			snprintf (path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &file[1]);	/* This is where all cache files live */
+			if (access (path, R_OK)) goto not_local;	/* No such file yet */
+		}
+		/* If we get here then we found the file locally.  Update file to path and return true */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Replace file %s with path %s\n", file, path);
+		gmt_M_str_free (*arg);
+		*arg = strdup (path);
+		return true;
+	}
+
+not_local:	/* Get here if we failed to find a file already on disk */
+
+	/* 3. If given an URL we must say true and deal with it later, since it may be a search string and not a file at all */
+
+	if (gmt_M_file_is_url (file)) return true;
 
 	if (file[0] == '=') pos = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
-	not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
-	if (kind == GMT_CACHE_FILE || kind == GMT_DATA_FILE) {
-		pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Has leading '@' in name so must skip that letter when checking if it exists locally */
-		if (gmt_getdatapath (GMT, &file[pos], path, R_OK)) {
+
+	/* 4. Relative file name check */
+
+	if (file[pos] != '@') {	/* Regular file with a relative path */
+		if (gmt_getdatapath (GMT, &file[pos], path, R_OK)) {	/* Found it */
 			/* Replace file name with full path */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Replace file %s with path %s\n", file, path);
 			gmt_M_str_free (*arg);
 			*arg = strdup (path);
+			return true;
 		}
 	}
-	else if (kind == GMT_URL_FILE)
-		pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
-	if (!not_url && kind == 0 && (family == GMT_IS_GRID || family == GMT_IS_IMAGE))	/* Only grid and images can be URLs so far */
-		not_url = !gmtlib_check_url_name (&file[pos]);
-	if (not_url) {
-		if (gmt_getdatapath (GMT, &file[pos], path, R_OK)) {
-			/* Replace file name with full path */
-			gmt_M_str_free (*arg);
-			*arg = strdup (path);
-		}
-		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No such file (%s) provided %s\n", &file[pos], message);
-			return false;	/* Could not find this file */
-		}
+
+	/* 5. Remote data file not yet stored locally or URLs */
+
+	if (gmtlib_download_remote_file (GMT, file, path, k_data, (k_data == GMT_NOTSET) ? 0 : 1)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to download file %s\n", file);
+		return false;
 	}
-	return true;	/* Seems OK */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Replace file %s with path %s\n", file, path);
+	gmt_M_str_free (*arg);
+	*arg = strdup (path);
+	return true;
 }
 
 #ifdef SET_IO_MODE

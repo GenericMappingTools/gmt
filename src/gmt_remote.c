@@ -183,7 +183,7 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 	return (strncmp (&name_1[1], name_2, len));
 }
 
-GMT_LOCAL int gmtremote_find_server_entry (struct GMTAPI_CTRL *API, char *file) {
+int gmtlib_get_serverfile_index (struct GMTAPI_CTRL *API, char *file) {
 	/* Return the entry in the remote file table of file is found, else -1 */
 	struct GMT_DATA_INFO *key = bsearch (file, API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	return ((key == NULL) ? GMT_NOTSET : key->id);
@@ -196,7 +196,7 @@ GMT_LOCAL int gmtremote_give_data_attribution (struct GMTAPI_CTRL *API, char *fi
 
 	if ((c = strstr (file, ".grd")))	/* Ignore extension in comparison */
 		c[0] = '\0';
-	match = gmtremote_find_server_entry (API, file);
+	match = gmtlib_get_serverfile_index (API, file);
 	if (match != GMT_NOTSET) {
 		GMT_Report (API, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", API->remote_info[match].file, API->remote_info[match].size);
 		GMT_Report (API, GMT_MSG_NOTICE, "%s.\n\n", API->remote_info[match].remark);
@@ -554,6 +554,244 @@ GMT_LOCAL bool gmtremote_is_not_a_valid_grid (char *file) {
 	return (strstr (file, ".grd") == NULL && strstr (file, ".tif"));
 }
 
+GMT_LOCAL int gmtremote_download_file (struct GMT_CTRL *GMT, char *url, char *localfile, unsigned int be_fussy) {
+	int curl_err;
+	CURL *Curl = NULL;
+	struct FtpFile urlfile = {NULL, NULL};
+		/* Here we will try to download a file */
+
+  	if ((Curl = curl_easy_init ()) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to initiate curl\n");
+		return 1;
+	}
+	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to not verify the peer\n");
+		return 1;
+	}
+	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to follow redirects\n");
+		return 1;
+	}
+	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
+		return 1;
+	}
+
+ 	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
+		return 1;
+	}
+	urlfile.filename = localfile;	/* Set pointer to local filename */
+	/* Define our callback to get called when there's data to be written */
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, gmtremote_fwrite_callback)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
+		return 1;
+	}
+	/* Set a pointer to our struct to pass to the callback */
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &urlfile)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to write to %s\n", localfile);
+		return 1;
+	}
+
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading file %s ...\n", url);
+	gmtremote_turn_on_ctrl_C_check (localfile);
+	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
+		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "You can turn remote file download off by setting GMT_AUTO_DOWNLOAD off.\n");
+			if (urlfile.fp != NULL) {
+				fclose (urlfile.fp);
+				urlfile.fp = NULL;
+			}
+			if (!access (localfile, F_OK) && gmt_remove_file (GMT, localfile))	/* Failed to clean up as well */
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not even remove file %s\n", localfile);
+		}
+		else if (curl_err == CURLE_COULDNT_CONNECT)
+			GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
+	}
+	curl_easy_cleanup (Curl);
+	if (urlfile.fp) /* close the local file */
+		fclose (urlfile.fp);
+	gmtremote_turn_off_ctrl_C_check ();
+	return (GMT_NOERROR);
+}
+
+int gmtlib_download_remote_file (struct GMT_CTRL *GMT, const char* file_name, char *path, int k_data, unsigned int mode) {
+	/* Downloads a remote file.  Returns 1 if there is any failure to get the file.
+	 * path will hold the full local path after download.
+	 * k_data is either -1 or an index into the remote data set array.
+ 	 * Values for mode:
+ 	 * 0 : Place file in the cache directory
+	 * 1 : Place file in user directory
+	 * 2 : Place file in local (current) directory
+	 * Add 4 if the file may not be found and we should not complain about this here.
+	 */
+	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
+	bool is_srtm = false, is_data = false, is_url = false;
+	size_t len, fsize;
+	static char *cache_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
+	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
+	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
+	char srtmdir[PATH_MAX] = {""}, serverdir[PATH_MAX] = {""}, *srtm_local = NULL;
+
+	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {  /* Not allowed to use remote copying */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated.  Cannot obtain %s\n", file_name);
+		return 1;
+	}
+	if (GMT->current.io.internet_error) return 1;   			/* Not able to use remote copying in this session */
+
+	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
+
+	file = gmt_M_memory (GMT, NULL, strlen (file_name)+2, char);	/* One extra in case need to change nc to jp2 for download of SRTM */
+	strcpy (file, file_name);
+	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
+	if (gmt_M_file_is_url (file)) {	/* A remote file given via an URL */
+		is_url = true;
+		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
+		if ((c = strchr (file, '?')) && !strchr (file, '='))	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
+			c[0] = '\0';
+		else if (c && c[0] != '?' && (c = strchr (file, '=')))	/* If no ? then = means grid attributes */
+			c[0] = '\0';
+		/* else we have both ? and = which is an URL query */
+		if (strchr (file, '?') == NULL)
+			kind = GMT_URL_FILE;
+		else
+			kind = GMT_URL_QUERY;	/* These we will never check for access and must rerun each time */
+	}
+	else if (k_data) {	/* A remote @earth_relief_xxm|s grid */
+		pos = 1;
+		is_data = true;
+		kind = GMT_DATA_FILE;
+	}
+	else {	/* Cache files */
+		pos = 1;
+		if ((c = strchr (file, '?')))	/* NetCDF directive since URL was handled above */
+			c[0] = '\0';
+		else if ((c = strchr (file, '=')))	/* Grid attributes */
+			c[0] = '\0';
+		kind = GMT_CACHE_FILE;
+	}
+
+	if (kind == GMT_DATA_FILE) {
+		k_data = gmtremote_give_data_attribution (GMT->parent, file);
+	}
+
+	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
+	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
+	snprintf (serverdir, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
+	if (is_data && access (serverdir, R_OK) && gmt_mkdir (serverdir))
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to create GMT data server directory : %s\n", serverdir);
+	if (gmt_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
+		from = (res == 1) ? 2 : 3;
+		to = GMT_CACHE_DIR;
+		is_srtm = true;
+		snprintf (srtmdir, PATH_MAX, "%s/srtm%d", serverdir, res);
+		/* Check if srtm1|3 subdir exist - if not create it */
+		if (access (srtmdir, R_OK) && gmt_mkdir (srtmdir))
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to create GMT data directory : %s\n", srtmdir);
+	}
+	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {
+		if (mode != GMT_LOCAL_DIR)
+			GMT_Report (GMT->parent, GMT_MSG_WARNING,
+			            "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
+		snprintf (local_path, PATH_MAX, "%s", &file[pos]);
+	}
+
+	/* Create the remote URL */
+	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
+		snprintf (url, PATH_MAX, "%s", file);
+	else {	/* Use GMT data dir, possible from a subfolder */
+		if (k_data == -1)	/* Not a server grid/image, so likely cache */
+			snprintf (url, PATH_MAX, "%s%s/%s", GMT->session.DATASERVER, cache_dir[from], &file[pos]);
+		else {	/* Served grid or image */
+			snprintf (url, PATH_MAX, "%s%s%s", GMT->session.DATASERVER, GMT->parent->remote_info[k_data].dir, GMT->parent->remote_info[k_data].file);
+		}
+		len = strlen (url);
+		if (is_srtm && !strncmp (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
+			strncpy (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN], GMT_SRTM_EXTENSION_REMOTE, GMT_SRTM_EXTENSION_REMOTE_LEN);	/* Switch extension for download */
+	}
+
+	if ((fsize = gmtremote_skip_large_files (GMT, url, GMT->current.setting.url_size_limit))) {
+		char *S = strdup (gmt_memory_use (fsize, 3));
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_SERVER_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
+		gmt_M_free (GMT, file);
+		gmt_M_str_free (S);
+		return 1;
+	}
+
+	if (mode != GMT_LOCAL_DIR && user_dir[to]) {
+		if (is_srtm) {	/* Doing SRTM tiles */
+			snprintf (local_path, PATH_MAX, "%s/%s", srtmdir, &file[pos]);
+			srtm_local = strdup (local_path);	/* What we want the local file to be called */
+			len = strlen (local_path);
+			if (!strncmp (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
+				strncpy (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN], GMT_SRTM_EXTENSION_REMOTE, GMT_SRTM_EXTENSION_REMOTE_LEN);	/* Switch extension for download */
+		}
+		else if (is_data) {
+			snprintf (local_path, PATH_MAX, "%s/server", user_dir[GMT_DATA_DIR]);
+			if (access (local_path, R_OK) && gmt_mkdir (local_path))
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
+			if (k_data == -1 || !strcmp (GMT->parent->remote_info[k_data].dir, "/"))	/* Not a server grid/image or probably one of the symbolic links in server */
+				snprintf (local_path, PATH_MAX, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
+			else {
+				snprintf (local_path, PATH_MAX, "%s%s", user_dir[GMT_DATA_DIR], GMT->parent->remote_info[k_data].dir);
+				if (access (local_path, R_OK) && gmt_mkdir (local_path))
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
+				strcat (local_path, GMT->parent->remote_info[k_data].file);
+			}
+		}
+		else if (is_url) {	/* Place in current dir */
+			snprintf (local_path, PATH_MAX, "%s", &file[pos]);
+		}
+		else {	/* Goes to cache */
+			if (access (user_dir[to], R_OK) && gmt_mkdir (user_dir[to]))
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", user_dir[to]);
+			snprintf (local_path, PATH_MAX, "%s/%s", user_dir[to], &file[pos]);
+		}
+	}
+	if (kind == GMT_DATA_FILE && !strstr (local_path, ".grd")) strcat (local_path, ".grd");	/* Must supply the .grd */
+	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in filename */
+		c = strchr (local_path, '?');
+		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
+	}
+
+	if (gmtremote_download_file (GMT, url, local_path, be_fussy)) {
+		gmt_M_free (GMT, file);
+		if (is_srtm) gmt_M_str_free (srtm_local);
+		return 1;
+	}
+
+	if (is_srtm && srtm_local) {	/* Convert JP2 file to NC for local cache storage */
+		static char *args = "=ns -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
+		char *cmd = gmt_M_memory (GMT, NULL, strlen (local_path) + strlen (srtm_local) + strlen(args) + 2, char);
+		sprintf (cmd, "%s %s%s", local_path, srtm_local, args);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", file);
+		if (GMT_Call_Module (GMT->parent, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", local_path);
+			gmt_M_free (GMT, file);
+			gmt_M_free (GMT, cmd);
+			if (is_srtm) gmt_M_str_free (srtm_local);
+			return 1;
+		}
+		gmt_M_free (GMT, cmd);
+		if (gmt_remove_file (GMT, local_path))
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not even remove file %s\n", local_path);
+		strcpy (local_path, srtm_local);
+		gmt_M_str_free (srtm_local);
+	}
+
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Say a few things about the file we got */
+		struct stat buf;
+		if (stat (local_path, &buf))
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not determine size of downloaded file %s\n", &file_name[pos]);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
+	}
+	gmt_M_free (GMT, file);
+	strcpy (path, local_path);
+
+	return (GMT_NOERROR);
+}
+
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode) {
 	/* Downloads a file if not found locally.  Returns the position in file_name of the
  	 * start of the actual file (e.g., if given an URL). Values for mode:
@@ -574,6 +812,14 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	struct FtpFile urlfile = {NULL, NULL};
 
 	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
+
+	/* 1. First handle full paths as given */
+#ifdef WIN32
+	if (file_name[0] == '/' || file_name[1] == ':')
+#else
+	if (file_name[0] == '/')
+#endif
+		return 0;
 
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD && (gmt_M_file_is_remotedata (file_name) || gmt_M_file_is_cache (file_name) || gmt_M_file_is_url (file_name))) {  /* Not allowed to use remote copying */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated\n");

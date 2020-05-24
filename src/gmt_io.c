@@ -4961,7 +4961,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	if (!access (stem, F_OK)) {	/* Yes, found it */
 		if (mode == F_OK || gmtio_file_is_readable (GMT, (char *)stem)) {	/* Yes, found it or can read it */
 			strcpy (path, stem);
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+			if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
 			return (path);
 		}
 		return (NULL);	/* Cannot read, give up */
@@ -5009,7 +5009,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 #endif /* HAVE_DIRENT_H_ */
 		}
 		if (found && gmtio_file_is_readable (GMT, path)) {
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+			if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
 			return (path);	/* Yes, can read it */
 		}
 	}
@@ -5022,7 +5022,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 			sprintf (path, "%s/%s/%s", udir[3], subdir[d], stem);
 			found = (!access (path, F_OK));
 			if (found && gmtio_file_is_readable (GMT, path)) {	/* Yes, can read it */
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+				if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
 				gmtlib_free_dir_list (GMT, &subdir);
 				return (path);
 			}
