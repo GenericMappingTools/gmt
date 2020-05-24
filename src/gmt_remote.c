@@ -801,15 +801,13 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	 * Add 4 if the file may not be found and we should not complain about this here.
 	 */
 	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
-	int curl_err = 0, k_data = -1;
+	int k_data = -1;
 	bool is_srtm = false, is_data = false, is_url = false;
 	size_t len, fsize;
-	CURL *Curl = NULL;
 	static char *cache_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
 	char srtmdir[PATH_MAX] = {""}, serverdir[PATH_MAX] = {""}, *srtm_local = NULL;
-	struct FtpFile urlfile = {NULL, NULL};
 
 	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
 
@@ -937,27 +935,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 
 	/* Here we will try to download a file */
 
-  	if ((Curl = curl_easy_init ()) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", &file[pos]);
-		gmt_M_free (GMT, file);
-		return 0;
-	}
-	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to not verify the peer\n");
-		gmt_M_free (GMT, file);
-		return 0;
-	}
-	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to follow redirects\n");
-		gmt_M_free (GMT, file);
-		return 0;
-	}
-	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to fail for 4xx responses\n");
-		gmt_M_free (GMT, file);
-		return 0;
-	}
-
 	if (mode != GMT_LOCAL_DIR && user_dir[to]) {
 		if (is_srtm) {	/* Doing SRTM tiles */
 			snprintf (local_path, PATH_MAX, "%s/%s", srtmdir, &file[pos]);
@@ -994,51 +971,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
 	}
 
- 	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
+ 	if (gmtremote_download_file (GMT, url, local_path, be_fussy)) {
 		gmt_M_free (GMT, file);
 		if (is_srtm) gmt_M_str_free (srtm_local);
-		return 0;
-	}
-	urlfile.filename = local_path;	/* Set pointer to local filename */
-	/* Define our callback to get called when there's data to be written */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, gmtremote_fwrite_callback)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
-		gmt_M_free (GMT, file);
-		if (is_srtm) gmt_M_str_free (srtm_local);
-		return 0;
-	}
-	/* Set a pointer to our struct to pass to the callback */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &urlfile)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to write to %s\n", local_path);
-		gmt_M_free (GMT, file);
-		if (is_srtm) gmt_M_str_free (srtm_local);
-		return 0;
-	}
-
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading file %s ...\n", url);
-	gmtremote_turn_on_ctrl_C_check (local_path);
-	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
-		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "You can turn remote file download off by setting GMT_AUTO_DOWNLOAD off.\n");
-			if (urlfile.fp != NULL) {
-				fclose (urlfile.fp);
-				urlfile.fp = NULL;
-			}
-			if (!access (local_path, F_OK) && gmt_remove_file (GMT, local_path))	/* Failed to clean up as well */
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not even remove file %s\n", local_path);
-		}
-		else if (curl_err == CURLE_COULDNT_CONNECT)
-			GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
-	}
-	curl_easy_cleanup (Curl);
-	if (urlfile.fp) /* close the local file */
-		fclose (urlfile.fp);
-	gmtremote_turn_off_ctrl_C_check ();
-	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in local filename */
-		c = strchr (file_name, '?');
-		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
+		return 1;
 	}
 
 	if (is_srtm && srtm_local) {	/* Convert JP2 file to NC for local cache storage */
