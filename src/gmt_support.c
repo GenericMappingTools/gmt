@@ -16805,7 +16805,7 @@ CROAK:	/* We are done or premature return due to error */
 }
 
 void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interval) {
-	/* CPT files in some programs (grdimage, grdview) may have a +i<dz> modifier,
+	/* CPT files in some programs (grd2kml, grdimage, grdvector, grdview) may have a +i<dz> modifier,
 	 * but it may be just one of several modifiers.  Here, we wish to remove this
 	 * modifier, set the corresponding interval, and update *file to only have the
 	 * remaining text items. */
