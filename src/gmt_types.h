@@ -446,7 +446,7 @@ typedef int (*p_to_io_func) (struct GMT_CTRL *, FILE *, uint64_t, double *);
    let GMT_exit possibly call exit, else it does nothing.  Thus, calls to GMT_exit
    must be followed by return <type> so that we return where we said we would. */
 
-/* If GMT is not set or no_not_exit is false then we call system exit, else we move along */
+/* If GMT is not set or do_not_exit is false then we call system exit, else we move along */
 static inline void GMT_exit (struct GMT_CTRL *GMT, int code) {
 	if (GMT == NULL || GMT->parent == NULL || GMT->parent->do_not_exit == false)
 		exit (code);
