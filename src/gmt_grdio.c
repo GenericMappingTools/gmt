@@ -1995,7 +1995,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 				snprintf (file, GMT_LEN64, "@earth_relief_0%cs", argv[i][strlen(argv[i])-8]);
 				txt = file;
 			}
-			else if (gmt_M_file_is_remotedata (argv[i]) && (c = strstr (argv[i], ".grd"))) {
+			else if (gmt_file_is_remotedata (GMT->parent, argv[i]) && (c = strstr (argv[i], ".grd"))) {
 				c[0] = '\0';
 				snprintf (file, GMT_LEN64, "%s", argv[i]);
 				c[0] = '.';

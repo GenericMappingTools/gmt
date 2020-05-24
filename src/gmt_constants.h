@@ -535,11 +535,12 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 	GMT_DATA_FILE  = 2,	/* Official GMT data file destined for the user's user dir */
 	GMT_URL_FILE   = 3,	/* Data given by an URL destined for the cache */
 	GMT_URL_QUERY  = 4,	/* Data given by an URL CGI command destined for the cache */
-	GMT_CACHE_DIR  = 0,	/* Use the cache directory */
-	GMT_DATA_DIR   = 1,	/* Use the data directory */
-	GMT_LOCAL_DIR  = 2};	/* Use the local (current) directory */
+	GMT_AUTO_DIR   = 0,	/* Use the directory given per internal rules */
+	GMT_CACHE_DIR  = 1,	/* Use the cache directory */
+	GMT_DATA_DIR   = 2,	/* Use the data directory */
+	GMT_LOCAL_DIR  = 3};	/* Use the local (current) directory */
 
-#define GMT_DATA_PREFIX "earth_relief_"				/* Special prefix for global relief data sets */
+#define GMT_TOPO_PREFIX "earth_relief_"				/* Special prefix for global relief topography data sets */
 #define GMT_SRTM_PREFIX "srtm_relief_"				/* Special prefix for srtm relief data sets when ocean is not requested */
 #define GMT_SRTM_EXTENSION_REMOTE  "jp2"			/* Tile extension of JPEG2000 files to be downloaded */
 #define GMT_SRTM_EXTENSION_REMOTE_LEN  4U			/* Length of JPEG2000 file extension (+1) */

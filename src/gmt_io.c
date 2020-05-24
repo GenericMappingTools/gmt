@@ -5121,7 +5121,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 		return (-1);
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */
 		char path[PATH_MAX] = {""};
-		if (gmt_M_file_is_remotedata (filename) && !strstr (filename, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
+		if (gmt_file_is_remotedata (GMT->parent, filename) && !strstr (filename, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
 			strcat (file, ".grd");	/* Must supply the .grd */
 		return (gmt_getdatapath (GMT, file, path, mode) ? 0 : -1);
 	}

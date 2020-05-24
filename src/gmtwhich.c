@@ -141,11 +141,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+#define TESTING_PATHS 1
+
 EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	int error = 0, fmode;
 	unsigned int first = 0;	/* Real start of filename */
 
 	char path[PATH_MAX] = {""}, file[PATH_MAX] = {""}, *Yes = "Y", *No = "N", cwd[PATH_MAX] = {""}, *p = NULL;
+#ifdef TESTING_PATHS
+	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
+#endif
 
 	struct GMTWHICH_CTRL *Ctrl = NULL;
 	struct GMT_RECORD *Out = NULL;
@@ -191,11 +196,19 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
+#ifdef TESTING_PATHS
+		if (gmt_set_remote_and_local_filenames (GMT, opt->arg, local_path, remote_path, Ctrl->G.mode))
+			GMT_Report (API, GMT_MSG_ERROR, "gmt_set_remote_and_local_filenames failed\n");
+		else
+			GMT_Report (API, GMT_MSG_NOTICE, "%s: Remote = (%s) Local = (%s)\n", opt->arg, remote_path, local_path);
+		continue;
+#endif
+
 		if (Ctrl->G.active)
 			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
 		else if (opt->arg[0] == '@') /* Gave @ without -G is likely a user mistake; remove it */
 			first = 1;
-		if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd"))
+		if (gmt_file_is_remotedata (API, opt->arg) && !strstr (opt->arg, ".grd"))
 			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote earth_relief grids */
 		else
 			strcpy (file, opt->arg);

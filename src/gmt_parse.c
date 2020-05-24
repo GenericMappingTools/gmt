@@ -836,7 +836,7 @@ char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 			if (skip_infiles) continue;
 			if (gmtlib_file_is_srtmlist (API, opt->arg))	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
 				snprintf (buffer, GMT_BUFSIZ, "@earth_relief_0%cs", opt->arg[strlen(opt->arg)-8]);
-			else if (gmt_M_file_is_remotedata (opt->arg) && (c = strstr (opt->arg, ".grd"))) {
+			else if (gmt_file_is_remotedata (API, opt->arg) && (c = strstr (opt->arg, ".grd"))) {
 				c[0] = '\0';
 				snprintf (buffer, GMT_BUFSIZ, "%s", opt->arg);
 				c[0] = '.';

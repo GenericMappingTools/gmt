@@ -22,7 +22,7 @@
  * Date:	1-JUN-2013
  * Version:	5
  *
- * The API presently consists of 68 documented functions.  For a full
+ * The API presently consists of 69 documented functions.  For a full
  * description of the API, see the GMT_API documentation.
  * These functions have Fortran bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUserAdvanced.cmake].
@@ -39,7 +39,7 @@
  * GMT_Message		       : Report an message given a verbosity level
  * GMT_Report		       : Report an error given an error code
  *
- * There are 31 further public functions used for GMT i/o activities:
+ * There are 32 further public functions used for GMT i/o activities:
  *
  * GMT_Alloc_Segment       : Allocate a single DATASET segment
  * GMT_Begin_IO	           : Allow i/o to take place for rec-by-rec operations
@@ -48,6 +48,7 @@
  * GMT_Destroy_Data        : Destroy a data set and its container
  * GMT_Duplicate_Data      : Make an exact duplicate of a dataset
  * GMT_Duplicate_String    : Allocates a copy of a string to be freed by API
+ * GMT_Get_FilePath        : Check existence of file and replace with full path
  * GMT_End_IO              : Disallow further rec-by-rec i/o
  * GMT_Get_Info            : Get meta-data from the object passed
  * GMT_Get_Record          : Get the next single data record from the source(s)
@@ -7544,7 +7545,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			char file[PATH_MAX] = {""};
 			first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable GMT data sets first */
 			strncpy (file, &input[first], PATH_MAX-1);
-			if (gmt_M_file_is_remotedata (input) && !strstr (input, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
+			if (gmt_file_is_remotedata (API, input) && !strstr (input, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
 				strcat (file, ".grd");	/* Must supply the .grd */
 			if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, file)) == GMT_NOTSET) {
 				gmt_M_str_free (input);
@@ -13006,6 +13007,64 @@ int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 int GMT_Set_AllocMode_ (unsigned int *family, void *object) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Set_AllocMode (GMT_FORTRAN, *family, object));
+}
+#endif
+
+/*! . */
+int GMT_Get_FilePath (void *V_API, char **file_ptr, unsigned int mode) {
+	/* Replace file with its full path if that file exists, else return an error.
+	 * If mode &GMT_FILE_REMOTE then we try to download any remote files
+	 * given and not yet cached), and if the downloaded file is readable then
+	 * we update file with the local path, otherwise return an error.
+	 * If mode & GMT_FILE_CHECK then we only return error code and don't update path.
+	 * The explicit mode for only local files is GMT_FILE_LOCAL [0] */
+
+	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *file = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	API = gmtapi_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+
+	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') {
+		GMT_Report (API, GMT_MSG_ERROR, "No filename provided\n");
+		return_error (V_API, GMT_ARG_IS_NULL);
+	}
+
+	if (gmt_set_remote_and_local_filenames (API->GMT, file, local_path, remote_path, GMT_AUTO_DIR)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot find file %s\n", file);
+		return_error (V_API, GMT_FILE_NOT_FOUND);
+	}
+
+	/* Here we have found a local file or we must download from server first */
+
+	if (remote_path[0]) {	/* Remote file given but not yet stored locally */
+		if (mode & GMT_FILE_REMOTE) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Download %s to %s\n", remote_path, local_path);
+			if (gmt_download_file (API->GMT, file, remote_path, local_path, true)) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to obtain remote file %s\n", file);
+				return_error (V_API, GMT_FILE_NOT_FOUND);
+			}
+		}
+		else {
+			GMT_Report (API, GMT_MSG_DEBUG, "Given a remote file %s but mode is not GMT_ADD_REMOTE\n", file);
+			return_error (V_API, GMT_FILE_NOT_FOUND);
+		}
+	}
+
+	if ((mode & GMT_FILE_CHECK) == 0) {	/* Pass the local path back */
+		GMT_Report (API, GMT_MSG_DEBUG, "Replace file %s with %s\n", file, local_path);
+		gmt_M_str_free (*file_ptr);
+		*file_ptr = strdup (local_path);
+	}
+
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_FilePath_ (char **file, unsigned int *mode, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_FilePath (GMT_FORTRAN, file, *mode));
 }
 #endif
 
