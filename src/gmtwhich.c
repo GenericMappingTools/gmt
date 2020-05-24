@@ -209,7 +209,7 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		else if (opt->arg[0] == '@') /* Gave @ without -G is likely a user mistake; remove it */
 			first = 1;
 		if (gmt_file_is_remotedata (API, opt->arg) && !strstr (opt->arg, ".grd"))
-			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote earth_relief grids */
+			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote grids */
 		else
 			strcpy (file, opt->arg);
 		if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */
