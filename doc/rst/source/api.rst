@@ -966,7 +966,7 @@ local path.  This is a job for GMT_Get_FilePath_, whose prototype is
 
     int GMT_Get_FilePath (void *API, char **ptr, unsigned int mode);
 
-where ``ptr`` is a pointer to a character string with the filename in
+where ``*ptr`` is a pointer to a character string with the filename in
 question, and ``mode`` modifies the behavior of the function.  Normally,
 we only look for local files (GMT_FILE_LOCAL [0]), but if ``mode`` contains
 the bit flag GMT_FILE_REMOTE [1] we will try to download any remote files given

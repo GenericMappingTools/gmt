@@ -1280,7 +1280,7 @@ provide a default CPT if none is provided.  By default, the default CPT is the
 (we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
 these CPTs are read and scaled to match the range of the grid values. You may append
 **+i**\ *dz* to the CPT to have the exact range rounded to nearest multiple of *dz*.
-THis is helpful if you plan to place a colorbar and prefer start and stop *z*-values
+This is helpful if you plan to place a colorbar and prefer start and stop *z*-values
 that are multiples of *dz*.
 
 The Drawing of Vectors
