@@ -16259,51 +16259,10 @@ unsigned int gmtlib_get_pos_of_filename (const char *url) {
 	return (unsigned int)pos;
 }
 
-GMT_LOCAL bool gmtinit_check_if_we_must_download (struct GMT_CTRL *GMT, const char *file, unsigned int kind) {
-	/* Returns false if file already present unless if it is a remote file */
-	unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
-	if (pos == 1) return true;  /* Must always check since file on server might have changed and should be refreshed first */
-	else if (kind == GMT_URL_QUERY)
-		return true;	/* A query can never exist locally so must follow the URL */
-	else if (!gmt_access (GMT, &file[pos], F_OK))
-		return false;	/* Regular file exists already so no need to download */
-	else if (kind == GMT_URL_FILE)	/* And not found in previous line so need to download */
-		return true;	/* File not found */
-	else
-		return false;	/* Just a local file that is not found */
-}
-
-bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
-	/* Returns true if file is a known GMT-distributable file and download is enabled */
-	/* Return immediately if no auto-download is disabled or file is found locally */
-#ifdef DEBUG
-	static char *fkind[5] = {"Regular File", "Cache File", "Data File", "URL File", "URL Query"};
-#endif
-	*kind = GMT_REGULAR_FILE;	/* Default is a regular file */
-	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return false;	/* Not enabled */
-	if (file == NULL) return false;	/* Return immediately if file is NULL */
-	if (gmt_file_is_remotedata (GMT->parent, file))	/* Special remote data set @earth_relief_xxm|s grid request */
-		*kind = GMT_DATA_FILE;
-	else if (gmt_M_file_is_cache (file))	/* Special @<filename> syntax for GMT cache files */
-		*kind = GMT_CACHE_FILE;
-	else if (gmt_M_file_is_url(file)) {	/* Full URL given */
-		if (strchr (file, '?') == NULL)
-			*kind = GMT_URL_FILE;
-		else
-			*kind = GMT_URL_QUERY;	/* These we will never check for access and must rerun each time */
-	}
-#ifdef DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s: Type is %s\n", file, fkind[*kind]);
-#endif
-	return (gmtinit_check_if_we_must_download (GMT, file, *kind));
-}
-
 /*! . */
 bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family) {
 	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
-	 * exists and is readable. Otherwise we return false. */
-	unsigned int pos = 0, kind = 0;
-	bool not_url = false;
+	 * exists and is readable. If remote we try to download the file first. Otherwise we return false. */
 	char message[GMT_LEN16] = {""};
 	if (option == GMT_OPT_INFILE)
 		sprintf (message, "for input file");
@@ -16317,24 +16276,10 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 		return false;	/* No file given */
 	}
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
-	if (file[0] == '=') pos = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
-	not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
-	if (kind == GMT_CACHE_FILE || kind == GMT_DATA_FILE) {
-		pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Has leading '@' in name so must skip that letter when checking if it exists locally */
-	}
-	else if (kind == GMT_URL_FILE) pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
-	if (!not_url && kind == 0 && (family == GMT_IS_GRID || family == GMT_IS_IMAGE))	/* Only grid and images can be URLs so far */
-		not_url = !gmtlib_check_url_name (&file[pos]);
-	if (not_url) {
-		if (gmt_access (GMT, &file[pos], F_OK)) {	/* Cannot find the file anywhere GMT looks */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No such file (%s) provided %s\n", &file[pos], message);
-			return false;	/* Could not find this file */
-		}
-		if (gmt_access (GMT, &file[pos], R_OK)) {	/* Cannot read this file (permissions?) */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot read file (%s) - check permissions %s\n", &file[pos], message);
-			return false;	/* Could not find this file */
-		}
-	}
+
+	if (GMT_Get_FilePath (GMT->parent, &file, GMT_FILE_REMOTE|GMT_FILE_CHECK))
+		return false;	/* No file given */
+
 	return true;	/* Seems OK */
 }
 
