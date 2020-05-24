@@ -136,34 +136,14 @@ These three GMT versions cannot live side by side.
 
 ### Fedora
 
-The GMT binary packages provided by the Fedora official repositories are usually too old.
-We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
-to allow Fedora users access the latest GMT releases in an easy way.
+GMT 6 packages are available for **Fedora 31 or newer**. Install it via:
 
-**NOTE: The RPM repository provides GMT packages for Fedora 30 or newer only!**
-
-Fedora users can add the GMT official RPM repository and install gmt by:
-
-	# enable the RPM repository
-	dnf copr enable genericmappingtools/gmt
-
-	# Install the latest GMT provided by the RPM repository
-	dnf install gmt
-
-	# Update to the latest version if available
-	dnf update gmt
+    dnf install GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high ghostscript
 
 You may also install other optional dependencies for more capabilities within GMT:
 
     dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
-    dnf install GraphicsMagick ffmpeg gdal
-
-**Note**:
-If you already installed the GMT packages provided by Fedora,
-you have to uninstall them before installing the new GMT packages provided
-by the official GMT repository. You can uninstall the older packages by:
-
-    dnf remove GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high
+    dnf install ffmpeg
 
 ### RHEL/CentOS
 
@@ -206,7 +186,7 @@ by the official GMT repository. You can uninstall the older packages by:
 
 ### Ubuntu/Debian
 
-GMT 6.0 packages are available for Ubuntu 20.04 (Focal Fossa) and Debian 11 (Bullseye/Testing).
+GMT 6 packages are available for Ubuntu 20.04 (Focal Fossa) and Debian 11 (Bullseye/Testing).
 Install it via
 
     sudo apt-get install gmt gmt-dcw gmt-gshhg

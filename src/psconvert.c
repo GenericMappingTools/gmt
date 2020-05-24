@@ -1541,6 +1541,9 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			            n, gsVersion.major, gsVersion.minor);
 			Return (GMT_RUNTIME_ERROR);
 		}
+		else {
+			GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript version: %d.%d\n", gsVersion.major, gsVersion.minor);
+		}
 	}
 	else {	/* Failure to open Ghostscript */
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot execute Ghostscript (%s).\n", Ctrl->G.file);

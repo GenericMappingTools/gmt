@@ -15675,7 +15675,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				}
 			}
 			else
-				GMT->current.setting.verbose = GMT_MSG_WARNING;
+				GMT->current.setting.verbose = GMT_MSG_INFORMATION;
 			break;
 
 		case 'X':
