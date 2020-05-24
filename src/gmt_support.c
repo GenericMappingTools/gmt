@@ -16804,6 +16804,23 @@ CROAK:	/* We are done or premature return due to error */
 	return (error);
 }
 
+void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interval) {
+	/* CPT files in some programs (grdimage, grdview) may have a +i<dz> modifier,
+	 * but it may be just one of several modifiers.  Here, we wish to remove this
+	 * modifier, set the corresponding interval, and update *file to only have the
+	 * remaining text items. */
+	char *file = NULL, *c = NULL, new_arg[PATH_MAX] = {""};
+	if (arg == NULL || (file = *arg) == NULL || file[0] == '\0') return;
+	if ((c = strstr (file, "+i")) == NULL) return;
+	/* Here we have a +i<dz> string in c */
+	*interval = atof (&c[2]);
+	c[0] = '\0';	c++;	/* Chop off and move one char to the right */
+	strcpy (new_arg, file);	/* Everything up to start of +i */
+	while (*c && *c != '+') c++;	/* Wind to next modifier or reach end of string */
+	if (*c) strcat (new_arg, c);	/* Append other modifiers given after +i */
+	gmt_M_str_free (*arg);
+	*arg = strdup (new_arg);
+}
 
 /* This set of 14 functions are used by both movie.c and batch.c to deal with understanding
  * input script types and to write shell commands in various syntax variants.

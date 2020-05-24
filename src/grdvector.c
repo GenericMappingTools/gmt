@@ -167,7 +167,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, n_files = 0;
 	int j;
 	size_t len;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol, *c = NULL;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -192,13 +192,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':	/* Vary symbol color with z */
 				Ctrl->C.active = true;
-				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
-					Ctrl->C.dz = atof (&c[2]);
-					c[0] = '\0';	/* Temporarily chop off the modifier */
-				}
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if (c) c[0] = '+';	/* Restore */
+				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */
 				if (gmt_M_compat_check (GMT, 4)) {
