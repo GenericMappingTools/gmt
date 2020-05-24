@@ -876,7 +876,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char *f
 			return 0;
 		}
 	}
-	pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
+	if (gmt_M_file_is_url (file))	/* A remote file or query given via an URL */
+		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
+	else if (strchr ("@=", file[0]))
+		pos = 1;
 
 	return (pos);
 }

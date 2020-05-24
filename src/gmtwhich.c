@@ -141,8 +141,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-#define TESTING_PATHS 1
-
 EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	int error = 0, fmode;
 	unsigned int first = 0;	/* Real start of filename */
