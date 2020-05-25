@@ -188,8 +188,12 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 			/* Common parameters */
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
-				else if (n_files[GMT_IN]++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (n_files[GMT_IN]++ > 0) break;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
+					n_errors++;
+				else
+					Ctrl->In.active = true;
 				break;
 			case '>':	/* Got named output file */
 				n_files[GMT_OUT]++;

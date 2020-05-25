@@ -5093,9 +5093,37 @@ char *gmt_strncpy (char *dest, const char *source, size_t num) {
 	return dest;
 }
 
+char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
+	/* Need to strip off any modifiers and netCDF specifications that may be part of filename */
+	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
+
+	if (strstr (filename, "/=srtm"))	/* Special list with SRTM tiles, use as is */
+		strncpy (file, filename, PATH_MAX-1);
+	else	/* Exclude netCDF3-D grid extensions to make sure we get a valid file name */
+		sscanf (filename, "%[^=?]", file);
+	if (file[0] == '\0')
+		return NULL;		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
+	if (mods) {	/* Given modifiers to chop off */
+		if (gmt_validate_modifiers (API->GMT, file, '-', mods, GMT_MSG_DEBUG)) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Filename has invalid modifiers - probably not a file (%s)\n", file);
+			return (NULL);
+		}
+		/* See if we have any */
+		if ((c = gmt_first_modifier (API->GMT, file, mods)))
+			c[0] = '\0';	/* Begone with you */
+	}
+if (file[0] == ' ')
+	c++;
+	clean_file = strdup (file);
+
+	GMT_Report (API, GMT_MSG_DEBUG, "gmt_get_filename: In: %s Out: %s\n", filename, clean_file);
+
+	return (clean_file);
+}
+
 /*! Like access but also checks the GMT_*DIR places */
 int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
-	char file[PATH_MAX] = {""}, *c = NULL;
+	char file[PATH_MAX] = {""}, *cleanfile = NULL;
 	unsigned int first = 0;
 	int err;
 	struct stat S;
@@ -5104,16 +5132,10 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (gmt_M_file_is_memory (filename)) return (0);	/* Memory location always exists */
 	if (gmt_M_file_is_cache (filename))			/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
-	if (strstr (filename, "/=srtm"))	/* Special list with SRTM tiles, use as is */
-		strncpy (file, filename, PATH_MAX-1);
-	else {
-		file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
-		sscanf (&filename[first], "%[^=?]", file);	/* Exclude netcdf 3-D grid extensions to make sure we get a valid file name */
-		if (file[0] == '\0')
-			return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
-	}
-	if ((c = gmtlib_file_unitscale (file))) c[0] = '\0';	/* Chop off any x/u unit specification */
-	else if ((c = strchr (file, '+')) && strchr ("hons", c[1])) c[0] = '\0';	/* Chop off any +h hinge setting or any z-scaling specification */
+
+	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], "honsuU")) == NULL) return (-1);	/* Likely not a valid filename */
+	strcpy (file, cleanfile);
+	gmt_M_str_free (cleanfile);
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	err = stat (file, &S);	/* Stat the argument */

@@ -300,11 +300,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET))
+				if (n_files++ > 0) break;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
-				else if (n_files == 0)	/* Just keep name of first file */
-					Ctrl->In.file = strdup (opt->arg);
-				n_files++;
+				else
+					Ctrl->In.active = true;
 				break;
 
 			/* Processes program-specific parameters */

@@ -247,7 +247,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg, 'D')) == NULL)
 					n_errors++;	/* Failed basic parsing */
 				else {	/* args are [+w<width>][+j<justify>][+o<dx>[/<dy>]] */
-					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jow")) n_errors++;
+					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jow", GMT_MSG_ERROR)) n_errors++;
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else BL */

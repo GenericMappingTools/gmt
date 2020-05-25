@@ -232,11 +232,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 			case '<':	/* Input file (only one or three is accepted) */
 				Ctrl->In.active = true;
-				if (n_files >= 3) break;
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->In.file[n_files++] = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files >= 3) {n_errors++; continue; }
+				Ctrl->In.file[n_files] = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_files]))) n_errors++;
+				n_files++;
 				break;
 			case '>':	/* Output file (probably for -A via external interface) */
 				Ctrl->Out.active = true;

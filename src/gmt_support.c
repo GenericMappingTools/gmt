@@ -12278,7 +12278,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			return (1);	/* Failed basic parsing */
 		}
 
-		if (gmt_validate_modifiers (GMT, B->refpoint->args, option, "jostw")) return (1);
+		if (gmt_validate_modifiers (GMT, B->refpoint->args, option, "jostw", GMT_MSG_ERROR)) return (1);
 
 		/* Reference point args are +w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]][+s<file>][+t]. */
 		/* Required modifier +w */
@@ -12438,7 +12438,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 
 	/* refpoint->args are now +c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+o<dx>[/<dy>]][+u][+v]. */
 
-	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouwv")) return (1);
+	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouwv", GMT_MSG_ERROR)) return (1);
 
 	/* Required modifiers +c, +w */
 
@@ -12623,7 +12623,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		return (1);	/* Failed basic parsing */
 	}
 
-	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "dfijloptw")) return (1);
+	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "dfijloptw", GMT_MSG_ERROR)) return (1);
 
 	/* Get required +w modifier */
 	if (gmt_get_modifier (ms->refpoint->args, 'w', string))	{	/* Get rose dimensions */
@@ -15620,7 +15620,7 @@ void gmt_enable_threads (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers) {
+unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers, unsigned int verbosity) {
 	/* Looks for modifiers +<mod> in string and making sure <mod> is
 	 * only from the set given by valid_modifiers.  Return 1 if failure, 0 otherwise.
 	*/
@@ -15634,7 +15634,10 @@ unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, c
 		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exits the quote */
 		if (quoted) continue;		/* Not consider +<mod> inside quoted strings */
 		if (string[k] == '+' && !strchr (valid_modifiers, string[k+1])) {	/* Found an invalid modifier */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c option: Modifier +%c unrecognized\n", option, string[k+1]);
+			if (option)
+				GMT_Report (GMT->parent, verbosity, "Option -%c option: Modifier +%c unrecognized\n", option, string[k+1]);
+			else
+				GMT_Report (GMT->parent, verbosity, "Modifier +%c unrecognized\n", string[k+1]);
 			n_errors++;
 		}
 	}
@@ -15846,15 +15849,6 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	*yy = gmtlib_assign_vector (GMT, new_n, GMT_Y);
 	*nn = (uint64_t)new_n;
 	return 0;
-}
-
-char * gmt_get_filename (char *string) {
-	/* Extract the filename from a string like <filename+<modifier> */
-	char *file = NULL, *c = strchr (string, '+');
-	if (c != NULL) c[0] = '\0';	/* Temporarily chop off the modifier */
-	file = strdup (string);
-	if (c != NULL) c[0] = '+';	/* Restore the modifier */
-	return (file);
 }
 
 char * gmt_memory_use (size_t bytes, int width) {
@@ -16124,7 +16118,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	if (gmt_validate_modifiers (GMT, argument, option, "abelnt")) return (GMT_PARSE_ERROR);
+	if (gmt_validate_modifiers (GMT, argument, option, "abelnt", GMT_MSG_ERROR)) return (GMT_PARSE_ERROR);
 
 	if ((m = gmt_first_modifier (GMT, argument, "abelnt"))) {	/* Process optional modifiers +a, +b, +e, +l, +n, +t */
 		unsigned int pos = 0;	/* Reset to start of new word */

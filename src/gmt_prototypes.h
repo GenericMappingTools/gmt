@@ -260,6 +260,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods);
 EXTERN_MSC void gmt_quit_bad_record (struct GMTAPI_CTRL *API, struct GMT_RECORD *In);
 EXTERN_MSC int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 EXTERN_MSC bool gmt_is_float (struct GMT_CTRL *GMT, char *text);
@@ -481,12 +482,11 @@ EXTERN_MSC unsigned int gmt_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsig
 EXTERN_MSC int gmt_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int in_dim[], unsigned int out_dim[]);
 EXTERN_MSC void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double x);
 EXTERN_MSC void gmt_enable_threads (struct GMT_CTRL *GMT);
-EXTERN_MSC unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers);
+EXTERN_MSC unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers, unsigned int verbosity);
 EXTERN_MSC double gmt_pol_area (double x[], double y[], uint64_t n);
 EXTERN_MSC void gmt_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double dim[], double off[], int justify, int anchor);
 EXTERN_MSC unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S);
 EXTERN_MSC void gmt_symbol_free (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S);
-EXTERN_MSC char * gmt_get_filename (char *string);
 
 /* gmt_calclock.c: */
 

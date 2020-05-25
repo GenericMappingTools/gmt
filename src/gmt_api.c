@@ -13051,13 +13051,15 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 
 	if (direction == GMT_OUT) return GMT_NOERROR;
 
+	if (gmt_M_file_is_memory (file)) return GMT_NOERROR;	/* Memory files are always fine */
+
 	switch (family) {
 		case GMT_IS_GRID:
 			if ((c = strchr (file, '='))) {	/* Got filename=id[+modifiers] */
 				/* Nothing*/
 			}
 			else {	/* Check for modifiers */
-				if (gmt_validate_modifiers (API->GMT, file, '-', "onsuU")) {
+				if (gmt_validate_modifiers (API->GMT, file, '-', "onsuU", GMT_MSG_ERROR)) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Grid filename has invalid modifiers! (%s)\n", file);
 					return_error (V_API, GMT_NOT_A_VALID_MODIFIER);
 				}
@@ -13066,7 +13068,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 			}
 			break;
 		case GMT_IS_PALETTE:
-			if (gmt_validate_modifiers (API->GMT, file, '-', "iuU")) {
+			if (gmt_validate_modifiers (API->GMT, file, '-', "iuU", GMT_MSG_ERROR)) {
 				GMT_Report (API, GMT_MSG_DEBUG, "CPT filename has invalid modifiers! (%s)\n", file);
 				return_error (V_API, GMT_NOT_A_VALID_MODIFIER);
 			}

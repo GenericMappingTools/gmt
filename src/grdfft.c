@@ -662,10 +662,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 					n_errors++;
 					GMT_Report (API, GMT_MSG_ERROR, "A maximum of two input grids may be processed\n");
 				}
-				else if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
-				else
-					n_errors++;
+				else {
+					Ctrl->In.file[Ctrl->In.n_grids] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]))) n_errors++;;
+					Ctrl->In.n_grids++;
+				}
 				break;
 
 			/* Processes program-specific parameters */

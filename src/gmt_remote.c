@@ -172,6 +172,7 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 	}
 	/* Soft alphabetically on file names */
 	qsort (I, *n, sizeof (struct GMT_DATA_INFO), gmtremote_compare_names);
+	for (k = 0; k < *n; k++) I[k].id = k;	/* Give running number as ID in the sorted array */
 	return (I);
 };
 
@@ -578,13 +579,15 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char* file, 
 	int k_data = -1;
 	unsigned int res;
 	bool is_url = false, is_query = false, is_srtm = false;
-	char was, *c = NULL, *jp2_file = NULL;
+	char was, *c = NULL, *jp2_file = NULL, *clean_file = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	local_path[0] = remote_path[0] = '\0';
 
 	/* 0. Were we even given an argument? */
 	if (!file || !file[0]) return GMT_ARG_IS_NULL;   /* Got nutin' */
+
+	if (gmt_M_file_is_memory (file)) return GMT_NOERROR;	/* Memory location always exists */
 
 	/* 1. First handle full paths as given */
 #ifdef WIN32
@@ -593,14 +596,18 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char* file, 
 	if (file[0] == '/')
 #endif
 	{
-		if (access (file, F_OK)) {
+		clean_file = gmt_get_filename (API, file, "honsuU");	/* Strip off any file modifier or netCDF directives */
+		if (access (clean_file, F_OK)) {
 			GMT_Report (API, GMT_MSG_ERROR, "File %s was not found\n", file);
+			gmt_M_str_free (clean_file);
 			return GMT_FILE_NOT_FOUND;
 		}
-		if (access (file, R_OK)) {
+		if (access (clean_file, R_OK)) {
 			GMT_Report (API, GMT_MSG_ERROR, "File %s is not readable\n", file);
+			gmt_M_str_free (clean_file);
 			return GMT_BAD_PERMISSION;
 		}
+		gmt_M_str_free (clean_file);
 		strncpy (local_path, file, PATH_MAX-1);
 		remote_path[0] = '\0';	/* No need to get from elsewhere */
 		GMT_Report (API, GMT_MSG_DEBUG, "Given full path to file %s\n", local_path);
@@ -726,14 +733,18 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	/* Looking for local files given a relative path - must search directories we are allowed.
 	 * Note: Any netCDF files with directives have had those chopped off earlier, so file is a valid name */
 
-	if (gmt_getdatapath (GMT, file, local_path, R_OK)) {	/* Found it */
+	clean_file = gmt_get_filename (API, file, "honsuU");	/* Strip off any file modifier or netCDF directives */
+	if (gmt_getdatapath (GMT, clean_file, local_path, R_OK)) {	/* Found it */
 		/* Return full path */
 		GMT_Report (API, GMT_MSG_DEBUG, "Replace file %s with path %s\n", file, local_path);
 		if (c) c[0] = was;
+		gmt_M_str_free (clean_file);
 		return GMT_NOERROR;
 	}
 
 	/* No luck whatsoever */
+
+	gmt_M_str_free (clean_file);
 
 	return GMT_FILE_NOT_FOUND;
 }
@@ -861,6 +872,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char *f
 	unsigned int pos = 0;
 	bool be_fussy;
 	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
+
+	if (gmt_M_file_is_memory (file)) return 0;	/* Memory location always exists */
 
 	be_fussy = ((mode & 4) == 0);	if (!be_fussy) mode -= 4;	/* Handle the optional 4 value */
 

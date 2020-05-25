@@ -182,20 +182,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':
-				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->D.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->D.active = true;
+				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file))) n_errors++;
 				break;
 			case 'N':
 				/* Must check for both -N[r]<n_model> and -N<n_model>[r] due to confusion */
@@ -205,10 +203,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 				if (opt->arg[j]) Ctrl->N.value = atoi(&opt->arg[j]);
 				break;
 			case 'T':
-				if ((Ctrl->T.active = gmt_check_filearg (GMT, 'T', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->T.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->T.active = true;
+				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->T.file))) n_errors++;
 				break;
 			case 'W':
 				Ctrl->W.active = true;

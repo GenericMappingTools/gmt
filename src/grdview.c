@@ -493,11 +493,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 			/* Common parameters */
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -515,25 +514,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					/* Three r,g,b grids for draping */
 					char A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
-					if (gmt_check_filearg (GMT, '<', A, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[0] = strdup (A);
-					else
-						n_errors++;
-					if (gmt_check_filearg (GMT, '<', B, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[1] = strdup (B);
-					else
-						n_errors++;
-					if (gmt_check_filearg (GMT, '<', C, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[2] = strdup (C);
-					else
-						n_errors++;
+					if (A[0]) Ctrl->G.file[0] = strdup (A);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[0]))) n_errors++;
+					if (B[0]) Ctrl->G.file[1] = strdup (B);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[1]))) n_errors++;
+					if (C[0]) Ctrl->G.file[0] = strdup (C);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[2]))) n_errors++;
 					Ctrl->G.n = 3;
 				}
 				else if (n_commas == 0 && Ctrl->G.n < 3) {	/* Just got another drape grid or image */
-					if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[Ctrl->G.n++] = strdup (opt->arg);
-					else
-						n_errors++;
+					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
+					Ctrl->G.n++;
 				}
 				else {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Usage is -G<z.grd|image> | -G<r.grd> -G<g.grd> -G<b.grd>\n");

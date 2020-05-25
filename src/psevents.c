@@ -199,7 +199,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -221,7 +221,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					default:	id = PSEVENTS_SYMBOL;	k = 0;	break;
 				}
 				Ctrl->E.active[id] = true;
-				if (gmt_validate_modifiers (GMT, &opt->arg[k], 'E', PSEVENTS_MODS)) n_errors++;
+				if (gmt_validate_modifiers (GMT, &opt->arg[k], 'E', PSEVENTS_MODS, GMT_MSG_ERROR)) n_errors++;
 				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL) {	/* This should not happen given the above check, but Coverity prefers it */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: No modifiers given?\n");
 					n_errors++;

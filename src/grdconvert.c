@@ -131,10 +131,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				break;
 			case '>':	/* Output file may be set this way from the external API */
 				Ctrl->G.active = true;
-				if (gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				n_in++;
 				break;
 

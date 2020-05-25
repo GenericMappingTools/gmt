@@ -227,15 +227,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 
 			case '<':	/* Collect input files */
 				Ctrl->In.active = true;
-				if (n_alloc <= Ctrl->In.n)  Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) {
-					if (gmt_getdatapath (GMT, opt->arg, path, R_OK) == NULL) {
-						GMT_Report (API, GMT_MSG_ERROR, "Cannot find/open file %s.\n", opt->arg);
-						continue;
-					}
-					Ctrl->In.file[Ctrl->In.n++] = strdup (path);
-				} else
-					n_errors++;
+				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
+				Ctrl->In.file[Ctrl->In.n] = strdup (path);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]))) n_errors++;
+				Ctrl->In.n++;
 				break;
 
 			/* Processes program-specific parameters */

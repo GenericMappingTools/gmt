@@ -709,11 +709,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -756,9 +755,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 						Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, &txt[1]);
 					}
 					else if (Ctrl->F.filter == 'f' || Ctrl->F.filter == 'o') {	/* Custom filter or operator */
-						if (gmt_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN, GMT_IS_GRID))
-							Ctrl->F.file = strdup (&opt->arg[1]);
-						else {
+						Ctrl->F.file = strdup (&opt->arg[1]);
+						if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -F%c: Cannot access filter weight or operator grid %s\n",
 								Ctrl->F.filter, &opt->arg[1]);
 							n_errors++;
@@ -836,10 +834,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* New grid spacings */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);

@@ -426,7 +426,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -513,7 +513,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 					 * to avoid parsing problems. */
 					n_slash = gmt_count_char (GMT, opt->arg, '/');
 					if ((q = strstr (opt->arg, "+u")) && q[2] == '+') q[2] = '*';
-					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv")) n_errors++;
+					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv", GMT_MSG_ERROR)) n_errors++;
 					if ((p = gmt_first_modifier (GMT, opt->arg, "aiuv")) == NULL) {	/* If just -G given then we get here; default to cumulate distances in meters */
 						Ctrl->G.mode |= GMT_MP_VAR_POINT;
 						Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
@@ -574,8 +574,8 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
-					if (gmt_validate_modifiers (GMT, opt->arg, 'L', "up")) n_errors++;
-					Ctrl->L.file = gmt_get_filename (opt->arg);
+					if (gmt_validate_modifiers (GMT, opt->arg, 'L', "up", GMT_MSG_ERROR)) n_errors++;
+					Ctrl->L.file = gmt_get_filename (API, opt->arg, "up");
 					if (gmt_get_modifier (opt->arg, 'u', txt_a))
 						Ctrl->L.unit = mapproject_set_unit_and_mode (API, txt_a, &Ctrl->L.sph);
 					if (gmt_get_modifier (opt->arg, 'p', txt_a))
@@ -587,7 +587,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && gmt_M_is_cartesian (GMT, GMT_IN))
 					gmt_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
-				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				Ctrl->used[MP_COL_DS] = Ctrl->used[MP_COL_XN] = Ctrl->used[MP_COL_YN] = true;	/* Output dist, xnear, ynear */
 				if (Ctrl->L.unit == 'C') will_need_RJ = true;	/* Since unit C is projected distances */
 				break;

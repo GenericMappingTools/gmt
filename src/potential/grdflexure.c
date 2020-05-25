@@ -600,10 +600,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 					Ctrl->In.list = true;
 					Ctrl->In.file = strdup (&opt->arg[1]);
 				}
-				else if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				else {
+					Ctrl->In.active = true;
+					if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				}
 				break;
 			case 'A':	/* In-plane forces */
 				Ctrl->A.active = true;
@@ -673,10 +674,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'G':	/* Output file name or template */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'L':	/* Output file name with list of generated grids */
 				Ctrl->L.active = true;
@@ -813,7 +813,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s\n", file);
 
-	if (!gmt_check_filearg (GMT, '<', file, GMT_IN, GMT_IS_DATASET)) {
+	if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE|GMT_FILE_CHECK, &file))  {
 		GMT_Report (API, GMT_MSG_ERROR, "Load file %s not found - skipped\n", file);
 		return NULL;
 	}

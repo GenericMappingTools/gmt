@@ -357,11 +357,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -524,7 +523,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 					else
 						j = 0;
 					if (strstr (opt->arg, "+a") || strstr (opt->arg, "+d") || strstr (opt->arg, "+l")) {	/* New parser */
-						if (gmt_validate_modifiers (GMT, opt->arg, 'T', "adl")) n_errors++;
+						if (gmt_validate_modifiers (GMT, opt->arg, 'T', "adl", GMT_MSG_ERROR)) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'a', string))
 							Ctrl->T.all = true;
 						if (gmt_get_modifier (opt->arg, 'd', string))
