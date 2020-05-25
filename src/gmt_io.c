@@ -5071,7 +5071,6 @@ char *gmt_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 	sprintf (path, "%s/%s%s", GMT->session.SHAREDIR, stem, suffix);
 	if (!access (path, R_OK)) return (path);
 
-
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 6. gmt_getsharepath failed\n");
 	return (NULL);	/* No file found, give up */
 }
