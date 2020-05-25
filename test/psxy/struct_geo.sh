@@ -2,9 +2,9 @@
 # Test all structural geology symbols from Jose
 ps=struct_geo.ps
 reg=-R0/10/0/10
-# Must temporarily change GMT_USERDIR to the gallery documentation dir
-export GMT_USERDIR=`gmt --show-sharedir`/../doc/rst/source/users-contrib-symbols/geology
-
+# Must copy the specific symbol files from the documentation to here.
+DIR=`gmt --show-sharedir`/../doc/rst/source/users-contrib-symbols/geology
+cp -f ${DIR}/*.def .
 gmt psxy $reg -JM12c -T -K -P > $ps
 
 echo 1 9 60 40 | gmt psxy -R -J -Skgeo-plane/24p -Wthin -O -K >> $ps
