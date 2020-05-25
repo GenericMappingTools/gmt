@@ -194,17 +194,18 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* CURVE input slope grid */
-				if ((Ctrl->C.active = gmt_check_filearg (GMT, 'C', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->C.file = strdup (opt->arg);
+				Ctrl->C.active = true;
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file))) n_errors++;
 				break;
 			case 'D':
 				Ctrl->D.active = true;
@@ -233,17 +234,15 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 					c[0] = '\0';	/* Temporarily chop off modifier */
 					Ctrl->F.mode = 1;
 				}
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				if (c) c[0] = '+';	/* Restore chopped off modifier */
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);

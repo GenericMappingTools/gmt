@@ -1738,18 +1738,16 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 					if (c[2]) Ctrl->D.z = atof (&c[2]);	/* Get the constant z-value [0] */
 					Ctrl->D.fix_z = true;
 				}
-				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->D.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->D.active = true;
+				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->D.file))) n_errors++;
 				if (c) c[0] = '+';	/* Restore original string */
 				if (d) d[0] = '+';	/* Restore original string */
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);

@@ -694,12 +694,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				strncat (Ctrl->C.arg, opt->arg, GMT_LEN256-1);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
-				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
-					gmt_M_str_free (Ctrl->D.dir);
-					Ctrl->D.dir = strdup (opt->arg);
-				}
-				else
-					n_errors++;
+				Ctrl->D.active = true;
+				Ctrl->D.dir = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.dir))) n_errors++;
 				break;
 			case 'E':	/* Set output dpi */
 				Ctrl->E.active = true;
@@ -730,10 +727,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Give list of files to convert */
-				if ((Ctrl->L.active = gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->L.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->L.active = true;
+				Ctrl->L.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				break;
 			case 'M':	/* Manage background and foreground layers for PostScript sandwich */
 				switch (opt->arg[0]) {

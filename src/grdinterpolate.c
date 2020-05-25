@@ -182,15 +182,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))) {
-					if (n_alloc <= Ctrl->In.n_files) {
-						n_alloc += GMT_SMALL_CHUNK;
-						Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc, char *);
-					}
-					Ctrl->In.file[Ctrl->In.n_files++] = strdup (opt->arg);
+				if (n_alloc <= Ctrl->In.n_files) {
+					n_alloc += GMT_SMALL_CHUNK;
+					Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc, char *);
 				}
-				else
-					n_errors++;
+				Ctrl->In.file[Ctrl->In.n_files] = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_files]))) n_errors++;
+				Ctrl->In.n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -215,11 +213,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 				strcpy (Ctrl->F.spline, opt->arg);	/* Keep track of what was given since it may need to be passed verbatim to other modules */
 				break;
 			case 'G':	/* Output file or name template */
-				if (n_files++ > 0) break;
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) { n_errors++; continue; }
+				Ctrl->G.file = strdup (opt->arg);
+				if (strchr (Ctrl->G.file, '%') == NULL) {	/* Gave a fixed output file, can check */
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				}
 				break;
 			case 'T':	/* Set level sampling spacing */
 				Ctrl->T.active = true;
@@ -251,12 +249,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 							gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->S.y), txt_b);
 					}
 				}
-				else if (!gmt_check_filearg (GMT, 'S', opt->arg, GMT_IN, GMT_IS_DATASET)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Cannot parse the name or find point file %s\n", opt->arg);
-					n_errors++;
-				}
-				else	/* File exist */
+				else {
 					Ctrl->S.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->S.file))) n_errors++;
+				}
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
