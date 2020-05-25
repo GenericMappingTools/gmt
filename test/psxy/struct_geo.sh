@@ -3,7 +3,7 @@
 ps=struct_geo.ps
 reg=-R0/10/0/10
 # Must copy the specific symbol files from the documentation to here.
-DIR=`gmt --show-sharedir`/../doc/rst/source/users-contrib-symbols/geology
+DIR=$(gmt --show-sharedir)/../doc/rst/source/users-contrib-symbols/geology
 cp -f ${DIR}/*.def .
 gmt psxy $reg -JM12c -T -K -P > $ps
 
