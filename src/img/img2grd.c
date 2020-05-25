@@ -683,7 +683,7 @@ EXTERN_MSC int GMT_img2grd (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Read failure at jin = %d.\n", jin);
 			gmt_M_free (GMT, ix);	gmt_M_free (GMT, row);
 			fclose (fp);
-			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
+			Return (GMT_DATA_READ_ERROR);
 		}
 
 #ifndef WORDS_BIGENDIAN
