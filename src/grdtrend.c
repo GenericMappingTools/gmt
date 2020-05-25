@@ -216,10 +216,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 				else
 					Ctrl->W.mode = 1;
 				/* OK if this file doesn't exist; we always write to that file on output */
-				if (gmt_check_filearg (GMT, 'W', opt->arg, GMT_IN, GMT_IS_GRID) || gmt_check_filearg (GMT, 'W', opt->arg, GMT_OUT, GMT_IS_GRID))
-					Ctrl->W.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->W.file = strdup (opt->arg);
+				if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* FOund the file */
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->W.file))) n_errors++;
+				}
+				else {
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->W.file))) n_errors++;
+				}
 				break;
 
 			default:	/* Report bad options */
