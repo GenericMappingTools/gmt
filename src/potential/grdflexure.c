@@ -603,7 +603,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				else {
 					Ctrl->In.active = true;
 					if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				}
 				break;
 			case 'A':	/* In-plane forces */
@@ -813,7 +813,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s\n", file);
 
-	if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE|GMT_FILE_CHECK, &file))  {
+	if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE|GMT_FILE_CHECK, &file))  {
 		GMT_Report (API, GMT_MSG_ERROR, "Load file %s not found - skipped\n", file);
 		return NULL;
 	}
