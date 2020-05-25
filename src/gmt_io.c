@@ -5022,12 +5022,12 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 
 /*! . */
 char *gmt_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *stem, const char *suffix, char *path, int mode) {
-	/* stem is the prefix of the file, e.g., gmt_cpt for gmt_cpt.conf
+	/* stem is the prefix of the file, e.g., mysymbol for mysymbol.def
 	 * subdir is an optional subdirectory name in the $GMT_SHAREDIR directory.
 	 * suffix is an optional suffix to append to name
 	 * path is the full path to the file in question
 	 * Returns full pathname if a workable path was found
-	 * Looks for file stem in current directory, $GMT_USERDIR (default ~/.gmt) and $GMT_SHAREDIR/subdir
+	 * Looks for file stem in current directory, $GMT_USERDIR (default ~/.gmt), $GMT_SHAREDIR/subdir and $GMT_SHAREDIR.
 	 */
 
 	/* First look in the current working directory */
@@ -5065,7 +5065,13 @@ char *gmt_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 		if (!access (path, R_OK)) return (path);
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 5. gmt_getsharepath failed\n");
+	/* Lastly try to get file from $GMT_SHAREDIR */
+
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 5. gmt_getsharepath trying SHAREDIR %s\n", GMT->session.SHAREDIR);
+	sprintf (path, "%s/%s%s", GMT->session.SHAREDIR, stem, suffix);
+	if (!access (path, R_OK)) return (path);
+
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 6. gmt_getsharepath failed\n");
 	return (NULL);	/* No file found, give up */
 }
 
