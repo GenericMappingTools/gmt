@@ -203,6 +203,7 @@
 #define gmt_M_file_is_url(file) (file != NULL && (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U)))
 #define gmt_M_file_is_query(file) (gmt_M_file_is_url(file) && strchr (file, '?') && strchr (file, '='))
 #define gmt_M_file_is_netcdf(file) (!gmt_M_file_is_url(file) && strchr (file, '?'))
+#define gmt_M_file_is_netcdf_layer(file) (gmt_M_file_is_netcdf(file) && (strchr (file, '(') || strchr (file, '[')))
 
 /*! Determine if file is an image GDAL can read */
 #define gmt_M_file_is_image(file) (file != NULL && (strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))

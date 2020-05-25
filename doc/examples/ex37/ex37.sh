@@ -24,7 +24,7 @@ gmt begin ex37
 	gmt grdimage @${G}.nc -I+a0+nt1 -R@${G}.nc -Jx${scl}i -C -X3.25i
 	gmt basemap -R-84/75/-78/81 -Jx${sclkm}i -Ba -BWSne+t"Satellite gravity"
 
-	gmt grdfft ${T}.nc ${G}.nc -E+wk -N192/192+d+wtmp > cross.txt
+	gmt grdfft @${T}.nc @${G}.nc -E+wk -N192/192+d+wtmp > cross.txt
 
 	gmt makecpt -Crainbow -T-1500/1500
 	gmt grdimage ${T}_tmp.nc -I+a0+nt1 -R${T}_tmp.nc -Jx${scl}i -X-3.474i -Y3i

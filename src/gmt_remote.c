@@ -705,6 +705,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	 * here an keep track of if we got a query or a file request. */
 
 	is_url = (gmt_M_file_is_url (file));	/* A remote file or query given via an URL */
+	is_query = (gmt_M_file_is_query (file));	/* A remote file or query given via an URL */
 
 	if ((c = strchr (file, '?')) && !strchr (file, '=')) {	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
 		was = c[0]; c[0] = '\0';
@@ -715,7 +716,6 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	else if (c) {	/* else we have both ? and = which means file is an URL query */
 		strncpy (remote_path, file, PATH_MAX-1);	/* Pass whatever we were given, no check possible */
 		was = c[0]; c[0] = '\0';
-		is_query = true;
 	}
 
 	if (is_url) {	/* A remote file or query given via an URL never exists locally */
@@ -736,8 +736,11 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	clean_file = gmt_get_filename (API, file, "honsuU");	/* Strip off any file modifier or netCDF directives */
 	if (gmt_getdatapath (GMT, clean_file, local_path, R_OK)) {	/* Found it */
 		/* Return full path */
+		if (c &&!is_query) {	/* We need to pass the ?var[]() or [id][+mods]stuff as part of the filename */
+			c[0] = was;
+			strcpy (local_path, file);
+		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Replace file %s with path %s\n", file, local_path);
-		if (c) c[0] = was;
 		gmt_M_str_free (clean_file);
 		return GMT_NOERROR;
 	}
