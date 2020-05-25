@@ -5105,8 +5105,8 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 		return NULL;		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 	if (mods) {	/* Given modifiers to chop off */
 		if (gmt_validate_modifiers (API->GMT, file, '-', mods, GMT_MSG_DEBUG)) {
-			GMT_Report (API, GMT_MSG_DEBUG, "Filename has invalid modifiers - probably not a file (%s)\n", file);
-			return (NULL);
+			GMT_Report (API, GMT_MSG_DEBUG, "Filename has invalid modifiers - probably not a file with modifiers (%s)\n", file);
+			return (strdup (file));
 		}
 		/* See if we have any */
 		if ((c = gmt_first_modifier (API->GMT, file, mods)))
