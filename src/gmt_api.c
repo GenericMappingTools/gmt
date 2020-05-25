@@ -13014,23 +13014,26 @@ int GMT_Set_AllocMode_ (unsigned int *family, void *object) {
 int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, unsigned int mode, char **file_ptr) {
 	/* Replace file with its full path if that file exists, else return an error.
 	 * If (mode & GMT_FILE_REMOTE) then we try to download any remote files
-	 * given and not yet cached), and if the downloaded file is readable then
-	 * we update file with the local path, otherwise return an error.
-	 * If (mode & GMT_FILE_CHECK) then we only return error code and don't update path.
-	 * The explicit mode for only local files is GMT_FILE_LOCAL [0].
+	 * given but not yet cached locally), and if the downloaded file is readable then
+	 * we update file_ptr with the local path, otherwise return an error.
+	 * If (mode & GMT_FILE_CHECK) then we only return error code and don't update file_ptr.
+	 * The explicit mode for only examining local files is GMT_FILE_LOCAL [0].
 	 *
-	 * Filename complications.  Both grid and CPT filenames may have modifers or format identifiers
-	 * appended to their names.  Thus, as given, file may name be a valid filename until we have
-	 * chopped off these strings.  Here is a summary of what GMT allows:
+	 * Filename complications:  Both grid, image and CPT filenames may have modifiers or
+	 * format identifiers appended to their names.  Thus, as given, file may name be a valid
+	 * filename until we have chopped off these strings.  Here is a summary of what GMT allows:
 	 *
+	 * imagefile[=gd[+b<band>]]
 	 * grdfile[=<id>][+o<offset>][+n<invalid>][+s<scale>][+u|U<unit>]
 	 * cptfile[+h<hinge>][+u|U<unit>]
-	 * grdimage/view also allows cptfile[+h<hinge>][+u|U<unit>][i<dz>] but it is taken care of in each module.
+	 *   Note: Some modules also allows cptfile[+h<hinge>][+u|U<unit>][i<dz>] but the +d
+	 *   modifier is processed and removed in the module (grd-image/view/vector/2kml).
 	 *
 	 * gridfiles may also have strings to select specific layers of nigher-dimension netCDFfiles, using
-	 * grdfile?<variable..
+	 * grdfile?<variables>[layer]|(value).
 	 *
-	 * URL queries also use ? as in http://<address>?<par1>=<val1>... or modifiers on remote grids
+	 * URL queries also use ? as in http://<address>?<par1>=<val1>...
+	 * Remote grids may also have format specification and modifiers like local grids:
 	 * https://<address>/grdfile[=<id>][+o<offset>][+n<invalid>][+s<scale>][+u|U<unit>]
 	 */
 
@@ -13066,6 +13069,9 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 				else
 					c = gmt_first_modifier (API->GMT, file, "onsuU");
 			}
+			break;
+		case GMT_IS_IMAGE:
+			c = strstr (file, "=gd");	/* Got image=gd[+modifiers] */
 			break;
 		case GMT_IS_PALETTE:
 			if (gmt_validate_modifiers (API->GMT, file, '-', "iuU", GMT_MSG_ERROR)) {
