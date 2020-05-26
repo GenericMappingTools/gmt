@@ -618,8 +618,8 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char* file, 
 		if ((k_data = gmtlib_get_serverfile_index (API, file)) != GMT_NOTSET) {
 			/* Got a valid remote server data filename and we know the local path to those */
 			if (GMT->session.USERDIR == NULL) goto not_local;	/* Cannot have server data if no user directory created yet */
-			snprintf (local_path, PATH_MAX, "%s/server", GMT->session.USERDIR);	/* This is the required subdir for server data */
-			if (access (local_path, R_OK)) goto not_local;	/* Have not made a server directory yet, so cannot have the file yet either */
+			snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
+			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
 			strcat (local_path, GMT->parent->remote_info[k_data].dir);	/* Append the subdir (/ or /earth_relief/, etc) */
 			strcat (local_path, GMT->parent->remote_info[k_data].file);	/* Append filename */
 			if (access (local_path, R_OK)) goto not_local;	/* No such file yet */
