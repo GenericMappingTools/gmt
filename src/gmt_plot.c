@@ -5636,6 +5636,10 @@ void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline) {
 		/* Fill with a pattern */
 		double rgb[4] = {-3.0, -3.0, -3.0, 0.0};
 		rgb[1] = (double)PSL_setimage (PSL, fill->pattern_no, fill->pattern, fill->image, fill->dpi, fill->dim, fill->f_rgb, fill->b_rgb);
+		if (rgb[1] < 0.0) {	/* Error in PSL_setimage */
+			gmt_M_memset (rgb, 4, double);
+			PSL_comment (GMT->PSL, "PSL_setimage failed: Setting fill to black\n");
+		}
 		PSL_setfill (PSL, rgb, outline);
 	}
 	else	/* Fill with a color */
