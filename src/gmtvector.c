@@ -79,14 +79,13 @@ struct GMTVECTOR_CTRL {
 		char *arg;
 	} S;
 	struct GMTVECTOR_T {	/* -T[operator][<arg>] */
-		char unit
+		char unit;
 		bool active;
 		bool degree;
 		bool a_and_d;
 		enum gmtvector_method mode;
 		unsigned int dmode;
 		double par[3];
-		char dist[GMT_32];	/* Distance may include unit */
 	} T;
 };
 
@@ -253,7 +252,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 					case 't':	/* Translate vectors */
 						Ctrl->T.mode = DO_TRANSLATE;
 						if (opt->arg[1]) {	/* Gave azimuth/distance[unit] */
-							if ((n = sscanf (&opt->arg[1], "%g/%s", Ctrl->T.par[0], txt_a)) != 2) {
+							if ((n = sscanf (&opt->arg[1], "%lg/%s", &Ctrl->T.par[0], txt_a)) != 2) {
 								GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tr (%s)\n", &opt->arg[1]);
 								n_errors++;
 							}
@@ -363,10 +362,10 @@ GMT_LOCAL void gmtvector_get_azpole (struct GMT_CTRL *GMT, double A[3], double P
 
 GMT_LOCAL void gmtvector_translate_point (struct GMT_CTRL *GMT, double A[3], double B[3], double a_d[], bool geo) {
 	/* Given point in A, azimuth az and distance d, return the point P away from A */
-	if (geo) {
-
-	}
+	if (geo)
+		gmt_translate_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y]);
 	else {	/* Cartesian translation */
+		double s, c;
 		sincosd (90.0 - a_d[0], &s, &c);
 		B[GMT_X] = A[GMT_X] + a_d[1] * c;
 		B[GMT_Y] = A[GMT_Y] + a_d[1] * s;
@@ -468,6 +467,13 @@ GMT_LOCAL void gmtvector_gmt_make_rot2d_matrix (double angle, double R[3][3]) {
 	R[1][0] = s;	R[1][1] = c;
 }
 
+GMT_LOCAL double gmtvector_dist_to_degree (struct GMT_CTRL *GMT, double d_in) {
+	double d_out = d_in / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in degrees or meters */
+	if (!GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Got unit distance measure */
+		d_out /= GMT->current.proj.DIST_M_PR_DEG;	/* Now in degrees */
+	return (d_out);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -524,8 +530,10 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (geo && Ctrl->T.mode == DO_TRANSLATE)	/* Initialize unit machinery */
-		gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.smode, GMT_MAP_DIST);
+	if (geo && Ctrl->T.mode == DO_TRANSLATE) {	/* Initialize unit machinery */
+		gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
+		if (!Ctrl->T.a_and_d && geo) Ctrl->T.par[1] = gmtvector_dist_to_degree (GMT, Ctrl->T.par[1]);	/* Make sure we have degrees */
+	}
 
 	/* Read input data set */
 
@@ -666,7 +674,7 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 							Ctrl->T.par[0] = Sin->data[2][row];
 							Ctrl->T.par[1] = Sin->data[3][row];
 						}
-						gmtvector_translate_point (GMT, vector_1, vector_3, Ctrl->T.par);
+						gmtvector_translate_point (GMT, vector_1, vector_3, Ctrl->T.par, geo);
 						break;
 					case DO_NOTHING:	/* Probably just want the effect of -C, -E, -N */
 						gmt_M_memcpy (vector_3, vector_1, n_components, double);
