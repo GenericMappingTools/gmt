@@ -482,8 +482,8 @@ GMT_LOCAL inline GMT_putfunction gmtapi_select_put_function (struct GMTAPI_CTRL 
 		case GMT_UCHAR:		return (gmtapi_put_val_uchar);	break;
 		case GMT_CHAR:		return (gmtapi_put_val_char);	break;
 		default:
-			GMT_Report (API, GMT_MSG_ERROR, "Internal error in gmtapi_select_put_function: Passed bad type (%d), Must abort\n", type);
-			GMT_exit (API->GMT, GMT_RUNTIME_ERROR); return NULL;
+			GMT_Report (API, GMT_MSG_ERROR, "Internal error in gmtapi_select_put_function: Passed bad type (%d), Will probably crash\n", type);
+			return NULL;
 			break;
 	}
 }
@@ -501,8 +501,8 @@ GMT_LOCAL inline GMT_getfunction gmtapi_select_get_function (struct GMTAPI_CTRL 
 		case GMT_UCHAR:		return (gmtapi_get_val_uchar);	break;
 		case GMT_CHAR:		return (gmtapi_get_val_char);	break;
 		default:
-			GMT_Report (API, GMT_MSG_ERROR, "Internal error in gmtapi_select_get_function: Passed bad type (%d), Must abort\n", type);
-			GMT_exit (API->GMT, GMT_RUNTIME_ERROR); return NULL;
+			GMT_Report (API, GMT_MSG_ERROR, "Internal error in gmtapi_select_get_function: Passed bad type (%d), Must probably crash\n", type);
+			return NULL;
 			break;
 	}
 }
@@ -576,7 +576,7 @@ GMT_LOCAL inline void gmtapi_update_prev_rec (struct GMT_CTRL *GMT, uint64_t n_u
 /*! . */
 GMT_LOCAL int gmtapi_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Use information in Grid header to allocate the grid data array.
-	 * We assume gmtgrdio_init_grdheader has already been called. */
+	 * We assume gmtapi_init_grdheader has already been called. */
 	struct GMT_GRID_HEADER_HIDDEN *GH = NULL;
 	if (G == NULL) return (GMT_PTR_IS_NULL);
 	GH = gmt_get_H_hidden (G->header);
@@ -595,7 +595,7 @@ GMT_LOCAL double * gmtapi_grid_coord (struct GMTAPI_CTRL *API, int dim, struct G
 /*! . */
 GMT_LOCAL int gmtapi_alloc_grid_xy (struct GMTAPI_CTRL *API, struct GMT_GRID *G) {
 	/* Use information in Grid header to allocate the grid x/y vectors.
-	 * We assume gmtgrdio_init_grdheader has been called. */
+	 * We assume gmtapi_init_grdheader has been called. */
 	if (G == NULL) return (GMT_PTR_IS_NULL);
 	if (G->x || G->y) return (GMT_PTR_NOT_NULL);
 	G->x = gmtapi_grid_coord (API, GMT_X, G);	/* Get array of x coordinates */
@@ -606,7 +606,7 @@ GMT_LOCAL int gmtapi_alloc_grid_xy (struct GMTAPI_CTRL *API, struct GMT_GRID *G)
 /*! . */
 GMT_LOCAL int gmtapi_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, struct GMT_IMAGE *I) {
 	/* Use information in Image header to allocate the image data.
-	 * We assume gmtgrdio_init_grdheader has been called.
+	 * We assume gmtapi_init_grdheader has been called.
 	 * If dim given and is 2 or 4 then we have 1 or 3 bands plus alpha channel */
 
 	if (I == NULL) return (GMT_PTR_IS_NULL);
@@ -627,7 +627,7 @@ GMT_LOCAL double * gmtapi_image_coord (struct GMTAPI_CTRL *API, int dim, struct 
 /*! . */
 GMT_LOCAL int gmtapi_alloc_image_xy (struct GMTAPI_CTRL *API, struct GMT_IMAGE *I) {
 	/* Use information in Grid header to allocate the image x,y vectors.
-	 * We assume gmtgrdio_init_grdheader has been called. */
+	 * We assume gmtapi_init_grdheader has been called. */
 	if (I == NULL) return (GMT_PTR_IS_NULL);
 	if (I->x || I->y) return (GMT_PTR_NOT_NULL);
 	I->x = gmtapi_image_coord (API, GMT_X, I);	/* Get array of x coordinates */
@@ -1888,7 +1888,7 @@ GMT_LOCAL unsigned int gmtapi_decode_layout (struct GMTAPI_CTRL *API, const char
 	return (bits);
 }
 
-int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options,
+GMT_LOCAL int gmtapi_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options,
                              uint64_t dim[], double wesn[], double inc[], unsigned int registration, unsigned int mode) {
 	/* Convenient way of setting a header struct wesn, inc, and registration, then compute dimensions, etc. */
 	double wesn_dup[4] = {0.0, 0.0, 0.0, 0.0}, inc_dup[2] = {0.0, 0.0};
@@ -1913,7 +1913,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struc
 		if (wesn == NULL) {	/* Must select -R setting */
 			if (!GMT->common.R.active[RSET]) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No w/e/s/n given and no -R in effect.  Cannot initialize new grid\n");
-				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
+				return GMT_ARG_IS_NULL;
 			}
 		}
 		else	/* In case user is passing header->wesn etc we must save them first as gmt_grd_init will clobber them */
@@ -1921,7 +1921,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struc
 		if (inc == NULL) {	/* Must select -I setting */
 			if (!GMT->common.R.active[ISET]) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No increment given and no -I in effect.  Cannot initialize new grid\n");
-				GMT_exit (GMT, GMT_ARG_IS_NULL); return GMT_ARG_IS_NULL;
+				return GMT_ARG_IS_NULL;
 			}
 		}
 		else	/* In case user is passing header->inc etc we must save them first as gmt_grd_init will clobber them */
@@ -1962,19 +1962,18 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struc
 /*! . */
 GMT_LOCAL int gmtapi_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_GRID *G) {
 	if (direction == GMT_OUT) return (GMT_NOERROR);	/* OK for creating a blank container for output */
-	gmtgrdio_init_grdheader (API->GMT, direction, G->header, opt, dim, range, inc, registration, mode);
-	return (GMT_NOERROR);
+	return (gmtapi_init_grdheader (API->GMT, direction, G->header, opt, dim, range, inc, registration, mode));
 }
 
 /*! . */
 GMT_LOCAL int gmtapi_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_IMAGE *I) {
-	int alpha;
+	int alpha, err = GMT_NOERROR;
 	if (direction == GMT_OUT) return (GMT_NOERROR);	/* OK for creating blank container for output */
 	alpha = (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4));	/* Must allocate alpha array later */
 	if (alpha) dim[GMT_Z]--;	/* Remove this flag before grdheader is set */
-	gmtgrdio_init_grdheader (API->GMT, direction, I->header, opt, dim, range, inc, registration, mode);
+	err = gmtapi_init_grdheader (API->GMT, direction, I->header, opt, dim, range, inc, registration, mode);
 	if (alpha) dim[GMT_Z]++;	/* Restore */
-	return (GMT_NOERROR);
+	return (err);
 }
 
 /*! . */
