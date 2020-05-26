@@ -765,7 +765,7 @@ EXTERN_MSC int GMT_spectrum1d (void *V_API, int mode, void *args) {
 
 			y = (C.y_given) ? S->data[GMT_Y] : NULL;
 			if (spectrum1d_compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 			}
 
 			if (!Ctrl->T.active) {

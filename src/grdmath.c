@@ -491,7 +491,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* Restrict GSHHS features */
 				Ctrl->A.active = true;
-				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
@@ -6406,7 +6406,9 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS);
+	if (gmt_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS)) {
+		Return (GMT_DIM_TOO_SMALL);
+	}
 
 	gmt_M_memset (wesn, 4, double);
 

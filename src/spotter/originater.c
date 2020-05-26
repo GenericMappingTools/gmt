@@ -401,10 +401,10 @@ EXTERN_MSC int GMT_originater (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the originater main code ----------------------------*/
 
-	ns = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot);	/* Get geocentric hotspot locations */
-	if (ns < 0) {
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return (GMT_RUNTIME_ERROR);		/* An error message was already issued by spotter_hotspot_init() */
+	if ((ns = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot)) < 0) {	/* Get geocentric hotspot locations */
+		Return (GMT_RUNTIME_ERROR);		/* An error message was already issued by spotter_hotspot_init() */
 	}
+	
 	n_hotspots = (unsigned int)ns;
 	if (Ctrl->S.n > n_hotspots) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -S: Give value between 1 and %d\n", n_hotspots);
