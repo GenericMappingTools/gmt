@@ -482,7 +482,7 @@ GMT_LOCAL inline GMT_putfunction gmtapi_select_put_function (struct GMTAPI_CTRL 
 		case GMT_UCHAR:		return (gmtapi_put_val_uchar);	break;
 		case GMT_CHAR:		return (gmtapi_put_val_char);	break;
 		default:
-			GMT_Report (API, GMT_MSG_ERROR, "Internal error in gmtapi_select_put_function: Passed bad type (%d), Will probably crash\n", type);
+			GMT_Report (API, GMT_MSG_ERROR, "Internal error in gmtapi_select_put_function: Passed bad type (%d), Will be unable to place binary data\n", type);
 			return NULL;
 			break;
 	}
@@ -501,7 +501,7 @@ GMT_LOCAL inline GMT_getfunction gmtapi_select_get_function (struct GMTAPI_CTRL 
 		case GMT_UCHAR:		return (gmtapi_get_val_uchar);	break;
 		case GMT_CHAR:		return (gmtapi_get_val_char);	break;
 		default:
-			GMT_Report (API, GMT_MSG_ERROR, "Internal error in gmtapi_select_get_function: Passed bad type (%d), Must probably crash\n", type);
+			GMT_Report (API, GMT_MSG_ERROR, "Internal error in gmtapi_select_get_function: Passed bad type (%d), will be unable to convert binary data\n", type);
 			return NULL;
 			break;
 	}
@@ -3251,7 +3251,8 @@ GMT_LOCAL struct GMT_MATRIX * gmtapi_read_matrix (struct GMT_CTRL *GMT, void *so
 		if (close_file) fclose (fp);
 		return_null (GMT->parent, GMT_MEMORY_ERROR);
 	}
-	api_put_val = gmtapi_select_put_function (GMT->parent, M->type);	/* Get correct put function given data type */
+	if ((api_put_val = gmtapi_select_put_function (GMT->parent, M->type)) == NULL)	/* Get correct put function given data type */
+		return_null (GMT->parent, GMT_NOT_A_VALID_TYPE);
 	GMT_2D_to_index = gmtapi_get_2d_to_index (GMT->parent, M->shape, GMT_GRID_IS_REAL);	/* Get ij index function */
 	for (col = 0; col < M->n_columns; col++) {
 		for (row = 0; row < M->n_rows; row++) {
@@ -3393,7 +3394,9 @@ GMT_LOCAL int gmtapi_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned in
 
 	/* Set index and put-value functions */
 	GMT_2D_to_index = gmtapi_get_2d_to_index (GMT->parent, M->shape, GMT_GRID_IS_REAL);
-	api_get_val = gmtapi_select_get_function (GMT->parent, M->type);
+	if ((api_get_val = gmtapi_select_get_function (GMT->parent, M->type)) == NULL)
+		return (GMT_NOT_A_VALID_TYPE);
+	
 
 	/* Start writing Matrix to fp */
 
@@ -3532,8 +3535,10 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 
 	/* Set get function per vector column */
 	api_get_val = gmt_M_memory (GMT, NULL, V->n_columns, GMT_getfunction);
-	for (col = 0; col < V->n_columns; col++)
-		api_get_val[col] = gmtapi_select_get_function (GMT->parent, V->type[col]);
+	for (col = 0; col < V->n_columns; col++) {
+		if ((api_get_val[col] = gmtapi_select_get_function (GMT->parent, V->type[col])) == NULL)
+			return (GMT_NOT_A_VALID_TYPE);
+	}
 
 	/* Start writing Vector to fp */
 
@@ -3690,7 +3695,8 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 		return_null (GMT->parent, GMT_MEMORY_ERROR);
 	}
 	for (col = 0; col < V->n_columns; col++) {
-		api_put_val = gmtapi_select_put_function (GMT->parent, V->type[col]);
+		if ((api_put_val = gmtapi_select_put_function (GMT->parent, V->type[col])) == NULL)
+			return_null (GMT->parent, GMT_NOT_A_VALID_TYPE);
 		for (row = 0; row < V->n_rows; row++)
 			api_put_val (&(V->data[col]), row, GMT->hidden.mem_coord[col][row]);
 	}
@@ -3948,7 +3954,9 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, M_obj->n_rows, n_columns, NULL, NULL);
 				GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-				api_get_val = gmtapi_select_get_function (API, M_obj->type);
+				if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
+					return_null (API, GMT_NOT_A_VALID_TYPE);
+
 				n_use = gmtapi_n_cols_needed_for_gaps (GMT, M_obj->n_columns);	/* Number of input columns to process */
 				for (row = seg = n_records = 0; row < M_obj->n_rows; row++) {	/* This loop may include NaN-records and data records */
 					gmtapi_update_prev_rec (GMT, n_use);	/* Make last current record the previous record if it is required by gap checking */
@@ -4014,12 +4022,15 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, V_obj->n_rows, n_columns, NULL, NULL);
 				for (col = 1, diff_types = false; !diff_types && col < V_obj->n_columns; col++) if (V_obj->type[col] != V_obj->type[col-1]) diff_types = true;
-				if (!diff_types) api_get_val = gmtapi_select_get_function (API, V_obj->type[0]);
+				if (!diff_types && (api_get_val = gmtapi_select_get_function (API, V_obj->type[0])) == NULL)
+					return_null (API, GMT_NOT_A_VALID_TYPE);
+
 				for (row = seg = n_records = 0; row < V_obj->n_rows; row++) {	/* This loop may include NaN-records and data records */
 					n_use = gmtapi_n_cols_needed_for_gaps (GMT, V_obj->n_columns);
 					gmtapi_update_prev_rec (GMT, n_use);
 					for (col = 0; col < V_obj->n_columns; col++) {	/* Process a single record into curr_rec */
-						if (diff_types) api_get_val = gmtapi_select_get_function (API, V_obj->type[col]);
+						if (diff_types && (api_get_val = gmtapi_select_get_function (API, V_obj->type[col])) == NULL)
+							return_null (API, GMT_NOT_A_VALID_TYPE);
 						api_get_val (&(V_obj->data[col]), row, &(GMT->current.io.curr_rec[col]));
 					}
 					if ((status = gmtapi_bin_input_memory (GMT, V_obj->n_columns, n_use)) < 0) {	/* Segment header found, finish the one we had and add more */
@@ -4324,7 +4335,8 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 
 			/* Set up index and put-value functions for this matrix */
 			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-			api_put_val = gmtapi_select_put_function (API, M_obj->type);
+			if ((api_put_val = gmtapi_select_put_function (API, M_obj->type)) == NULL)
+				return (gmtlib_report_error (API, GMT_NOT_A_VALID_TYPE));
 
 			for (tbl = row_out = 0; tbl < D_obj->n_tables; tbl++) {	/* Loop over tables and segments */
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
@@ -4379,7 +4391,8 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			}
 
 			/* Set up put-value functions for this vector */
-			if (!diff_types) api_put_val = gmtapi_select_put_function (API, V_obj->type[0]);	/* Get function to write 1st column (possibly all columns) */
+			if (!diff_types && (api_put_val = gmtapi_select_put_function (API, V_obj->type[0])) == NULL)	/* Get function to write 1st column (possibly all columns) */
+				return (gmtlib_report_error (API, GMT_NOT_A_VALID_TYPE));
 			for (tbl = row_out = 0; tbl < D_obj->n_tables; tbl++) {	/* Loop over all tables and segments */
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					S = D_obj->table[tbl]->segment[seg];	/* Shorthand for this segment */
@@ -4390,7 +4403,8 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 					}
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Copy the data records */
 						for (col = 0; col < V_obj->n_columns; col++) {
-							if (diff_types) api_put_val = gmtapi_select_put_function (API, V_obj->type[col]);
+							if (diff_types && (api_put_val = gmtapi_select_put_function (API, V_obj->type[col])) == NULL)
+								return (gmtlib_report_error (API, GMT_NOT_A_VALID_TYPE));
 							value = gmtapi_select_dataset_value (GMT, S, (unsigned int)row, (unsigned int)col);
 							api_put_val (&(V_obj->data[col]), row_out, value);
 						}
@@ -4718,7 +4732,8 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 			gmt_set_grddim (GMT, I_obj->header);	/* Set all dimensions */
 			I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size, unsigned char);
 			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-			api_get_val = gmtapi_select_get_function (API, M_obj->type);
+			if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
+				return_null (API, GMT_NOT_A_VALID_TYPE);
 			gmt_M_grd_loop (GMT, I_obj, row, col, ij) {
 				ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
 				api_get_val (&(M_obj->data), ij_orig, &d);
@@ -5138,7 +5153,8 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 					G_obj->header->z_min = +DBL_MAX;
 					G_obj->header->z_max = -DBL_MAX;
 					HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
-					api_get_val = gmtapi_select_get_function (API, M_obj->type);
+					if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
+						return_null (API, GMT_NOT_A_VALID_TYPE);
 					gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
 						ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
 						api_get_val (&(M_obj->data), ij_orig, &d);
@@ -5156,7 +5172,8 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			GMT_Report (API, GMT_MSG_INFORMATION, "Importing grid data from user memory location\n");
 			G_obj->data = gmt_M_memory_aligned (GMT, NULL, G_obj->header->size, gmt_grdfloat);
 			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-			api_get_val = gmtapi_select_get_function (API, M_obj->type);
+			if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
+				return_null (API, GMT_NOT_A_VALID_TYPE);
 			gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
 				ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
 				api_get_val (&(M_obj->data), ij_orig, &d);
@@ -5398,7 +5415,8 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 				MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			}
 			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-			api_put_val = gmtapi_select_put_function (API, M_obj->type);
+			if ((api_put_val = gmtapi_select_put_function (API, M_obj->type)) == NULL)
+				return (gmtlib_report_error (API, GMT_NOT_A_VALID_TYPE));
 			gmt_M_grd_loop (GMT, G_obj, row, col, ijp) {
 				ij = GMT_2D_to_index (row, col, M_obj->dim);
 				api_put_val (&(M_obj->data), ij, (double)G_obj->data[ijp]);
@@ -6919,6 +6937,7 @@ GMT_LOCAL int gmtapi_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_
 	}
 	if (S->delay) {	/* Must place delayed NaN record(s) signifying segment header(s) */
 		GMT_putfunction api_put_val = gmtapi_select_put_function (API, M->type);
+		if (api_put_val == NULL) return_error (API, GMT_NOT_A_VALID_TYPE);
 		p_func_uint64_t GMT_2D_to_index = NULL;
 		uint64_t col, ij;
 		GMT_2D_to_index = gmtapi_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL);	/* Can only do row-format until end of this function */
@@ -7990,7 +8009,8 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 		API->current_get_M = gmtapi_get_matrix_data (S->resource);
 		API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : S->n_columns;
 		API->current_get_M_index = gmtapi_get_2d_to_index (API, API->current_get_M->shape, GMT_GRID_IS_REAL);
-		API->current_get_M_val = gmtapi_select_get_function (API, API->current_get_M->type);
+		if ((API->current_get_M_val = gmtapi_select_get_function (API, API->current_get_M->type)) == NULL)
+			return NULL;
 		record = NULL;
 	}
 	else {	/* Read from the current resource */
@@ -8605,7 +8625,8 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 			/* Place current matrix parameters in API */
 			API->current_put_M = M_obj;
 			API->current_put_M_index = gmtapi_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL);	/* Since we cannot do col_format without knowing dimension - see end_io_matrix */
-			API->current_put_M_val = gmtapi_select_put_function (API, M_obj->type);
+			if ((API->current_put_M_val = gmtapi_select_put_function (API, M_obj->type)) == NULL)
+				return GMT_NOT_A_VALID_TYPE;
 			API->api_put_record = gmtapi_put_record_matrix;
 			error = gmtapi_put_record_matrix (API, mode, record);
 			break;
@@ -8643,8 +8664,10 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 			/* Place current vector parameters in API */
 			API->current_put_V = V_obj;
 			API->current_put_V_val = gmt_M_memory (GMT, NULL, V_obj->n_columns, GMT_putfunction);	/* Array of functions */
-			for (col = 0; col < V_obj->n_columns; col++)	/* Assign the functions */
-				API->current_put_V_val[col] = gmtapi_select_put_function (API, V_obj->type[col]);
+			for (col = 0; col < V_obj->n_columns; col++) {	/* Assign the functions */
+				if ((API->current_put_V_val[col] = gmtapi_select_put_function (API, V_obj->type[col])) == NULL)
+					return GMT_NOT_A_VALID_TYPE;
+			}
 			API->api_put_record = gmtapi_put_record_vector;
 			error = gmtapi_put_record_vector (API, mode, record);
 			break;
@@ -12031,7 +12054,7 @@ GMT_LOCAL void * gmtapi_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATA
 		MH = gmt_get_M_hidden (Out);
 		MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
-	api_put_val = gmtapi_select_put_function (API, Out->type);
+	if ((api_put_val = gmtapi_select_put_function (API, Out->type)) == NULL) return (NULL);
 	GMT_2D_to_index = gmtapi_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL);
 	for (tbl = row_out = 0; tbl < In->n_tables; tbl++) {
 		D = In->table[tbl];	/* Shorthand to current input data table */
@@ -12077,7 +12100,7 @@ GMT_LOCAL void * gmtapi_dataset2vector (struct GMTAPI_CTRL *API, struct GMT_DATA
 			return (NULL);
 		}
 	}
-	api_put_val = gmtapi_select_put_function (API, Out->type[0]);	/* Since all columns are of same type we get the pointer here */
+	if ((api_put_val = gmtapi_select_put_function (API, Out->type[0])) == NULL) return NULL;	/* Since all columns are of same type we get the pointer here */
 	for (tbl = row_out = 0; tbl < In->n_tables; tbl++) {
 		D = In->table[tbl];	/* Shorthand to current input data table */
 		for (seg = 0; seg < D->n_segments; seg++) {
@@ -12114,7 +12137,8 @@ GMT_LOCAL void * gmtapi_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATR
 	if (alloc && (Out = gmtlib_create_dataset (GMT, 1U, 1U, In->n_rows, In->n_columns, GMT_IS_POINT, mode, true)) == NULL)
 		return_null (API, GMT_MEMORY_ERROR);
 	SD = Out->table[0]->segment[0];	/* Shorthand to only segment in the dataset */
-	api_get_val = gmtapi_select_get_function (API, In->type);
+	if ((api_get_val = gmtapi_select_get_function (API, In->type)) == NULL)
+		return_null (API, GMT_NOT_A_VALID_TYPE);
 	GMT_2D_to_index = gmtapi_get_2d_to_index (API, In->shape, GMT_GRID_IS_REAL);
 	for (row = 0; row < In->n_rows; row++) {
 		for (col = 0; col < In->n_columns; col++) {
@@ -12152,8 +12176,10 @@ GMT_LOCAL void * gmtapi_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRI
 		}
 	}
 
-	api_get_val_m = gmtapi_select_get_function (API, In->type);
-	api_put_val_v = gmtapi_select_put_function (API, GMT->current.setting.export_type);	/* Since all columns are of same type we get the pointer here */
+	if ((api_get_val_m = gmtapi_select_get_function (API, In->type)) == NULL)
+		return_null (API, GMT_NOT_A_VALID_TYPE);
+	if ((api_put_val_v = gmtapi_select_put_function (API, GMT->current.setting.export_type)) == NULL)	/* Since all columns are of same type we get the pointer here */
+		return_null (API, GMT_NOT_A_VALID_TYPE);
 	GMT_2D_to_index = gmtapi_get_2d_to_index (API, In->shape, GMT_GRID_IS_REAL);
 	for (row = 0; row < In->n_rows; row++) {
 		for (col = 0; col < In->n_columns; col++) {
@@ -12183,7 +12209,8 @@ GMT_LOCAL void * gmtapi_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECT
 		return_null (API, GMT_MEMORY_ERROR);
 	SD = Out->table[0]->segment[0];	/* Shorthand to only segment in the dataset */
 	for (col = 0; col < In->n_columns; col++) {
-		api_get_val = gmtapi_select_get_function (API, In->type[col]);
+		if ((api_get_val = gmtapi_select_get_function (API, In->type[col])) == NULL)
+			return_null (API, GMT_NOT_A_VALID_TYPE);
 		for (row = 0; row < In->n_rows; row++)
 			api_get_val (&(In->data[col]), row, &(SD->data[col][row]));
 	}
@@ -12223,9 +12250,13 @@ GMT_LOCAL void * gmtapi_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTO
 	}
 
 	GMT_2D_to_index = gmtapi_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL);
-	api_put_val = gmtapi_select_put_function (API, Out->type);	/* Since all columns are of same type we get the pointer here */
+	if ((api_put_val = gmtapi_select_put_function (API, Out->type)) == NULL)	/* Since all columns are of same type we get the pointer here */
+		return (NULL);
 	for (col = 0; col < In->n_columns; col++) {
-		api_get_val = gmtapi_select_get_function (API, In->type[col]);
+		if ((api_get_val = gmtapi_select_get_function (API, In->type[col])) == NULL) {
+			gmt_M_free (GMT, Out);
+			return (NULL);
+		}
 		for (row = 0; row < In->n_rows; row++) {
 			api_get_val (&(In->data[col]), row, &value);
 			ij = GMT_2D_to_index (row, col, Out->dim);
