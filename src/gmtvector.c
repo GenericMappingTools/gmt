@@ -518,7 +518,7 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 		gmt_make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
 	else if (Ctrl->T.mode == DO_ROT2D)	/* Cartesian 2-D rotation */
 		gmtvector_gmt_make_rot2d_matrix (Ctrl->T.par[2], R);
-	else if (!(Ctrl->T.mode == DO_NOTHING || Ctrl->T.mode == DO_POLE)) {	/* Will need secondary vector, get that first before input file */
+	else if (!(Ctrl->T.mode == DO_NOTHING || Ctrl->T.mode == DO_POLE || Ctrl->T.mode == DO_TRANSLATE)) {	/* Will need secondary vector, get that first before input file */
 		n = gmtvector_decode_vector (GMT, Ctrl->S.arg, vector_2, Ctrl->C.active[GMT_IN], Ctrl->E.active);
 		if (n == 0) Return (GMT_RUNTIME_ERROR);
 		if (Ctrl->T.mode == DO_DOT) {	/* Must normalize to turn dot-product into angle */
