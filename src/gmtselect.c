@@ -334,7 +334,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Limit GSHHS features */
 				Ctrl->A.active = true;
-				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'C':	/* Near a point test  Syntax -C<pfile>+d<distance>  */
 				Ctrl->C.active = true;

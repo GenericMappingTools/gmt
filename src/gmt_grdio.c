@@ -112,7 +112,7 @@ GMT_LOCAL int gmtgrdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER 
 	needed_size = 2ULL * ((size_t)header->mx) * ((size_t)header->my);	/* For the complex array */
 	if (header->size < needed_size) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Complex grid not large enough to hold both components!.\n");
-		GMT_exit (GMT, GMT_DIM_TOO_SMALL); return GMT_DIM_TOO_SMALL;
+		return GMT_DIM_TOO_SMALL;
 	}
 	if (direction == GMT_IN) {	/* About to read in a complex component; another one might have been read in earlier */
 		if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
@@ -129,17 +129,17 @@ GMT_LOCAL int gmtgrdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER 
 	else {	/* About to write out a complex component */
 		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) {	/* Not a complex grid */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Asking to write out complex components from a non-complex grid.\n");
-			GMT_exit (GMT, GMT_WRONG_MATRIX_SHAPE); return GMT_WRONG_MATRIX_SHAPE;
+			return GMT_WRONG_MATRIX_SHAPE;
 		}
 		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) && (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) == 0) {
 			/* Programming error: Requesting to write real components when there are none */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Complex grid has no real components that can be written to file.\n");
-			GMT_exit (GMT, GMT_WRONG_MATRIX_SHAPE); return GMT_WRONG_MATRIX_SHAPE;
+			return GMT_WRONG_MATRIX_SHAPE;
 		}
 		else if ((header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) && (header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) == 0) {
 			/* Programming error: Requesting to write imag components when there are none */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Complex grid has no imaginary components that can be written to file.\n");
-			GMT_exit (GMT, GMT_WRONG_MATRIX_SHAPE); return GMT_WRONG_MATRIX_SHAPE;
+			return GMT_WRONG_MATRIX_SHAPE;
 		}
 		if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {	/* Must first demultiplex the grid */
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Demultiplexing complex grid before writing can take place.\n");
@@ -1449,7 +1449,7 @@ int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *h
 	 */
 
 	bool expand;		/* true or false */
-	int err;		/* Implied by gmt_M_err_trap */
+	int err = GMT_OK;		/* Implied by gmt_M_err_trap */
 	struct GRD_PAD P;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
@@ -1459,7 +1459,8 @@ int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *h
 
 	expand = gmtgrdio_padspace (GMT, header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
-	gmtgrdio_grd_layout (GMT, header, grid, complex_mode & GMT_GRID_IS_COMPLEX_MASK, GMT_IN);	/* Deal with complex layout */
+	if ((err = gmtgrdio_grd_layout (GMT, header, grid, complex_mode & GMT_GRID_IS_COMPLEX_MASK, GMT_IN)))	/* Deal with complex layout */
+		return err;
 
 	gmt_M_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, grid, P.wesn, P.pad, complex_mode));
 
@@ -1488,13 +1489,14 @@ int gmtlib_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	int err;	/* Implied by gmt_M_err_trap */
+	int err = GMT_OK;	/* Implied by gmt_M_err_trap */
 
 	gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, false));
 	gmtgrdio_pack_grid (GMT, header, grid, k_grd_pack); /* scale and offset */
 	gmtgrdio_grd_xy_scale (GMT, header, GMT_OUT);	/* Possibly scale wesn,inc */
 
-	gmtgrdio_grd_layout (GMT, header, grid, complex_mode, GMT_OUT);	/* Deal with complex layout */
+	if ((err = gmtgrdio_grd_layout (GMT, header, grid, complex_mode, GMT_OUT)))	/* Deal with complex layout */
+		return (err);
 	gmtgrdio_grd_check_consistency (GMT, header, grid);			/* Fix east repeating columns and polar values */
 	err = (*GMT->session.writegrd[header->type]) (GMT, header, grid, wesn, pad, complex_mode);
 	if (GMT->parent->leave_grid_scaled == 0) gmtgrdio_pack_grid (GMT, header, grid, k_grd_unpack); /* revert scale and offset to leave grid as it was before writing unless session originated from gm*/

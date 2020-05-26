@@ -545,9 +545,16 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	else {	/* Cartesian scaling */
 		unsigned int s_unit;
-		s_unit = gmt_check_scalingopt (GMT, 'D', Ctrl->D.unit, unit_name);
+		int is;
+		if ((is = gmt_check_scalingopt (GMT, 'D', Ctrl->D.unit, unit_name)) == -1) {
+			Return (GMT_PARSE_ERROR);
+		}
+		else
+			s_unit = (unsigned int)is;
 		/* We only need inv_scale here which scales input data in these units to m */
-		gmt_init_scales (GMT, s_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+		if ((error = gmt_init_scales (GMT, s_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
+			Return (error);
+		}
 		d_mode = 0, unit = 'X';	/* Select Cartesian distances */
 	}
 	gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST);

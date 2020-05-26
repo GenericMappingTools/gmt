@@ -702,7 +702,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, colvalue);
 				if (two_cols) gmt_M_free (GMT, coldnt);
 				if (strings) gmt_M_free (GMT, tmp_string);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 			}
 
 			if (strings) {	/* number in col1, string in col2 */
@@ -763,7 +763,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 		if (MGD77_Read_File (GMT, list[argno], &In, D)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data set for cruise %s\n", list[argno]);
-			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
+			Return (GMT_DATA_READ_ERROR);
 		}
 
 		/* Start reading data from file */
@@ -775,7 +775,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if (set == MGD77_M77_SET && !Ctrl->F.active) {
 				GMT_Report (API, GMT_MSG_ERROR, "Column %s is part of the standard MGD77 set and cannot be removed unless you use -F!\n",
 				            Ctrl->I.c_abbrev);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 			}
 			if (!Ctrl->A.replace) {
 				GMT_Report (API, GMT_MSG_ERROR, "A columned named %s is already present in %s.  use -A+ to overwrite [default is to skip]\n",
@@ -837,7 +837,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 			sprintf (oldfile, "%s.old", In.path);
 			if (gmt_rename_file (GMT, In.path, oldfile, GMT_RENAME_FILE)) {
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 			}
 
 			/* Update header history */
@@ -851,14 +851,14 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 			if (MGD77_Write_File (GMT, In.path, &In, D)) {	/* Create the new, slimmer file */
 				GMT_Report (API, GMT_MSG_ERROR, "Failure while writing slimmer version of %s\n", list[argno]);
-				GMT_exit (GMT, GMT_DATA_WRITE_ERROR); return GMT_DATA_WRITE_ERROR;
+				Return (GMT_DATA_WRITE_ERROR);
 			}
 
 			/* Now we can safely remove the old file */
 
 			if (gmt_remove_file (GMT, oldfile))	{
 				GMT_Report (API, GMT_MSG_ERROR, "Failure while removing the old version of %s\n", list[argno]);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 			}
 
 			MGD77_Free_Dataset (GMT, &D);
@@ -870,7 +870,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			D = MGD77_Create_Dataset (GMT);
 			if (MGD77_Read_File (GMT, list[argno], &In, D)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failure while reading data set for cruise %s\n", list[argno]);
-				GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
+				Return (GMT_DATA_READ_ERROR);
 			}
 			if (reset_column)
 				column = MGD77_NOT_SET;
@@ -1011,7 +1011,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if (n != D->H.n_records) {
 				GMT_Report (API, GMT_MSG_ERROR, "Extra column data records (%d) do not match # of cruise records (%d) for %s\n",
 				            n, D->H.n_records, list[argno]);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Appended column data for all %d records for cruise %s\n", D->H.n_records, list[argno]);
 		}
@@ -1038,7 +1038,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				result = gmt_intpol (GMT, coldnt, colvalue, n, D->H.n_records, x, y, GMT->current.setting.interpolant);
 				if (result != 0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failure in gmt_intpol near row %d!\n", result+1);
-					GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 				}
 				gmt_M_memcpy (colvalue, y, D->H.n_records, double);
 				gmt_M_free (GMT, y);
