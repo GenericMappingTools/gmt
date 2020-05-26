@@ -227,7 +227,7 @@ EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction,
 EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 	bool set_n = false, shift_xy = false;
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
-	int error = 0;
+	int error = 0, is;
 
 	char format[GMT_LEN256+6] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};
 
@@ -264,8 +264,14 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M");
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);
 
-	unit = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name);
-	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+	if ((is = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name)) == -1) {
+		Return (GMT_PARSE_ERROR);
+	}
+	else
+		unit = (unsigned int)is;
+	if ((error = gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
+		Return (error);
+	}
 
 	if (GMT->common.R.active[RSET])	/* Load the w/e/s/n from -R */
 		gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
