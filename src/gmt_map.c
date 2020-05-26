@@ -9320,7 +9320,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 /*! . */
 unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode, unsigned int type) {
-	/* Initializes distance calcuation given the selected values for:
+	/* Initializes distance calculation given the selected values for:
 	 * Distance unit: must be on of the following:
 	 *  1) d|e|f|k|m|M|n|s
 	 *  2) GMT (Cartesian distance after projecting with -J) | X (Cartesian)
