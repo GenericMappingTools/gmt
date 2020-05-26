@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt which** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**c**\|\ **l**\|\ **u**] ] [ |SYN_OPT-V| ] [ |SYN_OPT--| ]
+**gmt which** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**a**\|\ **c**\|\ **l**\|\ **u**] ] [ |SYN_OPT-V| ] [ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -61,12 +61,15 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [**c**\|\ **l**\|\ **u**]
+**-G**\ [**a**\|\ **c**\|\ **l**\|\ **u**]
     If a file argument is a downloadable file (either a complete URL, a @file for
     downloading from the GMT data server, or @earth_relief_xxy) we will try
     to download the file if it is not found in your local data or cache dirs.
-    By default [**-Gl**] we download to the current directory. Append **c** to place
-    in the user cache directory or **u** user data directory instead.
+    By default [**-Gl**] we download to the current directory. Append **a** to
+    place files in the appropriate folder under the user directory (this is where
+    GMT normally places downloaded files), **c** to place it in the user cache directory,
+    or **u** for the user data directory instead (i.e., ignoring any subdirectory
+    structure).
 
 .. _-V:
 
@@ -84,11 +87,11 @@ To see the path to the file myjunk.txt, use::
 
 To download the 10 arc-minute global relief file from the GMT data server, use::
 
-    gmt which -Gu @earth_relief_10m
+    gmt which -Ga @earth_relief_10m
 
 which will print the path (after downloading if not already present).  The file will
-be placed in the user's GMT_USERDIR.  To obtain a GMT example or test file from the
-GMT data server, try::
+be placed in the appropriate folder under the user's GMT_USERDIR.  To obtain a GMT
+example or test file from the GMT data server, try::
 
     gmt which -Gc @hotspots.txt
 

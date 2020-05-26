@@ -68,7 +68,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [files] [-A] [-C] [-D] [-G[c|l|u]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [files] [-A] [-C] [-D] [-G[a|c|l|u]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -77,6 +77,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Download file if possible and not found locally.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append a to place under the user directory in the appropriate folder.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to place it in the cache directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to place it in the current local directory [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to place it in the user\'s data directory.\n");
@@ -116,6 +117,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 			case 'G':	/* Download file first, if required */
 				Ctrl->G.active = true;
 				switch (opt->arg[0]) {
+					case 'a': Ctrl->G.mode = GMT_AUTO_DIR;		break;
 					case 'c': Ctrl->G.mode = GMT_CACHE_DIR;		break;
 					case 'u': Ctrl->G.mode = GMT_DATA_DIR;		break;
 					case '\0': case 'l': Ctrl->G.mode = GMT_LOCAL_DIR;	break;
