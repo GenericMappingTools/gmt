@@ -12859,19 +12859,24 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 	 * We return the wesn array with the exact or rounded region, depending on the setting of exact.
 	 */
 	unsigned int item;
+	int k_data;
 	bool geo;
 	bool is_PS, is_oneliner;
 	struct GMT_GRID *G = NULL;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
-	char virt_file[GMT_VF_LEN] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:";
+	char virt_file[GMT_VF_LEN] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:", *file = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	switch (family) {
 		case GMT_IS_GRID:
 			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
-			if (gmt_access (API->GMT, opt->arg, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
-			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, opt->arg, NULL)) == NULL)
+			if ((k_data = gmtlib_get_serverfile_index (API, opt->arg)) != GMT_NOTSET)	/* This is a remote grid */
+				file = API->remote_info[k_data].file;	/* To ensure we have proper extension */
+			else
+				file = opt->arg;
+			if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
+			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, file, NULL)) == NULL)
 				return API->error;	/* Failure to read grid header */
 			gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
 			HH = gmt_get_H_hidden (G->header);
