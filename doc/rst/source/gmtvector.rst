@@ -116,10 +116,10 @@ Optional Arguments
     angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
     pole and angle), **R** will instead rotate the fixed secondary vector
     by the rotations implied by the input records, **t** to translate
-    the input point by *distance* in the *azimuth* direction (append *azimuth*/*distance*[*unit*]
+    the input point by *distance* in the *azimuth* direction (append *azimuth*/*distance*\ [*unit*]
     for the same translation for all input points, or just append
-    *unit* to read *azimuth* and *distance* (in specified unit)
-    from the third and fourth data column in the file [e], and **x** for cross-product.
+    *unit* to read *azimuth* and *distance* (in specified *unit* [**e**])
+    from the third and fourth data column in the file, and **x** for cross-product.
     If **-T** is not given then no transformation takes place; the
     output is determined by other options such as **-A**, **-C**,
     **-E**, and **-N**.
@@ -208,7 +208,7 @@ the point -30/60 at an azimuth of 105 degrees, use::
 
     gmt vector -A-30/60 -Tp105 -fg > pole.txt
 
-To translate tall locations in the geographic file points.txt
+To translate all locations in the geographic file points.txt
 by 65 km to the NE, try::
 
     gmt vector points -Tt45/65k -fg > shifted.txt

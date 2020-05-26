@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Test the gmt vector -Tt option for fixed and variable translation
+# Test the gmt vector -Tt option for fixed and variable geographic translation
 
-ps=translate.ps
+ps=translate_geo.ps
 
 # Make lon lat points that spiral out
 gmt math -T0/360/15 -N5 -o1:4 T 36 DIV T -C1 COSD -C2 SIND -C3-4 0.1 MUL -Ca MUL = spiral.txt
