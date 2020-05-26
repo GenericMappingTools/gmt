@@ -6406,7 +6406,9 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS);
+	if (gmt_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS)) {
+		Return (GMT_DIM_TOO_SMALL);
+	}
 
 	gmt_M_memset (wesn, 4, double);
 

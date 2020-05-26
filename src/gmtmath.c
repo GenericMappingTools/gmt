@@ -6254,7 +6254,9 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	t_check_required = !Ctrl->T.notime;	/* Turn off default GMT NaN-handling in t column */
 
-	gmt_hash_init (GMT, localhashnode, operator, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS);
+	if (gmt_hash_init (GMT, localhashnode, operator, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS)) {
+		Return (GMT_DIM_TOO_SMALL);
+	}
 
 	for (i = 0; i < GMTMATH_STACK_SIZE; i++) stack[i] = gmt_M_memory (GMT, NULL, 1, struct GMTMATH_STACK);
 
