@@ -16185,7 +16185,10 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	GMT->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: PSL_beginsession\n");
-	PSL_beginsession (GMT->PSL, API->external, GMT->session.SHAREDIR, GMT->session.USERDIR);	/* Initializes the session and sets a few defaults */
+	if (PSL_beginsession (GMT->PSL, API->external, GMT->session.SHAREDIR, GMT->session.USERDIR)) {	/* Initializes the session and sets a few defaults */
+		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
+		return NULL;
+	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit : PSL_beginsession\n");
 	/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: PSL_setdefaults\n");
