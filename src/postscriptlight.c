@@ -1757,13 +1757,15 @@ static char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const c
 
 static int psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
 	/* Write the specified encoding string to file */
-	int k = 0, match = 0;
+	int k = 0, match = 0, err = 0;
 	while (PSL_ISO_name[k] && (match = strcmp (encoding, PSL_ISO_name[k])) != 0) k++;
 	if (match == 0)
 		PSL_command (PSL, "%s", PSL_ISO_encoding[k]);
-	else
+	else {
 		PSL_message (PSL, PSL_MSG_ERROR, "Fatal Error: Could not find ISO encoding %s\n", encoding);
-	return 0;
+		err = -1;
+	}
+	return err;
 }
 
 /* psl_bulkcopy copies the given long static string (defined in PSL_strings.h)
