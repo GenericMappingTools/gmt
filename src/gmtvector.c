@@ -96,6 +96,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.conf = 0.95;	/* 95% conf level */
+	C->T.unit = 'e';	/* Unit is meter unless specified */
 	return (C);
 }
 
@@ -144,7 +145,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -TR will instead assume the input vectors/angles are different rotations and repeatedly\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      rotate the fixed secondary vector (see -S) using the input rotations.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Tt will translate input vectors to points a distance <d> away in the azimuth <az>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append <az>/<d>, otherwise we expect to read these from the input file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Append <az>/<d> for a fixed set of azimuth and distance for all points,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      otherwise we expect to read azim, dist from the input file; append a unit [e]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
 	GMT_Option (API, "V,bi0");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
@@ -251,18 +253,29 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 						break;
 					case 't':	/* Translate vectors */
 						Ctrl->T.mode = DO_TRANSLATE;
-						if (opt->arg[1]) {	/* Gave azimuth/distance[unit] */
-							if ((n = sscanf (&opt->arg[1], "%lg/%s", &Ctrl->T.par[0], txt_a)) != 2) {
-								GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tr (%s)\n", &opt->arg[1]);
-								n_errors++;
+						if (opt->arg[1]) {	/* Gave azimuth/distance[<unit>] or just <unit> */
+							if (strchr (opt->arg, '/')) {	/* Gave a fixed azimuth/distance[<unit>] combination */
+								if ((n = sscanf (&opt->arg[1], "%lg/%s", &Ctrl->T.par[0], txt_a)) != 2) {
+									GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tr (%s)\n", &opt->arg[1]);
+									n_errors++;
+								}
+								else
+									Ctrl->T.dmode = gmt_get_distance (GMT, txt_a, &(Ctrl->T.par[1]), &(Ctrl->T.unit));
 							}
-							Ctrl->T.dmode = gmt_get_distance (GMT, txt_a, &(Ctrl->T.par[1]), &(Ctrl->T.unit));
+							else if (opt->arg[1] && strchr (GMT_LEN_UNITS, opt->arg[1])) {	/* Gave the unit of the data in column 3 */
+								Ctrl->T.unit = opt->arg[1];
+								Ctrl->T.a_and_d = true;
+							}
 						}
-						else
+						else /* No arg means use default meters */
 							Ctrl->T.a_and_d = true;
 						break;
 					case 'x':	/* Cross-product between vectors */
 						Ctrl->T.mode = DO_CROSS;
+						break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized directive given to -T (%s)\n", opt->arg);
+						n_errors++;
 						break;
 				}
 				break;
@@ -536,12 +549,12 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 	}
 
 	if (geo && Ctrl->T.mode == DO_TRANSLATE) {	/* Initialize unit machinery */
-		if (!Ctrl->T.a_and_d) {
+		if (Ctrl->T.a_and_d)	/* Read az and dist from file, set units here */
+			gmt_init_distaz (GMT, Ctrl->T.unit, GMT_GREATCIRCLE, GMT_MAP_DIST);
+		else {	/* Got a fixed set, set units here */
 			gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
 			Ctrl->T.par[1] = gmtvector_dist_to_degree (GMT, Ctrl->T.par[1]);	/* Make sure we have degrees from whatever -Tt set */
 		}
-		else
-			gmt_init_distaz (GMT, 'e', GMT_GREATCIRCLE, GMT_MAP_DIST);
 	}
 
 	/* Read input data set */
