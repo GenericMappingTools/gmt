@@ -6695,7 +6695,8 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 				if (Ctrl->C.cols[j]) continue;
 				status = (*call_operator[op]) (GMT, &info, stack, nstack - 1, j);	/* Do it */
 				if (status == -1) {	/* Serious problem, need to bail */
-					GMT_exit (GMT, GMT_RUNTIME_ERROR); Return (GMT_RUNTIME_ERROR);
+					GMT_Report (API, GMT_MSG_ERROR, "Operand %s returned status = %d. Must give up.\n", operator[op], status);
+					Return (GMT_RUNTIME_ERROR);
 				}
 			}
 		}

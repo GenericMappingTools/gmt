@@ -274,7 +274,7 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	if (Ctrl->I.active && (k = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
 		x2sys_free_list (GMT, trk_name, n_tracks);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
@@ -322,7 +322,7 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 				break;
 			}
 			/* Intentionally fall through */
@@ -360,7 +360,7 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 				break;
 			}
 			/* Intentionally fall through */
@@ -385,7 +385,7 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 			x2sys_end (GMT, s);
 			x2sys_free_list (GMT, trk_name, n_tracks);
-			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 	/* Override default GMT->current.io.col_type[GMT_OUT] settings */

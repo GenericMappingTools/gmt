@@ -162,7 +162,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Restrict GSHHS features */
 				Ctrl->A.active = true;
-				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
