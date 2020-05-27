@@ -12731,11 +12731,14 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 		case GMT_UCHAR:		V->type[col] = GMT_UCHAR;	V->data[col].uc1 = vector;	break;
 		case GMT_CHAR:		V->type[col] = GMT_CHAR;	V->data[col].sc1 = vector;	break;
 		case GMT_DATETIME:	/* Must convert from string-time to double */
+			if ((dt = gmtapi_get_char_char_ptr (vector)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Datetime string array is NULL\n");
+				return GMT_MEMORY_ERROR;
+			}
 			if ((t_vector = malloc (V->n_rows * sizeof(double))) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate array of %" PRIu64 " doubles for converted datetime strings\n", V->n_rows);
 				return GMT_MEMORY_ERROR;
 			}
-			dt = gmtapi_get_char_char_ptr (vector);
 			for (row = 0; row < V->n_rows; row++) {
 				if (gmt_scanf_argtime (API->GMT, dt[row], &(t_vector[row])) == GMT_IS_NAN) n_bad++;
 			}
