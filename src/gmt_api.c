@@ -2093,9 +2093,9 @@ GMT_LOCAL int gmtapi_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 			if (mode & GMT_WITH_STRINGS) {	/* Must allocate text pointer array */
 				if ((V->text = gmt_M_memory (API->GMT, NULL, V->n_rows, char *)) == NULL)
 					return (GMT_MEMORY_ERROR);
+				VH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
 			}
 		}
-		VH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 
 	return (GMT_NOERROR);
@@ -4321,6 +4321,10 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				/* Allocate output matrix space or die */
 				if ((error = gmtlib_alloc_univector (GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_NOERROR) return (gmtlib_report_error (API, error));
 				MH->alloc_mode = GMT_ALLOC_INTERNALLY;
+				if (D_obj->type >= GMT_READ_TEXT) { /* Also has trailing text */
+					M_obj->text = gmt_M_memory (GMT, NULL, n_rows, char *);
+					MH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
+				}
 			}
 			else {	/* We passed in a matrix so must check it is big enough */
 				if (M_obj->n_rows < n_rows || M_obj->n_columns < n_columns)
@@ -4355,6 +4359,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 							value = gmtapi_select_dataset_value (GMT, S, (unsigned int)row, (unsigned int)col);
 							api_put_val (&(M_obj->data), ij, value);
 						}
+						if (S->text) M_obj->text[row_out] = strdup (S->text[row]);
 					}
 				}
 			}
@@ -4378,6 +4383,11 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				for (col = 0; col < V_obj->n_columns; col++) V_obj->type[col] = S_obj->type;	/* Set same data type for all columns */
 				V_obj->n_rows = n_rows;
 				if ((error = gmtlib_alloc_vectors (GMT, V_obj, n_rows)) != GMT_NOERROR) return (gmtlib_report_error (API, error));	/* Allocate space for all columns */
+				if (D_obj->type >= GMT_READ_TEXT) { /* Also has trailing text */
+					struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V_obj);
+					V_obj->text = gmt_M_memory (GMT, NULL, n_rows, char *);
+					VH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
+				}
 			}
 			else {	/* Got a preallocated container */
 				if (V_obj->n_rows < n_rows || V_obj->n_columns < n_columns)
@@ -4409,6 +4419,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 							value = gmtapi_select_dataset_value (GMT, S, (unsigned int)row, (unsigned int)col);
 							api_put_val (&(V_obj->data[col]), row_out, value);
 						}
+						if (S->text) V_obj->text[row_out] = strdup (S->text[row]);
 					}
 				}
 			}
@@ -4435,17 +4446,22 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 				if ((V_obj = gmt_create_vector (GMT, n_columns, GMT_OUT)) == NULL)
 					return (gmtlib_report_error (API, GMT_PTR_IS_NULL));
+				VH = gmt_get_V_hidden (V_obj);
 				for (col = 0; col < V_obj->n_columns; col++) {
 					V_obj->type[col] = S_obj->type;	/* Set same data type for all columns */
 					V_obj->data[col].f8 = S->data[col];	/* Set pointer only */
+					VH->alloc_mode[col] = GMT_ALLOC_EXTERNALLY;	/* Since not duplicated, just pointed to */
+				}
+				if (S->text) {
+					V_obj->text = S->text;
+					VH->alloc_mode_text = GMT_ALLOC_EXTERNALLY;	/* Since not duplicated, just pointed to */
 				}
 				V_obj->n_rows = n_rows;
-				VH = gmt_get_V_hidden (V_obj);
 				VH->alloc_level = S_obj->alloc_level;	/* Otherwise D_obj will be freed before we get to use data */
-				VH->alloc_mode = S_obj->alloc_mode = DH->alloc_mode;	/* Otherwise D_obj will be freed before we get to use data */
+				S_obj->alloc_mode = DH->alloc_mode;	/* Otherwise D_obj will be freed before we get to use data */
 				SH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* To prevent freeing in D_obj */
 			}
-			else {	/* Got a preallocated contrainer */
+			else {	/* Got a preallocated container */
 				if (V_obj->n_rows < n_rows || V_obj->n_columns < n_columns)
 					return (gmtlib_report_error (API, GMT_DIM_TOO_SMALL));
 				for (col = 0; col < V_obj->n_columns; col++)
@@ -12743,15 +12759,14 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 				if (gmt_scanf_argtime (API->GMT, dt[row], &(t_vector[row])) == GMT_IS_NAN) n_bad++;
 			}
 			V->type[col] = GMT_DOUBLE;	V->data[col].f8 = t_vector;
+			if (n_bad) GMT_Report (API, GMT_MSG_ERROR, "Unable to parse %" PRIu64 "datetime strings (ISO datetime format required)\n", n_bad);
 			break;
 		default:
 			return_error (API, GMT_NOT_A_VALID_TYPE);
 			break;
 	}
 	VH = gmt_get_V_hidden (V);
-	VH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
-	if (n_bad) GMT_Report (API, GMT_MSG_ERROR, "Unable to parse %" PRIu64 "datetime strings (ISO datetime format required)\n", n_bad);
-
+	VH->alloc_mode[col] = (type == GMT_DATETIME) ? GMT_ALLOC_INTERNALLY : GMT_ALLOC_EXTERNALLY;
 	return GMT_NOERROR;
 }
 
@@ -12868,11 +12883,15 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 	if (!(family == GMT_IS_VECTOR || family == GMT_IS_MATRIX)) return_error (V_API, GMT_NOT_A_VALID_FAMILY);
 	if (family == GMT_IS_VECTOR) {
 		struct GMT_VECTOR *V = gmtapi_get_vector_data (object);
+		struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
 		V->text = array;
+		VH->alloc_mode_text = GMT_ALLOC_EXTERNALLY;
 	}
 	else if (family == GMT_IS_MATRIX) {
 		struct GMT_MATRIX *M = gmtapi_get_matrix_data (object);
+		struct GMT_MATRIX_HIDDEN *MH = gmt_get_M_hidden (M);
 		M->text = array;
+		MH->alloc_mode_text = GMT_ALLOC_EXTERNALLY;
 	}
 	return (GMT_NOERROR);
 }
@@ -13008,6 +13027,8 @@ int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head) {
 
 int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 	int error = GMT_NOERROR;
+	uint64_t col;
+	struct GMT_VECTOR      *V = NULL;
 	struct GMT_DATASET_HIDDEN     *DH = NULL;
 	struct GMT_PALETTE_HIDDEN     *CH = NULL;
 	struct GMT_POSTSCRIPT_HIDDEN  *PH = NULL;
@@ -13040,9 +13061,11 @@ int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 			PH = gmt_get_P_hidden (gmtapi_get_postscript_data (object));
 			PH->alloc_mode = GMT_ALLOC_EXTERNALLY;
 			break;
-		case GMT_IS_VECTOR:	/* GMT Vector*/
-			VH = gmt_get_V_hidden (gmtapi_get_vector_data (object));
-			VH->alloc_mode = GMT_ALLOC_EXTERNALLY;
+		case GMT_IS_VECTOR:	/* GMT Vector */
+			V = gmtapi_get_vector_data (object);
+			VH = gmt_get_V_hidden (V);
+			for (col = 0; col < V->n_columns; col++)
+				VH->alloc_mode[col] = GMT_ALLOC_EXTERNALLY;
 			break;
 		case GMT_IS_MATRIX:	/* GMT Matrix */
 			MH = gmt_get_M_hidden (gmtapi_get_matrix_data (object));
