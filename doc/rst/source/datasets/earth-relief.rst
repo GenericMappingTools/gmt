@@ -54,7 +54,7 @@ Code Dimensions        Reg Size     Description
 ==== ================= === =======  ==================================================
 
 All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
-the earth_relief files being placed in an earth_relief sub-directory and the SRTM data
+the earth_relief files being placed in an ``earth/earth_relief`` sub-directory and the SRTM data
 organized in sub-directories srtm1 and srtm3.
 
 Technical Information
