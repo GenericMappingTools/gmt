@@ -550,7 +550,7 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 			error = gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
 			Ctrl->T.par[1] = gmtvector_dist_to_degree (GMT, Ctrl->T.par[1]);	/* Make sure we have degrees from whatever -Tt set */
 		}
-		if (error) Return (error);
+		if (error == GMT_NOT_A_VALID_TYPE) Return (error);
 	}
 
 	/* Read input data set */

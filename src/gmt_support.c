@@ -9253,7 +9253,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 						G->label_type = GMT_LABEL_IS_MDIST;
 						if (p[2] && strchr ("defkMn", (int)p[2])) {	/* Found a valid unit */
 							c = p[2];
-							bad += (gmt_init_distaz (GMT, c, gmt_M_sph_mode (GMT), GMT_LABEL_DIST) == GMT_NOT_A_VALID_TYPE);
+							if (gmt_init_distaz (GMT, c, gmt_M_sph_mode (GMT), GMT_LABEL_DIST) == GMT_NOT_A_VALID_TYPE) bad++;
 						}
 						else 	/* Meaning "not set" */
 							c = 0;
@@ -9452,7 +9452,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 				k = (int)strlen (txt_a) - 1;
 				c = (isdigit ((int)txt_a[k]) || txt_a[k] == '.') ? 0 : txt_a[k];
 				L->label_dist_spacing = atof (&txt_a[1]);
-				error += (gmt_init_distaz (GMT, c, gmt_M_sph_mode (GMT), GMT_CONT_DIST) == GMT_NOT_A_VALID_TYPE);
+				if (gmt_init_distaz (GMT, c, gmt_M_sph_mode (GMT), GMT_CONT_DIST) == GMT_NOT_A_VALID_TYPE) error++;
 			}
 			else
 				L->label_dist_spacing = gmt_M_to_inch (GMT, &txt_a[1]);
@@ -9681,7 +9681,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 				k = (int)strlen (txt_a) - 1;
 				c = (isdigit ((int)txt_a[k]) || txt_a[k] == '.') ? 0 : txt_a[k];
 				L->symbol_dist_spacing = atof (&txt_a[1]);
-				error += (gmt_init_distaz (GMT, c, gmt_M_sph_mode (GMT), GMT_CONT_DIST) == GMT_NOT_A_VALID_TYPE);
+				if (gmt_init_distaz (GMT, c, gmt_M_sph_mode (GMT), GMT_CONT_DIST) == GMT_NOT_A_VALID_TYPE) error++;
 			}
 			else
 				L->symbol_dist_spacing = gmt_M_to_inch (GMT, &txt_a[1]);
@@ -16238,7 +16238,6 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 		else
 			T->distmode = gmt_get_distance (GMT, txt[ns], &(T->inc), &(T->unit));
-		gmt_init_distaz (GMT, T->unit, T->distmode, GMT_MAP_DIST);
 		if (gmt_init_distaz (GMT, T->unit, T->distmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
 			return GMT_PARSE_ERROR;
 		T->spatial = (T->unit == 'X') ? 1 : 2;
