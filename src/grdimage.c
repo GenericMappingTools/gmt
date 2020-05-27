@@ -1061,14 +1061,20 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_PALETTE, GMT_IS_NONE, 0, cpt_len, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			P->model = GMT_RGB;
-			if (Img_proj->colormap == NULL && Img_proj->color_interp &&
-			    (!strncmp (Img_proj->color_interp, "Gra", 3) || !strncmp (Img_proj->color_interp, "Red", 3) ||
-				 !strncmp (Img_proj->color_interp, "Gre", 3) || !strncmp (Img_proj->color_interp, "Blu", 3) ||
-			     !strncmp (Img_proj->color_interp, "Und", 3)) ) {
+			if (Img_proj->colormap == NULL) {
+				if (Img_proj->color_interp &&
+					(!strncmp (Img_proj->color_interp, "Gra", 3) || !strncmp (Img_proj->color_interp, "Red", 3) ||
+					!strncmp (Img_proj->color_interp, "Gre", 3) || !strncmp (Img_proj->color_interp, "Blu", 3) ||
+					!strncmp (Img_proj->color_interp, "Und", 3)) ) {
 					/* Grayscale image, only assign r as shade */
-				r_table = gmt_M_memory (GMT, NULL, 256, double);
-				for (k = 0; k < 256; k++) r_table[k] = gmt_M_is255 (k);	/* Sets k/255.0 */
-				gray_only = true;	/* Flag that we are doing a grayscale image below */
+					r_table = gmt_M_memory (GMT, NULL, 256, double);
+					for (k = 0; k < 256; k++) r_table[k] = gmt_M_is255 (k);	/* Sets k/255.0 */
+					gray_only = true;	/* Flag that we are doing a grayscale image below */
+				}
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "color_interp is either empty or unknown. Can't proceed.\n");
+					Return (API->error);
+				}
 			}
 			else if (Img_proj->colormap != NULL) {	/* Incoming image has a colormap, extract it */
 				r_table = gmt_M_memory (GMT, NULL, 256, double);
