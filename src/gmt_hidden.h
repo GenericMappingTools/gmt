@@ -128,7 +128,8 @@ struct GMT_POSTSCRIPT_HIDDEN {	/* Supporting information hidden from the API */
 struct GMT_VECTOR_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;			/* The internal number of the data set */
 	unsigned int alloc_level;	/* The level it was allocated at */
-	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc *alloc_mode;	/* Allocation mode per column [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc alloc_mode_text;	/* Allocation mode per text [GMT_ALLOC_INTERNALLY] */
 };
 
 struct GMT_MATRIX_HIDDEN {	/* Supporting information hidden from the API */
@@ -136,6 +137,7 @@ struct GMT_MATRIX_HIDDEN {	/* Supporting information hidden from the API */
 	int pad;			/* The internal number of the data set */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc alloc_mode_text;	/* Allocation mode per text [GMT_ALLOC_INTERNALLY] */
 };
 
 struct GMT_GRID_HEADER_HIDDEN {

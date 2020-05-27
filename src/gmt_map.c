@@ -3108,9 +3108,10 @@ GMT_LOCAL bool gmtmap_init_stereo (struct GMT_CTRL *GMT) {
 		}
 		else {	/* Global view only */
 			/* No annotations or tickmarks in global mode */
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
@@ -3189,6 +3190,16 @@ GMT_LOCAL bool gmtmap_init_lambert (struct GMT_CTRL *GMT) {
 /*!
  *	TRANSFORMATION ROUTINES FOR THE OBLIQUE MERCATOR PROJECTION (GMT_OBLIQUE_MERC)
  */
+
+void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat) {
+	/* compute new point dist degrees from input point along azimuth */
+	double sa, ca, sd, cd, sy, cy;
+	sincosd (lat,  &sy, &cy);
+	sincosd (azimuth,  &sa, &ca);
+	sincosd (distance, &sd, &cd);
+	*tlon = lon + atand (sd * sa / (cy * cd - sy * sd * ca));
+	*tlat = d_asind (sy * cd + cy * sd * ca);
+}
 
 GMT_LOCAL void gmtmap_pole_rotate_forward (struct GMT_CTRL *GMT, double lon, double lat, double *tlon, double *tlat) {
 	/* Given the pole position in GMT->current.proj, geographical coordinates
@@ -3279,7 +3290,7 @@ GMT_LOCAL void gmtmap_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double
 /*! . */
 GMT_LOCAL bool gmtmap_init_oblique (struct GMT_CTRL *GMT) {
 	double xmin, xmax, ymin, ymax, dummy;
-	double o_x, o_y, p_x, p_y, c, az, b_x, b_y, w, e, s, n;
+	double o_x, o_y, p_x, p_y, az, b_x, b_y, w, e, s, n;
 
 	gmtmap_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
@@ -3302,9 +3313,9 @@ GMT_LOCAL bool gmtmap_init_oblique (struct GMT_CTRL *GMT) {
 
 		gmtmap_get_origin (GMT, o_x, o_y, p_x, p_y, &o_x, &o_y);
 		az = atand (cosd (p_y) * sind (p_x - o_x) / (cosd (o_y) * sind (p_y) - sind (o_y) * cosd (p_y) * cosd (p_x - o_x))) + 90.0;
-		c = 10.0;	/* compute point 10 degrees from origin along azimuth */
-		b_x = o_x + atand (sind (c) * sind (az) / (cosd (o_y) * cosd (c) - sind (o_y) * sind (c) * cosd (az)));
-		b_y = d_asind (sind (o_y) * cosd (c) + cosd (o_y) * sind (c) * cosd (az));
+		/* compute point 10 degrees from origin along azimuth */
+		gmt_translate_point (GMT, o_x, o_y, az, 10.0, &b_x, &b_y);
+
 		GMT->current.proj.pars[0] = o_x;	GMT->current.proj.pars[1] = o_y;
 		GMT->current.proj.pars[2] = b_x;	GMT->current.proj.pars[3] = b_y;
 	}
@@ -3788,9 +3799,10 @@ GMT_LOCAL bool gmtmap_init_lambeq (struct GMT_CTRL *GMT) {
 		}
 		else {	/* Global view only */
 			/* No annotations or tickmarks in global mode */
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
@@ -3882,9 +3894,10 @@ GMT_LOCAL bool gmtmap_init_ortho (struct GMT_CTRL *GMT) {
 		}
 		else {	/* Global view only */
 			/* No annotations or tickmarks in global mode */
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
@@ -3995,9 +4008,10 @@ GMT_LOCAL bool gmtmap_init_genper (struct GMT_CTRL *GMT) {
 	else {
 		if (GMT->current.proj.g_debug > 0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "using global view\n");
 		/* No annotations or tickmarks in global mode */
-		for (i = 0; i < GMT_GRID_UPPER; i++)
+		for (i = 0; i < GMT_GRID_UPPER; i++) {
 			GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 			GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+		}
 		GMT->current.map.overlap = &gmtmap_genperg_overlap;
 		GMT->current.map.crossing = &gmtmap_radial_crossing;
 		GMT->current.map.clip = &gmtmap_radial_clip;
@@ -4180,9 +4194,10 @@ GMT_LOCAL bool gmtmap_init_azeqdist (struct GMT_CTRL *GMT) {
 		else {	/* Global view only, force wesn = 0/360/-90/90  */
 			/* No annotations or tickmarks in global mode */
 			GMT->current.map.is_world = true;
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
@@ -9320,7 +9335,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 /*! . */
 unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode, unsigned int type) {
-	/* Initializes distance calcuation given the selected values for:
+	/* Initializes distance calculation given the selected values for:
 	 * Distance unit: must be on of the following:
 	 *  1) d|e|f|k|m|M|n|s
 	 *  2) GMT (Cartesian distance after projecting with -J) | X (Cartesian)
