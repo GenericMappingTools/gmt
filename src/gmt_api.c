@@ -2092,9 +2092,9 @@ GMT_LOCAL int gmtapi_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 			if (mode & GMT_WITH_STRINGS) {	/* Must allocate text pointer array */
 				if ((V->text = gmt_M_memory (API->GMT, NULL, V->n_rows, char *)) == NULL)
 					return (GMT_MEMORY_ERROR);
+				VH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
 			}
 		}
-		VH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 
 	return (GMT_NOERROR);
@@ -12728,7 +12728,7 @@ int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned 
 			break;
 	}
 	VH = gmt_get_V_hidden (V);
-	VH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
+	VH->alloc_mode[col] = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
 	return GMT_NOERROR;
 }
 
@@ -12845,11 +12845,15 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 	if (!(family == GMT_IS_VECTOR || family == GMT_IS_MATRIX)) return_error (V_API, GMT_NOT_A_VALID_FAMILY);
 	if (family == GMT_IS_VECTOR) {
 		struct GMT_VECTOR *V = gmtapi_get_vector_data (object);
+		struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
 		V->text = array;
+		VH->alloc_mode_text = GMT_ALLOC_EXTERNALLY;
 	}
 	else if (family == GMT_IS_MATRIX) {
 		struct GMT_MATRIX *M = gmtapi_get_matrix_data (object);
+		struct GMT_MATRIX_HIDDEN *MH = gmt_get_M_hidden (M);
 		M->text = array;
+		MH->alloc_mode_text = GMT_ALLOC_EXTERNALLY;
 	}
 	return (GMT_NOERROR);
 }
