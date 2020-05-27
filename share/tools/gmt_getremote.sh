@@ -37,7 +37,7 @@ fi
 SERVER=$(gmt get GMT_DATA_SERVER)
 
 # The "gmt which" command
-gmtwhich="gmt which -Gu"
+gmtwhich="gmt which -Ga"
 #Uncomment the line below for a dry-run
 # gmtwhich="printf %s\n"
 

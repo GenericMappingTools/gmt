@@ -102,7 +102,7 @@ steps:
 - bash: |
     set -x -e
     $(gmt --show-sharedir)/tools/gmt_getremote.sh cache
-    gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m @earth_relief_20m
+    gmt which -Ga @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m @earth_relief_20m
   displayName: Download remote data
   condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
 
