@@ -3277,12 +3277,25 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	if (must_be_image && from_gdalread->band_field_names != NULL && strcmp(from_gdalread->band_field_names[0].DataType, "Byte")) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Using data type other than byte (unsigned char) is not implemented\n");
-		gmt_M_free (GMT, to_gdalread);
-		gmtgrdio_gdal_free_from (GMT, from_gdalread);
-		gmt_M_free (GMT, from_gdalread);
-		return (GMT_NOT_A_VALID_TYPE);
+	if (must_be_image && from_gdalread->band_field_names != NULL) {
+		if (!strcmp(from_gdalread->band_field_names[0].DataType, "Byte"))
+			I->type = GMT_UCHAR;
+		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "Unt16"))
+			I->type = GMT_SHORT;
+		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "UInt16"))
+			I->type = GMT_USHORT;
+		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "Int32"))
+			I->type = GMT_INT;
+		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "UInt32"))
+			I->type = GMT_UINT;
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Using this data type (%s) is not implemented\n",
+			            from_gdalread->band_field_names[0].DataType);
+			gmt_M_free (GMT, to_gdalread);
+			gmtgrdio_gdal_free_from (GMT, from_gdalread);
+			gmt_M_free (GMT, from_gdalread);
+			return (GMT_NOT_A_VALID_TYPE);
+		}
 	}
 
 	I->color_interp    = from_gdalread->color_interp;     /* Must find out how to release this mem */
@@ -3291,23 +3304,32 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 	gmt_M_str_free (I->header->ProjRefWKT);
 	I->header->ProjRefPROJ4 = from_gdalread->ProjRefPROJ4;
 	I->header->ProjRefWKT   = from_gdalread->ProjRefWKT;
+	I->header->ProjRefEPSG  = from_gdalread->ProjRefEPSG;
 	I->header->inc[GMT_X] = from_gdalread->hdr[7];
 	I->header->inc[GMT_Y] = from_gdalread->hdr[8];
 	I->header->n_columns = from_gdalread->RasterXsize;
 	I->header->n_rows = from_gdalread->RasterYsize;
 	I->header->n_bands = from_gdalread->RasterCount;
 	I->header->registration = (int)from_gdalread->hdr[6];
+	I->header->z_min = from_gdalread->hdr[4];	/* Whatever that means for an image */
+	I->header->z_max = from_gdalread->hdr[5];
+	/* These are always pixel-reg, so they would be wrong when we are returning grid-reg
 	I->header->wesn[XLO] = from_gdalread->Corners.LL[0];
 	I->header->wesn[XHI] = from_gdalread->Corners.UR[0];
 	I->header->wesn[YLO] = from_gdalread->Corners.LL[1];
 	I->header->wesn[YHI] = from_gdalread->Corners.UR[1];
+	*/
+	I->header->wesn[XLO] = from_gdalread->hdr[0];
+	I->header->wesn[XHI] = from_gdalread->hdr[1];
+	I->header->wesn[YLO] = from_gdalread->hdr[2];
+	I->header->wesn[YHI] = from_gdalread->hdr[3];
 	if (I->header->wesn[YHI] < I->header->wesn[YLO]) {	/* Simple images have that annoying origin at UL and y positive down */
 		dumb = I->header->wesn[YHI];
 		I->header->wesn[YHI] = I->header->wesn[YLO];
 		I->header->wesn[YLO] = dumb;
 	}
-	if (I->header->ProjRefPROJ4 && strstr (I->header->ProjRefPROJ4, "longlat"))	/* A geographic image */
-		gmt_set_geographic (GMT, GMT_IN);
+	if (I->header->ProjRefPROJ4 && (strstr (I->header->ProjRefPROJ4, "longlat") || strstr (I->header->ProjRefPROJ4, "latlong")))
+		gmt_set_geographic (GMT, GMT_IN);	/* A geographic image */
 
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
 

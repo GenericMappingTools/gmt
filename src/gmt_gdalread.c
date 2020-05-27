@@ -993,6 +993,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		case GDT_Int16:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
+			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
+				Ctrl->Int16.data = (int16_t *)prhs->c_ptr.grd;
 			else
 				Ctrl->Int16.data = gmt_M_memory (GMT, NULL, n_alloc, int16_t);
 			break;
@@ -1001,18 +1003,26 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				Ctrl->Float.data = prhs->f_ptr.grd;
 				Ctrl->Float.active = true;		/* In case it was not set yet */
 			}
+			else if (prhs->c_ptr.active) {	/* Use the previously allocated pointer */
+				Ctrl->UInt16.data = (uint16_t *)prhs->c_ptr.grd;
+				Ctrl->UInt16.active = true;		/* In case it was not set yet */
+			}
 			else
 				Ctrl->UInt16.data = gmt_M_memory (GMT, NULL, n_alloc, uint16_t);
 			break;
 		case GDT_Int32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
+			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
+				Ctrl->Int32.data = (int32_t *)prhs->c_ptr.grd;
 			else
 				Ctrl->Int32.data = gmt_M_memory (GMT, NULL, n_alloc, int32_t);
 			break;
 		case GDT_UInt32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
+			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
+				Ctrl->UInt32.data = (uint32_t *)prhs->c_ptr.grd;
 			else
 				Ctrl->UInt32.data = gmt_M_memory (GMT, NULL, n_alloc, uint32_t);
 			break;
