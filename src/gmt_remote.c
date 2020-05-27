@@ -566,7 +566,7 @@ bool gmt_file_is_remotedata (struct GMTAPI_CTRL *API, const char *file) {
 int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char* file, char *local_path, char *remote_path, unsigned int mode) {
 	/* Determines the remote and local files for any given file_name.
 	 * For remote files, the mode controls where they are written locally:
- 	 *    0 : Place file where GMT wants it to be (e.g., server/earth_relief, /cache etc depending on file type).
+ 	 *    0 : Place file where GMT wants it to be (e.g., server/earth/earth_relief, /cache etc depending on file type).
  	 *    1 : Place file in the cache directory
 	 *    2 : Place file in user directory
 	 *    3 : Place file in local (current) directory
@@ -620,7 +620,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char* file, 
 			if (GMT->session.USERDIR == NULL) goto not_local;	/* Cannot have server data if no user directory created yet */
 			snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
 			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
-			strcat (local_path, GMT->parent->remote_info[k_data].dir);	/* Append the subdir (/ or /earth_relief/, etc) */
+			strcat (local_path, GMT->parent->remote_info[k_data].dir);	/* Append the subdir (/ or /server/earth/earth_relief/, etc) */
 			strcat (local_path, GMT->parent->remote_info[k_data].file);	/* Append filename */
 			if (access (local_path, R_OK)) goto not_local;	/* No such file yet */
 		}
