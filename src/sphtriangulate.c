@@ -567,7 +567,8 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the sphtriangulate main code ----------------------------*/
 
-	gmt_init_distaz (GMT, Ctrl->L.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, Ctrl->L.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 	do_authalic = (Ctrl->A.active && !Ctrl->T.active && !gmt_M_is_zero (GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening));
 	if (do_authalic) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Will convert to authalic latitudes for area calculations\n");

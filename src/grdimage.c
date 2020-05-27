@@ -946,14 +946,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
-			gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
-			                Ctrl->In.file[0]);
+			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->In.file[0])) Return (GMT_PROJECTION_ERROR);
 			if (Ctrl->A.active) /* Need to set background color to white for raster images */
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
 			gmt_set_grddim (GMT, Img_proj->header);	/* Recalculate projected image dimensions */
 			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected image */
-			gmt_img_project (GMT, I, Img_proj, false);	/* Now project the image onto the projected rectangle */
+			if (gmt_img_project (GMT, I, Img_proj, false)) Return (GMT_RUNTIME_ERROR);	/* Now project the image onto the projected rectangle */
 			if (!API->external && (GMT_Destroy_Data (API, &I) != GMT_NOERROR)) {	/* Free the original image now we have projected.  Use Img_proj from now on */
 				Return (API->error);	/* Failed to free the image */
 			}
@@ -965,12 +965,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			grdimage_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project, mixed);
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if a dpi was specified, else keep as is */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig[k]->header->registration;
-			gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
-			                Ctrl->In.file[k]);
+			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->In.file[k])) Return (GMT_PROJECTION_ERROR);
 			gmt_set_grddim (GMT, Grid_proj[k]->header);	/* Recalculate projected grid dimensions */
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected grid */
-			gmt_grd_project (GMT, Grid_orig[k], Grid_proj[k], false);	/* Now project the grid onto the projected rectangle */
+			if (gmt_grd_project (GMT, Grid_orig[k], Grid_proj[k], false)) Return (GMT_RUNTIME_ERROR);	/* Now project the grid onto the projected rectangle */
 			if (GMT_Destroy_Data (API, &Grid_orig[k]) != GMT_NOERROR) {	/* Free the original grid now we have projected.  Use Grid_proj from now on */
 				Return (API->error);	/* Failed to free the original grid */
 			}
@@ -987,12 +987,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				nx_proj = Intens_orig->header->n_columns;
 				ny_proj = Intens_orig->header->n_rows;
 			}
-			gmt_M_err_fail (GMT, gmt_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
-			                Ctrl->I.file);
+			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->I.file)) Return (GMT_PROJECTION_ERROR);
 			gmt_set_grddim (GMT, Intens_proj->header);	/* Recalculate projected intensity grid dimensions */
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected intensity grid */
-			gmt_grd_project (GMT, Intens_orig, Intens_proj, false);	/* Now project the intensity grid onto the projected rectangle */
+			if (gmt_grd_project (GMT, Intens_orig, Intens_proj, false)) Return (GMT_RUNTIME_ERROR);	/* Now project the intensity grid onto the projected rectangle */
 			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_NOERROR) {	/* Free the original intensity grid now we have projected.  Use Intens_proj from now on */
 				Return (API->error);	/* Failed to free the original intensity grid */
 			}
