@@ -3816,9 +3816,10 @@ GMT_LOCAL int gmtmap_init_lambeq (struct GMT_CTRL *GMT, bool *search) {
 		}
 		else {	/* Global view only */
 			/* No annotations or tickmarks in global mode */
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
@@ -4025,9 +4026,10 @@ GMT_LOCAL int gmtmap_init_genper (struct GMT_CTRL *GMT, bool *search) {
 	else {
 		if (GMT->current.proj.g_debug > 0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "using global view\n");
 		/* No annotations or tickmarks in global mode */
-		for (i = 0; i < GMT_GRID_UPPER; i++)
+		for (i = 0; i < GMT_GRID_UPPER; i++) {
 			GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 			GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+		}
 		GMT->current.map.overlap = &gmtmap_genperg_overlap;
 		GMT->current.map.crossing = &gmtmap_radial_crossing;
 		GMT->current.map.clip = &gmtmap_radial_clip;
@@ -4213,9 +4215,10 @@ GMT_LOCAL int gmtmap_init_azeqdist (struct GMT_CTRL *GMT, bool *search) {
 		else {	/* Global view only, force wesn = 0/360/-90/90  */
 			/* No annotations or tickmarks in global mode */
 			GMT->current.map.is_world = true;
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
