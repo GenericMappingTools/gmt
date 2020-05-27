@@ -8149,6 +8149,7 @@ void gmtlib_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_im
 /*! . */
 struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction) {
 	/* Allocates space for a new vector container.  No space allocated for the vectors themselves */
+	uint64_t col;
 	struct GMT_VECTOR *V = NULL;
 	struct GMT_VECTOR_HIDDEN *VH = NULL;
 	gmt_M_unused(direction);
@@ -8158,9 +8159,11 @@ struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns,
 	VH = V->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_VECTOR_HIDDEN);
 	if (n_columns) V->data = gmt_M_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
 	if (n_columns) V->type = gmt_M_memory (GMT, NULL, n_columns, enum GMT_enum_type);
+	if (n_columns) VH->alloc_mode = gmt_M_memory (GMT, NULL, n_columns, enum GMT_enum_alloc);
 	V->n_columns = n_columns;
 	/* We expect external memory for input and GMT-allocated memory on output */
-	VH->alloc_mode = (direction == GMT_IN) ? GMT_ALLOC_EXTERNALLY : GMT_ALLOC_INTERNALLY;
+	for (col = 0; col < n_columns; col++)
+		VH->alloc_mode[col] = (direction == GMT_IN) ? GMT_ALLOC_EXTERNALLY : GMT_ALLOC_INTERNALLY;
 	VH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level */
 	VH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 
@@ -8178,11 +8181,11 @@ int gmtlib_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, uint64_t n
 	if (V->n_columns == 0) return (GMT_PTR_IS_NULL);	/* No columns specified */
 	if (n_alloc == 0) return (GMT_N_ROWS_NOT_SET);		/* No rows specified */
 	if (!V->data) return (GMT_PTR_IS_NULL);			/* Array of columns have not been allocated */
+	VH = gmt_get_V_hidden (V);
 	for (col = 0; col < V->n_columns; col++) {
 		if ((error = gmtlib_alloc_univector (GMT, &V->data[col], V->type[col], n_alloc)) != GMT_NOERROR) return (error);
+		VH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
 	}
-	VH = gmt_get_V_hidden (V);
-	VH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	return (GMT_NOERROR);
 }
 
@@ -8202,6 +8205,14 @@ struct GMT_VECTOR * gmtlib_duplicate_vector (struct GMT_CTRL *GMT, struct GMT_VE
 		if (mode & GMT_DUPLICATE_DATA) {
 			for (col = 0; col < V_in->n_columns; col++)
 				gmtio_duplicate_univector (GMT, &V->data[col], &V_in->data[col], V->type[col], V_in->n_rows);
+			if (V_in->text) {	/* Also duplicate string array */
+				uint64_t row;
+				struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
+				V->text = gmt_M_memory (GMT, NULL, V_in->n_rows, char *);
+				for (row = 0; row < V_in->n_rows; row++)
+					V->text[row] = strdup (V_in->text[row]);
+				VH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
+			}
 		}
 	}
 	return (V);
@@ -8233,35 +8244,35 @@ GMT_LOCAL void gmtio_free_text_array (uint64_t n, char **text) {
 }
 
 /*! . */
-unsigned int gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector) {
+void gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector) {
 	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
 	struct GMT_VECTOR_HIDDEN *VH = NULL;
-	if (!V) return 0;	/* Nothing to deallocate */
+	if (!V) return;	/* Nothing to deallocate */
 	/* Only free V->data if allocated by GMT AND free_vector is true */
 	VH = gmt_get_V_hidden (V);
 	if (V->data && free_vector) {
 		uint64_t col;
 		for (col = 0; col < V->n_columns; col++) {
-			if (VH->alloc_mode == GMT_ALLOC_INTERNALLY) gmtio_free_univector (GMT, &(V->data[col]), V->type[col]);
+			if (VH->alloc_mode[col] == GMT_ALLOC_INTERNALLY) gmtio_free_univector (GMT, &(V->data[col]), V->type[col]);
 			gmtio_null_univector (GMT, &(V->data[col]), V->type[col]);
 		}
 	}
-	if (V->text && free_vector && VH->alloc_mode == GMT_ALLOC_INTERNALLY) {
+	if (V->text && free_vector && VH->alloc_mode_text == GMT_ALLOC_INTERNALLY) {
 		gmtio_free_text_array (V->n_rows, V->text);
 		gmt_M_free (GMT, V->text);
 	}
 	gmt_M_free (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
 	gmt_M_free (GMT, V->type);
+	gmt_M_free (GMT, VH->alloc_mode);
 	gmt_M_free (GMT, V->hidden);
-	return (VH->alloc_mode);
 }
 
 /*! . */
 void gmt_free_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR **V, bool free_vector) {
 	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
-	(void)gmtlib_free_vector_ptr (GMT, *V, free_vector);
+	gmtlib_free_vector_ptr (GMT, *V, free_vector);
 	gmt_M_free (GMT, *V);
 }
 
@@ -8298,39 +8309,46 @@ struct GMT_MATRIX * gmtlib_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MA
 			gmt_M_free (GMT, M);
 			return (NULL);
 		}
-		if (mode & GMT_DUPLICATE_DATA)
+		if (mode & GMT_DUPLICATE_DATA) {
 			gmtio_duplicate_univector (GMT, &M->data, &M_in->data, M->type, size);
+			if (M_in->text) {	/* Also duplicate string array */
+				uint64_t row;
+				struct GMT_MATRIX_HIDDEN *MH = gmt_get_M_hidden (M);
+				M->text = gmt_M_memory (GMT, NULL, M_in->n_rows, char *);
+				for (row = 0; row < M_in->n_rows; row++)
+					M->text[row] = strdup (M_in->text[row]);
+				MH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
+			}
+		}
 	}
 	return (M);
 }
 
 /*! . */
-unsigned int gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix) {
+void gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix) {
 	/* Free everything but the struct itself  */
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	enum GMT_enum_alloc alloc_mode;
-	if (!M) return 0;	/* Nothing to deallocate */
+	if (!M) return;	/* Nothing to deallocate */
 	/* Only free M->data if allocated by GMT AND free_matrix is true */
 	MH = gmt_get_M_hidden (M);
 	if (&(M->data) && free_matrix) {
 		if (MH->alloc_mode == GMT_ALLOC_INTERNALLY) gmtio_free_univector (GMT, &(M->data), M->type);
 		gmtio_null_univector (GMT, &(M->data), M->type);
 	}
-	if (M->text && free_matrix && MH->alloc_mode == GMT_ALLOC_INTERNALLY) {
+	if (M->text && free_matrix && MH->alloc_mode_text == GMT_ALLOC_INTERNALLY) {
 		gmtio_free_text_array (M->n_rows, M->text);
 		gmt_M_free (GMT, M->text);
 	}
 	alloc_mode = MH->alloc_mode;
 	gmt_M_free (GMT, M->hidden);
-	return (alloc_mode);
 }
 
 void gmtlib_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix) {
 	/* By taking a reference to the matrix pointer we can set it to NULL when done */
-	(void)gmtlib_free_matrix_ptr (GMT, *M, free_matrix);
+	gmtlib_free_matrix_ptr (GMT, *M, free_matrix);
 	gmt_M_free (GMT, *M);
 }
-
 
 /*!  m input matrix
 	n_rows number of rows of \a m
