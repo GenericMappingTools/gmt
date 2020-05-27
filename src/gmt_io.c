@@ -4973,7 +4973,6 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 #ifdef HAVE_DIRENT_H_
 	size_t N;
 #endif /* HAVE_DIRENT_H_ */
-	bool gmtio_file_is_readable (struct GMT_CTRL *GMT, char *path);
 
 	/* First look in the current working directory */
 
@@ -5002,7 +5001,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	if (stem[1] == ':') return (NULL);
 #endif
 
-	/* Not found, see if there is a file in the GMT_{USER,DATA,CACHE}DIR directories [if set] plus GMT_USER/server dir */
+	/* Not found, see if there is a file in the GMT_{USER,DATA,CACHE}DIR directories [if set] */
 
 	snprintf (serverdir, PATH_MAX, "%s/server", GMT->session.USERDIR);	udir[3] = serverdir;
 
@@ -5033,22 +5032,30 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 		}
 	}
 
-	if (udir[3]) {	/* Finally, try any subdirectory under the server */
-		char **subdir = gmtlib_get_dirs (GMT, udir[3]);
+	/* Finally, try any subdirectory under the server; For GMT >= 6.1 these are server/dir/subdir so we go as far deep as 2 */
+	if (udir[3]) {
+		char **subdir = gmtlib_get_dirs (GMT, udir[3]), **subsubdir = NULL;
 		if (subdir == NULL) return (NULL);	/* No dirs found, give up */
 		d = 0;
-		while (subdir[d]) {
-			sprintf (path, "%s/%s/%s", udir[3], subdir[d], stem);
-			found = (!access (path, F_OK));
-			if (found && gmtio_file_is_readable (GMT, path)) {	/* Yes, can read it */
-				if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
-				gmtlib_free_dir_list (GMT, &subdir);
-				return (path);
+		while (!found && subdir[d]) {	/* Look through planetary subdirectories under /server (e.g. /server/earth) */
+			sprintf (path, "%s/%s/", udir[3], subdir[d]);
+			if ((subsubdir = gmtlib_get_dirs (GMT, path))) {	/* Now look in any sub-subdirs (e.g., /server/earth/earth_relief) */
+				unsigned int s = 0;
+				while (!found && subsubdir[s]) {
+					sprintf (path, "%s/%s/%s/%s", udir[3], subdir[d], subsubdir[s], stem);
+					found = (!access (path, F_OK));
+					s++;
+				}			
+				gmtlib_free_dir_list (GMT, &subsubdir);
 			}
 			d++;
 		}
 		gmtlib_free_dir_list (GMT, &subdir);
 	}
+	if (found && gmtio_file_is_readable (GMT, path)) {	/* Yes, can read it */
+		if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
+		return (path);
+	}				
 
 	return (NULL);	/* No file found, give up */
 }
