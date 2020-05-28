@@ -11746,7 +11746,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 			value = gmt_convert_units (GMT, p, GMT->current.setting.proj_length_unit, GMT->current.setting.proj_length_unit);
 		else if (strchr (GMT_LEN_UNITS, p[len])) {	/* Distance units, return as meters [or degrees if arc] */
 			mode = gmt_get_distance (GMT, p, &value, &unit);
-			gmt_init_distaz (GMT, unit, mode, GMT_MAP_DIST);
+			if (gmt_init_distaz (GMT, unit, mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) return_value (V_API, GMT_NOT_A_VALID_TYPE, GMT_NOTSET);
 			value /= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Convert to default unit */
 		}
 		else	/* Perhaps coordinates or floats */
