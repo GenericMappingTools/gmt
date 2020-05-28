@@ -347,8 +347,10 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) {
 			int signed_flag = s->dist_flag;
 			gmt_M_memset (dist_bin, B.nm_bin, double);
-			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL)
-				gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
+			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) {
+				error = gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
+				Return (error);
+			}
 		}
 
 		last_bin_index = UINT_MAX;

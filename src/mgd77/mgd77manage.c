@@ -1025,8 +1025,10 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if ((iy = mgd77manage_skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 				x = D->values[ix];
 				y = D->values[iy];
-				if ((d = gmt_dist_array_2 (GMT, x, y, D->H.n_records, dist_scale, GMT->common.h.mode)) == NULL)
-					gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+				if ((d = gmt_dist_array_2 (GMT, x, y, D->H.n_records, dist_scale, GMT->common.h.mode)) == NULL) {
+					error = gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+					Return (error);
+				}
 				x = d;
 			}
 			else if (Ctrl->A.mode == MODE_t) {	/* Time */

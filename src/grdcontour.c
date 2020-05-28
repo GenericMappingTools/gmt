@@ -994,6 +994,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	unsigned int cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};
 
 	uint64_t ij, *n_seg = NULL;
+	int64_t ns;
 
 	size_t n_save = 0, n_alloc = 0, n_save_alloc = 0, *n_seg_alloc = NULL;
 
@@ -1584,8 +1585,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		n_alloc = 0;
 		begin = true;
 
-		while ((n = (unsigned int)gmt_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
-
+		while ((ns = gmt_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
+			n = (uint64_t)ns;
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
 			is_closed = (closed != cont_is_not_closed);
 
@@ -1670,6 +1671,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, x);
 			gmt_M_free (GMT, y);
 		}
+		if (ns < 0) Return (-ns);
 	}
 
 	if (make_plot && n_cont_attempts == 0) GMT_Report (API, GMT_MSG_INFORMATION, "No contours drawn, check your -A, -C, -L settings?\n");
