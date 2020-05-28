@@ -936,7 +936,7 @@ EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		char unit_name[GMT_LEN16] = {""};
 		gmt_check_scalingopt (GMT, 'Q', Ctrl->Q.unit, unit_name);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Wiggle scale given as %g z-data units per %s.\n", Ctrl->Q.scale, unit_name);
-		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Initialize distance machinery */
+		if (gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) Return (GMT_NOT_A_VALID_TYPE);	/* Initialize distance machinery */
 		Ctrl->Q.scale = 1.0 / Ctrl->Q.scale;	/* Now in map-distance units (i.e, unit they appended) per users data units */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Wiggle scale inverted as %g %s per z-data units.\n", Ctrl->Q.scale, unit_name);
 		/* Convert to degrees per user data unit - this is our scale that converts z-data to degree distance latitude */

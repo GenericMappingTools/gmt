@@ -719,7 +719,8 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 		grd = gmt_M_memory (GMT, NULL, Grid->header->size, char);	/* Only need char array to store 0 and 1 */
 
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
-			gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+			if (gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+				Return (GMT_NOT_A_VALID_TYPE);
 			d_col = gmt_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
 		}
 		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);

@@ -535,7 +535,8 @@ EXTERN_MSC int GMT_grdvolume (void *V_API, int mode, void *args) {
 	ij_inc[4] = ij_inc[0];	/* Repeat for convenience */
 	cellsize = Work->header->inc[GMT_X] * Work->header->inc[GMT_Y];
 	if (shrink) {
-		gmt_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST);	/* Flat Earth mode */
+		if (gmt_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Flat Earth mode */
+			Return (GMT_NOT_A_VALID_TYPE);
 		dist_pr_deg = GMT->current.proj.DIST_M_PR_DEG;
 		dist_pr_deg *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scales meters to desired unit */
 		cellsize *= dist_pr_deg * dist_pr_deg;

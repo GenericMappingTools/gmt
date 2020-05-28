@@ -4636,7 +4636,16 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
 			if (!I_obj->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
-				I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
+				if (I_obj->type <= GMT_UCHAR)
+					I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
+				else if (I_obj->type <= GMT_USHORT)
+					I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned short);
+				else if (I_obj->type <= GMT_UINT)
+					I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned int);
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "Unsupported image data type %d\n", I_obj->type);
+					return_null (API, GMT_NOT_A_VALID_TYPE);
+				}
 			}
 			else {	/* Already have allocated space; check that it is enough */
 				size = gmtapi_set_grdarray_size (GMT, I_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/
@@ -11738,7 +11747,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 			value = gmt_convert_units (GMT, p, GMT->current.setting.proj_length_unit, GMT->current.setting.proj_length_unit);
 		else if (strchr (GMT_LEN_UNITS, p[len])) {	/* Distance units, return as meters [or degrees if arc] */
 			mode = gmt_get_distance (GMT, p, &value, &unit);
-			gmt_init_distaz (GMT, unit, mode, GMT_MAP_DIST);
+			if (gmt_init_distaz (GMT, unit, mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) return_value (V_API, GMT_NOT_A_VALID_TYPE, GMT_NOTSET);
 			value /= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Convert to default unit */
 		}
 		else	/* Perhaps coordinates or floats */

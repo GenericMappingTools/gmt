@@ -931,8 +931,12 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "-JE requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
-		if (!Ctrl->S.active)	/* Since we are painting wet areas we must now reset them to white */
-			gmt_init_fill (GMT, &fill[0], 1.0, 1.0, 1.0);		/* Default Ocean color = white */
+		if (!Ctrl->S.active) {	/* Since we are painting wet areas we must now reset them to white */
+			if (GMT->current.map.frame.paint)	/* Let ocean color match cancas fill color */
+				fill[0] = GMT->current.map.frame.fill;
+			else
+				gmt_init_fill (GMT, &fill[0], 1.0, 1.0, 1.0);	/* Default Ocean color = white */
+		}
 		fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];	/* If lake not set then use ocean */
 	}
 
@@ -1298,7 +1302,10 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 			gmt_map_basemap (GMT);
 		}
 
-		if (Ctrl->L.active) gmt_draw_map_scale (GMT, &Ctrl->L.scale);
+		if (Ctrl->L.active) {
+			if ((error = gmt_draw_map_scale (GMT, &Ctrl->L.scale)))
+				Return (error);
+		}
 		if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 
 		gmt_plane_perspective (GMT, -1, 0.0);

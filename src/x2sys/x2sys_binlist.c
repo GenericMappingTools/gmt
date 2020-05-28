@@ -284,7 +284,8 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	X = gmt_M_memory (GMT, NULL, nx_alloc, struct X2SYS_BINLIST_BINCROSS);
 
 	if (Ctrl->D.active) {
-		gmt_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST);
+		if (gmt_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 		dist_bin = gmt_M_memory (GMT, NULL, B.nm_bin, double);
 	}
 

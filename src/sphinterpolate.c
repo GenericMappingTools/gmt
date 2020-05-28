@@ -353,7 +353,8 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 	/* Do the interpolation */
 
-	gmt_ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd);
+	if (gmt_ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd))
+		Return (GMT_RUNTIME_ERROR);
 
 	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 	gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
