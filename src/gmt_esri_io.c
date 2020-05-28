@@ -74,7 +74,7 @@ GMT_LOCAL int gmtesriio_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_G
 
 GMT_LOCAL int gmtesriio_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Parse the contents of a .HDR file */
-	int nB;
+	int nB, error;
 	char record[GMT_BUFSIZ];
 	FILE *fp = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -167,14 +167,15 @@ GMT_LOCAL int gmtesriio_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEA
 	header->wesn[XHI] = header->wesn[XLO] + (header->n_columns - 1 + header->registration) * header->inc[GMT_X];
 	header->wesn[YLO] = header->wesn[YHI] - (header->n_rows - 1 + header->registration) * header->inc[GMT_Y];
 
-	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), HH->name);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), HH->name)))
+		return error;
 
 	return (GMT_NOERROR);
 }
 
 GMT_LOCAL int gmtesriio_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
 	/* Note: fp is an open file pointer passed in; it will be closed upstream and not here */
-	int c;
+	int c, error;
 	char record[GMT_BUFSIZ];
 	FILE *fp2 = NULL, *fpBAK = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -326,7 +327,8 @@ GMT_LOCAL int gmtesriio_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GR
 	header->wesn[XHI] = header->wesn[XLO] + (header->n_columns - 1 + header->registration) * header->inc[GMT_X];
 	header->wesn[YHI] = header->wesn[YLO] + (header->n_rows - 1 + header->registration) * header->inc[GMT_Y];
 
-	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), HH->name);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), HH->name)))
+		return error;
 
 	if (fpBAK) {		/* Case of Arc/Info binary file with a separate header file. We still have things to do. */
 		char tmp[16];

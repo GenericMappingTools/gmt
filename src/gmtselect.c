@@ -531,10 +531,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
-	int err;	/* Required by gmt_M_err_fail */
 	unsigned int base = 3, np[2] = {0, 0};
 	unsigned int side, col, id;
-	int error = GMT_NOERROR, n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX;
+	int error = GMT_NOERROR, err, n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX;
 	bool inside = false, need_header = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;
 

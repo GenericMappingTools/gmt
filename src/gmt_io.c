@@ -4001,12 +4001,19 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 		/* Get variable ID and variable name */
 		if (nvars <= 0)
 			GMT->current.io.varid[i] = i;
-		else
-			gmt_M_err_fail (GMT, nc_inq_varid (GMT->current.io.ncid, varnm[i], &GMT->current.io.varid[i]), file);
+		else {
+			if (gmt_M_err_fail (GMT, nc_inq_varid (GMT->current.io.ncid, varnm[i], &GMT->current.io.varid[i]), file)) {
+				GMT->parent->error = GMT_NOT_A_VALID_ID;
+				return NULL;
+			}
+		}
 		nc_inq_varname (GMT->current.io.ncid, GMT->current.io.varid[i], varname);
 
 		/* Check number of dimensions */
-		gmt_M_err_fail (GMT, nc_inq_varndims (GMT->current.io.ncid, GMT->current.io.varid[i], &ndims), file);
+		if (gmt_M_err_fail (GMT, nc_inq_varndims (GMT->current.io.ncid, GMT->current.io.varid[i], &ndims), file)) {
+			GMT->parent->error = GMT_GRDIO_BAD_DIM;
+			return NULL;
+		}
 		if (ndims > 5) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "NetCDF variable %s has too many dimensions (%d)\n", varname, j);
 			GMT->parent->error = GMT_DIM_TOO_LARGE;

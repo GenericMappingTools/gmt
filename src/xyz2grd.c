@@ -477,7 +477,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Grid->header->wesn[XHI] = Grid->header->wesn[XLO] + (Grid->header->n_columns - 1 + Grid->header->registration) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[YHI] = Grid->header->wesn[YLO] + (Grid->header->n_rows - 1 + Grid->header->registration) * Grid->header->inc[GMT_Y];
 		gmt_set_grddim (GMT, Grid->header);
-		gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+		if (gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 		n_left = Grid->header->nm;
@@ -557,7 +557,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "n_columns = %d  n_rows = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->n_columns, Grid->header->n_rows, Grid->header->nm, Grid->header->size);
 
-	gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file);
+	if (gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && gmt_M_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */

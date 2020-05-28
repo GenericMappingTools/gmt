@@ -55,6 +55,7 @@ EXTERN_MSC char *dlerror (void);
 EXTERN_MSC int gmtlib_download_remote_file (struct GMT_CTRL *GMT, const char* file_name, char *path, int k_data, unsigned int mode);
 EXTERN_MSC int gmtlib_get_serverfile_index (struct GMTAPI_CTRL *API, const char *file);
 EXTERN_MSC void gmtlib_refresh_server (struct GMT_CTRL *GMT);
+EXTERN_MSC bool gmtlib_module_may_get_R_from_RP (struct GMT_CTRL *GMT, const char *mod_name);
 EXTERN_MSC double gmtlib_distance_type (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE, unsigned int id);
 EXTERN_MSC bool gmtlib_genper_reset (struct GMT_CTRL *GMT, bool reset);
 EXTERN_MSC double gmtlib_left_boundary (struct GMT_CTRL *GMT, double y);

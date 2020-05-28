@@ -259,7 +259,8 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((GMT->common.R.active[ISET] + Ctrl->E.active) == 0) set_n = true;
-	if (Ctrl->M.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M");
+	if (Ctrl->M.active && ((error = gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M"))))
+		Return (error);
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);
 
 	if ((is = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name)) == -1) {
@@ -443,7 +444,8 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 			use_nx = Rect->header->n_columns;
 			use_ny = Rect->header->n_rows;
 		}
-		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file)) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file))
+			Return (GMT_PROJECTION_ERROR);
 		gmt_set_grddim (GMT, Geo->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL)
 			Return (API->error);
@@ -559,7 +561,8 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 		offset = Geo->header->registration;	/* Same as input */
 		if (GMT->common.R.active[GSET]) offset = !offset;	/* Toggle */
 
-		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file)) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file))
+			Return (GMT_PROJECTION_ERROR);
 		gmt_set_grddim (GMT, Rect->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		gmt_BC_init (GMT, Rect->header);

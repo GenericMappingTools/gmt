@@ -521,7 +521,10 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (gmt_M_is_subset (GMT, Surf->header, wesn)) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, Surf->header, wesn)) {	/* Subset requested; make sure wesn matches header spacing */
+		if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "")))
+			Return (error);
+	}
 	gmt_grd_init (GMT, Surf->header, options, true);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, Surf) == NULL) {	/* Get subset */

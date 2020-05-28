@@ -451,7 +451,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
-		gmt_stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
+		if (gmt_stripack_lists (GMT, n, xx, yy, zz, &T)) Return (GMT_RUNTIME_ERROR);	/* Do the basic triangulation */
 		gmt_M_free (GMT, T.D.tri);	/* Don't need the triangulation */
 		if (Ctrl->C.active) {	/* Recompute lon,lat and set pointers */
 			gmt_n_cart_to_geo (GMT, n, xx, yy, zz, xx, yy);	/* Revert to lon, lat */

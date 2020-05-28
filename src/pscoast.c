@@ -1302,7 +1302,10 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 			gmt_map_basemap (GMT);
 		}
 
-		if (Ctrl->L.active) gmt_draw_map_scale (GMT, &Ctrl->L.scale);
+		if (Ctrl->L.active) {
+			if ((error = gmt_draw_map_scale (GMT, &Ctrl->L.scale)))
+				Return (error);
+		}
 		if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 
 		gmt_plane_perspective (GMT, -1, 0.0);

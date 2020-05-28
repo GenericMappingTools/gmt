@@ -354,7 +354,7 @@ GMT_LOCAL int gmtparse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION
 			update_id = id = gmt_get_option_id (0, str);	/* If -R then we get id for RP */
 			if (id == GMT_NOTSET) Return;	/* Error: user gave shorthand option but there is no record in the history */
 			if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'R') {	/* Must deal with both RP and RG under modern mode */
-				if (GMT->current.ps.active || !strncmp (GMT->init.module_name, "subplot", 7U) || !strncmp (GMT->init.module_name, "pscoast", 7U) || !strncmp (GMT->init.module_name, "psbasemap", 9U)) {	/* Plotting module plus special options to pscoast and psbasemap: First check RP if it exists */
+				if (gmtlib_module_may_get_R_from_RP (GMT, GMT->init.module_name)) {	/* First check -RP history */
 					if (!GMT->init.history[id]) id++;	/* No RP in the history, try RG next */
 				}
 				else {	/* Only try RG for non-plotting modules. RG follows RP in gmt_unique.h order [Modern mode only] */

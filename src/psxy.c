@@ -1792,7 +1792,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
 						}
 						if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
-						gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, In->text, S.custom, &current_pen, &current_fill, outline_setting);
+						if ((error = gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, In->text, S.custom, &current_pen, &current_fill, outline_setting)))
+							Return (error);
 						break;
 				}
 			}

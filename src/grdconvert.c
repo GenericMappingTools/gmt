@@ -205,10 +205,12 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 	gmt_grd_init (GMT, Grid->header, options, false);
 	HH = gmt_get_H_hidden (Grid->header);
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
-	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->In.file, Grid->header, true), Ctrl->In.file);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->In.file, Grid->header, true), Ctrl->In.file)))
+		Return (error);
 	type[GMT_IN] = Grid->header->type;
 	strncpy (fname[GMT_IN], HH->name, GMT_BUFSIZ);
-	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false), Ctrl->G.file);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false), Ctrl->G.file)))
+		Return (error);
 	type[GMT_OUT] = Grid->header->type;
 	strncpy (fname[GMT_OUT], HH->name, GMT_BUFSIZ);
 	gmt_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */

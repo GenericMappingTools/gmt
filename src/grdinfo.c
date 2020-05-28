@@ -577,7 +577,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		subset = gmt_M_is_subset (GMT, G->header, wesn);	/* Subset requested */
-		if (subset) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
+		if (subset && ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), ""))))	/* Make sure wesn matches header spacing */
+			Return (error);
 		HH = gmt_get_H_hidden (G->header);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing grid %s\n", HH->name);
 
