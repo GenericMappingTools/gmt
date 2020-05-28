@@ -679,8 +679,10 @@ EXTERN_MSC int GMT_mgd77track (void *V_API, int mode, void *args) {
 		track_time = (double*)D->values[0];
 		lon = (double*)D->values[1];
 		lat = (double*)D->values[2];
-		if ((track_dist = gmt_dist_array_2(GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL)		/* Work internally in meters */
-			gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+		if ((track_dist = gmt_dist_array_2(GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL) {		/* Work internally in meters */
+			error = gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+			Return (error);
+		}
 		for (rec = 0; rec < D->H.n_records && mgd77track_bad_coordinates (lon[rec], lat[rec]) && track_time[rec] <
 		     Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
 		first_rec = rec;

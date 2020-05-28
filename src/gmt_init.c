@@ -13408,6 +13408,16 @@ GMT_LOCAL bool gmtinit_panel_B_get (struct GMTAPI_CTRL *API, int fig, int row, i
 	return false;
 }
 
+bool gmtlib_module_may_get_R_from_RP (struct GMT_CTRL *GMT, const char *mod_name) {
+	/* THe cases where a module can consult the plot region because a projection or grid domain is not set is
+	 * limited to these cases:
+	 * 	  pscoast -M:  We wish to dump data and often as part of a plot situation
+	 *    psbasemap -A: Writing out the bounds of the region may need the plot region
+	 *    mapproject -W: OFten done in computing positions in a plot, hence plot region is reasonable.
+	 */
+	return (GMT->current.ps.active || (!strncmp (mod_name, "subplot", 7U) || !strncmp (mod_name, "pscoast", 7U) || !strncmp (mod_name, "psbasemap", 9U) || !strncmp (mod_name, "mapproject", 10U)));
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmtinit_begin_module_sub.
@@ -13456,6 +13466,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 	if (options && strstr (mod_name, "legend") && (opt = GMT_Find_Option (API, 'D', *options)) && strchr ("jJg", opt->arg[0])) /* Must turn jr into JR */
+		required = "JR";
+	if (options && strstr (mod_name, "mapproject") && (opt = GMT_Find_Option (API, 'W', *options))) /* Must turn on JR */
 		required = "JR";
 
 	if (options && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
@@ -13778,8 +13790,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
 			/* First consult the history */
 			id = gmt_get_option_id (0, "R");	/* The -RP history item */
-			if (GMT->current.ps.active || !strncmp (mod_name, "pscoast", 7U) || !strncmp (mod_name, "psbasemap", 9U)) {	/* A plotting module (or pscoast -M; psbasemap -A); first check -RP history */
-				if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
+			if (gmtlib_module_may_get_R_from_RP (API->GMT, mod_name)) {	/* First check -RP history */
+				if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fall-back */
 			}
 			else id++;	/* Only examine -RG history if not a plotter */
 			if (GMT->init.history[id]) {	/* There is history for -R */

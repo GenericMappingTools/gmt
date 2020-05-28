@@ -628,7 +628,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (test_header.wesn, wesn_new, 4, double);
 	gmt_M_memcpy (test_header.inc, G->header->inc, 2, double);
-	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file)))
+		Return (error);
 
 	/* OK, so far so good. Check if new wesn differs from old wesn by integer dx/dy */
 

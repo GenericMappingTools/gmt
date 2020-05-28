@@ -24,4 +24,4 @@ gmt select @locations.txt -Gmask.nc -Ig > out.txt
 gmt grdimage mask.nc -JX6i -P -Bafg1 -Ct.cpt -Q -K > $ps
 # Lay down inside points
 gmt psxy -Rmask.nc -J -O -K in.txt  -Sc0.1i -Gwhite -W0.25p >> $ps
-gmt psxy -Rmask.nc -J -O -K out.txt -Sc0.1i -Gblack -W0.25p >> $ps
+gmt psxy -Rmask.nc -J -O out.txt -Sc0.1i -Gblack -W0.25p >> $ps

@@ -543,8 +543,10 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Delaunay optimal triangulation on projected coordinates\n");
 
-		if (Ctrl->Q.active)
-			V = gmt_voronoi (GMT, xxp, yyp, n, GMT->current.proj.rect, Ctrl->Q.mode);
+		if (Ctrl->Q.active) {
+			if ((V = gmt_voronoi (GMT, xxp, yyp, n, GMT->current.proj.rect, Ctrl->Q.mode)) == NULL)
+				Return (GMT_RUNTIME_ERROR);
+		}
 		else
 			np = gmt_delaunay (GMT, xxp, yyp, n, &link);
 
@@ -554,8 +556,10 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 	else {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Delaunay optimal triangulation on given coordinates\n");
 
-		if (Ctrl->Q.active)
-			V = gmt_voronoi (GMT, xx, yy, n, GMT->common.R.wesn, Ctrl->Q.mode);
+		if (Ctrl->Q.active) {
+			if ((V = gmt_voronoi (GMT, xx, yy, n, GMT->common.R.wesn, Ctrl->Q.mode)) == NULL)
+				Return (GMT_RUNTIME_ERROR);
+		}
 		else
 			np = gmt_delaunay (GMT, xx, yy, n, &link);
 	}
