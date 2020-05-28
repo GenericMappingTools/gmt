@@ -180,7 +180,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int j;
+	int j, ival;
 	unsigned int n_errors = 0, k;
 	bool special = false;
 	char *c = NULL;
@@ -221,7 +221,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 			case 'D':	/* Region adjustment Granularity */
 				Ctrl->D.active = true;
 				if (opt->arg[0]) {
-					Ctrl->D.ncol = gmt_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS);
+					if ((Ctrl->D.ncol = gmt_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS)) < 0) n_errors++;
 					Ctrl->D.mode = 1;
 				}
 				break;
@@ -288,8 +288,15 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 						n_errors++;
 						GMT_Report (API, GMT_MSG_ERROR, "Option -I: No increment given.\n");
 				}
-				else
+				else {
+					if (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)
+						Ctrl->I.ncol = 2;
+					else {
+						if ((ival = gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS)) < 0) n_errors++;
+						else Ctrl->I.ncol = (unsigned int)ival;
+					}
 					Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
+				}
 				break;
 			case 'L':	/* Detect limiting range */
 				Ctrl->L.active = true;

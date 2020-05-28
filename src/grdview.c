@@ -775,6 +775,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	int start[2], stop[2], inc[2];
 
 	uint64_t sw, se, nw, ne, n, pt, ij, bin;
+	int64_t ns;
 
 	size_t max_alloc;
 
@@ -1040,8 +1041,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			}
 
 			begin = true;
-			while ((n = gmt_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
-
+			while ((ns = gmt_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
+				n = (uint64_t)n;
 				i_bin_old = j_bin_old = -1;
 				for (pt = 1; pt < n; pt++) {
 					/* Compute the lower-left bin i,j of the tile cut by the start of the contour (first 2 points) */
@@ -1062,6 +1063,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, x);
 				gmt_M_free (GMT, y);
 			}
+			if (ns < 0) Return (-ns);
 		}
 
 		/* Remove temporary variables */
