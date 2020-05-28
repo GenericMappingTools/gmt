@@ -313,8 +313,10 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) {
 		if (Ctrl->L.scale.vertical)
 			gmt_draw_vertical_scale (GMT, &Ctrl->L.scale);
-		else
-			gmt_draw_map_scale (GMT, &Ctrl->L.scale);
+		else {
+			if ((error = gmt_draw_map_scale (GMT, &Ctrl->L.scale)))
+				Return (error);
+		}
 	}
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset, false);
