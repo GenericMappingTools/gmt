@@ -5679,7 +5679,10 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 	/* First convert the information we have into the center and dimensions of a rectangle */
 
 	if (B->refpoint || B->unit || B->oblique) {	/* Dealing with projected coordinates and dimensions or got oblique box */
-		if (B->unit) gmt_init_distaz (GMT, B->unit, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Get scales for this unit */
+		if (B->unit) {
+			if (gmt_init_distaz (GMT, B->unit, GMT_GREATCIRCLE, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Get scales for this unit */
+				return;
+		}
 		if (B->refpoint) {	/* Got a geographic center point and width/height for a rectangular box */
 			gmt_M_memcpy (dim, B->dim, 2, double);		/* Duplicate the width/height of rectangle */
 			if (B->unit) {	/* Gave dimensioned box */

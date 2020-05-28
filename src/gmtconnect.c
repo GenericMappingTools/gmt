@@ -360,7 +360,8 @@ EXTERN_MSC int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance-computing machinery with proper unit */
+	if (gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize distance-computing machinery with proper unit */
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input assuming lines */
 		gmt_M_free (GMT, buffer);

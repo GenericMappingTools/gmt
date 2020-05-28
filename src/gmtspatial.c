@@ -1167,7 +1167,8 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S.active && !(Ctrl->S.mode == POL_SPLIT || Ctrl->S.mode == POL_HOLE)) external = 1;
 
-	gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Use Cartesian calculations and user units */
+	if (gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Use Cartesian calculations and user units */
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	gmt_set_inside_mode (GMT, NULL, (gmt_M_is_geographic (GMT, GMT_IN)) ? GMT_IOO_SPHERICAL : GMT_IOO_CARTESIAN);
 
@@ -1179,7 +1180,8 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct NN_DIST *NN_dist = NULL;
 		struct NN_INFO  *NN_info = NULL;
 
-		gmt_init_distaz (GMT, Ctrl->A.unit, Ctrl->A.smode, GMT_MAP_DIST);	/* Set the unit and distance calculation we requested */
+		if (gmt_init_distaz (GMT, Ctrl->A.unit, Ctrl->A.smode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)		/* Set the unit and distance calculation we requested */
+			Return (GMT_NOT_A_VALID_TYPE);
 
 		NN_dist = gmtspatial_NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */
 		NN_info = gmtspatial_NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return array of NN ID record look-ups */
@@ -1321,7 +1323,8 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		uint64_t row, seg, tbl;
 		double dx, dy, DX, DY, dist;
 
-		gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
+		if (gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, 2, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)			/* Default is m using great-circle distances */
+			Return (GMT_NOT_A_VALID_TYPE);
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
@@ -1391,7 +1394,10 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
 		}
 		geo = gmt_M_is_geographic (GMT, GMT_IN);
-		if (geo) gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Default is m using great-circle distances */
+		if (geo) {
+			if (gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Default is m using great-circle distances */
+				Return (GMT_NOT_A_VALID_TYPE);
+		}
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
 			qmode = Ctrl->Q.mode;	/* Don't know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */
@@ -1759,7 +1765,8 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		Info = gmt_M_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
 		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = gmt_M_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
 
-		gmt_init_distaz (GMT, Ctrl->D.unit, Ctrl->D.mode, GMT_MAP_DIST);
+		if (gmt_init_distaz (GMT, Ctrl->D.unit, Ctrl->D.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 
 		sprintf (format, "%%c : Input %%s %%s is an %%s duplicate of a %%s %%s in %%s, with d = %s c = %%.6g s = %%.4g",
 		         GMT->current.setting.format_float_out);

@@ -557,7 +557,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		}
 		d_mode = 0, unit = 'X';	/* Select Cartesian distances */
 	}
-	gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 	V = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	V_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	h_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */

@@ -534,7 +534,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 	int err;	/* Required by gmt_M_err_fail */
 	unsigned int base = 3, np[2] = {0, 0};
 	unsigned int side, col, id;
-	int n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX, error = 0;
+	int error = GMT_NOERROR, n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX;
 	bool inside = false, need_header = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;
 
@@ -628,14 +628,16 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 	/* Initiate pointer to distance calculation function */
 	if (gmt_M_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */
 		if (Ctrl->C.active)
-			gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
+			error = gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		else if (Ctrl->L.active)
-			gmt_init_distaz (GMT, Ctrl->L.unit, Ctrl->L.mode, GMT_MAP_DIST);
+			error = gmt_init_distaz (GMT, Ctrl->L.unit, Ctrl->L.mode, GMT_MAP_DIST);
 	}
 	else if (do_project)	/* Lon/lat projected via -R -J */
-		gmt_init_distaz (GMT, 'Z', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r after projection to avoid hypot */
+		error = gmt_init_distaz (GMT, 'Z', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r after projection to avoid hypot */
 	else	/* Cartesian data */
-		gmt_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
+		error = gmt_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
+
+	if (error == GMT_NOT_A_VALID_TYPE) Return (error);
 
 	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
 

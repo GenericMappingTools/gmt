@@ -436,7 +436,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Cannot mix units in -E (%s)\n", Ctrl->E.lines);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
+			if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
+				Return (GMT_NOT_A_VALID_TYPE);
 
 			/* Need to get dx,dy from one grid */
 			if (Ctrl->Z.active[GMT_IN])	/* Get the first file */

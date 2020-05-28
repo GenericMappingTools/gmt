@@ -443,7 +443,7 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 			use_nx = Rect->header->n_columns;
 			use_ny = Rect->header->n_rows;
 		}
-		gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file)) Return (GMT_PROJECTION_ERROR);
 		gmt_set_grddim (GMT, Geo->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL)
 			Return (API->error);
@@ -511,7 +511,7 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 		Geo->header->ProjRefEPSG = 0;
 		Geo->header->ProjRefPROJ4 = strdup(buf);
 
-		gmt_grd_project (GMT, Rect, Geo, true);
+		if (gmt_grd_project (GMT, Rect, Geo, true)) Return (GMT_RUNTIME_ERROR);
 
 		HH->grdtype = gmtlib_get_grdtype (GMT, GMT_OUT, Geo->header);	/* Determine grid type */
 
@@ -559,11 +559,11 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 		offset = Geo->header->registration;	/* Same as input */
 		if (GMT->common.R.active[GSET]) offset = !offset;	/* Toggle */
 
-		gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file)) Return (GMT_PROJECTION_ERROR);
 		gmt_set_grddim (GMT, Rect->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		gmt_BC_init (GMT, Rect->header);
-		gmt_grd_project (GMT, Geo, Rect, false);
+		if (gmt_grd_project (GMT, Geo, Rect, false)) Return (GMT_RUNTIME_ERROR);
 		gmt_grd_init (GMT, Rect->header, options, true);
 
 		/* Modify output rect header if -F, -C, -M have been set */
