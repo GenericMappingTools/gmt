@@ -657,7 +657,7 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (&T, 1, struct STRIPACK);
 	T.mode = Ctrl->Q.mode;
-	gmt_stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
+	if (gmt_stripack_lists (GMT, n, xx, yy, zz, &T)) Return (GMT_RUNTIME_ERROR);	/* Do the basic triangulation */
 	if (Ctrl->C.active) {	/* Must recover lon,lat and set pointers */
 		gmt_n_cart_to_geo (GMT, n, xx, yy, zz, xx, yy);	/* Revert to lon, lat */
 		lon = xx;
