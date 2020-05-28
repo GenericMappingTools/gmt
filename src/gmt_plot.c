@@ -5812,7 +5812,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default distance unit */
 		if ((unit = gmtlib_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad distance unit %c\n", measure);
-			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+			return GMT_PARSE_ERROR;
 		}
 		bar_length_km = 0.001 * GMT->current.proj.m_per_unit[unit] * ms->length;	/* Now in km */
 	}
@@ -7582,12 +7582,14 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		bool wants_PS;
 		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No workflow directory\n");
-			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+			GMT->parent->error = GMT_ERROR_ON_FOPEN;
+			return NULL;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s hidden PS file %s\n", verb[k], GMT->current.ps.filename);
 		if ((fp = PSL_fopen (PSL, GMT->current.ps.filename, mode[k])) == NULL) {	/* Must open inside PSL DLL */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open %s with mode %s\n", GMT->current.ps.filename, mode[k]);
-			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+			GMT->parent->error = GMT_ERROR_ON_FOPEN;
+			return NULL;
 		}
 		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
 		/* Determine paper size */
@@ -7633,7 +7635,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					fclose (fpl);
 					if (gmt_remove_file (GMT, file)) {	/* Now remove the file since done */
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot delete file %s\n", file);
-						GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+						GMT->parent->error = GMT_ERROR_ON_FOPEN;
+						return NULL;
 					}
 				}
 			}
@@ -7652,7 +7655,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		else {
 			if ((fp = PSL_fopen (PSL, &(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
-				GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
+				GMT->parent->error = GMT_ERROR_ON_FOPEN;
+				return NULL;
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opened PS file %s\n", &(Out->arg[k]));
 		}
