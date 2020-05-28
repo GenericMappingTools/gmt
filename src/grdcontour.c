@@ -1585,8 +1585,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		n_alloc = 0;
 		begin = true;
 
-		while ((ns = (unsigned int)gmt_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
-			n = (uint64_t)n;
+		while ((ns = gmt_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
+			n = (uint64_t)ns;
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
 			is_closed = (closed != cont_is_not_closed);
 

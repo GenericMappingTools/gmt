@@ -1042,7 +1042,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 			begin = true;
 			while ((ns = gmt_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
-				n = (uint64_t)n;
+				n = (uint64_t)ns;
 				i_bin_old = j_bin_old = -1;
 				for (pt = 1; pt < n; pt++) {
 					/* Compute the lower-left bin i,j of the tile cut by the start of the contour (first 2 points) */
