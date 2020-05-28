@@ -12765,10 +12765,10 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 				return GMT_MEMORY_ERROR;
 			}
 			for (row = 0; row < V->n_rows; row++) {
-				if (gmt_scanf_argtime (API->GMT, dt[row], &(t_vector[row])) == GMT_IS_NAN) n_bad++;
+				if (gmt_scanf (API->GMT, dt[row], GMT_IS_ABSTIME, &(t_vector[row]))) n_bad++;
 			}
 			V->type[col] = GMT_DOUBLE;	V->data[col].f8 = t_vector;
-			if (n_bad) GMT_Report (API, GMT_MSG_ERROR, "Unable to parse %" PRIu64 "datetime strings (ISO datetime format required)\n", n_bad);
+			if (n_bad) GMT_Report (API, GMT_MSG_ERROR, "Unable to parse %" PRIu64 " datetime strings (ISO datetime format required)\n", n_bad);
 			break;
 		default:
 			return_error (API, GMT_NOT_A_VALID_TYPE);
