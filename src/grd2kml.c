@@ -517,6 +517,8 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grd2kml main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	uniq = (int)getpid();	/* Unique number for temporary files  */
 
 	/* Read grid header only to determine dimensions and required levels for the Pyramid */

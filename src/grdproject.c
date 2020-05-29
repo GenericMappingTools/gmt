@@ -256,6 +256,8 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdproject main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((GMT->common.R.active[ISET] + Ctrl->E.active) == 0) set_n = true;

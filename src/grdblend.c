@@ -798,6 +798,8 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdblend main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	if (Ctrl->In.n <= 1) {	/* Got a blend file (or stdin) */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);

@@ -342,6 +342,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdinterpolate main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	if (Ctrl->Z.active[GMT_IN]) {	/* Create the input level array */
 		if (gmt_create_array (GMT, 'Z', &(Ctrl->Z.T), NULL, NULL)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -Zi: Unable to set up input level array\n");

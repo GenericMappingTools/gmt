@@ -807,6 +807,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdview main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use the intensity grid */
 

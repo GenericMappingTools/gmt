@@ -258,6 +258,8 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdsample main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */

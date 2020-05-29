@@ -713,6 +713,8 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdtrack main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	cmd = GMT_Create_Cmd (API, options);
 	sprintf (run_cmd, "# %s %s", GMT->init.module_name, cmd);	/* Build command line argument string */
 	gmt_M_free (GMT, cmd);
