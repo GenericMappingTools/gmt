@@ -30,9 +30,15 @@ struct GMT_DATA_INFO {
 	int id;						/* Running number 0-(n-1) AFTER array is sorted */
 	char dir[GMT_LEN64];		/* Here, / means /export/gmtserver/gmt/data */
 	char file[GMT_LEN64];		/* E.g., earth_relief_20m_g.grd */
-	char tag[GMT_LEN8];			/* E.g., 30m */
+	char inc[GMT_LEN8];			/* E.g., 30m */
 	char reg;					/* E.g., g */
+	double scale;				/* Scale integers to data units */
+	double offset;				/* Offset to shift to data range */
 	char size[GMT_LEN8];		/* E.g., 300M */
+	double tile;				/* Tile size in degrees (0 if no tiles) */
+	char tag[GMT_LEN16];		/* E.g., ER, SRTMGL3 */
+	char coverage[GMT_LEN64];	/* E.g., ER, earth_relief_tiles_03s.nc or - for none */
+	char filler[GMT_LEN64];		/* E.g., ER, earth_relief_tiles_15s.grd or - for none*/
 	char remark[GMT_LEN128];	/* What it is */
 };
 

@@ -135,10 +135,10 @@ GMT_LOCAL int gmtremote_compare_names (const void *item_1, const void *item_2) {
 
 GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *n) {
 	/* Read contents of the info file into an array of structs */
-	int k = 0;
+	int k = 0, nr;
 	FILE *fp = NULL;
 	struct GMT_DATA_INFO *I = NULL;
-	char line[GMT_LEN256] = {""};
+	char line[GMT_LEN512] = {""};
 	char file[PATH_MAX] = {""};
 	snprintf (file, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, GMT_INFO_SERVER_FILE);
 
@@ -159,9 +159,12 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 		return NULL;
 
 	}
-	while (fgets (line, GMT_LEN256, fp) != NULL) {
+
+	while (fgets (line, GMT_LEN512, fp) != NULL) {
 		if (line[0] == '#') continue;	/* Comments */
-		sscanf (line, "%s %s %s %c %s %[^\n]", I[k].dir, I[k].file, I[k].tag, &I[k].reg, I[k].size, I[k].remark);
+		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile, I[k].tag, I[k].coverage, I[k].filler, I[k].remark)) != 12)
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s should have 12 fields but only %d read for record %d - download error???\n", file, nr, k);
+
 		k++;
 	}
 	fclose (fp);
