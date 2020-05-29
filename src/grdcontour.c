@@ -1166,6 +1166,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdcontour main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	if (Ctrl->D.active) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "With -D, no plotting will take place\n");
