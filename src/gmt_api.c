@@ -13125,11 +13125,8 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 				/* Nothing*/
 			}
 			else {	/* Check for modifiers */
-				if (gmt_validate_modifiers (API->GMT, file, '-', "onsuU", GMT_MSG_ERROR)) {
-					GMT_Report (API, GMT_MSG_DEBUG, "Grid filename has invalid modifiers! (%s)\n", file);
-					return_error (V_API, GMT_NOT_A_VALID_MODIFIER);
-				}
-				else
+				unsigned int nm = gmt_validate_modifiers (API->GMT, file, 0, "onsuU", GMT_MSG_QUIET);
+				if (nm) /* Found some valid modifiers, lets get to the first */
 					c = gmt_first_modifier (API->GMT, file, "onsuU");
 			}
 			break;
