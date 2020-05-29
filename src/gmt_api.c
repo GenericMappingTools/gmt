@@ -11587,12 +11587,14 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	va_list args;
 	/* GMT_Report may be called before GMT is set so take precautions */
 	if (V_API == NULL) return GMT_NOERROR;		/* Not a fatal issue here but we cannot report anything */
+	if (level == GMT_MSG_QUIET)		/* We don't want to hear it, period. */
+		return GMT_NOERROR;
 	API = gmtapi_get_api_ptr (V_API);	/* Get the typecast structure pointer to API */
 	GMT = API->GMT;	/* Short-hand for the GMT sub-structure */
 	g_level = (GMT) ? GMT->current.setting.verbose : GMT_MSG_QUIET;
 	if (GMT) err = GMT->session.std[GMT_ERR];
 	if (level > MAX(API->verbose, g_level))
-		return 0;
+		return GMT_NOERROR;
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
 	API->message[0] = '\0';	/* Start fresh */
 	if (GMT && GMT->current.setting.timer_mode > GMT_NO_TIMER) {
