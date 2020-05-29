@@ -642,6 +642,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdimage main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use an intensity grid */
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;	/* Either reading 3 grids (r, g, b) or a z-data grid */
 	if (Ctrl->A.file) {

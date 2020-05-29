@@ -440,6 +440,8 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	if (Ctrl->Q.mode & 1) {	/* Read in previous statistics */
 		char sfile[PATH_MAX] = {""};
 		FILE *fp = NULL;
