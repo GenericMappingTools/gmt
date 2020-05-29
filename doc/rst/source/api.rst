@@ -1289,7 +1289,9 @@ For vectors the same principles apply:
 where ``V`` is the :ref:`GMT_VECTOR <struct-vector>` created by GMT_Create_Data_, ``col`` is the vector
 column in question, ``type`` is one of the
 recognized data :ref:`types <tbl-types>` used for this vector, and ``vector`` is
-a pointer to this custom vector.
+a pointer to this custom vector.  In addition, ``type`` may be also **GMT_DATETIME**, in which case
+we expect an array of strings with ISO datetime strings and we do the conversion to internal
+GMT time and allocate a vector to hold the result in the given ``col``.
 To extract a custom vector from an output :ref:`GMT_VECTOR <struct-vector>` you can use
 
 .. _GMT_Get_Vector:
