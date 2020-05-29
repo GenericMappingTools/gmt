@@ -483,6 +483,7 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 		return (false);	/* Subset equals whole area */
 	gmt_M_memcpy (P->wesn, wesn, 4, double);					/* Copy the subset boundaries */
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (false);	/* No padding requested */
+	if (!GMT->current.io.grid_padding) return (false);	/* Not requested */
 
 	/* Determine if data exist for a pad on all four sides.  If not we give up */
 	wrap = gmt_grd_is_global (GMT, header);	/* If global wrap then we cannot be outside */
@@ -517,6 +518,12 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	}
 
 	return (true);	/* Return true so the calling function can take appropriate action */
+}
+
+void gmt_grd_set_datapadding (struct GMT_CTRL *GMT, bool set) {
+	/* Changes the value of GMT->current.io.grid_padding.
+	 * If set = true we turn padding on, else off. */
+	GMT->current.io.grid_padding = set;
 }
 
 GMT_LOCAL void gmtgrdio_handle_pole_averaging (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, gmt_grdfloat f_value, int pole) {

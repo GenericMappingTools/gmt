@@ -257,6 +257,7 @@ struct GMT_IO {				/* Used to process input data records */
 	bool trailing_text[2];	/* Default is to process training text unless turned off via -i, -o */
 	bool hash_refreshed;		/* true after calling the hash_refresh function the first time */
 	bool internet_error;		/* true after failing to get hash table due to time-out */
+	bool grid_padding;		/* If true we try to read two extra rows/cols from grids for BC purposes */
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
