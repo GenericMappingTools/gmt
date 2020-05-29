@@ -103,22 +103,22 @@ GMT_LOCAL void gmtremote_turn_off_ctrl_C_check () {
 }
 
 struct FtpFile {	/* Needed for argument to libcurl */
-	const char *filename;
-	FILE *fp;
+	const char *filename;	/* Name of file to write */
+	FILE *fp;	/* File pointer to said file */
 };
 
-GMT_LOCAL size_t gmtremote_throw_away(void *ptr, size_t size, size_t nmemb, void *data) {
-	(void)ptr;
-	(void)data;
-	/* we are not interested in the headers itself,
-	   so we only return the size we would have saved ... */
+GMT_LOCAL size_t gmtremote_throw_away (void *ptr, size_t size, size_t nmemb, void *data) {
+	gmt_M_unused (ptr);
+	gmt_M_unused (data);
+	/* We are not interested in the headers itself,
+	   so we only return the file size we would have saved ... */
 	return (size_t)(size * nmemb);
 }
 
 GMT_LOCAL size_t gmtremote_fwrite_callback (void *buffer, size_t size, size_t nmemb, void *stream) {
 	struct FtpFile *out = (struct FtpFile *)stream;
-	if (out == NULL) return 0;	/* This cannot happen but Coverity fusses */
-	if (!out->fp) { /* open file for writing */
+	if (out == NULL) return GMT_NOERROR;	/* This cannot happen but Coverity fusses */
+	if (!out->fp) { /* Open file for writing */
 		out->fp = fopen (out->filename, "wb");
 		if (!out->fp)
 			return -1; /* failure, can't open file to write */
@@ -127,6 +127,7 @@ GMT_LOCAL size_t gmtremote_fwrite_callback (void *buffer, size_t size, size_t nm
 }
 
 GMT_LOCAL int gmtremote_compare_names (const void *item_1, const void *item_2) {
+	/* Compare function used to sort the GMT_DATA_INFO array of structures into alphabetical order */
 	const char *name_1 = ((struct GMT_DATA_INFO *)item_1)->file;
 	const char *name_2 = ((struct GMT_DATA_INFO *)item_2)->file;
 
@@ -138,39 +139,47 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 	int k = 0, nr;
 	FILE *fp = NULL;
 	struct GMT_DATA_INFO *I = NULL;
-	char line[GMT_LEN512] = {""};
-	char file[PATH_MAX] = {""};
+	char line[GMT_LEN512] = {""}, file[PATH_MAX] = {""};
+
 	snprintf (file, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, GMT_INFO_SERVER_FILE);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
-	if ((fp = fopen (file, "r")) == NULL) return NULL;
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open file %s\n", file);
+		return NULL;
+	}
 	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get first record */
 		fclose (fp);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error first record in file %s\n", file);
 		return NULL;
 	}
 	*n = atoi (line);		/* Number of non-commented records to follow */
 	if (*n <= 0 || *n > GMT_BIG_CHUNK) {	/* Probably not a good value */
 		fclose (fp);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad record counter in file %s\n", file);
 		return NULL;
 	}
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to allocated %d GMT_DATA_INFO structures!\n", *n);
 		return NULL;
-
 	}
 
 	while (fgets (line, GMT_LEN512, fp) != NULL) {
-		if (line[0] == '#') continue;	/* Comments */
-		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile, I[k].tag, I[k].coverage, I[k].filler, I[k].remark)) != 12)
+		if (line[0] == '#') continue;	/* Skip any comments */
+		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile, I[k].tag, I[k].coverage, I[k].filler, I[k].remark)) != 12) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s should have 12 fields but only %d read for record %d - download error???\n", file, nr, k);
-
+			gmt_M_free (GMT, I);
+			fclose (fp);
+			return NULL;
+		}
 		k++;
 	}
 	fclose (fp);
+
 	if (k != *n) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s said it has %d records but only found %d - download error???\n", file, *n, k);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s will be deleted.  Please try again\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s should be deleted.  Please try again\n", file);
 		*n = 0;	/* Flag that excrement hit the fan */
 	}
 	/* Soft alphabetically on file names */
@@ -191,13 +200,15 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 int gmtlib_get_serverfile_index (struct GMTAPI_CTRL *API, const char *file) {
 	/* Return the entry in the remote file table of file is found, else -1 */
 	int pos = 0;
+	struct GMT_DATA_INFO *key = NULL;
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
-	if (file[0] == '@') pos = 1;	/* Skip the leading remote flag */
-	struct GMT_DATA_INFO *key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
+	if (file[0] == '@') pos = 1;	/* Skip any leading remote flag */
+	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	return ((key == NULL) ? GMT_NOTSET : key->id);
 }
 
 GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key) {
+	/* Display a notice regarding the source of this data set */
 	if (key == GMT_NOTSET) return;
 	GMT_Report (API, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", API->remote_info[key].file, API->remote_info[key].size);
 	GMT_Report (API, GMT_MSG_NOTICE, "%s.\n\n", API->remote_info[key].remark);
@@ -209,7 +220,7 @@ GMT_LOCAL int gmtremote_find_and_give_data_attribution (struct GMTAPI_CTRL *API,
 	int match;
 
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
-	if ((c = strstr (file, ".grd")))	/* Ignore extension in comparison */
+	if ((c = strstr (file, ".grd")) || (c = strstr (file, ".tif")))	/* Ignore extension in comparison */
 		c[0] = '\0';
 	match = gmtlib_get_serverfile_index (API, file);
 	gmtremote_display_attribution (API, match);
@@ -217,29 +228,8 @@ GMT_LOCAL int gmtremote_find_and_give_data_attribution (struct GMTAPI_CTRL *API,
 	return (match);
 }
 
-#if 0
-GMT_LOCAL int gmtremote_find_and_give_data_attribution (struct GMTAPI_CTRL *API, char *file) {
-	/* Print attribution when the @remotefile is downloaded for the first time */
-	char *c = NULL;
-	int k, match = -1, len = (int)strlen(file);
-
-	if ((c = strstr (file, ".grd"))) {	/* Ignore extension in comparison */
-		c[0] = '\0';	/* Chop off extension for the message */
-		len -= 4;
-	}
-	for (k = 0; match == -1 && k < API->n_remote_info; k++) {
-		if (!strncmp (&file[1], API->remote_info[k].file, len-1)) {	/* Found the matching file */
-			GMT_Report (API, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", API->remote_info[k].file, API->remote_info[k].size);
-			GMT_Report (API, GMT_MSG_NOTICE, "%s.\n\n", API->remote_info[k].remark);
-			match = k;
-		}
-	}
-	if (c) c[0] = '.';	/* Restore extension */
-	return (match);
-}
-#endif
-
 GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit) {
+	/* Get the remote file's size and if too large we refuse to download */
 	CURL *curl = NULL;
 	CURLcode res;
 	double filesize = 0.0;
@@ -417,7 +407,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 	char indexpath[PATH_MAX] = {""}, old_indexpath[PATH_MAX] = {""}, new_indexpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	const char *index_file = (index == GMT_HASH_INDEX) ? GMT_HASH_SERVER_FILE : GMT_INFO_SERVER_FILE;
 
-	if (GMT->current.io.refreshed[index]) return 0;	/* Already been here */
+	if (GMT->current.io.refreshed[index]) return GMT_NOERROR;	/* Already been here */
 
 	snprintf (indexpath, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, index_file);
 
@@ -433,12 +423,12 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 		if (gmtremote_get_url (GMT, url, indexpath, NULL, index)) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
 			if (!access (indexpath, F_OK)) gmt_remove_file (GMT, indexpath);	/* Remove index file just in case it got corrupted or zero size */
-			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;		/* Temporarily turn off auto download in this session only */
-			GMT->current.io.internet_error = true;				/* No point trying again */
+			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
+			GMT->current.io.internet_error = true;		/* No point trying again */
 			return 1;
 		}
 		GMT->current.io.refreshed[index] = true;	/* Done our job */
-		return 0;
+		return GMT_NOERROR;
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Local file %s found\n", indexpath);
@@ -489,7 +479,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 			struct GMT_DATA_HASH *O = NULL, *N = NULL;
 
 			if ((N = gmtremote_hash_load (GMT, indexpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
-				gmt_remove_file (GMT, indexpath);		/* Remove corrupted index file */
+				gmt_remove_file (GMT, indexpath);	/* Remove corrupted index file */
 				return 1;
 			}
 
@@ -534,7 +524,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", indexpath);
-	return 0;
+	return GMT_NOERROR;
 }
 
 void gmtlib_refresh_server (struct GMT_CTRL *GMT) {
@@ -579,7 +569,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char* file, 
 	 * If a local file is not found we return an error code, else 0.
 	 */
 
-	int k_data = -1;
+	int k_data = GMT_NOTSET;
 	unsigned int res;
 	bool is_url = false, is_query = false, is_srtm = false;
 	char was, *c = NULL, *jp2_file = NULL, *clean_file = NULL;
@@ -776,7 +766,7 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {  /* Not allowed to use remote copying */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated\n");
-		return 01;
+		return 1;
 	}
 	if (GMT->current.io.internet_error) return 1;   			/* Not able to use remote copying in this session */
 
@@ -879,20 +869,20 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char *f
 	bool be_fussy;
 	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
 
-	if (gmt_M_file_is_memory (file)) return 0;	/* Memory location always exists */
+	if (gmt_M_file_is_memory (file)) return GMT_NOERROR;	/* Memory location always exists */
 
 	be_fussy = ((mode & 4) == 0);	if (!be_fussy) mode -= 4;	/* Handle the optional 4 value */
 
 	if (gmt_set_remote_and_local_filenames (GMT, file, local_path, remote_path, mode)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot find file %s\n", file);
-		return 0;
+		return GMT_NOERROR;
 	}
 
 	if (remote_path[0]) {	/* Remote file given but not yet stored locally */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download %s to %s\n", remote_path, local_path);
 		if (gmt_download_file (GMT, file, remote_path, local_path, be_fussy)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to obtain remote file %s\n", file);
-			return 0;
+			return GMT_NOERROR;
 		}
 	}
 	if (gmt_M_file_is_url (file))	/* A remote file or query given via an URL */
