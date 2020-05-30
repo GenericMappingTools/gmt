@@ -23,7 +23,6 @@
  * psconvert uses the ideas of the EPS2XXX.m from Primoz Cermelj published in MatLab Central
  * and of psbbox.sh of Remko Scharroo.
  *
- *
  *--------------------------------------------------------------------*/
 /*
  * Authors:	Joaquim Luis and Remko Scharroo
@@ -2079,8 +2078,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 					}
 				}
 				else if (Ctrl->W.kml) {
-					GMT_Report (API, GMT_MSG_ERROR, "To GE images must be in geographical coordinates. Very likely "
-								"this won't work as you wish inside GE.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "To GE images must be in geographical coordinates (-JXd projected). "
+								"Very likely this won't work as you wish inside GE.\n");
 				}
 			}
 			else if (!strncmp (line, "%GMTBoundingBox:", 16)) {
