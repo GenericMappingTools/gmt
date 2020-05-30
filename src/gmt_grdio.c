@@ -1990,7 +1990,8 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 	if (options) {
 		size_t len;
 		struct GMTAPI_CTRL *API = GMT->parent;
-		int argc = 0; char **argv = NULL, *c = NULL;
+		int argc = 0, k_data;
+		char **argv = NULL, *c = NULL;
 		char file[GMT_LEN64] = {""}, *txt = NULL;
 
 		if ((argv = GMT_Create_Args (API, &argc, options)) == NULL) {
@@ -2000,11 +2001,12 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		strncpy (header->command, GMT->init.module_name, GMT_GRID_COMMAND_LEN320-1);
 		len = strlen (header->command);
 		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
-			if (gmtlib_file_is_srtmlist (API, argv[i])) {	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
-				snprintf (file, GMT_LEN64, "@earth_relief_0%cs", argv[i][strlen(argv[i])-8]);
+			if (gmtlib_file_is_tile_list (API, argv[i])) {	/* Want to replace the tiled list with the original @earth_relief_xxx name instead */
+				k_data = gmtlib_get_tile_id (API, argv[i]);
+				snprintf (file, GMT_LEN64, "@%s", API->remote_info[k_data].file);
 				txt = file;
 			}
-			else if (gmt_file_is_remotedata (GMT->parent, argv[i]) && (c = strstr (argv[i], ".grd"))) {
+			else if ((k_data = gmt_file_is_remotedata (API, argv[i])) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (argv[i], API->remote_info[k_data].ext))) {
 				c[0] = '\0';
 				snprintf (file, GMT_LEN64, "%s", argv[i]);
 				c[0] = '.';

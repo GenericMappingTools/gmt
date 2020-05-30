@@ -96,7 +96,6 @@
 #include <stdarg.h>
 #include "gmt_internals.h"
 #include "gmt_common_runpath.h"
-#include "gmt_remote.h"
 
 #ifdef GMT_MATLAB
 #	include <mex.h>
@@ -12870,7 +12869,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 	switch (family) {
 		case GMT_IS_GRID:
 			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
-			if ((k_data = gmtlib_get_serverfile_index (API, opt->arg)) != GMT_NOTSET)	/* This is a remote grid */
+			if ((k_data = gmt_file_is_remotedata (API, opt->arg)) != GMT_NOTSET)	/* This is a remote grid */
 				file = API->remote_info[k_data].file;	/* To ensure we have proper extension */
 			else
 				file = opt->arg;
@@ -13452,7 +13451,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 */
 
 	bool is_PS, is_psrose = false;
-	unsigned int srtm_res = 0;
 	char *required = (char *)in_required;
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -13861,19 +13859,18 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	}
 
 	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
-		bool ocean;
-		if (gmtlib_file_is_srtmrequest (API, opt->arg, &srtm_res, &ocean)) {
+		int k_data;
+		if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg)) != GMT_NOTSET) {	/* File is a remote tiled dataset */
 			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
-			unsigned int k;
 			char *list = NULL;
-			double res[4] = {15.0/3600.0, 1.0/3600.0, 0.0, 3.0/3600.0};	/* Only access 1 or 3 here */
 			struct GMT_OPTION *opt_J = GMT_Find_Option (API, 'J', *options);
+			struct GMT_DATA_INFO *I = &API->remote_info[k_data];
 			opt_R = GMT_Find_Option (API, 'R', *options);
 			if (opt_R == NULL) {
 				GMT_Report (API, GMT_MSG_DEBUG, "Cannot select %s as input without specifying a region with -R!\n", opt->arg);
 				return NULL;
 			}
-			/* Replace the magic reference to SRTM with a file list of SRTM tiles.
+			/* Replace the magic reference to a tiled remote dataset with a file list of the required tiles.
 			 * Because GMT_Parse_Common has not been called yet, no -J has been processed yet.
 			 * Since -J may be needed if -R does oblique or give a region in projected units
 			 * we must also parse -J here first before parsing -R */
@@ -13882,24 +13879,22 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
 			gmt_parse_R_option (GMT, opt_R->arg);
 			API->GMT->hidden.func_level = level;	/* Reset to what it should be */
-			/* Enforce multiple of 1s or 3s in wesn so requested region is in phase with tiles and at least covers the given region.
-			 * When ocean is true we instead round to nearest 15s since earth_relief_15s will be used.
-			 * the GMT_CONV8_LIMIT is there to ensure we dont round an almost exact x/dx */
-			k = (ocean) ? 0 : srtm_res;	/* Select 15s, 1s, or 3s increments */
-			GMT->common.R.wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / res[k]) + GMT_CONV8_LIMIT) * res[k];
-			GMT->common.R.wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / res[k]) - GMT_CONV8_LIMIT) * res[k];
-			GMT->common.R.wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / res[k]) + GMT_CONV8_LIMIT) * res[k];
-			GMT->common.R.wesn[YHI] = ceil  ((GMT->common.R.wesn[YHI] / res[k]) - GMT_CONV8_LIMIT) * res[k];
-			/* Get a file with a list of all needed srtm tiles */
-			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res, ocean, GMT->current.ps.active);
-			/* Replace the @[earth|srtm]_relief_0[1|3s file name with this local list */
+			/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given region. */
+			GMT->common.R.wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
+			GMT->common.R.wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
+			GMT->common.R.wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
+			GMT->common.R.wesn[YHI] = ceil  ((GMT->common.R.wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
+			/* Get a file with a list of all needed tiles */
+			list = gmtlib_get_tile_list (API, GMT->common.R.wesn, k_data, GMT->current.ps.active);
+			/* Replace the remote file name with this local list */
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;
 			GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
 		}
-		else if (gmt_file_is_remotedata (API, opt->arg) && !strstr (opt->arg, ".grd")) {
-			char *file = malloc (strlen(opt->arg)+5);
-			sprintf (file, "%s.grd", opt->arg);
+		else if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET) {	/* Remote file without file extension */
+			char *file = malloc (strlen(opt->arg)+1+strlen (API->remote_info[k_data].ext));
+			sprintf (file, "%s", opt->arg);
+			strcat (file, API->remote_info[k_data].ext);
 			gmt_M_str_free (opt->arg);
 			opt->arg = file;
 		}

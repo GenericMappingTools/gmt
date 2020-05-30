@@ -144,7 +144,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
-	int error = 0, fmode;
+	int error = 0, fmode, k_data;
 	unsigned int first = 0;	/* Real start of filename */
 
 	char path[PATH_MAX] = {""}, file[PATH_MAX] = {""}, *Yes = "Y", *No = "N", cwd[PATH_MAX] = {""}, *p = NULL;
@@ -208,8 +208,8 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
 		else if (opt->arg[0] == '@') /* Gave @ without -G is likely a user mistake; remove it */
 			first = 1;
-		if (gmt_file_is_remotedata (API, opt->arg) && !strstr (opt->arg, ".grd"))
-			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote grids */
+		if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET)
+			sprintf (file, "%s%s", opt->arg, API->remote_info[k_data].ext);	/* Append the implicit extension for remote grids */
 		else
 			strcpy (file, opt->arg);
 		if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */

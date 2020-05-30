@@ -542,9 +542,9 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 
 #define GMT_TOPO_PREFIX "earth_relief_"				/* Special prefix for global relief topography data sets */
 #define GMT_SRTM_PREFIX "srtm_relief_"				/* Special prefix for srtm relief data sets when ocean is not requested */
-#define GMT_SRTM_EXTENSION_REMOTE  "jp2"			/* Tile extension of JPEG2000 files to be downloaded */
-#define GMT_SRTM_EXTENSION_REMOTE_LEN  4U			/* Length of JPEG2000 file extension (+1) */
-#define GMT_SRTM_EXTENSION_LOCAL "nc"				/* Tile extension of nc short int files to be saved */
-#define GMT_SRTM_EXTENSION_LOCAL_LEN 2U				/* Length of  nc short int file extension */
+#define GMT_TILE_EXTENSION_REMOTE  "jp2"			/* Tile extension of JPEG2000 files to be downloaded */
+#define GMT_TILE_EXTENSION_REMOTE_LEN  4U			/* Length of JPEG2000 file extension (+1) */
+#define GMT_TILE_EXTENSION_LOCAL "nc"				/* Tile extension of nc short int files to be saved */
+#define GMT_TILE_EXTENSION_LOCAL_LEN 2U				/* Length of  nc short int file extension */
 
 #endif  /* GMT_CONSTANTS_H */

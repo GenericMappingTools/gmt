@@ -5164,7 +5164,7 @@ if (file[0] == ' ')
 int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	char file[PATH_MAX] = {""}, *cleanfile = NULL;
 	unsigned int first = 0;
-	int err;
+	int err, k_data;
 	struct stat S;
 
 	if (!filename || !filename[0]) return (-1);		/* No file given */
@@ -5182,8 +5182,8 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 		return (-1);
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */
 		char path[PATH_MAX] = {""};
-		if (gmt_file_is_remotedata (GMT->parent, filename) && !strstr (filename, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
-			strcat (file, ".grd");	/* Must supply the .grd */
+		if ((k_data = gmt_remote_no_extension (GMT->parent, filename)) != GMT_NOTSET)	/* A remote @filename_xxm|s grid without extension */
+			strcat (file, GMT->parent->remote_info[k_data].ext);	/* Must supply the .extension */
 		return (gmt_getdatapath (GMT, file, path, mode) ? 0 : -1);
 	}
 	/* If we get here then mode is bad (X_OK)? */

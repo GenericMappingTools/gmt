@@ -812,6 +812,7 @@ char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 
 	char *txt = NULL, *c = NULL, buffer[GMT_BUFSIZ] = {""};
 	bool first = true, skip_infiles = false;
+	int k_data;
 	size_t length = 0, inc, n_alloc = GMT_BUFSIZ;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = NULL;
@@ -834,10 +835,12 @@ char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 		}
 		else if (opt->option == GMT_OPT_INFILE)	{	/* Option for input filename [or numbers] */
 			if (skip_infiles) continue;
-			if (gmtlib_file_is_srtmlist (API, opt->arg))	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
-				snprintf (buffer, GMT_BUFSIZ, "@earth_relief_0%cs", opt->arg[strlen(opt->arg)-8]);
-			else if (gmt_file_is_remotedata (API, opt->arg) && (c = strstr (opt->arg, ".grd"))) {
-				c[0] = '\0';
+			if (gmtlib_file_is_tile_list (API, opt->arg)) {	/* Want to replace the tiled list with the original @remotefile name instead */
+				k_data = gmtlib_get_tile_id (API, opt->arg);
+				snprintf (buffer, GMT_BUFSIZ, "@%s", API->remote_info[k_data].file);
+			}
+			else if ((k_data = gmt_file_is_remotedata (API, opt->arg)) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (opt->arg, API->remote_info[k_data].ext))) {
+				c[0] = '\0';	/* Remove extension on remote file */
 				snprintf (buffer, GMT_BUFSIZ, "%s", opt->arg);
 				c[0] = '.';
 			}
