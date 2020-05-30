@@ -16,6 +16,7 @@ Synopsis
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
+[ |-Z|\ [**+s**\ *factor*][**+o**\ *offset*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 
@@ -100,6 +101,18 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
+
+**-Z**\ [**+s**\ *factor*][**+o**\ *offset*]
+    Use to subtract *offset* from the data and then multiply the results by
+    *factor* before writing the output file [1/0]. **Note**: This
+    *changes* the values in the grid.  In contrast, while options to supply
+    a scale and offset via the **+s** and **+o** modifiers in a file
+    name also adjust the data accordingly they also set the scale and
+    offset in the metadata, so upon reading the new file you recover
+    the original range.  Typically, those options are used to enable
+    packing of data via the use of an integer format (see table).
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
