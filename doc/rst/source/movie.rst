@@ -537,7 +537,7 @@ Remaking Movie with Existing PNG Frames
 
 Perhaps you made your movie and then decided you want to change the frame rate or adjust something else in
 how the movie is put together from all the still images.  If you kept all the frame images then
-iyou do not have to rerun the whole render process.  Assuming you want a MP4 movie and that you
+you do not have to rerun the whole render process.  Assuming you want a MP4 movie and that you
 want to rerun just the ffmpeg command, here is an example::
 
     ffmpeg -loglevel warning -f image2 -framerate 24 -y -i "mydir/myimages_%04d.png" -vcodec libx264 -pix_fmt yuv420p mymovie.mp4
