@@ -527,10 +527,24 @@ Other Movie Formats
 
 As configured, **movie** only offers the MP4 and WebM formats for movies.  The conversion is performed by the
 tool `FFmpeg <https://www.ffmpeg.org/>`_, which has more codecs and processing options than there are children in China.
-If you wish to run FFmpeg with other options, select mp4 and run **movie** with verbose information on (**-Vi**).
+If you wish to run FFmpeg with other options, run **movie** with one of the two video formats.
 At the end it will print the FFmpeg command used.  You can copy, paste, and modify this command to
 select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such
 as QuickTime Player, iMovie, MovieMaker, and other commercial programs to make a movie that way.
+
+Remaking Movie with Existing PNG Frames
+---------------------------------------
+
+Perhaps you made your movie and then decided you want to change the frame rate or adjust something else in
+how the movie is put together from all the still images.  If you kept all the frame images then
+you do not have to rerun the whole render process.  Assuming you want a MP4 movie and that you
+want to rerun just the ffmpeg command, here is an example::
+
+    ffmpeg -loglevel warning -f image2 -framerate 24 -y -i "mydir/myimages_%04d.png" -vcodec libx264 -pix_fmt yuv420p mymovie.mp4
+
+This command is also written out when movie performs this step.
+For other movie formats you will need to consult the `FFmpeg <https://www.ffmpeg.org/>`_ documentation.
+**Note**: On Windows, the percentage character is special (like the dollar sign under shells) so you will need to enter two (%%).
 
 Manipulating Multiple Movies
 ----------------------------
