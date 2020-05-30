@@ -167,7 +167,13 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 
 	while (fgets (line, GMT_LEN512, fp) != NULL) {
 		if (line[0] == '#') continue;	/* Skip any comments */
-		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile, I[k].tag, I[k].coverage, I[k].filler, I[k].remark)) != 12) {
+		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile, I[k].tag, I[k].coverage, I[k].filler, I[k].remark)) == 12) {
+			/* New format - soon the only format once testing is over */
+		}
+		else if ((nr = sscanf (line, "%s %s %s %c %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, I[k].size, I[k].tag, I[k].remark)) == 7) {
+			/* Current format on the server soon to go away */
+		}
+		else {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s should have 12 fields but only %d read for record %d - download error???\n", file, nr, k);
 			gmt_M_free (GMT, I);
 			fclose (fp);
