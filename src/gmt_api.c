@@ -13144,6 +13144,8 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 
 	if (gmt_M_file_is_memory (file)) return GMT_NOERROR;	/* Memory files are always fine */
 
+	gmt_set_unspecified_remote_registration (API, file_ptr);	/* Complete remote filenames without registration information */
+
 	switch (family) {
 		case GMT_IS_GRID:
 			if (!gmtlib_file_is_tile_list (API, file) && (c = strchr (file, '='))) {	/* Got filename=id[+modifiers] */

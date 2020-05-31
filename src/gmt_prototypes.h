@@ -174,6 +174,7 @@ EXTERN_MSC int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const c
 EXTERN_MSC int gmt_file_is_remotedata (struct GMTAPI_CTRL *API, const char *file);
 EXTERN_MSC int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *file);
 EXTERN_MSC int gmt_remote_no_extension (struct GMTAPI_CTRL *API, const char *file);
+EXTERN_MSC void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **file);
 
 /* gmt_grdio.c: */
 

@@ -222,6 +222,35 @@ int gmt_file_is_remotedata (struct GMTAPI_CTRL *API, const char *file) {
 	return ((key == NULL) ? GMT_NOTSET : key->id);
 }
 
+void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **file_ptr) {
+	/* If a remote file is missing _g or _p we find which one we should use and revise the file accordingly.
+	 * There are a few different scenarios where this can happen:
+	 * 1. Users of GMT <= 6.0.0 are used to say earth_relief_01m. These will now get p.
+	 * 2. Users who do not care about registration.  If so, they get p if available. */
+	char newfile[GMT_LEN256] = {""}, reg[2] = {'p', 'g'}, *file = NULL, *infile = NULL, *ext = NULL;
+	int k_data, k;
+	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
+	if (file[0] != '@') return;
+	infile = strdup (file);
+	/* Deal with any extension the user may have added */
+	ext = gmt_chop_ext (infile);
+	/* If the remote file is found then there is nothing to do */
+	if ((k_data = gmt_file_is_remotedata (API, infile)) == GMT_NOTSET) goto clean_up;
+	if (strstr (file, "_p") || strstr (file, "_g")) goto clean_up;	/* Already have the registration codes */
+	for (k = 0; k < 2; k++) {
+		/* First see if this _<reg> version exists of this dataset */
+		sprintf (newfile, "%s_%c", infile, reg[k]);
+		if ((k_data = gmt_file_is_remotedata (API, newfile)) != GMT_NOTSET) {
+			/* Found, replace given file name with this */
+			gmt_M_str_free (*file_ptr);
+			*file_ptr = strdup (newfile);
+			goto clean_up;
+		}
+	}
+clean_up:
+	gmt_M_str_free (infile);
+}
+
 int gmt_remote_no_extension (struct GMTAPI_CTRL *API, const char *file) {
 	int k_data = gmt_file_is_remotedata (API, file);
 	if (k_data == GMT_NOTSET) return GMT_NOTSET;

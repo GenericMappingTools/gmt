@@ -13860,6 +13860,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
 		int k_data;
+        gmt_set_unspecified_remote_registration (API, &(opt->arg));
+
 		if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg)) != GMT_NOTSET) {	/* File is a remote tiled dataset */
 			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
 			char *list = NULL;
