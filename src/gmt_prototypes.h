@@ -172,7 +172,7 @@ EXTERN_MSC double gmt_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FF
 EXTERN_MSC int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *localfile, bool mode);
 EXTERN_MSC int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char* file, char *local_path, char *remote_path, unsigned int mode);
 EXTERN_MSC int gmt_file_is_remotedata (struct GMTAPI_CTRL *API, const char *file);
-EXTERN_MSC bool gmt_file_is_srtmtile (struct GMTAPI_CTRL *API, const char *file, unsigned int *res);
+EXTERN_MSC int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *file);
 EXTERN_MSC int gmt_remote_no_extension (struct GMTAPI_CTRL *API, const char *file);
 
 /* gmt_grdio.c: */

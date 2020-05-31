@@ -5136,7 +5136,7 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 	/* Need to strip off any modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
 
-	if (strstr (filename, "/=srtm"))	/* Special list with SRTM tiles, use as is */
+	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use as is */
 		strncpy (file, filename, PATH_MAX-1);
 	else	/* Exclude netCDF3-D grid extensions to make sure we get a valid file name */
 		sscanf (filename, "%[^=?]", file);

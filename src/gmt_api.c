@@ -4999,7 +4999,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 	method = gmtapi_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
 	switch (method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
-			if (gmtlib_remote_file_is_tiled (API, S_obj->filename)) {	/* Special list file */
+			if (gmtlib_file_is_tile_list (API, S_obj->filename)) {	/* Special list file */
 				if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
 					if ((G_obj = gmtlib_assemble_tiles (API, NULL, S_obj->filename)) == NULL)
 						return_null (API, GMT_GRID_READ_ERROR);
@@ -13146,7 +13146,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 
 	switch (family) {
 		case GMT_IS_GRID:
-			if ((c = strchr (file, '='))) {	/* Got filename=id[+modifiers] */
+			if (!gmtlib_file_is_tile_list (API, file) && (c = strchr (file, '='))) {	/* Got filename=id[+modifiers] */
 				/* Nothing*/
 			}
 			else {	/* Check for modifiers */

@@ -38,9 +38,9 @@ struct GMT_DATA_INFO {
 	double offset;				/* Offset to shift to data range */
 	char size[GMT_LEN8];		/* E.g., 300M */
 	double tile_size;			/* Tile size in degrees (0 if no tiles) */
-	char tag[GMT_LEN16];		/* E.g., ER, SRTMGL3 */
-	char coverage[GMT_LEN64];	/* E.g., ER, earth_relief_tiles_03s.nc or - for none */
-	char filler[GMT_LEN64];		/* E.g., ER, earth_relief_tiles_15s.grd or - for none*/
+	char tag[GMT_LEN64];		/* E.g., earth_relief_01m_g, SRTMGL3 */
+	char coverage[GMT_LEN64];	/* E.g., srtm_tiles.nc or - for none */
+	char filler[GMT_LEN64];		/* E.g., earth_relief_tiles_15s.grd or - for none */
 	char remark[GMT_LEN128];	/* What it is */
 };
 
@@ -55,5 +55,12 @@ struct GMT_DATA_HASH {	/* Holds file hashes (probably SHA256) */
 
 #define GMT_HASH_INDEX	0
 #define GMT_INFO_INDEX	1
+
+#define GMT_TOPO_PREFIX "earth_relief_"				/* Special prefix for global relief topography data sets */
+#define GMT_SRTM_PREFIX "srtm_relief_"				/* Special prefix for srtm relief data sets when ocean is not requested */
+#define GMT_TILE_EXTENSION_REMOTE  "jp2"			/* Tile extension of JPEG2000 files to be downloaded */
+#define GMT_TILE_EXTENSION_REMOTE_LEN  3U			/* Length of JPEG2000 file extension */
+#define GMT_TILE_EXTENSION_LOCAL "nc"				/* Tile extension of nc short int files to be saved */
+#define GMT_TILE_EXTENSION_LOCAL_LEN 2U				/* Length of  nc short int file extension */
 
 #endif /* GMT_REMOTE_H */

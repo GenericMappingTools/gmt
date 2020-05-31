@@ -193,7 +193,7 @@ GMT_LOCAL bool grdblend_overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INF
 
 GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode, bool delayed, struct GMT_GRID *Grid) {
 	/* Returns how many blend files or a negative error value if something went wrong */
-	int type, status, not_supported = 0;
+	int type, status, not_supported = 0, t_data;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
 	bool srtm_job = false, common_inc = true;
 	struct GRDBLEND_INFO *B = NULL;
@@ -223,7 +223,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	}
 	else {	/* Must read blend file */
 		size_t n_alloc = 0;
-		unsigned int res;
+		unsigned int res = 0;
 		struct GMT_RECORD *In = NULL;
 		char r_in[GMT_LEN256] = {""}, file[PATH_MAX] = {""};
 		double weight;
@@ -255,7 +255,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			L[n].region = (nr > 1 && r_in[0] == '-' && r_in[1] == 'R') ? strdup (r_in) : strdup ("-");
 			if (n == 2 && !(r_in[0] == '-' && (r_in[1] == '\0' || r_in[1] == 'R'))) weight = atof (r_in);	/* Got "file weight" record */
 			L[n].weight = (nr == 1 || (n == 2 && r_in[0] == '-')) ? 1.0 : weight;	/* Default weight is 1 if none were given */
-			if (gmt_file_is_srtmtile (GMT->parent, L[n].file, &res)) {
+			if ((t_data = gmt_file_is_a_tile (GMT->parent, L[n].file)) != GMT_NOTSET) {
 				srtm_res = res;
 				srtm_job = true;
 				if (gmt_access (GMT, &L[n].file[1], F_OK)) {	/* Tile must be downloaded */
@@ -1015,7 +1015,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	nx_final = Grid->header->n_columns;	ny_final = Grid->header->n_rows;
 	if (zmode) {	/* Pass the information up via the header */
 		char line[GMT_GRID_REMARK_LEN160] = {""};
-		unsigned int srtm_res = zmode / 10;	/* Extract resolutin as 1 or 3 */
+		unsigned int srtm_res = zmode / 10;	/* Extract resolution as 1 or 3 */
 		zmode -= srtm_res * 10;			/* Extract zmode as 1 or 2 */
 		if (zmode == 1) sprintf (line, "@earth_relief_0%ds blend", srtm_res);
 		else if (zmode == 2) sprintf (line, "@srtm_relief_0%ds blend", srtm_res);
