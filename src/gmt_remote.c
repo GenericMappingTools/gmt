@@ -817,7 +817,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	return GMT_FILE_NOT_FOUND;
 }
 
-GMT_LOCAL int gmtremote_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
+int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 	/* Detect if a file matches the name <path>/[N|S]yy[E|W]xxx.tag.jp2 (e.g., N22W160.earth_relief_01m_p.jp2) */
 	char *c, tmp[GMT_LEN64] = {""};
 	if (file == NULL || file[0] == '\0') return false;	/* Bad argument */
@@ -905,11 +905,11 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 		fclose (urlfile.fp);
 	gmtremote_turn_off_ctrl_C_check ();
 
-	if ((k_data = gmtremote_is_jpeg2000_tile (API, localfile)) != GMT_NOTSET) {	/* Convert JP2 file to NC for local cache storage */
+	if ((k_data = gmtlib_file_is_jpeg2000_tile (API, localfile)) != GMT_NOTSET) {	/* Convert JP2 file to NC for local cache storage */
 		static char *args = "=ns -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
 		char *ncfile = gmt_strrep (localfile, GMT_TILE_EXTENSION_REMOTE, GMT_TILE_EXTENSION_LOCAL);
 		char cmd[GMT_LEN512] = {""};
-		sprintf (cmd, "%s %s%s", localfile, ncfile, args);
+		sprintf (cmd, "%s -G%s%s", localfile, ncfile, args);
 		if (!doubleAlmostEqual (API->remote_info[k_data].scale, 1.0) || !gmt_M_is_zero (API->remote_info[k_data].offset)) {
 			/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first */
 			char extra[GMT_LEN64] = {""};

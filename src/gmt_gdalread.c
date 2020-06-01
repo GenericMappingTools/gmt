@@ -651,10 +651,13 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		   So we'll check for the "Area" keyword and if found we will respect it and set grid to pix reg */
 		if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) &&
 			!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
-			pixel_reg = 1;
+			pixel_reg = true;
 		else if (!pixel_reg && GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL) &&
 			!strcmp(GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL), "Area"))
-			pixel_reg = 1;
+			pixel_reg = true;
+		else if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET && (Ctrl->RasterXsize % 2) == 0 && (Ctrl->RasterYsize % 2) == 0)
+			/* PW: Reading GMT server special JP2 tiles: even size implies pixel registration */
+			pixel_reg = true;
 
 		Ctrl->hdr[6] = pixel_reg;
 		Ctrl->hdr[7] = adfGeoTransform[1];
@@ -1093,6 +1096,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				pixel_reg = true;
 			else if (!pixel_reg && GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL) &&
 				!strcmp(GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL), "Area"))
+				pixel_reg = true;
+			else if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET && (Ctrl->RasterXsize % 2) == 0 && (Ctrl->RasterYsize % 2) == 0)
+				/* PW: Reading GMT server special JP2 tiles: even size implies pixel registration */
 				pixel_reg = true;
 		}
 
