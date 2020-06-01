@@ -193,7 +193,7 @@ GMT_LOCAL bool grdblend_overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INF
 
 GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, unsigned int *zmode, bool delayed, struct GMT_GRID *Grid) {
 	/* Returns how many blend files or a negative error value if something went wrong */
-	int type, status, not_supported = 0, t_data;
+	int type, status, not_supported = 0, t_data, k_data = GMT_NOTSET;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
 	bool srtm_job = false, common_inc = true;
 	struct GRDBLEND_INFO *B = NULL;
@@ -223,7 +223,6 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	}
 	else {	/* Must read blend file */
 		size_t n_alloc = 0;
-		unsigned int res = 0;
 		struct GMT_RECORD *In = NULL;
 		char r_in[GMT_LEN256] = {""}, file[PATH_MAX] = {""};
 		double weight;
@@ -256,12 +255,17 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			if (n == 2 && !(r_in[0] == '-' && (r_in[1] == '\0' || r_in[1] == 'R'))) weight = atof (r_in);	/* Got "file weight" record */
 			L[n].weight = (nr == 1 || (n == 2 && r_in[0] == '-')) ? 1.0 : weight;	/* Default weight is 1 if none were given */
 			if ((t_data = gmt_file_is_a_tile (GMT->parent, L[n].file, GMT_LOCAL_DIR)) != GMT_NOTSET) {
-				srtm_res = res;
-				srtm_job = true;
+				if (!strncmp (L[n].file, "@earth_relief_01s_g", 19U)) {
+					srtm_res = 1;	srtm_job = true;
+				}
+				else if (!strncmp (L[n].file, "@earth_relief_03s_g", 19U)) {
+					srtm_res = 3;	srtm_job = true;
+				}
 				if (gmt_access (GMT, &L[n].file[1], F_OK)) {	/* Tile must be downloaded */
 					L[n].download = true;
 					n_download++;
 				}
+				if (k_data == GMT_NOTSET) k_data = t_data;
 			}
 			n++;
 		} while (true);
@@ -269,7 +273,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		n_files = n;
 	}
 	if (srtm_job) {	/* Signal default CPT for earth or srtm relief final grid */
-		*zmode = (!strcmp (L[n_files-1].file, "@earth_relief_15s")) ? 1 : 2;
+		*zmode = (!strncmp (L[n_files-1].file, "@earth_relief_15s_p", 19U)) ? 1 : 2;
 		*zmode += 10 * srtm_res;
 		if (h) {
 			if (h->wesn[XHI] > 180.0) {
@@ -292,9 +296,11 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 
 		if (L[n].download) {	/* Report that we will be downloading this SRTM tile */
-			char tile[8] = {""};
-			strncpy (tile, &L[n].file[1], 7U);
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading SRTM%d tile %d of %d [%s]\n", srtm_res, ++down, n_download, tile);
+			if (k_data != GMT_NOTSET) {
+				char tile[8] = {""};
+				strncpy (tile, &(L[n].file[1]), 7U);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading %s tile %d of %d [%s]\n", GMT->parent->remote_info[k_data].file, ++down, n_download, tile);
+			}
 		}
 
 		strncpy (B[n].file, L[n].file, PATH_MAX-1);
@@ -433,7 +439,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			else {	/* Just reformat to netCDF so this grid may be used as well */
 				if (srtm_job)
 					GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
-					            "Convert SRTM%d tile from JPEG2000 to netCDF grid [%s]\n", srtm_res, B[n].file);
+					            "Convert tile from JPEG2000 to netCDF grid [%s]\n", B[n].file);
 				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 					sprintf (buffer, "%s/grdblend_reformatted_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
 				else	/* Must dump it in current directory */
@@ -744,14 +750,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 }
 
 GMT_LOCAL bool grdblend_got_plot_domain (struct GMTAPI_CTRL *API, const char *file, bool *ocean) {
-	/* If given an =srtm?? list then we return true if the region given when the list was assembled
+	/* If given an =tiled_<ID>_[P|G][K|O|X].xxxxxx list then we return true if the region given when the list was assembled
 	 * was a plot domain (give to a PS producer) or a grid domain (given to a grid producer). */
 	char *c = NULL;
+	size_t L;
 	*ocean = false;
 	if (file == NULL || file[0] == '\0') return false;	/* Sanity check */
-	if ((c = strstr (file, "=srtm")) && strlen (c) > 7 && strchr ("13", c[5]) && c[7] == 'P') {
-		GMT_Report (API, GMT_MSG_DEBUG, "Got SRTM list determined from a plot region\n");
-		if (c[6] == 'O') *ocean = true;
+	if ((c = strstr (file, "=tiled_")) && (L = strlen (c)) > 17 && c[L-9] == 'P') {
+		GMT_Report (API, GMT_MSG_DEBUG, "Got tiled list determined from a plot region\n");
+		if (c[L-8] == 'O') *ocean = true;
 		return true;
 	}
 	return false;

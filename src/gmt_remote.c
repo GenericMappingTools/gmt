@@ -1143,15 +1143,25 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn[], int k_dat
 char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, bool plot_region) {
 	/* Builds a list of the tiles to download for the chosen region, dataset and resolution.
 	 * Uses the optional tile information grid to know if a particular tile exists. */
-	char tile_list[PATH_MAX] = {""}, *file = NULL, **tile = NULL, regtype[2] = {'G', 'P'};
-	unsigned int k, n_tiles = 0;
+	char tile_list[PATH_MAX] = {""}, *file = NULL, **tile = NULL, datatype[3] = {'L', 'O', 'X'}, regtype[2] = {'G', 'P'};
+	unsigned int k, k_filler = GMT_NOTSET, n_tiles = 0, ocean = 2;
 	FILE *fp = NULL;
-	struct GMT_DATA_INFO *I = &API->remote_info[k_data];	/* Pointer to primary tiled dataset */
+	struct GMT_DATA_INFO *Ip = &API->remote_info[k_data], *Is = NULL;	/* Pointer to primary tiled dataset */
+
+	/* See if we want a background filler - this is most likely when using SRTM tiles and a 15s background ocean */
+	if (strcmp (Ip->filler, "-") && strncmp (Ip->file, "strm_", 5U)) {	/* Want background filler, except special case when srtm_relief is the given dataset name */
+		if ((k_filler = gmt_file_is_remotedata (API, Ip->filler)) == GMT_NOTSET) {
+			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Internal error - Filler grid %s is not a recognized remote data set.\n", Ip->filler);
+			return NULL;			
+		}
+		Is = &API->remote_info[k_filler];	/* Pointer to secondary tiled dataset */
+		ocean = (strcmp (Is->inc, "15s") == 0);
+	}
 
 	/* Create temporary filename for list of tiles */
 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Isolation mode is baked in, so just use 000000 (or any 6 characters) as extension */
-		snprintf (tile_list, PATH_MAX, "%s/=tiled_%d_%c.000000", API->GMT->parent->gwf_dir, k_data, regtype[plot_region]);
+		snprintf (tile_list, PATH_MAX, "%s/=tiled_%d_%c%c.000000", API->GMT->parent->gwf_dir, k_data, regtype[plot_region], datatype[ocean]);
 		file = tile_list;
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to create list of tiles: %s.\n", file);
@@ -1165,7 +1175,7 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 #endif
 		if (API->tmp_dir)	/* Have a recognized temp directory */
 			snprintf (tile_list, PATH_MAX, "%s/", API->tmp_dir);
-		snprintf (name, GMT_LEN16, "=tiled_%d_%c.000000", k_data, regtype[plot_region]);
+		snprintf (name, GMT_LEN16, "=tiled_%d_%c%c.000000", k_data, regtype[plot_region], datatype[ocean]);
 		strcat (tile_list, name);
 #ifdef _WIN32
 		if ((file = mktemp (tile_list)) == NULL) {
@@ -1195,7 +1205,7 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 
 	/* Get the primary tiles */
 	if ((tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles)) == NULL) {
-		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: No %s tiles available for your region.\n", I->file);
+		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: No %s tiles available for your region.\n", Ip->file);
 		fclose (fp);
 		gmt_remove_file (API->GMT, file);
 		return NULL;
@@ -1207,28 +1217,20 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 
 	gmtlib_free_list (API->GMT, tile, n_tiles);	/* Free the primary tile list */
 
-	if (strcmp (I->filler, "-") && strncmp (I->file, "strm_", 5U)) {	/* Want background filler, except special case when srtm_relief is the given dataset name */
-		int k_filler;
-		if ((k_filler = gmt_file_is_remotedata (API, I->filler)) == GMT_NOTSET) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Internal error - Filler grid %s is not a recognized remote data set.\n", I->filler);
-			fclose (fp);
-			return NULL;			
-		}
-		I = &API->remote_info[k_filler];	/* Pointer to secondary tiled dataset */
-		/* Get the secondary tiles */
+	if (k_filler != GMT_NOTSET) {	/* Want the secondary tiles */
 		if ((tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles))) {
 			/* Write secondary tiles to list file */
 			for (k = 0; k < n_tiles; k++)
 				fprintf (fp, "%s\n", tile[k]);
 			gmtlib_free_list (API->GMT, tile, n_tiles);	/* Free the secondary tile list */
-			if (API->remote_info[k_data].d_inc < I->d_inc) {
+			if (Ip->d_inc < Is->d_inc) {
 				/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
 				/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
 				 * region. The GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx away from the truth. */
-				API->GMT->common.R.wesn[XLO] = floor ((API->GMT->common.R.wesn[XLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
-				API->GMT->common.R.wesn[XHI] = ceil  ((API->GMT->common.R.wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
-				API->GMT->common.R.wesn[YLO] = floor ((API->GMT->common.R.wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
-				API->GMT->common.R.wesn[YHI] = ceil  ((API->GMT->common.R.wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
+				API->GMT->common.R.wesn[XLO] = floor ((API->GMT->common.R.wesn[XLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+				API->GMT->common.R.wesn[XHI] = ceil  ((API->GMT->common.R.wesn[XHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
+				API->GMT->common.R.wesn[YLO] = floor ((API->GMT->common.R.wesn[YLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+				API->GMT->common.R.wesn[YHI] = ceil  ((API->GMT->common.R.wesn[YHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
 			}
 		}
 	}
