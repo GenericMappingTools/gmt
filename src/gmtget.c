@@ -40,13 +40,16 @@ struct GMTGET_CTRL {
 		bool active;
 		char *dir;
 	} D;
-	struct GMTGET_L {	/* -L */
-		bool active;
-	} L;
 	struct GMTGET_G {	/* -Gfilename */
 		bool active;
 		char *file;
 	} G;
+	struct GMTGET_L {	/* -L */
+		bool active;
+	} L;
+	struct GMTGET_N {	/* -N */
+		bool active;
+	} N;
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -65,7 +68,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTGET_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D<download>] [-G<defaultsfile>] [-L] [PARAMETER1 PARAMETER2 PARAMETER3 ...] [%s]\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D<download>] [-G<defaultsfile>] [-L] [-N] [PARAMETER1 PARAMETER2 PARAMETER3 ...] [%s]\n", name, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see gmt.conf man page\n");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -80,6 +83,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses the GMT defaults].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Write one parameter value per line [Default writes all on one line].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT convert grids downloaded with -D to netCDF but leave as JP2.\n");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -116,6 +120,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 			case 'L':	/* One per line */
 				Ctrl->L.active = true;
 				break;
+			case 'N':	/* Leave JP2 as is */
+				Ctrl->N.active = true;
+				break;
+
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -168,6 +176,8 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 		if (!strncmp (Ctrl->D.dir, "all", 3U) || !strncmp (Ctrl->D.dir, "data", 4U)) {	/* Want data */
 			unsigned int n_tiles, k, t;
 			double world[4] = {-180.0, +180.0, -90.0, +90.0};
+
+			if (Ctrl->N.active) GMT->current.io.leave_as_jp2 = true;	/* Do not convert to netCDF right away */
 			if ((c = strchr (Ctrl->D.dir, '='))) {	/* But only a specific planet */
 				planet = &c[1];
 			}

@@ -623,6 +623,35 @@ GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file) {
 	return (new_file);
 }
 
+GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localfile) {
+	static char *args = "=ns -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
+	char cmd[GMT_LEN512] = {""},  *ncfile = NULL;
+	int k_data;
+
+	if (API->GMT->current.io.leave_as_jp2) return GMT_NOERROR;	/* Conversion temporarily turned off by gmtget -N */
+	if ((k_data = gmtlib_file_is_jpeg2000_tile (API, localfile)) == GMT_NOTSET) return GMT_NOERROR;	/* Nothing to do */
+
+	/* Convert JP2 file to NC for local cache storage */
+	ncfile = gmt_strrep (localfile, GMT_TILE_EXTENSION_REMOTE, GMT_TILE_EXTENSION_LOCAL);
+	sprintf (cmd, "%s -G%s%s", localfile, ncfile, args);
+	if (!doubleAlmostEqual (API->remote_info[k_data].scale, 1.0) || !gmt_M_is_zero (API->remote_info[k_data].offset)) {
+		/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first */
+		char extra[GMT_LEN64] = {""};
+		sprintf (extra, " -Z+s%g+o%g", API->remote_info[k_data].scale, API->remote_info[k_data].offset);
+		strcat (cmd, extra);
+	}
+	GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
+	if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", localfile);
+		gmt_M_free (API->GMT, ncfile);
+		return GMT_RUNTIME_ERROR;
+	}
+	gmt_M_str_free (ncfile);
+	if (gmt_remove_file (API->GMT, localfile))
+		GMT_Report (API, GMT_MSG_WARNING, "Could not even remove file %s\n", localfile);
+	return GMT_NOERROR;
+}
+
 int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file, char *local_path, char *remote_path, unsigned int mode) {
 	/* Determines the remote and local files for any given file_name.
 	 * For remote files, the mode controls where they are written locally:
@@ -719,8 +748,12 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 		/* Set local path */
 		switch (mode) {
 			case GMT_CACHE_DIR:
-				if (GMT->session.CACHEDIR == NULL || access (GMT->session.CACHEDIR, R_OK))
-					GMT_Report (API, GMT_MSG_ERROR, "Cache directory storage requested for %s but your cache directory is undefined or does not exist\n", file);
+				if (GMT->session.CACHEDIR == NULL) {
+					GMT_Report (API, GMT_MSG_ERROR, "Cache directory storage requested for %s but your cache directory is undefined\n", file);
+					return GMT_FILE_NOT_FOUND;
+				}
+				else if (access (GMT->session.CACHEDIR, R_OK) && gmt_mkdir (GMT->session.CACHEDIR))
+					GMT_Report (API, GMT_MSG_ERROR, "Cache directory storage requested for %s but your cache directory could not be created\n", file);
 				else
 					snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &file[1]);
 				break;
@@ -827,7 +860,7 @@ int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 }
 
 int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *localfile, bool be_fussy) {
-	int curl_err, k_data;
+	int curl_err, error;
 	size_t fsize;
 	CURL *Curl = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
@@ -905,29 +938,9 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 		fclose (urlfile.fp);
 	gmtremote_turn_off_ctrl_C_check ();
 
-	if ((k_data = gmtlib_file_is_jpeg2000_tile (API, localfile)) != GMT_NOTSET) {	/* Convert JP2 file to NC for local cache storage */
-		static char *args = "=ns -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
-		char *ncfile = gmt_strrep (localfile, GMT_TILE_EXTENSION_REMOTE, GMT_TILE_EXTENSION_LOCAL);
-		char cmd[GMT_LEN512] = {""};
-		sprintf (cmd, "%s -G%s%s", localfile, ncfile, args);
-		if (!doubleAlmostEqual (API->remote_info[k_data].scale, 1.0) || !gmt_M_is_zero (API->remote_info[k_data].offset)) {
-			/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first */
-			char extra[GMT_LEN64] = {""};
-			sprintf (extra, " -Z+s%g+o%g", API->remote_info[k_data].scale, API->remote_info[k_data].offset);
-			strcat (cmd, extra);
-		}
-		GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
-		if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", localfile);
-			gmt_M_free (GMT, ncfile);
-			return 1;
-		}
-		gmt_M_str_free (ncfile);
-		if (gmt_remove_file (GMT, localfile))
-			GMT_Report (API, GMT_MSG_WARNING, "Could not even remove file %s\n", localfile);
-	}
+	error = gmtremote_convert_jp2_to_nc (API, localfile);
 
-	return (GMT_NOERROR);
+	return (error);
 }
 
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char *file, unsigned int mode) {

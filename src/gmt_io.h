@@ -258,6 +258,7 @@ struct GMT_IO {				/* Used to process input data records */
 	bool refreshed[2];		/* true after calling the hash_refresh function the first time, for hash and info, respectively */
 	bool internet_error;		/* true after failing to get hash table due to time-out */
 	bool grid_padding;		/* If true we try to read two extra rows/cols from grids for BC purposes */
+	bool leave_as_jp2;		/* If true we do not convert downloaded JP2 grids to NC right away, but as needed */
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */

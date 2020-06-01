@@ -17,6 +17,7 @@ Synopsis
 [ |-D|\ *selection* ]
 [ |-G|\ *defaultsfile* ]
 [ |-L| ]
+[ |-N| ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -60,6 +61,14 @@ PARAMETER
     returns all selected parameter values on one line separated by
     spaces].
 
+.. _-N:
+
+**-N**
+    Used in conjunction with **-D** and disables the otherwise automatic conversion
+    of downloaded compressed JP2000 tiles to locally (compressed) netCDF grids.
+    This speeds up the total data request and defers the conversion to when the
+    tile is requested by a module.
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -70,9 +79,9 @@ PARAMETER
 Examples
 --------
 
-To download all the Earth gridded products, try::
+To download all the Earth gridded products, leaving tiles as JP2000 files, try::
 
-    gmt get -Ddata=earth
+    gmt get -Ddata=earth -N
 
 To download the entire cache directory contents, try::
 

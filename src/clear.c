@@ -37,14 +37,14 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data [<planet>]|sessions|settings [%s]\n\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data[=<planet>]|sessions|settings [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tDeletes the specified item.  Choose one of these targets:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cache     Deletes the user\'s cache directory [%s].\n", API->GMT->session.CACHEDIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t   data      Deletes the user\'s data download directory [%s/server].\n", API->GMT->session.USERDIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t             Add a specific planet to limit removal to such data [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t             Append =<planet> to limit removal to such data for a specific <planet> [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   sessions  Deletes the user\'s sessions directory [%s].\n", API->session_dir);
 	GMT_Message (API, GMT_TIME_NONE, "\t   settings  Deletes a modern mode session\'s gmt.conf file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
@@ -226,11 +226,11 @@ EXTERN_MSC int GMT_clear (void *V_API, int mode, void *args) {
 			if (clear_cache (API))
 				error = GMT_RUNTIME_ERROR;
 		}
-		else if (!strcmp (opt->arg, "data")) {	/* Clear the data */
-			char *planet = (opt->next) ? opt->next->arg : NULL;
+		else if (!strncmp (opt->arg, "data", 4U)) {	/* Clear the data */
+			char *planet = strchr (opt->arg, '=');
+			if (planet) planet++;	/* Skip past the = sign */
 			if (clear_data (API, planet))
 				error = GMT_RUNTIME_ERROR;
-			if (planet) opt = opt->next;	/* Wind past the given planet */
 		}
 		else if (!strcmp (opt->arg, "sessions")) {	/* Clear the sessions dir */
 			if (clear_sessions (API))
