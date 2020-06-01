@@ -11032,6 +11032,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		else
 			type = 'G';
 	}
+	/* 1q. Check if gmtget is downloading dataset */
+	else if (!strncmp (module, "gmtget", 6U) && (opt = GMT_Find_Option (API, 'D', *head))) {
+		deactivate_output = true;	/* Download, turn off output */
+	}
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */

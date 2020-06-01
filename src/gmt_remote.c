@@ -1059,14 +1059,93 @@ int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *infile, unsigned in
 	return (k_data);
 }
 
+char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn[], int k_data, unsigned int *n_tiles) {
+	/* Return the full list of tiles for this tiled dataset */
+	char **list = NULL, YS, XS, file[GMT_LEN64] = {""};
+	int x, lon, lat, iw, ie, is, in,  t_size;
+	uint64_t node, row, col;
+	unsigned int n_alloc = GMT_CHUNK, n = 0;
+	struct GMT_DATA_INFO *I = &API->remote_info[k_data];	/* Pointer to primary tiled dataset */
+	struct GMT_GRID *Coverage = NULL;
+
+	if (gmt_M_is_zero (I->tile_size)) return NULL;
+
+	if (strcmp (I->coverage, "-")) {	/* This primary tiled dataset has limited coverage as described by a named hit grid */
+		char coverage_file[GMT_LEN64] = {""};
+		sprintf (coverage_file, "@%s", I->coverage);	/* Prepend the remote flag since we may need to download the file */
+		if ((Coverage = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, coverage_file, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "gmt_get_dataset_tiles: Unable to obtain coverage grid %s of available tiles.\n", I->coverage);
+			API->error = GMT_RUNTIME_ERROR;
+			return NULL;
+		}
+	}
+
+	if ((list = gmt_M_memory (API->GMT, NULL, n_alloc, char *)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_get_dataset_tiles: Unable to allocate memory.\n");
+		API->error = GMT_RUNTIME_ERROR;
+		return NULL;
+	}
+
+	/* Get nearest whole multiple of tile size wesn boundary.  This ASSUMES all global grids are -Rd  */
+	iw = (int)(-180 + floor ((wesn[XLO] + 180) / I->tile_size) * I->tile_size);
+	ie = (int)(-180 + ceil  ((wesn[XHI] + 180) / I->tile_size) * I->tile_size);
+	is = (int)( -90 + floor ((wesn[YLO] +  90) / I->tile_size) * I->tile_size);
+	in = (int)( -90 + ceil  ((wesn[YHI] +  90) / I->tile_size) * I->tile_size);
+	t_size = rint (I->tile_size);
+
+	for (lat = is; lat < in; lat += t_size) {	/* Loop over the rows of tiles */
+		if (Coverage && (lat < Coverage->header->wesn[YLO] || lat > Coverage->header->wesn[YHI])) continue;	/* Outside Coverage band */
+		YS = (lat < 0) ? 'S' : 'N';
+		for (x = iw; x < ie; x += t_size) {	/* Loop over the columns of tiles */
+			lon = (x < 0) ? x + 360 : x;	/* Get longitude in 0-360 range */
+			if (Coverage) {
+				if (lon < Coverage->header->wesn[XLO] || lon > Coverage->header->wesn[XHI]) continue;	/* Outside Coverage band */
+				row  = gmt_M_grd_y_to_row (GMT, (double)lat, Coverage->header);
+				col  = gmt_M_grd_x_to_col (GMT, (double)lon, Coverage->header);
+				node = gmt_M_ijp (Coverage->header, row, col);
+				if (Coverage->data[node] == 0) continue;	/* No such tile exists */
+			}
+			lon = (x >= 180) ? x - 360 : x;	/* Need longitudes 0-179 for E and 1-180 for W */
+			XS = (lon < 0) ? 'W' : 'E';
+			/* Write remote tile name to list */
+			if (n >= n_alloc) {
+				n_alloc <<= 1; 
+				if ((list = gmt_M_memory (API->GMT, list, n_alloc, char *)) == NULL) {
+					GMT_Report (API, GMT_MSG_ERROR, "gmt_get_dataset_tiles: Unable to reallocate memory.\n");
+					API->error = GMT_RUNTIME_ERROR;
+					return NULL;
+				}
+			}
+			sprintf (file, "@%c%2.2d%c%3.3d.%s.%s", YS, abs(lat), XS, abs(lon), I->tag, GMT_TILE_EXTENSION_LOCAL);
+			list[n++] = strdup (file);
+		}
+	}
+	if (Coverage && GMT_Destroy_Data (API, &Coverage) != GMT_NOERROR) {
+		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: Unable to destroy coverage grid.\n");
+	}
+
+	*n_tiles = n;
+	if (n == 0) {	/* Nutin' */
+		gmt_M_free (API->GMT, list);
+		GMT_Report (API, GMT_MSG_WARNING, "gmt_get_dataset_tiles: No %s tiles available for your region.\n", I->file);
+		return NULL;
+	}
+
+	if ((list = gmt_M_memory (API->GMT, list, n, char *)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_get_dataset_tiles: Unable to finalize memory.\n");
+		API->error = GMT_RUNTIME_ERROR;
+		return NULL;
+	}
+
+	return (list);
+}
+
 char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, bool plot_region) {
 	/* Builds a list of the tiles to download for the chosen region, dataset and resolution.
 	 * Uses the optional tile information grid to know if a particular tile exists. */
-	char tile_list[PATH_MAX] = {""}, YS, XS, *file = NULL, regtype[2] = {'G', 'P'};
-	int x, lon, lat, iw, ie, is, in, n_tiles = 0, t_size, n_datasets = 1, d, data[2] = {k_data, GMT_NOTSET};
-	uint64_t node, row, col;
+	char tile_list[PATH_MAX] = {""}, *file = NULL, **tile = NULL, regtype[2] = {'G', 'P'};
+	unsigned int k, n_tiles = 0;
 	FILE *fp = NULL;
-	struct GMT_GRID *Coverage[2] = {NULL, NULL};	/* Coverage[1] is always NULL, used to make a loop possible */
 	struct GMT_DATA_INFO *I = &API->remote_info[k_data];	/* Pointer to primary tiled dataset */
 
 	/* Create temporary filename for list of tiles */
@@ -1114,77 +1193,46 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 #endif
 	}
 
-	if (strcmp (I->coverage, "-")) {	/* This primary tiled dataset has limited coverage as described by a named hit grid */
-		char coverage_file[GMT_LEN64] = {""};
-		sprintf (coverage_file, "@%s", I->coverage);	/* Prepend the remote flag since we may need to download the file */
-		if ((Coverage[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, coverage_file, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to obtain coverage grid %s of available tiles.\n", I->coverage);
-			API->error = GMT_RUNTIME_ERROR;
-			fclose (fp);
-			return NULL;
-		}
+	/* Get the primary tiles */
+	if ((tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles)) == NULL) {
+		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: No %s tiles available for your region.\n", I->file);
+		fclose (fp);
+		gmt_remove_file (API->GMT, file);
+		return NULL;
 	}
+
+	/* Write primary tiles to list file */
+	for (k = 0; k < n_tiles; k++)
+		fprintf (fp, "%s\n", tile[k]);
+
+	gmtlib_free_list (API->GMT, tile, n_tiles);	/* Free the primary tile list */
 
 	if (strcmp (I->filler, "-") && strncmp (I->file, "strm_", 5U)) {	/* Want background filler, except special case when srtm_relief is the given dataset name */
-		if ((data[1] = gmt_file_is_remotedata (API, I->filler)) == GMT_NOTSET) {
+		int k_filler;
+		if ((k_filler = gmt_file_is_remotedata (API, I->filler)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Internal error - Filler grid %s is not a recognized remote data set.\n", I->filler);
+			fclose (fp);
 			return NULL;			
 		}
-		else {	/* Need to loop over two sets of tiles */
-			n_datasets = 2;	
-			if (I->d_inc < API->remote_info[data[1]].d_inc) {
-				/* If selected dataset has smaller increment that the filler grid then we adjust -R to be in a multiple of the larger spacing */
-				/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given region.
-				 * When ocean is true we instead round to nearest 15s since earth_relief_15s will be used.
-				 * the GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx */
-				double inc = API->remote_info[data[1]].d_inc;
-				API->GMT->common.R.wesn[XLO] = floor ((API->GMT->common.R.wesn[XLO] / inc) + GMT_CONV8_LIMIT) * inc;
-				API->GMT->common.R.wesn[XHI] = ceil  ((API->GMT->common.R.wesn[XHI] / inc) - GMT_CONV8_LIMIT) * inc;
-				API->GMT->common.R.wesn[YLO] = floor ((API->GMT->common.R.wesn[YLO] / inc) + GMT_CONV8_LIMIT) * inc;
-				API->GMT->common.R.wesn[YHI] = ceil  ((API->GMT->common.R.wesn[YHI] / inc) - GMT_CONV8_LIMIT) * inc;
-			}
-		}
-	}
-
-	for (d = 0; d < n_datasets; d++) {	/* First do primary dataset, then optionally the filler dataset */
-		I = &API->remote_info[data[d]];	/* Pointer to current tiled dataset */
-		/* Get nearest whole multiple of tile size wesn boundary.  This ASSUMES all global grids are -Rd  */
-		iw = (int)(-180 + floor ((wesn[XLO] + 180) / I->tile_size) * I->tile_size);
-		ie = (int)(-180 + ceil  ((wesn[XHI] + 180) / I->tile_size) * I->tile_size);
-		is = (int)( -90 + floor ((wesn[YLO] +  90) / I->tile_size) * I->tile_size);
-		in = (int)( -90 + ceil  ((wesn[YHI] +  90) / I->tile_size) * I->tile_size);
-		t_size = rint (I->tile_size);
-
-		for (lat = is; lat < in; lat += t_size) {	/* Loop over the rows of tiles */
-			if (Coverage[d] && (lat < Coverage[d]->header->wesn[YLO] || lat > Coverage[d]->header->wesn[YHI])) continue;	/* Outside Coverage band */
-			YS = (lat < 0) ? 'S' : 'N';
-			for (x = iw; x < ie; x += t_size) {	/* Loop over the columns of tiles */
-				lon = (x < 0) ? x + 360 : x;	/* Get longitude in 0-360 range */
-				if (Coverage[d]) {
-					if (lon < Coverage[d]->header->wesn[XLO] || lon > Coverage[d]->header->wesn[XHI]) continue;	/* Outside Coverage band */
-					row  = gmt_M_grd_y_to_row (GMT, (double)lat, Coverage[d]->header);
-					col  = gmt_M_grd_x_to_col (GMT, (double)lon, Coverage[d]->header);
-					node = gmt_M_ijp (Coverage[d]->header, row, col);
-					if (Coverage[d]->data[node] == 0) continue;	/* No such tile exists */
-				}
-				lon = (x >= 180) ? x - 360 : x;	/* Need longitudes 0-179 for E and 1-180 for W */
-				XS = (lon < 0) ? 'W' : 'E';
-				/* Write remote tile name to list */
-				fprintf (fp, "@%c%2.2d%c%3.3d.%s.%s\n", YS, abs(lat), XS, abs(lon), I->tag, GMT_TILE_EXTENSION_LOCAL);
-				n_tiles++;
+		I = &API->remote_info[k_filler];	/* Pointer to secondary tiled dataset */
+		/* Get the secondary tiles */
+		if ((tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles))) {
+			/* Write secondary tiles to list file */
+			for (k = 0; k < n_tiles; k++)
+				fprintf (fp, "%s\n", tile[k]);
+			gmtlib_free_list (API->GMT, tile, n_tiles);	/* Free the secondary tile list */
+			if (API->remote_info[k_data].d_inc < I->d_inc) {
+				/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
+				/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
+				 * region. The GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx away from the truth. */
+				API->GMT->common.R.wesn[XLO] = floor ((API->GMT->common.R.wesn[XLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
+				API->GMT->common.R.wesn[XHI] = ceil  ((API->GMT->common.R.wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
+				API->GMT->common.R.wesn[YLO] = floor ((API->GMT->common.R.wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
+				API->GMT->common.R.wesn[YHI] = ceil  ((API->GMT->common.R.wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
 			}
 		}
 	}
 	fclose (fp);
-
-	/* Done listing all the tiles */
-
-	if (Coverage[0] && GMT_Destroy_Data (API, &Coverage[0]) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: Unable to destroy coverage grid.\n");
-	}
-
-	if (n_tiles == 0)	/* No tiles inside region */
-		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: No %s tiles available for your region.\n", I->file);
 
 	return (strdup (file));
 }

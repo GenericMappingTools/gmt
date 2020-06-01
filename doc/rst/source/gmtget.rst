@@ -12,16 +12,23 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt get** [ |-G|\ *defaultsfile* ] [ |-L| ] *PARAMETER1* [ *PARAMETER2* *PARAMETER3* ... ]
+**gmt get**
+[ *PARAMETER1* *PARAMETER2* *PARAMETER3* ... ]
+[ |-D|\ *selection* ]
+[ |-G|\ *defaultsfile* ]
+[ |-L| ]
+[ |SYN_OPT-V| ]
 
 |No-spaces|
 
 Description
 -----------
 
-**gmt get** will list the value of one or more GMT default parameters.
+Normally, **gmt get** will list the value of one or more specified GMT default parameters.
+Alternatively (with **-D**), it will instead download selected sets remote data from the
+current GMT data server.
 
-Required Arguments
+Optional Arguments
 ------------------
 
 PARAMETER
@@ -29,8 +36,15 @@ PARAMETER
     those parameters will be written to *stdout*. For a complete listing
     of available parameters and their meaning, see the :doc:`gmt.conf` man page.
 
-Optional Arguments
-------------------
+.. _-D:
+
+**-D**\ *selection*
+    Download one or more directories of data from the GMT server.  Here,
+    *selection* may be *cache* (get the entire cache directory with the files
+    used in the GMT examples and tests), *data* (the entire data directory
+    on the server), or *all* (both *cache* and *data*).  You can further limit
+    the *data* download by appending =*planet*.  Consult the dataset documentation
+    to see what data sets are currently available from the server.
 
 .. _-G:
 
@@ -44,10 +58,25 @@ Optional Arguments
 **-L**
     Return the values of the parameters on separate lines [Default
     returns all selected parameter values on one line separated by
-    spaces]
+    spaces].
+
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
+
+.. include:: explain_help.rst_
 
 Examples
 --------
+
+To download all the Earth gridded products, try::
+
+    gmt get -Ddata=earth
+
+To download the entire cache directory contents, try::
+
+    gmt get -Dcache
 
 To list the value of the parameter :term:`PS_COMMENTS`::
 
@@ -58,9 +87,17 @@ To get both the values of the parameter
 
     gmt get MAP_GRID_CROSS_SIZE_PRIMARY MAP_GRID_CROSS_SIZE_SECONDARY
 
+Downloading Data
+----------------
+
+Be aware that the GMT data server hosts many tens of Gb of data sets.  The **-D** option
+may require considerable free space on your local computer.  Data and cache directories
+may be removed by using the :doc:`clear` module.
+
 See Also
 --------
 
+:doc:`clear`,
 :doc:`gmt`,
 :doc:`gmt.conf`,
 :doc:`gmtdefaults`,
