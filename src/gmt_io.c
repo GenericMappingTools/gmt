@@ -4973,6 +4973,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	 * If the dir ends in / we traverse recursively [not under Windows].
 	 */
 	unsigned int d, pos;
+	int t_data;
 	size_t L;
 	bool found;
 	char *udir[4] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL}, dir[PATH_MAX];
@@ -5033,6 +5034,16 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 			}
 #endif /* HAVE_DIRENT_H_ */
 		}
+		if (found && gmtio_file_is_readable (GMT, path)) {
+			if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
+			return (path);	/* Yes, can read it */
+		}
+	}
+
+	/* Check special case of a local tile */
+	if ((t_data = gmt_file_is_a_tile (GMT->parent, stem, GMT_LOCAL_DIR)) != GMT_NOTSET) {
+		snprintf (path, PATH_MAX, "%s%s%s%s", GMT->session.USERDIR, GMT->parent->remote_info[t_data].dir, GMT->parent->remote_info[t_data].file, stem);
+		found = (!access (path, F_OK));
 		if (found && gmtio_file_is_readable (GMT, path)) {
 			if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
 			return (path);	/* Yes, can read it */

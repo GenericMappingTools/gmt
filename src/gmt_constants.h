@@ -538,6 +538,7 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 	GMT_AUTO_DIR   = 0,	/* Use the directory given per internal rules */
 	GMT_CACHE_DIR  = 1,	/* Use the cache directory */
 	GMT_DATA_DIR   = 2,	/* Use the data directory */
-	GMT_LOCAL_DIR  = 3};	/* Use the local (current) directory */
+	GMT_LOCAL_DIR  = 3,	/* Use the local (current) directory */
+	GMT_REMOTE_DIR = 4}; /* File is on the remote server */
 
 #endif  /* GMT_CONSTANTS_H */
