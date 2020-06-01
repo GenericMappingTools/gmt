@@ -994,7 +994,8 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 			API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
 	}
 	else {	/* The handling of the core library is only special when gmt.c is used. */
-		API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
+		sprintf(path, "%s/%s", GMT->init.runtime_libdir, GMT_CORE_LIB_NAME);
+		API->lib[0].path = strdup(path);
 		GMT_Report (API, GMT_MSG_DEBUG, "Loading core GMT shared library: %s\n", API->lib[0].path);
 		if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while loading core GMT shared library: %s\n", dlerror());

@@ -27,6 +27,7 @@
  */
 
 #include "gmt_dev.h"
+#include "gmt_sharedlibs.h"
 
 #if !(defined(WIN32) || defined(NO_SIGHANDLER))
 #ifdef	__APPLE__
@@ -210,8 +211,14 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Show share directory */
-			else if (!strncmp (argv[arg_n], "--show-sharedir", 12U)) {
+			else if (!strncmp (argv[arg_n], "--show-sharedir", 15U)) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
+				status = GMT_NOERROR;
+			}
+
+			/* Show share directory */
+			else if (!strncmp (argv[arg_n], "--show-sharelib", 15U)) {
+				fprintf (stdout, "%s\n", api_ctrl->lib[0].path);
 				status = GMT_NOERROR;
 			}
 
@@ -337,6 +344,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
 			fprintf (stderr, "  --show-sharedir   Show directory for shared GMT resources.\n");
+			fprintf (stderr, "  --show-sharelib   Show gmt share lib full name. Handy for externals.\n");
 			fprintf (stderr, "  --version         Print GMT version number.\n\n");
 			fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
 		}
