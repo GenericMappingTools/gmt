@@ -721,7 +721,16 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 			strcat (local_path, GMT->parent->remote_info[t_data].file);	/* Append the tiledir to get full path to dir for this type of tiles */
 			strcat (local_path, &file[1]);	/* Append filename */
 			is_tile = true;
-			if (access (local_path, R_OK)) goto not_local;	/* No such file yet */
+			if (access (local_path, R_OK)) {	/* A local tile in netCDF format was not found.  See if it exists as compressed JP2000 */
+				char *local_jp2 = gmt_strrep (local_path, GMT_TILE_EXTENSION_LOCAL, GMT_TILE_EXTENSION_REMOTE);
+ 				if (access (local_jp2, R_OK))
+	 				goto not_local;	/* No such file yet */
+				else {	/* Yep, do the just-in-time conversion now */
+					int error = gmtremote_convert_jp2_to_nc (API, local_jp2);
+					gmt_M_str_free (local_jp2);
+					if (error) return error;	/* Something failed in the conversion */
+				}
+			}
 		}
 		else {	/* Must be cache file */
 			if (GMT->session.CACHEDIR == NULL) goto not_local;	/* Cannot have cache data if no cache directory created yet */
