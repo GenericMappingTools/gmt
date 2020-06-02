@@ -13860,9 +13860,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
 		int k_data;
+		unsigned int srtm_flag;
         gmt_set_unspecified_remote_registration (API, &(opt->arg));
 
-		if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg)) != GMT_NOTSET) {	/* File is a remote tiled dataset */
+		if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg, &srtm_flag)) != GMT_NOTSET) {	/* File is a remote tiled dataset */
 			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
 			char *list = NULL;
 			struct GMT_OPTION *opt_J = GMT_Find_Option (API, 'J', *options);
@@ -13887,7 +13888,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			GMT->common.R.wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
 			GMT->common.R.wesn[YHI] = ceil  ((GMT->common.R.wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
 			/* Get a file with a list of all needed tiles */
-			list = gmtlib_get_tile_list (API, GMT->common.R.wesn, k_data, GMT->current.ps.active);
+			list = gmtlib_get_tile_list (API, GMT->common.R.wesn, k_data, GMT->current.ps.active, srtm_flag);
 			/* Replace the remote file name with this local list */
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;

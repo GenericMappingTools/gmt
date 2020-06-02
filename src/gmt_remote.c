@@ -1023,10 +1023,18 @@ GMT_LOCAL bool gmtremote_is_directory (struct GMTAPI_CTRL *API, int k) {
 	return (API->remote_info[k].file[len-1] == '/');
 }
 
-int gmtlib_remote_file_is_tiled (struct GMTAPI_CTRL *API, const char *file) {
+int gmtlib_remote_file_is_tiled (struct GMTAPI_CTRL *API, const char *file, unsigned int *mode) {
 	/* Determine if file is referring to a tiled remote data set. */
 	int k_data;
 	if (!file || file[0] != '@') return GMT_NOTSET;	/* Not a remote file */
+	if (mode) *mode = 0;
+	if (strncmp (file, "@srtm_relief_0", 14U) == 0) {	/* This virtual tile set does not exist. It means earth_relief_0xs_g but do not add filler */
+		char tmpfile[GMT_LEN32] = {""};
+		sprintf (tmpfile, "@earth_relief_0%cs_g", file[14]);
+		if ((k_data = gmt_file_is_remotedata (API, tmpfile)) == GMT_NOTSET) return GMT_NOTSET;	/* Not a recognized remote dataset */
+		if (mode) *mode = GMT_SRTM_ONLY;
+		return (k_data);	/* Since we know earth_relief_01|d_g is a tiled directory */
+	}
 	if ((k_data = gmt_file_is_remotedata (API, file)) == GMT_NOTSET) return GMT_NOTSET;	/* Not a recognized remote dataset */
 	return (gmtremote_is_directory (API, k_data) ? k_data : GMT_NOTSET);	/* -1 for a regular, remote file, valid index for a directory */
 }
@@ -1164,16 +1172,16 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn[], int k_dat
 	return (list);
 }
 
-char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, bool plot_region) {
+char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, bool plot_region, unsigned int srtm_flag) {
 	/* Builds a list of the tiles to download for the chosen region, dataset and resolution.
 	 * Uses the optional tile information grid to know if a particular tile exists. */
 	char tile_list[PATH_MAX] = {""}, *file = NULL, **tile = NULL, datatype[3] = {'L', 'O', 'X'}, regtype[2] = {'G', 'P'};
-	unsigned int k, k_filler = GMT_NOTSET, n_tiles = 0, ocean = 2;
+	unsigned int k, k_filler = GMT_NOTSET, n_tiles = 0, ocean = (srtm_flag) ? 0 : 2;
 	FILE *fp = NULL;
 	struct GMT_DATA_INFO *Ip = &API->remote_info[k_data], *Is = NULL;	/* Pointer to primary tiled dataset */
 
 	/* See if we want a background filler - this is most likely when using SRTM tiles and a 15s background ocean */
-	if (strcmp (Ip->filler, "-") && strncmp (Ip->file, "strm_", 5U)) {	/* Want background filler, except special case when srtm_relief is the given dataset name */
+	if (strcmp (Ip->filler, "-") && srtm_flag == 0) {	/* Want background filler, except special case when srtm_relief is the given dataset name (srtm_flag == 1) */
 		if ((k_filler = gmt_file_is_remotedata (API, Ip->filler)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Internal error - Filler grid %s is not a recognized remote data set.\n", Ip->filler);
 			return NULL;			

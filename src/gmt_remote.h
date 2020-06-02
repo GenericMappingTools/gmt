@@ -51,6 +51,8 @@ struct GMT_DATA_HASH {			/* Holds file hashes (probably SHA256) */
 	size_t size;				/* File size in bytes */
 };
 
+#define GMT_SRTM_ONLY	1	/* Mode so that when srtm_relief* is used we do not blend in earth_relief_15s */
+
 #define GMT_HASH_SERVER_FILE "gmt_hash_server.txt"
 #define GMT_INFO_SERVER_FILE "gmt_data_server.txt"
 
