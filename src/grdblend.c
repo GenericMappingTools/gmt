@@ -750,15 +750,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 }
 
 GMT_LOCAL bool grdblend_got_plot_domain (struct GMTAPI_CTRL *API, const char *file, bool *ocean) {
-	/* If given an =tiled_<ID>_[P|G][K|O|X].xxxxxx list then we return true if the region given when the list was assembled
+	/* If given an =tiled_<ID>_[P|G][L|O|X].xxxxxx list then we return true if the region given when the list was assembled
 	 * was a plot domain (give to a PS producer) or a grid domain (given to a grid producer). */
-	char *c = NULL;
-	size_t L;
+	char wet, region;
 	*ocean = false;
-	if (file == NULL || file[0] == '\0') return false;	/* Sanity check */
-	if ((c = strstr (file, "=tiled_")) && (L = strlen (c)) > 17 && c[L-9] == 'P') {
+	if (!gmt_file_is_tiled_list (API, file, NULL, &wet, &region)) return false;	/* Not a valid tiled list file */
+
+	if (region == 'P') {
 		GMT_Report (API, GMT_MSG_DEBUG, "Got tiled list determined from a plot region\n");
-		if (c[L-8] == 'O') *ocean = true;
+		if (wet == 'O') *ocean = true;
 		return true;
 	}
 	return false;

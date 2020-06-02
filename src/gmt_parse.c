@@ -835,8 +835,7 @@ char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 		}
 		else if (opt->option == GMT_OPT_INFILE)	{	/* Option for input filename [or numbers] */
 			if (skip_infiles) continue;
-			if (gmtlib_file_is_tile_list (API, opt->arg)) {	/* Want to replace the tiled list with the original @remotefile name instead */
-				k_data = gmtlib_get_tile_id (API, opt->arg);
+			if (gmt_file_is_tiled_list (API, opt->arg, &k_data, NULL, NULL)) {	/* Want to replace the tiled list with the original @remotefile name instead */
 				snprintf (buffer, GMT_BUFSIZ, "@%s", API->remote_info[k_data].file);
 			}
 			else if ((k_data = gmt_file_is_remotedata (API, opt->arg)) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (opt->arg, API->remote_info[k_data].ext))) {

@@ -35,6 +35,9 @@
 #	endif
 #	endif
 
+#define GMT_HASH_INDEX	0
+#define GMT_INFO_INDEX	1
+
 /* Copy a file from the GMT auto-download directory or the Internet.  We recognize
  * different types and names of files.
  * 1. There are data sets of use to all GMT users, such as global relief:
@@ -166,7 +169,7 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 
 	while (fgets (line, GMT_LEN512, fp) != NULL) {
 		if (line[0] == '#') continue;	/* Skip any comments */
-		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile_size, I[k].coverage, I[k].filler, I[k].remark)) == 11) {
+		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile_size, I[k].date, I[k].coverage, I[k].filler, I[k].remark)) == 12) {
 			/* New format - soon the only format once testing of 6.1 is over */
 		}
 		else if ((nr = sscanf (line, "%s %s %s %c %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, I[k].size, I[k].remark)) == 6) {
@@ -990,7 +993,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char *f
 
 /* Support functions for tiled grids
  * gmtlib_file_is_tiled	Determine if a request was given for a tiled dataset.
- * gmtlib_file_is_tile_list: Determine if file is a listfile with SRTM tile info
+ * gmt_file_is_tiled_list: Determine if file is a listfile with SRTM tile info
  * gmtlib_get_tile_list:	Convert -Rw/e/s/n into a file with a list of the tiles needed
  * gmtlib_assemble_tiles: Take the list, run grdblend to built the grid.
  *
@@ -1028,26 +1031,25 @@ int gmtlib_remote_file_is_tiled (struct GMTAPI_CTRL *API, const char *file) {
 	return (gmtremote_is_directory (API, k_data) ? k_data : GMT_NOTSET);	/* -1 for a regular, remote file, valid index for a directory */
 }
 
-#define GMT_REMOTE_TILE_POS 17	/* start of =tiled_ string counting from end in file if a tiled list */
-
-bool gmtlib_file_is_tile_list (struct GMTAPI_CTRL *API, const char *file) {
-	size_t len = strlen(file);
-	gmt_M_unused (API);
-	if (len < GMT_REMOTE_TILE_POS) return false;	/* Too short a filename for a tile list */
-	if (strncmp (&file[len-GMT_REMOTE_TILE_POS], "=tiled_", 7U)) return false;	/* Not that kind of file */
+bool gmt_file_is_tiled_list (struct GMTAPI_CTRL *API, const char *file, int *ID, char *wetdry, char *region_type) {
+	char *c = NULL, dummy2, dummy3, *wet, *region;
+	int dummy1, *kval;
+	kval = (ID) ? ID : &dummy1;	/* Allow passing NULL if we don't care */
+	wet = (wetdry) ? wetdry : &dummy2;	/* Allow passing NULL if we don't care */
+	region = (region_type) ? region_type : &dummy3;	/* Allow passing NULL if we don't care */
+	*kval = GMT_NOTSET;
+	*wet = *region = 0;
+	if (file == NULL) return false;
+	if ((c = strstr (file, "=tiled_")) == NULL) return false;	/* Not that kind of file */
+	if (c[7] && sscanf (&c[7], "%d_%c%c", kval, region, wet) != 3) return false;	/* Not finding the id, land/ocean, and grid/plot markers */
+	if (strchr ("LOX", *wet) == NULL || strchr ("GP", *region) == NULL) return false;	/* Invalid characters for two keys */
+	if (*kval < 0 || (*kval) > API->n_remote_info) return false;	/* Outside recognized range of remote file IDs */
 	return true;	/* We got one */
 }
 
 int gmtlib_get_tile_id (struct GMTAPI_CTRL *API, char *file) {
 	int k_data;
-	char *c = NULL, *u = NULL;
-	if (!gmtlib_file_is_tile_list (API, file)) return GMT_NOTSET;
-	if ((c = strstr (file, "=tiled_")) == NULL) return GMT_NOTSET;
-	c += 7;	/* Now at the start of ID */
-	if ((u = strchr (c, '_')) == NULL) return GMT_NOTSET;	/* Find the next underscore after the ID */
-	u[0] = '\0';
-	k_data = atoi (c);
-	u[0] = '_';
+	if (!gmt_file_is_tiled_list (API, file, &k_data, NULL, NULL)) return GMT_NOTSET;
 	return (k_data);
 }
 
@@ -1197,7 +1199,7 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 #endif
 		if (API->tmp_dir)	/* Have a recognized temp directory */
 			snprintf (tile_list, PATH_MAX, "%s/", API->tmp_dir);
-		snprintf (name, GMT_LEN16, "=tiled_%d_%c%c.000000", k_data, regtype[plot_region], datatype[ocean]);
+		snprintf (name, GMT_LEN32, "=tiled_%d_%c%c.XXXXXX", k_data, regtype[plot_region], datatype[ocean]);
 		strcat (tile_list, name);
 #ifdef _WIN32
 		if ((file = mktemp (tile_list)) == NULL) {

@@ -2001,8 +2001,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		strncpy (header->command, GMT->init.module_name, GMT_GRID_COMMAND_LEN320-1);
 		len = strlen (header->command);
 		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
-			if (gmtlib_file_is_tile_list (API, argv[i])) {	/* Want to replace the tiled list with the original @earth_relief_xxx name instead */
-				k_data = gmtlib_get_tile_id (API, argv[i]);
+			if (gmt_file_is_tiled_list (API, argv[i], &k_data, NULL, NULL)) {	/* Want to replace the tiled list with the original @earth_relief_xxx name instead */
 				snprintf (file, GMT_LEN64, "@%s", API->remote_info[k_data].file);
 				txt = file;
 			}
