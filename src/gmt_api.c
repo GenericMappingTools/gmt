@@ -3398,7 +3398,7 @@ GMT_LOCAL int gmtapi_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned in
 	GMT_2D_to_index = gmtapi_get_2d_to_index (GMT->parent, M->shape, GMT_GRID_IS_REAL);
 	if ((api_get_val = gmtapi_select_get_function (GMT->parent, M->type)) == NULL)
 		return (GMT_NOT_A_VALID_TYPE);
-	
+
 
 	/* Start writing Matrix to fp */
 
@@ -12773,10 +12773,13 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 				return GMT_MEMORY_ERROR;
 			}
 			for (row = 0; row < V->n_rows; row++) {
-				if (gmt_scanf (API->GMT, dt[row], GMT_IS_ABSTIME, &(t_vector[row])) == GMT_IS_NAN) n_bad++;
+				if (gmt_scanf (API->GMT, dt[row], GMT_IS_ABSTIME, &(t_vector[row])) == GMT_IS_NAN) {
+					n_bad++;
+					t_vector[row] = API->GMT->session.d_NaN;
+				}
 			}
 			V->type[col] = GMT_DOUBLE;	V->data[col].f8 = t_vector;
-			if (n_bad) GMT_Report (API, GMT_MSG_ERROR, "Unable to parse %" PRIu64 " datetime strings (ISO datetime format required)\n", n_bad);
+			if (n_bad) GMT_Report (API, GMT_MSG_WARNING, "Unable to parse %" PRIu64 " datetime strings (ISO datetime format required)\n", n_bad);
 			break;
 		default:
 			return_error (API, GMT_NOT_A_VALID_TYPE);
