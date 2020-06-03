@@ -865,8 +865,8 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 	/* Detect if a file matches the name <path>/[N|S]yy[E|W]xxx.tag.jp2 (e.g., N22W160.earth_relief_01m_p.jp2) */
 	char *c, tmp[GMT_LEN64] = {""};
-	if (file == NULL || file[0] == '\0') return false;	/* Bad argument */
-	if ((c = strrchr (file, '/')) == NULL) return false;	/* Get place of the last slash */
+	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* Bad argument */
+	if ((c = strrchr (file, '/')) == NULL) return GMT_NOTSET;	/* Get place of the last slash */
 	sprintf (tmp, "@%s", &c[1]);	/* Now should have something like @N22W160.earth_relief_01m_p.jp2 */
 	return (gmt_file_is_a_tile (API, tmp, GMT_REMOTE_DIR));
 }

@@ -13148,13 +13148,15 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 
 	if (gmt_M_file_is_memory (file)) return GMT_NOERROR;	/* Memory files are always fine */
 
-	gmt_set_unspecified_remote_registration (API, file_ptr);	/* Complete remote filenames without registration information */
+	if ((mode & GMT_FILE_CHECK) == 0) gmt_set_unspecified_remote_registration (API, file_ptr);	/* Complete remote filenames without registration information */
 
 	switch (family) {
 		case GMT_IS_GRID:
 			if (!gmt_file_is_tiled_list (API, file, NULL, NULL, NULL) && (c = strchr (file, '='))) {	/* Got filename=id[+modifiers] */
 				/* Nothing*/
 			}
+			else if (gmt_M_file_is_netcdf (file))	/* Meaning it specifies a layer etc via ?<args> */
+				c = strchr (file, '?');				
 			else {	/* Check for modifiers */
 				unsigned int nm = gmt_validate_modifiers (API->GMT, file, 0, "onsuU", GMT_MSG_QUIET);
 				if (nm) /* Found some valid modifiers, lets get to the first */

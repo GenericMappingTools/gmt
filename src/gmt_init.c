@@ -13425,6 +13425,41 @@ bool gmtlib_module_may_get_R_from_RP (struct GMT_CTRL *GMT, const char *mod_name
 	return (GMT->current.ps.active || (!strncmp (mod_name, "subplot", 7U) || !strncmp (mod_name, "pscoast", 7U) || !strncmp (mod_name, "psbasemap", 9U) || !strncmp (mod_name, "mapproject", 10U)));
 }
 
+/*! Classic mode: Discover if a certain option was set in the history and re-set it */
+void gmtinit_add_missing_RJ_classic (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *options) {
+	/* When a module discovers it needs -R or -J and it maybe was not given
+	 * see if we can tease out the answer from the history and parse it.
+	 * Currently used in gmt_get_refpoint where we may learn that -R -J will
+	 * indeed be required.  We then check if they have been given.  If not,
+	 * then under classic mode we abort, while under modern mode we add them,
+	 * if possible.
+	 */
+	int id = 0, j;
+	char str[3] = {""};
+	struct GMT_OPTION *opt;
+
+	assert (codes);	/* Should never be NULL */
+
+	for (j = 0; codes[j]; j++) {	/* Do this for all required options listed */
+		assert (strchr ("JR", codes[j]));	/* Only J and/or R should be present in options */
+		if ((opt = GMT_Find_Option (GMT->parent, codes[j], options)) == NULL) continue;	/* Not found */
+		if (opt->arg[0]) continue;	/* Set already */
+		/* Must dig around in the history array */
+		gmt_M_memset (str, 3, char);
+		str[0] = codes[j];
+		if ((id = gmt_get_option_id (0, str)) == -1) continue;	/* Not an option we have history for yet */
+		if (codes[j] == 'R' && !GMT->current.ps.active) id++;		/* Examine -RG history if not a plotter */
+		if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
+		if (codes[j] == 'J') {	/* Must now search for actual option since -J only has the code (e.g., -JM) */
+			/* Continue looking for -J<code> */
+			str[1] = GMT->init.history[id][0];
+			if ((id = gmt_get_option_id (id + 1, str)) == -1) continue;	/* Not an option we have history for yet */
+			if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
+		}
+		GMT_Update_Option (GMT->parent, opt, GMT->init.history[id]);	/* Failure to update option */
+	}
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmtinit_begin_module_sub.
@@ -13876,9 +13911,19 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			/* Replace the magic reference to a tiled remote dataset with a file list of the required tiles.
 			 * Because GMT_Parse_Common has not been called yet, no -J has been processed yet.
 			 * Since -J may be needed if -R does oblique or give a region in projected units
-			 * we must also parse -J here first before parsing -R */
+			 * we must also parse -J here first before parsing -R. */
+
+			if (GMT->current.setting.run_mode == GMT_CLASSIC) {
+				 /* CLASSIC MODE: One complication is that we have -R -J with no args and hence we need to fill those in first. */
+				char codes[3] = {""};
+				int nc = 0;
+				if (!opt_R->arg[0]) codes[nc++] = 'R';
+				if (!opt_J->arg[0]) codes[nc++] = 'J';
+				if (nc)
+					gmtinit_add_missing_RJ_classic (GMT, codes, *options);
+			}
+
 			if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
-			opt_R = GMT_Find_Option (API, 'R', *options);
 			API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
 			gmt_parse_R_option (GMT, opt_R->arg);
 			API->GMT->hidden.func_level = level;	/* Reset to what it should be */

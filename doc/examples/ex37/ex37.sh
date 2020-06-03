@@ -13,7 +13,7 @@ gmt begin ex37
 	T=mb.par.surf.1km.sq
 	gmt set FONT_TITLE 14p GMT_FFT kiss
 
-	gmt grdinfo $T.nc -Ib > bbox
+	gmt grdinfo @$T.nc -Ib > bbox
 	scl=1.4e-5
 	sclkm=1.4e-2
 	gmt makecpt -Crainbow -T-5000/-3000
