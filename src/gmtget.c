@@ -202,7 +202,6 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NOTICE, "Unable to create or find your cache directory\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
-			GMT_Report (API, GMT_MSG_NOTICE, "Cache download not yet implemented\n");
 			/* Read gmt_hash_server.txt, loop over lines, skip datasets, then call gmt_download... on the rest */
 			snprintf (hashpath, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, GMT_HASH_SERVER_FILE);
 			if ((fp = fopen (hashpath, "r")) == NULL) {

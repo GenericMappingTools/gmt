@@ -13895,62 +13895,76 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
-	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
+	if (options) {	/* Check if any filename argument is s remote tiled dataset */
+		bool first_time = true;
 		int k_data;
 		unsigned int srtm_flag;
-        gmt_set_unspecified_remote_registration (API, &(opt->arg));
+		char *list = NULL;
+		double wesn[4];
+		struct GMT_OPTION *opt_J = NULL;
+		struct GMT_DATA_INFO *I = NULL;
 
-		if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg, &srtm_flag)) != GMT_NOTSET) {	/* File is a remote tiled dataset */
-			unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
-			char codes[3] = {""}, *list = NULL;
-			struct GMT_OPTION *opt_J = GMT_Find_Option (API, 'J', *options);
-			struct GMT_DATA_INFO *I = &API->remote_info[k_data];
-			opt_R = GMT_Find_Option (API, 'R', *options);
-			if (opt_R == NULL) {
-				GMT_Report (API, GMT_MSG_DEBUG, "Cannot select %s as input without specifying a region with -R!\n", opt->arg);
-				return NULL;
+		opt_R = GMT_Find_Option (API, 'R', *options);
+		opt_J = GMT_Find_Option (API, 'J', *options);
+
+		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+			if (opt->arg[0] != '@') continue;	/* No remote file argument given */
+        	gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then tis handles any missing registration _p|_g */
+			if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET) {	/* Remote file without file extension */
+				char *file = malloc (strlen(opt->arg)+1+strlen (API->remote_info[k_data].ext));
+				sprintf (file, "%s", opt->arg);
+				strcat (file, API->remote_info[k_data].ext);
+				gmt_M_str_free (opt->arg);
+				opt->arg = file;
+				continue;
 			}
-			/* Replace the magic reference to a tiled remote dataset with a file list of the required tiles.
-			 * Because GMT_Parse_Common has not been called yet, no -R -J have been processed yet.
-			 * Since -J may be needed if -R does oblique or give a region in projected units
-			 * we must also parse -J here first before parsing -R. If just -R -J then we must update from history now */
+			if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg, &srtm_flag)) == GMT_NOTSET) continue;	/* Argument is not a remote tiled dataset */
+			/* Here, the argument IS a tiled remote dataset */
+			if (first_time) {
+				/* Replace the magic reference to a tiled remote dataset with a file list of the required tiles.
+				 * Because GMT_Parse_Common has not been called yet, no -R -J have been processed yet.
+				 * Since -J may be needed if -R does oblique or give a region in projected units
+				 * we must also parse -J here first before parsing -R. If just -R -J then we must update from history now */
 
-			if (!opt_R->arg[0]) codes[n_to_set++] = 'R';	/* Must have 0R */
-			if (opt_J && !opt_J->arg[0]) codes[n_to_set++] = 'J';	/* May or may not have -J */
-			if (n_to_set) gmtinit_complete_RJ (GMT, codes, *options);	/* Fill in what -R actually is (and possibly fill in -J) */
-
-			if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
-			API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
-			gmt_parse_R_option (GMT, opt_R->arg);
-			API->GMT->hidden.func_level = level;	/* Reset to what it should be */
-			if (GMT->common.R.oblique) {	/* Must do gmt_mapsetup here to get correct region for building tiles */
-				if (!opt_J) {
-					GMT_Report (API, GMT_MSG_DEBUG, "Cannot select %s and an oblique region without -J!\n", opt->arg);
-					return NULL;
+				if (opt_R == NULL) {	/* In this context we imply -Rd */
+					wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
 				}
-				GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have */
-				if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
-					return NULL;
+				else {
+					char codes[3] = {""};
+					unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
+					if (!opt_R->arg[0]) codes[n_to_set++] = 'R';	/* Must have -R */
+					if (opt_J && !opt_J->arg[0]) codes[n_to_set++] = 'J';	/* May or may not have -J */
+					if (n_to_set) gmtinit_complete_RJ (GMT, codes, *options);	/* Fill in what -R actually is (and possibly fill in -J) */
+					if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
+					API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
+					gmt_parse_R_option (GMT, opt_R->arg);
+					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
+					if (GMT->common.R.oblique) {	/* Must do gmt_mapsetup here to get correct region for building tiles */
+						if (!opt_J) {
+							GMT_Report (API, GMT_MSG_DEBUG, "Cannot select %s and an oblique region without -J!\n", opt->arg);
+							return NULL;
+						}
+						GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
+						if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+							return NULL;
+					}
+					GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
+					gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
+				}
+				first_time = false;	/* Done with getting valid region */
 			}
+			I = &API->remote_info[k_data];
 
 			/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given region. */
-			GMT->common.R.wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
-			GMT->common.R.wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
-			GMT->common.R.wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
-			GMT->common.R.wesn[YHI] = ceil  ((GMT->common.R.wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
+			wesn[XLO] = floor ((wesn[XLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
+			wesn[XHI] = ceil  ((wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
+			wesn[YLO] = floor ((wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
+			wesn[YHI] = ceil  ((wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
 			/* Get a file with a list of all needed tiles */
-			list = gmtlib_get_tile_list (API, GMT->common.R.wesn, k_data, GMT->current.ps.active, srtm_flag);
+			list = gmtlib_get_tile_list (API, wesn, k_data, GMT->current.ps.active, srtm_flag);
 			/* Replace the remote file name with this local list */
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;
-			GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
-		}
-		else if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET) {	/* Remote file without file extension */
-			char *file = malloc (strlen(opt->arg)+1+strlen (API->remote_info[k_data].ext));
-			sprintf (file, "%s", opt->arg);
-			strcat (file, API->remote_info[k_data].ext);
-			gmt_M_str_free (opt->arg);
-			opt->arg = file;
 		}
 	}
 

@@ -1246,12 +1246,7 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 	}
 
 	/* Get the primary tiles */
-	if ((tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles)) == NULL) {
-		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: No %s tiles available for your region.\n", Ip->tag);
-		fclose (fp);
-		gmt_remove_file (API->GMT, file);
-		return NULL;
-	}
+	tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles);
 
 	/* Write primary tiles to list file */
 	for (k = 0; k < n_tiles; k++)
@@ -1269,16 +1264,16 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 				/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
 				/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
 				 * region. The GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx away from the truth. */
-				API->GMT->common.R.wesn[XLO] = floor ((API->GMT->common.R.wesn[XLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
-				API->GMT->common.R.wesn[XHI] = ceil  ((API->GMT->common.R.wesn[XHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
-				API->GMT->common.R.wesn[YLO] = floor ((API->GMT->common.R.wesn[YLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
-				API->GMT->common.R.wesn[YHI] = ceil  ((API->GMT->common.R.wesn[YHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
+				wesn[XLO] = floor ((wesn[XLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+				wesn[XHI] = ceil  ((wesn[XHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
+				wesn[YLO] = floor ((wesn[YLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+				wesn[YHI] = ceil  ((wesn[YHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
 			}
 		}
 	}
 	fclose (fp);
 
-	gmt_M_memcpy (API->tile_wesn, API->GMT->common.R.wesn, 4, double);	/* Retain this knowledge in case it was obtained via map_setup for an oblique area */
+	gmt_M_memcpy (API->tile_wesn, wesn, 4, double);	/* Retain this knowledge in case it was obtained via map_setup for an oblique area */
 
 	return (strdup (file));
 }
