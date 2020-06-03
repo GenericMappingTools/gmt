@@ -28,6 +28,7 @@
 
 struct GMT_DATA_INFO {
 	int id;						/* Running number 0-(n-1) AFTER array is sorted */
+	bool used;					/* If true then do not repeat the attribution details */
 	char dir[GMT_LEN64];		/* Directory of file.  Here, / (root) means /export/gmtserver/gmt/data */
 	char file[GMT_LEN64];		/* Full file (or tile directory) name. E.g., earth_relief_20m_g.grd or earth_relief_01m_g/ */
 	char ext[GMT_LEN8];			/* Data file extension. E.g., .grd, *tif, etc. */

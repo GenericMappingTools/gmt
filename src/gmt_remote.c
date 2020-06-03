@@ -264,16 +264,35 @@ int gmt_remote_no_extension (struct GMTAPI_CTRL *API, const char *file) {
 
 GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, const char *file, int tile) {
 	/* Display a notice regarding the source of this data set */
-	if (key == GMT_NOTSET) return;
-	if (tile) {	/* Temporarily remote the trailing slash when printing the dataset name */
-		char *c = strrchr (API->remote_info[key].file, '/');
-		c[0] = '\0';
-		GMT_Report (API, GMT_MSG_NOTICE, "%s: Download tile %s from the GMT data server.\n", API->remote_info[key].file, file);
-		c[0] = '/';
+	char *c = NULL, name[GMT_LEN128] = {""};
+	if (!API->server_announced) {
+		if ((c = strrchr (API->GMT->session.DATASERVER, '/')))	/* FOund last slash in http:// */
+			strcpy (name, ++c);
+		else /* Just in case */
+			strcpy (name, API->GMT->session.DATASERVER);
+		if ((c = strchr (name, '.'))) c[0] = '\0';	/* Chop off stuff after the initial name */
+		gmt_str_toupper (name);
+		GMT_Report (API, GMT_MSG_NOTICE, "Downloaded data courtesy of GMT data server %s [%s]\n\n", name, API->GMT->session.DATASERVER);
+		API->server_announced = true;
 	}
-	else
-		GMT_Report (API, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", API->remote_info[key].file, API->remote_info[key].size);
-	GMT_Report (API, GMT_MSG_NOTICE, "%s.\n\n", API->remote_info[key].remark);
+	if (key == GMT_NOTSET)	/* A Cache file */
+		GMT_Report (API, GMT_MSG_NOTICE, "  -> Download cache file: %s\n", file);
+	else {
+		if (!API->remote_info[key].used) {
+			GMT_Report (API, GMT_MSG_NOTICE, "%s.\n", API->remote_info[key].remark);
+			API->remote_info[key].used = true;
+		}
+		if (tile) {	/* Temporarily remote the trailing slash when printing the dataset name */
+			c = strrchr (API->remote_info[key].file, '/');
+			c[0] = '\0';
+			strncpy (name, &file[1], 7U);	name[7] = '\0';
+			GMT_Report (API, GMT_MSG_NOTICE, "  -> Download %lgx%lg degree grid tile (%s): %s\n",
+					API->remote_info[key].tile_size, API->remote_info[key].tile_size, API->remote_info[key].file, name);
+			c[0] = '/';
+		}
+		else
+			GMT_Report (API, GMT_MSG_NOTICE, "  -> Download grid file [%s]: %s\n", API->remote_info[key].size, API->remote_info[key].file);
+	}
 }
 
 GMT_LOCAL int gmtremote_find_and_give_data_attribution (struct GMTAPI_CTRL *API, const char *file) {
@@ -1292,7 +1311,6 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 		GMT_Report (API, GMT_MSG_ERROR, "Internal error: Non-recognized tiled ID embedded in file %s\n", file);
 		return NULL;
 	}
-	//gmtremote_display_attribution (API, k_data);
 
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co- to override using negative earth_relief_15s values */

@@ -202,6 +202,7 @@ struct GMTAPI_CTRL {
 	/* structure array of remote file information (sorted alphabetically) */
 	int n_remote_info;	/* How many remote server files we know of */
 	struct GMT_DATA_INFO *remote_info;
+	bool server_announced;	/* Set to true after we have announced which GMT data server we are using */
 };
 
 /* Macro to test if filename is a special name indicating memory location */
