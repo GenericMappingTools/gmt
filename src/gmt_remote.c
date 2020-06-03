@@ -262,23 +262,33 @@ int gmt_remote_no_extension (struct GMTAPI_CTRL *API, const char *file) {
 	return k_data;	/* Missing its extension */
 }
 
-GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key) {
+GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, const char *file, int tile) {
 	/* Display a notice regarding the source of this data set */
 	if (key == GMT_NOTSET) return;
-	GMT_Report (API, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", API->remote_info[key].file, API->remote_info[key].size);
+	if (tile) {	/* Temporarily remote the trailing slash when printing the dataset name */
+		char *c = strrchr (API->remote_info[key].file, '/');
+		c[0] = '\0';
+		GMT_Report (API, GMT_MSG_NOTICE, "%s: Download tile %s from the GMT data server.\n", API->remote_info[key].file, file);
+		c[0] = '/';
+	}
+	else
+		GMT_Report (API, GMT_MSG_NOTICE, "%s: Download file from the GMT data server [data set size is %s].\n", API->remote_info[key].file, API->remote_info[key].size);
 	GMT_Report (API, GMT_MSG_NOTICE, "%s.\n\n", API->remote_info[key].remark);
 }
 
 GMT_LOCAL int gmtremote_find_and_give_data_attribution (struct GMTAPI_CTRL *API, const char *file) {
 	/* Print attribution when the @remotefile is downloaded for the first time */
 	char *c = NULL;
-	int match;
+	int match, tile = 0;
 
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
 	if ((c = strstr (file, ".grd")) || (c = strstr (file, ".tif")))	/* Ignore extension in comparison */
 		c[0] = '\0';
-	match = gmt_file_is_remotedata (API, file);
-	gmtremote_display_attribution (API, match);
+	if ((match = gmt_file_is_remotedata (API, file)) == GMT_NOTSET) {	/* Check if it is a tile */
+		if ((match = gmt_file_is_a_tile (API, file, GMT_LOCAL_DIR)) != GMT_NOTSET)	/* Got a remote tile */
+			tile = 1;
+	}
+	gmtremote_display_attribution (API, match, file, tile);
 	if (c) c[0] = '.';	/* Restore extension */
 	return (match);
 }
@@ -1287,7 +1297,7 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 		GMT_Report (API, GMT_MSG_ERROR, "Internal error: Non-recognized tiled ID embedded in file %s\n", file);
 		return NULL;
 	}
-	gmtremote_display_attribution (API, k_data);
+	//gmtremote_display_attribution (API, k_data);
 
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co- to override using negative earth_relief_15s values */
