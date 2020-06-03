@@ -204,8 +204,14 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		continue;
 #endif
 
-		if (Ctrl->G.active)
-			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
+		if (Ctrl->G.active) {
+			if (gmt_file_is_tiled_list (API, opt->arg, NULL, NULL, NULL)) {
+				gmt_download_tiles (API, opt->arg, Ctrl->G.mode);
+				continue;
+			}
+			else
+				first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
+		}
 		else if (opt->arg[0] == '@') /* Gave @ without -G is likely a user mistake; remove it */
 			first = 1;
 		if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET)

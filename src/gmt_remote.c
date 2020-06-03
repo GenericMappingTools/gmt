@@ -1327,3 +1327,17 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 	HH->orig_datatype = GMT_SHORT;	/* Since we know this */
 	return (G);
 }
+
+int gmt_download_tiles (struct GMTAPI_CTRL *API, char *list, unsigned int mode) {
+	/* Download all tiles not already here given by the list */
+	uint64_t n, k;
+	char **file = NULL;
+
+	if (!gmt_file_is_tiled_list (API, list, NULL, NULL, NULL)) return GMT_RUNTIME_ERROR;
+	if ((n = gmtlib_read_list (API->GMT, list, &file)) == 0) return GMT_RUNTIME_ERROR;
+	for (k = 0; k < n; k++) {
+		gmt_download_file_if_not_found (API->GMT, file[k], mode);
+	}
+	gmtlib_free_list (API->GMT, file, n);
+	return GMT_NOERROR;
+}
