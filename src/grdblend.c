@@ -844,7 +844,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	n_blend = status;
 	if (!Ctrl->W.active && n_blend == 1) {
-		GMT_Report (API, GMT_MSG_WARNING, "Only 1 grid found; no blending will take place\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Only 1 grid found; no blending will take place\n");
 	}
 
 	if (delayed) {	/* Now we can create the output grid */
