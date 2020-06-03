@@ -44,6 +44,10 @@ struct GMTGET_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GMTGET_I {	/* -LI<inc>*/
+		bool active;
+		double inc;
+	} I;
 	struct GMTGET_L {	/* -L */
 		bool active;
 	} L;
@@ -68,7 +72,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTGET_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D<download>] [-G<defaultsfile>] [-L] [-N] [PARAMETER1 PARAMETER2 PARAMETER3 ...] [%s]\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D<download>] [-G<defaultsfile>] [-I<inc>] [-L] [-N] [PARAMETER1 PARAMETER2 PARAMETER3 ...] [%s]\n", name, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see gmt.conf man page\n");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -82,6 +86,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific gmt.conf file to process.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses the GMT defaults].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Limit the download of data sets to grid spacings of <inc> or larger [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Write one parameter value per line [Default writes all on one line].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT convert grids downloaded with -D to netCDF but leave as JP2.\n");
 	GMT_Option (API, "V,.");
@@ -116,6 +121,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
+				break;
+			case 'I':	/* Set increment limitation */
+				Ctrl->I.active = true;
+				if (gmt_getincn (GMT, opt->arg, &Ctrl->I.inc, 1) != 1)
+					n_errors++;
+
 				break;
 			case 'L':	/* One per line */
 				Ctrl->L.active = true;
@@ -183,6 +194,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			}
 			for (k = 0; k < API->n_remote_info; k++) {
 				if (planet && strstr (API->remote_info[k].dir, planet) == NULL) continue;	/* Not this planet */
+				if (Ctrl->I.active && Ctrl->I.inc > API->remote_info[k].d_inc) continue;	/* Skip this resolution */
 				if (API->remote_info[k].tile_size > 0.0) {	/* Must obtain all tiles */
 					char **list = gmt_get_dataset_tiles (API, world, k, &n_tiles);
 					for (t = 0; t < n_tiles; t++)

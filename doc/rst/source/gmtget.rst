@@ -16,6 +16,7 @@ Synopsis
 [ *PARAMETER1* *PARAMETER2* *PARAMETER3* ... ]
 [ |-D|\ *selection* ]
 [ |-G|\ *defaultsfile* ]
+[ |-I|\ *inc*\ [**m**\|\ **s**] ]
 [ |-L| ]
 [ |-N| ]
 [ |SYN_OPT-V| ]
@@ -53,6 +54,13 @@ PARAMETER
     Name of specific :doc:`gmt.conf` file to read [Default looks first in
     current directory, then in your home directory, then in ~/.gmt and
     finally in the system defaults].
+
+
+.. _-I:
+
+**-I**\ *inc*\ [**m**\|\ **s**]
+    In conjunction with **-D**, limit the download of grids to those with grid
+    spacing equal to or larger than *inc* [no limit].
 
 .. _-L:
 
