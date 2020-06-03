@@ -664,7 +664,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			 * force all tiles to be downloaded, converted, and stitched into a single grid per -R. This must
 			 * happen _before_ we auto-derive intensities via grdgradient so that there is an input data grid */
 			if (gmtlib_remote_file_is_tiled (API, Ctrl->In.file[0], NULL)) {	/* Must read and stitch the tiles first */
-				if ((Grid_orig[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, GMT->common.R.wesn, Ctrl->In.file[0], NULL)) == NULL)	/* Get srtm grid data */
+				//if ((Grid_orig[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, GMT->common.R.wesn, Ctrl->In.file[0], NULL)) == NULL)	/* Get srtm grid data */
+				if ((Grid_orig[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->In.file[0], NULL)) == NULL)	/* Get srtm grid data */
 					Return (API->error);
 				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Grid_orig[0], data_grd))
 					Return (API->error);
