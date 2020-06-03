@@ -13426,7 +13426,7 @@ bool gmtlib_module_may_get_R_from_RP (struct GMT_CTRL *GMT, const char *mod_name
 }
 
 /*! Classic mode: Discover if a certain option was set in the history and re-set it */
-void gmtinit_add_missing_RJ_classic (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *options) {
+void gmtinit_complete_RJ (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *options) {
 	/* When a module discovers it needs -R or -J and it maybe was not given
 	 * see if we can tease out the answer from the history and parse it.
 	 * Currently used in gmt_get_refpoint where we may learn that -R -J will
@@ -13899,8 +13899,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
         gmt_set_unspecified_remote_registration (API, &(opt->arg));
 
 		if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg, &srtm_flag)) != GMT_NOTSET) {	/* File is a remote tiled dataset */
-			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
-			char *list = NULL;
+			unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
+			char codes[3] = {""}, *list = NULL;
 			struct GMT_OPTION *opt_J = GMT_Find_Option (API, 'J', *options);
 			struct GMT_DATA_INFO *I = &API->remote_info[k_data];
 			opt_R = GMT_Find_Option (API, 'R', *options);
@@ -13909,24 +13909,28 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				return NULL;
 			}
 			/* Replace the magic reference to a tiled remote dataset with a file list of the required tiles.
-			 * Because GMT_Parse_Common has not been called yet, no -J has been processed yet.
+			 * Because GMT_Parse_Common has not been called yet, no -R -J have been processed yet.
 			 * Since -J may be needed if -R does oblique or give a region in projected units
-			 * we must also parse -J here first before parsing -R. */
+			 * we must also parse -J here first before parsing -R. If just -R -J then we must update from history now */
 
-			if (GMT->current.setting.run_mode == GMT_CLASSIC) {
-				 /* CLASSIC MODE: One complication is that we have -R -J with no args and hence we need to fill those in first. */
-				char codes[3] = {""};
-				int nc = 0;
-				if (!opt_R->arg[0]) codes[nc++] = 'R';
-				if (!opt_J->arg[0]) codes[nc++] = 'J';
-				if (nc)
-					gmtinit_add_missing_RJ_classic (GMT, codes, *options);
-			}
+			if (!opt_R->arg[0]) codes[n_to_set++] = 'R';	/* Must have 0R */
+			if (opt_J && !opt_J->arg[0]) codes[n_to_set++] = 'J';	/* May or may not have -J */
+			if (n_to_set) gmtinit_complete_RJ (GMT, codes, *options);	/* Fill in what -R actually is (and possibly fill in -J) */
 
 			if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
 			API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
 			gmt_parse_R_option (GMT, opt_R->arg);
 			API->GMT->hidden.func_level = level;	/* Reset to what it should be */
+			if (GMT->common.R.oblique) {	/* Must do gmt_mapsetup here to get correct region for building tiles */
+				if (!opt_J) {
+					GMT_Report (API, GMT_MSG_DEBUG, "Cannot select %s and an oblique region without -J!\n", opt->arg);
+					return NULL;
+				}
+				GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have */
+				if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+					return NULL;
+			}
+
 			/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given region. */
 			GMT->common.R.wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
 			GMT->common.R.wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;

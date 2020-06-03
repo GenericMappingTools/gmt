@@ -1159,7 +1159,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn[], int k_dat
 	*n_tiles = n;
 	if (n == 0) {	/* Nutin' */
 		gmt_M_free (API->GMT, list);
-		GMT_Report (API, GMT_MSG_WARNING, "gmt_get_dataset_tiles: No %s tiles available for your region.\n", I->file);
+		GMT_Report (API, GMT_MSG_WARNING, "gmt_get_dataset_tiles: No %s tiles available for your region.\n", I->tag);
 		return NULL;
 	}
 
@@ -1237,7 +1237,7 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 
 	/* Get the primary tiles */
 	if ((tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles)) == NULL) {
-		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: No %s tiles available for your region.\n", Ip->file);
+		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: No %s tiles available for your region.\n", Ip->tag);
 		fclose (fp);
 		gmt_remove_file (API->GMT, file);
 		return NULL;
@@ -1268,6 +1268,8 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 	}
 	fclose (fp);
 
+	gmt_M_memcpy (API->tile_wesn, API->GMT->common.R.wesn, 4, double);	/* Retain this knowledge in case it was obtained via map_setup for an oblique area */
+
 	return (strdup (file));
 }
 
@@ -1277,7 +1279,7 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 	 */
 	int k_data;
 	struct GMT_GRID *G = NULL;
-	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
+	double *wesn = (region) ? region : API->tile_wesn;	/* Default to -R */
 	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
