@@ -44,7 +44,7 @@ struct GMTGET_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct GMTGET_I {	/* -LI<inc>*/
+	struct GMTGET_I {	/* -I<inc>*/
 		bool active;
 		double inc;
 	} I;
