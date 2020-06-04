@@ -7532,7 +7532,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			}
 			API->object[item]->selected = true;
 		}
-		gmtlib_free_list (API->GMT, filelist, n_files);	/* Free the file list */
+		gmt_free_list (API->GMT, filelist, n_files);	/* Free the file list */
 		in_ID = GMT_NOTSET;
 	}
 	else if (a_grid_or_image (family) && (mode & GMT_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
@@ -7699,7 +7699,7 @@ void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, un
 		if ((object[k] = GMT_Read_Data (API, family, method, geometry, mode, wesn, file[k], object[k])) == NULL)
 			GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Group: Reading of %s failed, returning NULL\n", file[k]);
 	}
-	gmtlib_free_list (API->GMT, file, n_files);	/* Free the file list */
+	gmt_free_list (API->GMT, file, n_files);	/* Free the file list */
 	if (n_items) *n_items = n_files;	/* Return how many items we allocated, if n_items is not NULL */
 	return (object);	/* Return pointer to the data containers */
 }

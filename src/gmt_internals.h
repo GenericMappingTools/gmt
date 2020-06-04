@@ -101,13 +101,11 @@ EXTERN_MSC bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, const char *modu
 EXTERN_MSC const char * gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module);
 EXTERN_MSC double gmtlib_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
 EXTERN_MSC double gmtlib_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
-EXTERN_MSC uint64_t gmtlib_read_list (struct GMT_CTRL *GMT, char *file, char ***list);
 EXTERN_MSC void gmtlib_finalize_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 EXTERN_MSC bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt, bool *no_T);
 EXTERN_MSC void gmtlib_update_outcol_type (struct GMT_CTRL *GMT, uint64_t n);
 EXTERN_MSC void gmtlib_reset_input (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmtlib_remote_file_is_tiled (struct GMTAPI_CTRL *API, const char *file, unsigned int *mode);
-EXTERN_MSC int gmtlib_get_tile_id (struct GMTAPI_CTRL *API, char *file);
 EXTERN_MSC char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, bool plot_region, unsigned int strm_flag);
 EXTERN_MSC struct GMT_GRID * gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region, char *file);
 EXTERN_MSC bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT);
@@ -225,7 +223,6 @@ EXTERN_MSC void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I
 EXTERN_MSC struct GMT_IMAGE * gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned int mode);
 EXTERN_MSC int gmtlib_scanf_geodim (struct GMT_CTRL *GMT, char *s, double *val);
 EXTERN_MSC unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsigned int ncols, double *out);
-EXTERN_MSC void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 EXTERN_MSC p_to_io_func gmtlib_get_io_ptr (struct GMT_CTRL *GMT, int direction, enum GMT_swap_direction swap, char type);
 EXTERN_MSC void gmtlib_io_binary_header (struct GMT_CTRL *GMT, FILE *fp, unsigned int dir);
 EXTERN_MSC void gmtlib_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt);

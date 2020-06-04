@@ -170,7 +170,7 @@ static int clear_sessions (struct GMTAPI_CTRL *API) {
 			if (gmt_remove_dir (API, dirlist[k], false))
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", dirlist[k]);
 		}
-		gmtlib_free_list (API->GMT, dirlist, n_dirs);	/* Free the dir list */
+		gmt_free_list (API->GMT, dirlist, n_dirs);	/* Free the dir list */
 	}
 	if (chdir (here)) {		/* Get back to where we were */
 		perror (here);

@@ -5689,7 +5689,7 @@ GMT_LOCAL int gmtsupport_compare_sugs (const void *point_1, const void *point_2)
 }
 
 /*! . */
-uint64_t gmtlib_read_list (struct GMT_CTRL *GMT, char *file, char ***list) {
+uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list) {
 	uint64_t n = 0;
 	size_t n_alloc = GMT_CHUNK;
 	char **p = NULL, line[GMT_BUFSIZ] = {""};
@@ -5759,8 +5759,8 @@ GMT_LOCAL int gmtsupport_sort_order_ascend (const void *p_1, const void *p_2) {
 }
 
 /*! . */
-void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
-	/* Properly free memory allocated by gmtlib_read_list */
+void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
+	/* Properly free memory allocated by gmt_read_list */
 	uint64_t i;
 	for (i = 0; i < n; i++) gmt_M_str_free (list[i]);
 	gmt_M_free (GMT, list);
@@ -15192,7 +15192,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 	if (!item || !item[0]) return (NULL);	/* Nothing to do */
 	if (item[0] == '~') k = 1;		/* We want the inverse selection */
 	if (item[k] == '+' && item[k+1] == 'f') {	/* Gave +f<file> with segment numbers */
-		if ((n_items = gmtlib_read_list (GMT, &item[k+2], &list)) == 0) {
+		if ((n_items = gmt_read_list (GMT, &item[k+2], &list)) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find/open file: %s\n", &item[k+2]);
 			return (NULL);
 		}
@@ -15220,7 +15220,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 		while ((gmt_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
 			if ((step = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) {
 				gmt_free_int_selection (GMT, &select);
-				gmtlib_free_list (GMT, list, n_items);
+				gmt_free_list (GMT, list, n_items);
 				return (NULL);
 			}
 
@@ -15230,7 +15230,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 			for (i = start; i <= stop; i += step, n++) select->item[n] = i;
 		}
 	}
-	gmtlib_free_list (GMT, list, n_items);	/* Done with the list */
+	gmt_free_list (GMT, list, n_items);	/* Done with the list */
 	/* Here we got something to return */
 	select->n = n;							/* Total number of items */
 	select->item = gmt_M_memory (GMT, select->item, n, uint64_t);	/* Trim back array size */
@@ -15250,7 +15250,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 void gmt_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **S) {
 	/* Free the selection structure */
 	if (*S == NULL) return;	/* Nothing to free */
-	if ((*S)->pattern) gmtlib_free_list (GMT, (*S)->pattern, (*S)->n);
+	if ((*S)->pattern) gmt_free_list (GMT, (*S)->pattern, (*S)->n);
 	gmt_M_free (GMT, (*S)->regexp);
 	gmt_M_free (GMT, (*S)->caseless);
 	gmt_M_free (GMT, *S);
@@ -15308,7 +15308,7 @@ struct GMT_TEXT_SELECTION * gmt_set_text_selection (struct GMT_CTRL *GMT, char *
 	item = strdup (arg);
 	if (item[0] == '~') {k = 1, invert = true;}	/* We want the inverse selection, then skip the first char */
 	if (item[k] == '+' && item[k+1] == 'f') {	/* Gave [~]+f<file> with list of patterns, one per record */
-		if ((n_items = gmtlib_read_list (GMT, &item[k+2], &list)) == 0) {
+		if ((n_items = gmt_read_list (GMT, &item[k+2], &list)) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find/open file: %s\n", &item[k+2]);
 			gmt_M_str_free (item);
 			return (NULL);

@@ -150,7 +150,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-EXTERN_MSC void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
+EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 
 /* Must free allocated memory before returning */
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -199,7 +199,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 					char **list = gmt_get_dataset_tiles (API, world, k, &n_tiles);
 					for (t = 0; t < n_tiles; t++)
 						gmt_download_file_if_not_found (GMT, list[t], GMT_AUTO_DIR);
-					gmtlib_free_list (GMT, list, n_tiles);
+					gmt_free_list (GMT, list, n_tiles);
 				}
 				else {
 					sprintf (file, "@%s", API->remote_info[k].file);

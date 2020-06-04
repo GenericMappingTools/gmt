@@ -572,7 +572,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		if (args[arg][0] == '=' && args[arg][1] && !gmt_access (API->GMT, &args[arg][1], F_OK)) {	/* Gave a file list which we must expand into options */
 			char **flist = NULL;
 			uint64_t n_files, f;
-			n_files = gmtlib_read_list (API->GMT, &args[arg][1], &flist);
+			n_files = gmt_read_list (API->GMT, &args[arg][1], &flist);
 			if ((new_opt = GMT_Make_Option (API, '=', &args[arg][1])) == NULL)	/* Make option with the listing name flagged as option -= */
 				return_null (API, error);	/* Create the new option structure given the args, or return the error */
 			head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
@@ -584,7 +584,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 				new_opt = gmtparse_fix_gdal_files (new_opt);
 				head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 			}
-			gmtlib_free_list (API->GMT, flist, n_files);
+			gmt_free_list (API->GMT, flist, n_files);
 			continue;
 		}
 		else if (args[arg][0] == '<' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "< file" for input */

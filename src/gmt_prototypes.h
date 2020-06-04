@@ -178,6 +178,7 @@ EXTERN_MSC void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API
 EXTERN_MSC char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn[], int k_data, unsigned int *n_tiles);
 EXTERN_MSC bool gmt_file_is_tiled_list (struct GMTAPI_CTRL *API, const char *file, int *ID, char *wetdry, char *region_type);
 EXTERN_MSC int gmt_download_tiles (struct GMTAPI_CTRL *API, char *list, unsigned int mode);
+EXTERN_MSC int gmt_get_tile_id (struct GMTAPI_CTRL *API, char *file);
 
 /* gmt_grdio.c: */
 
@@ -363,6 +364,8 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
+EXTERN_MSC uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list);
 EXTERN_MSC void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interval);
 EXTERN_MSC int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int mode);
 EXTERN_MSC bool gmt_is_gmtmodule (char *line, char *module);

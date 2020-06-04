@@ -1084,7 +1084,7 @@ bool gmt_file_is_tiled_list (struct GMTAPI_CTRL *API, const char *file, int *ID,
 	return true;	/* We got one */
 }
 
-int gmtlib_get_tile_id (struct GMTAPI_CTRL *API, char *file) {
+int gmt_get_tile_id (struct GMTAPI_CTRL *API, char *file) {
 	int k_data;
 	if (!gmt_file_is_tiled_list (API, file, &k_data, NULL, NULL)) return GMT_NOTSET;
 	return (k_data);
@@ -1271,14 +1271,14 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 	for (k = 0; k < n_tiles; k++)
 		fprintf (fp, "%s\n", tile[k]);
 
-	gmtlib_free_list (API->GMT, tile, n_tiles);	/* Free the primary tile list */
+	gmt_free_list (API->GMT, tile, n_tiles);	/* Free the primary tile list */
 
 	if (k_filler != GMT_NOTSET) {	/* Want the secondary tiles */
 		if ((tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles))) {
 			/* Write secondary tiles to list file */
 			for (k = 0; k < n_tiles; k++)
 				fprintf (fp, "%s\n", tile[k]);
-			gmtlib_free_list (API->GMT, tile, n_tiles);	/* Free the secondary tile list */
+			gmt_free_list (API->GMT, tile, n_tiles);	/* Free the secondary tile list */
 			if (Ip->d_inc < Is->d_inc) {
 				/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
 				/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
@@ -1307,7 +1307,7 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
-	if ((k_data = gmtlib_get_tile_id (API, file)) == GMT_NOTSET) {
+	if ((k_data = gmt_get_tile_id (API, file)) == GMT_NOTSET) {
 		GMT_Report (API, GMT_MSG_ERROR, "Internal error: Non-recognized tiled ID embedded in file %s\n", file);
 		return NULL;
 	}
@@ -1334,10 +1334,10 @@ int gmt_download_tiles (struct GMTAPI_CTRL *API, char *list, unsigned int mode) 
 	char **file = NULL;
 
 	if (!gmt_file_is_tiled_list (API, list, NULL, NULL, NULL)) return GMT_RUNTIME_ERROR;
-	if ((n = gmtlib_read_list (API->GMT, list, &file)) == 0) return GMT_RUNTIME_ERROR;
+	if ((n = gmt_read_list (API->GMT, list, &file)) == 0) return GMT_RUNTIME_ERROR;
 	for (k = 0; k < n; k++) {
 		gmt_download_file_if_not_found (API->GMT, file[k], mode);
 	}
-	gmtlib_free_list (API->GMT, file, n);
+	gmt_free_list (API->GMT, file, n);
 	return GMT_NOERROR;
 }

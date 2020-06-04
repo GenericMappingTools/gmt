@@ -16471,7 +16471,7 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 			if (gmt_remove_file (GMT, filelist[k]))
 				GMT_Report (API, GMT_MSG_WARNING, "Unable to remove %s [permissions?]\n", filelist[k]);
 		}
-		gmtlib_free_list (GMT, filelist, n_files);	/* Free the file list */
+		gmt_free_list (GMT, filelist, n_files);	/* Free the file list */
 	}
 	if (chdir (here)) {		/* Get back to where we were */
 		perror (here);

@@ -140,10 +140,55 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+
+GMT_LOCAL int gmtwhich_list_tiles (struct GMTAPI_CTRL *API, char *list, bool YN, struct GMT_RECORD *Out) {
+	/* List all tiles and whether found/not found */
+	int t_data, fail;
+	uint64_t n, k, nf = 0;
+	char dir[PATH_MAX] = {""}, path[PATH_MAX] = {""};
+	char **file = NULL;
+
+	if ((t_data = gmt_get_tile_id (API, list)) == GMT_NOTSET) return GMT_RUNTIME_ERROR;
+	if ((n = gmt_read_list (API->GMT, list, &file)) == 0) return GMT_RUNTIME_ERROR;
+	snprintf (dir, PATH_MAX, "%s%s%s", API->GMT->session.USERDIR, API->remote_info[t_data].dir, API->remote_info[t_data].file);
+
+	for (k = 0; k < n; k++) {
+		sprintf (path, "%s%s", dir, &file[k][1]);
+		fail = access (path, R_OK);
+		if (fail) {	/* Look for jp2 version instead */
+			char *jp2_file = gmt_strrep (path, GMT_TILE_EXTENSION_LOCAL, GMT_TILE_EXTENSION_REMOTE);
+			strcpy (path, jp2_file);
+			fail = access (path, R_OK);
+			gmt_M_str_free (jp2_file);
+		}
+		if (fail) {
+			if (YN) {
+				strcpy (path, "N");
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			}
+			strcpy (Out->text, path);
+			GMT_Report (API, GMT_MSG_ERROR, "Tile %s not found!\n", file[k]);
+
+		}
+		else {	/* Found */
+			if (YN)	/* Just want a Yes */
+				strcpy (path, "Y");
+			strcpy (Out->text, path);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			nf++;
+		}
+	}
+	GMT_Report (API, GMT_MSG_INFORMATION, "Tiled dataset %s has %" PRIu64 " tiles; %" PRIu64 " are present in %s\n", API->remote_info[t_data].file, n, nf, dir);
+
+	gmt_free_list (API->GMT, file, n);
+	return GMT_NOERROR;
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
+	bool list;
 	int error = 0, fmode, k_data;
 	unsigned int first = 0;	/* Real start of filename */
 
@@ -193,8 +238,10 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
+		list = gmt_file_is_tiled_list (API, opt->arg, NULL, NULL, NULL);
+
 		if (Ctrl->G.active) {
-			if (gmt_file_is_tiled_list (API, opt->arg, NULL, NULL, NULL)) {
+			if (list) {
 				gmt_download_tiles (API, opt->arg, Ctrl->G.mode);
 				continue;
 			}
@@ -207,7 +254,11 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			sprintf (file, "%s%s", opt->arg, API->remote_info[k_data].ext);	/* Append the implicit extension for remote grids */
 		else
 			strcpy (file, opt->arg);
-		if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */
+		if (list) {
+			if ((error = gmtwhich_list_tiles (API, opt->arg, Ctrl->C.active, Out)))
+				Return (error);
+		}
+		else if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */
 			char *L = NULL;
 			if (Ctrl->D.active) {
 				p = strstr (path, &file[first]);	/* Start of filename */
