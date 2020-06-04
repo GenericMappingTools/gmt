@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** **all** \| **cache** \| **data**\ [=*planet*] \| **sessions** \| **settings**
+**gmt clear** **all** \| **cache** \| **data**\ [=\ *planet*] \| **sessions** \| **settings**
 [ |SYN_OPT-V| ]
 
 |No-spaces|
