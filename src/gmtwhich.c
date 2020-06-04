@@ -148,9 +148,6 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	unsigned int first = 0;	/* Real start of filename */
 
 	char path[PATH_MAX] = {""}, file[PATH_MAX] = {""}, *Yes = "Y", *No = "N", cwd[PATH_MAX] = {""}, *p = NULL;
-#ifdef TESTING_PATHS
-	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
-#endif
 
 	struct GMTWHICH_CTRL *Ctrl = NULL;
 	struct GMT_RECORD *Out = NULL;
@@ -195,14 +192,6 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
-
-#ifdef TESTING_PATHS
-		if (gmt_set_remote_and_local_filenames (GMT, opt->arg, local_path, remote_path, Ctrl->G.mode))
-			GMT_Report (API, GMT_MSG_ERROR, "gmt_set_remote_and_local_filenames failed\n");
-		else
-			GMT_Report (API, GMT_MSG_NOTICE, "%s: Remote = (%s) Local = (%s)\n", opt->arg, remote_path, local_path);
-		continue;
-#endif
 
 		if (Ctrl->G.active) {
 			if (gmt_file_is_tiled_list (API, opt->arg, NULL, NULL, NULL)) {
