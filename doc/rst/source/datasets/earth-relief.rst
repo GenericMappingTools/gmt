@@ -49,8 +49,8 @@ Code Dimensions        Reg Size     Description
 01m     21601 x  10801 g,p  258 MB  1 arc minute global relief (SRTM15+V2.1 @ 1.9 km)
 30s     43201 x  21601 g,p  935 MB  30 arc second global relief (SRTM15+V2.1 @ 1.0 km)
 15s     86400 x  43200 p    3.2 GB  15 arc second global relief (SRTM15+V2.1)
-03s    432001 x 216001 p    6.8 GB  3 arc second global relief (SRTM3S)
-01s   1296001 x 432001 p     41 GB  1 arc second global relief (SRTM1S)
+03s    432001 x 216001 g    6.8 GB  3 arc second global relief (SRTM3S)
+01s   1296001 x 432001 g     41 GB  1 arc second global relief (SRTM1S)
 ==== ================= === =======  ==================================================
 
 All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with

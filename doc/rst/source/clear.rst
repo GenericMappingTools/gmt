@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** **all** \| **cache** \| **data**\ [=*planet*] \| **sessions** \| **settings**
+**gmt clear** **all** \| **cache** \| **data**\ [=\ *planet*] \| **sessions** \| **settings**
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -38,9 +38,9 @@ Optional Arguments
 
 .. _clear-data:
 
-**data**\ [=*planet*]
+**data**\ [=\ *planet*]
     Delete the user's data download server directory and all of its contents.
-    Alternatively, append =*planet* for a specific planet and we only delete
+    Alternatively, append =\ *planet* for a specific planet and we only delete
     data for that sub-directory [all planets].
 
 .. _clear-sessions:
