@@ -38,7 +38,7 @@ Optional Arguments
 
 .. _clear-data:
 
-**data**\ [=*planet*]
+**data**\ [=\ *planet*]
     Delete the user's data download server directory and all of its contents.
     Alternatively, append =*planet* for a specific planet and we only delete
     data for that sub-directory [all planets].
