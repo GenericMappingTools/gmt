@@ -110,8 +110,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<transp>] [-C] [-D]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] [-M] [-N[i|o][<factor>]] [-Q] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W<weight>] [%s] [%s]\n\n", GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] [-M] [-N[i|o][<factor>]] [-Q] [%s]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<weight>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -119,20 +119,23 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output %s file.\n", type[API->external]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   With -D the name is a template and must contain %%c to hold the layer code.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify a transparency grid or image, or set a constant alpha value (0-1 range).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify a transparency grid or image, or set a constant alpha value [no transparency].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   An image must have 0-255 values, while a grid or constant must be in the 0-1 range).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct an image from 1 (gray) or 3 (r, g, b) input component grids.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   You may optionally supply transparency (-A) and/or intensity (-I).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Deconstruct an image into 1 or 3 output component grids, plus any transparency.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We write the layers as is (0-255); use -N to normalize the layers.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify an intensity grid file, or set a constant intensity value (-1/+1 range).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify an intensity grid file, or set a constant intensity value [no intensity].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The grid or constant must be in the -1 to +1 range).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force a monochrome final image [same number of bands as the input].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set normalization factor for (i)input or (o)output grids [Default sets both].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set normalization factor for (i)nput or (o)utput grids [Default sets both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   With -Ni (or -N), input grids will be divided by <factor> [255].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   With -No (or -N), output grids will be multiplied by <factor> [255].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append <factor> to use another factor than 255.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Make the final image opaque by removing any alpha layer.\n");
 	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify a blend weight grid or image, or set a constant weight (0-1 range).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify a blend weight grid or image, or set a constant weight [no blend weight].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   An image must have 0-255 values, while a grid or constant must be in the 0-1 range).\n");
 	GMT_Option (API, "f,.");
 
 	return (GMT_MODULE_USAGE);
