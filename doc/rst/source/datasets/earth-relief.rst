@@ -22,14 +22,14 @@ We have processed and reformatted publicly available global relief
 grids and standardized their file names.  In GMT, you may access a global relief grid
 (or a subset only by using the **-R** option) by specifying the special name
 
-   @earth_relief_\ *rr*\ *u*\ [_*reg*\ ]
+   @earth_relief_\ *rr*\ *u*\ [_\ *reg*\ ]
 
 where *rr* is a 2-digit integer specifying the grid resolution in the unit *u*, where
 *u* is either **d**, **m** or **s** for arc degree, arc minute or arc second, respectively.
-Optionally, you can append *_g* or *_p* to specifically get the gridline-registered or
+Optionally, you can append _\ **g** or _\ **p** to specifically get the gridline-registered or
 pixel-registered version (if they both exist).  If *reg* is not specified we will return
 the pixel-registered version unless only the gridline-registered file is available.
-The following codes for *rr*\ *u* and *reg* are supported:
+The following codes for *rr*\ *u* and the optional *reg* are supported:
 
 .. _tbl-earth_relief:
 
@@ -111,7 +111,7 @@ Offline Usage
 -------------
 
 If you anticipate to be without an Internet connection (or a very slow one), you can download
-all the remote files prior to losing connection, using the module :doc:`gmtget`. You can choose
+all the remote files prior to losing connection, using the module :doc:`/gmtget`. You can choose
 which data to download and limit it to grid spacings larger or equal to a limit, and you can
 minimize space on your computer by requesting the JPEG2000 tiles not be converted until GMT
 is accessing them.  Here are some examples of usage.  Download the entire cache directory used
