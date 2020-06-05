@@ -483,12 +483,21 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			off = band * H->size;
+			if (Ctrl->N.active) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node) shared(GMT,G,off,scale,I_in)
 #endif
-			gmt_M_grd_loop (GMT, G, row, col, node)
-				G->data[node] = scale * I_in[0]->data[node+off];
+				gmt_M_grd_loop (GMT, G, row, col, node)
+					G->data[node] = scale * I_in[0]->data[node+off];
+			}
+			else {
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node) shared(GMT,G,off,scale,I_in)
+#endif
+				gmt_M_grd_loop (GMT, G, row, col, node)
+					G->data[node] = I_in[0]->data[node+off];
 
+			}
 			sprintf (file, Ctrl->G.file, code[band]);
 			/* Write out grid */
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
