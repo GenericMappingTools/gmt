@@ -200,13 +200,6 @@ static inline uint32_t inline_bswap32 (uint32_t x) {
 #	define bswap32 inline_bswap32
 #endif /* HAVE___BUILTIN_BSWAP32 */
 
-/* Macro for exit since this should be returned when called from Matlab */
-#ifdef DO_NOT_EXIT
-#define PSL_exit(code) return(code)
-#else
-#define PSL_exit(code) exit(code)
-#endif
-
 #define PSL_M_unused(x) (void)(x)
 
 /* ISO Font encodings.  Ensure that the order of PSL_ISO_names matches order of includes below */
@@ -1764,15 +1757,15 @@ static char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const c
 
 static int psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
 	/* Write the specified encoding string to file */
-	int k = 0, match = 0;
+	int k = 0, match = 0, err = 0;
 	while (PSL_ISO_name[k] && (match = strcmp (encoding, PSL_ISO_name[k])) != 0) k++;
 	if (match == 0)
 		PSL_command (PSL, "%s", PSL_ISO_encoding[k]);
 	else {
 		PSL_message (PSL, PSL_MSG_ERROR, "Fatal Error: Could not find ISO encoding %s\n", encoding);
-		PSL_exit (EXIT_FAILURE);
+		err = -1;
 	}
-	return 0;
+	return err;
 }
 
 /* psl_bulkcopy copies the given long static string (defined in PSL_strings.h)
@@ -2474,13 +2467,13 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 	else {	/* User image, check to see if already used */
 		if (imagefile == NULL) {
 			PSL_message (PSL, PSL_MSG_ERROR, "Error: Gave NULL as imagefile name\n");
-			PSL_exit (EXIT_FAILURE);
+			return (-1);
 		}
 		i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
 		if (i >= 0) return (PSL_N_PATTERNS + i + 1);	/* Already registered, just return number */
 		if (PSL->internal.n_userimages > (PSL_N_PATTERNS-1)) {
 			PSL_message (PSL, PSL_MSG_ERROR, "Error: Already maintaining %d user images and cannot accept any more\n", PSL->internal.n_userimages+1);
-			PSL_exit (EXIT_FAILURE);
+			return (-1);
 		}
 		/* Must initialize a previously unused image */
 		PSL->internal.user_image[PSL->internal.n_userimages] = PSL_memory (PSL, NULL, strlen (imagefile)+1, char);
@@ -3174,7 +3167,7 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 		if ((in = fopen (fullname, "r")) == NULL) {	/* File exist but opening fails? WTF! */
 			PSL_message (PSL, PSL_MSG_ERROR, "Fatal Error: ");
 			perror (fullname);
-			PSL_exit (EXIT_FAILURE);
+			return (EXIT_FAILURE);
 		}
 
 		while (fgets (buf, PSL_BUFSIZ, in)) {
@@ -3459,12 +3452,12 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int flags, char *sharedir, 
 		psl_dos_path_fix (PSL->internal.SHAREDIR);
 		if (access(PSL->internal.SHAREDIR, R_OK)) {
 			PSL_message (PSL, PSL_MSG_ERROR, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
-			PSL_exit (EXIT_FAILURE);
+			return (EXIT_FAILURE);
 		}
 	}
 	else {	/* No sharedir found */
 		PSL_message (PSL, PSL_MSG_ERROR, "Error: Could not locate PSL_SHAREDIR.\n");
-		PSL_exit (EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	}
 
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
@@ -4007,14 +4000,16 @@ int PSL_setimage (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned 
 
 	/* Determine if image was used before */
 
-	if ((image_no > 0 && image_no <= PSL_N_PATTERNS) && !PSL->internal.pattern[image_no-1].status)	/* Unused predefined */
-		image_no = psl_pattern_init (PSL, image_no, NULL, NULL, 64, 64, 1);
+	if ((image_no > 0 && image_no <= PSL_N_PATTERNS) && !PSL->internal.pattern[image_no-1].status) {	/* Unused predefined */
+		if ((image_no = psl_pattern_init (PSL, image_no, NULL, NULL, 64, 64, 1)) < 0) return -1;	/* Error in psl_pattern_init */
+	}
 	else if (image_no < 0) {	/* User image, check if already used */
 		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
 		if (i == -1)	/* Not found or no previous user images loaded */
 			image_no = psl_pattern_init (PSL, -1, imagefile, image, dim[0], dim[1], dim[2]);
 		else
 			image_no = PSL_N_PATTERNS + i + 1;
+		if (image_no < 0) return -1;	/* Error in psl_pattern_init */
 	}
 	k = image_no - 1;	/* Image array index */
 	nx = PSL->internal.pattern[k].nx;
@@ -4306,6 +4301,9 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 			PSL->internal.fp = NULL;
 		}
 	}
+	PSL->internal.offset[0] = PSL->internal.prev_offset[0];
+	PSL->internal.offset[1] = PSL->internal.prev_offset[1];
+
 	PSL->internal.call_level--;	/* Done with this module call */
 	return (PSL_NO_ERROR);
 }
@@ -4386,6 +4384,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	right_now = time ((time_t *)0);
 	PSL->internal.landscape = !(overlay || orientation);	/* Only rotate if not overlay and not Portrait */
+	PSL->internal.prev_offset[0] = PSL->internal.offset[0];
+	PSL->internal.prev_offset[1] = PSL->internal.offset[1];
 	PSL->internal.offset[0] = offset[0];
 	PSL->internal.offset[1] = offset[1];
 

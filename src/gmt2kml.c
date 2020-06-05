@@ -300,11 +300,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET))
+				if (n_files++ > 0) break;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
-				else if (n_files == 0)	/* Just keep name of first file */
-					Ctrl->In.file = strdup (opt->arg);
-				n_files++;
+				else
+					Ctrl->In.active = true;
 				break;
 
 			/* Processes program-specific parameters */
@@ -936,7 +937,7 @@ EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		char unit_name[GMT_LEN16] = {""};
 		gmt_check_scalingopt (GMT, 'Q', Ctrl->Q.unit, unit_name);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Wiggle scale given as %g z-data units per %s.\n", Ctrl->Q.scale, unit_name);
-		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Initialize distance machinery */
+		if (gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) Return (GMT_NOT_A_VALID_TYPE);	/* Initialize distance machinery */
 		Ctrl->Q.scale = 1.0 / Ctrl->Q.scale;	/* Now in map-distance units (i.e, unit they appended) per users data units */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Wiggle scale inverted as %g %s per z-data units.\n", Ctrl->Q.scale, unit_name);
 		/* Convert to degrees per user data unit - this is our scale that converts z-data to degree distance latitude */

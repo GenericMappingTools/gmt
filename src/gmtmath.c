@@ -6254,7 +6254,9 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	t_check_required = !Ctrl->T.notime;	/* Turn off default GMT NaN-handling in t column */
 
-	gmt_hash_init (GMT, localhashnode, operator, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS);
+	if (gmt_hash_init (GMT, localhashnode, operator, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS)) {
+		Return (GMT_DIM_TOO_SMALL);
+	}
 
 	for (i = 0; i < GMTMATH_STACK_SIZE; i++) stack[i] = gmt_M_memory (GMT, NULL, 1, struct GMTMATH_STACK);
 
@@ -6693,7 +6695,8 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 				if (Ctrl->C.cols[j]) continue;
 				status = (*call_operator[op]) (GMT, &info, stack, nstack - 1, j);	/* Do it */
 				if (status == -1) {	/* Serious problem, need to bail */
-					GMT_exit (GMT, GMT_RUNTIME_ERROR); Return (GMT_RUNTIME_ERROR);
+					GMT_Report (API, GMT_MSG_ERROR, "Operand %s returned status = %d. Must give up.\n", operator[op], status);
+					Return (GMT_RUNTIME_ERROR);
 				}
 			}
 		}

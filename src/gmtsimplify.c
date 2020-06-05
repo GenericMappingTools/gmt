@@ -108,7 +108,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Write to named output file instead of stdout */
 				Ctrl->Out.active = true;
@@ -330,7 +330,8 @@ EXTERN_MSC int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	geo = gmt_M_is_geographic (GMT, GMT_IN);					/* true for lon/lat coordinates */
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = true;	/* Used units but did not set -fg; implicitly set -fg via geo */
 
-	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance scalings according to unit selected */
+	if (gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize distance scalings according to unit selected */
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	/* Convert tolerance to degrees [or leave as Cartesian] */
 	/* We must do this here since gmtsimplify_douglas_peucker_geog is doing its own thing and cannot use gmt_distance yet */

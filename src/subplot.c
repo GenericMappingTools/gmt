@@ -338,7 +338,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					if (c) {	/* Gave modifiers so we must parse those now */
 						c[0] = '+';	/* Restore modifiers */
 						/* Modifiers are [+c<dx/dy>][+g<fill>][+j|J<justify>][+o<dx/dy>][+p<pen>][+r|R][+v] */
-						if (gmt_validate_modifiers (GMT, opt->arg, 'A', "cgjJoprRv")) n_errors++;
+						if (gmt_validate_modifiers (GMT, opt->arg, 'A', "cgjJoprRv", GMT_MSG_ERROR)) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'j', Ctrl->A.placement)) {	/* Inside placement */
 							gmt_just_validate (GMT, Ctrl->A.placement, "TL");
 							strncpy (Ctrl->A.justify, Ctrl->A.placement, 2);
@@ -498,7 +498,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				}
 				if (c) {	/* Gave paint/pen/debug modifiers */
 					c[0] = '+';	/* Restore modifiers */
-					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "cdgpfw")) n_errors++;
+					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "cdgpfw", GMT_MSG_ERROR)) n_errors++;
 					if (gmt_get_modifier (opt->arg, 'c', string) && string[0])	/* Clearance for rectangle */
 						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->F.clearance) < 0) n_errors++;
 					if (gmt_get_modifier (opt->arg, 'g', Ctrl->F.fill) && Ctrl->F.fill[0]) {
@@ -537,7 +537,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				if ((k == GMT_X && opt->arg[1] == 'b') || (k == GMT_Y && opt->arg[1] == 'l')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MIN;
 				else if ((k == GMT_X && opt->arg[1] == 't') || (k == GMT_Y && opt->arg[1] == 'r')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MAX;
 				else Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_BOTH;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'S', "lspt")) n_errors++;	/* Gave a bad modifier */
+				if (gmt_validate_modifiers (GMT, opt->arg, 'S', "lspt", GMT_MSG_ERROR)) n_errors++;	/* Gave a bad modifier */
 				if (gmt_get_modifier (opt->arg, 'l', string)) {	/* Want space for (primary) labels */
 					Ctrl->S[k].has_label = true;
 					if (string[0]) Ctrl->S[k].label[GMT_PRIMARY] = strdup (string);
@@ -1220,17 +1220,17 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Ly);
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
-		char legend_justification[4] = {""};
+		char legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
 		double gap[4], legend_width = 0.0, legend_scale = 1.0;
 
-		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
+		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN128] = {""};
 			if ((P = gmt_subplot_info (API, fig)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No subplot information file!\n");
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
+			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o%s -F+p%s+g%s -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, off, pen, fill, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to place legend on current subplot figure\n");
 				Return (error);
@@ -1249,7 +1249,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 	else {	/* SUBPLOT_END */
 		int k, id;
 		char *wmode[2] = {"w","a"}, vfile[GMT_VF_LEN] = {""}, Rtxt[GMT_LEN64] = {""}, tag[GMT_LEN16] = {""};
-		char legend_justification[4] = {""}, Jstr[3] = {"J"};
+		char legend_justification[4] = {""}, Jstr[3] = {"J"}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
 		double legend_width = 0.0, legend_scale = 1.0;
 		FILE *fp = NULL;
 
@@ -1258,10 +1258,10 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 
-		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification)) {	/* Unplaced legend file */
+		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN128] = {""};
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
-			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o0.2c -F+p1p+gwhite -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
+			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o%s -F+p%s+g%s -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, off, pen, fill, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to place legend on current subplot figure\n");
 				Return (error);

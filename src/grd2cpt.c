@@ -212,7 +212,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input files */
 				Ctrl->In.active = true;
 				n_files[GMT_IN]++;
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files[GMT_OUT]++ == 0) Ctrl->Out.file = strdup (opt->arg);
@@ -252,7 +252,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'F':	/* Set color model for output */
-				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
 					Ctrl->F.cat = true;
 					if (txt_a[0] == '\0') break;

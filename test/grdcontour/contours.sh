@@ -6,7 +6,7 @@ ps=contours.ps
 
 color_contour () {
 	rm -f contour_*.txt
-	gmt grdcontour @BigIsland.nc -C1000 -Dcontour_%d.txt -F$1 -S8
+	gmt grdcontour BigIsland.nc -C1000 -Dcontour_%d.txt -F$1 -S8
 
 	for name in contour_*.txt; do
 		# For each contour we compute distance a

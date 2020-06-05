@@ -149,6 +149,7 @@ struct GMTAPI_CTRL {
 	int shelf;				/* Place to pass hidden values within API */
 	unsigned int log_level;			/* 0 = stderr, 1 = just this module, 2 = set until unset */
 	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */
+	double tile_wesn[GMTAPI_N_GRID_ARGS];	/* Original region used when getting tiles (perhaps result of -Roblique -J) */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
@@ -198,6 +199,10 @@ struct GMTAPI_CTRL {
 	GMT_getfunction *current_get_V_val;
 	/* These are used for -O -K -P -c and set to blank under modern/classic modes */
 	char *O_OPT, *K_OPT, *P_OPT, *c_OPT;
+	/* structure array of remote file information (sorted alphabetically) */
+	int n_remote_info;	/* How many remote server files we know of */
+	struct GMT_DATA_INFO *remote_info;
+	bool server_announced;	/* Set to true after we have announced which GMT data server we are using */
 };
 
 /* Macro to test if filename is a special name indicating memory location */

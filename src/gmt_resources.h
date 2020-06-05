@@ -219,6 +219,13 @@ enum GMT_enum_freg {
 	GMT_ADD_DEFAULT       =  6	/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
 };
 
+/* Three constants for GMT_Get_DataPath modes */
+enum GMT_enum_files {
+	GMT_FILE_LOCAL        =  0,	/* Tell GMT_Get_DataPath to only consider local files and ignore remote files */
+	GMT_FILE_REMOTE       =  1,	/* Tell GMT_Get_DataPath to try to download remote files if given such files (@filename) */
+	GMT_FILE_CHECK        =  2,	/* Tell GMT_Get_DataPath to only return error codes but not update the path */
+};
+
 enum GMT_enum_ioset {
 	GMT_IO_DONE = 0,	/* Tell GMT_End_IO we are done but nothing special is to be done. */
 	GMT_IO_ASCII = 512,	/* Force ASCII mode for reading (ignoring current io settings). */

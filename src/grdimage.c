@@ -232,11 +232,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 			case '<':	/* Input file (only one or three is accepted) */
 				Ctrl->In.active = true;
-				if (n_files >= 3) break;
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->In.file[n_files++] = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files >= 3) {n_errors++; continue; }
+				Ctrl->In.file[n_files] = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_files]))) n_errors++;
+				n_files++;
 				break;
 			case '>':	/* Output file (probably for -A via external interface) */
 				Ctrl->Out.active = true;
@@ -305,13 +304,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 
 			case 'C':	/* CPT */
 				Ctrl->C.active = true;
-				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
-					Ctrl->C.dz = atof (&c[2]);
-					c[0] = '\0';	/* Temporarily chop off the modifier */
-				}
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if (c) c[0] = '+';	/* Restore */
+				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 #ifdef HAVE_GDAL
 			case 'D':	/* Get an image via GDAL */
@@ -586,7 +581,6 @@ GMT_LOCAL int grdimage_set_rgb_three_grids (struct GMT_GRID *Grid_proj[], uint64
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
-EXTERN_MSC bool gmtlib_file_is_srtmlist (struct GMTAPI_CTRL *API, const char *file);
 
 #define img_inc_is_one(h) (h->inc[GMT_X] == 1.0 && h->inc[GMT_Y] == 1.0)
 #define img_region_is_dimension(h) (h->wesn[XLO] == 0.0 && h->wesn[YLO] == 0.0 && img_inc_is_one(h) && \
@@ -646,6 +640,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdimage main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use an intensity grid */
 	n_grids = (Ctrl->In.do_rgb) ? 3 : 1;	/* Either reading 3 grids (r, g, b) or a z-data grid */
 	if (Ctrl->A.file) {
@@ -666,8 +662,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			/* If input grid is actually a list of SRTM tiles then we must read that list first since this will
 			 * force all tiles to be downloaded, converted, and stitched into a single grid per -R. This must
 			 * happen _before_ we auto-derive intensities via grdgradient so that there is an input data grid */
-			if (gmtlib_file_is_srtmlist (API, Ctrl->In.file[0])) {	/* Must read and stitch the tiles first */
-				if ((Grid_orig[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, GMT->common.R.wesn, Ctrl->In.file[0], NULL)) == NULL)	/* Get srtm grid data */
+
+			if (gmt_file_is_tiled_list (API, Ctrl->In.file[0], NULL, NULL, NULL)) {	/* Must read and stitch the tiles first */
+				//if ((Grid_orig[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, GMT->common.R.wesn, Ctrl->In.file[0], NULL)) == NULL)	/* Get srtm grid data */
+				if ((Grid_orig[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->In.file[0], NULL)) == NULL)	/* Get srtm grid data */
 					Return (API->error);
 				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Grid_orig[0], data_grd))
 					Return (API->error);
@@ -950,14 +948,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
-			gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
-			                Ctrl->In.file[0]);
+			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->In.file[0])) Return (GMT_PROJECTION_ERROR);
 			if (Ctrl->A.active) /* Need to set background color to white for raster images */
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
 			gmt_set_grddim (GMT, Img_proj->header);	/* Recalculate projected image dimensions */
 			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected image */
-			gmt_img_project (GMT, I, Img_proj, false);	/* Now project the image onto the projected rectangle */
+			if (gmt_img_project (GMT, I, Img_proj, false)) Return (GMT_RUNTIME_ERROR);	/* Now project the image onto the projected rectangle */
 			if (!API->external && (GMT_Destroy_Data (API, &I) != GMT_NOERROR)) {	/* Free the original image now we have projected.  Use Img_proj from now on */
 				Return (API->error);	/* Failed to free the image */
 			}
@@ -969,12 +967,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			grdimage_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project, mixed);
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if a dpi was specified, else keep as is */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig[k]->header->registration;
-			gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
-			                Ctrl->In.file[k]);
+			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->In.file[k])) Return (GMT_PROJECTION_ERROR);
 			gmt_set_grddim (GMT, Grid_proj[k]->header);	/* Recalculate projected grid dimensions */
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected grid */
-			gmt_grd_project (GMT, Grid_orig[k], Grid_proj[k], false);	/* Now project the grid onto the projected rectangle */
+			if (gmt_grd_project (GMT, Grid_orig[k], Grid_proj[k], false)) Return (GMT_RUNTIME_ERROR);	/* Now project the grid onto the projected rectangle */
 			if (GMT_Destroy_Data (API, &Grid_orig[k]) != GMT_NOERROR) {	/* Free the original grid now we have projected.  Use Grid_proj from now on */
 				Return (API->error);	/* Failed to free the original grid */
 			}
@@ -991,12 +989,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				nx_proj = Intens_orig->header->n_columns;
 				ny_proj = Intens_orig->header->n_rows;
 			}
-			gmt_M_err_fail (GMT, gmt_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
-			                Ctrl->I.file);
+			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->I.file)) Return (GMT_PROJECTION_ERROR);
 			gmt_set_grddim (GMT, Intens_proj->header);	/* Recalculate projected intensity grid dimensions */
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected intensity grid */
-			gmt_grd_project (GMT, Intens_orig, Intens_proj, false);	/* Now project the intensity grid onto the projected rectangle */
+			if (gmt_grd_project (GMT, Intens_orig, Intens_proj, false)) Return (GMT_RUNTIME_ERROR);	/* Now project the intensity grid onto the projected rectangle */
 			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_NOERROR) {	/* Free the original intensity grid now we have projected.  Use Intens_proj from now on */
 				Return (API->error);	/* Failed to free the original intensity grid */
 			}
@@ -1065,14 +1063,20 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_PALETTE, GMT_IS_NONE, 0, cpt_len, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			P->model = GMT_RGB;
-			if (Img_proj->colormap == NULL && Img_proj->color_interp &&
-			    (!strncmp (Img_proj->color_interp, "Gra", 3) || !strncmp (Img_proj->color_interp, "Red", 3) ||
-				 !strncmp (Img_proj->color_interp, "Gre", 3) || !strncmp (Img_proj->color_interp, "Blu", 3) ||
-			     !strncmp (Img_proj->color_interp, "Und", 3)) ) {
+			if (Img_proj->colormap == NULL) {
+				if (Img_proj->color_interp &&
+					(!strncmp (Img_proj->color_interp, "Gra", 3) || !strncmp (Img_proj->color_interp, "Red", 3) ||
+					!strncmp (Img_proj->color_interp, "Gre", 3) || !strncmp (Img_proj->color_interp, "Blu", 3) ||
+					!strncmp (Img_proj->color_interp, "Und", 3)) ) {
 					/* Grayscale image, only assign r as shade */
-				r_table = gmt_M_memory (GMT, NULL, 256, double);
-				for (k = 0; k < 256; k++) r_table[k] = gmt_M_is255 (k);	/* Sets k/255.0 */
-				gray_only = true;	/* Flag that we are doing a grayscale image below */
+					r_table = gmt_M_memory (GMT, NULL, 256, double);
+					for (k = 0; k < 256; k++) r_table[k] = gmt_M_is255 (k);	/* Sets k/255.0 */
+					gray_only = true;	/* Flag that we are doing a grayscale image below */
+				}
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "color_interp is either empty or unknown. Can't proceed.\n");
+					Return (API->error);
+				}
 			}
 			else if (Img_proj->colormap != NULL) {	/* Incoming image has a colormap, extract it */
 				r_table = gmt_M_memory (GMT, NULL, 256, double);

@@ -138,10 +138,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct GM
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Supplemental parameters */
@@ -151,10 +150,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct GM
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 			case 'F':
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'N':	/* Extend oldest stage back to this time [no extension] */
 				Ctrl->N.active = true;
@@ -319,7 +317,8 @@ EXTERN_MSC int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
+	if (gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Great circle distances in degrees */
+		Return (GMT_NOT_A_VALID_TYPE);
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
 	out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);

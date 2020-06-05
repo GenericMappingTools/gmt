@@ -169,10 +169,11 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
+				else
+					Ctrl->In.active = true;
 				break;
 
 			/* Processes program-specific parameters */
@@ -209,10 +210,9 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -268,7 +268,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 	}
 
 	if (Ctrl->Z.active) {
-		gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
+		n_errors += gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 		GMT->common.b.type[GMT_IN] = Ctrl->Z.type;
 		if (b_only) {
 			GMT->common.b.active[GMT_IN] = false;
@@ -477,7 +477,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Grid->header->wesn[XHI] = Grid->header->wesn[XLO] + (Grid->header->n_columns - 1 + Grid->header->registration) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[YHI] = Grid->header->wesn[YLO] + (Grid->header->n_rows - 1 + Grid->header->registration) * Grid->header->inc[GMT_Y];
 		gmt_set_grddim (GMT, Grid->header);
-		gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+		if (gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 		n_left = Grid->header->nm;
@@ -557,7 +557,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "n_columns = %d  n_rows = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->n_columns, Grid->header->n_rows, Grid->header->nm, Grid->header->size);
 
-	gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file);
+	if (gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && gmt_M_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */

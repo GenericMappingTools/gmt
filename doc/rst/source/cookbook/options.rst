@@ -759,7 +759,7 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 Timestamps on plots: The **-U** option
 --------------------------------------
 
-The **-U** option draws the GMT UNIX System time stamp on the plot.
+The **-U** option draws the GMT system time stamp on the plot.
 By appending **+j**\ *just* and/or **+o**\ *dx/dy*, the user may
 specify the justification of the stamp and where the stamp should fall
 on the page relative to lower left corner of the plot.

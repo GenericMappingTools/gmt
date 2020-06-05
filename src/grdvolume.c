@@ -352,11 +352,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct GMT_
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -535,7 +534,8 @@ EXTERN_MSC int GMT_grdvolume (void *V_API, int mode, void *args) {
 	ij_inc[4] = ij_inc[0];	/* Repeat for convenience */
 	cellsize = Work->header->inc[GMT_X] * Work->header->inc[GMT_Y];
 	if (shrink) {
-		gmt_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST);	/* Flat Earth mode */
+		if (gmt_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Flat Earth mode */
+			Return (GMT_NOT_A_VALID_TYPE);
 		dist_pr_deg = GMT->current.proj.DIST_M_PR_DEG;
 		dist_pr_deg *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scales meters to desired unit */
 		cellsize *= dist_pr_deg * dist_pr_deg;

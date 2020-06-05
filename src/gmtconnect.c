@@ -163,13 +163,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -360,7 +360,8 @@ EXTERN_MSC int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance-computing machinery with proper unit */
+	if (gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize distance-computing machinery with proper unit */
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input assuming lines */
 		gmt_M_free (GMT, buffer);

@@ -113,13 +113,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 			/* Processes program-specific parameters */
 			case '<':	/* Input file(s) */
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID) ||
-				    gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) {
-					Ctrl->fname_in = opt->arg;
-					n_files++;
+				Ctrl->fname_in = opt->arg;
+				n_files++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) {	/* No grid found */
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) 	/* No dataset found */
+						n_errors++;
 				}
-				else
-					n_errors++;
 				break;
 
 			case 'A':	/* GDAL prog name */
@@ -146,10 +145,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = opt->arg;
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			case 'I':	/* Grid spacings */

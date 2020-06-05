@@ -163,10 +163,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 			case 'A':	/* Boundary conditions -A[l|r]<bc>[/<w>|<m>/<f>]*/
 				Ctrl->A.active = true;

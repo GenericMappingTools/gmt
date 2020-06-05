@@ -96,23 +96,23 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->In.file[n_in++] = strdup (opt->arg);
-				else if (n_in == 1 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->In.file[n_in++] = strdup (opt->arg);
-				else {
+				if (n_in == 2) {
 					n_errors++;
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only two files may be pasted\n");
+				}
+				else {
+					Ctrl->In.file[n_in] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_in]))) n_errors++;
+					n_in++;
 				}
 				break;
 
 			/* Processes program-specific parameters */
 
  			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			default:	/* Report bad options */

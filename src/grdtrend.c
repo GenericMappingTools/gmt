@@ -182,20 +182,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':
-				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->D.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->D.active = true;
+				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file))) n_errors++;
 				break;
 			case 'N':
 				/* Must check for both -N[r]<n_model> and -N<n_model>[r] due to confusion */
@@ -205,10 +203,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 				if (opt->arg[j]) Ctrl->N.value = atoi(&opt->arg[j]);
 				break;
 			case 'T':
-				if ((Ctrl->T.active = gmt_check_filearg (GMT, 'T', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->T.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->T.active = true;
+				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->T.file))) n_errors++;
 				break;
 			case 'W':
 				Ctrl->W.active = true;
@@ -219,10 +216,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 				else
 					Ctrl->W.mode = 1;
 				/* OK if this file doesn't exist; we always write to that file on output */
-				if (gmt_check_filearg (GMT, 'W', opt->arg, GMT_IN, GMT_IS_GRID) || gmt_check_filearg (GMT, 'W', opt->arg, GMT_OUT, GMT_IS_GRID))
-					Ctrl->W.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->W.file = strdup (opt->arg);
+				if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* FOund the file */
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->W.file))) n_errors++;
+				}
+				else {
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->W.file))) n_errors++;
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -538,7 +538,10 @@ EXTERN_MSC int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (gmt_M_is_subset (GMT, G->header, wesn)) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, G->header, wesn)) {	/* Subset requested; make sure wesn matches header spacing */
+		if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "")))
+			Return (error);
+	}
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
 	}

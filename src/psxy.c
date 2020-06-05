@@ -649,7 +649,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				n_files++;
 				break;
 
@@ -1253,7 +1253,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					if (S.read_symbol_cmd) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
 					if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-S", s_args)) {	/* Found -Sargs */
 						if (!(s_args[0] == 'q'|| s_args[0] == 'f')) { /* Update parameters */
-							gmt_parse_symbol_option (GMT, s_args, &S, 0, false);
+							if ((error = gmt_parse_symbol_option (GMT, s_args, &S, 0, false))) {
+								Return (error);
+							}
 						}
 						else
 							GMT_Report (API, GMT_MSG_ERROR, "Segment header tries to switch to a line symbol like quoted line or fault - ignored\n");
@@ -1279,7 +1281,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "ERROR: no symbol code was provided in the -S option.\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
-				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, In->text, &S, 0, false);
+				if (S.read_symbol_cmd == 1 && (error = gmt_parse_symbol_option (GMT, In->text, &S, 0, false))) {
+					Return (error);
+				}
 				QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 				/* Since we only now know if some of the input columns should NOT be considered dimensions we
 				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
@@ -1788,7 +1792,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
 						}
 						if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
-						gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, In->text, S.custom, &current_pen, &current_fill, outline_setting);
+						if ((error = gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, In->text, S.custom, &current_pen, &current_fill, outline_setting)))
+							Return (error);
 						break;
 				}
 			}
@@ -1979,7 +1984,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						if ((S.symbol == GMT_SYMBOL_QUOTED_LINE && s_args[0] == 'q') || (S.symbol == GMT_SYMBOL_DECORATED_LINE && s_args[0] == '~') || (S.symbol == GMT_SYMBOL_FRONT && s_args[0] == 'f')) { /* Update parameters */
 							gmt_contlabel_plot (GMT, &S.G);
 							gmt_contlabel_free (GMT, &S.G);
-							gmt_parse_symbol_option (GMT, s_args, &S, 0, false);
+							if ((error = gmt_parse_symbol_option (GMT, s_args, &S, 0, false))) {
+								Return (error);
+							}
 							if (change & 1) change -= 1;	/* Don't want polygon to be true later */
 							if (S.symbol == GMT_SYMBOL_DECORATED_LINE && S.D.symbol_code[0] != 'k') decorate_custom = false;
 

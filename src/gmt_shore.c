@@ -408,18 +408,18 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 				case 'S': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP_INV;	break;	/* Skip everything BUT Antarctica data south of 60S */
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A modifier +a: Invalid code %c\n", p[0]);
-					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+					return GMT_PARSE_ERROR;
 					break;
 			}
 			p++;	/* Go to next code */
 		}
 		if ((I->antarctica_mode & GSHHS_ANTARCTICA_GROUND) && (I->antarctica_mode & GSHHS_ANTARCTICA_ICE)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A modifier +a: Cannot select both g and i\n");
-			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+			return GMT_PARSE_ERROR;
 		}
 		if ((I->antarctica_mode & GSHHS_ANTARCTICA_SKIP) && (I->antarctica_mode & GSHHS_ANTARCTICA_SKIP_INV)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A modifier +a: Cannot select both s and S\n");
-			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+			return GMT_PARSE_ERROR;
 		}
 	}
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
@@ -431,7 +431,7 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: No area given\n");
-		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+		return GMT_PARSE_ERROR;
 	}
 	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;
 	return (GMT_OK);
@@ -451,7 +451,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 
 	switch (*res) {
 		case 'a':	/* Automatic selection via -J or -R, if possible */
-			if (GMT->common.J.active) {	/* Use map scale xxxx as in 1:xxxx */
+			if (GMT->common.J.active && !gmt_M_is_linear (GMT)) {	/* Use map scale xxxx as in 1:xxxx */
 				double i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
 				if (i_scale > GMT_CRUDE_THRESHOLD)
 					base = 4;	/* crude */

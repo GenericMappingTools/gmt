@@ -181,7 +181,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p]\n", GMT_CONTG, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N[<cpt>]] %s%s[-Q[<cut>][+z]] [%s]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s] [%s]\n", GMT_bo_OPT, API->c_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_l_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -357,11 +357,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -524,7 +523,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 					else
 						j = 0;
 					if (strstr (opt->arg, "+a") || strstr (opt->arg, "+d") || strstr (opt->arg, "+l")) {	/* New parser */
-						if (gmt_validate_modifiers (GMT, opt->arg, 'T', "adl")) n_errors++;
+						if (gmt_validate_modifiers (GMT, opt->arg, 'T', "adl", GMT_MSG_ERROR)) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'a', string))
 							Ctrl->T.all = true;
 						if (gmt_get_modifier (opt->arg, 'd', string))
@@ -994,6 +993,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	unsigned int cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};
 
 	uint64_t ij, *n_seg = NULL;
+	int64_t ns;
 
 	size_t n_save = 0, n_alloc = 0, n_save_alloc = 0, *n_seg_alloc = NULL;
 
@@ -1164,6 +1164,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdcontour main code ----------------------------*/
+
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	if (Ctrl->D.active) {
@@ -1536,8 +1538,10 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->Q.active && Ctrl->Q.unit && (strchr (GMT_LEN_UNITS, Ctrl->Q.unit) || Ctrl->Q.unit == 'X'))	/* Need to compute distances in map units */
-		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
+	if (Ctrl->Q.active && Ctrl->Q.unit && (strchr (GMT_LEN_UNITS, Ctrl->Q.unit) || Ctrl->Q.unit == 'X')) {	/* Need to compute distances in map units */
+		if (gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
+	}
 
 	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
 
@@ -1582,8 +1586,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		n_alloc = 0;
 		begin = true;
 
-		while ((n = (unsigned int)gmt_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
-
+		while ((ns = gmt_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
+			n = (uint64_t)ns;
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
 			is_closed = (closed != cont_is_not_closed);
 
@@ -1668,6 +1672,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, x);
 			gmt_M_free (GMT, y);
 		}
+		if (ns < 0) Return (-ns);
 	}
 
 	if (make_plot && n_cont_attempts == 0) GMT_Report (API, GMT_MSG_INFORMATION, "No contours drawn, check your -A, -C, -L settings?\n");

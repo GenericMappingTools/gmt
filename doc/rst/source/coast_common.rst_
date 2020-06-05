@@ -68,7 +68,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*]
+**-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+z**]
     Select painting or dumping country polygons from the Digital Chart of the World.
     This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
     Append one or more comma-separated countries using the
@@ -84,7 +84,8 @@ Optional Arguments
     repeat if more than one continent is requested.
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
-    specified unless **-M** is in effect, in which case only one **-E** option can be given.
+    specified unless **-M** is in effect, in which case only one **-E** option can be given;
+    append **+z** to place the country code in the segment headers via **-Z**\ *code* settings.
     Otherwise, you may repeat **-E** to give different groups of items their own pen/fill settings.
     If neither **-J** nor **-M** are set then we just print the **-R**\ *wesn* string.
 
