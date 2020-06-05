@@ -52,6 +52,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC bool gmtlib_module_may_get_R_from_RP (struct GMT_CTRL *GMT, const char *mod_name);
 EXTERN_MSC double gmtlib_distance_type (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE, unsigned int id);
 EXTERN_MSC bool gmtlib_genper_reset (struct GMT_CTRL *GMT, bool reset);
 EXTERN_MSC double gmtlib_left_boundary (struct GMT_CTRL *GMT, double y);
@@ -213,8 +214,8 @@ EXTERN_MSC void gmtlib_inplace_transpose (gmt_grdfloat *A, unsigned int n_rows, 
 EXTERN_MSC void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data);
 EXTERN_MSC void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P);
-EXTERN_MSC unsigned int gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix);
-EXTERN_MSC unsigned int gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector);
+EXTERN_MSC void gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix);
+EXTERN_MSC void gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector);
 EXTERN_MSC void gmtlib_union_transpose (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *m, const uint64_t n_rows, const uint64_t n_columns, unsigned int type);
 EXTERN_MSC void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free_image);
 EXTERN_MSC struct GMT_IMAGE * gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned int mode);

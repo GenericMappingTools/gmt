@@ -203,7 +203,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 		}
 	}
 
-	if (Ctrl->Z.active) gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
+	if (Ctrl->Z.active) n_errors += gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 
 	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Must specify at least one input file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Option -E can only handle one input file\n");
@@ -299,8 +299,10 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (gmt_M_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
-			gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");
+		if (gmt_M_is_subset (GMT, G->header, wesn)) {	/* Subset requested; make sure wesn matches header spacing */
+			if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "")))
+				Return (error);
+		}
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, G) == NULL) {
 			Return (API->error);	/* Get subset */
@@ -310,7 +312,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 		n_total += G->header->nm;
 
-		gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, G), opt->arg);
+		if ((error = gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, G), opt->arg)))
+			Return (error);
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			bool previous = GMT->common.b.active[GMT_OUT], rst = false;

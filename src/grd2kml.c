@@ -230,13 +230,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* CPT */
 				Ctrl->C.active = true;
-				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
-					Ctrl->C.dz = atof (&c[2]);
-					c[0] = '\0';	/* Temporarily chop off the modifier */
-				}
 				gmt_M_str_free (Ctrl->C.file);
-				Ctrl->C.file = strdup (opt->arg);
-				if (c) c[0] = '+';	/* Restore */
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'D':	/* Debug options - may fade away when happy with the performance */
 				Ctrl->D.active = true;
@@ -522,6 +518,8 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grd2kml main code ----------------------------*/
+
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	uniq = (int)getpid();	/* Unique number for temporary files  */
 

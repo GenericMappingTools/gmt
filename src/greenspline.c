@@ -1427,7 +1427,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
 	unsigned int dimension = 0, normalize = 0, n_cols, w_col, L_Max = 0;
 	size_t n_alloc;
-	int error, out_ID, way, n_columns, n_use;
+	int error = GMT_NOERROR, out_ID, way, n_columns, n_use;
 	bool delete_grid = false, check_longitude, skip;
 
 	char *method[N_METHODS] = {"Minimum curvature Cartesian spline [1-D]",
@@ -1503,25 +1503,25 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 0:	/* Cartesian 2-D x,y data */
-			gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
+			error = gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
 			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 1:	/* 2-D lon, lat data, but scale to Cartesian flat earth km */
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
-			gmt_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
+			error = gmt_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
 			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 2:	/* 2-D lon, lat data, use spherical distances in km (geodesic if PROJ_ELLIPSOID is nor sphere) */
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
-			gmt_init_distaz (GMT, 'k', way, GMT_MAP_DIST);
+			error = gmt_init_distaz (GMT, 'k', way, GMT_MAP_DIST);
 			normalize = GREENSPLINE_NORM;
 			break;
 		case 3:	/* 2-D lon, lat data, and Green's function needs cosine of spherical or geodesic distance */
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
-			gmt_init_distaz (GMT, 'S', way, GMT_MAP_DIST);
+			error = gmt_init_distaz (GMT, 'S', way, GMT_MAP_DIST);
 			normalize = GREENSPLINE_NORM;
 			break;
 		case 4:	/* 3-D Cartesian x,y,z data handled separately */
@@ -1531,7 +1531,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "BUG since D (=%d) cannot be outside 0-5 range\n", Ctrl->D.mode+1);
 			break;
 	}
-
+	if (error == GMT_NOT_A_VALID_TYPE) Return (error);
+	
 	if (Ctrl->D.mode <= 1 && Ctrl->L.active)
 		normalize = GREENSPLINE_NORM;	/* Do not de-plane, just remove mean and normalize */
 	else if (Ctrl->D.mode > 1 && Ctrl->L.active)
@@ -1901,7 +1902,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				Grid->header->wesn[YLO] = Ctrl->R3.range[2];	Grid->header->wesn[YHI] = Ctrl->R3.range[3];
 				Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
 				gmt_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set n_columns, n_rows */
-				gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+				if ((error = gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file)))
+					Return (error);
 				gmt_set_grddim (GMT, Grid->header);
 				/* Also set nz */
 				Z.z_min = Ctrl->R3.range[4];	Z.z_max = Ctrl->R3.range[5];

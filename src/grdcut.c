@@ -477,7 +477,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "The -S option requires a geographic grid\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+		if (gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 		/* Set w/e to center and adjust in case of -/+ 360 stuff */
 		wesn_new[XLO] = wesn_new[XHI] = Ctrl->S.lon;
 		while (wesn_new[XLO] < G->header->wesn[XLO]) wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
@@ -627,7 +628,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (test_header.wesn, wesn_new, 4, double);
 	gmt_M_memcpy (test_header.inc, G->header->inc, 2, double);
-	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file)))
+		Return (error);
 
 	/* OK, so far so good. Check if new wesn differs from old wesn by integer dx/dy */
 

@@ -344,14 +344,12 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
-		return GMT_RUNTIME_ERROR;
+		Return (GMT_RUNTIME_ERROR);
 	}
 	if ((check = segy_get_binhd (fpi, &binhead)) != true) {
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
-		return GMT_RUNTIME_ERROR;
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (swap_bytes) {
@@ -400,7 +398,7 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "No sample interval in reel header\n");
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		Return (GMT_RUNTIME_ERROR);
 	}
 	if (read_cont && (Ctrl->Q.value[Y_ID] != Grid->header->inc[GMT_Y])) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Grid spacing != sample interval, setting sample interval to grid spacing\n");

@@ -491,7 +491,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* Restrict GSHHS features */
 				Ctrl->A.active = true;
-				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
@@ -1835,8 +1835,9 @@ GMT_LOCAL void grdmath_DAYNIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 	unsigned int prev1, prev2;
 	double x0, y0, iw, d;
 
-	if (gmt_M_is_geographic (GMT, GMT_IN))
-		gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {
+		if (gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) return;
+	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "DAYNIGHT: Grid must be geographic.\n");
 		return;
@@ -3041,11 +3042,12 @@ GMT_LOCAL void grdmath_KURT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 GMT_LOCAL struct GMT_DATASET *grdmath_ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, int geometry, char *op)
 {
 	struct GMT_DATASET *D = NULL;
+	int error;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
-		gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
+		error = gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
 	else
-		gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
-
+		error = gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
+	if (error == GMT_NOT_A_VALID_TYPE) return NULL;
 	if (GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator %s setting number of input columns\n", op);
 		info->error = GMT->parent->error;
@@ -3291,7 +3293,7 @@ GMT_LOCAL void grdmath_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) /* Set -fg implicitly since not set already via input grid or -fg */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
-	gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);	/* Request distances in km */
+	if (gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) return;	/* Request distances in km */
 
 	/* We use the global GSHHG data set to construct distances to. Although we know that the
 	 * max distance to a coastline is ~2700 km, we cannot anticipate the usage of any user.
@@ -4625,16 +4627,18 @@ GMT_LOCAL void grdmath_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 GMT_LOCAL void grdmath_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: SDIST 2 1 Spherical distance (in km) between grid nodes and stack lon,lat (A, B).  */
+	int error = GMT_NOERROR;
 	int64_t node, row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
 	unsigned int prev = last - 1;
 	double x0, y0;
 
 	if (gmt_M_is_geographic (GMT, GMT_IN))
-		gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
+		error = gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid must be geographic; see CDIST for Cartesian data.\n");
 		return;
 	}
+	if (error == GMT_NOT_A_VALID_TYPE) return;
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0) shared(info,stack,prev,last,GMT)
@@ -4651,16 +4655,18 @@ GMT_LOCAL void grdmath_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 
 GMT_LOCAL void grdmath_SDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: SDIST2 2 1 As SDIST but only to nodes that are != 0.  */
+	int error = GMT_NOERROR;
 	int64_t node, row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
 	unsigned int prev = last - 1;
 	double x0, y0;
 
 	if (gmt_M_is_geographic (GMT, GMT_IN))
-		gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
+		error = gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Grid must be geographic; see CDIST2 for Cartesian data.\n");
 		return;
 	}
+	if (error == GMT_NOT_A_VALID_TYPE) return;
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0) shared(info,stack,prev,last,GMT)
@@ -4685,7 +4691,7 @@ GMT_LOCAL void grdmath_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 	double x0 = 0.0, y0 = 0.0, az;
 
 	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
-	gmt_init_distaz (GMT, 'd', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, 'd', gmt_M_sph_mode (GMT), GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) return;
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0,az) shared(info,stack,prev,last,GMT,reverse)
 #endif
@@ -6378,6 +6384,8 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Perform reverse Polish notation calculations on grids\n");
 	gmt_M_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
@@ -6406,7 +6414,9 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS);
+	if (gmt_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS)) {
+		Return (GMT_DIM_TOO_SMALL);
+	}
 
 	gmt_M_memset (wesn, 4, double);
 

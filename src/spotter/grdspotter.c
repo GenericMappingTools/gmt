@@ -672,7 +672,7 @@ EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 			if ((fp = gmt_fopen (GMT, Ctrl->Q.file, "r")) == NULL) {	/* Oh, oh... */
 				GMT_Report (API, GMT_MSG_ERROR, "-Q info file unreadable/nonexistent\n");
-				GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
+				Return (GMT_ERROR_ON_FOPEN);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				if (line[0] == '#' || line[0] == '\n') continue;

@@ -1024,7 +1024,8 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 			break;
 	}
 
-	gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT->common.j.mode, GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT->common.j.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	Ctrl->S.start *= dist_scale;	Ctrl->S.stop *= dist_scale;	/* Convert the meters to the same units used for cumulative distances */
 	if (Ctrl->A.cable_adjust) Ctrl->A.sensor_offset *= dist_scale;

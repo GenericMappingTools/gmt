@@ -713,6 +713,8 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdtrack main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	cmd = GMT_Create_Cmd (API, options);
 	sprintf (run_cmd, "# %s %s", GMT->init.module_name, cmd);	/* Build command line argument string */
 	gmt_M_free (GMT, cmd);
@@ -732,7 +734,10 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
-			if (GMT->common.R.active[RSET]) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "");		/* Subset requested; make sure wesn matches header spacing */
+			if (GMT->common.R.active[RSET]) {		/* Subset requested; make sure wesn matches header spacing */
+				if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "")))
+					Return (error);
+			}
 
 			if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
 
@@ -772,7 +777,8 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, GC);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
+		if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
+			Return (GMT_NOT_A_VALID_TYPE);
 
 		/* Set default spacing to half the min grid spacing: */
 		Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
@@ -820,7 +826,8 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Ctrl->C.dist_mode = GMT_GREATCIRCLE;
 			}
 			if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.dist_mode = 1 + GMT_LOXODROME;
-			gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.dist_mode, GMT_MAP_DIST);
+			if (gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.dist_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+				Return (GMT_NOT_A_VALID_TYPE);
 		}
 
 		/* Expand with dist,az columns (mode = 2) (and possibly make space for more) and optionally resample */
@@ -1158,7 +1165,8 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			h = GC[0].G->header;
 			Ctrl->T.S = gmt_M_memory (GMT, NULL, 1, struct GMT_ZSEARCH);
 			Ctrl->T.S->C = &GC[0];	/* Since we know there is only one grid */
-			gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
+			if (gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+				Return (GMT_NOT_A_VALID_TYPE);
 			Ctrl->T.S->x = gmt_grd_coord (GMT, h, GMT_X);
 			Ctrl->T.S->y = gmt_grd_coord (GMT, h, GMT_Y);
 			Ctrl->T.S->max_radius = (Ctrl->T.radius == 0.0) ? DBL_MAX : Ctrl->T.radius;

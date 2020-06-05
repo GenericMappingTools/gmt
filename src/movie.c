@@ -2248,7 +2248,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.%s %s.gif", delay, Ctrl->A.loops, workdir, dir_sep, Ctrl->N.prefix, files, MOVIE_RASTER_EXTENSION, Ctrl->N.prefix);
 		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
+		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running GIF conversion returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
@@ -2270,7 +2270,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
 		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
+		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to MP4 returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
@@ -2293,7 +2293,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, vpx[Ctrl->F.transparent],
 			(Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", pix_fmt[Ctrl->F.transparent], Ctrl->N.prefix);
 		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
+		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to webM returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);

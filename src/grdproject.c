@@ -227,7 +227,7 @@ EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction,
 EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 	bool set_n = false, shift_xy = false;
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
-	int error = 0;
+	int error = 0, is;
 
 	char format[GMT_LEN256+6] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};
 
@@ -258,14 +258,23 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdproject main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((GMT->common.R.active[ISET] + Ctrl->E.active) == 0) set_n = true;
-	if (Ctrl->M.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M");
+	if (Ctrl->M.active && ((error = gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M"))))
+		Return (error);
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);
 
-	unit = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name);
-	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+	if ((is = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name)) == -1) {
+		Return (GMT_PARSE_ERROR);
+	}
+	else
+		unit = (unsigned int)is;
+	if ((error = gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
+		Return (error);
+	}
 
 	if (GMT->common.R.active[RSET])	/* Load the w/e/s/n from -R */
 		gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
@@ -439,7 +448,8 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 			use_nx = Rect->header->n_columns;
 			use_ny = Rect->header->n_rows;
 		}
-		gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file))
+			Return (GMT_PROJECTION_ERROR);
 		gmt_set_grddim (GMT, Geo->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL)
 			Return (API->error);
@@ -507,7 +517,7 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 		Geo->header->ProjRefEPSG = 0;
 		Geo->header->ProjRefPROJ4 = strdup(buf);
 
-		gmt_grd_project (GMT, Rect, Geo, true);
+		if (gmt_grd_project (GMT, Rect, Geo, true)) Return (GMT_RUNTIME_ERROR);
 
 		HH->grdtype = gmtlib_get_grdtype (GMT, GMT_OUT, Geo->header);	/* Determine grid type */
 
@@ -555,11 +565,12 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 		offset = Geo->header->registration;	/* Same as input */
 		if (GMT->common.R.active[GSET]) offset = !offset;	/* Toggle */
 
-		gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file))
+			Return (GMT_PROJECTION_ERROR);
 		gmt_set_grddim (GMT, Rect->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		gmt_BC_init (GMT, Rect->header);
-		gmt_grd_project (GMT, Geo, Rect, false);
+		if (gmt_grd_project (GMT, Geo, Rect, false)) Return (GMT_RUNTIME_ERROR);
 		gmt_grd_init (GMT, Rect->header, options, true);
 
 		/* Modify output rect header if -F, -C, -M have been set */

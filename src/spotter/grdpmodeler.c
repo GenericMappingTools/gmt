@@ -412,7 +412,8 @@ EXTERN_MSC int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 
 
-	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
+	if (gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Great circle distances in degrees */
+		Return (GMT_NOT_A_VALID_TYPE);
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
 	gmt_M_grd_loop (GMT, G, row, col, node) {

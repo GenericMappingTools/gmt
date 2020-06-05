@@ -299,7 +299,8 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (&T, 1, struct STRIPACK);
 
-	gmt_init_distaz (GMT, Ctrl->L.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, Ctrl->L.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	if (!GMT->common.R.active[RSET]) {	/* Default to a global grid */
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
@@ -451,7 +452,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
-		gmt_stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
+		if (gmt_stripack_lists (GMT, n, xx, yy, zz, &T)) Return (GMT_RUNTIME_ERROR);	/* Do the basic triangulation */
 		gmt_M_free (GMT, T.D.tri);	/* Don't need the triangulation */
 		if (Ctrl->C.active) {	/* Recompute lon,lat and set pointers */
 			gmt_n_cart_to_geo (GMT, n, xx, yy, zz, xx, yy);	/* Revert to lon, lat */

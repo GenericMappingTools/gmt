@@ -11,7 +11,7 @@ gmt
 Introduction
 ------------
 
-GMT is a collection of public-domain Unix tools that allows you to
+GMT is a collection of freely available command-line tools under the GNU LGPL that allows you to
 manipulate x,y and x,y,z data sets (filtering, trend fitting, gridding,
 projecting, etc.) and produce illustrations ranging from
 simple x-y plots, via contour maps, to artificially illuminated surfaces

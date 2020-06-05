@@ -2261,8 +2261,8 @@ GMT_LOCAL double gmtmap_mean_radius (struct GMT_CTRL *GMT, double a, double f) {
 			r = 0.5 * sqrt (3.0 * a * a + b * b);
 			break;
 		default:	/* Cannot get here! Safety valve */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT mean radius not specified\n");
-			GMT_exit (GMT, GMT_RUNTIME_ERROR);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT mean radius type not recognized - defaulting to mean radius\n");
+			r = a * (1.0 - f / 3.0);
 			break;
 	}
 
@@ -2565,10 +2565,11 @@ GMT_LOCAL void gmtmap_ilinearxy (struct GMT_CTRL *GMT, double *x, double *y, dou
 }
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_linear (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	bool positive;
 	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
 
+	*search = false;
 	GMT->current.map.left_edge  = &gmtmap_left_rect;
 	GMT->current.map.right_edge = &gmtmap_right_rect;
 	GMT->current.proj.fwd = &gmtmap_linearxy;
@@ -2604,7 +2605,7 @@ GMT_LOCAL bool gmtmap_init_linear (struct GMT_CTRL *GMT) {
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[XLO] <= 0.0 || GMT->common.R.wesn[XHI] <= 0.0) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -JX|x:  Limits must be positive for log10 option\n");
-				GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
+				return GMT_PROJECTION_ERROR;
 			}
 			xmin = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XLO]) : d_log10 (GMT, GMT->common.R.wesn[XHI]);
 			xmax = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XHI]) : d_log10 (GMT, GMT->common.R.wesn[XLO]);
@@ -2639,7 +2640,7 @@ GMT_LOCAL bool gmtmap_init_linear (struct GMT_CTRL *GMT) {
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[YLO] <= 0.0 || GMT->common.R.wesn[YHI] <= 0.0) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -JX|x:  Limits must be positive for log10 option\n");
-				GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
+				return GMT_PROJECTION_ERROR;
 			}
 			ymin = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YLO]) : d_log10 (GMT, GMT->common.R.wesn[YHI]);
 			ymax = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YHI]) : d_log10 (GMT, GMT->common.R.wesn[YLO]);
@@ -2739,20 +2740,21 @@ GMT_LOCAL bool gmtmap_init_linear (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.horizontal = 1;
 	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
-	return (false);
+	return (GMT_NOERROR);
 }
 
 /*!
  *	TRANSFORMATION ROUTINES FOR POLAR (theta,r) PROJECTION (GMT_POLAR)
  */
-GMT_LOCAL bool gmtmap_init_polar (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_polar (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
 
+	*search = false;
 	gmtproj_vpolar (GMT, GMT->current.proj.pars[1]);
 	if (GMT->current.proj.flip) {	/* Check restrictions */
 		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > GMT->current.proj.flip_radius) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-JP...+f requires s >= 0 and n <= %g!\n", GMT->current.proj.flip_radius);
-			GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
+			return GMT_PROJECTION_ERROR;
 		}
 		if (doubleAlmostEqual (GMT->common.R.wesn[YHI], GMT->current.proj.flip_radius) && gmt_M_is_zero (GMT->current.proj.radial_offset))
 			GMT->current.proj.edge[2] = false;
@@ -2782,15 +2784,16 @@ GMT_LOCAL bool gmtmap_init_polar (struct GMT_CTRL *GMT) {
 	GMT->current.map.n_lat_nodes = 2;
 	GMT->current.map.meridian_straight = 1;
 
-	return (false);
+	return (GMT_NOERROR);
 }
 
 /*!
  *	TRANSFORMATION ROUTINES FOR THE MERCATOR PROJECTION (GMT_MERCATOR)
  */
-GMT_LOCAL bool gmtmap_init_merc (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_merc (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax, D = 1.0;
 
+	*search = false;	/* No need to search for wesn */
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) {	/* Set fudge factor */
 		gmtlib_scale_eqrad (GMT);
@@ -2798,7 +2801,7 @@ GMT_LOCAL bool gmtmap_init_merc (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->common.R.wesn[YLO] <= -90.0 || GMT->common.R.wesn[YHI] >= 90.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -R:  Cannot include south/north poles with Mercator projection!\n");
-		GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
+		return GMT_PROJECTION_ERROR;
 	}
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	gmtmap_cyl_validate_clon (GMT, 0);	/* Make sure the central longitude is valid */
@@ -2825,15 +2828,16 @@ GMT_LOCAL bool gmtmap_init_merc (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.check_side = true;
 	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
-	return (false);	/* No need to search for wesn */
+	return (GMT_NOERROR);
 }
 
 /*!
  *	TRANSFORMATION ROUTINES FOR CYLINDRICAL EQUAL-AREA PROJECTIONS (GMT_CYL_EQ)
  */
-GMT_LOCAL bool gmtmap_init_cyleq (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_cyleq (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
 
+	*search = false;	/* No need to search for wesn */
 	GMT->current.proj.Dx = GMT->current.proj.Dy = 0.0;
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) {
@@ -2873,15 +2877,17 @@ GMT_LOCAL bool gmtmap_init_cyleq (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.check_side = true;
 	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
-	return (false);	/* No need to search for wesn */
+	return (GMT_NOERROR);
 }
 
 /*!
  *	TRANSFORMATION ROUTINES FOR CYLINDRICAL EQUIDISTANT PROJECTION (GMT_CYL_EQDIST)
  */
 
-GMT_LOCAL bool gmtmap_init_cyleqdist (struct GMT_CTRL *GMT) {
+GMT_LOCAL bool gmtmap_init_cyleqdist (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = false;	/* No need to search for wesn */
 
 	gmtmap_set_spherical (GMT, true);	/* Force spherical for now */
 
@@ -2907,15 +2913,17 @@ GMT_LOCAL bool gmtmap_init_cyleqdist (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.check_side = true;
 	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
-	return (false);	/* No need to search for wesn */
+
+	return (GMT_NOERROR);
 }
-//#define CHRISTMAS
 
 /*!
  *	TRANSFORMATION ROUTINES FOR MILLER CYLINDRICAL PROJECTION (GMT_MILLER)
  */
-GMT_LOCAL bool gmtmap_init_miller (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_miller (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = false;	/* No need to search for wesn */
 
 	gmtmap_set_spherical (GMT, true);	/* Force spherical for now */
 
@@ -2953,15 +2961,16 @@ GMT_LOCAL bool gmtmap_init_miller (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.check_side = true;
 	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
-	return (false);	/* No need to search for wesn */
+	return (GMT_NOERROR);
 }
 
 /*!
  *	TRANSFORMATION ROUTINES FOR CYLINDRICAL STEREOGRAPHIC PROJECTIONS (GMT_CYL_STEREO)
  */
-GMT_LOCAL bool gmtmap_init_cylstereo (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_cylstereo (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
 
+	*search = false;	/* No need to search for wesn */
 	gmtmap_set_spherical (GMT, true);	/* Force spherical for now */
 
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
@@ -2986,7 +2995,7 @@ GMT_LOCAL bool gmtmap_init_cylstereo (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.check_side = true;
 	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = 1;
 
-	return (false);	/* No need to search for wesn */
+	return (GMT_NOERROR);
 }
 
 
@@ -2994,7 +3003,7 @@ GMT_LOCAL bool gmtmap_init_cylstereo (struct GMT_CTRL *GMT) {
  *	TRANSFORMATION ROUTINES FOR THE POLAR STEREOGRAPHIC PROJECTION (GMT_STEREO)
  */
 
-GMT_LOCAL bool gmtmap_init_stereo (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_stereo (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius, latg, D = 1.0;
 
@@ -3084,14 +3093,14 @@ GMT_LOCAL bool gmtmap_init_stereo (struct GMT_CTRL *GMT) {
 			if (GMT->current.proj.north_pole) {
 				if (GMT->common.R.wesn[YLO] <= -90.0) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "South boundary cannot be -90.0 for north polar stereographic projection\n");
-					GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
+					return GMT_PROJECTION_ERROR;
 				}
 				if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 			}
 			else {
 				if (GMT->common.R.wesn[YHI] >= 90.0) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "North boundary cannot be +90.0 for south polar stereographic projection\n");
-					GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
+					return GMT_PROJECTION_ERROR;
 				}
 				if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 			}
@@ -3108,9 +3117,10 @@ GMT_LOCAL bool gmtmap_init_stereo (struct GMT_CTRL *GMT) {
 		}
 		else {	/* Global view only */
 			/* No annotations or tickmarks in global mode */
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
@@ -3131,14 +3141,15 @@ GMT_LOCAL bool gmtmap_init_stereo (struct GMT_CTRL *GMT) {
 	GMT->current.proj.r = 0.5 * GMT->current.proj.rect[XHI];
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
 
-	return (GMT->common.R.oblique);
+	*search = GMT->common.R.oblique;
+	return (GMT_NOERROR);
 }
 
 /*!
  *	TRANSFORMATION ROUTINES FOR THE LAMBERT CONFORMAL CONIC PROJECTION (GMT_LAMBERT)
  */
 
-GMT_LOCAL bool gmtmap_init_lambert (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_lambert (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
 
 	GMT->current.proj.GMT_convert_latitudes = gmtmap_quickconic (GMT);
@@ -3183,12 +3194,23 @@ GMT_LOCAL bool gmtmap_init_lambert (struct GMT_CTRL *GMT) {
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
 	GMT->current.map.meridian_straight = 1;
 
-	return (GMT->common.R.oblique);
+	*search = GMT->common.R.oblique;
+	return (GMT_NOERROR);
 }
 
 /*!
  *	TRANSFORMATION ROUTINES FOR THE OBLIQUE MERCATOR PROJECTION (GMT_OBLIQUE_MERC)
  */
+
+void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat) {
+	/* compute new point dist degrees from input point along azimuth */
+	double sa, ca, sd, cd, sy, cy;
+	sincosd (lat,  &sy, &cy);
+	sincosd (azimuth,  &sa, &ca);
+	sincosd (distance, &sd, &cd);
+	*tlon = lon + atand (sd * sa / (cy * cd - sy * sd * ca));
+	*tlat = d_asind (sy * cd + cy * sd * ca);
+}
 
 GMT_LOCAL void gmtmap_pole_rotate_forward (struct GMT_CTRL *GMT, double lon, double lat, double *tlon, double *tlat) {
 	/* Given the pole position in GMT->current.proj, geographical coordinates
@@ -3277,10 +3299,11 @@ GMT_LOCAL void gmtmap_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double
 }
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_oblique (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax, dummy;
-	double o_x, o_y, p_x, p_y, c, az, b_x, b_y, w, e, s, n;
+	double o_x, o_y, p_x, p_y, az, b_x, b_y, w, e, s, n;
 
+	*search = true;
 	gmtmap_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
 	if (strncmp (GMT->init.module_name, "mapproject", 10U))
@@ -3302,9 +3325,9 @@ GMT_LOCAL bool gmtmap_init_oblique (struct GMT_CTRL *GMT) {
 
 		gmtmap_get_origin (GMT, o_x, o_y, p_x, p_y, &o_x, &o_y);
 		az = atand (cosd (p_y) * sind (p_x - o_x) / (cosd (o_y) * sind (p_y) - sind (o_y) * cosd (p_y) * cosd (p_x - o_x))) + 90.0;
-		c = 10.0;	/* compute point 10 degrees from origin along azimuth */
-		b_x = o_x + atand (sind (c) * sind (az) / (cosd (o_y) * cosd (c) - sind (o_y) * sind (c) * cosd (az)));
-		b_y = d_asind (sind (o_y) * cosd (c) + cosd (o_y) * sind (c) * cosd (az));
+		/* compute point 10 degrees from origin along azimuth */
+		gmt_translate_point (GMT, o_x, o_y, az, 10.0, &b_x, &b_y);
+
 		GMT->current.proj.pars[0] = o_x;	GMT->current.proj.pars[1] = o_y;
 		GMT->current.proj.pars[2] = b_x;	GMT->current.proj.pars[3] = b_y;
 	}
@@ -3362,7 +3385,7 @@ GMT_LOCAL bool gmtmap_init_oblique (struct GMT_CTRL *GMT) {
 #endif
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
-	return (true);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -3470,8 +3493,10 @@ GMT_LOCAL int gmtmap_jump_tm (struct GMT_CTRL *GMT, double x0, double y0, double
 }
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_tm (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_tm (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	/* Wrap and truncations are in y, not x for TM */
 
@@ -3555,7 +3580,7 @@ GMT_LOCAL bool gmtmap_init_tm (struct GMT_CTRL *GMT) {
 
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -3619,8 +3644,10 @@ GMT_LOCAL void gmtmap_set_utmzone (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_utm (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_utm (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax, lon0;
+
+	*search = GMT->common.R.oblique;
 
 	if (GMT->current.setting.proj_scale_factor == -1.0) GMT->current.setting.proj_scale_factor = 0.9996;	/* Select default map scale for UTM */
 	if (GMT->current.proj.pars[0] < 0.0) gmtmap_set_utmzone (GMT);	/* Determine UTM zone from -R */
@@ -3683,7 +3710,7 @@ GMT_LOCAL bool gmtmap_init_utm (struct GMT_CTRL *GMT) {
 
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 #if 0
@@ -3714,10 +3741,11 @@ GMT_LOCAL double gmtmap_UTMzone_to_clon (struct GMT_CTRL *GMT, unsigned int zone
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_lambeq (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_lambeq (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
+	*search = GMT->common.R.oblique;
 	GMT->current.proj.Dx = GMT->current.proj.Dy = 1.0;
 
 	gmtmap_set_polar (GMT);
@@ -3764,14 +3792,14 @@ GMT_LOCAL bool gmtmap_init_lambeq (struct GMT_CTRL *GMT) {
 			if (GMT->current.proj.north_pole) {
 				if (GMT->common.R.wesn[YLO] <= -90.0){
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "South boundary cannot be -90.0 for north polar Lambert azimuthal projection\n");
-					GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
+					return GMT_PROJECTION_ERROR;
 				}
 				if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 			}
 			else {
 				if (GMT->common.R.wesn[YHI] >= 90.0) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "North boundary cannot be +90.0 for south polar Lambert azimuthal projection\n");
-					GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
+					return GMT_PROJECTION_ERROR;
 				}
 				if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 			}
@@ -3788,9 +3816,10 @@ GMT_LOCAL bool gmtmap_init_lambeq (struct GMT_CTRL *GMT) {
 		}
 		else {	/* Global view only */
 			/* No annotations or tickmarks in global mode */
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
@@ -3812,7 +3841,7 @@ GMT_LOCAL bool gmtmap_init_lambeq (struct GMT_CTRL *GMT) {
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
 	if (GMT->current.proj.polar) GMT->current.map.meridian_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -3820,9 +3849,11 @@ GMT_LOCAL bool gmtmap_init_lambeq (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_ortho (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_ortho (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
+
+	*search  =GMT->common.R.oblique;
 
 	gmtmap_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
@@ -3882,9 +3913,10 @@ GMT_LOCAL bool gmtmap_init_ortho (struct GMT_CTRL *GMT) {
 		}
 		else {	/* Global view only */
 			/* No annotations or tickmarks in global mode */
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
@@ -3906,7 +3938,7 @@ GMT_LOCAL bool gmtmap_init_ortho (struct GMT_CTRL *GMT) {
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
 	if (GMT->current.proj.polar) GMT->current.map.meridian_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*! . */
@@ -3921,8 +3953,7 @@ GMT_LOCAL double gmtmap_right_genper (struct GMT_CTRL *GMT, double y) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_genper (struct GMT_CTRL *GMT) {
-	bool search;
+GMT_LOCAL int gmtmap_init_genper (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius = 0.0;
 	double alt, azimuth, tilt, width, height;
@@ -3990,14 +4021,15 @@ GMT_LOCAL bool gmtmap_init_genper (struct GMT_CTRL *GMT) {
 		GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE);
 		GMT->current.map.frame.horizontal = (fabs (GMT->current.proj.pars[1]) < 30.0 && fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) < 30.0) ? 1 : 0;
 		GMT->current.map.jump = &gmtmap_jump_not;
-		search = true;
+		*search = true;
 	}
 	else {
 		if (GMT->current.proj.g_debug > 0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "using global view\n");
 		/* No annotations or tickmarks in global mode */
-		for (i = 0; i < GMT_GRID_UPPER; i++)
+		for (i = 0; i < GMT_GRID_UPPER; i++) {
 			GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 			GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+		}
 		GMT->current.map.overlap = &gmtmap_genperg_overlap;
 		GMT->current.map.crossing = &gmtmap_radial_crossing;
 		GMT->current.map.clip = &gmtmap_radial_clip;
@@ -4007,7 +4039,7 @@ GMT_LOCAL bool gmtmap_init_genper (struct GMT_CTRL *GMT) {
 
 		if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 
-		search = false;
+		*search = false;
   	}
 
 	if (GMT->current.proj.polar) {
@@ -4039,8 +4071,7 @@ GMT_LOCAL bool gmtmap_init_genper (struct GMT_CTRL *GMT) {
 		fflush(NULL);
 	}
 
-	return (search);
-
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4048,8 +4079,10 @@ GMT_LOCAL bool gmtmap_init_genper (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_gnomonic (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_gnomonic (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax, dummy, radius;
+
+	*search = GMT->common.R.oblique;
 
 	gmtmap_set_spherical (GMT, true);	/* PW: Force spherical for now */	gmtmap_set_polar (GMT);
 
@@ -4120,7 +4153,7 @@ GMT_LOCAL bool gmtmap_init_gnomonic (struct GMT_CTRL *GMT) {
 	GMT->current.proj.r = 0.5 * GMT->current.proj.rect[XHI];
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4128,9 +4161,11 @@ GMT_LOCAL bool gmtmap_init_gnomonic (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_azeqdist (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_azeqdist (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
+
+	*search = GMT->common.R.oblique;
 
 	gmtmap_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
@@ -4180,9 +4215,10 @@ GMT_LOCAL bool gmtmap_init_azeqdist (struct GMT_CTRL *GMT) {
 		else {	/* Global view only, force wesn = 0/360/-90/90  */
 			/* No annotations or tickmarks in global mode */
 			GMT->current.map.is_world = true;
-			for (i = 0; i < GMT_GRID_UPPER; i++)
+			for (i = 0; i < GMT_GRID_UPPER; i++) {
 				GMT->current.map.frame.axis[GMT_X].item[i].active = GMT->current.map.frame.axis[GMT_Y].item[i].active = false,
 				GMT->current.map.frame.axis[GMT_X].item[i].interval = GMT->current.map.frame.axis[GMT_Y].item[i].interval = 0.0;
+			}
 			GMT->common.R.wesn[XLO] = 0.0;
 			GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;
@@ -4204,7 +4240,7 @@ GMT_LOCAL bool gmtmap_init_azeqdist (struct GMT_CTRL *GMT) {
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
 	if (GMT->current.proj.polar) GMT->current.map.meridian_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4212,8 +4248,10 @@ GMT_LOCAL bool gmtmap_init_azeqdist (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_mollweide (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_mollweide (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax, y, dummy;
+
+	*search = GMT->common.R.oblique;
 
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
@@ -4260,7 +4298,7 @@ GMT_LOCAL bool gmtmap_init_mollweide (struct GMT_CTRL *GMT) {
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.parallel_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 
@@ -4269,8 +4307,10 @@ GMT_LOCAL bool gmtmap_init_mollweide (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_hammer (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_hammer (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
@@ -4317,7 +4357,7 @@ GMT_LOCAL bool gmtmap_init_hammer (struct GMT_CTRL *GMT) {
 	GMT->current.proj.fwd = &gmtproj_hammer;
 	GMT->current.proj.inv = &gmtproj_ihammer;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4325,8 +4365,10 @@ GMT_LOCAL bool gmtmap_init_hammer (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_grinten (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_grinten (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	gmtmap_set_spherical (GMT, true);
 
@@ -4373,7 +4415,7 @@ GMT_LOCAL bool gmtmap_init_grinten (struct GMT_CTRL *GMT) {
 	GMT->current.proj.fwd = &gmtproj_grinten;
 	GMT->current.proj.inv = &gmtproj_igrinten;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4381,8 +4423,10 @@ GMT_LOCAL bool gmtmap_init_grinten (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_winkel (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_winkel (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	gmtmap_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
@@ -4425,7 +4469,7 @@ GMT_LOCAL bool gmtmap_init_winkel (struct GMT_CTRL *GMT) {
 	GMT->current.proj.fwd = &gmtproj_winkel;
 	GMT->current.proj.inv = &gmtproj_iwinkel;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4433,8 +4477,10 @@ GMT_LOCAL bool gmtmap_init_winkel (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_eckert4 (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_eckert4 (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
@@ -4479,7 +4525,7 @@ GMT_LOCAL bool gmtmap_init_eckert4 (struct GMT_CTRL *GMT) {
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.parallel_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4487,8 +4533,10 @@ GMT_LOCAL bool gmtmap_init_eckert4 (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_eckert6 (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_eckert6 (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
@@ -4533,7 +4581,7 @@ GMT_LOCAL bool gmtmap_init_eckert6 (struct GMT_CTRL *GMT) {
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.parallel_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4541,8 +4589,10 @@ GMT_LOCAL bool gmtmap_init_eckert6 (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_robinson (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_robinson (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	gmtmap_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
@@ -4586,7 +4636,7 @@ GMT_LOCAL bool gmtmap_init_robinson (struct GMT_CTRL *GMT) {
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.parallel_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4594,8 +4644,10 @@ GMT_LOCAL bool gmtmap_init_robinson (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_sinusoidal (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_sinusoidal (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
@@ -4644,7 +4696,7 @@ GMT_LOCAL bool gmtmap_init_sinusoidal (struct GMT_CTRL *GMT) {
 	gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
 	GMT->current.map.parallel_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4652,15 +4704,17 @@ GMT_LOCAL bool gmtmap_init_sinusoidal (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_cassini (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_cassini (struct GMT_CTRL *GMT, bool *search) {
 	bool too_big;
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	if (gmtmap_central_meridian_not_set (GMT))
 		gmtmap_set_default_central_meridian (GMT);
 	if ((GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 90.0 || (GMT->common.R.wesn[XHI] - GMT->current.proj.pars[0]) > 90.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Max longitude extension away from central meridian is limited to +/- 90 degrees\n");
-		GMT_exit (GMT, GMT_PROJECTION_ERROR); return false;
+		return GMT_PROJECTION_ERROR;
 	}
 	too_big = gmtmap_quicktm (GMT, GMT->current.proj.pars[0], 4.0);
 	if (too_big) gmtmap_set_spherical (GMT, true);	/* Cannot use ellipsoidal series for this area */
@@ -4701,7 +4755,7 @@ GMT_LOCAL bool gmtmap_init_cassini (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.horizontal = 1;
 	gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[2]);
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4709,8 +4763,10 @@ GMT_LOCAL bool gmtmap_init_cassini (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_albers (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_albers (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax, dy, az, x1, y1;
+
+	*search = GMT->common.R.oblique;
 
 	GMT->current.proj.GMT_convert_latitudes = gmtmap_quickconic (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
@@ -4759,7 +4815,7 @@ GMT_LOCAL bool gmtmap_init_albers (struct GMT_CTRL *GMT) {
 	GMT->current.proj.c_y0 += dy;
 	GMT->current.map.meridian_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 
@@ -4769,8 +4825,10 @@ GMT_LOCAL bool gmtmap_init_albers (struct GMT_CTRL *GMT) {
 
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_econic (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_econic (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax, dy, az, x1, y1;
+
+	*search = GMT->common.R.oblique;
 
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
@@ -4811,7 +4869,7 @@ GMT_LOCAL bool gmtmap_init_econic (struct GMT_CTRL *GMT) {
 	GMT->current.proj.c_y0 += dy;
 	GMT->current.map.meridian_straight = 1;
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 /*
@@ -4819,8 +4877,10 @@ GMT_LOCAL bool gmtmap_init_econic (struct GMT_CTRL *GMT) {
  */
 
 /*! . */
-GMT_LOCAL bool gmtmap_init_polyconic (struct GMT_CTRL *GMT) {
+GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 	double xmin, xmax, ymin, ymax;
+
+	*search = GMT->common.R.oblique;
 
 	gmtmap_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
@@ -4866,51 +4926,52 @@ GMT_LOCAL bool gmtmap_init_polyconic (struct GMT_CTRL *GMT) {
 	GMT->current.map.frame.horizontal = 1;
 	gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[2]);
 
-	return (GMT->common.R.oblique);
+	return (GMT_NOERROR);
 }
 
 #ifdef HAVE_GDAL
 /*!
  *	TRANSFORMATION ROUTINES FOR PROJ4 TRANSFORMATIONS (GMT_PROJ4_PROJS)
  */
- GMT_LOCAL bool map_init_proj4 (struct GMT_CTRL *GMT) {
+ GMT_LOCAL int map_init_proj4 (struct GMT_CTRL *GMT, bool *search) {
 	/*
 	*  Here we use the trick of letting the previous GMT functions do the necessary initializations
 	*  and at the end just replace the pointers to the FWD & INV transform functions to those of GDAL.
 	*/
-	bool search = false;
+	int error = GMT_NOERROR;
 	double xmin, xmax, ymin, ymax;
 
+	*search = false;
 	switch (GMT->current.proj.projection_GMT) {
-		case GMT_LINEAR:        search = gmtmap_init_linear (GMT); break;      /* Linear transformations */
-		case GMT_POLAR:         search = gmtmap_init_polar (GMT); break;       /* Both lon/lat are actually theta, radius */
-		case GMT_MERCATOR:      search = gmtmap_init_merc (GMT); break;        /* Standard Mercator projection */
-		case GMT_STEREO:        search = gmtmap_init_stereo (GMT); break;      /* Stereographic projection */
-		case GMT_LAMBERT:       search = gmtmap_init_lambert (GMT); break;     /* Lambert Conformal Conic */
-		case GMT_OBLIQUE_MERC:  search = gmtmap_init_oblique (GMT); break;     /* Oblique Mercator */
-		case GMT_TM:            search = gmtmap_init_tm (GMT); break;          /* Transverse Mercator */
-		case GMT_UTM:           search = gmtmap_init_utm (GMT); break;         /* Universal Transverse Mercator */
-		case GMT_LAMB_AZ_EQ:    search = gmtmap_init_lambeq (GMT); break;      /* Lambert Azimuthal Equal-Area */
-		case GMT_ORTHO:         search = gmtmap_init_ortho (GMT); break;       /* Orthographic Projection */
-		case GMT_GENPER:        search = gmtmap_init_genper (GMT); break;      /* General Perspective Projection */
-		case GMT_AZ_EQDIST:     search = gmtmap_init_azeqdist (GMT); break;    /* Azimuthal Equal-Distance Projection */
-		case GMT_GNOMONIC:      search = gmtmap_init_gnomonic (GMT); break;    /* Azimuthal Gnomonic Projection */
-		case GMT_MOLLWEIDE:     search = gmtmap_init_mollweide (GMT); break;   /* Mollweide Equal-Area */
-		case GMT_HAMMER:        search = gmtmap_init_hammer (GMT); break;      /* Hammer-Aitoff Equal-Area */
-		case GMT_VANGRINTEN:    search = gmtmap_init_grinten (GMT); break;     /* Van der Grinten */
-		case GMT_WINKEL:        search = gmtmap_init_winkel (GMT); break;      /* Winkel Tripel */
-		case GMT_ECKERT4:       search = gmtmap_init_eckert4 (GMT); break;     /* Eckert IV */
-		case GMT_ECKERT6:       search = gmtmap_init_eckert6 (GMT); break;     /* Eckert VI */
-		case GMT_CYL_EQ:        search = gmtmap_init_cyleq (GMT); break;       /* Cylindrical Equal-Area */
-		case GMT_CYL_STEREO:    search = gmtmap_init_cylstereo (GMT); break;   /* Cylindrical Stereographic */
-		case GMT_MILLER:        search = gmtmap_init_miller (GMT); break;      /* Miller Cylindrical */
-		case GMT_CYL_EQDIST:    search = gmtmap_init_cyleqdist (GMT); break;   /* Cylindrical Equidistant */
-		case GMT_ROBINSON:      search = gmtmap_init_robinson (GMT); break;    /* Robinson */
-		case GMT_SINUSOIDAL:    search = gmtmap_init_sinusoidal (GMT); break;  /* Sinusoidal Equal-Area */
-		case GMT_CASSINI:       search = gmtmap_init_cassini (GMT); break;     /* Cassini cylindrical */
-		case GMT_ALBERS:        search = gmtmap_init_albers (GMT); break;      /* Albers Equal-Area Conic */
-		case GMT_ECONIC:        search = gmtmap_init_econic (GMT); break;      /* Equidistant Conic */
-		case GMT_POLYCONIC:     search = gmtmap_init_polyconic (GMT); break;   /* Polyconic */
+		case GMT_LINEAR:        error = gmtmap_init_linear (GMT, search); break;      /* Linear transformations */
+		case GMT_POLAR:         error = gmtmap_init_polar (GMT, search); break;       /* Both lon/lat are actually theta, radius */
+		case GMT_MERCATOR:      error = gmtmap_init_merc (GMT, search); break;        /* Standard Mercator projection */
+		case GMT_STEREO:        error = gmtmap_init_stereo (GMT, search); break;      /* Stereographic projection */
+		case GMT_LAMBERT:       error = gmtmap_init_lambert (GMT, search); break;     /* Lambert Conformal Conic */
+		case GMT_OBLIQUE_MERC:  error = gmtmap_init_oblique (GMT, search); break;     /* Oblique Mercator */
+		case GMT_TM:            error = gmtmap_init_tm (GMT, search); break;          /* Transverse Mercator */
+		case GMT_UTM:           error = gmtmap_init_utm (GMT, search); break;         /* Universal Transverse Mercator */
+		case GMT_LAMB_AZ_EQ:    error = gmtmap_init_lambeq (GMT, search); break;      /* Lambert Azimuthal Equal-Area */
+		case GMT_ORTHO:         error = gmtmap_init_ortho (GMT, search); break;       /* Orthographic Projection */
+		case GMT_GENPER:        error = gmtmap_init_genper (GMT, search); break;      /* General Perspective Projection */
+		case GMT_AZ_EQDIST:     error = gmtmap_init_azeqdist (GMT, search); break;    /* Azimuthal Equal-Distance Projection */
+		case GMT_GNOMONIC:      error = gmtmap_init_gnomonic (GMT, search); break;    /* Azimuthal Gnomonic Projection */
+		case GMT_MOLLWEIDE:     error = gmtmap_init_mollweide (GMT, search); break;   /* Mollweide Equal-Area */
+		case GMT_HAMMER:        error = gmtmap_init_hammer (GMT, search); break;      /* Hammer-Aitoff Equal-Area */
+		case GMT_VANGRINTEN:    error = gmtmap_init_grinten (GMT, search); break;     /* Van der Grinten */
+		case GMT_WINKEL:        error = gmtmap_init_winkel (GMT, search); break;      /* Winkel Tripel */
+		case GMT_ECKERT4:       error = gmtmap_init_eckert4 (GMT, search); break;     /* Eckert IV */
+		case GMT_ECKERT6:       error = gmtmap_init_eckert6 (GMT, search); break;     /* Eckert VI */
+		case GMT_CYL_EQ:        error = gmtmap_init_cyleq (GMT, search); break;       /* Cylindrical Equal-Area */
+		case GMT_CYL_STEREO:    error = gmtmap_init_cylstereo (GMT, search); break;   /* Cylindrical Stereographic */
+		case GMT_MILLER:        error = gmtmap_init_miller (GMT, search); break;      /* Miller Cylindrical */
+		case GMT_CYL_EQDIST:    error = gmtmap_init_cyleqdist (GMT, search); break;   /* Cylindrical Equidistant */
+		case GMT_ROBINSON:      error = gmtmap_init_robinson (GMT, search); break;    /* Robinson */
+		case GMT_SINUSOIDAL:    error = gmtmap_init_sinusoidal (GMT, search); break;  /* Sinusoidal Equal-Area */
+		case GMT_CASSINI:       error = gmtmap_init_cassini (GMT, search); break;     /* Cassini cylindrical */
+		case GMT_ALBERS:        error = gmtmap_init_albers (GMT, search); break;      /* Albers Equal-Area Conic */
+		case GMT_ECONIC:        error = gmtmap_init_econic (GMT, search); break;      /* Equidistant Conic */
+		case GMT_POLYCONIC:     error = gmtmap_init_polyconic (GMT, search); break;   /* Polyconic */
 		default:	/* Non-GMT proj4 projection.  Try to assign functions */
 			GMT->current.proj.fwd = &gmt_proj4_fwd;
 			GMT->current.proj.inv = &gmt_proj4_inv;
@@ -4943,7 +5004,7 @@ GMT_LOCAL bool gmtmap_init_polyconic (struct GMT_CTRL *GMT) {
 	/* Now we only have to replace the pointers to the FWD and INV transform functions */
 	GMT->current.proj.fwd = &gmt_proj4_fwd;
 	GMT->current.proj.inv = &gmt_proj4_inv;
-	return search;
+	return error;
 }
 #endif
 
@@ -5076,7 +5137,7 @@ GMT_LOCAL int gmtmap_horizon_search (struct GMT_CTRL *GMT, double w, double e, d
 	if (beyond) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Rectangular region for azimuthal projection extends beyond the horizon\n");
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Please select a region that is completely within the visible hemisphere\n");
-		GMT_exit (GMT, GMT_PROJECTION_ERROR); return GMT_PROJECTION_ERROR;
+		return GMT_PROJECTION_ERROR;
 	}
 	return (GMT_NOERROR);
 }
@@ -5946,7 +6007,7 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[ZLO] <= 0.0 || GMT->common.R.wesn[ZHI] <= 0.0) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Jz -JZ: limits must be positive for log10 projection\n");
-				GMT_exit (GMT, GMT_PROJECTION_ERROR); return GMT_PROJECTION_ERROR;
+				return GMT_PROJECTION_ERROR;
 			}
 			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[ZLO]) : d_log10 (GMT, GMT->common.R.wesn[ZHI]);
 			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[ZHI]) : d_log10 (GMT, GMT->common.R.wesn[ZLO]);
@@ -6186,7 +6247,7 @@ GMT_LOCAL double gmtmap_cartesian_dist_periodic (struct GMT_CTRL *GMT, double x0
 }
 
 /*! . */
-GMT_LOCAL void gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type, char *unit_name) {
+GMT_LOCAL int gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type, char *unit_name) {
 	/* Assigns pointers to the chosen distance and azimuth functions */
 	char *type_name[3] = {"Map", "Contour", "Contour annotation"};
 	char *aux[6] = {"no", "authalic", "conformal", "meridional", "geocentric", "parametric"};
@@ -6276,10 +6337,10 @@ GMT_LOCAL void gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsig
 			break;
 		default:	/* Cannot happen unless we make a bug */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Mode (=%d) for distance function is unknown. Must be bug.\n", mode);
-			GMT_exit (GMT, GMT_PROJECTION_ERROR);
+			return (GMT_PROJECTION_ERROR);
 			break;
 	}
-	if (type > 0) return;	/* Contour-related assignments end here */
+	if (type > 0) return (GMT_NOERROR);	/* Contour-related assignments end here */
 
 	/* Mapping only */
 	if (mode == GMT_CARTESIAN_DIST || mode == GMT_CARTESIAN_DIST2)	{	/* Cartesian data */
@@ -6292,6 +6353,7 @@ GMT_LOCAL void gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsig
 		GMT->current.map.near_a_line_func  = &gmtmap_near_a_line_spherical;
 		GMT->current.map.near_point_func   = &gmtmap_near_a_point_spherical;
 	}
+	return (GMT_NOERROR);
 }
 
 
@@ -7766,7 +7828,7 @@ int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_project_init: Necessary arguments not set\n");
-		GMT_exit (GMT, GMT_PROJECTION_ERROR); return GMT_PROJECTION_ERROR;
+		return GMT_PROJECTION_ERROR;
 	}
 	header->registration = offset;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_project_init: OUT: Inc [%.12g/%.12g] n_columns/n_rows [%u/%u] dpi = %u offset = %u\n",
@@ -7815,7 +7877,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	/* Only input grid MUST have at least 2 rows/cols padding */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_project: Input grid does not have sufficient (2) padding\n");
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		return GMT_RUNTIME_ERROR;
 	}
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_grd_project: In [%.12g/%.12g/%.12g/%.12g] and out [%.12g/%.12g/%.12g/%.12g]\n",
@@ -8026,7 +8088,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	/* Only input image MUST have at least 2 rows/cols padding */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_img_project: Input image does not have sufficient (2) padding\n");
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		return GMT_RUNTIME_ERROR;
 	}
 
 	/* Precalculate grid coordinates */
@@ -9025,6 +9087,7 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	 * gmt_proj_setup first. */
 
 	bool search = false;
+	int error = GMT_NOERROR;
 
 	if (wesn[XHI] == wesn[XLO] && wesn[YHI] == wesn[YLO]) Return (GMT_MAP_NO_REGION);	/* Since -R may not be involved if there are grids */
 
@@ -9104,133 +9167,134 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	switch (GMT->current.proj.projection) {
 
 		case GMT_LINEAR:		/* Linear transformations */
-			search = gmtmap_init_linear (GMT);
+			error = gmtmap_init_linear (GMT, &search);
 			break;
 
 		case GMT_POLAR:		/* Both lon/lat are actually theta, radius */
-			search = gmtmap_init_polar (GMT);
+			error = gmtmap_init_polar (GMT, &search);
 			break;
 
 		case GMT_MERCATOR:		/* Standard Mercator projection */
-			search = gmtmap_init_merc (GMT);
+			error = gmtmap_init_merc (GMT, &search);
 			break;
 
 		case GMT_STEREO:		/* Stereographic projection */
-			search = gmtmap_init_stereo (GMT);
+			error = gmtmap_init_stereo (GMT, &search);
 			break;
 
 		case GMT_LAMBERT:		/* Lambert Conformal Conic */
-			search = gmtmap_init_lambert (GMT);
+			error = gmtmap_init_lambert (GMT, &search);
 			break;
 
 		case GMT_OBLIQUE_MERC:	/* Oblique Mercator */
-			search = gmtmap_init_oblique (GMT);
+			error = gmtmap_init_oblique (GMT, &search);
 			break;
 
 		case GMT_TM:		/* Transverse Mercator */
-			search = gmtmap_init_tm (GMT);
+			error = gmtmap_init_tm (GMT, &search);
 			break;
 
 		case GMT_UTM:		/* Universal Transverse Mercator */
-			search = gmtmap_init_utm (GMT);
+			error = gmtmap_init_utm (GMT, &search);
 			break;
 
 		case GMT_LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
-			search = gmtmap_init_lambeq (GMT);
+			error = gmtmap_init_lambeq (GMT, &search);
 			break;
 
 		case GMT_ORTHO:		/* Orthographic Projection */
-			search = gmtmap_init_ortho (GMT);
+			error = gmtmap_init_ortho (GMT, &search);
 			break;
 
 		case GMT_GENPER:		/* General Perspective Projection */
-			search = gmtmap_init_genper (GMT);
+			error = gmtmap_init_genper (GMT, &search);
 			break;
 
 		case GMT_AZ_EQDIST:		/* Azimuthal Equal-Distance Projection */
-			search = gmtmap_init_azeqdist (GMT);
+			error = gmtmap_init_azeqdist (GMT, &search);
 			break;
 
 		case GMT_GNOMONIC:		/* Azimuthal Gnomonic Projection */
-			search = gmtmap_init_gnomonic (GMT);
+			error = gmtmap_init_gnomonic (GMT, &search);
 			break;
 
 		case GMT_MOLLWEIDE:		/* Mollweide Equal-Area */
-			search = gmtmap_init_mollweide (GMT);
+			error = gmtmap_init_mollweide (GMT, &search);
 			break;
 
 		case GMT_HAMMER:		/* Hammer-Aitoff Equal-Area */
-			search = gmtmap_init_hammer (GMT);
+			error = gmtmap_init_hammer (GMT, &search);
 			break;
 
 		case GMT_VANGRINTEN:		/* Van der Grinten */
-			search = gmtmap_init_grinten (GMT);
+			error = gmtmap_init_grinten (GMT, &search);
 			break;
 
 		case GMT_WINKEL:		/* Winkel Tripel */
-			search = gmtmap_init_winkel (GMT);
+			error = gmtmap_init_winkel (GMT, &search);
 			break;
 
 		case GMT_ECKERT4:		/* Eckert IV */
-			search = gmtmap_init_eckert4 (GMT);
+			error = gmtmap_init_eckert4 (GMT, &search);
 			break;
 
 		case GMT_ECKERT6:		/* Eckert VI */
-			search = gmtmap_init_eckert6 (GMT);
+			error = gmtmap_init_eckert6 (GMT, &search);
 			break;
 
 		case GMT_CYL_EQ:		/* Cylindrical Equal-Area */
-			search = gmtmap_init_cyleq (GMT);
+			error = gmtmap_init_cyleq (GMT, &search);
 			break;
 
 		case GMT_CYL_STEREO:			/* Cylindrical Stereographic */
-			search = gmtmap_init_cylstereo (GMT);
+			error = gmtmap_init_cylstereo (GMT, &search);
 			break;
 
 		case GMT_MILLER:		/* Miller Cylindrical */
-			search = gmtmap_init_miller (GMT);
+			error = gmtmap_init_miller (GMT, &search);
 			break;
 
 		case GMT_CYL_EQDIST:	/* Cylindrical Equidistant */
-			search = gmtmap_init_cyleqdist (GMT);
+			error = gmtmap_init_cyleqdist (GMT, &search);
 			break;
 
 		case GMT_ROBINSON:		/* Robinson */
-			search = gmtmap_init_robinson (GMT);
+			error = gmtmap_init_robinson (GMT, &search);
 			break;
 
 		case GMT_SINUSOIDAL:	/* Sinusoidal Equal-Area */
-			search = gmtmap_init_sinusoidal (GMT);
+			error = gmtmap_init_sinusoidal (GMT, &search);
 			break;
 
 		case GMT_CASSINI:		/* Cassini cylindrical */
-			search = gmtmap_init_cassini (GMT);
+			error = gmtmap_init_cassini (GMT, &search);
 			break;
 
 		case GMT_ALBERS:		/* Albers Equal-Area Conic */
-			search = gmtmap_init_albers (GMT);
+			error = gmtmap_init_albers (GMT, &search);
 			break;
 
 		case GMT_ECONIC:		/* Equidistant Conic */
-			search = gmtmap_init_econic (GMT);
+			error = gmtmap_init_econic (GMT, &search);
 			break;
 
 		case GMT_POLYCONIC:		/* Polyconic */
-			search = gmtmap_init_polyconic (GMT);
+			error = gmtmap_init_polyconic (GMT, &search);
 			break;
 
 #ifdef HAVE_GDAL
 		case GMT_PROJ4_PROJS:	/* All proj.4 projections */
-			search = map_init_proj4 (GMT);
+			error = map_init_proj4 (GMT, &search);
 			break;
 #endif
 
 		default:	/* No projection selected, return to a horrible death */
 			Return (GMT_MAP_NO_PROJECTION);
 	}
+	if (error) Return (error);	/* Something went wrong in one of the map_init_* functions */
 
-	if (GMT->current.proj.fwd == NULL)	/* Some wrror in projection projection parameters, return to a horrible death */
-		Return(GMT_MAP_NO_PROJECTION);
+	if (GMT->current.proj.fwd == NULL)	/* Some error in projection projection parameters, return to a horrible death */
+		Return (GMT_MAP_NO_PROJECTION);
 
 	GMT->current.proj.search = search;
 
@@ -9251,9 +9315,9 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
 	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
 
-	gmtmap_init_three_D (GMT);
+	error = gmtmap_init_three_D (GMT);
 
-	return (GMT_NOERROR);
+	return (error);
 }
 
 /*! . */
@@ -9304,7 +9368,9 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 			gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
 		GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 		GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
-		if (gmt_M_is_azimuthal(GMT) && GMT->common.R.oblique) gmtmap_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]);
+		if (gmt_M_is_azimuthal(GMT) && GMT->common.R.oblique) {
+			if ((i = gmtmap_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]))) return i;
+		}
 	}
 
 	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (or meridians/parallels)  before they are plotted */
@@ -9320,7 +9386,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 /*! . */
 unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode, unsigned int type) {
-	/* Initializes distance calcuation given the selected values for:
+	/* Initializes distance calculation given the selected values for:
 	 * Distance unit: must be on of the following:
 	 *  1) d|e|f|k|m|M|n|s
 	 *  2) GMT (Cartesian distance after projecting with -J) | X (Cartesian)
@@ -9336,6 +9402,7 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 	 */
 
 	unsigned int proj_type = GMT_GEOGRAPHIC;	/* Default is to just use the geographic coordinates as they are */
+	int err = GMT_NOERROR;
 
 	if (strchr (GMT_LEN_UNITS, unit) && gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Want geographic distance units but -fg (or -J) not set */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
@@ -9355,16 +9422,16 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			/* First the three arc angular distance units */
 
 		case 'd':	/* Arc degrees on spherical body using desired metric mode */
-			gmtmap_set_distaz (GMT, GMT_DIST_DEG + mode, type, "arc-degree");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_DEG + mode, type, "arc-degree");
 			GMT->current.map.dist[type].arc = true;	/* Angular measure */
 			break;
 		case 'm':	/* Arc minutes on spherical body using desired metric mode */
-			gmtmap_set_distaz (GMT, GMT_DIST_DEG + mode, type, "arc-minute");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_DEG + mode, type, "arc-minute");
 			GMT->current.map.dist[type].scale = GMT_DEG2MIN_F;
 			GMT->current.map.dist[type].arc = true;	/* Angular measure */
 			break;
 		case 's':	/* Arc seconds on spherical body using desired metric mode */
-			gmtmap_set_distaz (GMT, GMT_DIST_DEG + mode, type, "arc-second");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_DEG + mode, type, "arc-second");
 			GMT->current.map.dist[type].scale = GMT_DEG2SEC_F;
 			GMT->current.map.dist[type].arc = true;	/* Angular measure */
 			break;
@@ -9372,26 +9439,26 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			/* Various distance units on the planetary body */
 
 		case 'e':	/* Meters on spherical body using desired metric mode */
-			gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "meter");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "meter");
 			break;
 		case 'f':	/* Feet on spherical body using desired metric mode */
-			gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "foot");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "foot");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_FOOT;
 			break;
 		case 'k':	/* Kilometers on spherical body using desired metric mode */
-			gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "km");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "km");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_KM;
 			break;
 		case 'M':	/* Statute Miles on spherical body using desired metric mode  */
-			gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "mile");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "mile");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_MILE;
 			break;
 		case 'n':	/* Nautical miles on spherical body using desired metric mode */
-			gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "nautical mile");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "nautical mile");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_NAUTICAL_MILE;
 			break;
 		case 'u':	/* Survey feet on spherical body using desired metric mode */
-			gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "survey feet");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_M + mode, type, "survey feet");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_SURVEY_FOOT;
 			break;
 
@@ -9400,40 +9467,40 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 		case 'X':	/* Cartesian distances in user units */
 			proj_type = GMT_CARTESIAN;
 			if (GMT->common.n.periodic[GMT_X] || GMT->common.n.periodic[GMT_Y])
-				gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PERIODIC, type, "");
+				err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PERIODIC, type, "");
 			else
-				gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST, type, "");
+				err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST, type, "");
 			break;
 		case 'C':	/* Cartesian distances (in PROJ_LENGTH_UNIT) after first projecting input coordinates with -J */
-			gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ, type, "");
+			err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ, type, "");
 			proj_type = GMT_GEO2CART;
 			break;
 
 		case 'R':	/* Cartesian distances squared in user units */
 			proj_type = GMT_CARTESIAN;
-			gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST2, type, "");
+			err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST2, type, "");
 			break;
 		case 'Z':	/* Cartesian distances squared (in PROJ_LENGTH_UNIT^2) after first projecting input coordinates with -J */
-			gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ2, type, "");
+			err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ2, type, "");
 			proj_type = GMT_GEO2CART;
 			break;
 
 			/* Specialized cosine distances used internally only (e.g., greenspline) */
 
 		case 'S':	/* Spherical cosine distances (for various gridding functions) */
-			gmtmap_set_distaz (GMT, GMT_DIST_COS + mode, type, "");
+			err = gmtmap_set_distaz (GMT, GMT_DIST_COS + mode, type, "");
 			break;
 		case 'P':	/* Spherical distances after first inversily projecting Cartesian coordinates with -J */
-			gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ_INV, type, "");
+			err = gmtmap_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ_INV, type, "");
 			proj_type = GMT_CART2GEO;
 			break;
 
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Distance units must be one of %s\n", GMT_LEN_UNITS_DISPLAY);
-			GMT_exit (GMT, GMT_NOT_A_VALID_TYPE); return GMT_NOT_A_VALID_TYPE;
+			err =  GMT_NOT_A_VALID_TYPE;
 			break;
 	}
-
+	if (err) return (err);
 	GMT->current.map.dist[type].init = true;	/* OK, we have now initialized the info for this type */
 	return (proj_type);
 }

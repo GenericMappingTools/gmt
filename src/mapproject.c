@@ -846,22 +846,35 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
-	if (Ctrl->D.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
+	if (Ctrl->D.active) {
+		if ((error = gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D")))
+			Return (error);
+	}
 	if (Ctrl->T.active) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
 	if (Ctrl->A.active) {
 		way = gmt_M_is_geographic (GMT, GMT_IN) ? 2 + Ctrl->A.geodesic : 0;
-		proj_type = gmt_init_distaz (GMT, (way) ? 'k' : 'X', way, GMT_MAP_DIST);
+		if ((proj_type = gmt_init_distaz (GMT, (way) ? 'k' : 'X', way, GMT_MAP_DIST)) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 	}
 	if (Ctrl->G.active) {
 		way = gmt_M_is_geographic (GMT, GMT_IN) ? Ctrl->G.sph : 0;
-		proj_type = gmt_init_distaz (GMT, Ctrl->G.unit, way, GMT_MAP_DIST);
+		if ((proj_type = gmt_init_distaz (GMT, Ctrl->G.unit, way, GMT_MAP_DIST)) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 	}
 	if (Ctrl->L.active) {
 		way = gmt_M_is_geographic (GMT, GMT_IN) ? Ctrl->L.sph: 0;
-		proj_type = gmt_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST);
+		if ((proj_type = gmt_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST)) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 	}
 	if (Ctrl->E.active) gmt_ECEF_init (GMT, &Ctrl->E.datum);
-	if (Ctrl->F.active) unit = gmt_check_scalingopt (GMT, 'F', Ctrl->F.unit, scale_unit_name);
+	if (Ctrl->F.active) {
+		int is;
+		if ((is = gmt_check_scalingopt (GMT, 'F', Ctrl->F.unit, scale_unit_name)) == -1) {
+			Return (GMT_PARSE_ERROR);
+		}
+		else
+			unit = (unsigned int)is;
+	}
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active || Ctrl->Z.active);
 	gmt_M_memset (extra, MP_COL_N, double);
@@ -895,7 +908,9 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	else
 		datum_conv_only = Ctrl->T.active;
 
-	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+	if ((error = gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
+		Return (error);
+	}
 
 	if (Ctrl->G.mode) {	/* save output format in case -J changes it */
 		save[GMT_X] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : gmt_M_type (GMT, GMT_OUT, GMT_X);

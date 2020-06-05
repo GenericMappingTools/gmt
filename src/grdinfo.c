@@ -114,7 +114,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> may be one or more grid files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report in fields on a single line using the format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <file w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med L1scale] [mean std rms] [n_nan] [mode LMSscale]>,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <file w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med L1scale] [mean std rms] [n_nan] [mode LMSscale] registration>,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   where -M adds [x0 y0 x1 y1] and [n_nan], -L1 adds [median L1scale], -L2 adds [mean std rms],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and -Lp adds [mode LMSscale]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ct to place <file> at the end of the output record, or -Cn to write only numerical columns.\n");
@@ -478,7 +478,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	double x_min = 0.0, y_min = 0.0, z_min = 0.0, x_max = 0.0, y_max = 0.0, z_max = 0.0, wesn[4];
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
-	double z_mean = 0.0, z_median = 0.0, z_mode = 0.0, z_stdev = 0.0, z_scale = 0.0, z_lmsscl = 0.0, z_rms = 0.0, out[22];
+	double z_mean = 0.0, z_median = 0.0, z_mode = 0.0, z_stdev = 0.0, z_scale = 0.0, z_lmsscl = 0.0, z_rms = 0.0, out[23];
 
 	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN512] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[PATH_MAX] = {""};
 	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL, *projStr = NULL, *answer[2] = {"", " no"};
@@ -533,6 +533,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->L.norm & 1) n_cols += 2;	/* Add median scale */
 			if (Ctrl->L.norm & 2) n_cols += 3;	/* Add mean stdev rms */
 			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
+			n_cols ++;		/* Add registration */
 		}
 		if (Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
 		geometry = GMT_IS_NONE;
@@ -576,7 +577,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		subset = gmt_M_is_subset (GMT, G->header, wesn);	/* Subset requested */
-		if (subset) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
+		if (subset && ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), ""))))	/* Make sure wesn matches header spacing */
+			Return (error);
 		HH = gmt_get_H_hidden (G->header);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing grid %s\n", HH->name);
 
@@ -789,6 +791,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				if (Ctrl->L.norm & 4) {
 					out[col++] = z_mode;	out[col++] = z_lmsscl;
 				}
+				out[col++] = G->header->registration;
 				if (Ctrl->C.mode == GRDINFO_TRAILING)
 					sprintf (record, "%s", HH->name);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
@@ -840,6 +843,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_mode,   GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_lmsscl, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
+				strcat (record, sep);	gmt_ascii_format_col (GMT, text, (double)G->header->registration, GMT_OUT, GMT_Z);	strcat (record, text);
 				if (Ctrl->C.mode == GRDINFO_TRAILING) { sprintf (text, "%s%s", sep, HH->name);	strcat (record, text); }
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}

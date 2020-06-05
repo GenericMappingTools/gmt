@@ -504,13 +504,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 
 			case 'C':	/* Cpt file */
 				Ctrl->C.active = true;
-				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
-					Ctrl->C.dz = atof (&c[2]);
-					c[0] = '\0';	/* Temporarily chop off the modifier */
-				}
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if (c) c[0] = '+';	/* Restore */
+				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
@@ -779,6 +775,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	int start[2], stop[2], inc[2];
 
 	uint64_t sw, se, nw, ne, n, pt, ij, bin;
+	int64_t ns;
 
 	size_t max_alloc;
 
@@ -817,6 +814,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdview main code ----------------------------*/
+
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use the intensity grid */
@@ -1044,8 +1043,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			}
 
 			begin = true;
-			while ((n = gmt_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
-
+			while ((ns = gmt_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
+				n = (uint64_t)ns;
 				i_bin_old = j_bin_old = -1;
 				for (pt = 1; pt < n; pt++) {
 					/* Compute the lower-left bin i,j of the tile cut by the start of the contour (first 2 points) */
@@ -1066,6 +1065,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, x);
 				gmt_M_free (GMT, y);
 			}
+			if (ns < 0) Return (-ns);
 		}
 
 		/* Remove temporary variables */
