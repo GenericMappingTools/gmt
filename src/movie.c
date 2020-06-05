@@ -469,7 +469,7 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 		I->justify = PSL_BC;
 
 	/* Check for modifiers [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] and the extra +a<labelinfo>+w<width> */
-	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw")) n_errors++;	/* ALso tolerate +G +P */
+	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw", GMT_MSG_ERROR)) n_errors++;	/* ALso tolerate +G +P */
 	if (gmt_get_modifier (arg, 'c', string) && string[0])	/* Clearance for a text box */
 		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->clearance) < 0) n_errors++;
 	if (gmt_get_modifier (arg, 'f', string)) {	/* Gave a separate font for labeling */
@@ -575,10 +575,8 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case '<':	/* Input file */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXT)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;;
 				break;
 
 			case 'A':	/* Animated GIF */
@@ -946,8 +944,11 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 								break;
 							case 'w':	/* Split trailing text into words using any white space. */
 								Ctrl->T.split = true;
-								if (p[1])	/* Gave an argument, watch out for tabs given as \t */
-									strncpy (Ctrl->T.sep, gmt_get_strwithtab (&p[1]), GMT_LEN8-1);
+								if (p[1]) {	/* Gave an argument, watch out for tabs given as \t */
+									char *W = gmt_get_strwithtab (&p[1]);
+									strncpy (Ctrl->T.sep, W, GMT_LEN8-1);
+									gmt_M_str_free (W);
+								}
 								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */

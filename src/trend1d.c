@@ -578,7 +578,7 @@ static int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -611,7 +611,7 @@ static int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s", GMT_MSG_ERROR)) n_errors++;
 				Ctrl->W.mode = (strstr (opt->arg, "+s")) ? 2 : 1;
 				break;
 

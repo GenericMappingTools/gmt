@@ -4514,7 +4514,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		}
 	}
 
-	n_slashes = gmt_count_char (GMT, args, '/');	/* Count slashes to distinguis args */
+	n_slashes = gmt_count_char (GMT, args, '/');	/* Count slashes to distinguish args */
 
 	/* Differentiate between general perspective and orthographic projection based on number of slashes */
 	if (project == GMT_GENPER || project == GMT_ORTHO) {
@@ -12385,6 +12385,8 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	gmtinit_free_user_media (GMT);
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (GMT->PSL);
+	/* Free remote file information structure */
+	gmt_M_free (GMT, GMT->parent->remote_info);
 #ifdef MEMDEBUG
 	gmt_memtrack_report (GMT);
 	gmt_M_str_free (GMT->hidden.mem_keeper);
@@ -12855,24 +12857,31 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 	 * We return the wesn array with the exact or rounded region, depending on the setting of exact.
 	 */
 	unsigned int item;
+	int k_data;
 	bool geo;
 	bool is_PS, is_oneliner;
 	struct GMT_GRID *G = NULL;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
-	char virt_file[GMT_VF_LEN] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:";
+	char virt_file[GMT_VF_LEN] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:", *file = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	switch (family) {
 		case GMT_IS_GRID:
 			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
-			if (gmt_access (API->GMT, opt->arg, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
-			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, opt->arg, NULL)) == NULL)
-				return API->error;	/* Failure to read grid header */
-			gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
-			HH = gmt_get_H_hidden (G->header);
-			if (!exact) gmtinit_round_wesn (wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
-			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
+			if ((k_data = gmt_file_is_remotedata (API, opt->arg)) != GMT_NOTSET) {	/* This is a remote grid so -Rd */
+				wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
+			}
+			else {	/* Must read the grid header */
+				file = opt->arg;
+				if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
+				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, file, NULL)) == NULL)
+					return API->error;	/* Failure to read grid header */
+				gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
+				HH = gmt_get_H_hidden (G->header);
+				if (!exact) gmtinit_round_wesn (wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
+				if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
+			}
 			break;
 
 		case GMT_IS_DATASET:
@@ -13418,6 +13427,41 @@ bool gmtlib_module_may_get_R_from_RP (struct GMT_CTRL *GMT, const char *mod_name
 	return (GMT->current.ps.active || (!strncmp (mod_name, "subplot", 7U) || !strncmp (mod_name, "pscoast", 7U) || !strncmp (mod_name, "psbasemap", 9U) || !strncmp (mod_name, "mapproject", 10U)));
 }
 
+/*! Classic mode: Discover if a certain option was set in the history and re-set it */
+void gmtinit_complete_RJ (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *options) {
+	/* When a module discovers it needs -R or -J and it maybe was not given
+	 * see if we can tease out the answer from the history and parse it.
+	 * Currently used in gmt_get_refpoint where we may learn that -R -J will
+	 * indeed be required.  We then check if they have been given.  If not,
+	 * then under classic mode we abort, while under modern mode we add them,
+	 * if possible.
+	 */
+	int id = 0, j;
+	char str[3] = {""};
+	struct GMT_OPTION *opt;
+
+	assert (codes);	/* Should never be NULL */
+
+	for (j = 0; codes[j]; j++) {	/* Do this for all required options listed */
+		assert (strchr ("JR", codes[j]));	/* Only J and/or R should be present in options */
+		if ((opt = GMT_Find_Option (GMT->parent, codes[j], options)) == NULL) continue;	/* Not found */
+		if (opt->arg[0]) continue;	/* Set already */
+		/* Must dig around in the history array */
+		gmt_M_memset (str, 3, char);
+		str[0] = codes[j];
+		if ((id = gmt_get_option_id (0, str)) == -1) continue;	/* Not an option we have history for yet */
+		if (codes[j] == 'R' && !GMT->current.ps.active) id++;		/* Examine -RG history if not a plotter */
+		if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
+		if (codes[j] == 'J') {	/* Must now search for actual option since -J only has the code (e.g., -JM) */
+			/* Continue looking for -J<code> */
+			str[1] = GMT->init.history[id][0];
+			if ((id = gmt_get_option_id (id + 1, str)) == -1) continue;	/* Not an option we have history for yet */
+			if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
+		}
+		GMT_Update_Option (GMT->parent, opt, GMT->init.history[id]);	/* Failure to update option */
+	}
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmtinit_begin_module_sub.
@@ -13444,7 +13488,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 */
 
 	bool is_PS, is_psrose = false;
-	unsigned int srtm_res = 0;
 	char *required = (char *)in_required;
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -13852,48 +13895,76 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
-	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
-		bool ocean;
-		if (gmtlib_file_is_srtmrequest (API, opt->arg, &srtm_res, &ocean)) {
-			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
-			unsigned int k;
-			char *list = NULL;
-			double res[4] = {15.0/3600.0, 1.0/3600.0, 0.0, 3.0/3600.0};	/* Only access 1 or 3 here */
-			struct GMT_OPTION *opt_J = GMT_Find_Option (API, 'J', *options);
-			opt_R = GMT_Find_Option (API, 'R', *options);
-			if (opt_R == NULL) {
-				GMT_Report (API, GMT_MSG_DEBUG, "Cannot select %s as input without specifying a region with -R!\n", opt->arg);
-				return NULL;
+	if (options) {	/* Check if any filename argument is s remote tiled dataset */
+		bool first_time = true;
+		int k_data;
+		unsigned int srtm_flag;
+		char *list = NULL;
+		double wesn[4];
+		struct GMT_OPTION *opt_J = NULL;
+		struct GMT_DATA_INFO *I = NULL;
+
+		opt_R = GMT_Find_Option (API, 'R', *options);
+		opt_J = GMT_Find_Option (API, 'J', *options);
+
+		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+			if (opt->arg[0] != '@') continue;	/* No remote file argument given */
+        	gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then tis handles any missing registration _p|_g */
+			if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET) {	/* Remote file without file extension */
+				char *file = malloc (strlen(opt->arg)+1+strlen (API->remote_info[k_data].ext));
+				sprintf (file, "%s", opt->arg);
+				strcat (file, API->remote_info[k_data].ext);
+				gmt_M_str_free (opt->arg);
+				opt->arg = file;
+				continue;
 			}
-			/* Replace the magic reference to SRTM with a file list of SRTM tiles.
-			 * Because GMT_Parse_Common has not been called yet, no -J has been processed yet.
-			 * Since -J may be needed if -R does oblique or give a region in projected units
-			 * we must also parse -J here first before parsing -R */
-			if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
-			opt_R = GMT_Find_Option (API, 'R', *options);
-			API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
-			gmt_parse_R_option (GMT, opt_R->arg);
-			API->GMT->hidden.func_level = level;	/* Reset to what it should be */
-			/* Enforce multiple of 1s or 3s in wesn so requested region is in phase with tiles and at least covers the given region.
-			 * When ocean is true we instead round to nearest 15s since earth_relief_15s will be used.
-			 * the GMT_CONV8_LIMIT is there to ensure we dont round an almost exact x/dx */
-			k = (ocean) ? 0 : srtm_res;	/* Select 15s, 1s, or 3s increments */
-			GMT->common.R.wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / res[k]) + GMT_CONV8_LIMIT) * res[k];
-			GMT->common.R.wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / res[k]) - GMT_CONV8_LIMIT) * res[k];
-			GMT->common.R.wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / res[k]) + GMT_CONV8_LIMIT) * res[k];
-			GMT->common.R.wesn[YHI] = ceil  ((GMT->common.R.wesn[YHI] / res[k]) - GMT_CONV8_LIMIT) * res[k];
-			/* Get a file with a list of all needed srtm tiles */
-			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res, ocean, GMT->current.ps.active);
-			/* Replace the @[earth|srtm]_relief_0[1|3s file name with this local list */
+			if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg, &srtm_flag)) == GMT_NOTSET) continue;	/* Argument is not a remote tiled dataset */
+			/* Here, the argument IS a tiled remote dataset */
+			if (first_time) {
+				/* Replace the magic reference to a tiled remote dataset with a file list of the required tiles.
+				 * Because GMT_Parse_Common has not been called yet, no -R -J have been processed yet.
+				 * Since -J may be needed if -R does oblique or give a region in projected units
+				 * we must also parse -J here first before parsing -R. If just -R -J then we must update from history now */
+
+				if (opt_R == NULL) {	/* In this context we imply -Rd */
+					wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
+				}
+				else {
+					char codes[3] = {""};
+					unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
+					if (!opt_R->arg[0]) codes[n_to_set++] = 'R';	/* Must have -R */
+					if (opt_J && !opt_J->arg[0]) codes[n_to_set++] = 'J';	/* May or may not have -J */
+					if (n_to_set) gmtinit_complete_RJ (GMT, codes, *options);	/* Fill in what -R actually is (and possibly fill in -J) */
+					if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
+					API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
+					gmt_parse_R_option (GMT, opt_R->arg);
+					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
+					if (GMT->common.R.oblique) {	/* Must do gmt_mapsetup here to get correct region for building tiles */
+						if (!opt_J) {
+							GMT_Report (API, GMT_MSG_DEBUG, "Cannot select %s and an oblique region without -J!\n", opt->arg);
+							return NULL;
+						}
+						GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
+						if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+							return NULL;
+					}
+					GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
+					gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
+				}
+				first_time = false;	/* Done with getting valid region */
+			}
+			I = &API->remote_info[k_data];
+
+			/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given region. */
+			wesn[XLO] = floor ((wesn[XLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
+			wesn[XHI] = ceil  ((wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
+			wesn[YLO] = floor ((wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
+			wesn[YHI] = ceil  ((wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
+			/* Get a file with a list of all needed tiles */
+			list = gmtlib_get_tile_list (API, wesn, k_data, GMT->current.ps.active, srtm_flag);
+			/* Replace the remote file name with this local list */
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;
-			GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
-		}
-		else if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd")) {
-			char *file = malloc (strlen(opt->arg)+5);
-			sprintf (file, "%s.grd", opt->arg);
-			gmt_M_str_free (opt->arg);
-			opt->arg = file;
 		}
 	}
 
@@ -16272,6 +16343,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmtinit_set_today (GMT);	/* Determine today's rata die value */
 
+	gmtlib_refresh_server (GMT);	/* Refresh hash and info tables if needed */
+
 	return (GMT);
 }
 
@@ -16286,51 +16359,10 @@ unsigned int gmtlib_get_pos_of_filename (const char *url) {
 	return (unsigned int)pos;
 }
 
-GMT_LOCAL bool gmtinit_check_if_we_must_download (struct GMT_CTRL *GMT, const char *file, unsigned int kind) {
-	/* Returns false if file already present unless if it is a remote file */
-	unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
-	if (pos == 1) return true;  /* Must always check since file on server might have changed and should be refreshed first */
-	else if (kind == GMT_URL_QUERY)
-		return true;	/* A query can never exist locally so must follow the URL */
-	else if (!gmt_access (GMT, &file[pos], F_OK))
-		return false;	/* Regular file exists already so no need to download */
-	else if (kind == GMT_URL_FILE)	/* And not found in previous line so need to download */
-		return true;	/* File not found */
-	else
-		return false;	/* Just a local file that is not found */
-}
-
-bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind) {
-	/* Returns true if file is a known GMT-distributable file and download is enabled */
-	/* Return immediately if no auto-download is disabled or file is found locally */
-#ifdef DEBUG
-	static char *fkind[5] = {"Regular File", "Cache File", "Data File", "URL File", "URL Query"};
-#endif
-	*kind = GMT_REGULAR_FILE;	/* Default is a regular file */
-	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return false;	/* Not enabled */
-	if (file == NULL) return false;	/* Return immediately if file is NULL */
-	if (gmt_M_file_is_remotedata (file))	/* Special remote data set @earth_relief_xxm|s grid request */
-		*kind = GMT_DATA_FILE;
-	else if (gmt_M_file_is_cache (file))	/* Special @<filename> syntax for GMT cache files */
-		*kind = GMT_CACHE_FILE;
-	else if (gmt_M_file_is_url(file)) {	/* Full URL given */
-		if (strchr (file, '?') == NULL)
-			*kind = GMT_URL_FILE;
-		else
-			*kind = GMT_URL_QUERY;	/* These we will never check for access and must rerun each time */
-	}
-#ifdef DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s: Type is %s\n", file, fkind[*kind]);
-#endif
-	return (gmtinit_check_if_we_must_download (GMT, file, *kind));
-}
-
 /*! . */
 bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family) {
 	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
-	 * exists and is readable. Otherwise we return false. */
-	unsigned int pos = 0, kind = 0;
-	bool not_url = false;
+	 * exists and is readable. If remote we try to download the file first. Otherwise we return false. */
 	char message[GMT_LEN16] = {""};
 	if (option == GMT_OPT_INFILE)
 		sprintf (message, "for input file");
@@ -16344,24 +16376,10 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 		return false;	/* No file given */
 	}
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
-	if (file[0] == '=') pos = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
-	not_url = !gmtlib_file_is_downloadable (GMT, file, &kind);	/* not_url may become false if this could potentially be obtained from GMT ftp site */
-	if (kind == GMT_CACHE_FILE || kind == GMT_DATA_FILE) {
-		pos = gmt_download_file_if_not_found (GMT, file, 0);	/* Has leading '@' in name so must skip that letter when checking if it exists locally */
-	}
-	else if (kind == GMT_URL_FILE) pos = gmtlib_get_pos_of_filename (file);	/* Find start of filename */
-	if (!not_url && kind == 0 && (family == GMT_IS_GRID || family == GMT_IS_IMAGE))	/* Only grid and images can be URLs so far */
-		not_url = !gmtlib_check_url_name (&file[pos]);
-	if (not_url) {
-		if (gmt_access (GMT, &file[pos], F_OK)) {	/* Cannot find the file anywhere GMT looks */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No such file (%s) provided %s\n", &file[pos], message);
-			return false;	/* Could not find this file */
-		}
-		if (gmt_access (GMT, &file[pos], R_OK)) {	/* Cannot read this file (permissions?) */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot read file (%s) - check permissions %s\n", &file[pos], message);
-			return false;	/* Could not find this file */
-		}
-	}
+
+	if (GMT_Get_FilePath (GMT->parent, family, direction, GMT_FILE_REMOTE|GMT_FILE_CHECK, &file))
+		return false;	/* No file given */
+
 	return true;	/* Seems OK */
 }
 
@@ -16453,7 +16471,7 @@ int gmt_remove_dir (struct GMTAPI_CTRL *API, char *dir, bool recreate) {
 			if (gmt_remove_file (GMT, filelist[k]))
 				GMT_Report (API, GMT_MSG_WARNING, "Unable to remove %s [permissions?]\n", filelist[k]);
 		}
-		gmtlib_free_list (GMT, filelist, n_files);	/* Free the file list */
+		gmt_free_list (GMT, filelist, n_files);	/* Free the file list */
 	}
 	if (chdir (here)) {		/* Get back to where we were */
 		perror (here);
@@ -17378,7 +17396,7 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 	}
 	else if (gmt_M_file_is_url (file))	/* Full URL given */
 		code |= GMT_IS_URL;
-	else if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
+	else if (!strncmp (file, GMT_TOPO_PREFIX, strlen(GMT_TOPO_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
 		code |= GMT_IS_DATA;
 
 	/* Now try to detect subtleries like netcdf slices and grid attributes */

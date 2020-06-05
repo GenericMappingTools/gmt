@@ -165,11 +165,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Input rasters */
-				if (Ctrl->In.n_in < 3 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->In.file[Ctrl->In.n_in++] = strdup (opt->arg);
-				else {
+				if (Ctrl->In.n_in >= 3) {
 					n_errors++;
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "A maximum of three rasters may be provided\n");
+				}
+				else {
+					Ctrl->In.file[Ctrl->In.n_in] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_in]))) n_errors++;
+					Ctrl->In.n_in++;
 				}
 				break;
 
@@ -189,10 +192,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			case 'G':	/* Does not matter if we pass GMT_IS_GRID or GMT_IS_IMAGE */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			case 'I':

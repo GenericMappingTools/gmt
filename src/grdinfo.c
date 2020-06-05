@@ -171,10 +171,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					n_files++;
-				else
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg)))
 					n_errors++;
+				else
+					n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -272,7 +272,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				}
 				else
 					strncpy (text, opt->arg, GMT_LEN32-1);
-				if (gmt_validate_modifiers (GMT, text, opt->option, "as")) {
+				if (gmt_validate_modifiers (GMT, text, opt->option, "as", GMT_MSG_ERROR)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -T: Syntax is -T[<dz>][+s][+a[<alpha>]] next time.\n");
 					n_errors++;
 				}

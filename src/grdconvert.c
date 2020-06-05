@@ -146,13 +146,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 			case '<':	/* Input and Output files */
 				/* Since grdconvert allowed output grid to be given without -G we must actually
 				 * check for two input files and assign the 2nd as the actual output file */
-				if (n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) {
-					Ctrl->In.file= strdup (opt->arg);
+				if (n_in == 0) {
+					Ctrl->In.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 					n_in++;
 				}
-				else if (n_in == 1 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID)) {
+				else if (n_in == 1) {
 					Ctrl->G.active = true;
-					Ctrl->G.file= strdup (opt->arg);
+					Ctrl->G.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 					n_in++;
 				}
 				else {
@@ -163,10 +165,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				break;
 			case '>':	/* Output file may be set this way from the external API */
 				Ctrl->G.active = true;
-				if (gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				n_in++;
 				break;
 
@@ -178,8 +178,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 					GMT_Report (API, GMT_MSG_ERROR, "Specify only one output file\n");
 					n_errors++;
 				}
-				else
+				else {
 					Ctrl->G.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				}
 				break;
 
 			case 'N':

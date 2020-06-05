@@ -297,9 +297,8 @@ GMT_LOCAL int gmtselect_old_L_parser (struct GMTAPI_CTRL *API, char *arg, struct
 		return 1;
 	}
 	else {
-		if (gmt_check_filearg (API->GMT, 'L', &arg[j+1], GMT_IN, GMT_IS_DATASET))
-			Ctrl->L.file = strdup (&arg[j+1]);
-		else {
+		Ctrl->L.file = strdup (&arg[j+1]);
+		if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -L: No file given\n");
 			return 1;
 		}
@@ -328,7 +327,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -349,7 +348,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 					n_errors++;
 				}
 				else
-					Ctrl->C.file = gmt_get_filename (opt->arg);
+					Ctrl->C.file = gmt_get_filename (API, opt->arg, "d");
 				Ctrl->C.mode = gmt_get_distance (GMT, &c[2], &(Ctrl->C.dist), &(Ctrl->C.unit));
 				break;
 			case 'D':	/* Set GSHHS resolution */
@@ -371,16 +370,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'F':	/* Inside/outside polygon test */
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)))
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':	/* In-grid selection */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Invert these tests */
 				Ctrl->I.active = true;
@@ -407,13 +404,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 					break;
 				}
 				/* Here we perform new syntax parsing */
-				if (gmt_validate_modifiers (GMT, opt->arg, 'L', "dp")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'L', "dp", GMT_MSG_ERROR)) n_errors++;
 				if (opt->arg[0] == 0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -L: No file given\n");
 					n_errors++;
 				}
 				else
-					Ctrl->L.file = gmt_get_filename (opt->arg);
+					Ctrl->L.file = gmt_get_filename (API, opt->arg, "dp");
 				if (gmt_get_modifier (opt->arg, 'd', buffer)) {
 					Ctrl->L.mode = gmt_get_distance (GMT, buffer, &(Ctrl->L.dist), &(Ctrl->L.unit));
 				}

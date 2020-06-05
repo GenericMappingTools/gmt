@@ -5689,7 +5689,7 @@ GMT_LOCAL int gmtsupport_compare_sugs (const void *point_1, const void *point_2)
 }
 
 /*! . */
-uint64_t gmtlib_read_list (struct GMT_CTRL *GMT, char *file, char ***list) {
+uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list) {
 	uint64_t n = 0;
 	size_t n_alloc = GMT_CHUNK;
 	char **p = NULL, line[GMT_BUFSIZ] = {""};
@@ -5759,8 +5759,8 @@ GMT_LOCAL int gmtsupport_sort_order_ascend (const void *p_1, const void *p_2) {
 }
 
 /*! . */
-void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
-	/* Properly free memory allocated by gmtlib_read_list */
+void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
+	/* Properly free memory allocated by gmt_read_list */
 	uint64_t i;
 	for (i = 0; i < n; i++) gmt_M_str_free (list[i]);
 	gmt_M_free (GMT, list);
@@ -5920,13 +5920,11 @@ GMT_LOCAL int gmtsupport_find_mod_syntax_start (char *arg, int k) {
 char *gmtlib_file_unitscale (char *name) {
 	/* Determine if this file ends in +u|U<unit>, with <unit> one of the valid Cartesian distance units */
 	char *c = NULL;
-	size_t len = strlen (name);					/* Get length of the file name */
-	if (len < 4) return NULL;					/* Not enough space for name and modifier */
-	c = &name[len-3];						/* c may be +u<unit>, +U<unit> or anything else */
-	if (c[0] != '+') return NULL;					/* Does not start with + */
-	if (! (c[1] == 'u' || c[1] == 'U')) return NULL;		/* Did not have the proper modifier u or U */
+	size_t len = strlen (name);	/* Get length of the file name */
+	if (len < 4) return NULL;	/* Not enough space for name and modifier */
+	if ((c = strstr (name, "+u")) == NULL && (c = strstr (name, "+U")) == NULL) return NULL;	/* No such modifier */
 	if (strchr (GMT_LEN_UNITS2, c[2]) == NULL) return NULL;		/* Does no have a valid unit at the end */
-	return c;							/* We passed, return c */
+	return c;	/* Return valid modifier */
 }
 
 /*! . */
@@ -12296,7 +12294,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			return (1);	/* Failed basic parsing */
 		}
 
-		if (gmt_validate_modifiers (GMT, B->refpoint->args, option, "jostw")) return (1);
+		if (gmt_validate_modifiers (GMT, B->refpoint->args, option, "jostw", GMT_MSG_ERROR)) return (1);
 
 		/* Reference point args are +w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]][+s<file>][+t]. */
 		/* Required modifier +w */
@@ -12456,7 +12454,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int fl
 
 	/* refpoint->args are now +c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+o<dx>[/<dy>]][+u][+v]. */
 
-	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouwv")) return (1);
+	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouwv", GMT_MSG_ERROR)) return (1);
 
 	/* Required modifiers +c, +w */
 
@@ -12641,7 +12639,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		return (1);	/* Failed basic parsing */
 	}
 
-	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "dfijloptw")) return (1);
+	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "dfijloptw", GMT_MSG_ERROR)) return (1);
 
 	/* Get required +w modifier */
 	if (gmt_get_modifier (ms->refpoint->args, 'w', string))	{	/* Get rose dimensions */
@@ -15194,7 +15192,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 	if (!item || !item[0]) return (NULL);	/* Nothing to do */
 	if (item[0] == '~') k = 1;		/* We want the inverse selection */
 	if (item[k] == '+' && item[k+1] == 'f') {	/* Gave +f<file> with segment numbers */
-		if ((n_items = gmtlib_read_list (GMT, &item[k+2], &list)) == 0) {
+		if ((n_items = gmt_read_list (GMT, &item[k+2], &list)) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find/open file: %s\n", &item[k+2]);
 			return (NULL);
 		}
@@ -15222,7 +15220,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 		while ((gmt_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
 			if ((step = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) {
 				gmt_free_int_selection (GMT, &select);
-				gmtlib_free_list (GMT, list, n_items);
+				gmt_free_list (GMT, list, n_items);
 				return (NULL);
 			}
 
@@ -15232,7 +15230,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 			for (i = start; i <= stop; i += step, n++) select->item[n] = i;
 		}
 	}
-	gmtlib_free_list (GMT, list, n_items);	/* Done with the list */
+	gmt_free_list (GMT, list, n_items);	/* Done with the list */
 	/* Here we got something to return */
 	select->n = n;							/* Total number of items */
 	select->item = gmt_M_memory (GMT, select->item, n, uint64_t);	/* Trim back array size */
@@ -15252,7 +15250,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 void gmt_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **S) {
 	/* Free the selection structure */
 	if (*S == NULL) return;	/* Nothing to free */
-	if ((*S)->pattern) gmtlib_free_list (GMT, (*S)->pattern, (*S)->n);
+	if ((*S)->pattern) gmt_free_list (GMT, (*S)->pattern, (*S)->n);
 	gmt_M_free (GMT, (*S)->regexp);
 	gmt_M_free (GMT, (*S)->caseless);
 	gmt_M_free (GMT, *S);
@@ -15310,7 +15308,7 @@ struct GMT_TEXT_SELECTION * gmt_set_text_selection (struct GMT_CTRL *GMT, char *
 	item = strdup (arg);
 	if (item[0] == '~') {k = 1, invert = true;}	/* We want the inverse selection, then skip the first char */
 	if (item[k] == '+' && item[k+1] == 'f') {	/* Gave [~]+f<file> with list of patterns, one per record */
-		if ((n_items = gmtlib_read_list (GMT, &item[k+2], &list)) == 0) {
+		if ((n_items = gmt_read_list (GMT, &item[k+2], &list)) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find/open file: %s\n", &item[k+2]);
 			gmt_M_str_free (item);
 			return (NULL);
@@ -15637,12 +15635,14 @@ void gmt_enable_threads (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers) {
+unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers, unsigned int verbosity) {
 	/* Looks for modifiers +<mod> in string and making sure <mod> is
-	 * only from the set given by valid_modifiers.  Return 1 if failure, 0 otherwise.
+	 * only from the set given by valid_modifiers.  if verbosity is GMT_MSQ_QUIET
+	 * we file no errors but just returns the number of valid modifiers found.
+	 * Otherwise we return the number of invalid modifiers or 0.
 	*/
 	bool quoted = false;
-	unsigned int n_errors = 0;
+	unsigned int n_bad = 0, n_good = 0;
 	size_t k, len, start = 0;
 
 	if (!string || string[0] == 0) return 0;	/* Nothing to check */
@@ -15650,12 +15650,19 @@ unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, c
 	for (k = 0; start == 0 && k < (len-1); k++) {
 		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exits the quote */
 		if (quoted) continue;		/* Not consider +<mod> inside quoted strings */
-		if (string[k] == '+' && !strchr (valid_modifiers, string[k+1])) {	/* Found an invalid modifier */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c option: Modifier +%c unrecognized\n", option, string[k+1]);
-			n_errors++;
+		if (string[k] == '+') {	/*Possibly a modifier */
+			if (strchr (valid_modifiers, string[k+1]))	/* Found a recognized valid modifier */
+				n_good++;
+			else {	/* Found an invalid modifier or some part of a filename that has + in it */
+				if (option)
+					GMT_Report (GMT->parent, verbosity, "Option -%c option: Modifier +%c unrecognized\n", option, string[k+1]);
+				else
+					GMT_Report (GMT->parent, verbosity, "Modifier +%c unrecognized\n", string[k+1]);
+				n_bad++;
+			}
 		}
 	}
-	return n_errors;
+	return ((verbosity == GMT_MSG_QUIET) ? n_good : n_bad);
 }
 
 /*! . */
@@ -15864,15 +15871,6 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	*yy = gmtlib_assign_vector (GMT, new_n, GMT_Y);
 	*nn = (uint64_t)new_n;
 	return 0;
-}
-
-char * gmt_get_filename (char *string) {
-	/* Extract the filename from a string like <filename+<modifier> */
-	char *file = NULL, *c = strchr (string, '+');
-	if (c != NULL) c[0] = '\0';	/* Temporarily chop off the modifier */
-	file = strdup (string);
-	if (c != NULL) c[0] = '+';	/* Restore the modifier */
-	return (file);
 }
 
 char * gmt_memory_use (size_t bytes, int width) {
@@ -16112,7 +16110,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	gmt_M_memset (T, 1, struct GMT_ARRAY);	/* Wipe clean the structure */
 
 	/* 1a. Check if argument is a remote file */
-	if (gmt_M_file_is_remotedata (argument) || gmt_M_file_is_url (argument)) {	/* Remote file, must check */
+	if (gmt_file_is_remotedata (GMT->parent, argument) != GMT_NOTSET || gmt_M_file_is_url (argument)) {	/* Remote file, must check */
 		char path[PATH_MAX] = {""};
 		unsigned int first = gmt_download_file_if_not_found (GMT, argument, GMT_CACHE_DIR);
 		if (gmt_getdatapath (GMT, &argument[first], path, R_OK) == NULL) {	/* Remote file was not found? */
@@ -16142,7 +16140,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	if (gmt_validate_modifiers (GMT, argument, option, "abelnt")) return (GMT_PARSE_ERROR);
+	if (gmt_validate_modifiers (GMT, argument, option, "abelnt", GMT_MSG_ERROR)) return (GMT_PARSE_ERROR);
 
 	if ((m = gmt_first_modifier (GMT, argument, "abelnt"))) {	/* Process optional modifiers +a, +b, +e, +l, +n, +t */
 		unsigned int pos = 0;	/* Reset to start of new word */
@@ -16827,6 +16825,7 @@ void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interv
 	 * modifier, set the corresponding interval, and update *file to only have the
 	 * remaining text items. */
 	char *file = NULL, *c = NULL, new_arg[PATH_MAX] = {""};
+	gmt_M_unused (GMT);
 	if (arg == NULL || (file = *arg) == NULL || file[0] == '\0') return;
 	if ((c = strstr (file, "+i")) == NULL) return;
 	/* Here we have a +i<dz> string in c */
@@ -16942,7 +16941,7 @@ char *gmt_get_strwithtab (const char *txt) {
 	}
 	else
 		strcpy (dummy, txt);
-	return dummy;
+	return strdup (dummy);
 }
 
 char *gmt_place_var (int mode, char *name) {

@@ -248,7 +248,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* Sets format for color reporting */
 				Ctrl->F.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) Ctrl->F.cat = true;
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;

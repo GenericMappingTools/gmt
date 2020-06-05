@@ -178,10 +178,9 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Get list of approved filepair combinations to check */
-				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->A.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->A.active = true;
+				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
 				break;
 			case 'C':
 				Ctrl->C.active = true;

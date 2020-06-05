@@ -20,7 +20,7 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt clear cleans up by removing files or dirs.
- *	gmt clear [all | cache | data | sessions | settings ]
+ *	gmt clear [all | cache | data[=<planet>] | sessions | settings ]
  */
 
 #include "gmt_dev.h"
@@ -37,13 +37,14 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data|sessions|settings [%s]\n\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data[=<planet>]|sessions|settings [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tDeletes the specified item.  Choose one of these targets:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cache     Deletes the user\'s cache directory [%s].\n", API->GMT->session.CACHEDIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t   data      Deletes the user\'s data download directory [%s/server].\n", API->GMT->session.USERDIR);
+	GMT_Message (API, GMT_TIME_NONE, "\t             Append =<planet> to limit removal to such data for a specific <planet> [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   sessions  Deletes the user\'s sessions directory [%s].\n", API->session_dir);
 	GMT_Message (API, GMT_TIME_NONE, "\t   settings  Deletes a modern mode session\'s gmt.conf file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
@@ -82,17 +83,70 @@ static int clear_defaults (struct GMTAPI_CTRL *API) {
 	return GMT_NOERROR;
 }
 
-static int clear_data (struct GMTAPI_CTRL *API) {
-	char dir[PATH_MAX] = {""};
-	sprintf (dir, "%s/server/srtm1", API->GMT->session.USERDIR);
-	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
-		return GMT_RUNTIME_ERROR;
-	sprintf (dir, "%s/server/srtm3", API->GMT->session.USERDIR);
-	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
-		return GMT_RUNTIME_ERROR;
-	sprintf (dir, "%s/server", API->GMT->session.USERDIR);
-	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
-		return GMT_RUNTIME_ERROR;
+static int clear_data (struct GMTAPI_CTRL *API, char *planet) {
+	int d1, d2, d3;
+	char server_dir[PATH_MAX] = {""}, current_d1[PATH_MAX] = {""}, current_d2[PATH_MAX] = {""}, current_d3[PATH_MAX] = {""};
+	char **dir1, **dir2, **dir3;
+	struct GMT_CTRL *GMT = API->GMT;
+
+	sprintf (server_dir, "%s/server", API->GMT->session.USERDIR);
+	if ((dir1 = gmtlib_get_dirs (GMT, server_dir)) == NULL) {
+		GMT_Report (API, GMT_MSG_NOTICE, "No directories found under %s\n", server_dir);
+		return GMT_NOERROR;
+	}
+
+	d1 = 0;
+	while (dir1[d1]) {	/* Look through planetary subdirectories under /server (e.g. earth) */
+		if (planet && strcmp (dir1[d1], planet)) {	/* Not a planet that we want to delete */
+			d1++;
+			continue;
+		}
+		sprintf (current_d1, "%s/%s", server_dir, dir1[d1]);	/* E.g., ~/.gmt/server/earth */
+		if ((dir2 = gmtlib_get_dirs (GMT, current_d1))) {	/* Find all subdirs under this planet (e.g. earth_relief), if any */
+			d2 = 0;
+			while (dir2[d2]) {	/* Look through an subdirectories under /server/planet.data (e.g. /server/planet/dataset), if any */
+				sprintf (current_d2, "%s/%s/%s", server_dir, dir1[d1], dir2[d2]);	/* E.g., ~/.gmt/server/earth/earth_relief */
+				if ((dir3 = gmtlib_get_dirs (GMT, current_d2))) {
+					d3 = 0;
+					while (dir3[d3]) {	/* Look through an subdirectories under /server/planet.data (e.g. /server/planet/dataset/tileddata), if any */
+						sprintf (current_d3, "%s/%s/%s/%s", server_dir, dir1[d1], dir2[d2], dir3[d3]);	/* E.g., ~/.gmt/server/earth/earth_relief/earth_relief_15s_p */
+						if (gmt_remove_dir (API, current_d3, false)) {
+							GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d3);
+							return GMT_NOERROR;
+						}
+						d3++;
+					}
+					gmtlib_free_dir_list (GMT, &dir3);
+				}
+				if (gmt_remove_dir (API, current_d2, false)) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d2);
+					return GMT_NOERROR;
+				}
+				d2++;
+			}
+			gmtlib_free_dir_list (GMT, &dir2);
+		}
+		if (gmt_remove_dir (API, current_d1, false)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d1);
+			return GMT_NOERROR;
+		}
+		d1++;
+	}
+	gmtlib_free_dir_list (GMT, &dir1);
+
+	if (planet == NULL) {
+		if (gmt_remove_dir (API, server_dir, false)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", server_dir);
+			return GMT_NOERROR;
+		}
+		/* Also remove old legacy SRTM dirs, if found */
+		sprintf (current_d1, "%s/srtm1", server_dir);
+		if (access (current_d1, F_OK) == 0 && gmt_remove_dir (API, current_d1, false))
+			return GMT_RUNTIME_ERROR;
+		sprintf (current_d1, "%s/srtm3", server_dir);
+		if (access (current_d1, F_OK) == 0 && gmt_remove_dir (API, current_d1, false))
+			return GMT_RUNTIME_ERROR;
+	}
 	return GMT_NOERROR;
 }
 
@@ -116,7 +170,7 @@ static int clear_sessions (struct GMTAPI_CTRL *API) {
 			if (gmt_remove_dir (API, dirlist[k], false))
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", dirlist[k]);
 		}
-		gmtlib_free_list (API->GMT, dirlist, n_dirs);	/* Free the dir list */
+		gmt_free_list (API->GMT, dirlist, n_dirs);	/* Free the dir list */
 	}
 	if (chdir (here)) {		/* Get back to where we were */
 		perror (here);
@@ -161,7 +215,7 @@ EXTERN_MSC int GMT_clear (void *V_API, int mode, void *args) {
 		if (!strcmp (opt->arg, "all")) {	/* Clear all */
 			if (clear_cache (API))
 				error = GMT_RUNTIME_ERROR;
-			if (clear_data (API))
+			if (clear_data (API, NULL))
 				error = GMT_RUNTIME_ERROR;
 			if (clear_sessions (API))
 				error = GMT_RUNTIME_ERROR;
@@ -172,8 +226,10 @@ EXTERN_MSC int GMT_clear (void *V_API, int mode, void *args) {
 			if (clear_cache (API))
 				error = GMT_RUNTIME_ERROR;
 		}
-		else if (!strcmp (opt->arg, "data")) {	/* Clear the data */
-			if (clear_data (API))
+		else if (!strncmp (opt->arg, "data", 4U)) {	/* Clear the data */
+			char *planet = strchr (opt->arg, '=');
+			if (planet) planet++;	/* Skip past the = sign */
+			if (clear_data (API, planet))
 				error = GMT_RUNTIME_ERROR;
 		}
 		else if (!strcmp (opt->arg, "sessions")) {	/* Clear the sessions dir */

@@ -100,10 +100,12 @@ steps:
 # Download remote files, if not already cached
 - bash: |
     set -x -e
-    $(gmt --show-sharedir)/tools/gmt_getremote.sh cache
-    gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m @earth_relief_20m
+    gmt get -Dcache
+    gmt which -Ga @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_06 @earth_relief_15m @earth_relief_20m @earth_relief_30m
+    gmt which -Ga @earth_relief_05m_p @earth_relief_05_g  @earth_relief_10m_p @earth_relief_10m_g
   displayName: Download remote data
   condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
+  enabled: false
 
 # Run the full tests, and rerun failed tests
 - bash: |

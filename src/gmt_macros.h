@@ -198,10 +198,12 @@
 /*! Determine default justification for box item */
 #define gmt_M_just_default(GMT,refpoint,just) (refpoint->mode == GMT_REFPOINT_JUST_FLIP ? gmt_flip_justify(GMT,refpoint->justify) : refpoint->mode == GMT_REFPOINT_JUST ? refpoint->justify : just)
 
-/*! Determine if we have a special downloadable file */
-#define gmt_M_file_is_remotedata(file) (file != NULL && file[0] == '@' && !strncmp (&file[1], GMT_DATA_PREFIX, 13U))
+/*! Determine if we have a special virtual, remote, or query files */
 #define gmt_M_file_is_cache(file) (file != NULL && file[0] == '@' && strncmp (file, "@GMTAPI@-", 9U))
 #define gmt_M_file_is_url(file) (file != NULL && (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U)))
+#define gmt_M_file_is_query(file) (gmt_M_file_is_url(file) && strchr (file, '?') && strchr (file, '='))
+#define gmt_M_file_is_netcdf(file) (!gmt_M_file_is_url(file) && strchr (file, '?'))
+#define gmt_M_file_is_netcdf_layer(file) (gmt_M_file_is_netcdf(file) && (strchr (file, '(') || strchr (file, '[')))
 
 /*! Determine if file is an image GDAL can read */
 #define gmt_M_file_is_image(file) (file != NULL && (strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))

@@ -493,11 +493,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 			/* Common parameters */
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -515,25 +514,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					/* Three r,g,b grids for draping */
 					char A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
-					if (gmt_check_filearg (GMT, '<', A, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[0] = strdup (A);
-					else
-						n_errors++;
-					if (gmt_check_filearg (GMT, '<', B, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[1] = strdup (B);
-					else
-						n_errors++;
-					if (gmt_check_filearg (GMT, '<', C, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[2] = strdup (C);
-					else
-						n_errors++;
+					if (A[0]) Ctrl->G.file[0] = strdup (A);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[0]))) n_errors++;
+					if (B[0]) Ctrl->G.file[1] = strdup (B);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[1]))) n_errors++;
+					if (C[0]) Ctrl->G.file[2] = strdup (C);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[2]))) n_errors++;
 					Ctrl->G.n = 3;
 				}
 				else if (n_commas == 0 && Ctrl->G.n < 3) {	/* Just got another drape grid or image */
-					if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[Ctrl->G.n++] = strdup (opt->arg);
-					else
-						n_errors++;
+					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
+					Ctrl->G.n++;
 				}
 				else {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Usage is -G<z.grd|image> | -G<r.grd> -G<g.grd> -G<b.grd>\n");
@@ -870,14 +862,21 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid */
-		char int_grd[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
+		char int_grd[GMT_VF_LEN] = {""}, data_file[PATH_MAX] = {""}, cmd[GMT_LEN256] = {""};
 		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid\n");
 		/* Create a virtual file to hold the intensity grid */
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
 			Return (API->error);
+		if (Topo->data) {	/* If not NULL it means we have a tiled and blended grid, use as is */
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Topo, data_file))
+				Return (API->error);
+		}
+		else
+				strcpy (data_file, Ctrl->In.file);
+
 		/* Prepare the grdgradient arguments using selected -A -N */
 		sprintf (cmd, "%s -G%s -A%s -N%s -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=false",
-			Ctrl->In.file, int_grd, Ctrl->I.azimuth, Ctrl->I.method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+			data_file, int_grd, Ctrl->I.azimuth, Ctrl->I.method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdgradient with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))

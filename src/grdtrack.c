@@ -250,10 +250,11 @@ GMT_LOCAL int grdtrack_process_one (struct GMT_CTRL *GMT, char *record, struct G
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -G: Give imgfile, scale, mode [and optionally max_lat]\n");
 			return (0);
 		}
-		else if (gmt_check_filearg (GMT, '<', line, GMT_IN, GMT_IS_GRID))
-			Ctrl->G.file[ng] = strdup (line);
-		else
-			return (0);
+		else {
+			if (line[0]) Ctrl->G.file[ng] = strdup (line);
+			if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[ng])))
+				return (0);
+		}
 		Ctrl->G.type[ng] = 1;
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Option -G: mode must be in 0-3 range\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Option -G: max latitude should be positive\n");
@@ -261,9 +262,8 @@ GMT_LOCAL int grdtrack_process_one (struct GMT_CTRL *GMT, char *record, struct G
 	}
 	else {	/* Regular grid file */
 		sscanf (record, "%s", line);	/* Since we may have more than one word in the line */
-		if (gmt_check_filearg (GMT, '<', line, GMT_IN, GMT_IS_GRID))
-			Ctrl->G.file[ng] = strdup (line);
-		else
+		if (line[0]) Ctrl->G.file[ng] = strdup (line);
+		if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[ng])))
 			return (0);
 	}
 	return 1;
@@ -288,13 +288,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Specified output file */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

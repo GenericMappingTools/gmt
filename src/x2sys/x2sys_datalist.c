@@ -151,16 +151,16 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
-				if ((Ctrl->I.active = gmt_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->I.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->I.active = true;
+				if (opt->arg[0]) Ctrl->I.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
 				break;
 			case 'L':	/* Crossover correction table */
-				if ((Ctrl->L.active = gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
+				Ctrl->L.active = true;
+				if (opt->arg[0]) {
 					Ctrl->L.file = strdup (opt->arg);
-				else
-					n_errors++;
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+				}
 				break;
 			case 'S':
 				Ctrl->S.active = true;

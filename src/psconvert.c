@@ -678,7 +678,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 			case '<':	/* Input files [Allow for file "=" under API calls] */
 				if (strstr (opt->arg, ".ps-")) halfbaked = true;
 				if (!(GMT->parent->external && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
-					if (!halfbaked && !gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+					if (!halfbaked && GMT_Get_FilePath (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				}
 				Ctrl->In.n_files++;
 				break;
@@ -693,33 +693,24 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				strncat (Ctrl->C.arg, opt->arg, GMT_LEN256-1);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
-				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
-					gmt_M_str_free (Ctrl->D.dir);
-					Ctrl->D.dir = strdup (opt->arg);
-				}
-				else
-					n_errors++;
+				Ctrl->D.active = true;
+				Ctrl->D.dir = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.dir))) n_errors++;
 				break;
 			case 'E':	/* Set output dpi */
 				Ctrl->E.active = true;
 				Ctrl->E.dpi = atof (opt->arg);
 				break;
 			case 'F':	/* Set explicitly the output file name */
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
-					Ctrl->F.file = gmt_strdup_noquote (opt->arg);
-					gmt_filename_get (Ctrl->F.file);
-				}
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				Ctrl->F.file = gmt_strdup_noquote (opt->arg);
+				gmt_filename_get (Ctrl->F.file);
 				break;
 			case 'G':	/* Set GS path */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0) {
-					gmt_M_str_free (Ctrl->G.file);
-					Ctrl->G.file = malloc (strlen (opt->arg)+3);	/* Add space for quotes */
-					sprintf (Ctrl->G.file, "%c%s%c", quote, opt->arg, quote);
-				}
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				gmt_M_str_free (Ctrl->G.file);
+				Ctrl->G.file = malloc (strlen (opt->arg)+3);	/* Add space for quotes */
+				sprintf (Ctrl->G.file, "%c%s%c", quote, opt->arg, quote);
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
 				Ctrl->H.active = true;
@@ -729,10 +720,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Give list of files to convert */
-				if ((Ctrl->L.active = gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->L.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->L.active = true;
+				Ctrl->L.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				break;
 			case 'M':	/* Manage background and foreground layers for PostScript sandwich */
 				switch (opt->arg[0]) {

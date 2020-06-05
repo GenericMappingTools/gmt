@@ -4969,25 +4969,25 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	/* stem is the name of the file, e.g., grid.img
 	 * path is the full path to the file in question
 	 * Returns full pathname if a workable path was found
-	 * Looks for file stem in current directory and $GMT_{USER,DATA}DIR
+	 * Looks for file stem in current directory, $GMT_{USER,DATA,CACHE}DIR and server dir.
 	 * If the dir ends in / we traverse recursively [not under Windows].
 	 */
 	unsigned int d, pos;
+	int t_data;
 	size_t L;
 	bool found;
-	char *udir[6] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL, NULL, NULL}, dir[PATH_MAX];
-	char path_separator[2] = {',', '\0'}, serverdir[PATH_MAX] = {""}, srtm1dir[PATH_MAX] = {""}, srtm3dir[PATH_MAX] = {""};
+	char *udir[4] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL}, dir[PATH_MAX];
+	char path_separator[2] = {',', '\0'}, serverdir[PATH_MAX] = {""};
 #ifdef HAVE_DIRENT_H_
 	size_t N;
 #endif /* HAVE_DIRENT_H_ */
-	bool gmtio_file_is_readable (struct GMT_CTRL *GMT, char *path);
 
 	/* First look in the current working directory */
 
 	if (!access (stem, F_OK)) {	/* Yes, found it */
 		if (mode == F_OK || gmtio_file_is_readable (GMT, (char *)stem)) {	/* Yes, found it or can read it */
 			strcpy (path, stem);
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+			if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
 			return (path);
 		}
 		return (NULL);	/* Cannot read, give up */
@@ -5009,17 +5009,14 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	if (stem[1] == ':') return (NULL);
 #endif
 
-	/* Not found, see if there is a file in the GMT_{USER,DATA}DIR directories [if set] */
+	/* Not found, see if there is a file in the GMT_{USER,DATA,CACHE}DIR directories [if set] */
 
 	snprintf (serverdir, PATH_MAX, "%s/server", GMT->session.USERDIR);	udir[3] = serverdir;
-	snprintf (srtm1dir, PATH_MAX, "%s/server/srtm1", GMT->session.USERDIR);	udir[4] = srtm1dir;
-	snprintf (srtm3dir, PATH_MAX, "%s/server/srtm3", GMT->session.USERDIR);	udir[5] = srtm3dir;
 
-	for (d = 0; d < 6; d++) {	/* Loop over USER, DATA and CACHE dirs */
+	for (d = 0; d < 4; d++) {	/* Loop over USER, DATA and CACHE dirs */
 		if (!udir[d]) continue;	/* This directory was not set */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Look for file %s in %s\n", stem, udir[d]);
-		found = false;
-		pos = 0;
+		found = false;	pos = 0;
 		while (!found && (gmt_strtok (udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
 
@@ -5038,10 +5035,45 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 #endif /* HAVE_DIRENT_H_ */
 		}
 		if (found && gmtio_file_is_readable (GMT, path)) {
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found file %s\n", path);
+			if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
 			return (path);	/* Yes, can read it */
 		}
 	}
+
+	/* Check special case of a local tile */
+	if ((t_data = gmt_file_is_a_tile (GMT->parent, stem, GMT_LOCAL_DIR)) != GMT_NOTSET) {
+		snprintf (path, PATH_MAX, "%s%s%s%s", GMT->session.USERDIR, GMT->parent->remote_info[t_data].dir, GMT->parent->remote_info[t_data].file, stem);
+		found = (!access (path, F_OK));
+		if (found && gmtio_file_is_readable (GMT, path)) {
+			if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
+			return (path);	/* Yes, can read it */
+		}
+	}
+
+	/* Finally, try any subdirectory under the server; For GMT >= 6.1 these are server/dir/subdir so we go as far deep as 2 */
+	if (udir[3]) {
+		char **subdir = gmtlib_get_dirs (GMT, udir[3]), **subsubdir = NULL;
+		if (subdir == NULL) return (NULL);	/* No dirs found, give up */
+		d = 0;
+		while (!found && subdir[d]) {	/* Look through planetary subdirectories under /server (e.g. /server/earth) */
+			sprintf (path, "%s/%s/", udir[3], subdir[d]);
+			if ((subsubdir = gmtlib_get_dirs (GMT, path))) {	/* Now look in any sub-subdirs (e.g., /server/earth/earth_relief) */
+				unsigned int s = 0;
+				while (!found && subsubdir[s]) {
+					sprintf (path, "%s/%s/%s/%s", udir[3], subdir[d], subsubdir[s], stem);
+					found = (!access (path, F_OK));
+					s++;
+				}			
+				gmtlib_free_dir_list (GMT, &subsubdir);
+			}
+			d++;
+		}
+		gmtlib_free_dir_list (GMT, &subdir);
+	}
+	if (found && gmtio_file_is_readable (GMT, path)) {	/* Yes, can read it */
+		if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
+		return (path);
+	}				
 
 	return (NULL);	/* No file found, give up */
 }
@@ -5111,27 +5143,49 @@ char *gmt_strncpy (char *dest, const char *source, size_t num) {
 	return dest;
 }
 
+char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const char *mods) {
+	/* Need to strip off any modifiers and netCDF specifications that may be part of filename */
+	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
+
+	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use as is */
+		strncpy (file, filename, PATH_MAX-1);
+	else	/* Exclude netCDF3-D grid extensions to make sure we get a valid file name */
+		sscanf (filename, "%[^=?]", file);
+	if (file[0] == '\0')
+		return NULL;		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
+	if (mods) {	/* Given modifiers to chop off */
+		if (gmt_validate_modifiers (API->GMT, file, '-', mods, GMT_MSG_DEBUG)) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Filename has invalid modifiers - probably not a file with modifiers (%s)\n", file);
+			return (strdup (file));
+		}
+		/* See if we have any */
+		if ((c = gmt_first_modifier (API->GMT, file, mods)))
+			c[0] = '\0';	/* Begone with you */
+	}
+if (file[0] == ' ')
+	c++;
+	clean_file = strdup (file);
+
+	GMT_Report (API, GMT_MSG_DEBUG, "gmt_get_filename: In: %s Out: %s\n", filename, clean_file);
+
+	return (clean_file);
+}
+
 /*! Like access but also checks the GMT_*DIR places */
 int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
-	char file[PATH_MAX] = {""}, *c = NULL;
+	char file[PATH_MAX] = {""}, *cleanfile = NULL;
 	unsigned int first = 0;
-	int err;
+	int err, k_data;
 	struct stat S;
 
 	if (!filename || !filename[0]) return (-1);		/* No file given */
 	if (gmt_M_file_is_memory (filename)) return (0);	/* Memory location always exists */
 	if (gmt_M_file_is_cache (filename))			/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
-	if (strstr (filename, "/=srtm"))	/* Special list with SRTM tiles, use as is */
-		strncpy (file, filename, PATH_MAX-1);
-	else {
-		file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
-		sscanf (&filename[first], "%[^=?]", file);	/* Exclude netcdf 3-D grid extensions to make sure we get a valid file name */
-		if (file[0] == '\0')
-			return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
-	}
-	if ((c = gmtlib_file_unitscale (file))) c[0] = '\0';	/* Chop off any x/u unit specification */
-	else if ((c = strchr (file, '+')) && strchr ("hons", c[1])) c[0] = '\0';	/* Chop off any +h hinge setting or any z-scaling specification */
+
+	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], "honsuU")) == NULL) return (-1);	/* Likely not a valid filename */
+	strcpy (file, cleanfile);
+	gmt_M_str_free (cleanfile);
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	err = stat (file, &S);	/* Stat the argument */
@@ -5139,8 +5193,8 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 		return (-1);
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */
 		char path[PATH_MAX] = {""};
-		if (gmt_M_file_is_remotedata (filename) && !strstr (filename, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
-			strcat (file, ".grd");	/* Must supply the .grd */
+		if ((k_data = gmt_remote_no_extension (GMT->parent, filename)) != GMT_NOTSET)	/* A remote @filename_xxm|s grid without extension */
+			strcat (file, GMT->parent->remote_info[k_data].ext);	/* Must supply the .extension */
 		return (gmt_getdatapath (GMT, file, path, mode) ? 0 : -1);
 	}
 	/* If we get here then mode is bad (X_OK)? */
@@ -8600,6 +8654,72 @@ bool gmt_polygon_is_hole (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 }
 
 /*! . */
+char ** gmtlib_get_dirs (struct GMT_CTRL *GMT, char *path) {
+	/* Return an array of subdirectories found in the given directory, or NULL if path cannot be opened. */
+	size_t n = 0, n_alloc = GMT_TINY_CHUNK;
+	char **list = NULL;
+#ifdef HAVE_DIRENT_H_
+	DIR *D = NULL;
+	struct dirent *F = NULL;
+	size_t d_namlen = 0;
+
+	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
+	if ((D = opendir (path)) == NULL) {	/* Unable to open directory listing */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while opening directory %s\n", path);
+		return NULL;
+	}
+	list = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	/* Now read the contents of the dir and add each file to array */
+	while ((F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes true */
+		d_namlen = strlen (F->d_name);
+		if (d_namlen == 1U && F->d_name[0] == '.') continue;			/* Skip current dir */
+		if (d_namlen == 2U && F->d_name[0] == '.' && F->d_name[1] == '.') continue;	/* Skip parent dir */
+#ifdef HAVE_SYS_DIR_H_
+		if (F->d_type != DT_DIR) continue;	/* Entry is not a directory; skip it */
+#endif
+		if (strchr (F->d_name, '.')) continue;	/* Our directories do not have a period in them */
+		list[n++] = strdup (F->d_name);	/* Save the directory name */
+		if (n == n_alloc) {		/* Allocate more memory for list */
+			n_alloc <<= 1;
+			list = gmt_M_memory (GMT, list, n_alloc, char *);
+		}
+	}
+	(void)closedir (D);
+#elif defined(WIN32)
+	char text[PATH_MAX] = {""};
+	HANDLE hFind;
+	WIN32_FIND_DATA FindFileData;
+
+	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
+	snprintf (text, PATH_MAX, "%s/*", path);
+	if ((hFind = FindFirstFile (text, &FindFileData)) == INVALID_HANDLE_VALUE) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while opening directory %s\n", path);
+		return NULL;
+	}
+	list = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	do {
+		if ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) continue;
+		if (strcmp (FindFileData.cFileName, ".") && strcmp (FindFileData.cFileName, "..")) {	/* Don't want the '.' and '..' names */
+		if (strchr (FindFileData.cFileName, '.')) continue;	/* Our directories do not have a period in them */
+			list[n++] = strdup (FindFileData.cFileName);	/* Save the file name */
+			if (n == n_alloc) {			/* Allocate more memory for list */
+				n_alloc <<= 1;
+				list = gmt_M_memory (GMT, list, n_alloc, char *);
+			}
+		}
+	} while (FindNextFile (hFind, &FindFileData));
+	FindClose(hFind);
+#else
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your OS does not support directory listings\n");
+	return NULL;
+#endif /* HAVE_DIRENT_H_ */
+
+	list = gmt_M_memory (GMT, list, n + 1, char *);	/* The final entry is NULL, indicating end of list */
+	list[n] = NULL;	/* Since the realloc will not necessarily have set it to NULL */
+	return (list);
+}
+
+/*! . */
 char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	/* Return an array of filenames found in the given directory, or NULL if path cannot be opened.
 	 * If ext is not NULL we only return filenames that end in <ext> */
@@ -8653,6 +8773,7 @@ char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	}
 	list = gmt_M_memory (GMT, NULL, n_alloc, char *);
 	do {
+		if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;	/* Skip sub-directories */
 		if (strcmp(FindFileData.cFileName, ".") && strcmp(FindFileData.cFileName, "..")) {	/* Don't want the '.' and '..' names */
 			list[n++] = strdup(FindFileData.cFileName);	/* Save the file name */
 			if (n == n_alloc) {			/* Allocate more memory for list */

@@ -22,7 +22,7 @@
  * Date:	1-JUN-2013
  * Version:	5
  *
- * The API presently consists of 68 documented functions.  For a full
+ * The API presently consists of 69 documented functions.  For a full
  * description of the API, see the GMT_API documentation.
  * These functions have Fortran bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUserAdvanced.cmake].
@@ -39,7 +39,7 @@
  * GMT_Message		       : Report an message given a verbosity level
  * GMT_Report		       : Report an error given an error code
  *
- * There are 31 further public functions used for GMT i/o activities:
+ * There are 32 further public functions used for GMT i/o activities:
  *
  * GMT_Alloc_Segment       : Allocate a single DATASET segment
  * GMT_Begin_IO	           : Allow i/o to take place for rec-by-rec operations
@@ -48,6 +48,7 @@
  * GMT_Destroy_Data        : Destroy a data set and its container
  * GMT_Duplicate_Data      : Make an exact duplicate of a dataset
  * GMT_Duplicate_String    : Allocates a copy of a string to be freed by API
+ * GMT_Get_FilePath        : Check existence of file and replace with full path
  * GMT_End_IO              : Disallow further rec-by-rec i/o
  * GMT_Get_Info            : Get meta-data from the object passed
  * GMT_Get_Record          : Get the next single data record from the source(s)
@@ -4998,9 +4999,9 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 	method = gmtapi_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
 	switch (method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
-			if (gmtlib_file_is_srtmlist (API, S_obj->filename)) {	/* Special list file */
+			if (gmt_file_is_tiled_list (API, S_obj->filename, NULL, NULL, NULL)) {	/* Special list file */
 				if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
-					if ((G_obj = gmtlib_assemble_srtm (API, NULL, S_obj->filename)) == NULL)
+					if ((G_obj = gmtlib_assemble_tiles (API, NULL, S_obj->filename)) == NULL)
 						return_null (API, GMT_GRID_READ_ERROR);
 					if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), S_obj->filename))
 						return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
@@ -6732,7 +6733,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
 				char *p = NULL;
 				bool not_url = true;
-				if (a_grid_or_image (family) && !gmtlib_file_is_srtmlist (API, file) && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids and images so access can work */
+				if (a_grid_or_image (family) && !gmtlib_remote_file_is_tiled (API, file, NULL) && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids and images so access can work */
 				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) {
 					char *c = strchr (file, '.');	/* The period before an extension */
 					 /* PW 1/30/2014: Protect images with band requests, e.g., my_image.jpg+b2 */
@@ -7531,7 +7532,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			}
 			API->object[item]->selected = true;
 		}
-		gmtlib_free_list (API->GMT, filelist, n_files);	/* Free the file list */
+		gmt_free_list (API->GMT, filelist, n_files);	/* Free the file list */
 		in_ID = GMT_NOTSET;
 	}
 	else if (a_grid_or_image (family) && (mode & GMT_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
@@ -7585,11 +7586,12 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			}
 		}
 		else {	/* Not a CPT file but could be remote */
+			int k_data;
 			char file[PATH_MAX] = {""};
 			first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable GMT data sets first */
 			strncpy (file, &input[first], PATH_MAX-1);
-			if (gmt_M_file_is_remotedata (input) && !strstr (input, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
-				strcat (file, ".grd");	/* Must supply the .grd */
+			if ((k_data = gmt_remote_no_extension (API, input)) != GMT_NOTSET)	/* A remote @earth_relief_xxm|s grid without extension */
+				strcat (file, API->remote_info[k_data].ext);	/* Must supply the .extension */
 			if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, file)) == GMT_NOTSET) {
 				gmt_M_str_free (input);
 				return_null (API, API->error);
@@ -7697,7 +7699,7 @@ void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, un
 		if ((object[k] = GMT_Read_Data (API, family, method, geometry, mode, wesn, file[k], object[k])) == NULL)
 			GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Group: Reading of %s failed, returning NULL\n", file[k]);
 	}
-	gmtlib_free_list (API->GMT, file, n_files);	/* Free the file list */
+	gmt_free_list (API->GMT, file, n_files);	/* Free the file list */
 	if (n_items) *n_items = n_files;	/* Return how many items we allocated, if n_items is not NULL */
 	return (object);	/* Return pointer to the data containers */
 }
@@ -11030,6 +11032,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		else
 			type = 'G';
 	}
+	/* 1q. Check if gmtget is downloading dataset */
+	else if (!strncmp (module, "gmtget", 6U) && (opt = GMT_Find_Option (API, 'D', *head))) {
+		deactivate_output = true;	/* Download, turn off output */
+	}
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
@@ -13096,6 +13102,127 @@ int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 int GMT_Set_AllocMode_ (unsigned int *family, void *object) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Set_AllocMode (GMT_FORTRAN, *family, object));
+}
+#endif
+
+/*! . */
+int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, unsigned int mode, char **file_ptr) {
+	/* Replace file with its full path if that file exists, else return an error.
+	 * If (mode & GMT_FILE_REMOTE) then we try to download any remote files
+	 * given but not yet cached locally), and if the downloaded file is readable then
+	 * we update file_ptr with the local path, otherwise return an error.
+	 * If (mode & GMT_FILE_CHECK) then we only return error code and don't update file_ptr.
+	 * The explicit mode for only examining local files is GMT_FILE_LOCAL [0].
+	 *
+	 * Filename complications:  Both grid, image and CPT filenames may have modifiers or
+	 * format identifiers appended to their names.  Thus, as given, file may name be a valid
+	 * filename until we have chopped off these strings.  Here is a summary of what GMT allows:
+	 *
+	 * imagefile[=gd[+b<band>]]
+	 * grdfile[=<id>][+o<offset>][+n<invalid>][+s<scale>][+u|U<unit>]
+	 * cptfile[+h<hinge>][+u|U<unit>]
+	 *   Note: Some modules also allows cptfile[+h<hinge>][+u|U<unit>][i<dz>] but the +d
+	 *   modifier is processed and removed in the module (grd-image/view/vector/2kml).
+	 *
+	 * gridfiles may also have strings to select specific layers of nigher-dimension netCDFfiles, using
+	 * grdfile?<variables>[layer]|(value).
+	 *
+	 * URL queries also use ? as in http://<address>?<par1>=<val1>...
+	 * Remote grids may also have format specification and modifiers like local grids:
+	 * https://<address>/grdfile[=<id>][+o<offset>][+n<invalid>][+s<scale>][+u|U<unit>]
+	 */
+
+	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, was, *file = NULL, *c = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
+	if (!gmtapi_valid_input_family (family)) return_error (API, GMT_NOT_A_VALID_FAMILY);
+	if (mode > (GMT_FILE_CHECK+GMT_FILE_REMOTE)) return_error (API, GMT_NOT_A_VALID_MODE);
+	API = gmtapi_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+
+	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') {
+		GMT_Report (API, GMT_MSG_ERROR, "No filename provided\n");
+		return_error (V_API, GMT_ARG_IS_NULL);
+	}
+
+	if (direction == GMT_OUT) return GMT_NOERROR;
+
+	if (gmt_M_file_is_memory (file)) return GMT_NOERROR;	/* Memory files are always fine */
+
+	if ((mode & GMT_FILE_CHECK) == 0) gmt_set_unspecified_remote_registration (API, file_ptr);	/* Complete remote filenames without registration information */
+
+	switch (family) {
+		case GMT_IS_GRID:
+			if (!gmt_file_is_tiled_list (API, file, NULL, NULL, NULL) && (c = strchr (file, '='))) {	/* Got filename=id[+modifiers] */
+				/* Nothing*/
+			}
+			else if (gmt_M_file_is_netcdf (file))	/* Meaning it specifies a layer etc via ?<args> */
+				c = strchr (file, '?');				
+			else {	/* Check for modifiers */
+				unsigned int nm = gmt_validate_modifiers (API->GMT, file, 0, "onsuU", GMT_MSG_QUIET);
+				if (nm) /* Found some valid modifiers, lets get to the first */
+					c = gmt_first_modifier (API->GMT, file, "onsuU");
+			}
+			break;
+		case GMT_IS_IMAGE:
+			c = strstr (file, "=gd");	/* Got image=gd[+modifiers] */
+			break;
+		case GMT_IS_PALETTE:
+			if (gmt_validate_modifiers (API->GMT, file, '-', "iuU", GMT_MSG_ERROR)) {
+				GMT_Report (API, GMT_MSG_DEBUG, "CPT filename has invalid modifiers! (%s)\n", file);
+				return_error (V_API, GMT_NOT_A_VALID_MODIFIER);
+			}
+			else
+				c = gmt_first_modifier (API->GMT, file, "iuU");
+			break;
+		default:	/* No checks for the other families */
+			break;
+	}
+
+	if (c && !gmt_M_file_is_url (file)) {	/* Other that queries, we dont want to pass modifiers when copying files */
+		was = c[0];
+		c[0] = '\0';
+	}
+
+	if (gmt_set_remote_and_local_filenames (API->GMT, file, local_path, remote_path, GMT_AUTO_DIR)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot find file %s\n", file);
+		return_error (V_API, GMT_FILE_NOT_FOUND);
+	}
+
+	/* Here we have found a local file or we must download from server first */
+
+	if (remote_path[0]) {	/* Remote file given but not yet stored locally */
+		if (mode & GMT_FILE_REMOTE) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Download %s to %s\n", remote_path, local_path);
+			if (gmt_download_file (API->GMT, file, remote_path, local_path, true)) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to obtain remote file %s\n", file);
+				return_error (V_API, GMT_FILE_NOT_FOUND);
+			}
+		}
+		else {
+			GMT_Report (API, GMT_MSG_DEBUG, "Given a remote file %s but mode is not GMT_ADD_REMOTE\n", file);
+			return_error (V_API, GMT_FILE_NOT_FOUND);
+		}
+	}
+
+	if (c) c[0] = was; /* Restore what we did*/
+	if ((mode & GMT_FILE_CHECK) == 0) {	/* Pass the local path back */
+		GMT_Report (API, GMT_MSG_DEBUG, "Replace file %s with %s\n", file, local_path);
+		if (c) /* Also append any file directives via modifiers */
+			strcat (local_path, c);
+		gmt_M_str_free (*file_ptr);
+		*file_ptr = strdup (local_path);
+	}
+
+	return GMT_NOERROR;
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_FilePath_ (unsigned int *family, unsigned int *direction, unsigned int *mode, char **file, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_FilePath (GMT_FORTRAN, *family, *direction, *mode, file));
 }
 #endif
 
