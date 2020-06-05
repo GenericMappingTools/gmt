@@ -81,12 +81,13 @@ struct BATCH_CTRL {
 		char *file;	/* Name of script file */
 		FILE *fp;	/* Open file pointer to script */
 	} S[2];
-	struct BATCH_T {	/* -T<n_jobs>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<job>][+w] */
+	struct BATCH_T {	/* -T<n_jobs>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<job>][+w[<str>]] */
 		bool active;
-		bool split;		/* true means we must split any trailing text in to words */
+		bool split;		/* true means we must split any trailing text in to words, using separators in <str> [" \t"] */
 		unsigned int n_jobs;	/* Total number of jobs */
 		unsigned int start_job;	/* First job [0] */
 		unsigned int precision;	/* Decimals used in making unique job tags */
+		char sep[GMT_LEN8];		/* word separator(s) */
 		char *file;		/* timefile name */
 	} T;
 	struct BATCH_W {	/* -W<workingdirectory> */
@@ -113,6 +114,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = gmt_M_memory (GMT, NULL, 1, struct BATCH_CTRL);
 	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
+	strcpy (C->T.sep, " \t");	/* White space */
 	return (C);
 }
 
@@ -172,7 +174,7 @@ GMT_LOCAL int batch_delete_scripts (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctr
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-M[<job>,]] [-Q[s]] [-Sb<postflight>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<preflight>] [%s] [-W[<workdir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
@@ -186,21 +188,22 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<width> to set number of digits used in creating the job tags [automatic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first job [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into individual word variables.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   We use any white-space as separators; use +W to strictly use TABs only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the batch_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all batch scripts.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Run just the indicated job number [0] for testing [run all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directories behind for inspection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for postflight script).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional postflight and preflight GMT scripts [none]:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append name of preflight GMT modern script that may download or compute\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by <mainscript>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of postflight GMT modern mode script which will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for <preflight> script).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional <postflight> and <preflight> GMT scripts [none]:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append name of <preflight> GMT modern script that may download or compute\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by the <mainscript>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of <postflight> script (which may not be a GMT script) which will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       take actions once all batch jobs have completed.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Give <workdir> where temporary files will be built [<workdir> = <prefix> set by -N].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <workdir> is not given we create one in the system temp directory named <prefix> (from -N).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase input scripts (mainscript and any files via -I, -S [leave input scripts alone].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase input scripts (<mainscript> and any files via -I, -S [leave input scripts alone].\n");
 	GMT_Option (API, "f");
 	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in job generation [Default uses all cores = %d].\n", API->n_cores);
@@ -285,8 +288,10 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 							case 's':	/* Specify start job other than 0 */
 								Ctrl->T.start_job = atoi (&p[1]);
 								break;
-							case 'w':	/* Split trailing text into words. */
+							case 'w':	/* Split trailing text into words using any white space. */
 								Ctrl->T.split = true;
+								if (p[1])	/* Gave an argument, watch out for tabs given as \t */
+									strncpy (Ctrl->T.sep, gmt_get_strwithtab (&p[1]), GMT_LEN8-1);
 								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -323,6 +328,8 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 					"Option -N: Must specify a batch prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
 					"Option -T: Must specify number of jobs or a time file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.split && Ctrl->T.sep[0] == '\0',
+					"Option -T: Must specify a string of characters if using +w<str>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active,
 					"Option -Z: Not compatible with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->M.job < Ctrl->T.start_job,
@@ -677,12 +684,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S[BATCH_POSTFLIGHT].active) {	/* Prepare the temporary postflight script */
 		sprintf (post_file, "batch_postflight.%s", extension[Ctrl->In.mode]);
-		is_classic = gmt_script_is_classic (GMT, Ctrl->S[BATCH_POSTFLIGHT].fp);
-		if (is_classic) {
-			GMT_Report (API, GMT_MSG_ERROR, "Your postflight file %s is not in GMT modern node - exiting\n", post_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
-		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Create postflight script %s\n", post_file);
 		if ((fp = fopen (post_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create postflight file %s - exiting\n", post_file);
@@ -752,7 +753,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[data_job]);
 				col = 0;
 				trail = orig;
-				while ((word = strsep (&trail, " \t")) != NULL) {
+				while ((word = strsep (&trail, Ctrl->T.sep)) != NULL) {
 					if (*word != '\0') {	/* Skip empty strings */
 						sprintf (string, "BATCH_WORD%u", col++);
 						gmt_set_tvalue (fp, Ctrl->In.mode, false, string, word);

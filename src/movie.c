@@ -178,12 +178,13 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of script or PostScript file */
 		FILE *fp;	/* Open file pointer to script */
 	} S[2];
-	struct MOVIE_T {	/* -T<n_frames>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w] */
+	struct MOVIE_T {	/* -T<n_frames>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w[<str>]] */
 		bool active;
-		bool split;		/* true means we must split any trailing text in to words */
+		bool split;		/* true means we must split any trailing text in to words, using separators in <str> [" \t"] */
 		unsigned int n_frames;	/* Total number of frames */
 		unsigned int start_frame;	/* First frame [0] */
 		unsigned int precision;	/* Decimals used in making unique frame tags */
+		char sep[GMT_LEN8];		/* word separator(s) */
 		char *file;		/* timefile name */
 	} T;
 	struct MOVIE_W {	/* -W<workingdirectory> */
@@ -214,6 +215,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.unit = 'c';	/* c for SI units */
 	C->D.framerate = 24.0;	/* 24 frames/sec */
 	C->F.options[MOVIE_WEBM] = strdup ("-crf 10 -b:v 1.2M");	/* Default WebM options for now */
+	strcpy (C->T.sep, " \t");	/* White space */
 	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
 	return (C);
 }
@@ -256,7 +258,7 @@ GMT_LOCAL int movie_parse_x_option (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctr
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<titlepage>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>]] [-F<format>[+o<opts>][+t]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W[<workdir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
@@ -293,6 +295,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<width> to set number of digits used in creating the frame tags [automatic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first frame [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into individual word variables.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   We use any white-space as separators; use +W to strictly use TABs only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Animated GIF: Append +l for looping [no loop]; optionally append number of loops [infinite loop].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -F is used you may restrict the GIF animation to use every <stride> frame only [all];\n");
@@ -939,8 +942,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 							case 's':	/* Specify start frame other than 0 */
 								Ctrl->T.start_frame = atoi (&p[1]);
 								break;
-							case 'w':	/* Split trailing text into words. */
+							case 'w':	/* Split trailing text into words using any white space. */
 								Ctrl->T.split = true;
+								if (p[1])	/* Gave an argument, watch out for tabs given as \t */
+									strncpy (Ctrl->T.sep, gmt_get_strwithtab (&p[1]), GMT_LEN8-1);
 								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -996,6 +1001,8 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					"Option -N: Must specify a movie prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
 					"Option -T: Must specify number of frames or a time file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.split && Ctrl->T.sep[0] == '\0',
+					"Option -T: Must specify a string of characters if using +w<str>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->Q.active || Ctrl->animate || Ctrl->M.active),
 					"Option -Z: Cannot be used without specifying a GIF (-A), master (-M) or movie (-F) product\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.skip && !(Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
@@ -1761,7 +1768,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[data_frame]);
 				col = 0;
 				trail = orig;
-				while ((word = strsep (&trail, " \t")) != NULL) {
+				while ((word = strsep (&trail, Ctrl->T.sep)) != NULL) {
 					if (*word != '\0') {	/* Skip empty strings */
 						sprintf (string, "MOVIE_WORD%u", col++);
 						gmt_set_tvalue (fp, Ctrl->In.mode, false, string, word);

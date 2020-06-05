@@ -16932,6 +16932,18 @@ void gmt_set_comment (FILE *fp, int mode, char *comment) {
 	}
 }
 
+char *gmt_get_strwithtab (const char *txt) {
+	/* Replace any literal "\t" strings with the tab character */
+	char dummy[GMT_LEN128] = {""};
+	if (!strcmp (txt, "\\t")) {
+		char new[2] = {'\t', 0};	/* The tab character in a string */
+		strcpy (dummy, gmt_strrep (txt, "\\t", new));
+	}
+	else
+		strcpy (dummy, txt);
+	return dummy;
+}
+
 char *gmt_place_var (int mode, char *name) {
 	/* Prints a single variable to stdout where needed in the script via the string static variable.
 	 * PS!  Only one call per printf statement since static string cannot hold more than one item at the time */

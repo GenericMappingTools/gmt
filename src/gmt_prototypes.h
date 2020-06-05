@@ -366,6 +366,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 EXTERN_MSC uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list);
+EXTERN_MSC char *gmt_get_strwithtab (const char *txt);
 EXTERN_MSC void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interval);
 EXTERN_MSC int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int mode);
 EXTERN_MSC bool gmt_is_gmtmodule (char *line, char *module);
