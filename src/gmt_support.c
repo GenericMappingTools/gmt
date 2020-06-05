@@ -16941,7 +16941,7 @@ char *gmt_get_strwithtab (const char *txt) {
 	}
 	else
 		strcpy (dummy, txt);
-	return dummy;
+	return strdup (dummy);
 }
 
 char *gmt_place_var (int mode, char *name) {

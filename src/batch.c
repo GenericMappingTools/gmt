@@ -290,8 +290,11 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 								break;
 							case 'w':	/* Split trailing text into words using any white space. */
 								Ctrl->T.split = true;
-								if (p[1])	/* Gave an argument, watch out for tabs given as \t */
-									strncpy (Ctrl->T.sep, gmt_get_strwithtab (&p[1]), GMT_LEN8-1);
+								if (p[1]) {	/* Gave an argument, watch out for tabs given as \t */
+									char *W = gmt_get_strwithtab (&p[1]);
+									strncpy (Ctrl->T.sep, W, GMT_LEN8-1);
+									gmt_M_str_free (W);
+								}
 								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
