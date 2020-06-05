@@ -182,7 +182,7 @@ export GMT_VERSION="@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@"
 # Disable gmt end show from displaying plots
 export GMT_END_SHOW=off
 # Start with proper GMT defaults
-gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT ps GMT_DATA_SERVER=http://test.generic-mapping-tools.org
+gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT ps
 # Tentative PS file name
 ps="${script_name%.sh}.ps"
 # Modern mode needs a stable PPID but ctest messes that up when pipes are used

@@ -46,7 +46,7 @@ done
 unset GLOBIGNORE
 
 # Start with proper GMT defaults
-gmt set -Du FORMAT_TIME_STAMP "Version 6" GMT_DATA_SERVER=http://test.generic-mapping-tools.org
+gmt set -Du FORMAT_TIME_STAMP "Version 6"
 
 # Now run the original script
 . "${script}" animate
