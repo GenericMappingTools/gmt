@@ -61,7 +61,7 @@ steps:
 # Cache the ${HOME}/.gmt directory, for docs and testing
 - task: Cache@2
   inputs:
-    key: cachedata | 20200604
+    key: cachedata | 20200523
     path: $(HOME)/.gmt
     cacheHitVar: CACHE_CACHEDATA_RESTORED
   displayName: Cache GMT remote data for testing
@@ -100,8 +100,7 @@ steps:
 # Download remote files, if not already cached
 - bash: |
     set -x -e
-    export GMT_DATA_SERVER=http://test.generic-mapping-tools.org
-    $(gmt --show-sharedir)/tools/gmt_getremote.sh cache
+    gmt get -Dcache
     gmt which -Ga @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_06 @earth_relief_15m @earth_relief_20m @earth_relief_30m
     gmt which -Ga @earth_relief_05m_p @earth_relief_05_g  @earth_relief_10m_p @earth_relief_10m_g
   displayName: Download remote data
