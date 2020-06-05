@@ -244,6 +244,7 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			if (list) {
 				gmt_download_tiles (API, opt->arg, Ctrl->G.mode);
 				if ((error = gmtwhich_list_tiles (API, opt->arg, Ctrl->C.active, Out)))
+					Return (error);
 				continue;
 			}
 			else
