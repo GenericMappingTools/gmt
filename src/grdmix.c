@@ -439,7 +439,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], G_in[k]) == NULL) {	/* Get data only */
 				Return (API->error);
 			}
-			if (Ctrl->N.active[GMT_IN]) {	/* Normalize the grid */
+			if (k < 3 && Ctrl->N.active[GMT_IN]) {	/* Normalize the 1-3 input grid */
 				double factor = 1.0 / Ctrl->N.factor[GMT_IN];	/* To avoid division in the loop */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Normalizing grid %s\n", Ctrl->In.file[k]);
 				gmt_M_grd_loop (GMT, G_in[k], row, col, node)
