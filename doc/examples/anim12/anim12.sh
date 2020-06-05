@@ -8,7 +8,7 @@
 # create the frames and the final movie via the batch module.
 #
 # DEM:    @earth_relief_02m.grd
-# Images: @BlueMarble_02m.tif @BlackMarble_02m.tif
+# Images: @earth_day_02m.tif @earth_night_02m.tif from the GMT data server
 # 
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/X8TojLs0NYk
@@ -38,9 +38,9 @@ gmt begin
   gmt set COLOR_HSV_MIN_V 0 MAP_FRAME_PEN=faint
   # Make global grid with a smooth 2-degree day/night transition for this time.
   gmt grdmath -Rd -I${INC}m -r \$(gmt solar -C -o0:1 -I+d\${BATCH_COL0}) 2 DAYNIGHT = daynight_${SIZE}.grd
-  # Blend the Blue and Black Marble geotiffs using the weights, so that when w is 1
-  # we get the Blue marble, and then adjust colors based on the intensity.
-  gmt grdmix @BlueMarble_${SIZE}.tif @BlackMarble_${SIZE}.tif -Wdaynight_${SIZE}.grd -Iintens_${SIZE}.grd -G\${BATCH_NAME}.png -Ve
+  # Blend the day and night Earth images using the weights, so that when w is 1
+  # we get the daytime view, and then adjust colors based on the intensity.
+  gmt grdmix @earth_day_${SIZE}.tif @earth_night_${SIZE}.tif -Wdaynight_${SIZE}.grd -Iintens_${SIZE}.grd -G\${BATCH_NAME}.png -Ve
 gmt end
 EOF
 # 3. Create postflight script to build movie from the images

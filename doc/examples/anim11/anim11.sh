@@ -7,7 +7,7 @@
 # where each frame advances the viewpoint 0.25 degrees of longitude.
 #
 # DEM:    @earth_relief_02m.grd
-# Images: @BlueMarble_02m.tif @BlackMarble_02m.tif
+# Images: @earth_day_02m.tif @earth_night_02m.tif from the GMT data server
 # 
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/nmxy9yb2cR8
@@ -31,9 +31,9 @@ cat << EOF > main.sh
 gmt begin
   # Let HSV minimum value go to zero and faint map border
   gmt set COLOR_HSV_MIN_V 0 MAP_FRAME_PEN=faint
-  # Blend the Blue and Black Marble geotiffs using the weights, so that when w is 1
-  # we get the Blue marble, and then adjust colors based on the intensity.
-  gmt grdmix @BlueMarble_02m.tif @BlackMarble_02m.tif -Wdaynight.grd -Iintens.grd -Gview.tif
+  # Blend the day and night Earth images using the weights, so that when w is 1
+  # we get the daytime view, and then adjust colors based on the intensity.
+  gmt grdmix @earth_day_02m.tif @earth_night_02m.tif -Wdaynight.grd -Iintens.grd -Gview.tif
   # Plot this image on an Earth with view from current longitude
   gmt grdimage view.tif -JG\${MOVIE_COL0}/30N/21.6c -Bafg -X0 -Y0
 gmt end
