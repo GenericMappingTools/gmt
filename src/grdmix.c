@@ -117,7 +117,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<raster?> are the main %s to be used (1, 2, or 3).\n", type[API->external]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output %s file.\n", type[API->external]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   With -C the name is a template and must contain %%c to hold the layer code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   With -D the name is a template and must contain %%c to hold the layer code.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify a transparency grid or image, or set a constant alpha value (0-1 range).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct an image from 1 (gray) or 3 (r, g, b) input component grids.\n");
@@ -485,12 +485,21 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			off = band * H->size;
+			if (Ctrl->N.active) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node) shared(GMT,G,off,scale,I_in)
 #endif
-			gmt_M_grd_loop (GMT, G, row, col, node)
-				G->data[node] = scale * I_in[0]->data[node+off];
+				gmt_M_grd_loop (GMT, G, row, col, node)
+					G->data[node] = scale * I_in[0]->data[node+off];
+			}
+			else {
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node) shared(GMT,G,off,scale,I_in)
+#endif
+				gmt_M_grd_loop (GMT, G, row, col, node)
+					G->data[node] = I_in[0]->data[node+off];
 
+			}
 			sprintf (file, Ctrl->G.file, code[band]);
 			/* Write out grid */
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
