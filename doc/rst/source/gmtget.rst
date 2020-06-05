@@ -45,7 +45,7 @@ PARAMETER
     *selection* may be *cache* (get the entire cache directory with the files
     used in the GMT examples and tests), *data* (the entire data directory
     on the server), or *all* (both *cache* and *data*).  You can further limit
-    the *data* download by appending =*planet*.  Consult the dataset documentation
+    the *data* download by appending =\ *planet*.  Consult the :doc:`/datasets` documentation
     to see what data sets are currently available from the server.
 
 .. _-G:
