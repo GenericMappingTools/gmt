@@ -16825,6 +16825,7 @@ void gmt_cpt_interval_modifier (struct GMT_CTRL *GMT, char **arg, double *interv
 	 * modifier, set the corresponding interval, and update *file to only have the
 	 * remaining text items. */
 	char *file = NULL, *c = NULL, new_arg[PATH_MAX] = {""};
+	gmt_M_unused (GMT);
 	if (arg == NULL || (file = *arg) == NULL || file[0] == '\0') return;
 	if ((c = strstr (file, "+i")) == NULL) return;
 	/* Here we have a +i<dz> string in c */

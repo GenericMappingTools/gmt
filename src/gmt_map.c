@@ -3205,6 +3205,7 @@ GMT_LOCAL int gmtmap_init_lambert (struct GMT_CTRL *GMT, bool *search) {
 void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat) {
 	/* compute new point dist degrees from input point along azimuth */
 	double sa, ca, sd, cd, sy, cy;
+	gmt_M_unused (GMT);
 	sincosd (lat,  &sy, &cy);
 	sincosd (azimuth,  &sa, &ca);
 	sincosd (distance, &sd, &cd);

@@ -383,7 +383,7 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 			n_errors++;
 		}
 	}
-	if (n_errors) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Rotation argument is neither GPlates pair, rotation file, or rotation parameters: %s\n", arg);
+	if (n_errors) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Rotation argument is neither GPlates pair, rotation file, or rotation parameters: %s\n", option, arg);
 	if (c) c[0] = '+';	/* Restore modifier */
 	return (n_errors);
 }
