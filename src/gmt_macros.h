@@ -200,7 +200,7 @@
 
 /*! Determine if we have a special virtual, remote, or query files */
 #define gmt_M_file_is_cache(file) (file != NULL && file[0] == '@' && strncmp (file, "@GMTAPI@-", 9U))
-#define gmt_M_file_is_url(file) (file != NULL && (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U)))
+#define gmt_M_file_is_url(file) (file != NULL && (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U) || !strncmp (file, "/vsi", 4U)))
 #define gmt_M_file_is_query(file) (gmt_M_file_is_url(file) && strchr (file, '?') && strchr (file, '='))
 #define gmt_M_file_is_netcdf(file) (!gmt_M_file_is_url(file) && strchr (file, '?'))
 #define gmt_M_file_is_netcdf_layer(file) (gmt_M_file_is_netcdf(file) && (strchr (file, '(') || strchr (file, '[')))

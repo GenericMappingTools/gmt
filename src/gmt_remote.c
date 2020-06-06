@@ -260,7 +260,7 @@ int gmt_remote_no_extension (struct GMTAPI_CTRL *API, const char *file) {
 GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, const char *file, int tile) {
 	/* Display a notice regarding the source of this data set */
 	char *c = NULL, name[GMT_LEN128] = {""};
-	if (!API->server_announced) {
+	if (!API->server_announced && !strchr (file, ':')) {	/* Server file has no http:// here */
 		if ((c = strrchr (API->GMT->session.DATASERVER, '/')))	/* FOund last slash in http:// */
 			strcpy (name, ++c);
 		else /* Just in case */
@@ -693,6 +693,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 	 */
 
 	int k_data = GMT_NOTSET, t_data = GMT_NOTSET;
+	unsigned int pos;
 	bool is_url = false, is_query = false, is_tile = false;
 	char was, *c = NULL, *jp2_file = NULL, *clean_file = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -703,6 +704,13 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 	if (!file || !file[0]) return GMT_ARG_IS_NULL;   /* Got nutin' */
 
 	if (gmt_M_file_is_memory (file)) return GMT_NOERROR;	/* Memory location always exists */
+
+	if (gmtlib_found_url_for_gdal ((char *)file)) {	/* Special URLs for grids to be read via GDAL */
+		snprintf (remote_path, PATH_MAX, "%s", file);
+		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
+		snprintf (local_path, PATH_MAX, "%s", &file[pos]);	/* Same. No directives when writing the file */
+		return GMT_NOERROR;
+	}
 
 	/* 1. First handle full paths as given */
 #ifdef WIN32
@@ -853,7 +861,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	}
 
 	if (is_url) {	/* A remote file or query given via an URL never exists locally */
-		unsigned int pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
+		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
 		if (is_query) /* We have truncated off all the ?specifications part */
 			snprintf (local_path, PATH_MAX, "%s", &file[pos]);
 		else {	/* URL file, we have truncated off any netCDF directives */
@@ -992,6 +1000,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char *f
 	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""};
 
 	if (gmt_M_file_is_memory (file)) return GMT_NOERROR;	/* Memory location always exists */
+	if (gmtlib_found_url_for_gdal ((char *)file)) return GMT_NOERROR;	/* /vis.../ files are read in GDAL */
 
 	be_fussy = ((mode & 4) == 0);	if (!be_fussy) mode -= 4;	/* Handle the optional 4 value */
 

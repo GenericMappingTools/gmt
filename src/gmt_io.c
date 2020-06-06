@@ -4996,7 +4996,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	/* If we got here and a full path is given, we give up ... unless it is one of those /vsi.../ files */
 	if (stem[0] == '/') {
 #ifdef HAVE_GDAL
-		if (gmtlib_check_url_name ((char *)stem))
+		if (gmtlib_found_url_for_gdal ((char *)stem))
 			return ((char *)stem);			/* With GDAL all the /vsi-stuff is given existence credit */
 		else
 			return (NULL);

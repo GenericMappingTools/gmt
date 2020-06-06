@@ -194,7 +194,7 @@ EXTERN_MSC double gmtlib_great_circle_dist_degree (struct GMT_CTRL *GMT, double 
 EXTERN_MSC int gmtlib_gmonth_length (int year, int month);
 EXTERN_MSC int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
 EXTERN_MSC void gmtlib_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
-EXTERN_MSC bool gmtlib_check_url_name (char *fname);
+EXTERN_MSC bool gmtlib_found_url_for_gdal (char *fname);
 EXTERN_MSC int64_t gmtlib_splitinteger (double value, int epsilon, double *doublepart);
 EXTERN_MSC bool gmtlib_is_gleap (int gyear);
 EXTERN_MSC char * gmtlib_file_unitscale (char *name);
