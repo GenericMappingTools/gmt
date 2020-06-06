@@ -31,7 +31,7 @@ The following codes for *rr*\ *u* and the optional *reg* are supported:
 ==== ================= === =======  =====================================================
 Code Dimensions        Reg Size     Description
 ==== ================= === =======  =====================================================
-01d       361 x    181 g,p  128 KB  1 arc degree global mask (skip features < 12364 km^2)
+01d       361 x    181 g,p   20 KB  1 arc degree global mask (skip features < 12364 km^2)
 30m       721 x    361 g,p   24 KB  30 arc minute global mask (skip features < 3091 km^2)
 20m      1081 x    541 g,p   30 KB  20 arc minute global mask (skip features < 1374 km^2)
 15m      1441 x    721 g,p   35 KB  15 arc minute global mask (skip features < 773 km^2)
