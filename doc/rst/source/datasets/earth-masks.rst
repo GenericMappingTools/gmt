@@ -12,7 +12,7 @@ set over the ocean or on land.  While you can prevent such areas from being plot
 via the clipping in :doc:`/coast`, you may still want to perform calculations on
 gridded data and apply masks via :doc:`/grdmath`.  Such mask grids can be computed
 via :doc:`/grdlandmask` but they can take a long time to compute for large regions,
-the full GSHHG resolution,\ and small grid spacings. For these reasons we offer
+the full GSHHG resolution, and small grid spacings. For these reasons we offer
 precalculated mask grids via the remote server mechanism. In GMT, you may access a
 global mask grid (or a subset only by using the **-R** option) by specifying the
 special name
