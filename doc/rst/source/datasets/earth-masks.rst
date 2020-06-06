@@ -10,11 +10,12 @@ Global Earth Mask Grids
 Many users need ocean/land mask grids to isolate features that should only be
 set over the ocean or on land.  While you can prevent such areas from being plotted
 via the clipping in :doc:`/coast`, you may still want to perform calculations on
-gridded data and apply masks.  Such mask grids can be computed via :doc:`/grdlandmask`
-but they can take a long time to compute for large regions, full GSHHG resolution,\
-and small grid spacings. For these reasons we offer precalculated mask grids via the
-remote server mechanism. In GMT, you may access a global mask grid (or a subset only
-by using the **-R** option) by specifying the special name
+gridded data and apply masks via :doc:`/grdmath`.  Such mask grids can be computed
+via :doc:`/grdlandmask` but they can take a long time to compute for large regions,
+the full GSHHG resolution,\ and small grid spacings. For these reasons we offer
+precalculated mask grids via the remote server mechanism. In GMT, you may access a
+global mask grid (or a subset only by using the **-R** option) by specifying the
+special name
 
    @earth_mask_\ *rr*\ *u*\ [_\ *reg*\ ]
 
@@ -37,13 +38,13 @@ Code Dimensions        Reg Size     Description
 20m      1080 x    540 g,p   30 KB  20 arc minute global mask (skip features < 1374 km^2)
 15m      1440 x    720 g,p   35 KB  15 arc minute global mask (skip features < 773 km^2)
 10m      2160 x   1080 g,p   57 KB  10 arc minute global mask (skip features < 343 km^2)
-06m      3600 x   1801 g,p  106 KB  6 arc minute global mask (skip features < 124 km^2)
-05m      4320 x   2161 g,p  117 KB  5 arc minute global mask (skip features < 86 km^2)
-04m      5400 x   2701 g,p  149 KB  4 arc minute global mask (skip features < 55 km^2)
-03m      7200 x   3601 g,p  209 KB  3 arc minute global mask (skip features < 31 km^2)
-02m     10800 x   5401 g,p  393 KB  2 arc minute global mask (skip features < 14 km^2)
-01m     21600 x  10801 g,p  998 KB  1 arc minute global mask (skip features < 3 km^2)
-30s     43200 x  21601 g,p  2.6 MB  30 arc second global  mask (skip features < 1 km^2)
+06m      3600 x   1800 g,p  106 KB  6 arc minute global mask (skip features < 124 km^2)
+05m      4320 x   2160 g,p  117 KB  5 arc minute global mask (skip features < 86 km^2)
+04m      5400 x   2700 g,p  149 KB  4 arc minute global mask (skip features < 55 km^2)
+03m      7200 x   3600 g,p  209 KB  3 arc minute global mask (skip features < 31 km^2)
+02m     10800 x   5400 g,p  393 KB  2 arc minute global mask (skip features < 14 km^2)
+01m     21600 x  10800 g,p  998 KB  1 arc minute global mask (skip features < 3 km^2)
+30s     43200 x  21600 g,p  2.6 MB  30 arc second global  mask (skip features < 1 km^2)
 15s     86400 x  43200 g,p  7.5 MB  15 arc second global (all features)
 ==== ================= === =======  =====================================================
 
