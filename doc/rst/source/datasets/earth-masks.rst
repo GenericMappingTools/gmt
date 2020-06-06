@@ -1,7 +1,7 @@
 Global Earth Mask Grids
 =======================
 
-.. figure:: /_images/earthmask.*
+.. figure:: /_images/GMT_earthmask.*
    :height: 888 px
    :width: 1774 px
    :align: center
@@ -9,8 +9,8 @@ Global Earth Mask Grids
 
 Many users need ocean/land mask grids to isolate features that should only be
 set over the ocean or on land.  While you can prevent such areas from being plotted
-via the clipping in :doc:`/coast, you may still want to perform calculations on
-gridded data and apply masks.  Such mask grids can be computed via :doc:`/grdlandmask
+via the clipping in :doc:`/coast`, you may still want to perform calculations on
+gridded data and apply masks.  Such mask grids can be computed via :doc:`/grdlandmask`
 but they can take a long time to compute for large regions and small grid spacings.
 For these reasons we offer precalculated mask grids via the remote server mechanism.
 In GMT, you may access a global mask grid (or a subset only by using the **-R** option)
@@ -54,7 +54,7 @@ Technical Information
 
 Given that GSHHG contains 5 levels (ocean, land, lake, island-in-lake, pond-in-island-in-lake),
 the mask grid was computed to reflect those 5 levels.  This means that if you only want a mask
-for the ocean or one for wet versus dry, you will need to run a :doc:`/grdmath command to adjust
+for the ocean or one for wet versus dry, you will need to run a :doc:`/grdmath` command to adjust
 the mask.  We give some common examples here.  To create a mask that is 0 in the ocean and 1
 everywhere else (even in lakes, etc.), try::
 
