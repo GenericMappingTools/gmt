@@ -11,7 +11,8 @@ We serve two NASA image products: Their Blue and Black marbles.
 We have filtered and downsampled those as well at the same resolutions that are
 available for the Earth DEMs.  However, all images are pixel-registered only.
 These images may be plotted with :doc:`/grdimage` or :doc:`/grdview` and manipulated
-by :doc:`/grdmix`.
+by :doc:`/grdmix`.  The above example mixes both images according to a day-night
+mask and adds illumination from a corresponding Earth DEM.
 
 Usage
 -----
