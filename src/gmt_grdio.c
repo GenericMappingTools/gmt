@@ -2749,6 +2749,62 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, struct GMT
 	return (false);
 }
 
+bool gmt_prepare_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT_IMAGE **I_out) {
+	/* In most situations we can use an input image given to a module as the dataset to
+	 * plot.  However, if the image is indexed then we must expand it to rgb since we may
+	 * need to interpolate the r/g/b planes due to projections. If the image is read-only
+	 * then we cannot reallocate the array and must duplicate, otherwise we reallocate the
+	 * image array and expand to rgb.  */
+	bool new = false;
+	unsigned char *data = NULL;
+	uint64_t node, k;
+	unsigned int start_c, c, index;
+	struct GMT_IMAGE *I = NULL;
+	struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
+	struct GMT_GRID_HEADER *h = I_in->header;
+
+	if (I_in->n_indexed_colors == 0) {	/* Regular gray or r/g/b image - use as is */
+		(*I_out) = I_in;
+		return (false);
+	}
+	/* Here we have an indexed image */
+	if (IH->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot reallocate a non-GMT read-only input array */
+		if ((I = GMT_Duplicate_Data (GMT->parent, GMT_IS_IMAGE, GMT_DUPLICATE_DATA, I_in)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to duplicate image! - this is not a good thing and may crash this module\n");
+			(*I_out) = I_in;
+		}
+		else {
+			struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I);
+			IH->alloc_mode = GMT_ALLOC_INTERNALLY;
+		}
+		new = true;
+	}
+	else	/* Here we may overwrite the input image and just pass the pointer back */
+		I = I_in;
+
+	/* Here, I is an image we can reallocate the array when expanding the colors */
+
+	h = I->header;
+	data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char);	/* The new r,g,b image */
+
+	for (node = k = 0; node < h->size; node++) {	/* For all pixels, including the pad */
+		index = I->data[node];
+		start_c = index * 4;
+		for (c = 0; c < 3; c++, k++) data[k] = I->colormap[start_c+c];
+	}
+	gmt_M_free_aligned (GMT, I->data);		/* Free previous aligned image memory */
+	I->data = data;	/* Pass the reallocated rgb image */
+	/* Reset meta data to reflect a regular 3-band r,g,b image */
+	h->n_bands = 3;
+	I->n_indexed_colors = 0;
+	gmt_M_free (GMT, I->colormap);	/* Free the colormap */
+	I->color_interp = NULL;
+	strncpy (h->mem_layout, "BRP", 3);
+
+	(*I_out) = I;
+	return (new);
+}
+
 int gmt_change_grdreg (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int registration) {
 	unsigned int old_registration;
 	double F;

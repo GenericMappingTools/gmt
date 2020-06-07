@@ -454,7 +454,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				gmt_set_geographic (GMT, GMT_IN);
 		}
 		else {	/* Read the image */
-			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[k], I_in[k]) == NULL) {	/* Get data only */
+			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | GMT_IMAGE_NO_INDEX, NULL, Ctrl->In.file[k], I_in[k]) == NULL) {	/* Get data only */
 				Return (API->error);
 			}
 #if DEBUG
@@ -576,7 +576,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* Create output image for the blend or for the transparent image */
-			if ((I = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_ALLOC, I_in[img])) == NULL) {
+			if ((I = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_ALLOC, I_in[0])) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}

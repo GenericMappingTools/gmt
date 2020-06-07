@@ -182,6 +182,7 @@ EXTERN_MSC int gmt_get_tile_id (struct GMTAPI_CTRL *API, char *file);
 
 /* gmt_grdio.c: */
 
+EXTERN_MSC bool gmt_prepare_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT_IMAGE **I_out);
 EXTERN_MSC void gmt_grd_set_datapadding (struct GMT_CTRL *GMT, bool set);
 EXTERN_MSC void gmt_grd_set_cartesian (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int direction);
 EXTERN_MSC int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
