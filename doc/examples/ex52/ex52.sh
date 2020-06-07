@@ -17,10 +17,10 @@ gmt begin ex52
   # Need to make this pixel-registered to match Geotiffs
   gmt grdsample intens.grd -T -Gintens.grd
 
-  # Blend the Blue and Black Marble geotiffs using the weights, so that when w is 1
-  # we get the Blue marble, and then adjust colors based on the intensity.
+  # Blend the earth_day and earth_night geotiffs using the weights, so that when w is 1
+  # we get the earth_day, and then adjust colors based on the intensity.
 
-  gmt grdmix @BlueMarble_${res}.tif @BlackMarble_${res}.tif -Ww.grd -Iintens.grd -Gview.tif
+  gmt grdmix @earth_day_${res} @earth_night_${res} -Ww.grd -Iintens.grd -Gview.tif
 
   # Plot this image on an Earth with view from over Mexico
   gmt grdimage view.tif -JG80W/30N/18c -Bafg
