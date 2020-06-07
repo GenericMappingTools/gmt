@@ -8132,7 +8132,9 @@ struct GMT_IMAGE *gmtlib_create_image (struct GMT_CTRL *GMT) {
 
 /*! . */
 struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned int mode) {
-	/* Duplicates an entire image, including data if requested. */
+	/* Duplicates an entire image, including data if requested.
+	 * For the purpose of alloc/duplicate, items like colormap and color_interp is
+	 * considered part of the header and is always duplicated. */
 	struct GMT_IMAGE *Inew = NULL;
 	struct GMT_GRID_HEADER *save = NULL;
 	struct GMT_IMAGE_HIDDEN *IH = NULL;
@@ -8144,10 +8146,18 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	Inew->header = save;	/* Reset to correct header pointer */
 	Inew->hidden = IH;	/* Reset to correct hidden pointer */
 	Inew->data = NULL;	/* Reset to NULL data pointer */
+	Inew->colormap = NULL;	/* Reset to NULL colormap pointer */
+	Inew->color_interp = NULL;	/* Reset to NULL pointer */
 	Inew->alpha = NULL;	/* Reset to NULL alpha pointer */
 	Inew->x = NULL;		/* Reset to NULL x pointer */
 	Inew->y = NULL;		/* Reset to NULL y pointer */
 	gmt_copy_gridheader (GMT, Inew->header, I->header);
+	if (I->colormap) {	/* Also deal with the colormap for indexed images. If found we duplicate */
+		size_t nc = I->n_indexed_colors * 4 + 1;
+		Inew->colormap = gmt_M_memory (GMT, NULL, nc, int);
+		gmt_M_memcpy (Inew->colormap, I->colormap, nc, int);
+		if (I->color_interp) Inew->color_interp = I->color_interp;
+	}
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
 		Inew->data = gmt_M_memory_aligned (GMT, NULL, I->header->size * I->header->n_bands, char);

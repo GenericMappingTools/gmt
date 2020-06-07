@@ -1083,9 +1083,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				g_table = gmt_M_memory (GMT, NULL, 256, double);
 				b_table = gmt_M_memory (GMT, NULL, 256, double);
 				for (k = 0; k < 256; k++) {
-					r_table[k] = gmt_M_is255 (I->colormap[k*4]);	/* 4 because image colormap is in RGBA format */
-					g_table[k] = gmt_M_is255 (I->colormap[k*4 + 1]);
-					b_table[k] = gmt_M_is255 (I->colormap[k*4 + 2]);
+					r_table[k] = gmt_M_is255 (Img_proj->colormap[k*4]);	/* 4 because image colormap is in RGBA format */
+					g_table[k] = gmt_M_is255 (Img_proj->colormap[k*4 + 1]);
+					b_table[k] = gmt_M_is255 (Img_proj->colormap[k*4 + 2]);
 				}
 				do_indexed = true;	/* Now it will be RGB */
 				gray_only = false;	/* True technocolor, baby */
