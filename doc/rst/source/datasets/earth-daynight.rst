@@ -7,7 +7,7 @@ Global Earth Day/Night Images
    :align: center
    :scale: 40 %
 
-We serve two NASA image products: The Blue and Black marbles.
+We serve two NASA image products: The Blue and Black marble mosaics.
 We have filtered and downsampled those as well at the same resolutions that are
 available for the Earth DEMs.  However, all images are pixel-registered only.
 These images may be plotted with :doc:`/grdimage` or :doc:`/grdview` and manipulated
@@ -34,22 +34,22 @@ The following codes for *rr*\ *u* are supported:
 
 .. _tbl-earth_relief:
 
-==== ================= =======  =====================================================
+==== ================= =======  ===========================================================
 Code Dimensions        Size     Description
-==== ================= =======  =====================================================
-01d       360 x    180  128 KB  1 arc degree image view (Blue|Black Marble @ 111 km)
-30m       720 x    360  435 KB  30 arc minute image view (Blue|Black Marble @ 55 km)
-20m      1080 x    540  918 KB  20 arc minute image view (Blue|Black Marble @ 37 km)
-15m      1440 x    720  1.6 MB  15 arc minute image view (Blue|Black Marble @ 28 km)
-10m      2160 x   1080  3.4 MB  10 arc minute image view (Blue|Black Marble @ 18 km)
-06m      3600 x   1800  8.8 MB  6 arc minute image view (Blue|Black Marble @ 10 km)
-05m      4320 x   2160   13 MB  5 arc minute image view (Blue|Black Marble @ 9 km)
-04m      5400 x   2700   19 MB  4 arc minute image view (Blue|Black Marble @ 7.5 km)
-03m      7200 x   3600   33 MB  3 arc minute image view (Blue|Black Marble @ 5.6 km)
-02m     10800 x   5400   71 MB  2 arc minute image view (Blue|Black Marble @ 3.7 km)
-01m     21600 x  10800  258 MB  1 arc minute image view (Blue|Black Marble @ 1.9 km)
-30s     43200 x  21600  935 MB  30 arc second image view (Blue|Black Marble original)
-==== ================= =======  =====================================================
+==== ================= =======  ===========================================================
+01d       360 x    180  128 KB  1 arc degree image view (Blue|Black Marble mosaic @ 111 km)
+30m       720 x    360  435 KB  30 arc minute image view (Blue|Black Marble mosaic @ 55 km)
+20m      1080 x    540  918 KB  20 arc minute image view (Blue|Black Marble mosaic @ 37 km)
+15m      1440 x    720  1.6 MB  15 arc minute image view (Blue|Black Marble mosaic @ 28 km)
+10m      2160 x   1080  3.4 MB  10 arc minute image view (Blue|Black Marble mosaic @ 18 km)
+06m      3600 x   1800  8.8 MB  6 arc minute image view (Blue|Black Marble mosaic @ 10 km)
+05m      4320 x   2160   13 MB  5 arc minute image view (Blue|Black Marble mosaic @ 9 km)
+04m      5400 x   2700   19 MB  4 arc minute image view (Blue|Black Marble mosaic @ 7.5 km)
+03m      7200 x   3600   33 MB  3 arc minute image view (Blue|Black Marble mosaic @ 5.6 km)
+02m     10800 x   5400   71 MB  2 arc minute image view (Blue|Black Marble mosaic @ 3.7 km)
+01m     21600 x  10800  258 MB  1 arc minute image view (Blue|Black Marble mosaic @ 1.9 km)
+30s     43200 x  21600  935 MB  30 arc second image view (Blue|Black Marble mosaic original)
+==== ================= =======  ===========================================================
 
 All of these images will, when downloaded, be placed in your ~/.gmt/server director under
 the ``earth/earth_day`` and ``earth/earth_night`` sub-directories.
@@ -57,7 +57,7 @@ the ``earth/earth_day`` and ``earth/earth_night`` sub-directories.
 Technical Information
 ---------------------
 
-The 01m and lower resolution images are derivatives of NASA's Blue and Black marble images.
+The 01m and lower resolution images are derivatives of NASA's Blue and Black marble image mosaics.
 We have downsampled them via Cartesian Gaussian filtering to prevent aliasing while preserving
 the latitude-dependent resolution in the original images. The full (6 sigma) filter-widths are
 indicated in parenthesis.
