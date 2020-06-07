@@ -65,3 +65,9 @@ The dimensions above reflect the number of nodes covered by the global images an
 to the geotiff files on the remote server. **Note**: This data set is experimental and the
 format and delivery is likely to change in the future (e.g., via image tiles).  To make the
 files as small as possible we have also downgraded them from 24-bit to 8-bit indexed images.
+
+Data References
+---------------
+
+#. Blue Marble [https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography].
+#. Black Marble: [https://earthobservatory.nasa.gov/features/NightLights/page3.php].
