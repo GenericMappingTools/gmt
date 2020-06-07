@@ -26,6 +26,7 @@ nighttime image by specifying the special names
 
 where *rr* is a 2-digit integer specifying the image resolution in the unit *u*, where
 *u* is either **d**, **m** or **s** for arc degree, arc minute or arc second, respectively.
+Note there is no file extension specified.
 The following codes for *rr*\ *u* are supported:
 
 .. _tbl-earth_relief:
