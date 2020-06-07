@@ -2757,7 +2757,7 @@ bool gmt_prepare_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT
 	 * image array and expand to rgb.  */
 	bool new = false;
 	unsigned char *data = NULL;
-	uint64_t node, k;
+	uint64_t node, off[3];
 	unsigned int start_c, c, index;
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
@@ -2787,19 +2787,20 @@ bool gmt_prepare_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT
 	h = I->header;
 	data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char);	/* The new r,g,b image */
 
-	for (node = k = 0; node < h->size; node++) {	/* For all pixels, including the pad */
-		index = I->data[node];
-		start_c = index * 4;
-		for (c = 0; c < 3; c++, k++) data[k] = I->colormap[start_c+c];
+	strncpy (h->mem_layout, "TRB ", 4);	/* Fill out red, green, and blue bands */
+	for (c = 0; c < 3; c++) off[c] = c * h->size;
+	for (node = 0; node < h->size; node++) {	/* For all pixels, including the pad */
+		index = I->data[node];	/* Pixel index into color table */
+		start_c = index * 4;	/* Start of the r,g,b entry in the color table for this index */
+		for (c = 0; c < 3; c++) data[node+off[c]] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
 	}
-	gmt_M_free_aligned (GMT, I->data);		/* Free previous aligned image memory */
-	I->data = data;	/* Pass the reallocated rgb image */
+	gmt_M_free_aligned (GMT, I->data);	/* Free previous aligned image memory */
+	I->data = data;	/* Pass the reallocated rgb TRB image back */
 	/* Reset meta data to reflect a regular 3-band r,g,b image */
 	h->n_bands = 3;
 	I->n_indexed_colors = 0;
 	gmt_M_free (GMT, I->colormap);	/* Free the colormap */
 	I->color_interp = NULL;
-	strncpy (h->mem_layout, "BRP", 3);
 
 	(*I_out) = I;
 	return (new);
