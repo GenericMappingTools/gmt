@@ -7,7 +7,7 @@ Global Earth Day/Night Images
    :align: center
    :scale: 40 %
 
-We serve two NASA image products: Their Blue and Black marbles.
+We serve two NASA image products: The Blue and Black marbles.
 We have filtered and downsampled those as well at the same resolutions that are
 available for the Earth DEMs.  However, all images are pixel-registered only.
 These images may be plotted with :doc:`/grdimage` or :doc:`/grdview` and manipulated
@@ -63,4 +63,5 @@ the latitude-dependent resolution in the original images. The full (6 sigma) fil
 indicated in parenthesis.
 The dimensions above reflect the number of nodes covered by the global images and the sizes refer
 to the geotiff files on the remote server. **Note**: This data set is experimental and the
-format and delivery is likely to change in the future (e.g., via image tiles).
+format and delivery is likely to change in the future (e.g., via image tiles).  To make the
+files as small as possible we have also downgraded them from 24-bit to 8-bit indexed images.
