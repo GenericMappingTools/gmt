@@ -13,13 +13,13 @@
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/X8TojLs0NYk
 # The movie took ~4 minutes to render on a 24-core MacPro 2013.
-# To make a UHD movie, comment/uncomment the SIZE, INC and FILT settings
-# SIZE=HD
-# INC=11.25
-# FILT=21
-SIZE=UHD
-INC=5.625
-FILT=10.5
+# To make a UHD (4k) movie, comment/uncomment the SIZE, INC and FILT settings
+SIZE=HD
+INC=11.25
+FILT=21
+# SIZE=UHD
+# INC=5.625
+# FILT=10.5
 # 1. Create preflight script to build data files needed in the loop
 cat << EOF > pre.sh
 gmt begin
