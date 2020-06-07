@@ -116,7 +116,7 @@ All required packages will also be installed.
 
 For the latest GMT 6 version, use:
 
-	sudo fink install gmt6
+    sudo fink install gmt6
 
 You also need to install other GMT run-time dependencies separately:
 
@@ -124,7 +124,7 @@ You also need to install other GMT run-time dependencies separately:
 
 For legacy GMT 5 version, use:
 
-	sudo fink install gmt5
+    sudo fink install gmt5
 
 For legacy GMT 4 version, use:
 
@@ -152,25 +152,26 @@ However, EPEL is far hebind packaging a recent version.
 We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 to allow RHEL/CentOS users access the latest GMT releases in an easy way.
 
-**NOTE: Currently, GMT on RHEL/CentOS 8 doesn't provide GDAL support.**:
-
 For RHEL/CentOS, run:
 
     # install epel-release
-	yum install epel-release
+    yum install epel-release
+
+    # Enable the PowerTools repository (RHEL/CentOS 8 only)
+	yum config-manager --set-enabled PowerTools
 
     # enable the RPM repository (RHEL/CentOS 7 or 8 ONLY)
     yum install yum-plugin-copr
-	yum copr enable genericmappingtools/gmt
+    yum copr enable genericmappingtools/gmt
 
     # enable the RPM repository (RHEL/CentOS 6 ONLY)
     wget https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/repo/epel-6/genericmappingtools-gmt-epel-6.repo -O /etc/yum.repos.d/genericmappingtools-gmt-epel-6.repo
 
-	# Install GMT
-	yum install gmt
+    # Install GMT
+    yum install gmt
 
     # Update to the latest version if available
-	yum update gmt
+    yum update gmt
 
 You may also install other optional dependencies for more capabilities within GMT:
 
