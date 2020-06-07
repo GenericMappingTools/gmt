@@ -18,13 +18,16 @@ Usage
 -----
 
 We have processed and reformatted this publicly available global imagery
-and standardized their file names.  In GMT, you may access a global daytime or
-nighttime image by specifying the special names
+and standardized their file names.  In GMT, you may access a global daytime image
+by specifying the special names
 
-   @earth_day_\ *rr*\ *u
-   @earth_night_\ *rr*\ *u
+   @earth_day_\ *rr*\ *u*
 
-where *rr* is a 2-digit integer specifying the image resolution in the unit *u*, where
+Similarly for the nightime view:
+
+   @earth_night_\ *rr*\ *u*
+
+Here, *rr* is a 2-digit integer specifying the image resolution in the unit *u*, where
 *u* is either **d**, **m** or **s** for arc degree, arc minute or arc second, respectively.
 Note there is no file extension specified.
 The following codes for *rr*\ *u* are supported:
@@ -58,6 +61,6 @@ The 01m and lower resolution images are derivatives of NASA's Blue and Black mar
 We have downsampled them via Cartesian Gaussian filtering to prevent aliasing while preserving
 the latitude-dependent resolution in the original images. The full (6 sigma) filter-widths are
 indicated in parenthesis.
-
 The dimensions above reflect the number of nodes covered by the global images and the sizes refer
-to the geotiff files on the remote server.
+to the geotiff files on the remote server. **Note**: This data set is experimental and the
+format and delivery is likely to change in the future (e.g., via image tiles).
