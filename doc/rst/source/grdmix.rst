@@ -43,7 +43,7 @@ the two *raster1* and *raster2* (grids or images) using the *weights* for
 normalized component grids.
 All operations support adjusting the final color image via an *intensity*
 grid, converting a color image to monochrome, or strip off the alpha layer.
-All *raster?*, *alpha*, *intensity* and *weights* files must have the same 
+All *raster?*, *alpha*, *intensity* and *weights* files must have the same
 dimensions. The optional *alpha*, *intensity* and *weights* files may be
 replaced by constant values instead.
 
@@ -104,7 +104,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**i**\|\ **o**][*factor*] 
+**-N**\ [**i**\|\ **o**][*factor*]
     Normalize all input grids from 0-255 to 0-1 and all output grids from 0-1 to 0-255.
     To only turn on normalization for input *or* output, use **-Ni** or **-No** instead.
     To normalize by another factor than 255, append an optional *factor* value.
@@ -146,7 +146,7 @@ Examples
 To blend the night and day views of the Earth using a weight image computed for
 a particular day/night terminus, try::
 
-    gmt grdmix @BlueMarble_06m.tif @BlackMarble_06m.tif -W@weight.png -Gnewmap.png
+    gmt grdmix @earth_day_06m @earth_night_06m -W@weight.png -Gnewmap.png
 
 Suppose map1.png and map2.png are overlapping maps of different quantities, but we wish
 to use the image visible.png to blend them into a single image: Where visible.png has

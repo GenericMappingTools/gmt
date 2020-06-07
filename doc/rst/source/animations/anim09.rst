@@ -10,7 +10,7 @@ path to simulate a constant velocity at the given altitude, with synthetic
 banking as we turn to follow the path.  We use the 30 arc second global relief
 grid and overlay a few labels for named features.
 
-- Grid:   @earth_relief_30s.grd
+- Grid:   @earth_relief_30s
 - Path:   MOR_PAC_twist_path.txt
 - Labels: MOR_names.txt
 
