@@ -93,6 +93,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 
 	int ns;			/* Number of segments to use in current bin */
 	unsigned char node_level[4];
+	unsigned char node_level_g[4];	/* Levels if gronding line Antarctica is used */
 	struct GMT_SHORE_SEGMENT *seg;	/* Array of these segments */
 	struct GSHHS_SIDE *side[4];	/* Has position & id for each side exit/entry */
 	int nside[4];		/* Number of entries per side, including corner */
@@ -121,6 +122,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int *GSHHS_node;	/* Array with ids of the polygon that enclose each node */
 	int *bin_firstseg;	/* Array with ids of first segment per bin */
 	short int *bin_info;	/* Array with levels of all 4 nodes per bin */
+	short int *bin_info_g;	/* Array with levels of all 4 nodes per bin for the other Antarctica choice [or NULL] */
 	short int *bin_nseg;	/* Array with number of segments per bin */
 
 	int *GSHHS_parent;		/* Array with ids of the parent polygon for each GSHHS polygon (-1 for all level 1 polygons) */

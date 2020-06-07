@@ -6,3 +6,5 @@ Datasets
    datasets/gshhg
    datasets/dcw
    datasets/earth-relief
+   datasets/earth-daynight
+   datasets/earth-masks
