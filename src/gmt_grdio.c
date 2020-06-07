@@ -2787,12 +2787,23 @@ bool gmt_prepare_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT
 	h = I->header;
 	data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char);	/* The new r,g,b image */
 
-	strncpy (h->mem_layout, "TRB ", 4);	/* Fill out red, green, and blue bands */
-	for (c = 0; c < 3; c++) off[c] = c * h->size;
-	for (node = 0; node < h->size; node++) {	/* For all pixels, including the pad */
-		index = I->data[node];	/* Pixel index into color table */
-		start_c = index * 4;	/* Start of the r,g,b entry in the color table for this index */
-		for (c = 0; c < 3; c++) data[node+off[c]] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
+	if (strncmp (GMT->parent->GMT->current.gdal_read_in.O.mem_layout, "TRB", 3U) == 0) {	/* Band interleave */
+		strncpy (h->mem_layout, "TRB ", 4);	/* Fill out red, green, and blue bands */
+		for (c = 0; c < 3; c++) off[c] = c * h->size;
+		for (node = 0; node < h->size; node++) {	/* For all pixels, including the pad */
+			index = I->data[node];	/* Pixel index into color table */
+			start_c = index * 4;	/* Start of the r,g,b entry in the color table for this index */
+			for (c = 0; c < 3; c++) data[node+off[c]] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
+		}
+	}
+	else {	/* Pixel interleave */
+		uint64_t k;
+		strncpy (h->mem_layout, "TRP ", 4);	/* Fill out red, green, and blue pixels */
+		for (node = k = 0; node < h->size; node++) {	/* For all pixels, including the pad */
+			index = I->data[node];	/* Pixel index into color table */
+			start_c = index * 4;	/* Start of the r,g,b entry in the color table for this index */
+			for (c = 0; c < 3; c++, k++) data[k] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
+		}
 	}
 	gmt_M_free_aligned (GMT, I->data);	/* Free previous aligned image memory */
 	I->data = data;	/* Pass the reallocated rgb TRB image back */
