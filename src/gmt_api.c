@@ -4603,7 +4603,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	h = I->header;
 	data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char);	/* The new r,g,b image */
 
-	if (strncmp (GMT->parent->GMT->current.gdal_read_in.O.mem_layout, "TRB", 3U) == 0) {	/* Band interleave */
+	if (GMT->parent->GMT->current.gdal_read_in.O.mem_layout[0] && strncmp (GMT->parent->GMT->current.gdal_read_in.O.mem_layout, "TRB", 3U) == 0) {	/* Band interleave */
 		strncpy (h->mem_layout, "TRB ", 4);	/* Fill out red, green, and blue bands */
 		for (c = 0; c < 3; c++) off[c] = c * h->size;
 		for (node = 0; node < h->size; node++) {	/* For all pixels, including the pad */
@@ -12792,9 +12792,10 @@ int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned in
 	 */
 	struct GMTAPI_CTRL *API = NULL;
 	int error;
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (V_API == NULL) return_error (V_API, GMT_NOERROR);	/* Not fuss if nothing is given */
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
+	if (code == NULL || code[0] == '\0') return_error (V_API, GMT_NOT_A_SESSION);
 	switch (family) {
 		case GMT_IS_GRID:
 			error = gmtapi_change_gridlayout (V_API, code, mode, obj, out);

@@ -723,8 +723,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		mixed = grdimage_clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
-		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
-			GMT_Report(API, GMT_MSG_WARNING, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
+		//if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
+		//	GMT_Report(API, GMT_MSG_WARNING, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
 
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
