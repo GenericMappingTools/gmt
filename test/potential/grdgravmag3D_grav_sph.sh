@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Computes the gravity anomaly over a sphere with radius r = 15 m and center at -15 m.
-# The sphere is aproximated by two hemi-spheres
+# The sphere is approximated by two hemispheres
 # Compare with analytical expressions
 
 ps=grdgravmag3D_grav_sph.ps
