@@ -196,7 +196,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			if ((c = strchr (Ctrl->D.dir, '=')) && (datasets = &c[1])) {	/* But only one or more specific planets or datasets */
 				n_items = gmt_char_count (datasets, ',') + 1;
 				list = gmt_M_memory (GMT, NULL, n_items, char *);
-				string = strdup (datasets);
+				tofree = string = strdup (datasets);
 				while ((token = strsep (&string, ",")) != NULL)
 					list[d++] = strdup (token);
 				gmt_M_str_free (tofree);
