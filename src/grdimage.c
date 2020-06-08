@@ -591,7 +591,7 @@ EXTERN_MSC int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GM
 EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_grid = false, set_gray, rgb_from_z, rgb_cube_scan;
-	bool do_indexed = false, has_content = false, mem_G[3] = {false, false, false}, mem_I = false, mem_D = false;
+	bool has_content = false, mem_G[3] = {false, false, false}, mem_I = false, mem_D = false;
 	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids, intensity_mode;
 	unsigned int colormask_offset = 0, try, row, col, mixed = 0, *actual_row = NULL, *actual_col = NULL;
 	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
@@ -617,8 +617,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_GRID_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
 	struct GMT_GRID_HEADER *header_D = NULL, *header_I = NULL, *header_G[3] = {NULL, NULL, NULL};
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-
-	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_IMAGE *Out = NULL;       /* A GMT image datatype, if external interface is used with -A */
 	struct GMT_GRID *G2 = NULL;
@@ -1048,7 +1046,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Get or calculate a color palette file */
 
-	if (!Ctrl->In.do_rgb) {	/* Got a single grid so need to convert z to color via a CPT */
+	if (!Ctrl->In.do_rgb) {	/* Got a single grid so need to convert z to color via a CPT, or a grayscale image */
 		if (Ctrl->C.active) {		/* Read a palette file */
 			unsigned int zmode = gmt_cpt_default (GMT, header_work);
 			if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max, Ctrl->C.dz, zmode)) == NULL) {
@@ -1057,44 +1055,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a grayscale image below */
 		}
-		else if (Ctrl->D.active) {	/* Already got an image with colors but need to set up a colormap of 256 entries */
-			uint64_t cpt_len[1] = {256};
-			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
-			/* We won't use much of the next 'P' but we still need to use some of its fields */
-			if ((P = GMT_Create_Data (API, GMT_IS_PALETTE, GMT_IS_NONE, 0, cpt_len, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
-			P->model = GMT_RGB;
-			if (Img_proj->colormap == NULL) {
-				if (Img_proj->color_interp &&
-					(!strncmp (Img_proj->color_interp, "Gra", 3) || !strncmp (Img_proj->color_interp, "Red", 3) ||
-					!strncmp (Img_proj->color_interp, "Gre", 3) || !strncmp (Img_proj->color_interp, "Blu", 3) ||
-					!strncmp (Img_proj->color_interp, "Und", 3)) ) {
-					/* Grayscale image, only assign r as shade */
-					r_table = gmt_M_memory (GMT, NULL, 256, double);
-					for (k = 0; k < 256; k++) r_table[k] = gmt_M_is255 (k);	/* Sets k/255.0 */
-					gray_only = true;	/* Flag that we are doing a grayscale image below */
-				}
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "color_interp is either empty or unknown. Can't proceed.\n");
-					Return (API->error);
-				}
-			}
-			else if (Img_proj->colormap != NULL) {	/* Incoming image has a colormap, extract it */
-				r_table = gmt_M_memory (GMT, NULL, 256, double);
-				g_table = gmt_M_memory (GMT, NULL, 256, double);
-				b_table = gmt_M_memory (GMT, NULL, 256, double);
-				for (k = 0; k < 256; k++) {
-					r_table[k] = gmt_M_is255 (Img_proj->colormap[k*4]);	/* 4 because image colormap is in RGBA format */
-					g_table[k] = gmt_M_is255 (Img_proj->colormap[k*4 + 1]);
-					b_table[k] = gmt_M_is255 (Img_proj->colormap[k*4 + 2]);
-				}
-				do_indexed = true;	/* Now it will be RGB */
-				gray_only = false;	/* True technocolor, baby */
-			}
-		}
-		else {
-			GMT_Report (API, GMT_MSG_ERROR, "Indexed image without colormap. Can't proceed.\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
+		else
+			gray_only = true;
 	}
 
 	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPT will be ignored\n");
@@ -1198,7 +1160,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	intensity_mode = use_intensity_grid;				/* Set bit 1 */
 	if (!n_grids || (IH && IH->reset_pad)) intensity_mode |= 2;	/* Add bit 2 */
-	set_gray = (P && gray_only);
+	set_gray = gray_only;
 	rgb_from_z = (!Ctrl->D.active && !Ctrl->In.do_rgb);		/* Normal case of getting rgb from z(x,y) */
 	rgb_cube_scan = (P && Ctrl->Q.active && !Ctrl->A.return_image);	/* Need to look for unique rgb for masking */
 	step = (set_gray || Ctrl->M.active) ? 1 : 3;
@@ -1248,15 +1210,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 						if (index != (GMT_NAN - 3)) has_content = true;
 					}
 					else if (Ctrl->D.active) {	/* Input was an image, not grid */
-						if (!Ctrl->In.do_rgb) {
-							k = (int)Img_proj->data[node];
-							rgb[0] = r_table[k];	/* Either shade or red */
-							if (do_indexed) {	/* Color via index colortable */
-								rgb[1] = g_table[k];
-								rgb[2] = b_table[k];
-							}
-						}
-						else {	/* Got RGBA image, convert to rgb in 0-1 range */
+						if (gray_only)
+							rgb[0] = gmt_M_is255 (Img_proj->data[node_RGBA++]);
+						else {
 							for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Img_proj->data[node_RGBA++]);
 							if (Img_proj->header->n_bands == 4) node_RGBA++;	/* Must skip the alpha transparency byte in the image */
 						}
@@ -1388,7 +1344,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		PSL_plotbitimage (PSL, x0, y0, x_side, y_side, PSL_BL, bit, nx_pixels, n_rows, Ctrl->G.rgb[GRDIMAGE_FGD], Ctrl->G.rgb[GRDIMAGE_BGD]);
 		gmt_M_free (GMT, bit);	/* Done with the B/W buffer */
 	}
-	else if ((P && gray_only) || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit grayscale image */
+	else if (gray_only || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit grayscale image */
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 8-bit grayshade image %s\n", way[Ctrl->A.way]);
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
@@ -1462,11 +1418,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->D.active) {	/* Free the color tables for indexed or gray images */
-		gmt_M_free (GMT, r_table);
-		if (g_table) {
-			gmt_M_free (GMT, g_table);
-			gmt_M_free (GMT, b_table);
-		}
 		if (GMT_Destroy_Data (API, &Img_proj) != GMT_NOERROR) {
 			Return (API->error);
 		}
