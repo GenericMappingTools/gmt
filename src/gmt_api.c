@@ -4563,6 +4563,78 @@ GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT_IMAGE **I_out) {
+	/* In most situations we can use an input image given to a module as the dataset to
+	 * plot.  However, if the image is indexed then we must expand it to rgb since we may
+	 * need to interpolate the r/g/b planes due to projections. If the image is read-only
+	 * then we cannot reallocate the array and must duplicate, otherwise we reallocate the
+	 * image array and expand to rgb.  This function is called at the end of gmtapi_import_image
+	 * if the GMT_IMAGE_NO_INDEX bitflag is passed. The image layout honors the current setting
+	 * of API_IMAGE_LAYOUT. */
+	bool new = false;
+	unsigned char *data = NULL;
+	uint64_t node, off[3];
+	unsigned int start_c, c, index;
+	struct GMT_IMAGE *I = NULL;
+	struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
+	struct GMT_GRID_HEADER *h = I_in->header;
+
+	if (I_in->n_indexed_colors == 0) {	/* Regular gray or r/g/b image - use as is */
+		(*I_out) = I_in;
+		return (false);
+	}
+	/* Here we have an indexed image */
+	if (IH->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot reallocate a non-GMT read-only input array */
+		if ((I = GMT_Duplicate_Data (GMT->parent, GMT_IS_IMAGE, GMT_DUPLICATE_DATA, I_in)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to duplicate image! - this is not a good thing and may crash this module\n");
+			(*I_out) = I_in;
+		}
+		else {
+			struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I);
+			IH->alloc_mode = GMT_ALLOC_INTERNALLY;
+		}
+		new = true;
+	}
+	else	/* Here we may overwrite the input image and just pass the pointer back */
+		I = I_in;
+
+	/* Here, I is an image we can reallocate the array when expanding the colors */
+
+	h = I->header;
+	data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char);	/* The new r,g,b image */
+
+	if (strncmp (GMT->parent->GMT->current.gdal_read_in.O.mem_layout, "TRB", 3U) == 0) {	/* Band interleave */
+		strncpy (h->mem_layout, "TRB ", 4);	/* Fill out red, green, and blue bands */
+		for (c = 0; c < 3; c++) off[c] = c * h->size;
+		for (node = 0; node < h->size; node++) {	/* For all pixels, including the pad */
+			index = I->data[node];	/* Pixel index into color table */
+			start_c = index * 4;	/* Start of the r,g,b entry in the color table for this index */
+			for (c = 0; c < 3; c++) data[node+off[c]] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
+		}
+	}
+	else {	/* Pixel interleave */
+		uint64_t k;
+		strncpy (h->mem_layout, "TRP ", 4);	/* Fill out red, green, and blue pixels */
+		for (node = k = 0; node < h->size; node++) {	/* For all pixels, including the pad */
+			index = I->data[node];	/* Pixel index into color table */
+			start_c = index * 4;	/* Start of the r,g,b entry in the color table for this index */
+			for (c = 0; c < 3; c++, k++) data[k] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
+		}
+		/* If neither TRB or TRP we call for a changed layout, which may or may not have been implemented */
+		GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);	
+	}
+	gmt_M_free_aligned (GMT, I->data);	/* Free previous aligned image memory */
+	I->data = data;	/* Pass the reallocated rgb TRB image back */
+	/* Reset meta data to reflect a regular 3-band r,g,b image */
+	h->n_bands = 3;
+	I->n_indexed_colors = 0;
+	gmt_M_free (GMT, I->colormap);	/* Free the colormap */
+	I->color_interp = NULL;
+
+	(*I_out) = I;
+	return (new);
+}
+
 /*! . */
 GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
 	/* Handles the reading of a 2-D grid given in one of several ways.
@@ -4835,7 +4907,7 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 
-	if (no_index && gmt_prepare_image (API->GMT, I_obj, &Irgb)) {	/* true if we have a read-only indexed image and we had to allocate a new one */
+	if (no_index && gmtapi_expand_index_image (API->GMT, I_obj, &Irgb)) {	/* true if we have a read-only indexed image and we had to allocate a new one */
 		if (GMT_Destroy_Data (API, &I_obj) != GMT_NOERROR) {
 			return_null (API, API->error);
 		}
