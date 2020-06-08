@@ -31,14 +31,15 @@
 #ifndef GMT_DCW_H
 #define GMT_DCW_H
 
-#define DCW_OPT "<code1,code2,...>[+l|L][+g<fill>][+p<pen>]"
+#define DCW_OPT "<code1,code2,...>[+l|L][+g<fill>][+p<pen>][+z]"
 
 enum GMT_DCW_modes {
 	GMT_DCW_REGION	= 1,
 	GMT_DCW_PLOT	= 2,
 	GMT_DCW_DUMP	= 4,
 	GMT_DCW_EXTRACT	= 8,
-	GMT_DCW_LIST	= 16
+	GMT_DCW_LIST	= 16,
+	GMT_DCW_ZHEADER	= 32
 };
 
 struct GMT_DCW_ITEM {	/* One set of codes with their color/fill */
@@ -57,7 +58,7 @@ struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 	struct GMT_DCW_ITEM **item;	/* Pointer to array of n_items items */
 };
 
-EXTERN_MSC unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode);
+EXTERN_MSC unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
 EXTERN_MSC unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F);
 EXTERN_MSC void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot);
 EXTERN_MSC struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode);

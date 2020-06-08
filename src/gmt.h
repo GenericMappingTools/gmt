@@ -132,7 +132,7 @@ EXTERN_MSC int GMT_Handle_Messages     (void *API, unsigned int mode, unsigned i
 
 EXTERN_MSC int GMT_Call_Module	       (void *API, const char *module, int mode, void *args);
 
-/* 15 secondary functions for argument and option parsing */
+/* 16 secondary functions for argument and option parsing */
 
 EXTERN_MSC struct GMT_OPTION * GMT_Create_Options    (void *API, int argc, const void *in);
 EXTERN_MSC struct GMT_OPTION * GMT_Duplicate_Options (void *API, struct GMT_OPTION *head);
@@ -144,6 +144,7 @@ EXTERN_MSC char * GMT_Create_Cmd                     (void *API, struct GMT_OPTI
 EXTERN_MSC int    GMT_Destroy_Options                (void *API, struct GMT_OPTION **head);
 EXTERN_MSC int    GMT_Destroy_Args                   (void *API, int argc, char **argv[]);
 EXTERN_MSC int    GMT_Destroy_Cmd                    (void *API, char **cmd);
+EXTERN_MSC int    GMT_Get_FilePath                   (void *API, unsigned int family, unsigned int direction, unsigned int mode, char **file_ptr);
 EXTERN_MSC int    GMT_Update_Option                  (void *API, struct GMT_OPTION *current, const char *arg);
 EXTERN_MSC int    GMT_Free_Option                    (void *API, struct GMT_OPTION **current);
 EXTERN_MSC int    GMT_Delete_Option                  (void *API, struct GMT_OPTION *current, struct GMT_OPTION **head);

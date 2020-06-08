@@ -44,6 +44,10 @@ struct GRDCONVERT_CTRL {
 	struct GRDCONVERT_N {	/* -N */
 		bool active;
 	} N;
+	struct GRDCONVERT_Z {	/* -Z[+s<fact>][+o<shift>] */
+		bool active;
+		double scale, offset;
+	} Z;
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -52,6 +56,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDCONVERT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+
+	C->Z.scale = 1.0;
 
 	return (C);
 }
@@ -69,7 +75,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid>[=<id>][+s<scale>][+o<offset>][+n<nan>]\n\t-G<outgrid>[=<id>][+s<scale>][+o<offset>][+n<nan>][:<driver>[/<dataType>]] [-N]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid>[=<id>][+s<scale>][+o<offset>][+n<nan>]\n\t-G<outgrid>[=<id>][+s<scale>][+o<offset>][+n<nan>][:<driver>[/<dataType>]]\n\t[-N] [%s] [%s]\n\t[-Z[+s<fact>][+o<shift>]] [%s] [%s]\n\n",
 		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -81,8 +87,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Useful when creating files to be used by external programs.\n");
-	GMT_Option (API, "R,V,f,.");
-
+	GMT_Option (API, "R,V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> (via +o<shift> [0]) then multiply result by <fact>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (via +s<fact> [1]) before writing the output grid.\n");
+	GMT_Option (API, "f,.");
 	GMT_Message (API, GMT_TIME_NONE, "\nThe following grid file formats are supported:\n");
 	for (i = 1; i < GMT_N_GRD_FORMATS; ++i) {
 		if (!strstr (grdformats[i], "not supported"))
@@ -96,6 +104,30 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	return (GMT_MODULE_USAGE);
 }
+
+GMT_LOCAL unsigned int grdconvert_parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDCONVERT_CTRL *Ctrl) {
+	/* Parse the -Z option: -Z[+s<scale>][+o<offset>] */
+	unsigned int uerr = 0;
+	if (!txt || txt[0] == '\0') {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR,
+    		"Option -Z: No arguments given\n");
+		return (GMT_PARSE_ERROR);
+	}
+	if (strstr (txt, "+s") || strstr (txt, "+o")) {
+		char p[GMT_LEN64] = {""};
+		unsigned int pos = 0;
+		while (gmt_getmodopt (GMT, 'Z', txt, "so", &pos, p, &uerr) && uerr == 0) {
+			switch (p[0]) {
+				case 's':	Ctrl->Z.scale = atof (&p[1]);	break;
+				case 'o':	Ctrl->Z.offset = atof (&p[1]);	break;
+				default: 	/* These are caught in gmt_getmodopt so break is just for Coverity */
+					break;
+			}
+		}
+	}
+	return (uerr ? GMT_PARSE_ERROR : GMT_NOERROR);
+}
+
 
 static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdconvert and sets parameters in CTRL.
@@ -114,13 +146,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 			case '<':	/* Input and Output files */
 				/* Since grdconvert allowed output grid to be given without -G we must actually
 				 * check for two input files and assign the 2nd as the actual output file */
-				if (n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) {
-					Ctrl->In.file= strdup (opt->arg);
+				if (n_in == 0) {
+					Ctrl->In.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 					n_in++;
 				}
-				else if (n_in == 1 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID)) {
+				else if (n_in == 1) {
 					Ctrl->G.active = true;
-					Ctrl->G.file= strdup (opt->arg);
+					Ctrl->G.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 					n_in++;
 				}
 				else {
@@ -131,10 +165,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				break;
 			case '>':	/* Output file may be set this way from the external API */
 				Ctrl->G.active = true;
-				if (gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				n_in++;
 				break;
 
@@ -146,12 +178,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 					GMT_Report (API, GMT_MSG_ERROR, "Specify only one output file\n");
 					n_errors++;
 				}
-				else
+				else {
 					Ctrl->G.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				}
 				break;
 
 			case 'N':
 				Ctrl->N.active = true;
+				break;
+
+			case 'Z':	/* For scaling or phase data */
+				Ctrl->Z.active = true;
+				n_errors += grdconvert_parse_Z_opt (GMT, opt->arg, Ctrl);
 				break;
 
 			default:	/* Report bad options */
@@ -203,10 +242,12 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 	gmt_grd_init (GMT, Grid->header, options, false);
 	HH = gmt_get_H_hidden (Grid->header);
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
-	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->In.file, Grid->header, true), Ctrl->In.file);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->In.file, Grid->header, true), Ctrl->In.file)))
+		Return (error);
 	type[GMT_IN] = Grid->header->type;
 	strncpy (fname[GMT_IN], HH->name, GMT_BUFSIZ);
-	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false), Ctrl->G.file);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false), Ctrl->G.file)))
+		Return (error);
 	type[GMT_OUT] = Grid->header->type;
 	strncpy (fname[GMT_OUT], HH->name, GMT_BUFSIZ);
 	gmt_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
@@ -282,6 +323,12 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 		strcpy (Grid->header->x_units, "x_units");
 		strcpy (Grid->header->y_units, "y_units");
 	}
+	if (Ctrl->Z.active) {	/* Apply given scale/offset before writing */
+		/* Since gmt_scale_and_offset_f applies z' = z * scale + offset we must adjust Z.offset first: */
+		Ctrl->Z.offset *= Ctrl->Z.scale;
+		gmt_scale_and_offset_f (GMT, Grid->data, Grid->header->size, Ctrl->Z.scale, -Ctrl->Z.offset);
+	}
+
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, hmode, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
 		Return (API->error);
 

@@ -17,12 +17,11 @@ gmt begin ex39
 	gmt sph2grd @VenusTopo180.txt -I1 -Rg -Ng -Gv3.nc -F1/1/170/180
 	gmt grd2cpt v3.nc -Crainbow -E
 	gmt grdimage v1.nc -I+a45+nt0.75 -JG90/30/12c -Bg -X7.5c
-	echo 10 11 L = 30 | gmt text -R0/12/0/12 -Jx1c -Dj0.5c -F+f16p+jLM -N
+	echo L = 30 | gmt text -F+f16p+cTR
 	gmt colorbar --FORMAT_FLOAT_MAP="%'g" -Dx3c/-0.5c+jTC+w13c/0.25c+h  -Bxaf -By+lm
-	gmt grdimage v2.nc -I+a45+nt0.75 -JG -Bg -X-3c -Y5c
-	echo 10 11 L = 90 | gmt text -R0/12/0/12 -Jx1c -Dj0.5c -F+f16p+jLM -N
-	gmt grdimage v3.nc -I+a45+nt0.75 -JG -Bg -X-3c -Y5c
-	echo 10 11 L = 180 | gmt text -R0/12/0/12 -Jx1c -Dj0.5c -F+f16p+jLM -N
-	echo 9 13 Venus Spherical Harmonic Model | gmt text -F+f24p+jCM -N
+	gmt grdimage v2.nc -I+a45+nt0.75 -JG -Rg -Bg -X-3c -Y5c
+	echo L = 90 | gmt text -F+f16p+cTR -B+t"Venus Spherical Harmonic Model" --MAP_TITLE_OFFSET=5.5c
+	gmt grdimage v3.nc -I+a45+nt0.75 -JG -Rg -Bg -X-3c -Y5c
+	echo L = 180 | gmt text -F+f16p+cTR
 	rm -f v?.nc
 gmt end show

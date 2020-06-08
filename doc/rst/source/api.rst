@@ -761,6 +761,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Enum_            | Obtain one of the API enum constants                  |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Get_FilePath_        | Verify input file exist and replace with full path    |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Get_Index_           | Convert row, col into a grid or image index           |
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Info_            | Obtain meta data (range, dimension), ... from object  |
@@ -948,6 +950,32 @@ and can do all sorts of stuff after the GMT session is destroyed, as long as
 no GMT functions or resources are accessed.  It may be convenient to isolate
 the GMT-specific processing from the custom part of the program and only
 maintain an active GMT session when needed.
+
+Get full path to local or remote files
+--------------------------------------
+
+If given a filename, GMT will look in several directories to find the given
+input file.  However, GMT can also look for files remotely, either via the
+remote file mechanism or URLs.  When you have a remote file (@filename) you
+may wish to have GMT automatically download the file and provide you with the
+local path.  This is a job for GMT_Get_FilePath_, whose prototype is
+
+.. _GMT_Get_FilePath:
+
+  ::
+
+    int GMT_Get_FilePath (void *API, unsigned int family, unsigned int direction,
+      unsigned int mode, char **ptr);
+
+where :ref:`family <tbl-family>` and ``direction`` set the data file type and whether it is
+for input or output, ``mode`` modifies the behavior of the function, and
+``*ptr`` is a pointer to a character string with the filename in question.  Normally,
+we only look for local files (GMT_FILE_LOCAL [0]), but if ``mode`` contains
+the bit flag GMT_FILE_REMOTE [1] we will try to download any remote files given
+to the function.  By default, we will replace the filename with the full
+path.  Add the bit flag GMT_FILE_CHECK [2] to only check for the files and return
+error codes but leave ``*ptr`` alone.
+
 
 Register input or output resources
 ----------------------------------
@@ -1289,7 +1317,9 @@ For vectors the same principles apply:
 where ``V`` is the :ref:`GMT_VECTOR <struct-vector>` created by GMT_Create_Data_, ``col`` is the vector
 column in question, ``type`` is one of the
 recognized data :ref:`types <tbl-types>` used for this vector, and ``vector`` is
-a pointer to this custom vector.
+a pointer to this custom vector.  In addition, ``type`` may be also **GMT_DATETIME**, in which case
+we expect an array of strings with ISO datetime strings and we do the conversion to internal
+GMT time and allocate a vector to hold the result in the given ``col``.
 To extract a custom vector from an output :ref:`GMT_VECTOR <struct-vector>` you can use
 
 .. _GMT_Get_Vector:

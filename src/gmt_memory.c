@@ -81,7 +81,7 @@ GMT_LOCAL void gmtmemory_init_tmp_arrays (struct GMT_CTRL *GMT, int direction, s
 	GMT->hidden.mem_set = true;
 }
 
-GMT_LOCAL int gmtmemory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char *where) {
+GMT_LOCAL void gmtmemory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char *where) {
 	/* Handle reporting and aborting if memory allocation fails */
 	double mem = ((double)nelem) * ((double)size);
 	unsigned int k = 0;
@@ -91,7 +91,6 @@ GMT_LOCAL int gmtmemory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size
 #ifdef DEBUG
 	gmtlib_report_func (GMT, GMT_MSG_WARNING, where, "gmt_M_memory [realloc] called\n");
 #endif
-	GMT_exit (GMT, GMT_MEMORY_ERROR); return GMT_MEMORY_ERROR;
 }
 
 #ifdef MEMDEBUG
@@ -147,7 +146,8 @@ int gmt_memtrack_init (struct GMT_CTRL *GMT) {
 		snprintf (logfile, GMT_LEN32, "gmt_memtrack_%d.log", pid);
 		if ((M->fp = fopen (logfile, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not create log file gmt_memtrack_%d.log\n", pid);
-			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
+			M->active = 0;
+			return GMT_ERROR_ON_FOPEN;
 		}
 	}
 	fprintf (M->fp, "# %s", ctime (&now));
@@ -500,7 +500,7 @@ void *gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 #ifdef DEBUG
 		gmtlib_report_func (GMT, GMT_MSG_WARNING, where, "gmt_M_memory called\n");
 #endif
-		GMT_exit (GMT, GMT_MEMORY_ERROR); return NULL;
+		GMT->parent->error = GMT_MEMORY_ERROR; return NULL;
 	}
 
 #if defined(WIN32) && !defined(USE_MEM_ALIGNED)
@@ -527,8 +527,10 @@ void *gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 		}
 		else
 			tmp = realloc ( prev_addr, nelem * size);
-		if (tmp == NULL)
+		if (tmp == NULL) {
 			gmtmemory_die_if_memfail (GMT, nelem, size, where);
+			return (NULL);
+		}
 	}
 	else {
 		if (nelem == 0) return (NULL); /* Take care of n == 0 */
@@ -549,8 +551,10 @@ void *gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 		}
 		else
 			tmp = calloc (nelem, size);
-		if (tmp == NULL)
+		if (tmp == NULL) {
 			gmtmemory_die_if_memfail (GMT, nelem, size, where);
+			return (NULL);
+		}
 	}
 
 #ifdef MEMDEBUG

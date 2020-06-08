@@ -142,10 +142,9 @@ int n;
 			/* Supplemental parameters */
 
 			case 'A':	/* File with abyssal hill traces */
-				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->A.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->A.active = true;
+				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
 				break;
 			case 'D':	/* Step length */
 				Ctrl->D.active = true;
@@ -159,16 +158,14 @@ int n;
 				Ctrl->E.active = true;
 				break;
 			case 'F':	/* File with fracture zone traces */
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -181,7 +178,7 @@ int n;
 					case 'p': Ctrl->S.mode = SPOTTER_SCAN_POLES;
 						break;
 					case 'l': Ctrl->S.mode = SPOTTER_SCAN_LINES;
-						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "m")) n_errors++;
+						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "m", GMT_MSG_ERROR)) n_errors++;
 						if ((c = strstr (opt->arg, "+m"))) {	/* Do midpoint analysis instead */
 							Ctrl->S.midpoint = true;
 							c[0] = '\0';	/* Chop off modifier */
@@ -197,7 +194,7 @@ int n;
 						if (c) c[0] = '+';	/* Restore modifier */
 						break;
 					case 's': Ctrl->S.mode = SPOTTER_SCAN_SPOTS;
-						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "cl")) n_errors++;
+						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "cl", GMT_MSG_ERROR)) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'l', txt_a))	/* Dump lines to stdout */
 							Ctrl->S.dump_lines = true;
 						if (gmt_get_modifier (opt->arg, 'c', txt_a) && txt_a[0]) {	/* Crossing output file */

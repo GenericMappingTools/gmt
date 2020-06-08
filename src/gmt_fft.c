@@ -336,8 +336,8 @@ int gmt_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WA
 		case GMT_FFT_K_IS_KY: K->k_ptr = gmtfft_ky; break;
 		case GMT_FFT_K_IS_KR: K->k_ptr = gmtfft_kr; break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad mode selected (%u) - exit\n", mode);
-			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad mode passed to gmt_fft_set_wave (%u)!\n", mode);
+			return GMT_RUNTIME_ERROR;
 			break;
 	}
 	return GMT_OK;
@@ -502,10 +502,8 @@ GMT_LOCAL fftwf_plan gmtfft_gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_
 			plan = fftwf_plan_dft_2d(n_rows, n_columns, cin, cout, sign, GMT->current.setting.fftw_plan);
 	}
 
-	if (plan == NULL) { /* There was a problem creating a plan */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not create FFTW plan.\n");
-		GMT_exit (GMT, GMT_ARG_IS_NULL); return NULL;
-	}
+	if (plan == NULL) /* There was a problem creating a plan */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not create FFTW plan!\n");
 
 	return plan;
 }

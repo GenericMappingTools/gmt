@@ -46,6 +46,7 @@ enum gmtvector_method {	/* The available methods */
 	DO_ROTVAR3D,
 	DO_DOT,
 	DO_POLE,
+	DO_TRANSLATE,
 	DO_BISECTOR};
 
 struct GMTVECTOR_CTRL {
@@ -77,10 +78,13 @@ struct GMTVECTOR_CTRL {
 		bool active;
 		char *arg;
 	} S;
-	struct GMTVECTOR_T {	/* -T[operator] */
+	struct GMTVECTOR_T {	/* -T[operator][<arg>] */
+		char unit;
 		bool active;
 		bool degree;
+		bool a_and_d;
 		enum gmtvector_method mode;
+		unsigned int dmode;
 		double par[3];
 	} T;
 };
@@ -92,6 +96,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.conf = 0.95;	/* 95% conf level */
+	C->T.unit = 'e';	/* Unit is meter unless specified */
 	return (C);
 }
 
@@ -108,7 +113,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[m][<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Ta|b|d|D|p<az>|s|r<rot>|R|x] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Ta|b|d|D|p<az>|r<rot>|R|s|t[az/d]|x] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -139,6 +144,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      <angle> or <plon/plat/angle>, respectively, to define the rotation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -TR will instead assume the input vectors/angles are different rotations and repeatedly\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      rotate the fixed secondary vector (see -S) using the input rotations.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Tt will translate input vectors to points a distance <d> away in the azimuth <az>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Append <az>/<d> for a fixed set of azimuth and distance for all points,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      otherwise we expect to read azim, dist from the input file; append a unit [e]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
 	GMT_Option (API, "V,bi0");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
@@ -216,15 +224,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 					case 'd':	/* dot-product of two vectors */
 						Ctrl->T.mode = DO_DOT;
 						break;
-					case 'x':	/* Cross-product between vectors */
-						Ctrl->T.mode = DO_CROSS;
-						break;
 					case 'p':	/* Pole of great circle */
 						Ctrl->T.mode = DO_POLE;
 						Ctrl->T.par[0] = atof (&opt->arg[1]);
-						break;
-					case 's':	/* Sum of vectors */
-						Ctrl->T.mode = DO_SUM;
 						break;
 					case 'r':	/* Rotate vectors */
 						n = sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
@@ -239,12 +241,41 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 							Ctrl->T.par[2] = atof (txt_c);
 						}
 						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tr (%s)\n", opt->arg);
+							GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tr (%s)\n", &opt->arg[1]);
 							n_errors++;
 						}
 						break;
 					case 'R':	/* Rotate secondary vector using input rotations */
 						Ctrl->T.mode = DO_ROTVAR2D;	/* Change to 3D later if that is what we are doing */
+						break;
+					case 's':	/* Sum of vectors */
+						Ctrl->T.mode = DO_SUM;
+						break;
+					case 't':	/* Translate vectors */
+						Ctrl->T.mode = DO_TRANSLATE;
+						if (opt->arg[1]) {	/* Gave azimuth/distance[<unit>] or just <unit> */
+							if (strchr (opt->arg, '/')) {	/* Gave a fixed azimuth/distance[<unit>] combination */
+								if ((n = sscanf (&opt->arg[1], "%lg/%s", &Ctrl->T.par[0], txt_a)) != 2) {
+									GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tr (%s)\n", &opt->arg[1]);
+									n_errors++;
+								}
+								else
+									Ctrl->T.dmode = gmt_get_distance (GMT, txt_a, &(Ctrl->T.par[1]), &(Ctrl->T.unit));
+							}
+							else if (strchr (GMT_LEN_UNITS, opt->arg[1])) {	/* Gave the unit of the data in column 3 */
+								Ctrl->T.unit = opt->arg[1];
+								Ctrl->T.a_and_d = true;
+							}
+						}
+						else /* No arg means use default meters */
+							Ctrl->T.a_and_d = true;
+						break;
+					case 'x':	/* Cross-product between vectors */
+						Ctrl->T.mode = DO_CROSS;
+						break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized directive given to -T (%s)\n", opt->arg);
+						n_errors++;
 						break;
 				}
 				break;
@@ -261,6 +292,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 	if ((Ctrl->T.mode == DO_ROT3D || Ctrl->T.mode == DO_POLE) && gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set for 3-D rots and pole ops */
 
 	n_in = (Ctrl->C.active[GMT_IN] && gmt_M_is_geographic (GMT, GMT_IN)) ? 3 : 2;
+	if (Ctrl->T.a_and_d) n_in += 2;	/* Must read azimuth and distance as well */
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Binary input data (-bi) must have at least %d columns\n", n_in);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !gmt_access (GMT, Ctrl->S.arg, R_OK), "Option -S: Secondary vector cannot be a file!\n");
@@ -339,6 +371,18 @@ GMT_LOCAL void gmtvector_get_azpole (struct GMT_CTRL *GMT, double A[3], double P
 	gmt_normalize3v (GMT, tmp);	/* Get unit vector */
 	gmt_make_rot_matrix2 (GMT, A, -az, R);	/* Make rotation about A of -azim degrees */
 	gmt_matrix_vect_mult (GMT, 3U, R, tmp, P);
+}
+
+GMT_LOCAL void gmtvector_translate_point (struct GMT_CTRL *GMT, double A[3], double B[3], double a_d[], bool geo) {
+	/* Given point in A, azimuth az and distance d, return the point P away from A */
+	if (geo)
+		gmt_translate_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y]);
+	else {	/* Cartesian translation */
+		double s, c;
+		sincosd (90.0 - a_d[0], &s, &c);
+		B[GMT_X] = A[GMT_X] + a_d[1] * c;
+		B[GMT_Y] = A[GMT_Y] + a_d[1] * s;
+	}
 }
 
 GMT_LOCAL void gmtvector_mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, bool geocentric, double *M, double *E) {
@@ -436,6 +480,13 @@ GMT_LOCAL void gmtvector_gmt_make_rot2d_matrix (double angle, double R[3][3]) {
 	R[1][0] = s;	R[1][1] = c;
 }
 
+GMT_LOCAL double gmtvector_dist_to_degree (struct GMT_CTRL *GMT, double d_in) {
+	double d_out = d_in / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in degrees or meters */
+	if (!GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Got unit distance measure */
+		d_out /= GMT->current.proj.DIST_M_PR_DEG;	/* Now in degrees */
+	return (d_out);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -480,7 +531,7 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 		gmt_make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
 	else if (Ctrl->T.mode == DO_ROT2D)	/* Cartesian 2-D rotation */
 		gmtvector_gmt_make_rot2d_matrix (Ctrl->T.par[2], R);
-	else if (!(Ctrl->T.mode == DO_NOTHING || Ctrl->T.mode == DO_POLE)) {	/* Will need secondary vector, get that first before input file */
+	else if (!(Ctrl->T.mode == DO_NOTHING || Ctrl->T.mode == DO_POLE || Ctrl->T.mode == DO_TRANSLATE)) {	/* Will need secondary vector, get that first before input file */
 		n = gmtvector_decode_vector (GMT, Ctrl->S.arg, vector_2, Ctrl->C.active[GMT_IN], Ctrl->E.active);
 		if (n == 0) Return (GMT_RUNTIME_ERROR);
 		if (Ctrl->T.mode == DO_DOT) {	/* Must normalize to turn dot-product into angle */
@@ -492,9 +543,20 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (Ctrl->T.mode == DO_TRANSLATE && geo) {	/* Initialize distance machinery */
+		if (Ctrl->T.a_and_d)	/* Read az and dist from file, set units here */
+			error = gmt_init_distaz (GMT, Ctrl->T.unit, GMT_GREATCIRCLE, GMT_MAP_DIST);
+		else {	/* Got a fixed set, set units here */
+			error = gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
+			Ctrl->T.par[1] = gmtvector_dist_to_degree (GMT, Ctrl->T.par[1]);	/* Make sure we have degrees from whatever -Tt set */
+		}
+		if (error == GMT_NOT_A_VALID_TYPE) Return (error);
+	}
+
 	/* Read input data set */
 
 	n_in = (geo && Ctrl->C.active[GMT_IN]) ? 3 : 2;
+	if (Ctrl->T.a_and_d) n_in += 2;	/* Must read azimuth and distance as well */
 
 	if (Ctrl->A.active) {	/* Want a single primary vector */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, 1, 3};
@@ -570,6 +632,10 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 	n_components = (n == 3 || geo) ? 3 : 2;	/* Number of Cartesian vector components */
 	if (Ctrl->T.mode == DO_ROTVAR2D) n_components = 1;	/* Override in case of 2-D Cartesian rotation angles on input */
 	convert = (!single && !Ctrl->C.active[GMT_IN] && !(Ctrl->T.mode == DO_ROTVAR2D || Ctrl->T.mode == DO_ROTVAR3D));
+	if (Ctrl->T.mode == DO_TRANSLATE) {
+		convert = false;
+		n_components = 2;
+	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			Sin = Din->table[tbl]->segment[seg];
@@ -625,11 +691,20 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 					case DO_POLE:	/* Return pole of great circle defined by center point an azimuth */
 						gmtvector_get_azpole (GMT, vector_1, vector_3, Ctrl->T.par[0]);
 						break;
+					case DO_TRANSLATE:	/* Return translated points moved a distance d in the direction of azimuth  */
+						if (Ctrl->T.a_and_d) {	/* Get azimuth and distance from input file */
+							Ctrl->T.par[0] = Sin->data[2][row];
+							Ctrl->T.par[1] = (geo) ? gmtvector_dist_to_degree (GMT, Sin->data[3][row]) : Sin->data[3][row];	/* Make sure we have degrees from meters for get */
+						}
+						gmtvector_translate_point (GMT, vector_1, vector_3, Ctrl->T.par, geo);
+						break;
 					case DO_NOTHING:	/* Probably just want the effect of -C, -E, -N */
 						gmt_M_memcpy (vector_3, vector_1, n_components, double);
 						break;
 				}
-				if (Ctrl->C.active[GMT_OUT]) {	/* Report Cartesian output... */
+				if (Ctrl->T.mode == DO_TRANSLATE)	/* Want to turn Cartesian output into something else */
+					gmt_M_memcpy (out, vector_3, 2, double);
+				else if (Ctrl->C.active[GMT_OUT]) {	/* Report Cartesian output... */
 					if (Ctrl->N.active) {	/* ...but normalize first */
 						if (n_out == 3)
 							gmt_normalize3v (GMT, vector_3);

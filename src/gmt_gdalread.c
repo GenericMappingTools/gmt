@@ -649,12 +649,15 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		   example file to test it. The example mentioned in issue http://gmtrac.soest.hawaii.edu/issues/254
 		   (where all this (re)started) not only is bugged as does not carry the AREA_OR_POINT metadata.
 		   So we'll check for the "Area" keyword and if found we will respect it and set grid to pix reg */
-		if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) &&
+		if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET && (Ctrl->RasterXsize % 2) == 0 && (Ctrl->RasterYsize % 2) == 0)
+			/* PW: Reading GMT server special JP2 tiles: even size implies pixel registration */
+			pixel_reg = true;
+		else if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) &&
 			!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
-			pixel_reg = 1;
+			pixel_reg = true;
 		else if (!pixel_reg && GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL) &&
 			!strcmp(GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL), "Area"))
-			pixel_reg = 1;
+			pixel_reg = true;
 
 		Ctrl->hdr[6] = pixel_reg;
 		Ctrl->hdr[7] = adfGeoTransform[1];
@@ -993,6 +996,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		case GDT_Int16:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
+			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
+				Ctrl->Int16.data = (int16_t *)prhs->c_ptr.grd;
 			else
 				Ctrl->Int16.data = gmt_M_memory (GMT, NULL, n_alloc, int16_t);
 			break;
@@ -1001,18 +1006,26 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				Ctrl->Float.data = prhs->f_ptr.grd;
 				Ctrl->Float.active = true;		/* In case it was not set yet */
 			}
+			else if (prhs->c_ptr.active) {	/* Use the previously allocated pointer */
+				Ctrl->UInt16.data = (uint16_t *)prhs->c_ptr.grd;
+				Ctrl->UInt16.active = true;		/* In case it was not set yet */
+			}
 			else
 				Ctrl->UInt16.data = gmt_M_memory (GMT, NULL, n_alloc, uint16_t);
 			break;
 		case GDT_Int32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
+			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
+				Ctrl->Int32.data = (int32_t *)prhs->c_ptr.grd;
 			else
 				Ctrl->Int32.data = gmt_M_memory (GMT, NULL, n_alloc, int32_t);
 			break;
 		case GDT_UInt32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
+			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
+				Ctrl->UInt32.data = (uint32_t *)prhs->c_ptr.grd;
 			else
 				Ctrl->UInt32.data = gmt_M_memory (GMT, NULL, n_alloc, uint32_t);
 			break;
@@ -1078,7 +1091,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			   (where all this (re)started) not only is bugged as it does not carry the AREA_OR_POINT metadata.
 			   So we'll check for the "Area" keyword and if found we will respect it and set grid to pix reg
 			*/
-			if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) &&
+			if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET && (Ctrl->RasterXsize % 2) == 0 && (Ctrl->RasterYsize % 2) == 0)
+				/* PW: Reading GMT server special JP2 tiles: even size implies pixel registration */
+				pixel_reg = true;
+			else if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) &&
 				!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
 				pixel_reg = true;
 			else if (!pixel_reg && GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL) &&

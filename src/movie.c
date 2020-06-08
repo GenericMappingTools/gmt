@@ -23,16 +23,16 @@
  *
  * movie automates the main frame loop and much of the machinery needed
  * to script a movie sequence.  It allows for an optional background
- * and foreground layer to be specified via separate modern scripts and
- * a single frame-script that uses special variables to mode slightly
+ * and foreground layer to be specified via separate modern mode scripts and
+ * a single frame-script that uses special variables to make slightly
  * different plots for each frame.  The user only needs to compose these
  * simple one-plot scripts and then movie takes care of the automation,
- * processing to PNG, assembly to a movie or animated GIF, and cleanup.
- * Frame scripts are run in parallel without need for OpenMP etc.
- * Experimental.  Optionally, you can supply a title page script and
- * request fading of title page and/or the main animation.  The
- * fore-, back-ground, and title page scripts can also just be ready-
- * to-use PostScripts plot of correct canvas size.
+ * processing to PNG, assembly of a movie or animated GIF, and cleanup.
+ * Frame scripts are run in parallel without need for OpenMP, etc.
+ * Optionally, you can supply a title page script and request fading of
+ * the title page and/or the main animation.  The fore-, back-ground, and
+ * title page scripts can also just be ready-to-use PostScripts plot of
+ * correct canvas size.
  */
 
 #include "gmt_dev.h"
@@ -56,10 +56,6 @@
 
 #define MOVIE_RASTER_EXTENSION	"png"	/* Fixed raster format extension */
 #define MOVIE_DEBUG_FORMAT	",ps"	/* Comma is intentional since we append to a list of formats */
-
-enum enum_script {BASH_MODE = 0,	/* Write Bash script */
-	CSH_MODE,			/* Write C-shell script */
-	DOS_MODE};			/* Write DOS script */
 
 enum enum_video {MOVIE_MP4,	/* Create a H.264 MP4 video */
 	MOVIE_WEBM,		/* Create a WebM video */
@@ -99,7 +95,7 @@ struct MOVIE_CTRL {
 	bool item_active[2];					/* 0 for labels, 1 for progress indicators */
 	struct MOVIE_In {	/* mainscript (Bourne, Bourne Again, csh, or DOS (bat) script) */
 		bool active;
-		enum enum_script mode;
+		enum GMT_enum_script mode;
 		char *file;	/* Name of main script */
 		FILE *fp;	/* Open file pointer to main script */
 	} In;
@@ -182,12 +178,13 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of script or PostScript file */
 		FILE *fp;	/* Open file pointer to script */
 	} S[2];
-	struct MOVIE_T {	/* -T<n_frames>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w] */
+	struct MOVIE_T {	/* -T<n_frames>|<min>/<max/<inc>[+n]|<timefile>[+p<precision>][+s<frame>][+w[<str>]] */
 		bool active;
-		bool split;		/* true means we must split any trailing text in to words */
+		bool split;		/* true means we must split any trailing text in to words, using separators in <str> [" \t"] */
 		unsigned int n_frames;	/* Total number of frames */
 		unsigned int start_frame;	/* First frame [0] */
 		unsigned int precision;	/* Decimals used in making unique frame tags */
+		char sep[GMT_LEN8];		/* word separator(s) */
 		char *file;		/* timefile name */
 	} T;
 	struct MOVIE_W {	/* -W<workingdirectory> */
@@ -218,6 +215,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.unit = 'c';	/* c for SI units */
 	C->D.framerate = 24.0;	/* 24 frames/sec */
 	C->F.options[MOVIE_WEBM] = strdup ("-crf 10 -b:v 1.2M");	/* Default WebM options for now */
+	strcpy (C->T.sep, " \t");	/* White space */
 	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
 	return (C);
 }
@@ -257,174 +255,10 @@ GMT_LOCAL int movie_parse_x_option (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctr
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL int movie_gmt_sleep (unsigned int microsec) {
-	/* Waiting before checking if the PNG has been completed */
-#ifdef WIN32
-	Sleep ((uint32_t)microsec/1000);	/* msec are microseconds but Sleep wants millisecs */
-	return 0;
-#else
-	return (usleep ((useconds_t)microsec));
-#endif
-}
-
-GMT_LOCAL void movie_set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, char *name, double value) {
-	/* Assigns a single named data floating point variable given the script mode
-	 * Here, col indicates which input column in case special formatting is implied via -f */
-	char string[GMT_LEN64] = {""};
-	gmt_ascii_format_one (GMT, string, value, gmt_M_type (GMT, GMT_IN, col));
-	switch (mode) {
-		case BASH_MODE: fprintf (fp, "%s=%s", name, string);       break;
-		case CSH_MODE:  fprintf (fp, "set %s = %s", name, string); break;
-		case DOS_MODE:  fprintf (fp, "set %s=%s", name, string);   break;
-	}
-	fprintf (fp, "\n");
-}
-
-GMT_LOCAL void movie_set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
-	/* Assigns a single named Cartesian floating point variable given the script mode */
-	switch (mode) {
-		case BASH_MODE: fprintf (fp, "%s=%.12g", name, value);       break;
-		case CSH_MODE:  fprintf (fp, "set %s = %.12g", name, value); break;
-		case DOS_MODE:  fprintf (fp, "set %s=%.12g", name, value);   break;
-	}
-	if (unit) fprintf (fp, "%c", unit);	/* Append the unit [c|i|p] unless 0 */
-	fprintf (fp, "\n");
-}
-
-GMT_LOCAL void movie_set_ivalue (FILE *fp, int mode, bool env, char *name, int value) {
-	/* Assigns a single named integer variable given the script mode */
-	switch (mode) {
-		case BASH_MODE: fprintf (fp, "%s=%d\n", name, value);       break;
-		case CSH_MODE:  if (env)
-					fprintf (fp, "%s %d\n", name, value);
-				else
-					fprintf (fp, "set %s = %d\n", name, value);
-				break;
-		case DOS_MODE:  fprintf (fp, "set %s=%d\n", name, value);   break;
-	}
-}
-
-GMT_LOCAL void movie_set_tvalue (FILE *fp, int mode, bool env, char *name, char *value) {
-	/* Assigns a single named text variable given the script mode */
-	if (strchr (value, ' ') || strchr (value, '\t') || strchr (value, '|')) {	/* String has spaces, tabs, or bar */
-		switch (mode) {
-			case BASH_MODE: fprintf (fp, "%s=\"%s\"\n", name, value);       break;
-			case CSH_MODE:  if (env)
-						fprintf (fp, "%s \"%s\"\n", name, value);
-					else
-						fprintf (fp, "set %s = \"%s\"\n", name, value);
-					break;
-			case DOS_MODE:  fprintf (fp, "set %s=\"%s\"\n", name, value);   break;
-		}
-	}
-	else {	/* Single word */
-		switch (mode) {
-			case BASH_MODE: fprintf (fp, "%s=%s\n", name, value);       break;
-			case CSH_MODE:  if (env)
-						fprintf (fp, "%s %s\n", name, value);
-					else
-						fprintf (fp, "set %s = %s\n", name, value);
-					break;
-			case DOS_MODE:  fprintf (fp, "set %s=%s\n", name, value);   break;
-		}
-	}
-}
-
-GMT_LOCAL void movie_set_script (FILE *fp, int mode) {
-	/* Writes the script's incantation line (or a comment for DOS, turning off default echo) */
-	switch (mode) {
-		case BASH_MODE: fprintf (fp, "#!/usr/bin/env bash\n"); break;
-		case CSH_MODE:  fprintf (fp, "#!/usr/bin/env csh\n"); break;
-		case DOS_MODE:  fprintf (fp, "@echo off\nREM Start of script\n"); break;
-	}
-}
-
-GMT_LOCAL void movie_set_comment (FILE *fp, int mode, char *comment) {
-	/* Write a comment line given the script mode */
-	switch (mode) {
-		case BASH_MODE: case CSH_MODE:  fprintf (fp, "# %s\n", comment); break;
-		case DOS_MODE:  fprintf (fp, "REM %s\n", comment); break;
-	}
-}
-
-GMT_LOCAL char *movie_place_var (int mode, char *name) {
-	/* Prints a single variable to stdout where needed in the script via the string static variable.
-	 * PS!  Only one call per printf statement since static string cannot hold more than one item at the time */
-	static char string[GMT_LEN128] = {""};	/* So max length of variable name is 127 */
-	if (mode == DOS_MODE)
-		sprintf (string, "%%%s%%", name);
-	else
-		sprintf (string, "${%s}", name);
-	return (string);
-}
-
-GMT_LOCAL int movie_dry_run_only (const char *cmd) {
-	/* Dummy function to not actually run the loop script when -Q is used */
-	gmt_M_unused (cmd);
-	return 0;
-}
-
-GMT_LOCAL unsigned int movie_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k, bool *PS) {
-	unsigned int n_errors = 0;
-	size_t L;
-	/* Examines file extension and compares to known mode from mainscript */
-
-	if (PS) *PS = false;
-	if (k < 3 && (L = strlen (file)) > 3 && !strncmp (&file[L-3], ".ps", 3U)) {
-		static char *layer[3] = {"background", "foreground", "title"};
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "PostScript %s layer %s detected\n", layer[k], file);
-		if (PS) *PS = true;	/* Got a PostScript file */
-		return GMT_NOERROR;
-	}
-
-	switch (mode) {
-		case BASH_MODE:
-			if (!(strstr (file, ".bash") || strstr (file, ".sh"))) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script is bash/sh but %s is not!\n", file);
-				n_errors++;
-			}
-			break;
-		case CSH_MODE:
-			if (!strstr (file, ".csh")) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script is csh but %s is not!\n", file);
-				n_errors++;
-			}
-			break;
-		case DOS_MODE:
-			if (!strstr (file, ".bat")) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script is bat but %s is not!\n", file);
-				n_errors++;
-			}
-			break;
-	}
-	return (n_errors);
-}
-
-GMT_LOCAL bool movie_script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
-	/* Read script to determine if it is in GMT classic mode or not, then rewind */
-	bool modern = false;
-	char line[PATH_MAX] = {""};
-	while (!modern && gmt_fgets (GMT, line, PATH_MAX, fp)) {
-		if (strstr (line, "gmt ") == NULL) continue;	/* Does not start with gmt */
-		if (strstr (line, " begin"))		/* A modern mode script */
-			modern = true;
-		else if (strstr (line, " figure"))	/* A modern mode script */
-			modern = true;
-		else if (strstr (line, " subplot"))	/* A modern mode script */
-			modern = true;
-		else if (strstr (line, " inset"))	/* A modern mode script */
-			modern = true;
-		else if (strstr (line, " end"))		/* A modern mode script */
-			modern = true;
-	}
-	rewind (fp);	/* Go back to beginning of file */
-	return (!modern);
-}
-
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<titlepage>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>]] [-F<format>[+o<opts>][+t]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W[<workdir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
@@ -461,6 +295,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<width> to set number of digits used in creating the frame tags [automatic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first frame [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into individual word variables.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   We use any white-space as separators; use +W to strictly use TABs only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Animated GIF: Append +l for looping [no loop]; optionally append number of loops [infinite loop].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -F is used you may restrict the GIF animation to use every <stride> frame only [all];\n");
@@ -634,7 +469,7 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 		I->justify = PSL_BC;
 
 	/* Check for modifiers [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] and the extra +a<labelinfo>+w<width> */
-	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw")) n_errors++;	/* ALso tolerate +G +P */
+	if (gmt_validate_modifiers (GMT, arg, option, "acfgGjopPstw", GMT_MSG_ERROR)) n_errors++;	/* ALso tolerate +G +P */
 	if (gmt_get_modifier (arg, 'c', string) && string[0])	/* Clearance for a text box */
 		if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, I->clearance) < 0) n_errors++;
 	if (gmt_get_modifier (arg, 'f', string)) {	/* Gave a separate font for labeling */
@@ -709,7 +544,7 @@ GMT_LOCAL unsigned int movie_get_n_frames (struct GMT_CTRL *GMT, char *txt, doub
 
 static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	/* This parses the options provided to grdcut and sets parameters in CTRL.
+	/* This parses the options provided to movie and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 */
 
@@ -728,7 +563,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		Ctrl->C.unit = 'i';
 	}
 
-	for (opt = options; opt; opt = opt->next) {	/* Look for -D first since framerate is needed when parsing -E */
+	for (opt = options; opt; opt = opt->next) {	/* Look for -D first since frame rate is needed when parsing -E */
 		if (opt->option == 'D') {	/* Display frame rate of movie */
 			Ctrl->D.active = true;
 			Ctrl->D.framerate = atof (opt->arg);
@@ -740,10 +575,8 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case '<':	/* Input file */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXT)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;;
 				break;
 
 			case 'A':	/* Animated GIF */
@@ -1109,8 +942,13 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 							case 's':	/* Specify start frame other than 0 */
 								Ctrl->T.start_frame = atoi (&p[1]);
 								break;
-							case 'w':	/* Split trailing text into words. */
+							case 'w':	/* Split trailing text into words using any white space. */
 								Ctrl->T.split = true;
+								if (p[1]) {	/* Gave an argument, watch out for tabs given as \t */
+									char *W = gmt_get_strwithtab (&p[1]);
+									strncpy (Ctrl->T.sep, W, GMT_LEN8-1);
+									gmt_M_str_free (W);
+								}
 								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -1166,6 +1004,8 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					"Option -N: Must specify a movie prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
 					"Option -T: Must specify number of frames or a time file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.split && Ctrl->T.sep[0] == '\0',
+					"Option -T: Must specify a string of characters if using +w<str>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->Q.active || Ctrl->animate || Ctrl->M.active),
 					"Option -Z: Cannot be used without specifying a GIF (-A), master (-M) or movie (-F) product\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.skip && !(Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
@@ -1183,11 +1023,11 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 	if (n_files == 1) {	/* Determine scripting language from file extension and open the main script file */
 		if (strstr (Ctrl->In.file, ".bash") || strstr (Ctrl->In.file, ".sh"))	/* Treat both as bash since sh is subset of bash */
-			Ctrl->In.mode = BASH_MODE;
+			Ctrl->In.mode = GMT_BASH_MODE;
 		else if (strstr (Ctrl->In.file, ".csh"))
-			Ctrl->In.mode = CSH_MODE;
+			Ctrl->In.mode = GMT_CSH_MODE;
 		else if (strstr (Ctrl->In.file, ".bat"))
-			Ctrl->In.mode = DOS_MODE;
+			Ctrl->In.mode = GMT_DOS_MODE;
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine script language from the extension of your script %s\n", Ctrl->In.file);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Allowable extensions are: *.sh, *.bash, *.csh, and *.bat\n");
@@ -1196,17 +1036,17 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		/* Armed with script language we check that any back/fore-ground scripts are of the same kind */
 		for (k = MOVIE_PREFLIGHT; !n_errors && k <= MOVIE_POSTFLIGHT; k++) {
 			if (!Ctrl->S[k].active) continue;	/* Not provided */
-			n_errors += movie_check_language (GMT, Ctrl->In.mode, Ctrl->S[k].file, k, &Ctrl->S[k].PS);
+			n_errors += gmt_check_language (GMT, Ctrl->In.mode, Ctrl->S[k].file, k, &Ctrl->S[k].PS);
 		}
 		if (!n_errors && Ctrl->E.active) {	/* Must also check the include file, and open it for reading */
-			n_errors += movie_check_language (GMT, Ctrl->In.mode, Ctrl->E.file, 2, &Ctrl->E.PS);
+			n_errors += gmt_check_language (GMT, Ctrl->In.mode, Ctrl->E.file, 2, &Ctrl->E.PS);
 			if (n_errors == 0 && ((Ctrl->E.fp = fopen (Ctrl->E.file, "r")) == NULL)) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open title script file %s\n", Ctrl->E.file);
 				n_errors++;
 			}
 		}
 		if (!n_errors && Ctrl->I.active) {	/* Must also check the include file, and open it for reading */
-			n_errors += movie_check_language (GMT, Ctrl->In.mode, Ctrl->I.file, 3, NULL);
+			n_errors += gmt_check_language (GMT, Ctrl->In.mode, Ctrl->I.file, 3, NULL);
 			if (n_errors == 0 && ((Ctrl->I.fp = fopen (Ctrl->I.file, "r")) == NULL)) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open include script file %s\n", Ctrl->I.file);
 				n_errors++;
@@ -1217,8 +1057,12 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open main script file %s\n", Ctrl->In.file);
 			n_errors++;
 		}
-		if (n_errors == 0 && movie_script_is_classic (GMT, Ctrl->In.fp)) {
+		if (n_errors == 0 && gmt_script_is_classic (GMT, Ctrl->In.fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your main script file %s is not in GMT modern mode\n", Ctrl->In.file);
+			n_errors++;
+		}
+		/* Make sure all MOVIE_* variables are used with leading token ($, %) */
+		if (n_errors == 0 && gmt_token_check (GMT, Ctrl->In.fp, "MOVIE_", Ctrl->In.mode)) {
 			n_errors++;
 		}
 	}
@@ -1230,44 +1074,6 @@ GMT_LOCAL void movie_close_files (struct MOVIE_CTRL *Ctrl) {
 	/* Close all files when an error forces us to quit */
 	fclose (Ctrl->In.fp);
 	if (Ctrl->I.active) fclose (Ctrl->I.fp);
-}
-
-GMT_LOCAL bool movie_line_is_a_comment (char *line) {
-	unsigned int k = 0;
-	while (line[k] && isspace (line[k])) k++;	/* Wind past leading whitespace */
-	return (line[k] == '#' || !strncasecmp (&line[k], "rem", 3U)) ? true : false;	/* Will return true for lines starting with some tabs, then comment */
-}
-
-GMT_LOCAL bool movie_is_gmt_module (char *line, char *module) {
-	/* Robustly identify the command "gmt begin" */
-	char word[GMT_LEN128] = {""};
-	unsigned int pos = 0;
-	size_t L;
-	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt begin */
-	/* To handle cases where there may be more than one space between gmt and module */
-	if (movie_line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get first word in the command or fail */
-	if (strcmp (word, "gmt")) return false;		/* Not starting with gmt so we are done */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get second word or fail */
-	L = strlen (module);				/* How many characters to compare against */
-	if (!strncmp (word, module, L)) return true;	/* Command starting with gmt <module> found */
-	return false;	/* Not gmt <module> */
-}
-
-GMT_LOCAL bool movie_is_gmt_end_show (char *line) {
-	char word[GMT_LEN128] = {""};
-	unsigned int pos = 0;
-	if (strlen (line) >= GMT_LEN128) return false;	/* Cannot be gmt end show */
-	/* Robustly identify the command "gmt end show" */
-	/* To handle cases where there may be more than one space between gmt and module */
-	if (movie_line_is_a_comment (line)) return false;	/* Skip commented lines like "  # anything" */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get first word in the command or fail */
-	if (strcmp (word, "gmt")) return false;		/* Not starting with gmt so we are done */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get second word or fail */
-	if (strcmp (word, "end")) return false;		/* Not continuing with end so we are done */
-	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get third word or fail */
-	if (!strcmp (word, "show")) return true;	/* Yes, found gmt end show */
-	return false;	/* Not gmt end show */
 }
 
 GMT_LOCAL int movie_delete_scripts (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl) {
@@ -1310,16 +1116,17 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	bool n_written = false, has_text = false, is_classic = false, place_background = false;
 
 	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"};
-	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
-	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
-	char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"};
-	char var_token[4] = "$$%", spacer;
+	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
+	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
+	static char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"}, var_token[4] = "$$%";
+	static char *LP_name[2] = {"LABEL", "PROG_INDICATOR"};
+
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {""};
-	char intro_file[PATH_MAX] = {""}, *script_file =  NULL, dir_sep = '/', which[2] = {"LP"};
-	static char *LP_name[2] = {"LABEL", "PROG_INDICATOR"};
+	char intro_file[PATH_MAX] = {""}, *script_file =  NULL, dir_sep = '/', which[2] = {"LP"}, spacer;
+
 	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0;
 
 	FILE *fp = NULL;
@@ -1387,7 +1194,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.scripts) {	/* No movie, but scripts will be produced */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
 		if (Ctrl->M.active) GMT_Report (API, GMT_MSG_INFORMATION, "A single plot for frame %d will be create and named %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
-		run_script = movie_dry_run_only;	/* This prevents the main frame loop from executing the script */
+		run_script = gmt_dry_run_only;	/* This prevents the main frame loop from executing the script */
 	}
 	else {	/* Will run scripts and may even need to make a movie */
 		run_script = system;	/* The standard system function will be used */
@@ -1504,17 +1311,17 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 
 	sprintf (string, "Static parameters set for animation sequence %s", Ctrl->N.prefix);
-	movie_set_comment (fp, Ctrl->In.mode, string);
-	movie_set_dvalue (fp, Ctrl->In.mode, "MOVIE_WIDTH",  Ctrl->C.dim[GMT_X], Ctrl->C.unit);
-	movie_set_dvalue (fp, Ctrl->In.mode, "MOVIE_HEIGHT", Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
-	movie_set_dvalue (fp, Ctrl->In.mode, "MOVIE_DPU",    Ctrl->C.dim[GMT_Z], 0);
-	movie_set_dvalue (fp, Ctrl->In.mode, "MOVIE_RATE",   Ctrl->D.framerate, 0);
-	if (n_written) movie_set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_data_frames);	/* Total frames (write to init since known) */
+	gmt_set_comment (fp, Ctrl->In.mode, string);
+	gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_WIDTH",  Ctrl->C.dim[GMT_X], Ctrl->C.unit);
+	gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_HEIGHT", Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
+	gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_DPU",    Ctrl->C.dim[GMT_Z], 0);
+	gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_RATE",   Ctrl->D.framerate, 0);
+	if (n_written) gmt_set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_data_frames);	/* Total frames (write to init since known) */
 	if (Ctrl->I.active) {	/* Append contents of an include file */
-		movie_set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
+		gmt_set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
-			if (movie_is_gmt_module (line, "begin")) continue;		/* Skip gmt begin */
-			if (movie_is_gmt_module (line, "end")) continue;		/* Skip gmt end */
+			if (gmt_is_gmtmodule (line, "begin")) continue;		/* Skip gmt begin */
+			if (gmt_is_gmtmodule (line, "end")) continue;		/* Skip gmt end */
 			if (strstr (line, "#!/")) continue;			/* Skip any leading shell incantation */
 			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 			fprintf (fp, "%s", line);				/* Just copy the line as is */
@@ -1530,7 +1337,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);
 		else {	/* Run the preflight script */
 			sprintf (pre_file, "movie_preflight.%s", extension[Ctrl->In.mode]);
-			is_classic = movie_script_is_classic (GMT, Ctrl->S[MOVIE_PREFLIGHT].fp);
+			is_classic = gmt_script_is_classic (GMT, Ctrl->S[MOVIE_PREFLIGHT].fp);
 			if (is_classic) {
 				GMT_Report (API, GMT_MSG_ERROR, "Your preflight file %s is not in GMT modern node - exiting\n", pre_file);
 				fclose (Ctrl->In.fp);
@@ -1542,26 +1349,26 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				fclose (Ctrl->In.fp);
 				Return (GMT_ERROR_ON_FOPEN);
 			}
-			movie_set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
-			movie_set_comment (fp, Ctrl->In.mode, "Preflight script");
-			fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since subshells may mess things up */
-			if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
+			gmt_set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
+			gmt_set_comment (fp, Ctrl->In.mode, "Preflight script");
+			fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since sub-shells may mess things up */
+			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
 				fprintf (fp, "set GMT_SESSION_NAME=1\n");
 			else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
-				movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+				gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 			fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Turn off auto-display of figures if scrip has gmt end show */
-			movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
+			gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 			fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
-				if (movie_is_gmt_module (line, "begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
+				if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
 					fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
-					movie_set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
+					gmt_set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
 					fprintf (fp, "\tgmt figure movie_background ps\n");
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 					fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 				}
-				else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by movie_set_script */
-					if (movie_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+				else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by gmt_set_script */
+					if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
 					else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 					fprintf (fp, "%s", line);	/* Just copy the line as is */
 				}
@@ -1578,7 +1385,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 	#endif
 			/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
-			if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
+			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
 				sprintf (cmd, "cmd /C %s", pre_file);
 			else
 				sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
@@ -1657,7 +1464,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		/* Make sure we have the information requested if data columns or trailing text is needed */
 		for (T = 0; T < Ctrl->n_items[k]; T++) {
 			I = &Ctrl->item[k][T];	/* Shorthand for this item */
-			if ((I->mode == MOVIE_LABEL_IS_COL_C || I->mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floatingpoint number */
+			if ((I->mode == MOVIE_LABEL_IS_COL_C || I->mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floating point number */
 				GMT_Report (API, GMT_MSG_ERROR, "No table given via -T for data-based labels in %c - exiting\n", which[k]);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -1683,7 +1490,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->S[MOVIE_POSTFLIGHT].fp);
 		else {	/* Must run postflight script */
 			sprintf (post_file, "movie_postflight.%s", extension[Ctrl->In.mode]);
-			is_classic = movie_script_is_classic (GMT, Ctrl->S[MOVIE_POSTFLIGHT].fp);
+			is_classic = gmt_script_is_classic (GMT, Ctrl->S[MOVIE_POSTFLIGHT].fp);
 			if (is_classic) {
 				GMT_Report (API, GMT_MSG_ERROR, "Your postflight file %s is not in GMT modern node - exiting\n", post_file);
 				fclose (Ctrl->In.fp);
@@ -1695,26 +1502,26 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				fclose (Ctrl->In.fp);
 				Return (GMT_ERROR_ON_FOPEN);
 			}
-			movie_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
-			movie_set_comment (fp, Ctrl->In.mode, "Postflight script");
-			fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since subshells may mess things up */
-			if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
+			gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+			gmt_set_comment (fp, Ctrl->In.mode, "Postflight script");
+			fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since sub-shells may mess things up */
+			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
 				fprintf (fp, "set GMT_SESSION_NAME=1\n");
 			else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
-				movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+				gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 			fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if scrip has gmt end show */
-			movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
+			gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
 			fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_POSTFLIGHT].fp)) {	/* Read the foreground script and copy to postflight script with some exceptions */
-				if (movie_is_gmt_module (line, "begin")) {	/* Need to insert gmt figure after this line */
+				if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert gmt figure after this line */
 					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
-					movie_set_comment (fp, Ctrl->In.mode, "\tSet fixed foreground output ps name");
+					gmt_set_comment (fp, Ctrl->In.mode, "\tSet fixed foreground output ps name");
 					fprintf (fp, "\tgmt figure movie_foreground ps\n");
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 					fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 				}
 				else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
-					if (movie_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+					if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
 					else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 					fprintf (fp, "%s", line);	/* Just copy the line as is */
 				}
@@ -1730,7 +1537,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 	#endif
 			/* Run post-flight now before dealing with the loop so the overlay exists */
-			if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
+			if (Ctrl->In.mode == GMT_DOS_MODE)	/* Needs to be "cmd /C" and not "start /B" to let it have time to finish */
 				sprintf (cmd, "cmd /C %s", post_file);
 			else
 				sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
@@ -1764,7 +1571,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				I->ne = 1, strcpy (I->format, "%2.2d");
 		}
 		format = (GMT->current.map.frame.primary) ? GMT->current.setting.format_time[GMT_PRIMARY] : GMT->current.setting.format_time[GMT_SECONDARY];
-		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
+		switch (format[0]) {	/* This parameter controls which version of month/day text strings we use for plotting */
 			case 'F':	/* Full name, upper case */
 				upper_case[k] = true;
 				/* Intentionally fall through - to 'f' */
@@ -1809,16 +1616,16 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				Return (GMT_ERROR_ON_FOPEN);
 			}
 			sprintf (state_prefix, "Parameter file for pre-frame %s", state_tag);
-			movie_set_comment (fp, Ctrl->In.mode, state_prefix);
+			gmt_set_comment (fp, Ctrl->In.mode, state_prefix);
 			sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
-			movie_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
+			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 			if (i_frame < Ctrl->E.fade[GMT_IN])	/* During title fade-in */
 				fade_level = 50 * (1.0 + cos (M_PI * i_frame / Ctrl->E.fade[GMT_IN]));
 			else if (i_frame > (start = (Ctrl->E.duration -Ctrl->E.fade[GMT_OUT])))	/* During title fade-out */
 				fade_level = 50 * (1.0 - cos (M_PI * (i_frame - start) / Ctrl->E.fade[GMT_OUT]));
 			else /* No fading during main part of title */
 				fade_level = 0.0;
-			movie_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
+			gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
 			fclose (fp);	/* Done writing this parameter file */
 		}
 
@@ -1829,7 +1636,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->E.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		sprintf (extra, "A+n+r+f%s", movie_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
+		sprintf (extra, "A+n+r+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
 		if (Ctrl->E.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->E.fill);}	/* Chose another fade color than black */
 		if (Ctrl->E.PS) {	/* Need to place a background title first (which will be in parent dir when loop script is run) */
 			strcat (extra, ",Mb../../");
@@ -1840,41 +1647,41 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (htxt, ",H%d", Ctrl->H.factor);
 			strcat (extra, htxt);
 		}
-		movie_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
-		movie_set_comment (fp, Ctrl->In.mode, "Movie intro frame loop script");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since subshells may mess things up */
-		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
+		gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+		gmt_set_comment (fp, Ctrl->In.mode, "Movie intro frame loop script");
+		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since sub-shells may mess things up */
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
 			fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 		else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
-			movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+			gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if scrip has gmt end show */
-		movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
-		movie_set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
+		gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
+		gmt_set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
-		fprintf (fp, "mkdir %s\n", movie_place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Make a temp directory for this frame */
-		fprintf (fp, "cd %s\n", movie_place_var (Ctrl->In.mode, "MOVIE_NAME"));		/* cd to the temp directory */
+		fprintf (fp, "mkdir %s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Make a temp directory for this frame */
+		fprintf (fp, "cd %s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"));		/* cd to the temp directory */
 		if (Ctrl->E.PS) {	/* There is no title script, just a PS, so we make a dummy script that plots nothing */
 			fclose (Ctrl->E.fp);
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
-			movie_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
+			gmt_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c GMT_MAX_CORES 1\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
-			fprintf (fp, "\tgmt figure ../%s %s", movie_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
-			fprintf (fp, " E%s,%s\n", movie_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
+			fprintf (fp, "\tgmt figure ../%s %s", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
+			fprintf (fp, " E%s,%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
 			fprintf (fp, "\tgmt plot -R0/%g/0/%g -Jx1%c -X0 -Y0 -T\n", Ctrl->C.dim[GMT_X], Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 			fprintf (fp, "gmt end\n");		/* Eliminate show from gmt end in this script */
 		}
 		else {	/* Read the title script */
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->E.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
-				if (movie_is_gmt_module (line, "begin")) {	/* Need to insert a gmt figure call after this line */
+				if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert a gmt figure call after this line */
 					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
-					movie_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
+					gmt_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
-					fprintf (fp, "\tgmt figure ../%s %s", movie_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
-					fprintf (fp, " E%s,%s\n", movie_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
+					fprintf (fp, "\tgmt figure ../%s %s", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
+					fprintf (fp, " E%s,%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
 				}
 				else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
-					if (movie_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+					if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
 					else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 					fprintf (fp, "%s", line);	/* Just copy the line as is */
 				}
@@ -1883,11 +1690,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 		if (!Ctrl->Q.active) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single frame only */
-			movie_set_comment (fp, Ctrl->In.mode, "Remove frame directory and frame parameter file");
-			fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], movie_place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Remove the work dir and any files in it */
+			gmt_set_comment (fp, Ctrl->In.mode, "Remove frame directory and frame parameter file");
+			fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Remove the work dir and any files in it */
 			fprintf (fp, "%s movie_params_%c1.%s\n", rmfile[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Remove the parameter file for this frame */
 		}
-		if (Ctrl->In.mode == DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
 			fprintf (fp, "exit\n");
 		fclose (fp);	/* Done writing loop script */
 
@@ -1925,9 +1732,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		sprintf (state_prefix, "Parameter file for frame %s", state_tag);
-		movie_set_comment (fp, Ctrl->In.mode, state_prefix);
+		gmt_set_comment (fp, Ctrl->In.mode, state_prefix);
 		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
-		movie_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
+		gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 
 		if (Ctrl->K.active) {	/* Must stay on either first or last actual frame repeatedly to fade in/out the first/last true frame plot */
 			if (i_frame < Ctrl->K.fade[GMT_IN]) { /* Must keep fixed first data frame but change fading in */
@@ -1942,32 +1749,32 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				fade_level = 0.0;	/* No fading */
 				if (Ctrl->K.preserve[GMT_IN]) data_frame = i_frame - Ctrl->K.fade[GMT_IN];
 			}
-			movie_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
+			gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
 		}
 		if (Ctrl->E.active) sprintf (state_tag, "%*.*d", precision, precision, data_frame);	/* Reset frame tag */
-		movie_set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_FRAME", data_frame);		/* Current frame number */
-		if (!n_written) movie_set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_data_frames);	/* Total frames (write here since n_frames was not yet known when init was written) */
-		movie_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
+		gmt_set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_FRAME", data_frame);		/* Current frame number */
+		if (!n_written) gmt_set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_NFRAMES", n_data_frames);	/* Total frames (write here since n_frames was not yet known when init was written) */
+		gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
 		if (place_background)	/* Need to place a background layer first (which is in parent dir when loop script is run) */
-			movie_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_BACKGROUND", ",Mb../movie_background.ps");		/* Current frame tag (formatted frame number) */
+			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_BACKGROUND", ",Mb../movie_background.ps");		/* Current frame tag (formatted frame number) */
 		else
-			movie_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_BACKGROUND", "");		/* Nothing */
+			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_BACKGROUND", "");		/* Nothing */
 		if (Ctrl->F.transparent && Ctrl->A.active) place_background = false;	/* Only place background once if transparent images */
-		movie_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
+		gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col);
-			movie_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_frame]);
+			gmt_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_frame]);
 		}
 		if (has_text) {	/* Also place any string parameter as a single string variable */
-			movie_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_TEXT", D->table[0]->segment[0]->text[data_frame]);
+			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_TEXT", D->table[0]->segment[0]->text[data_frame]);
 			if (Ctrl->T.split) {	/* Also split the string into individual words MOVIE_WORD1, MOVIE_WORD2, etc. */
 				char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[data_frame]);
 				col = 0;
 				trail = orig;
-				while ((word = strsep (&trail, " \t")) != NULL) {
+				while ((word = strsep (&trail, Ctrl->T.sep)) != NULL) {
 					if (*word != '\0') {	/* Skip empty strings */
 						sprintf (string, "MOVIE_WORD%u", col++);
-						movie_set_tvalue (fp, Ctrl->In.mode, false, string, word);
+						gmt_set_tvalue (fp, Ctrl->In.mode, false, string, word);
 					}
 				}
 				gmt_M_str_free (orig);
@@ -1984,7 +1791,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
 				fprintf (fp, "%s", export[Ctrl->In.mode]);
 				sprintf (name, "MOVIE_N_%sS", LP_name[k]);
-				movie_set_ivalue (fp, Ctrl->In.mode, true, name, Ctrl->n_items[k]);
+				gmt_set_ivalue (fp, Ctrl->In.mode, true, name, Ctrl->n_items[k]);
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
 					t = (frame + 1.0) / n_frames;
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
@@ -2080,7 +1887,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 					if (I->kind == 'F') strcat (label, "/0/1");
 					/* Set MOVIE_{LABEL|PROG_INDICATOR}_ARG# as exported environmental variable. gmt figure will check for this and if found create gmt.movie{label|prog_indicator}s in session directory */
 					fprintf (fp, "%s", export[Ctrl->In.mode]);
-					movie_set_tvalue (fp, Ctrl->In.mode, true, name, label);
+					gmt_set_tvalue (fp, Ctrl->In.mode, true, name, label);
 				}
 			}
 			spacer = 'T';	/* For ISO time stamp as used in -R */
@@ -2106,10 +1913,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				fade_level = 50 * (1.0 - cos (M_PI * (Ctrl->M.frame - start) / Ctrl->E.fade[GMT_OUT]));
 			else /* No fading during main part of title */
 				fade_level = 0.0;
-			movie_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
+			gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
 		}
 		else if (Ctrl->K.active) {
-			sprintf (extra, "A+n+r+f%s", movie_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
+			sprintf (extra, "A+n+r+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
 			if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 		}
 		else
@@ -2142,14 +1949,14 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (line, ",H%d", Ctrl->H.factor);
 			strncat (extra, line, GMT_LEN128);
 		}
-		movie_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
-		movie_set_comment (fp, Ctrl->In.mode, "Master frame loop script");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since subshells may mess things up */
-		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
+		gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+		gmt_set_comment (fp, Ctrl->In.mode, "Master frame loop script");
+		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since sub-shells may mess things up */
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
 			fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 		else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
-			movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
-		movie_set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
+			gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+		gmt_set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
 		fprintf (fp, "mkdir master\n");	/* Make a temp directory for this frame */
@@ -2157,34 +1964,33 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (is_title) {	/* Process title page script or PS */
 			if (Ctrl->E.PS) {	/* There is no title script, just a PS, so we make a dummy script that plots nothing */
 				fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
-				movie_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
+				gmt_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 				fprintf (fp, " %s", extra);
 				if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 					fprintf (fp, "\n");	/* No dpu needed */
 				else
-					fprintf (fp, ",E%s\n", movie_place_var (Ctrl->In.mode, "MOVIE_DPU"));
+					fprintf (fp, ",E%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 				fprintf (fp, "\tgmt plot -R0/%g/0/%g -Jx1%c -X0 -Y0 -T\n", Ctrl->C.dim[GMT_X], Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "gmt end\n");		/* Eliminate show from gmt end in this script */
 			}
 			else {	/* Read the title script */
 				while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->E.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
-					if (movie_is_gmt_module (line, "begin")) {	/* Need to insert a gmt figure call after this line */
+					if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert a gmt figure call after this line */
 						fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
-						movie_set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
+						gmt_set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
 						fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 						fprintf (fp, " %s", extra);
 						if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 							fprintf (fp, "\n");	/* No dpu needed */
 						else
-							fprintf (fp, ",E%s\n", movie_place_var (Ctrl->In.mode, "MOVIE_DPU"));
+							fprintf (fp, ",E%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
 						fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 					}
 					else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
-						if (movie_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
-						else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+						if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 						fprintf (fp, "%s", line);	/* Just copy the line as is */
 					}
 				}
@@ -2193,15 +1999,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		else {	/* Process main script */
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the mainscript and copy to loop script, with some exceptions */
-				if (movie_is_gmt_module (line, "begin")) {	/* Need to insert a gmt figure call after this line */
+				if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert a gmt figure call after this line */
 					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
-					movie_set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
+					gmt_set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
 					fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 					fprintf (fp, " %s", extra);
 					if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 						fprintf (fp, "\n");	/* No dpu needed */
 					else
-						fprintf (fp, ",E%s\n", movie_place_var (Ctrl->In.mode, "MOVIE_DPU"));
+						fprintf (fp, ",E%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 				}
 				else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
@@ -2211,11 +2017,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			rewind (Ctrl->In.fp);	/* Get ready for main_frame reading */
 		}
-		movie_set_comment (fp, Ctrl->In.mode, "Move master file up to top directory and cd up one level");
+		gmt_set_comment (fp, Ctrl->In.mode, "Move master file up to top directory and cd up one level");
 		fprintf (fp, "%s %s.%s %s\n", mvfile[Ctrl->In.mode], Ctrl->N.prefix, Ctrl->M.format, topdir);	/* Move master plot up to top dir */
 		fprintf (fp, "cd ..\n");	/* cd up to workdir */
 		if (!Ctrl->Q.active) {	/* Remove the work dir and any files in it */
-			movie_set_comment (fp, Ctrl->In.mode, "Remove frame directory");
+			gmt_set_comment (fp, Ctrl->In.mode, "Remove frame directory");
 			fprintf (fp, "%s master\n", rmdir[Ctrl->In.mode]);
 		}
 		fclose (fp);	/* Done writing loop script */
@@ -2276,7 +2082,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	if (Ctrl->K.active) {
-		sprintf (extra, "A+n+r+f%s", movie_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
+		sprintf (extra, "A+n+r+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
 		if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 	}
 	else
@@ -2305,31 +2111,31 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (htxt, ",H%d", Ctrl->H.factor);
 		strcat (extra, htxt);
 	}
-	movie_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
-	movie_set_comment (fp, Ctrl->In.mode, "Main frame loop script");
-	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since subshells may mess things up */
-	if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
+	gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+	gmt_set_comment (fp, Ctrl->In.mode, "Main frame loop script");
+	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since sub-shells may mess things up */
+	if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
 		fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
 	else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
-		movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+		gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
 	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Turn off auto-display of figures if script has gmt end show */
-	movie_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
-	movie_set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
+	gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_END_SHOW", "off");
+	gmt_set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 	fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
-	fprintf (fp, "mkdir %s\n", movie_place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Make a temp directory for this frame */
-	fprintf (fp, "cd %s\n", movie_place_var (Ctrl->In.mode, "MOVIE_NAME"));		/* cd to the temp directory */
+	fprintf (fp, "mkdir %s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Make a temp directory for this frame */
+	fprintf (fp, "cd %s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"));		/* cd to the temp directory */
 	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
-		if (movie_is_gmt_module (line, "begin")) {	/* Need to insert a gmt figure call after this line */
+		if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert a gmt figure call after this line */
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
-			movie_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
-			fprintf (fp, "\tgmt figure ../%s %s", movie_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
-			fprintf (fp, " E%s,%s", movie_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
-			fprintf (fp, "%s\n", movie_place_var (Ctrl->In.mode, "MOVIE_BACKGROUND"));
+			gmt_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
+			fprintf (fp, "\tgmt figure ../%s %s", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
+			fprintf (fp, " E%s,%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
+			fprintf (fp, "%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_BACKGROUND"));
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s GMT_MAX_CORES 1\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
-			if (movie_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+			if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
 			else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 			fprintf (fp, "%s", line);	/* Just copy the line as is */
 		}
@@ -2337,11 +2143,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	if (!Ctrl->Q.active) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single frame only */
-		movie_set_comment (fp, Ctrl->In.mode, "Remove frame directory and frame parameter file");
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], movie_place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Remove the work dir and any files in it */
+		gmt_set_comment (fp, Ctrl->In.mode, "Remove frame directory and frame parameter file");
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Remove the work dir and any files in it */
 		fprintf (fp, "%s movie_params_%c1.%s\n", rmfile[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Remove the parameter file for this frame */
 	}
-	if (Ctrl->In.mode == DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
+	if (Ctrl->In.mode == GMT_DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
 		fprintf (fp, "exit\n");
 	fclose (fp);	/* Done writing loop script */
 
@@ -2394,7 +2200,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (Ctrl->E.active && frame == Ctrl->E.duration)	/* Past the title intro, now point to main script */
 				script_file = main_file;
 		}
-		movie_gmt_sleep (MOVIE_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for completion of the PNG images */
+		gmt_sleep (MOVIE_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for completion of the PNG images */
 		for (k = first_frame; k < i_frame; k++) {	/* Only loop over the range of frames that we know are currently in play */
 			if (status[k].completed) continue;	/* Already finished with this frame */
 			if (!status[k].started) continue;	/* Not started this frame yet */
@@ -2442,8 +2248,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				strcat (files, "0");
 		}
 		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.%s %s.gif", delay, Ctrl->A.loops, workdir, dir_sep, Ctrl->N.prefix, files, MOVIE_RASTER_EXTENSION, Ctrl->N.prefix);
-		movie_gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
+		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
+		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running GIF conversion returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
@@ -2464,8 +2270,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (png_file, "%%0%dd", precision);
 		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
-		movie_gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
+		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
+		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to MP4 returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
@@ -2487,8 +2293,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec %s %s -pix_fmt %s %s.webm",
 			extra, Ctrl->D.framerate, workdir, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, vpx[Ctrl->F.transparent],
 			(Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", pix_fmt[Ctrl->F.transparent], Ctrl->N.prefix);
-		movie_gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Running: %s\n", cmd);
+		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
+		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to webM returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
@@ -2502,9 +2308,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
-	movie_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
+	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
 	if (Ctrl->Z.active) {	/* Want to delete the entire frame directory */
-		movie_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with frame files");
+		gmt_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with frame files");
 		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], workdir);	/* Delete the entire working directory with PNG frames and tmp files */
 	}
 	else {	/* Just delete the remaining scripts and PS files */
@@ -2533,7 +2339,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 #endif
 	if (!Ctrl->Q.active) {
 		/* Run cleanup script at the end */
-		if (Ctrl->In.mode == DOS_MODE)
+		if (Ctrl->In.mode == GMT_DOS_MODE)
 			error = system (cleanup_file);
 		else {
 			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], cleanup_file);

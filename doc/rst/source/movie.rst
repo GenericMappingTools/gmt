@@ -15,7 +15,7 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
@@ -90,14 +90,15 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
     Either specify how many image frames to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of frames instead), or supply a file with a set of parameters,
     one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
     string into individual words that can be accessed via variables **MOVIE_WORD0**, **MOVIE_WORD1**,
-    etc. The number of records equals
+    etc. By default we use any white-space to separate words.  Append *str* to select another character(s)
+    as the valid separator(s).  The number of records equals
     the number of frames. Note that the *background* script is allowed to create *timefile*,
     hence we check for its existence both before *and* after the background script has completed.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
@@ -296,8 +297,8 @@ Parameters
 Several parameters are automatically assigned and can be used when composing *mainscript* and the optional
 *background* and *foreground* scripts. There are two sets of parameters: Those that are constants
 and those that change with the frame number.  The constants are accessible by all the scripts:
-**MOVIE_WIDTH**\ : The width of the canvas,
-**MOVIE_HEIGHT**\ : The height of the canvas,
+**MOVIE_WIDTH**\ : The width of the canvas (the full movie frame),
+**MOVIE_HEIGHT**\ : The height of the canvas (the full movie frame),
 **MOVIE_DPU**\ : The current dots-per-unit,
 **MOVIE_RATE**\ : The current number of frames per second,
 **MOVIE_NFRAMES**\ : The total number of frames.
@@ -345,13 +346,15 @@ Your Canvas
 As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
 or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the custom canvas sizes are just
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"); this has no effect on the size of the movie
-frames but allow us to use good sizes that work well with the dpu chosen.  You should compose your plots using
+frames but allow us to use good sizes that work well with the *dpu* chosen.  You should compose your plots using
 the given canvas size, and **movie** will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
 to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
 recommended that any static part of the movie be considered either a static background (to be made once by *background*) and/or
 a static foreground (to be made once by *foreground*); **movie** will then assemble these layers per frame.  Also, any computation of
 static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
-frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.
+frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.  **Note**: Using
+the variables **MOVIE_WIDTH** or **MOVIE_HIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
+exact canvas dimensions.
 
 External *PostScript* Layers
 ----------------------------
@@ -365,7 +368,15 @@ making a HD movie using the US unit dimensions then a background pink layer woul
 Note the canvas selection via :term:`PS_MEDIA`, the matching region and projection, and
 the zero location of the origin.
 
-Transparent images
+Basemap Frames
+--------------
+
+Some map projections will by default draw a *fancy* map frame; this feature is under the control of :term:`MAP_FRAME_TYPE`.
+However, whether a *fancy* or *plain* frame is actually drawn also depends on the projection center *latitude*.
+Thus, if your movie varies the projection center latitude by changing the view, you should set the frame
+setting to *plain* as part of your setup.
+
+Transparent Images
 ------------------
 
 By default, **movie** will build *opaque* PNG images which can then be assembled into an animation.
@@ -517,10 +528,24 @@ Other Movie Formats
 
 As configured, **movie** only offers the MP4 and WebM formats for movies.  The conversion is performed by the
 tool `FFmpeg <https://www.ffmpeg.org/>`_, which has more codecs and processing options than there are children in China.
-If you wish to run FFmpeg with other options, select mp4 and run **movie** with verbose information on (**-Vi**).
+If you wish to run FFmpeg with other options, run **movie** with one of the two video formats.
 At the end it will print the FFmpeg command used.  You can copy, paste, and modify this command to
 select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such
 as QuickTime Player, iMovie, MovieMaker, and other commercial programs to make a movie that way.
+
+Remaking Movie with Existing PNG Frames
+---------------------------------------
+
+Perhaps you made your movie and then decided you want to change the frame rate or adjust something else in
+how the movie is put together from all the still images.  If you kept all the frame images then
+you do not have to rerun the whole render process.  Assuming you want a MP4 movie and that you
+want to rerun just the ffmpeg command, here is an example::
+
+    ffmpeg -loglevel warning -f image2 -framerate 24 -y -i "mydir/myimages_%04d.png" -vcodec libx264 -pix_fmt yuv420p mymovie.mp4
+
+This command is also written out when movie performs this step.
+For other movie formats you will need to consult the `FFmpeg <https://www.ffmpeg.org/>`_ documentation.
+**Note**: On Windows, the percentage character is special (like the dollar sign under shells) so you will need to enter two (%%).
 
 Manipulating Multiple Movies
 ----------------------------

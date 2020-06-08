@@ -27,6 +27,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    :hidden:
 
    basemap
+   batch
    begin
    blockmean
    blockmedian
@@ -79,6 +80,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    grdlandmask
    grdmask
    grdmath
+   grdmix
    grdpaste
    grdproject
    grdsample
@@ -187,6 +189,7 @@ Core Modules
     :columns: 6
 
     - :doc:`basemap`
+    - :doc:`batch`
     - :doc:`begin`
     - :doc:`blockmean`
     - :doc:`blockmedian`
@@ -239,6 +242,7 @@ Core Modules
     - :doc:`grdlandmask`
     - :doc:`grdmask`
     - :doc:`grdmath`
+    - :doc:`grdmix`
     - :doc:`grdpaste`
     - :doc:`grdproject`
     - :doc:`grdsample`
@@ -582,12 +586,16 @@ Grid operations
 +-----------------------+-----------------------+
 | :doc:`grdmath`        | |grdmath_purpose|     |
 +-----------------------+-----------------------+
+| :doc:`grdmix`         | |grdmix_purpose|      |
++-----------------------+-----------------------+
 | :doc:`grdvolume`      | |grdvolume_purpose|   |
 +-----------------------+-----------------------+
 
 Miscellaneous
 -------------
 
++-----------------------+-----------------------+
+| :doc:`batch`          | |batch_purpose|       |
 +-----------------------+-----------------------+
 | :doc:`gmt2kml`        | |gmt2kml_purpose|     |
 +-----------------------+-----------------------+

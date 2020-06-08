@@ -218,7 +218,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 	int j, k;
 	size_t n_alloc = 0, len;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
-	char path[PATH_MAX] = {""};	/* Full path to sac file */
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -227,15 +226,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 
 			case '<':	/* Collect input files */
 				Ctrl->In.active = true;
-				if (n_alloc <= Ctrl->In.n)  Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) {
-					if (gmt_getdatapath (GMT, opt->arg, path, R_OK) == NULL) {
-						GMT_Report (API, GMT_MSG_ERROR, "Cannot find/open file %s.\n", opt->arg);
-						continue;
-					}
-					Ctrl->In.file[Ctrl->In.n++] = strdup (path);
-				} else
-					n_errors++;
+				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
+				Ctrl->In.file[Ctrl->In.n] = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]))) n_errors++;
+				Ctrl->In.n++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -785,8 +779,7 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 		else {
 			unsigned int user = 0; /* default using user0 */
 			/* determine X0 */
-			if (!Ctrl->C.active) x0 = hd.b - tref;
-			else                 x0 = Ctrl->C.t0;
+			x0 = hd.b - tref;	/* the new begin time may not exactly match t1 */
 
 			/* determine Y0 */
 			if (Ctrl->E.active) {

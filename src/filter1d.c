@@ -264,7 +264,7 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -896,7 +896,9 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.spatial) {	/* Must add extra column to store distances and then compute them */
 		Ctrl->N.col = (int)D->n_columns;
 		gmt_adjust_dataset (GMT, D, D->n_columns + 1);
-		gmt_init_distaz (GMT, Ctrl->T.T.unit, Ctrl->T.T.distmode, GMT_MAP_DIST);
+		if (gmt_init_distaz (GMT, Ctrl->T.T.unit, Ctrl->T.T.distmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {
+			Return (GMT_NOT_A_VALID_TYPE, "Bad distance unit");
+		}
 		for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 			for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
 				S = D->table[tbl]->segment[seg];
