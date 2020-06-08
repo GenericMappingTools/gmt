@@ -198,9 +198,9 @@
 /*! Determine default justification for box item */
 #define gmt_M_just_default(GMT,refpoint,just) (refpoint->mode == GMT_REFPOINT_JUST_FLIP ? gmt_flip_justify(GMT,refpoint->justify) : refpoint->mode == GMT_REFPOINT_JUST ? refpoint->justify : just)
 
-/*! Determine if we have a special virtual, remote, or query files */
-#define gmt_M_file_is_cache(file) (file != NULL && file[0] == '@' && strncmp (file, "@GMTAPI@-", 9U))
-#define gmt_M_file_is_url(file) (file != NULL && (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U) || !strncmp (file, "/vsi", 4U)))
+/*! Determine if we have a remote file, special URL files or queries, or special netCDF files */
+#define gmt_M_file_is_remote(file) (file != NULL && !gmt_M_file_is_memory(file) && file[0] == '@')
+#define gmt_M_file_is_url(file) (file != NULL && (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U)))
 #define gmt_M_file_is_query(file) (gmt_M_file_is_url(file) && strchr (file, '?') && strchr (file, '='))
 #define gmt_M_file_is_netcdf(file) (!gmt_M_file_is_url(file) && strchr (file, '?'))
 #define gmt_M_file_is_netcdf_layer(file) (gmt_M_file_is_netcdf(file) && (strchr (file, '(') || strchr (file, '[')))

@@ -6826,7 +6826,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 						p = NULL;
 				}
 				if (a_grid_or_image (family))	/* Only grid and images can be URLs so far */
-					not_url = !gmtlib_found_url_for_gdal (file);
+					not_url = !(gmtlib_found_url_for_gdal (file) || gmt_M_file_is_url (file));	/* true if neither special GDAL-remote files nor regular URLs */
 				first = gmt_download_file_if_not_found (API->GMT, file, 0);	/* Deal with downloadable GMT data sets first */
 				if (gmt_access (GMT, &file[first], F_OK) && not_url) {	/* For input we can check if the file exists (except if via Web) */
 					GMT_Report (API, GMT_MSG_ERROR, "File %s not found\n", &file[first]);
@@ -7583,7 +7583,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		}
 	}
 
-	if (!gmt_M_file_is_cache(infile) && !gmt_M_file_is_url(infile) && infile && strpbrk (infile, "*?[]") && !gmtapi_file_with_netcdf_directive (API, infile)) {
+	if (!gmt_M_file_is_remote (infile) && !gmt_M_file_is_url(infile) && infile && strpbrk (infile, "*?[]") && !gmtapi_file_with_netcdf_directive (API, infile)) {
 		/* Gave a wildcard filename */
 		uint64_t n_files;
 		unsigned int k;

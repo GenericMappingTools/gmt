@@ -662,7 +662,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	char path[PATH_MAX] = {""}, file[GMT_LEN32] = {""};
 
 	strncpy (file, fname, GMT_LEN32-1);
-	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		start = gmt_download_file_if_not_found (GMT, file, 0);
 	}
@@ -733,7 +733,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	struct GMTMGG_REC record;
 
 	strncpy (file, fname, GMT_LEN32-1);
-	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		first = gmt_download_file_if_not_found (GMT, file, 9);
 	}
@@ -838,7 +838,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	MGD77_Init (GMT, &MC);	/* Initialize MGD77 Machinery */
 
 	strncpy (file, fname, GMT_LEN32-1);
-	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		first = gmt_download_file_if_not_found (GMT, file, 0);
 	}
@@ -913,7 +913,7 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 	S = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 
 	strcpy (file, fname);
-	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		first = gmt_download_file_if_not_found (GMT, file, 0);
 	}
@@ -966,7 +966,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 	gmt_M_unused(G);
 
 	strncpy (file, fname, GMT_LEN64-1);
-	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		first = gmt_download_file_if_not_found (GMT, file, 0);
 	}

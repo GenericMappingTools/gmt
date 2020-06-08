@@ -210,7 +210,7 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 	return (strncmp (name_1, name_2, len));
 }
 
-int gmt_file_is_remotedata (struct GMTAPI_CTRL *API, const char *file) {
+int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	/* Return the entry in the remote file table of file is found, else -1 */
 	int pos = 0;
 	struct GMT_DATA_INFO *key = NULL;
@@ -218,6 +218,15 @@ int gmt_file_is_remotedata (struct GMTAPI_CTRL *API, const char *file) {
 	if (file[0] == '@') pos = 1;	/* Skip any leading remote flag */
 	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	return ((key == NULL) ? GMT_NOTSET : key->id);
+}
+
+bool gmt_file_is_cache (struct GMTAPI_CTRL *API, const char *file) {
+	/* Returns true if a remote file is a cache file */
+	if (file == NULL || file[0] == '\0') return false;	/* Nothing given */
+	if (gmt_M_file_is_memory (file)) return false;	/* Memory files are not remote */
+	if (file[0] != '@') return false;	/* Cannot be a remote file, let alone cache */
+	if (gmt_remote_dataset_id (API, file) != GMT_NOTSET) return false;	/* Found a remote dataset, but not cache */
+	return true;
 }
 
 void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **file_ptr) {
@@ -233,12 +242,12 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	/* Deal with any extension the user may have added */
 	ext = gmt_chop_ext (infile);
 	/* If the remote file is found then there is nothing to do */
-	if ((k_data = gmt_file_is_remotedata (API, infile)) == GMT_NOTSET) goto clean_up;
+	if ((k_data = gmt_remote_dataset_id (API, infile)) == GMT_NOTSET) goto clean_up;
 	if (strstr (file, "_p") || strstr (file, "_g")) goto clean_up;	/* Already have the registration codes */
 	for (k = 0; k < 2; k++) {
 		/* First see if this _<reg> version exists of this dataset */
 		sprintf (newfile, "%s_%c", infile, reg[k]);
-		if ((k_data = gmt_file_is_remotedata (API, newfile)) != GMT_NOTSET) {
+		if ((k_data = gmt_remote_dataset_id (API, newfile)) != GMT_NOTSET) {
 			/* Found, replace given file name with this */
 			gmt_M_str_free (*file_ptr);
 			*file_ptr = strdup (newfile);
@@ -250,7 +259,7 @@ clean_up:
 }
 
 int gmt_remote_no_extension (struct GMTAPI_CTRL *API, const char *file) {
-	int k_data = gmt_file_is_remotedata (API, file);
+	int k_data = gmt_remote_dataset_id (API, file);
 	if (k_data == GMT_NOTSET) return GMT_NOTSET;
 	if (API->remote_info[k_data].ext[0] == '\0') return GMT_NOTSET;	/* Tiled grid */
 	if (strstr (file, API->remote_info[k_data].ext)) return GMT_NOTSET;	/* Already has extension */
@@ -298,7 +307,7 @@ GMT_LOCAL int gmtremote_find_and_give_data_attribution (struct GMTAPI_CTRL *API,
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
 	if ((c = strstr (file, ".grd")) || (c = strstr (file, ".tif")))	/* Ignore extension in comparison */
 		c[0] = '\0';
-	if ((match = gmt_file_is_remotedata (API, file)) == GMT_NOTSET) {	/* Check if it is a tile */
+	if ((match = gmt_remote_dataset_id (API, file)) == GMT_NOTSET) {	/* Check if it is a tile */
 		if ((match = gmt_file_is_a_tile (API, file, GMT_LOCAL_DIR)) != GMT_NOTSET)	/* Got a remote tile */
 			tile = 1;
 	}
@@ -738,7 +747,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 	}
 
 	if (file[0] == '@') {	/* Either a cache file or a remote data set */
-		if ((k_data = gmt_file_is_remotedata (API, file)) != GMT_NOTSET) {
+		if ((k_data = gmt_remote_dataset_id (API, file)) != GMT_NOTSET) {
 			/* Got a valid remote server data filename and we know the local path to those */
 			if (GMT->session.USERDIR == NULL) goto not_local;	/* Cannot have server data if no user directory created yet */
 			snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
@@ -1064,11 +1073,11 @@ int gmtlib_remote_file_is_tiled (struct GMTAPI_CTRL *API, const char *file, unsi
 	if (strncmp (file, "@srtm_relief_0", 14U) == 0) {	/* This virtual tile set does not exist. It means earth_relief_0xs_g but do not add filler */
 		char tmpfile[GMT_LEN32] = {""};
 		sprintf (tmpfile, "@earth_relief_0%cs_g", file[14]);
-		if ((k_data = gmt_file_is_remotedata (API, tmpfile)) == GMT_NOTSET) return GMT_NOTSET;	/* Not a recognized remote dataset */
+		if ((k_data = gmt_remote_dataset_id (API, tmpfile)) == GMT_NOTSET) return GMT_NOTSET;	/* Not a recognized remote dataset */
 		if (mode) *mode = GMT_SRTM_ONLY;
 		return (k_data);	/* Since we know earth_relief_01|d_g is a tiled directory */
 	}
-	if ((k_data = gmt_file_is_remotedata (API, file)) == GMT_NOTSET) return GMT_NOTSET;	/* Not a recognized remote dataset */
+	if ((k_data = gmt_remote_dataset_id (API, file)) == GMT_NOTSET) return GMT_NOTSET;	/* Not a recognized remote dataset */
 	return (gmtremote_is_directory (API, k_data) ? k_data : GMT_NOTSET);	/* -1 for a regular, remote file, valid index for a directory */
 }
 
@@ -1120,7 +1129,7 @@ int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *infile, unsigned in
 	}
 	if ((p = strstr (file, ".SRTMGL"))) /* Convert to the new tag for legacy SRTM tiles tag of SRTMGL[1|3] so it reflects the name of the dataset */
 		sprintf (tag, "earth_relief_0%cs_g", p[7]);	/* 7th char in p is the 1|3 resolution character */
-	k_data = gmt_file_is_remotedata (API, tag);
+	k_data = gmt_remote_dataset_id (API, tag);
 	return (k_data);
 }
 
@@ -1215,7 +1224,7 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 
 	/* See if we want a background filler - this is most likely when using SRTM tiles and a 15s background ocean */
 	if (strcmp (Ip->filler, "-") && srtm_flag == 0) {	/* Want background filler, except special case when srtm_relief is the given dataset name (srtm_flag == 1) */
-		if ((k_filler = gmt_file_is_remotedata (API, Ip->filler)) == GMT_NOTSET) {
+		if ((k_filler = gmt_remote_dataset_id (API, Ip->filler)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Internal error - Filler grid %s is not a recognized remote data set.\n", Ip->filler);
 			return NULL;			
 		}

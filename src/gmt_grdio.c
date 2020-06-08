@@ -2005,7 +2005,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 				snprintf (file, GMT_LEN64, "@%s", API->remote_info[k_data].file);
 				txt = file;
 			}
-			else if ((k_data = gmt_file_is_remotedata (API, argv[i])) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (argv[i], API->remote_info[k_data].ext))) {
+			else if ((k_data = gmt_remote_dataset_id (API, argv[i])) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (argv[i], API->remote_info[k_data].ext))) {
 				c[0] = '\0';
 				snprintf (file, GMT_LEN64, "%s", argv[i]);
 				c[0] = '.';
@@ -3111,7 +3111,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	if (gmt_M_file_is_memory (file)) {
 		return (file[GMT_VF_TYPE_POS] == 'G') ? GMT_NOTSET : GMT_IS_IMAGE;
 	}
-	if (gmt_M_file_is_cache (file) || gmt_M_file_is_url (file)) {	/* Must download, then modify the name */
+	if (gmt_M_file_is_remote (file) || gmt_M_file_is_url (file)) {	/* Must download, then modify the name */
 		j = gmt_download_file_if_not_found (GMT, file, 0);
 		F = strdup (&file[j]);
 	}
