@@ -29,6 +29,8 @@ gmt begin
   gmt grdfilter @earth_relief_04m -Fg${FILT} -I${INC}m -D1 -r -Gtopo_${SIZE}.grd
   # Create an intensity grid based on the ${SIZE} DEM so we can see structures in the oceans
   gmt grdgradient topo_${SIZE}.grd -Nt0.5 -A45 -Gintens_${SIZE}.grd
+  # Make sure our remote files have been downloaded
+  gmt which -Ga @earth_day_${SIZE}.tif @earth_night_${SIZE}.tif
 gmt end
 EOF
 # 2. Set up main script
