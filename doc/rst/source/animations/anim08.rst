@@ -12,7 +12,7 @@ symbol size (spherical circle diameter in km) and announce each quake by magnify
 size and whitening the color for a little bit.  Later the symbols fade to darker
 color and smaller sizes but remain for the duration of the movie.
 
-- DEM:   @earth_relief_02m.grd
+- DEM:   @earth_relief_02m
 - Line:  ridge.txt
 
 The resulting movie was presented at the Fall 2019 AGU meeting in an eLighting talk:
