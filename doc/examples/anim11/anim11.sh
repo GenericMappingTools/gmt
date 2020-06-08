@@ -6,8 +6,8 @@
 # from the slopes of the earth relief grid.  We spin around at 24 frames per second
 # where each frame advances the viewpoint 0.25 degrees of longitude.
 #
-# DEM:    @earth_relief_02m.grd
-# Images: @earth_day_02m.tif @earth_night_02m.tif from the GMT data server
+# DEM:    @earth_relief_02m
+# Images: @earth_day_02m @earth_night_02m from the GMT data server
 # 
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/nmxy9yb2cR8
@@ -19,11 +19,11 @@ gmt begin
   # Set view longitudes 0-360 with steps of 0.25 degree
   gmt math -T-180/180/0.25 -o0 T = view.txt
   # Make global grid with a smooth 2-degree day/night transition for the 2020 solstice.
-  gmt grdmath -Rd -I2m -r \$(gmt solar -C -o0:1 -I+d2020-06-20+z-10) 2 DAYNIGHT = daynight.grd
+  gmt grdmath -Rd -I2m -rp \$(gmt solar -C -o0:1 -I+d2020-06-20+z-10) 2 DAYNIGHT = daynight.grd
   # We will create an intensity grid based on a DEM so that we can see structures in the oceans
   gmt grdgradient @earth_relief_02m -Nt0.75 -A45 -Gintens.grd
-  # Need to make this pixel-registered to match Geotiffs
-  gmt grdsample intens.grd -T -Gintens.grd -nb+c
+  # Make sure our remote files have been downloaded
+  gmt which -Ga @earth_day_02m @earth_night_02m
 gmt end
 EOF
 # 2. Set up main script
@@ -33,7 +33,7 @@ gmt begin
   gmt set COLOR_HSV_MIN_V 0 MAP_FRAME_PEN=faint
   # Blend the day and night Earth images using the weights, so that when w is 1
   # we get the daytime view, and then adjust colors based on the intensity.
-  gmt grdmix @earth_day_02m.tif @earth_night_02m.tif -Wdaynight.grd -Iintens.grd -Gview.tif
+  gmt grdmix @earth_day_02m @earth_night_02m -Wdaynight.grd -Iintens.grd -Gview.tif
   # Plot this image on an Earth with view from current longitude
   gmt grdimage view.tif -JG\${MOVIE_COL0}/30N/21.6c -Bafg -X0 -Y0
 gmt end

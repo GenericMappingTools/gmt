@@ -7,8 +7,8 @@
 # Because we are not plotting anything, just manipulating images via grids, we must instead
 # create the frames and the final movie via the batch module.
 #
-# DEM:    @earth_relief_02m.grd
-# Images: @earth_day_02m.tif @earth_night_02m.tif from the GMT data server
+# DEM:    @earth_relief_04m
+# Images: @earth_day_HD.tif @earth_night_HD.tif from the GMT cache server
 # 
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/X8TojLs0NYk
