@@ -62,7 +62,7 @@ steps:
 # Cache the ${HOME}/.gmt directory, for docs and testing
 - task: Cache@2
   inputs:
-    key: cachedata | 20200605v4
+    key: cachedata | 20200607
     path: $(HOME)/.gmt
     cacheHitVar: CACHE_CACHEDATA_RESTORED
   displayName: Cache GMT remote data for testing
@@ -102,9 +102,12 @@ steps:
 - bash: |
     set -x -e
     gmt get -Dcache
-    gmt which -Ga @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_06m \
-        @earth_relief_15m @earth_relief_20m @earth_relief_30m \
-        @earth_relief_05m_p @earth_relief_05m_g  @earth_relief_10m_p @earth_relief_10m_g
+    gmt which -Ga @earth_relief_30m @earth_relief_20m @earth_relief_15m \
+        @earth_relief_10m @earth_relief_10m_g @earth_relief_06m \
+        @earth_relief_05m_g @earth_relief_05m @earth_relief_04m \
+        @earth_relief_02m @earth_relief_01m
+    gmt which -Ga @earth_day_01d @earth_day_20m
+    gmt which -Ga @earth_night_20m
   displayName: Download remote data
   condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
 
