@@ -14,9 +14,7 @@ gmt begin ex52
 
   # We will create an intensity grid based on a DEM so that we can see structures in the oceans
   gmt grdgradient @earth_relief_${res} -Nt0.5 -A45 -Gintens.grd
-  # Need to make this pixel-registered to match Geotiffs
-  gmt grdsample intens.grd -T -Gintens.grd
-
+  
   # Blend the earth_day and earth_night geotiffs using the weights, so that when w is 1
   # we get the earth_day, and then adjust colors based on the intensity.
 

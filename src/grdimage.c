@@ -718,13 +718,13 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file[0]);
-		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file[0], NULL)) == NULL) {
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
 		mixed = grdimage_clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
-		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
-			GMT_Report(API, GMT_MSG_WARNING, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
+		//if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
+		//	GMT_Report(API, GMT_MSG_WARNING, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
 
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
@@ -1083,9 +1083,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				g_table = gmt_M_memory (GMT, NULL, 256, double);
 				b_table = gmt_M_memory (GMT, NULL, 256, double);
 				for (k = 0; k < 256; k++) {
-					r_table[k] = gmt_M_is255 (I->colormap[k*4]);	/* 4 because image colormap is in RGBA format */
-					g_table[k] = gmt_M_is255 (I->colormap[k*4 + 1]);
-					b_table[k] = gmt_M_is255 (I->colormap[k*4 + 2]);
+					r_table[k] = gmt_M_is255 (Img_proj->colormap[k*4]);	/* 4 because image colormap is in RGBA format */
+					g_table[k] = gmt_M_is255 (Img_proj->colormap[k*4 + 1]);
+					b_table[k] = gmt_M_is255 (Img_proj->colormap[k*4 + 2]);
 				}
 				do_indexed = true;	/* Now it will be RGB */
 				gray_only = false;	/* True technocolor, baby */
