@@ -1520,6 +1520,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	bool adj_nan_value; /* if we need to change the fill value */
 	int err;            /* netcdf errors */
 	int n_shift;
+	int error;
 	unsigned dim[2], dim2[2], origin[2], origin2[2]; /* dimension and origin {y,x} of subset to read from netcdf */
 	unsigned width = 0, height = 0;
 	size_t width_t, height_t, row, stride_t;
@@ -1533,7 +1534,8 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	else if (GMT->session.grdformat[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
-	gmt_M_err_fail (GMT, gmtnc_grd_prep_io (GMT, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), HH->name);
+	if ((error = gmt_M_err_fail (GMT, gmtnc_grd_prep_io (GMT, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), HH->name)))
+		return (error);
 
 	/* Set stride and offset if complex */
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */

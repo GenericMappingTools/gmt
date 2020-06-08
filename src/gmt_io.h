@@ -255,8 +255,10 @@ struct GMT_IO {				/* Used to process input data records */
 	bool warn_geo_as_cartesion;	/* true if we should warn if we read a record with geographic data while the expected format has not been set (i.e., no -J or -fg) */
 	bool first_rec;			/* true when reading very first data record in a dataset */
 	bool trailing_text[2];	/* Default is to process training text unless turned off via -i, -o */
-	bool hash_refreshed;		/* true after calling the hash_refresh function the first time */
+	bool refreshed[2];		/* true after calling the hash_refresh function the first time, for hash and info, respectively */
 	bool internet_error;		/* true after failing to get hash table due to time-out */
+	bool grid_padding;		/* If true we try to read two extra rows/cols from grids for BC purposes */
+	bool leave_as_jp2;		/* If true we do not convert downloaded JP2 grids to NC right away, but as needed */
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */

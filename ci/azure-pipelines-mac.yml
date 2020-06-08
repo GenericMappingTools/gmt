@@ -62,7 +62,7 @@ steps:
 # Cache the ${HOME}/.gmt directory, for docs and testing
 - task: Cache@2
   inputs:
-    key: cachedata | 20200409
+    key: cachedata | 20200607
     path: $(HOME)/.gmt
     cacheHitVar: CACHE_CACHEDATA_RESTORED
   displayName: Cache GMT remote data for testing
@@ -94,15 +94,20 @@ steps:
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
     gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-    gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
+    gmt grdimage @earth_relief_01d -JH10c -Baf -pdf map
     gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
   displayName: Check a few simple commands
 
 # Download remote files, if not already cached
 - bash: |
     set -x -e
-    $(gmt --show-sharedir)/tools/gmt_getremote.sh cache
-    gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
+    gmt get -Dcache
+    gmt which -Ga @earth_relief_30m @earth_relief_20m @earth_relief_15m \
+        @earth_relief_10m @earth_relief_10m_g @earth_relief_06m \
+        @earth_relief_05m_g @earth_relief_05m @earth_relief_04m \
+        @earth_relief_02m @earth_relief_01m
+    gmt which -Ga @earth_day_01d @earth_day_20m
+    gmt which -Ga @earth_night_20m
   displayName: Download remote data
   condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
 

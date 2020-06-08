@@ -178,7 +178,7 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -193,10 +193,9 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -335,7 +334,8 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 	/* Regular nearest neighbor moving average operation */
 
-	gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);

@@ -440,7 +440,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 					break;
 			}
 		}
-		if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnovw")) n_errors++;
+		if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnovw", GMT_MSG_ERROR)) n_errors++;
 		/* Required modifier +w */
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 			if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */

@@ -354,7 +354,7 @@ GMT_LOCAL int gmtparse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION
 			update_id = id = gmt_get_option_id (0, str);	/* If -R then we get id for RP */
 			if (id == GMT_NOTSET) Return;	/* Error: user gave shorthand option but there is no record in the history */
 			if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'R') {	/* Must deal with both RP and RG under modern mode */
-				if (GMT->current.ps.active || !strncmp (GMT->init.module_name, "subplot", 7U) || !strncmp (GMT->init.module_name, "pscoast", 7U) || !strncmp (GMT->init.module_name, "psbasemap", 9U)) {	/* Plotting module plus special options to pscoast and psbasemap: First check RP if it exists */
+				if (gmtlib_module_may_get_R_from_RP (GMT, GMT->init.module_name)) {	/* First check -RP history */
 					if (!GMT->init.history[id]) id++;	/* No RP in the history, try RG next */
 				}
 				else {	/* Only try RG for non-plotting modules. RG follows RP in gmt_unique.h order [Modern mode only] */
@@ -572,7 +572,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		if (args[arg][0] == '=' && args[arg][1] && !gmt_access (API->GMT, &args[arg][1], F_OK)) {	/* Gave a file list which we must expand into options */
 			char **flist = NULL;
 			uint64_t n_files, f;
-			n_files = gmtlib_read_list (API->GMT, &args[arg][1], &flist);
+			n_files = gmt_read_list (API->GMT, &args[arg][1], &flist);
 			if ((new_opt = GMT_Make_Option (API, '=', &args[arg][1])) == NULL)	/* Make option with the listing name flagged as option -= */
 				return_null (API, error);	/* Create the new option structure given the args, or return the error */
 			head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
@@ -584,7 +584,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 				new_opt = gmtparse_fix_gdal_files (new_opt);
 				head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 			}
-			gmtlib_free_list (API->GMT, flist, n_files);
+			gmt_free_list (API->GMT, flist, n_files);
 			continue;
 		}
 		else if (args[arg][0] == '<' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "< file" for input */
@@ -812,6 +812,7 @@ char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 
 	char *txt = NULL, *c = NULL, buffer[GMT_BUFSIZ] = {""};
 	bool first = true, skip_infiles = false;
+	int k_data;
 	size_t length = 0, inc, n_alloc = GMT_BUFSIZ;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = NULL;
@@ -834,10 +835,11 @@ char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 		}
 		else if (opt->option == GMT_OPT_INFILE)	{	/* Option for input filename [or numbers] */
 			if (skip_infiles) continue;
-			if (gmtlib_file_is_srtmlist (API, opt->arg))	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
-				snprintf (buffer, GMT_BUFSIZ, "@earth_relief_0%cs", opt->arg[strlen(opt->arg)-8]);
-			else if (gmt_M_file_is_remotedata (opt->arg) && (c = strstr (opt->arg, ".grd"))) {
-				c[0] = '\0';
+			if (gmt_file_is_tiled_list (API, opt->arg, &k_data, NULL, NULL)) {	/* Want to replace the tiled list with the original @remotefile name instead */
+				snprintf (buffer, GMT_BUFSIZ, "@%s", API->remote_info[k_data].file);
+			}
+			else if ((k_data = gmt_file_is_remotedata (API, opt->arg)) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (opt->arg, API->remote_info[k_data].ext))) {
+				c[0] = '\0';	/* Remove extension on remote file */
 				snprintf (buffer, GMT_BUFSIZ, "%s", opt->arg);
 				c[0] = '.';
 			}

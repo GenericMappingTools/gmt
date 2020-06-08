@@ -210,7 +210,7 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -271,19 +271,21 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Discrete output locations, no grid will be written */
-				if ((Ctrl->N.active = gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->N.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->N.active = true;
+				if (opt->arg[0]) Ctrl->N.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
 				break;
 			case 'S':	/* Poission's ratio */
 				Ctrl->S.nu = atof (opt->arg);
 				break;
 			case 'T':	/* Input mask grid */
-				if ((Ctrl->T.active = gmt_check_filearg (GMT, 'T', opt->arg, GMT_IN, GMT_IS_GRID)) != 0) {	/* Obtain -R -I -r from file */
+				Ctrl->T.active = true;
+				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file)))
+					n_errors++;
+				else  {	/* Obtain -R -I -r from file */
 					struct GMT_GRID *G = NULL;
-					Ctrl->T.file = strdup (opt->arg);
-					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
+					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
 						return (API->error);
 					}
 					gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
@@ -294,8 +296,6 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 					}
 					GMT->common.R.active[RSET] = true;
 				}
-				else
-					n_errors++;
 				break;
 			case 'W':	/* Expect data weights in last two columns */
 				Ctrl->W.active = true;

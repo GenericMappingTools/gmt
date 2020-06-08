@@ -408,18 +408,18 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 				case 'S': I->antarctica_mode |= GSHHS_ANTARCTICA_SKIP_INV;	break;	/* Skip everything BUT Antarctica data south of 60S */
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A modifier +a: Invalid code %c\n", p[0]);
-					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+					return GMT_PARSE_ERROR;
 					break;
 			}
 			p++;	/* Go to next code */
 		}
 		if ((I->antarctica_mode & GSHHS_ANTARCTICA_GROUND) && (I->antarctica_mode & GSHHS_ANTARCTICA_ICE)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A modifier +a: Cannot select both g and i\n");
-			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+			return GMT_PARSE_ERROR;
 		}
 		if ((I->antarctica_mode & GSHHS_ANTARCTICA_SKIP) && (I->antarctica_mode & GSHHS_ANTARCTICA_SKIP_INV)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A modifier +a: Cannot select both s and S\n");
-			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+			return GMT_PARSE_ERROR;
 		}
 	}
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
@@ -431,7 +431,7 @@ int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: No area given\n");
-		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+		return GMT_PARSE_ERROR;
 	}
 	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;
 	return (GMT_OK);
@@ -451,7 +451,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 
 	switch (*res) {
 		case 'a':	/* Automatic selection via -J or -R, if possible */
-			if (GMT->common.J.active) {	/* Use map scale xxxx as in 1:xxxx */
+			if (GMT->common.J.active && !gmt_M_is_linear (GMT)) {	/* Use map scale xxxx as in 1:xxxx */
 				double i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
 				if (i_scale > GMT_CRUDE_THRESHOLD)
 					base = 4;	/* crude */
@@ -692,12 +692,17 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 
 	/* Allocate space for arrays of bin information */
 
+	c->bin_info_g    = gmt_M_memory (GMT, NULL, nb, short);
 	c->bin_info      = gmt_M_memory (GMT, NULL, nb, short);
 	c->bin_nseg      = gmt_M_memory (GMT, NULL, nb, short);
 	c->bin_firstseg  = gmt_M_memory (GMT, NULL, nb, int);
 
 	count[0] = c->n_bin;
 	stmp = gmt_M_memory (GMT, NULL, c->n_bin, short);
+
+	/* Keep the node levels for when the grounding line polygon is in effect */
+	err = nc_get_vara_short (c->cdfid, c->bin_info_id_ANT, start, count, stmp);
+	for (i = 0; i < c->nb; i++) c->bin_info_g[i] = stmp[c->bins[i]];
 
 	if (c->ant_mode & GSHHS_ANTARCTICA_ICE) {	/* Get node levels relevant for ice-shelf */
 		err = nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp);
@@ -749,6 +754,8 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	for (k = 0; k < 4; k++) {	/* Extract node corner levels */
 		corner[k] = ((unsigned short)c->bin_info[b] >> bitshift[k]) & 7;
 		c->node_level[k] = (unsigned char)MIN (corner[k], c->max_level);
+		corner[k] = ((unsigned short)c->bin_info_g[b] >> bitshift[k]) & 7;
+		c->node_level_g[k] = (unsigned char)MIN (corner[k], c->max_level);
 	}
 	dx = c->bin_size / 60.0;
 	c->lon_sw = (c->bins[b] % c->bin_nx) * dx;
@@ -789,9 +796,10 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
 			node = ll_node + inc[k];	/* Current node index */
 			ID = c->GSHHS_node[node];	/* GSHHS Id of the polygon that determined the level of the current node */
-			while (c->node_level[k] && c->GSHHS_area[ID] < c->min_area) {	/* Polygon must be skipped and node level reset */
+			while (ID >= 0 && c->node_level[k] && c->GSHHS_area[ID] < c->min_area) {	/* Polygon must be skipped and node level reset */
 				ID = c->GSHHS_parent[ID];	/* Pick the parent polygon since that is the next polygon up */
-				c->node_level[k]--;		/* ...and drop down one level to that of the parent polygon */
+				if (c->node_level[k] != c->node_level_g[k])
+					c->node_level[k]--;		/* ...and drop down one level to that of the parent polygon */
 			}	/* Keep doing this until the polygon containing the node is "too big to fail" or we are in the ocean */
 		}
 	}
@@ -1462,6 +1470,7 @@ void gmt_free_br (struct GMT_CTRL *GMT, struct GMT_BR *c) {
 void gmt_shore_cleanup (struct GMT_CTRL *GMT, struct GMT_SHORE *c) {
 	gmt_M_free (GMT, c->bins);
 	gmt_M_free (GMT, c->bin_info);
+	gmt_M_free (GMT, c->bin_info_g);
 	gmt_M_free (GMT, c->bin_nseg);
 	gmt_M_free (GMT, c->bin_firstseg);
 	gmt_M_free (GMT, c->GSHHS_area);

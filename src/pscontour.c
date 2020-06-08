@@ -531,7 +531,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -1430,8 +1430,10 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	/* Draw or dump contours */
 
-	if (Ctrl->Q.active && Ctrl->Q.unit && (strchr (GMT_LEN_UNITS, Ctrl->Q.unit) || Ctrl->Q.unit == 'X'))	/* Need to compute distances in map units */
-		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
+	if (Ctrl->Q.active && Ctrl->Q.unit && (strchr (GMT_LEN_UNITS, Ctrl->Q.unit) || Ctrl->Q.unit == 'X')) {	/* Need to compute distances in map units */
+		if (gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
+	}
 
 	if (get_contours) {
 		bool use_it;

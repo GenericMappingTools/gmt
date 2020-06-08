@@ -216,7 +216,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -260,10 +260,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'G':	/* Output file name or name template */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacing */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -546,12 +545,20 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	else {	/* Cartesian scaling */
 		unsigned int s_unit;
-		s_unit = gmt_check_scalingopt (GMT, 'D', Ctrl->D.unit, unit_name);
+		int is;
+		if ((is = gmt_check_scalingopt (GMT, 'D', Ctrl->D.unit, unit_name)) == -1) {
+			Return (GMT_PARSE_ERROR);
+		}
+		else
+			s_unit = (unsigned int)is;
 		/* We only need inv_scale here which scales input data in these units to m */
-		gmt_init_scales (GMT, s_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+		if ((error = gmt_init_scales (GMT, s_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
+			Return (error);
+		}
 		d_mode = 0, unit = 'X';	/* Select Cartesian distances */
 	}
-	gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 	V = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	V_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	h_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */

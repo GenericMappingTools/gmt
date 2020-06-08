@@ -1,7 +1,7 @@
 .. _-U_full:
 
 **-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
-    Draw the GMT Unix System time stamp on the plot.
+    Draw the GMT system time stamp on the plot.
     By appending **+j**\ *just* [BL] and/or **+o**\ *dx/dy* [-54p/-54p], the
     user may specify the justification of the stamp and where the stamp
     should fall on the page relative to lower left corner of the plot.

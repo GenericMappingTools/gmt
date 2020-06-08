@@ -151,7 +151,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -168,7 +168,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 						continue;
 					}
 					/* Args are +w<width>[/<height>][+j<justify>][+l<spacing>][+o<dx>[/<dy>]] */
-					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jlow")) n_errors++;
+					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jlow", GMT_MSG_ERROR)) n_errors++;
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else BL */

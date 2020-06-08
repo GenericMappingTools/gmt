@@ -196,11 +196,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -297,10 +296,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'G':	/* Output grid */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'L':	/* GMT4 BCs */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -369,10 +367,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'S':	/* Slope grid */
-				if ((Ctrl->S.active = gmt_check_filearg (GMT, 'S', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->S.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->S.active = true;
+				if (opt->arg[0]) Ctrl->S.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->S.file))) n_errors++;
 				break;
 
 			default:	/* Report bad options */
@@ -439,6 +436,8 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
+
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	if (Ctrl->Q.mode & 1) {	/* Read in previous statistics */
 		char sfile[PATH_MAX] = {""};
@@ -524,7 +523,10 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (gmt_M_is_subset (GMT, Surf->header, wesn)) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, Surf->header, wesn)) {	/* Subset requested; make sure wesn matches header spacing */
+		if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "")))
+			Return (error);
+	}
 	gmt_grd_init (GMT, Surf->header, options, true);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, Surf) == NULL) {	/* Get subset */

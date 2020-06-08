@@ -219,7 +219,7 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Supplemental parameters */
@@ -276,10 +276,9 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 				break;
 
 			case 'F':	/* File with hotspot motion history */
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 
 			case 'L':	/* Specify what kind of track to project */

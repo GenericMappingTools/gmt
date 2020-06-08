@@ -137,20 +137,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
-				break;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+			break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -477,7 +475,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "The -S option requires a geographic grid\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+		if (gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 		/* Set w/e to center and adjust in case of -/+ 360 stuff */
 		wesn_new[XLO] = wesn_new[XHI] = Ctrl->S.lon;
 		while (wesn_new[XLO] < G->header->wesn[XLO]) wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
@@ -627,7 +626,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (test_header.wesn, wesn_new, 4, double);
 	gmt_M_memcpy (test_header.inc, G->header->inc, 2, double);
-	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file)))
+		Return (error);
 
 	/* OK, so far so good. Check if new wesn differs from old wesn by integer dx/dy */
 

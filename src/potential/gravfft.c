@@ -202,10 +202,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 					GMT_Report (API, GMT_MSG_ERROR, "A maximum of two input grids may be processed\n");
 				}
-				else if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
-				else
-					n_errors++;
+				else {
+					Ctrl->In.file[Ctrl->In.n_grids] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]))) n_errors++;;
+					Ctrl->In.n_grids++;
+				}
 				break;
 			case 'C':	/* For theoretical curves only */
 				Ctrl->C.active = true;
@@ -276,10 +277,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				Ctrl->I.active = true;

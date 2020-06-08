@@ -167,10 +167,9 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -191,10 +190,9 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 				Ctrl->D.text = strdup (opt->arg);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -344,14 +342,12 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
-		return GMT_RUNTIME_ERROR;
+		Return (GMT_RUNTIME_ERROR);
 	}
 	if ((check = segy_get_binhd (fpi, &binhead)) != true) {
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
-		return GMT_RUNTIME_ERROR;
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (swap_bytes) {
@@ -400,7 +396,7 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "No sample interval in reel header\n");
 		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		Return (GMT_RUNTIME_ERROR);
 	}
 	if (read_cont && (Ctrl->Q.value[Y_ID] != Grid->header->inc[GMT_Y])) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Grid spacing != sample interval, setting sample interval to grid spacing\n");

@@ -195,10 +195,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -653,11 +652,11 @@ EXTERN_MSC int GMT_pssegyz (void *V_API, int mode, void *args) {
 
 	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {
 		fclose (fpi);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	if ((check = segy_get_binhd (fpi, &binhead)) != true) {
 		fclose (fpi);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Ctrl->A.active) {
@@ -685,7 +684,6 @@ use a few of these*/
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_Report (API, GMT_MSG_ERROR, "Number of samples per trace unknown\n");
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
 		if (fpi != stdin) fclose (fpi);
 		Return(GMT_RUNTIME_ERROR);
 	}
@@ -705,7 +703,7 @@ use a few of these*/
 	if (!Ctrl->Q.value[Y_ID]) { /* still no sample interval at this point is a problem! */
 		GMT_Report (API, GMT_MSG_ERROR, "No sample interval in reel header\n");
 		if (fpi != stdin) fclose (fpi);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	bitmap = gmt_M_memory (GMT, NULL, nm, unsigned char);

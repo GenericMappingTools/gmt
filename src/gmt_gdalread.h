@@ -161,7 +161,7 @@ struct GMT_GDALREAD_OUT_CTRL {
 	} Int16;
 	struct UInt32 {			/* Declare unsigned int pointers */
 		bool active;
-		int *data;
+		unsigned int *data;
 	} UInt32;
 	struct Int32 {			/* Declare int pointers */
 		bool active;
@@ -189,6 +189,7 @@ struct GMT_GDALREAD_OUT_CTRL {
 	const char	*DriverLongName;
 	const char	*color_interp;
 	int	*ColorMap;
+	int ProjRefEPSG;
 	int nIndexedColors; /* Number of colors in a paletted image */
 	int	RasterXsize;
 	int	RasterYsize;

@@ -144,10 +144,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_IMAGE))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_IMAGE, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -170,7 +170,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				else {	/* args are now [+j<justify>][+o<dx>[/<dy>]][+n<n_columns>[/<n_rows>]][+r<dpi>] */
-					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw")) n_errors++;
+					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw", GMT_MSG_ERROR)) n_errors++;
 					/* Required modifier +w OR +r */
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;

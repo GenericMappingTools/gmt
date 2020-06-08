@@ -14,7 +14,7 @@ Synopsis
 
 **gmt batch** *mainscript*
 |-N|\ *prefix*
-|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
@@ -37,7 +37,7 @@ module simplifies (and hides) most of the steps normally needed to set up a full
 processing sequence.  Instead, the user can focus on composing the main processing script and let the
 parallel execution of jobs be automatic.  We can set up required data sets and do one-time calculations
 via an optional *preflight* script.  After completion we can optionally assemble the data output
-and make summary plots in the *postflight* script.
+and make summary plots or similar in the *postflight* script.
 
 
 Required Arguments
@@ -58,14 +58,15 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
     Either specify how many jobs to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of jobs instead), or supply a file with
     a set of parameters, one record (i.e., row) per job.  The values in the columns will be available to the
     *mainscript* as named variables **BATCH_COL0**, **BATCH_COL1**, etc., while any trailing text
     can be accessed via the variable **BATCH_TEXT**.  Append **+w** to split the trailing
     string into individual *words* that can be accessed via variables **BATCH_WORD0**, **BATCH_WORD1**,
-    etc. The number of records equals the number of jobs. Note that the *preflight* script is allowed to
+    etc. By default we use any white-space to separate words.  Append *str* to select another character(s)
+    as the valid separator(s). The number of records equals the number of jobs. Note that the *preflight* script is allowed to
     create *timefile*, hence we check for its existence both before *and* after the *preflight* script has
     completed.  Normally, the job numbering starts at 0; you can change this by appending a different starting
     job number via **+s**\ *first*.  **Note**: All jobs are still included; this modifier only affects
@@ -110,10 +111,11 @@ Optional Arguments
 .. _-Sf:
 
 **-Sf**\ *postflight*
-    The optional GMT modern mode *postflight* (written in the same scripting language as *mainscript*) can be
+    The optional *postflight* (written in the same scripting language as *mainscript*) can be
     used to perform final processing steps **f**\ ollowing the completion of all the individual jobs, such as
     assembling all the products into a single larger file.  The script may also make one or more illustrations
-    using the products or stacked data after the main processing is completed..
+    using the products or stacked data after the main processing is completed. It does not have to be a GMT
+    script.
 
 .. _batch-V:
 
@@ -162,7 +164,7 @@ to parameters that vary with the job counter: **BATCH_JOB**\ : The current job n
 The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_TAG**), Furthermore, if a *timefile*
 was given then variables **BATCH_COL0**\ , **BATCH_COL1**\ , etc. are also set, yielding one variable per
 column in *timefile*.  If *timefile* has trailing text then that text can be accessed via the variable
-**BATCH_TEXT**, and if word-splitting was explicitly requested by **+w* modifier to **-T** then the trailing
+**BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to **-T** then the trailing
 text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc. **Note**: Any
 product(s) made by the processing scripts should be named using **BATCH_NAME** as their name prefix as these
 will be automatically moved up to the starting directory upon completion.
@@ -237,7 +239,7 @@ Examples
 
 We extract a subset of bathymetry for the Gulf of Guinea from the 2x2 arc minute resolution Earth DEM and compute
 Gaussian filtered high-pass grids using filter widths ranging from 10 to 200 km in steps of 10 km. When the grids
-are all completed we determine the standard deviation in the resul.  To replicate our setup, try::
+are all completed we determine the standard deviation in the result.  To replicate our setup, try::
 
     cat << EOF > pre.sh
     gmt begin
@@ -259,7 +261,7 @@ are all completed we determine the standard deviation in the resul.  To replicat
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nfilter -V -Z
     
-Of course, the syntax of how variables are used vary according to the scripting language. Here, we actuallly
+Of course, the syntax of how variables are used vary according to the scripting language. Here, we actually
 build the pre.sh, main.sh, and post.sh scripts on the fly, hence we need to escape any variables (since they
 start with a dollar sign that we need to be written verbatim). At the end of the execution we find 20 grids
 (e.g., such as filter_07.grd), as well as the filter_std.grd file obtained by stacking all the individual
@@ -267,6 +269,29 @@ scripts and computing a standard deviation. The information needed to do all of 
 the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch***
 supplies the extra machinery. The **batch** module automatically manages the parallel execution loop over all
 jobs using all available cores and launches new jobs as old ones complete.
+
+As another example, we get a list of all European countries and make a simple coast plot of each of them,
+placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
+we combine all the individual PDFs into a single file and delete them::
+
+    cat << EOF > pre.sh
+    gmt begin
+        gmt coast -E=EU+l > countries.txt
+    gmt end
+    EOF
+    cat << EOF > main.sh
+    gmt begin \${BATCH_NAME} pdf
+        gmt coast -R\${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t"\${BATCH_WORD1}" -E\${BATCH_WORD0}+gred+p0.5p
+        echo \${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p
+    gmt end
+    EOF
+    cat << EOF > post.sh
+    gs -dQUIET -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=\${BATCH_PREFIX}.pdf -dBATCH \${BATCH_PREFIX}_*.pdf
+    rm -f \${BATCH_PREFIX}_*.pdf
+    EOF
+    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
+
+Here, the postflight script is not even a GMT script; it simply runs gs and deletes what we don't want.
 
 See Also
 --------

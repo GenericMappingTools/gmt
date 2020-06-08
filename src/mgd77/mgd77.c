@@ -6092,8 +6092,10 @@ bool MGD77_fake_times (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD
 		t[i] = MGD77_rdc2dt (GMT, F, rata_die, 0.0);
 	}
 	if (t[1] <= t[0]) return (false);	/* Bad times */
-	if ((dist = gmt_dist_array_2 (GMT, lon, lat, nrec, 1.0, 1)) == NULL)	/* Get flat-earth distance in meters */
+	if ((dist = gmt_dist_array_2 (GMT, lon, lat, nrec, 1.0, 1)) == NULL) {	/* Get flat-earth distance in meters */
 		gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+		return (false);
+	}
 	slowness = (t[1] - t[0]) / dist[nrec-1];				/* Inverse average speed */
 	for (i = 0; i < nrec; i++) times[i] = t[0] + slowness * dist[i];	/* Fake time prediction */
 	gmt_M_free (GMT, dist);

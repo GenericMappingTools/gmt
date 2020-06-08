@@ -20,7 +20,7 @@ Synopsis
 [ |-D| ]
 [ |-I|\ *intensity* ]
 [ |-M| ]
-[ |-N|\ [*factor*] ]
+[ |-N|\ [**i**\|\ **o**][*factor*] ]
 [ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -43,7 +43,7 @@ the two *raster1* and *raster2* (grids or images) using the *weights* for
 normalized component grids.
 All operations support adjusting the final color image via an *intensity*
 grid, converting a color image to monochrome, or strip off the alpha layer.
-All *raster?*, *alpha*, *intensity* and *weights* files must have the same 
+All *raster?*, *alpha*, *intensity* and *weights* files must have the same
 dimensions. The optional *alpha*, *intensity* and *weights* files may be
 replaced by constant values instead.
 
@@ -75,7 +75,7 @@ Optional Arguments
 
 **-C**
     **C**\ onstruct an output image from one or three normalized input grids;
-    these grids must all have values in the 0-1 range only (see **-N** if they don't).
+    these grids must all have values in the 0-1 range only (see **-Ni** if they don't).
     Optionally, use **-A** to add transparency and **-I** to add intensity
     to the colors before writing the image. For three layers the input order must
     be red grid first, then the green grid, and finally the blue grid.
@@ -83,10 +83,10 @@ Optional Arguments
 .. _-D:
 
 **-D**
-    **D**\ econstruct a single image into one or three normalized output grids.
+    **D**\ econstruct a single image into one or three output grids.
     An extra grid will be written if the image contains an alpha (transparency layer).
-    All grids written will have values in the 0-1 range exclusively; however, you
-    can use **-N** to undo this implicit normalization.
+    All grids written will reflect the original image values in the 0-255 range exclusively;
+    however, you can use **-No** to normalize the values to the 0-1 range.
     The output names uses the name template given by **-G** which must contain the
     C-format string "%c".  This code is replaced by the codes R, G, B and A for color
     images and g, A for gray-scale images.
@@ -94,7 +94,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ *intensity*
-    A constant intensity or grid (-1/+1 range) to modify final output image colors.
+    A constant intensity or grid (-1 to +1 range) to modify final output image colors.
 
 .. _-M:
 
@@ -104,8 +104,9 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [*factor*] 
-    Normalize all input grids from 0-255 to 0-1 [All input grids are assumed to be in 0-1 range].
+**-N**\ [**i**\|\ **o**][*factor*]
+    Normalize all input grids from 0-255 to 0-1 and all output grids from 0-1 to 0-255.
+    To only turn on normalization for input *or* output, use **-Ni** or **-No** instead.
     To normalize by another factor than 255, append an optional *factor* value.
 
 .. _-Q:
@@ -145,7 +146,7 @@ Examples
 To blend the night and day views of the Earth using a weight image computed for
 a particular day/night terminus, try::
 
-    gmt grdmix @BlueMarble_06m.tif @BlackMarble_06m.tif -W@weight.png -Gnewmap.png
+    gmt grdmix @earth_day_06m @earth_night_06m -W@weight.png -Gnewmap.png
 
 Suppose map1.png and map2.png are overlapping maps of different quantities, but we wish
 to use the image visible.png to blend them into a single image: Where visible.png has
@@ -163,7 +164,7 @@ To insert the values from the grid transparency.grd into the image gravity.tif a
 To break the color image layers.png into separate, normalized red, green, and blue grids (and possibly an alpha grid),
 we run::
 
-    gmt grdmix layers.png -D -Glayer_%c.grd
+    gmt grdmix layers.png -D -Glayer_%c.grd -No
 
 To recombine the three normalized grids red.grd, green.grd, and blue.grd into a TIFF file, but
 applying intensities from intens.grd and add transparency from transp.grd grids, try::
