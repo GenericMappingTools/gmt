@@ -452,6 +452,7 @@ GMT_LOCAL bool pshistogram_new_syntax (struct GMT_CTRL *GMT, char *L, char *T, c
 	if (L) return false;				/* Here, must have given -L<pen> */
 	if (W && (strstr (W, "+b") || strstr (W, "+h") || strstr (W, "+l"))) return false;	/* Gave -W<width>+b|h|l */
 	if (W && strchr (GMT_DIM_UNITS, W[strlen(W)-1])) return true;	/* Must have given a -W<pen> */
+	if (W && strchr (W, ',')) return true;	/* Must have given a -W<pen>,<color> */
 	/* Unclear, get -T and -W args and see if we can learn from their values */
 	w_val = atof (W);	t_val = atof (T);
 	if (w_val == 0.0) return true;	/* Must have given a zero pen width (faint) */
