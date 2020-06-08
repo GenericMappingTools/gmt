@@ -13499,6 +13499,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	gmt_M_unused(this_module_kw);
 	#endif
 
+	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
+
+	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+		if (opt->arg[0] != '@') continue;	/* No remote file argument given */
+		gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then tis handles any missing registration _p|_g */
+	}
+
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
 
@@ -13909,7 +13916,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (opt->arg[0] != '@') continue;	/* No remote file argument given */
-        	gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then tis handles any missing registration _p|_g */
 			if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET) {	/* Remote file without file extension */
 				char *file = malloc (strlen(opt->arg)+1+strlen (API->remote_info[k_data].ext));
 				sprintf (file, "%s", opt->arg);

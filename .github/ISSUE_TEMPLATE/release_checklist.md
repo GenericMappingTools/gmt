@@ -32,13 +32,15 @@ assignees: ''
 - [ ] create macOS bundle (@PaulWessel)
 - [ ] create Windows installers (win32 and win64) (@joa-quim)
 - [ ] check if the source tarballs, macOS bundle and Windows installers work well
-- [ ] make a tag and push it to github
+- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
+- [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
     ```
     git tag x.x.x
     git push --tags
     ```
-- [ ] go to [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) and make a release. Remember to attach the source tarballs, macOS bundle and Windows installers.
-- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
+- [ ] make a [GitHub Release](https://github.com/GenericMappingTools/gmt/releases).
+  **GitHub actions automatically create a draft release for us after pushing the tag.**
+  We need to check if everything is OK and then publish the release.
 - [ ] upload the tarball to zenodo (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
