@@ -199,7 +199,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				string = strdup (datasets);
 				while ((token = strsep (&string, ",")) != NULL)
 					list[d++] = strdup (token);
-                gmt_M_str_free (tofree);
+				gmt_M_str_free (tofree);
 			}
 			for (k = 0; k < API->n_remote_info; k++) {
 				if (n_items) {	/* Want specific planet or dataset */
@@ -229,15 +229,14 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NOTICE, "Unable to create or find your cache directory\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
-			/* Read gmt_hash_server.txt, loop over lines, skip datasets, then call gmt_download... on the rest */
+			/* Read gmt_hash_server.txt, loop over lines, call gmt_download */
 			snprintf (hashpath, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, GMT_HASH_SERVER_FILE);
 			if ((fp = fopen (hashpath, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to access or read %s\n", hashpath);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			fgets (line, GMT_LEN256, fp);	/* Skip first record */
+			fgets (line, GMT_LEN256, fp);	/* Skip first record with record count */
 			while (fscanf (fp, "%s %*s %*s", line) == 1) {
-				if (strncmp (line, "earth_relief_", 13U) == 0) continue;	/* Skip old references to data sets in the hash table */
 				sprintf (file, "@%s", line);
 				gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
 			}
