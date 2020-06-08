@@ -126,6 +126,16 @@ To get all the data for Earth but only for 30 arc sec and coarser, and leave as 
 
 As shown in the table, the largest dataset may take some time to download the data from GMT server. Be patient!
 
+Data Updates
+------------
+
+These data sets are updated from time to time as our aim is to present the very latest version
+of the data.  This means we (a) do not support multiple versions of a dataset (you must obtain
+earlier versions of any published data sets elsewhere), (b) as GMT detects a new version on the
+server it will download that when you access the remote data set and overwrite any previous version,
+and (c) any data set we deem obsolete will be removed from the server, and hence will be removed
+from your .gmt/server area as well when the syncing occurs.
+
 Data References
 ---------------
 
