@@ -243,6 +243,9 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 /* Fraction of increment to force outward region expansion */
 #define GMT_REGION_INCFACTOR 0.25
 
+/* Allowable refpoint codes */
+#define GMT_REFPOINT_CODES "gjJnx"
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,

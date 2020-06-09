@@ -12283,7 +12283,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 	/* Determine if we got an reference point or a region */
 
-	if (strchr ("gjJnx", text[0])) {	/* Did the reference point thing. */
+	if (strchr (GMT_REFPOINT_CODES, text[0])) {	/* Did the reference point thing. */
 		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]][+s<file>], with +s<file> only in classic mode */
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
@@ -15464,7 +15464,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 	int n, justify = 0;
 	enum GMT_enum_refpoint mode = GMT_REFPOINT_NOTSET;
 	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, the_rest[GMT_LEN256] = {""};
-	static char *kind = "gjJnx";	/* The five types of refpoint specifications */
+	static char *kind = GMT_REFPOINT_CODES;	/* The five types of refpoint specifications */
 	char *arg = strdup (arg_in);	/* SInce it may be a constant */
 	struct GMT_REFPOINT *A = NULL;
 
