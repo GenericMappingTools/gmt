@@ -209,6 +209,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "MAP_ANNOT_OFFSET_PRIMARY"},
 	{ 0, "MAP_ANNOT_OFFSET_SECONDARY"},
 	{ 0, "MAP_ANNOT_ORTHO"},
+	{ 0, "MAP_AUTO_SCALE"},
 	{ 0, "MAP_DEFAULT_PEN"},
 	{ 0, "MAP_DEGREE_SYMBOL"},
 	{ 0, "MAP_FRAME_AXES"},
@@ -5791,6 +5792,8 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
 	/* MAP_ANNOT_ORTHO */
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
+	/* MAP_AUTO_SCALE */
+	GMT->current.setting.map_auto_scale = 0;
 	/* MAP_DEGREE_SYMBOL (degree) */
 	GMT->current.setting.map_degree_symbol = gmt_degree;
 	/* MAP_FRAME_AXES */
@@ -9431,11 +9434,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 		case GMTCASE_FONT:	/* Special to set all fonts */
 			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
-			        gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core) +
-			        gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
-			        gmtlib_setparameter (GMT, "FONT_TAG", value, core) +
-			        gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
-			        gmtlib_setparameter (GMT, "FONT_LABEL", value, core);
+				gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core) +
+				gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
+				gmtlib_setparameter (GMT, "FONT_TAG", value, core) +
+				gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
+				gmtlib_setparameter (GMT, "FONT_LABEL", value, core);
 			/*      FONT_LOGO is purposely skipped */
 			break;
 		case GMTCASE_FONT_ANNOT:
@@ -9642,6 +9645,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_ANNOT_ORTHO:
 			strncpy (GMT->current.setting.map_annot_ortho, lower_value, 5U);
+			break;
+		case GMTCASE_MAP_AUTO_SCALE:
+			if (value[0] == '\0' || !strcmp (lower_value, "off"))	/* Default */
+				GMT->current.setting.map_auto_scale = false;
+			else if (!strcmp (lower_value, "on"))
+				GMT->current.setting.map_auto_scale = true;
+			else
+				error = true;
 			break;
 		case GMTCASE_DEGREE_SYMBOL:
 			GMT_COMPAT_TRANSLATE ("MAP_DEGREE_SYMBOL");
@@ -11113,6 +11124,12 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			/* Intentionally fall through */
 		case GMTCASE_MAP_ANNOT_ORTHO:
 			strncpy (value, GMT->current.setting.map_annot_ortho, GMT_BUFSIZ-1);
+			break;
+		case GMTCASE_MAP_AUTO_SCALE:
+			if (GMT->current.setting.map_auto_scale)
+				snprintf (value, GMT_LEN256, "on");
+			else
+				snprintf (value, GMT_LEN256, "off");
 			break;
 		case GMTCASE_DEGREE_SYMBOL:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */

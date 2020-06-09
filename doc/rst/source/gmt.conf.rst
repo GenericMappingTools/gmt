@@ -613,6 +613,10 @@ MAP Parameters
         **e**, **s**, **n**, **z** (uppercase allowed as well). [we] (if nothing specified).
         Note that this setting can be overridden via the **+a** modifier in **-B**.
 
+    **MAP_AUTO_SCALE**
+        Determines if basemap font sizes, pen thicknesses, tick-lengths, and offsets will
+        be computed from the plot dimensions (**on**) or if they should be set manually (**off**) [off].
+
     **MAP_DEFAULT_PEN**
         Sets the default of all pens related to **-W** options. Prepend
         **+** to overrule the color of the parameters
@@ -630,8 +634,9 @@ MAP Parameters
         Sets which axes to draw and annotate. Combine any uppercase **W**,
         **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
         north and/or vertical (perspective view only) axis. Use lower case
-        to draw the axis only, but not annotate. Add an optional **+** to
-        draw a cube of axes in perspective view. [WESN].
+        to draw and tick the axis only, but not annotate, or use **l**, **r**,
+        **b** or **t** to just draw the axis. Add an optional **+** to
+        draw a cube of axes in perspective view. [WrSt].
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [thicker,black].

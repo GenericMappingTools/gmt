@@ -150,6 +150,7 @@ struct GMT_DEFAULTS {
 	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
 	unsigned int map_graph_extension_unit;	/* If mapframetype is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */
 	bool map_logo;			/* Plot time and map projection on map [false] */
+	bool map_auto_scale;	/* Auto-scale pens, fonts, offsets based on map dimension [manual|auto] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
 	struct GMT_PEN map_grid_pen[2];		/* Pen attributes for primary and secondary gridlines [default,black/thinner,black] */

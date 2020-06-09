@@ -5436,11 +5436,72 @@ GMT_LOCAL void gmtplot_check_primary_secondary (struct GMT_CTRL *GMT) {
 	}
 }
 
+GMT_LOCAL void gmtplot_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
+	/* If the primary font size is zero then we want auto-scaling based on plot size */
+	double fontsize, map_dim_cm, scale;
+	double const pt = 1.0/72.0;	/* points to inch */
+
+	/* If map frame is fancy then we cannot have lrbt */
+
+	if (GMT->current.setting.map_frame_type == GMT_IS_FANCY || GMT->current.setting.map_frame_type == GMT_IS_ROUNDED) {
+		for (unsigned int k = 0; k < 4; k++)
+			GMT->current.map.frame.side[k] |= GMT_AXIS_BARB;
+	}
+
+	if (!GMT->current.setting.map_auto_scale) return;
+	/* use this equation to compute the primary annotation font size */
+
+	map_dim_cm = MAX (GMT->current.map.width, GMT->current.map.height) * GMT->session.u2u[GMT_INCH][GMT_CM];
+	fontsize = (2.0/15.0) * (map_dim_cm - 10.0) + 8;
+	scale = fontsize / 10.0;	/* scaling of offsets and lengths related to the modern 10p size */
+	fprintf (stderr, "Primary annotation font size: %g p  dim scaling %g\n", fontsize, scale);
+
+	GMT->current.setting.font_annot[GMT_PRIMARY].size = fontsize;
+	GMT->current.setting.font_annot[GMT_SECONDARY].size = fontsize * (12.0/10.0);	/* Modern 12p vs 10p */
+	GMT->current.setting.font_label.size = fontsize * (16.0/12.0);	/* Modern 14p vs 10p */
+	GMT->current.setting.font_heading.size = fontsize * (32.0/12.0);	/* Modern 28p vs 10p */
+	GMT->current.setting.font_tag.size = fontsize * (20.0/12.0);	/* Modern 18p vs 10p */
+	GMT->current.setting.font_title.size = fontsize * (24.0/12.0);	/* Modern 22p vs 10p */
+	GMT->current.setting.font_logo.size = fontsize * (8.0/12.0);	/* Classic 8p vs 10p */
+
+	/* Offsets */
+
+	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = 4 * pt * scale; /* 4p */
+	GMT->current.setting.map_label_offset = 6 * pt * scale;	/* 6p */
+	GMT->current.setting.map_title_offset = 12 * pt * scale;	/* 12p */
+	GMT->current.setting.map_heading_offset = 16 * pt * scale;	/* 16p */
+
+	/* Tick lengths */
+
+	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 3 * pt * scale;	/* 3p */
+	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 1.5 * pt * scale;	/* 1.5p */
+	GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 12 * pt * scale;	/* 12p */
+	GMT->current.setting.map_tick_length[GMT_TICK_LOWER] = 3 * pt * scale;	/* 3p */
+
+	/* Frame, tick and gridline pens */
+
+	GMT->current.setting.map_frame_width = 3 * pt * scale; /* 3p */
+	GMT->current.setting.map_frame_pen.width = 1.5 * scale; /* 1.5p (thicker) */
+	GMT->current.setting.map_tick_pen[GMT_PRIMARY].width = GMT->current.setting.map_tick_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
+	GMT->current.setting.map_grid_pen[GMT_PRIMARY].width = 0.25 * scale;	/* 0.25p (default) */
+	GMT->current.setting.map_grid_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
+
+	if (GMT->current.setting.map_frame_type == GMT_IS_FANCY || GMT->current.setting.map_frame_type == GMT_IS_ROUNDED) {
+		/* Extend ticks the width of the fancy frame */
+		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] += GMT->current.setting.map_frame_width;
+		GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  += GMT->current.setting.map_frame_width;
+		GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] += GMT->current.setting.map_frame_width;
+		GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  += GMT->current.setting.map_frame_width;
+	}
+}
+
 void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	unsigned int side;
 	bool clip_on = false;
 	double w, e, s, n;
 	struct PSL_CTRL *PSL= GMT->PSL;
+
+	gmtplot_auto_font_tick_sizes (GMT);
 
 	if (!GMT->common.B.active[GMT_PRIMARY] && !GMT->common.B.active[GMT_SECONDARY]) return;	/* No frame annotation/ticks/gridlines specified */
 

@@ -6610,6 +6610,13 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	}
 	f *= GMT->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
 
+	if (gmt_M_axis_is_geo (GMT, axis)) {	/* Need more space for degree symbol and WESN letters not considered in the algorithm */
+		if (strchr (GMT->current.setting.format_geo_map, 'F'))	/* Need more space for degree symbol and letter */
+			d *= 1.75;
+		else	/* Just more space for degree symbol */
+			d *= 1.25;
+	}
+
 	/* First guess of interval */
 	d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.20));
 
