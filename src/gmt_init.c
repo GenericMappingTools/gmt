@@ -12870,7 +12870,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 	switch (family) {
 		case GMT_IS_GRID:
 			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
-			if ((k_data = gmt_file_is_remotedata (API, opt->arg)) != GMT_NOTSET) {	/* This is a remote grid so -Rd */
+			if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET) {	/* This is a remote grid so -Rd */
 				wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
 			}
 			else {	/* Must read the grid header */
@@ -17397,7 +17397,7 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 	q = strchr  (file, '?');	/* Address of the first ? or NULL */
 	s = strrchr (file, '/');	/* Address of the last / or NULL */
 	/* First distinguish between cache, urls, and special data files from the GMT server */
-	if (gmt_M_file_is_cache (file)) {	/* Special @<filename> syntax for GMT cache files */
+	if (gmt_file_is_cache (GMT->parent, file)) {	/* Special @<filename> syntax for GMT cache files */
 		code |= GMT_CACHE_FILE;
 		pos[0] = 1;	/* Must skip the first character to find the file name */
 	}

@@ -838,7 +838,7 @@ char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 			if (gmt_file_is_tiled_list (API, opt->arg, &k_data, NULL, NULL)) {	/* Want to replace the tiled list with the original @remotefile name instead */
 				snprintf (buffer, GMT_BUFSIZ, "@%s", API->remote_info[k_data].file);
 			}
-			else if ((k_data = gmt_file_is_remotedata (API, opt->arg)) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (opt->arg, API->remote_info[k_data].ext))) {
+			else if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (opt->arg, API->remote_info[k_data].ext))) {
 				c[0] = '\0';	/* Remove extension on remote file */
 				snprintf (buffer, GMT_BUFSIZ, "%s", opt->arg);
 				c[0] = '.';

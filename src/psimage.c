@@ -311,7 +311,7 @@ GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if 
 
 	if (F == NULL || F[0] == '\0') return GMT_NOTSET;	/* Nothing given */
 	if (gmt_M_file_is_memory (F)) return (0);	/* Special passing of image */
-	if (gmt_M_file_is_cache (F)) {	/* Must download, then modify the name */
+	if (gmt_file_is_cache (GMT->parent, F)) {	/* Must download, then modify the name */
 		char *tmp = strdup (&F[1]);
 		(void)gmt_download_file_if_not_found (GMT, F, 0);
 		gmt_M_str_free (*file);

@@ -275,7 +275,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 					Ctrl->I.derive = true;
 				else if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
 					Ctrl->I.file = strdup (opt->arg);
-				else if (gmt_M_file_is_cache (opt->arg))	/* Got a remote file */
+				else if (gmt_M_file_is_remote (opt->arg))	/* Got a remote file */
 					Ctrl->I.file = strdup (opt->arg);
 				else if (opt->arg[0] && !gmt_not_numeric (GMT, opt->arg)) {	/* Looks like a constant value */
 					Ctrl->I.value = atof (opt->arg);

@@ -33,7 +33,7 @@
 
 GMT_LOCAL GDALDatasetH gdal_open (struct GMT_CTRL *GMT, char *gdal_filename) {
 	char *file = NULL, path[PATH_MAX] = {""};
-	if (gmtlib_check_url_name (gdal_filename))	/* A vis*** URL, pass to GDAL as is */
+	if (gmtlib_found_url_for_gdal (gdal_filename))	/* A vis*** URL, pass to GDAL as is */
 		strncpy (path, gdal_filename, PATH_MAX-1);
 	else if (strchr(gdal_filename, ':'))		/* Assume it is a SUBDATASET */
 		strncpy (path, gdal_filename, PATH_MAX-1);
