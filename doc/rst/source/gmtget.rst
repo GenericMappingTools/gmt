@@ -45,8 +45,9 @@ PARAMETER
     *selection* may be *cache* (get the entire cache directory with the files
     used in the GMT examples and tests), *data* (the entire data directory
     on the server), or *all* (both *cache* and *data*).  You can further limit
-    the *data* download by appending =\ *planet*.  Consult the :doc:`/datasets` documentation
-    to see what data sets are currently available from the server.
+    the *data* download by appending =\ *planet* or =\ *datasetlist*.  Consult
+    the :doc:`/datasets` documentation to see what data sets are currently
+    available from the server as this may change over time.
 
 .. _-G:
 
@@ -90,6 +91,10 @@ Examples
 To download all the Earth gridded products, leaving tiles as JP2000 files, try::
 
     gmt get -Ddata=earth -N
+
+To download just the Earth masks and day image data, with a cutoff at 1x1 arc minutes, try::
+
+    gmt get -Ddata=earth_mask,earth_day -I1m
 
 To download the entire cache directory contents, try::
 

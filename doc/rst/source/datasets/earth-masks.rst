@@ -70,3 +70,5 @@ To make a pixel-registered mask that has NaNs on land and 1 in the oceans, use::
 Finally, to make a pixel-registered mask that is 1 for lakes and NaN elsewhere, try::
 
     gmt grdmath @earth_mask_01m 2 EQ 0 NAN = lakes_and_NaN.grd
+
+.. include:: ../data-updating.rst_

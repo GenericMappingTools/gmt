@@ -365,6 +365,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC unsigned int gmt_char_count (char *txt, char c);
 EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 EXTERN_MSC uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list);
 EXTERN_MSC char *gmt_get_strwithtab (const char *txt);
