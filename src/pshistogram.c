@@ -253,12 +253,12 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 }
 
 GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct PSHISTOGRAM_D *D) {
-	int i, index, fmode = 0, label_justify;
+	int i, k = 0, index, fmode = 0, label_justify;
 	uint64_t ibox;
 	char label[GMT_LEN64] = {""};
 	bool first = true;
 	double area = 0.0, rgb[4], x[4], y[4], dx, xx, yy, xval, label_angle = 0.0, *px = NULL, *py = NULL;
-	double plot_x = 0.0, plot_y = 0.0;
+	double plot_x = 0.0, plot_y = 0.0, *xpol = NULL, *ypol = NULL;
 	struct GMT_FILL *f = NULL;
 
 	if (draw_outline) gmt_setpen (GMT, pen);
@@ -272,6 +272,10 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 		py = y;
 	}
 
+	if (stairs && F->n_boxes) {	/* Build the outline polygon */
+		xpol = gmt_M_memory (GMT, NULL, 2*(F->n_boxes+1), double);
+		ypol = gmt_M_memory (GMT, NULL, 2*(F->n_boxes+1), double);
+	}
 	/* First lay down the bars or curve */
 	for (ibox = 0; ibox < F->n_boxes; ibox++) {
 		if (stairs || F->boxh[ibox]) {
@@ -310,10 +314,10 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 			if (stairs) {
 				if (first) {
 					first = false;
-					PSL_plotpoint (PSL, px[0], py[0], PSL_MOVE);
+					xpol[k] = px[0];	ypol[k++] = py[0];
 				}
-				PSL_plotpoint (PSL, px[3], py[3], PSL_DRAW);
-				PSL_plotpoint (PSL, px[2], py[2], PSL_DRAW);
+				xpol[k] = px[3];	ypol[k++] = py[3];
+				xpol[k] = px[2];	ypol[k++] = py[2];
 			}
 			else if (cpt) {
 				index = gmt_get_rgb_from_z (GMT, P, xval, rgb);
@@ -330,7 +334,19 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 			}
 		}
 	}
-	if (stairs && F->n_boxes) PSL_plotpoint (PSL, px[1], py[1], PSL_DRAW + PSL_STROKE);
+	if (stairs && F->n_boxes) {
+		xpol[k] = px[1];	ypol[k++] = py[1];
+		if (fill) {
+			gmt_setfill (GMT, fill, 0);
+			PSL_plotpolygon (PSL, xpol, ypol, k);
+		}
+		if (draw_outline) {
+			gmt_setfill (GMT, NULL, 1);
+			PSL_plotpolygon (PSL, xpol, ypol, k);
+		}
+		gmt_M_free (GMT, xpol);
+		gmt_M_free (GMT, ypol);
+	}
 
 	/* If -D then place labels */
 	if (D->active) {	/* Place label, so set font */
