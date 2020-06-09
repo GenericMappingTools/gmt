@@ -269,8 +269,8 @@ int gmt_remote_no_extension (struct GMTAPI_CTRL *API, const char *file) {
 GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, const char *file, int tile) {
 	/* Display a notice regarding the source of this data set */
 	char *c = NULL, name[GMT_LEN128] = {""};
-	if (!API->server_announced && !strchr (file, ':')) {	/* Server file has no http:// here */
-		if ((c = strrchr (API->GMT->session.DATASERVER, '/')))	/* FOund last slash in http:// */
+	if (key != GMT_NOTSET && !API->server_announced && !strchr (file, ':')) {	/* Server file has no http:// here */
+		if ((c = strrchr (API->GMT->session.DATASERVER, '/')))	/* Found last slash in http:// */
 			strcpy (name, ++c);
 		else /* Just in case */
 			strcpy (name, API->GMT->session.DATASERVER);
@@ -279,8 +279,12 @@ GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, 
 		GMT_Report (API, GMT_MSG_NOTICE, "Remote data courtesy of GMT data server %s [%s]\n\n", name, API->GMT->session.DATASERVER);
 		API->server_announced = true;
 	}
-	if (key == GMT_NOTSET)	/* A Cache file */
-		GMT_Report (API, GMT_MSG_NOTICE, "  -> Download cache file: %s\n", file);
+	if (key == GMT_NOTSET) {	/* A Cache file */
+		if (strchr (file, ':'))	/* Generic URL */
+			GMT_Report (API, GMT_MSG_NOTICE, "  -> Download URL file: %s\n", file);
+		else
+			GMT_Report (API, GMT_MSG_NOTICE, "  -> Download cache file: %s\n", file);
+	}
 	else {
 		if (!API->remote_info[key].used) {
 			GMT_Report (API, GMT_MSG_NOTICE, "%s.\n", API->remote_info[key].remark);
