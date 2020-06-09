@@ -126,6 +126,8 @@ To get all the data for Earth but only for 30 arc sec and coarser, and leave as 
 
 As shown in the table, the largest dataset may take some time to download the data from GMT server. Be patient!
 
+.. include:: ../data-updating.rst_
+
 Data References
 ---------------
 

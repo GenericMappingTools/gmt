@@ -79,6 +79,7 @@ To only wipe your entire GMT server and cache directories, (carefully) try::
 
     gmt clear all
 
+.. include:: data-updating.rst_
 
 See Also
 --------
