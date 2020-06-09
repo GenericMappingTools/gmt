@@ -5855,7 +5855,7 @@ GMT_LOCAL int gmtmath_decode_argument (struct GMT_CTRL *GMT, char *txt, double *
 	if (!txt) return (GMTMATH_ARG_IS_BAD);
 
 	if (gmt_M_file_is_memory (txt)) return GMTMATH_ARG_IS_FILE;	/* Deal with memory references first */
-	if (gmt_M_file_is_cache (txt)) return GMTMATH_ARG_IS_FILE;	/* Deal with cache file first */
+	if (gmt_file_is_cache (GMT->parent, txt)) return GMTMATH_ARG_IS_FILE;	/* Deal with cache file first */
 
 	/* Check if argument is operator */
 

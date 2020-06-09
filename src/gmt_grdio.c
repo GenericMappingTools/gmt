@@ -64,7 +64,7 @@
  *  gmt_grd_minmax          :
  *  gmt_grd_detrend         :
  *  gmtlib_init_complex        :
- *  gmtlib_check_url_name      :
+ *  gmtlib_found_url_for_gdal      :
  *  gmt_read_img            : Read [subset from] a Sandwell/Smith *.img file
  *  gmt_grd_init            : Initialize grd header structure
  *  gmt_grd_shift           : Rotates grdfiles in x-direction
@@ -1099,7 +1099,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		}
 		sscanf (HH->name, "%[^?]?%s", tmp, HH->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
-			if (header->type != GMT_GRID_IS_GD || !gmtlib_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
+			if (header->type != GMT_GRID_IS_GD || !gmtlib_found_url_for_gdal(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
 				if (!gmt_getdatapath (GMT, tmp, HH->name, R_OK))
 					return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
@@ -1111,7 +1111,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		sscanf (HH->name, "%[^?]?%s", tmp, HH->varname);    /* Strip off variable name */
 #ifdef HAVE_GDAL
 		/* Check if file is an URL */
-		if (gmtlib_check_url_name(HH->name)) {
+		if (gmtlib_found_url_for_gdal(HH->name)) {
 			/* Then check for GDAL grid */
 			if (gmtlib_is_gdal_grid (GMT, header) == GMT_NOERROR)
 				return (GMT_NOERROR);
@@ -2005,7 +2005,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 				snprintf (file, GMT_LEN64, "@%s", API->remote_info[k_data].file);
 				txt = file;
 			}
-			else if ((k_data = gmt_file_is_remotedata (API, argv[i])) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (argv[i], API->remote_info[k_data].ext))) {
+			else if ((k_data = gmt_remote_dataset_id (API, argv[i])) != GMT_NOTSET && API->remote_info[k_data].ext[0] && (c = strstr (argv[i], API->remote_info[k_data].ext))) {
 				c[0] = '\0';
 				snprintf (file, GMT_LEN64, "%s", argv[i]);
 				c[0] = '.';
@@ -3000,18 +3000,14 @@ void gmt_grd_flip_vertical (void *gridp, const unsigned n_cols32, const unsigned
 	gmt_M_str_free (tmp);
 }
 
-bool gmtlib_check_url_name (char *fname) {
+bool gmtlib_found_url_for_gdal (char *fname) {
 	/* File names starting as below should not be tested for existence or reading permissions as they
-	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
-	   the conditions holds true, returns true. All cases are read via GDAL support or other. */
-	if (gmt_M_file_is_url (fname) ||
-	    !strncmp(fname,"/vsizip/", 8)  ||
-	    !strncmp(fname,"/vsigzip/",9)  ||
-	    !strncmp(fname,"/vsicurl/",9)  ||
-	    !strncmp(fname,"/vsimem/", 8)  ||
-	    !strncmp(fname,"/vsitar/", 8)) {
+	   are either meant to be read via GDAL.  Regular URLs (e.g., htthp://, ftp:// are read via libcurl. */
+	if (!strncmp(fname,"WCS:", 4)  ||
+		!strncmp(fname,"WMS:", 4)  ||
+		!strncmp(fname,"/vsi", 4)) {
 #ifdef WIN32
-		/* On Windows libcurl does not care about the cerificates file (see https://github.com/curl/curl/issues/1538)
+		/* On Windows libcurl does not care about the certificates file (see https://github.com/curl/curl/issues/1538)
 		   and would fail, so no choice but prevent certificates verification.
 		   However, a CURL_CA_BUNDLE=/path/to/curl-ca-bundle.crt will overcome this and will consult the crt file. */
 		if (!getenv ("GDAL_HTTP_UNSAFESSL") && !getenv("CURL_CA_BUNDLE"))
@@ -3115,7 +3111,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	if (gmt_M_file_is_memory (file)) {
 		return (file[GMT_VF_TYPE_POS] == 'G') ? GMT_NOTSET : GMT_IS_IMAGE;
 	}
-	if (gmt_M_file_is_cache (file) || gmt_M_file_is_url (file)) {	/* Must download, then modify the name */
+	if (gmt_M_file_is_remote (file) || gmt_M_file_is_url (file)) {	/* Must download, then modify the name */
 		j = gmt_download_file_if_not_found (GMT, file, 0);
 		F = strdup (&file[j]);
 	}

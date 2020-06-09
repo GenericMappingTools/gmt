@@ -359,7 +359,7 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 		if (k == 1 || c) R->invert = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
 	}
-	else if (gmt_M_file_is_cache (arg)) {	/* Was given a remote file */
+	else if (gmt_file_is_cache (GMT->parent, arg)) {	/* Was given a remote file */
 		R->file = strdup (&arg[k]);
 		if (k == 1 || c) R->invert = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
@@ -417,7 +417,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 	char Plates[GMT_BUFSIZ] = {""}, Rotations[GMT_BUFSIZ] = {""}, *this_c = NULL;
 	double K[9];
 
-	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, file)) {	/* Must be a cache file */
 		gmt_download_file_if_not_found (GMT, file, 0);
 	}
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */

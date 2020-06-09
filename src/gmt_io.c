@@ -4663,7 +4663,7 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 	char path[PATH_MAX], *c = NULL;
 	FILE *fd = NULL;
 	unsigned int first = 0;
-	if (gmt_M_file_is_cache (filename)) {	/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, filename)) {	/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
 	}
 
@@ -4996,7 +4996,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	/* If we got here and a full path is given, we give up ... unless it is one of those /vsi.../ files */
 	if (stem[0] == '/') {
 #ifdef HAVE_GDAL
-		if (gmtlib_check_url_name ((char *)stem))
+		if (gmtlib_found_url_for_gdal ((char *)stem))
 			return ((char *)stem);			/* With GDAL all the /vsi-stuff is given existence credit */
 		else
 			return (NULL);
@@ -5180,7 +5180,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 
 	if (!filename || !filename[0]) return (-1);		/* No file given */
 	if (gmt_M_file_is_memory (filename)) return (0);	/* Memory location always exists */
-	if (gmt_M_file_is_cache (filename))			/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, filename))			/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
 
 	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], "honsuU")) == NULL) return (-1);	/* Likely not a valid filename */
