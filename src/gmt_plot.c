@@ -5438,12 +5438,14 @@ GMT_LOCAL void gmtplot_check_primary_secondary (struct GMT_CTRL *GMT) {
 
 GMT_LOCAL void gmtplot_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 	/* If the primary font size is zero then we want auto-scaling based on plot size */
+	bool geo = false;
 	double fontsize, map_dim_cm, scale;
 	double const pt = 1.0/72.0;	/* points to inch */
 
 	/* If map frame is fancy then we cannot have lrbt */
 
-	if (GMT->current.setting.map_frame_type == GMT_IS_FANCY || GMT->current.setting.map_frame_type == GMT_IS_ROUNDED) {
+	geo = (gmt_M_is_geographic (GMT, GMT_IN) && (GMT->current.setting.map_frame_type == GMT_IS_FANCY || GMT->current.setting.map_frame_type == GMT_IS_ROUNDED));
+	if (geo) {
 		for (unsigned int k = 0; k < 4; k++)
 			GMT->current.map.frame.side[k] |= GMT_AXIS_BARB;
 	}
@@ -5486,7 +5488,7 @@ GMT_LOCAL void gmtplot_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_grid_pen[GMT_PRIMARY].width = 0.25 * scale;	/* 0.25p (default) */
 	GMT->current.setting.map_grid_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
 
-	if (GMT->current.setting.map_frame_type == GMT_IS_FANCY || GMT->current.setting.map_frame_type == GMT_IS_ROUNDED) {
+	if (geo) {
 		/* Extend ticks the width of the fancy frame */
 		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] += GMT->current.setting.map_frame_width;
 		GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  += GMT->current.setting.map_frame_width;
