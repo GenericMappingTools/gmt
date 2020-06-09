@@ -79,18 +79,7 @@ To only wipe your entire GMT server and cache directories, (carefully) try::
 
     gmt clear all
 
-Data and Cache Updates
-----------------------
-
-Remote datasets and remote cache files are updated from time to time as our aim is to present the very latest version
-of the data.  This means we (a) do not support multiple versions of a dataset (you must obtain
-earlier versions of any published data sets elsewhere), (b) as GMT detects a new version on the
-server it will download it when you access the remote data set and overwrite any previous version,
-and (c) any data set or file we deem obsolete will be removed from the server, and hence will be removed
-from your .gmt/server area as well when the syncing occurs.  This is particularly true of the cache data
-that may come and go.  If there are any important data to you in the cache listing we recommend you
-place a copy in another place. Syncing occurs at most once a day.
-
+.. include:: data-updating.rst_
 
 See Also
 --------
