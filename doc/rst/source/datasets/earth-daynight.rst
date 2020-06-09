@@ -66,6 +66,8 @@ to the geotiff files on the remote server. **Note**: This data set is experiment
 format and delivery is likely to change in the future (e.g., via image tiles).  To make the
 files as small as possible we have also downgraded them from 24-bit to 8-bit indexed images.
 
+.. include:: ../data-updating.rst_
+
 Data References
 ---------------
 
