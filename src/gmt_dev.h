@@ -161,7 +161,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_plot.h"           /* extern functions defined in gmt_plot.c */
 #include "gmt_memory.h"         /* extern functions defined in gmt_M_memory.c */
 #include "gmt_types.h"          /* GMT type declarations */
-#include "gmt_remote.h"          /* GMT type declarations */
+#include "gmt_remote.h"         /* GMT remote dataset structure */
 
 #ifdef _OPENMP                  /* Using open MP parallelization */
 #include <omp.h>

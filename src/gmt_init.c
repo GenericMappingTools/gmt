@@ -12870,7 +12870,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 	switch (family) {
 		case GMT_IS_GRID:
 			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
-			if ((k_data = gmt_file_is_remotedata (API, opt->arg)) != GMT_NOTSET) {	/* This is a remote grid so -Rd */
+			if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET) {	/* This is a remote grid so -Rd */
 				wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
 			}
 			else {	/* Must read the grid header */
@@ -13488,7 +13488,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
 	 */
 
-	bool is_PS, is_psrose = false;
+	bool is_PS, is_psrose = false, is_legend = false;
 	char *required = (char *)in_required;
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -13516,8 +13516,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, -R -J not required for pscoast.\n");
 		}
 	}
-	if (options && strstr (mod_name, "legend") && (opt = GMT_Find_Option (API, 'D', *options)) && strchr ("jJg", opt->arg[0])) /* Must turn jr into JR */
-		required = "JR";
+	if (options && strstr (mod_name, "legend") && (opt = GMT_Find_Option (API, 'D', *options))) { /* Worry about legend calls */
+		if (strchr ("jJg", opt->arg[0])) /* Must turn jr into JR */
+			required = "JR";
+		is_legend = true;
+	}
 	if (options && strstr (mod_name, "mapproject") && (opt = GMT_Find_Option (API, 'W', *options))) /* Must turn on JR */
 		required = "JR";
 
@@ -13838,6 +13841,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 
+		if (is_legend && !got_R && !got_J && P)	/* pslegend call with -Dx in subplot, turn on JR since we know they exist */
+			required = "JR";
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
 			/* First consult the history */
 			id = gmt_get_option_id (0, "R");	/* The -RP history item */
@@ -16639,7 +16644,7 @@ GMT_LOCAL int gmtinit_put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to create session file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	if ((c = strrchr (arg, ' ')) && c[1] && gmtlib_char_count (arg, ' ') > 1) {	/* Determine if last arg is psconvert options or not */
+	if ((c = strrchr (arg, ' ')) && c[1] && gmt_char_count (arg, ' ') > 1) {	/* Determine if last arg is psconvert options or not */
 		unsigned int bad = 0, pos = 0;
 		char p[GMT_LEN256] = {""};
 		while (gmt_strtok (&c[1], ",", &pos, p)) {	/* Check args to determine what kind it is */
@@ -17397,7 +17402,7 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 	q = strchr  (file, '?');	/* Address of the first ? or NULL */
 	s = strrchr (file, '/');	/* Address of the last / or NULL */
 	/* First distinguish between cache, urls, and special data files from the GMT server */
-	if (gmt_M_file_is_cache (file)) {	/* Special @<filename> syntax for GMT cache files */
+	if (gmt_file_is_cache (GMT->parent, file)) {	/* Special @<filename> syntax for GMT cache files */
 		code |= GMT_CACHE_FILE;
 		pos[0] = 1;	/* Must skip the first character to find the file name */
 	}

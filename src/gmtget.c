@@ -83,6 +83,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      cache: The entire contents of the cache directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      data: The entire contents of the data directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append =<planet> to only download the data/<planet> directory.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append =<dataset1,dataset2...> to only download the stated datasets.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    -Dall downloads both cache and all datasets.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific gmt.conf file to process.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses the GMT defaults].\n");
@@ -158,7 +160,7 @@ EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 
 EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 	int error = GMT_NOERROR;
-	char *planet = NULL, *c = NULL, file[GMT_LEN64] = {""};
+	char *datasets = NULL, *c = NULL, file[GMT_LEN64] = {""};
 
 	struct GMTGET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -185,15 +187,27 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {	/* Data download */
 		if (!strncmp (Ctrl->D.dir, "all", 3U) || !strncmp (Ctrl->D.dir, "data", 4U)) {	/* Want data */
-			unsigned int n_tiles, k, t;
+			bool found;
+			unsigned int n_tiles, k, d = 0, t, n_items = 0;
+			char **list = NULL, *string = NULL, *token = NULL, *tofree = NULL;
 			double world[4] = {-180.0, +180.0, -90.0, +90.0};
 
 			if (Ctrl->N.active) GMT->current.io.leave_as_jp2 = true;	/* Do not convert to netCDF right away */
-			if ((c = strchr (Ctrl->D.dir, '='))) {	/* But only a specific planet */
-				planet = &c[1];
+			if ((c = strchr (Ctrl->D.dir, '=')) && (datasets = &c[1])) {	/* But only one or more specific planets or datasets */
+				n_items = gmt_char_count (datasets, ',') + 1;
+				list = gmt_M_memory (GMT, NULL, n_items, char *);
+				tofree = string = strdup (datasets);
+				while ((token = strsep (&string, ",")) != NULL)
+					list[d++] = strdup (token);
+				gmt_M_str_free (tofree);
 			}
 			for (k = 0; k < API->n_remote_info; k++) {
-				if (planet && strstr (API->remote_info[k].dir, planet) == NULL) continue;	/* Not this planet */
+				if (n_items) {	/* Want specific planet or dataset */
+					for (d = 0, found = false; !found && d < n_items; d++)
+						if (strstr (API->remote_info[k].dir, list[d])) found = true;
+
+					if (!found) continue;	/* Not this planet or dataset */
+				}
 				if (Ctrl->I.active && Ctrl->I.inc > API->remote_info[k].d_inc) continue;	/* Skip this resolution */
 				if (API->remote_info[k].tile_size > 0.0) {	/* Must obtain all tiles */
 					char **list = gmt_get_dataset_tiles (API, world, k, &n_tiles);
@@ -206,6 +220,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 					gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
 				}
 			}
+			if (list) gmt_free_list (GMT, list, n_items);
 		}
 		if (!strncmp (Ctrl->D.dir, "all", 3U) || !strncmp (Ctrl->D.dir, "cache", 5U)) {	/* Want cache */
 			char line[GMT_LEN256] = {""}, hashpath[PATH_MAX] = {""};
@@ -214,15 +229,14 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NOTICE, "Unable to create or find your cache directory\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
-			/* Read gmt_hash_server.txt, loop over lines, skip datasets, then call gmt_download... on the rest */
+			/* Read gmt_hash_server.txt, loop over lines, call gmt_download */
 			snprintf (hashpath, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, GMT_HASH_SERVER_FILE);
 			if ((fp = fopen (hashpath, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to access or read %s\n", hashpath);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			fgets (line, GMT_LEN256, fp);	/* Skip first record */
+			fgets (line, GMT_LEN256, fp);	/* Skip first record with record count */
 			while (fscanf (fp, "%s %*s %*s", line) == 1) {
-				if (strncmp (line, "earth_relief_", 13U) == 0) continue;	/* Skip old references to data sets in the hash table */
 				sprintf (file, "@%s", line);
 				gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
 			}
