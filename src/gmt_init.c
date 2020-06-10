@@ -13578,7 +13578,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
 	 */
 
-	bool is_PS, is_psrose = false;
+	bool is_PS, is_psrose = false, is_legend = false;
 	char *required = (char *)in_required;
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -13606,8 +13606,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, -R -J not required for pscoast.\n");
 		}
 	}
-	if (options && strstr (mod_name, "legend") && (opt = GMT_Find_Option (API, 'D', *options)) && strchr ("jJg", opt->arg[0])) /* Must turn jr into JR */
-		required = "JR";
+	if (options && strstr (mod_name, "legend") && (opt = GMT_Find_Option (API, 'D', *options))) { /* Worry about legend calls */
+		if (strchr ("jJg", opt->arg[0])) /* Must turn jr into JR */
+			required = "JR";
+		is_legend = true;
+	}
 	if (options && strstr (mod_name, "mapproject") && (opt = GMT_Find_Option (API, 'W', *options))) /* Must turn on JR */
 		required = "JR";
 
@@ -13928,6 +13931,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 
+		if (is_legend && !got_R && !got_J && P)	/* pslegend call with -Dx in subplot, turn on JR since we know they exist */
+			required = "JR";
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
 			/* First consult the history */
 			id = gmt_get_option_id (0, "R");	/* The -RP history item */
