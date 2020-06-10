@@ -13578,8 +13578,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
 	 */
 
-	bool is_PS, is_psrose = false, is_legend = false;
+	bool is_PS, is_psrose = false, is_D_module = false;
 	char *required = (char *)in_required;
+	unsigned int k;
+	static char *D_module[4] = {"gmtlogo", "psimage", "pslegend", "psscale"};	/* These all may take -Dx etc */
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
@@ -13606,10 +13608,14 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, -R -J not required for pscoast.\n");
 		}
 	}
-	if (options && strstr (mod_name, "legend") && (opt = GMT_Find_Option (API, 'D', *options))) { /* Worry about legend calls */
-		if (strchr ("jJg", opt->arg[0])) /* Must turn jr into JR */
+	/* Determine if module is one of the 4 horsemen of the apocalypse that potentially uses -Dx and thus may have no -R -J, but needed in subplots */
+	for (k = 0; !is_D_module && k < 4; k++)
+		if (!strcmp (mod_name, D_module[k]))
+			is_D_module = true;
+
+	if (options && is_D_module && (opt = GMT_Find_Option (API, 'D', *options))) { /* Worry about the -D option */
+		if (strchr ("jJg", opt->arg[0])) /* Must turn jr into JR, but will revisit this case later when we know if we have subplots or not */
 			required = "JR";
-		is_legend = true;
 	}
 	if (options && strstr (mod_name, "mapproject") && (opt = GMT_Find_Option (API, 'W', *options))) /* Must turn on JR */
 		required = "JR";
@@ -13931,7 +13937,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 		}
 
-		if (is_legend && !got_R && !got_J && P)	/* pslegend call with -Dx in subplot, turn on JR since we know they exist */
+		if (is_D_module && !got_R && !got_J && P)	/* Module call with -Dx in a subplot, turn on JR since we know both must exist */
 			required = "JR";
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
 			/* First consult the history */
