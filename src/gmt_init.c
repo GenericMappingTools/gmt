@@ -6116,10 +6116,6 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	/* MAP_FRAME_WIDTH */
 	GMT->current.setting.map_frame_width = 3 * pt; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_FRAME_WIDTH] = 'p';
-	/* MAP_GRID_PEN_PRIMARY */
-	error += gmt_getpen (GMT, "default,gray", &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
-	/* MAP_GRID_PEN_SECONDARY */
-	error += gmt_getpen (GMT, "thinner,gray", &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 	/* MAP_HEADING_OFFSET */
 	GMT->current.setting.map_heading_offset = 16 * pt;	/* 16p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_HEADING_OFFSET] = 'p';
@@ -6140,8 +6136,6 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	/* MAP_VECTOR_SHAPE */
 	GMT->current.setting.map_vector_shape = 0.5;
 
-	/* PS_LINE_CAP */
-	GMT->PSL->internal.line_cap = PSL_ROUND_CAP;
 	if (error)
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized value during gmtdefaults modern initialization.\n");}
 
@@ -9355,6 +9349,8 @@ GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT) {
 	else if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {	/* Load given theme */
 		error = gmtinit_loaddefaults (GMT, theme_file);
 	}
+	else
+		gmt_message (GMT, "Theme %s file not found - ignored\n", GMT->current.setting.theme);
 	return (error);
 }
 
