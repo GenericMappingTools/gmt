@@ -46,7 +46,7 @@ else
 fi
 
 # 3. Remove share directory
-for dir in cpt custom doc localization man mgd77 mgg spotter tools x2sys; do
+for dir in cpt custom doc localization man mgd77 mgg spotter tools themes x2sys; do
 	printf "Remove: %s/%s\n" $share $dir
 	rm -rf $share/$dir
 done

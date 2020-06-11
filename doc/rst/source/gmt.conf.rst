@@ -615,7 +615,8 @@ MAP Parameters
 
     **MAP_AUTO_SCALE**
         Determines if basemap font sizes, pen thicknesses, tick-lengths, and offsets will
-        be computed from the plot dimensions (**on**) or if they should be set manually (**off**) [off].
+        be computed from the plot dimensions (**on**) or if they should be set manually (**off**)
+        [off for classic mode, on for modern].
 
     **MAP_DEFAULT_PEN**
         Sets the default of all pens related to **-W** options. Prepend
