@@ -5793,7 +5793,7 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	/* MAP_ANNOT_ORTHO */
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
 	/* MAP_AUTO_SCALE */
-	GMT->current.setting.map_auto_scale = 0;
+	GMT->current.setting.map_auto_scale = false;
 	/* MAP_DEGREE_SYMBOL (degree) */
 	GMT->current.setting.map_degree_symbol = gmt_degree;
 	/* MAP_FRAME_AXES */
@@ -6064,15 +6064,98 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
+GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
+	int i, error = 0;
+	double const pt = 1.0/72.0;	/* points to inch */
+
+	/* FONT group */
+
+	/* FONT_ANNOT_PRIMARY */
+	error += gmt_getfont (GMT, "10p,AvantGarde-Book,black", &GMT->current.setting.font_annot[GMT_PRIMARY]);
+	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_PRIMARY] = 'p';
+	/* FONT_ANNOT_SECONDARY */
+	error += gmt_getfont (GMT, "12p,AvantGarde-Book,black", &GMT->current.setting.font_annot[GMT_SECONDARY]);
+	GMT->current.setting.given_unit[GMTCASE_FONT_ANNOT_SECONDARY] = 'p';
+	/* FONT_HEADING */
+	error += gmt_getfont (GMT, "28p,AvantGarde-Demi,black", &GMT->current.setting.font_heading);
+	GMT->current.setting.given_unit[GMTCASE_FONT_HEADING] = 'p';
+	/* FONT_TITLE */
+	error += gmt_getfont (GMT, "22p,AvantGarde-Demi,black", &GMT->current.setting.font_title);
+	GMT->current.setting.given_unit[GMTCASE_FONT_TITLE] = 'p';
+	/* FONT_LABEL */
+	error += gmt_getfont (GMT, "14p,AvantGarde-Book,black", &GMT->current.setting.font_label);
+	GMT->current.setting.given_unit[GMTCASE_FONT_LABEL] = 'p';
+	/* FONT_TAG */
+	error += gmt_getfont (GMT, "18p,AvantGarde-Book,black", &GMT->current.setting.font_tag);
+	GMT->current.setting.given_unit[GMTCASE_FONT_TAG] = 'p';
+	/* FONT_LOGO */
+	error += gmt_getfont (GMT, "8p,Helvetica,black", &GMT->current.setting.font_logo);
+	GMT->current.setting.given_unit[GMTCASE_FONT_LOGO] = 'p';
+
+	/* FORMAT_GEO_MAP */
+	strcpy (GMT->current.setting.format_geo_map, "ddd:mm:ssF");
+	gmtlib_plot_C_format (GMT);	/* Update format statements */
+
+	/* MAP group */
+
+	/* MAP_ANNOT_OFFSET_PRIMARY, MAP_ANNOT_OFFSET_SECONDARY */
+	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = 3 * pt; /* 3p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
+	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
+	/* MAP_AUTO_SCALE */
+	GMT->current.setting.map_auto_scale = true;
+	/* MAP_DEGREE_SYMBOL (degree) */
+	GMT->current.setting.map_degree_symbol = gmt_degree;
+	/* MAP_FRAME_AXES */
+	strcpy (GMT->current.setting.map_frame_axes, "WrStZ");
+	for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
+	GMT->current.map.frame.draw_box = false;
+	error += gmtinit_decode5_wesnz (GMT, GMT->current.setting.map_frame_axes, false);
+	/* MAP_FRAME_TYPE (plain) */
+	GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
+	/* MAP_FRAME_WIDTH */
+	GMT->current.setting.map_frame_width = 3 * pt; /* 3p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_FRAME_WIDTH] = 'p';
+	/* MAP_GRID_PEN_PRIMARY */
+	error += gmt_getpen (GMT, "default,gray", &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+	/* MAP_GRID_PEN_SECONDARY */
+	error += gmt_getpen (GMT, "thinner,gray", &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
+	/* MAP_HEADING_OFFSET */
+	GMT->current.setting.map_heading_offset = 16 * pt;	/* 16p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_HEADING_OFFSET] = 'p';
+	/* MAP_LABEL_OFFSET */
+	GMT->current.setting.map_label_offset = 6 * pt;	/* 6p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_LABEL_OFFSET] = 'p';
+	/* MAP_TICK_LENGTH_PRIMARY */
+	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 3 * pt;	/* 3p */
+	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 1.5 * pt;	/* 1.5p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_TICK_LENGTH_PRIMARY] = 'p';
+	/* MAP_TICK_LENGTH_SECONDARY */
+	GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 12 * pt;	/* 12p */
+	GMT->current.setting.map_tick_length[GMT_TICK_LOWER] = 3 * pt;	/* 3p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_TICK_LENGTH_SECONDARY] = 'p';
+	/* MAP_TITLE_OFFSET */
+	GMT->current.setting.map_title_offset = 12 * pt;	/* 12p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_TITLE_OFFSET] = 'p';
+	/* MAP_VECTOR_SHAPE */
+	GMT->current.setting.map_vector_shape = 0.5;
+
+	/* PS_LINE_CAP */
+	GMT->PSL->internal.line_cap = PSL_ROUND_CAP;
+	if (error)
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized value during gmtdefaults modern initialization.\n");}
+
+/*! . */
 GMT_LOCAL void gmtinit_conf_modern_US (struct GMT_CTRL *GMT) {
-	/* REPLACE WITH gmtinit_conf_modern_US when ready */
 	gmtinit_conf_classic_US (GMT);	/* Override with US settings */
+	gmtinit_conf_modern_override (GMT);
 }
 
 /*! . */
 GMT_LOCAL void gmtinit_conf_modern (struct GMT_CTRL *GMT) {
 	/* REPLACE WITH gmtinit_conf_modern when ready */
 	gmtinit_conf_classic (GMT);
+	gmtinit_conf_modern_override (GMT);
 }
 
 /*! . */
@@ -6086,7 +6169,7 @@ void gmt_conf_US (struct GMT_CTRL *GMT) {
 /*! . */
 void gmt_conf_SI (struct GMT_CTRL *GMT) {
 	if (GMT->current.setting.run_mode == GMT_MODERN)
-		gmtinit_conf_modern (GMT);	/* REPLACE WITH gmtinit_conf_modern when ready */
+		gmtinit_conf_modern (GMT);
 	else
 		gmtinit_conf_classic (GMT);
 }
@@ -9267,8 +9350,8 @@ GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT) {
 	GMT->current.setting.update_theme = false;
 	if (!strcmp (GMT->current.setting.theme, "classic"))	/* Just reload the classic defaults */
 		gmtinit_conf_classic (GMT);
-	//else if (!strcmp (GMT->current.setting.theme, "modern"))	/* Just reload the modern defaults TESTING VIA MODERN.CONF FOR NOW */
-	//	gmtinit_conf_modern (GMT);
+	else if (!strcmp (GMT->current.setting.theme, "modern"))
+		gmtinit_conf_modern (GMT);
 	else if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {	/* Load given theme */
 		error = gmtinit_loaddefaults (GMT, theme_file);
 	}
@@ -13342,6 +13425,7 @@ GMT_LOCAL int gmtinit_set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, stru
 			}
 			API->GMT->hidden.func_level++;	/* Must do this here since it has not yet been increased by gmtinit_begin_module_sub ! */
 			gmt_reset_history (API->GMT);	/* A one-liner should have no history */
+			gmtinit_conf_modern_override (API->GMT);
 
 			if ((error = GMT_Call_Module (API, "begin", GMT_MODULE_CMD, session))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to call module begin from gmtinit_set_modern_mode_if_oneliner.\n");
