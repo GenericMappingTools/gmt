@@ -395,6 +395,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	GDALDEMProcessingOptionsFree(psOptions);
     OGRCleanupAll();
 	GDALDestroyDriverManager();
+	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
 
@@ -427,6 +428,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 
 	GDALGridOptionsFree(psOptions);
 	GDALDestroyDriverManager();
+	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
 
@@ -459,6 +461,7 @@ int gmt_gdal_rasterize(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GD
 
 	GDALRasterizeOptionsFree(psOptions);
 	GDALDestroyDriverManager();
+	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
 
@@ -481,6 +484,7 @@ int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 
 	GDALTranslateOptionsFree(psOptions);
 	GDALDestroyDriverManager();
+	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
 
@@ -504,6 +508,7 @@ int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 
 	GDALWarpAppOptionsFree(psOptions);
 	GDALDestroyDriverManager();
+	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
 #endif		//defined(HAVE_GDAL) && ...
