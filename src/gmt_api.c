@@ -1969,13 +1969,8 @@ GMT_LOCAL int gmtapi_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt,
 
 /*! . */
 GMT_LOCAL int gmtapi_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_IMAGE *I) {
-	int alpha, err = GMT_NOERROR;
 	if (direction == GMT_OUT) return (GMT_NOERROR);	/* OK for creating blank container for output */
-	alpha = (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4));	/* Must allocate alpha array later */
-	if (alpha) dim[GMT_Z]--;	/* Remove this flag before grdheader is set */
-	err = gmtapi_init_grdheader (API->GMT, direction, I->header, opt, dim, range, inc, registration, mode);
-	if (alpha) dim[GMT_Z]++;	/* Restore */
-	return (err);
+	return (gmtapi_init_grdheader (API->GMT, direction, I->header, opt, dim, range, inc, registration, mode));
 }
 
 /*! . */
