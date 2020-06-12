@@ -654,6 +654,13 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 
+	/* Determine if grid/image is to be projected */
+	need_to_project = (gmt_M_is_nonlinear_graticule (GMT) || Ctrl->E.dpi > 0);
+	if (need_to_project)
+		GMT_Report (API, GMT_MSG_DEBUG, "Projected grid is non-orthogonal, nonlinear, or dpi was changed\n");
+	else  if (Ctrl->D.active)			/* If not projecting no need for a pad */
+		gmt_set_pad(GMT, 0);
+
 	/* Read the illumination grid header right away so we can use its region to set that of an image (if requested) */
 	if (use_intensity_grid) {	/* Illumination grid desired */
 		if (Ctrl->I.derive) {	/* Illumination grid must be derived */
@@ -804,11 +811,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		gmt_set_R_from_grd (GMT, Grid_orig[0]->header);
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
-
-	/* Determine if grid/image is to be projected */
-
-	need_to_project = (gmt_M_is_nonlinear_graticule (GMT) || Ctrl->E.dpi > 0);
-	if (need_to_project) GMT_Report (API, GMT_MSG_DEBUG, "Projected grid is non-orthogonal, nonlinear, or dpi was changed\n");
 
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
 
