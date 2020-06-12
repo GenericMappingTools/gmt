@@ -2100,7 +2100,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 					}
 					else {	/* Just one line, which may even be closed */
-						closed = !(gmt_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n));
+						closed = (GMT->current.plot.n > 2 && !(gmt_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n)));
 						gmt_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, closed, false, &S.G);
 						GMT->current.plot.n_alloc = GMT->current.plot.n;	/* Since gmt_hold_contour reallocates to fit the array */
 					}
