@@ -13267,7 +13267,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 			break;
 	}
 
-	if (c && !gmt_M_file_is_url (file)) {	/* Other that queries, we dont want to pass modifiers when copying files */
+	if (c && !gmt_M_file_is_url (file)) {	/* Other that queries, we don't want to pass modifiers when copying files */
 		was = c[0];
 		c[0] = '\0';
 	}
