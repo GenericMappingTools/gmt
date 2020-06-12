@@ -868,7 +868,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				for (seg = 0; seg < T->n_segments; seg++) {
 					S = T->segment[seg];
 					for (row = 0; row < S->n_rows; row++, prof++) {
-						dist[prof] = S->data[2][row];
+						dist[prof] = S->data[GMT_Z][row];
 					}
 				}
 			}
@@ -1078,7 +1078,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 							out[9] = out[10] = out[11] = GMT->session.d_NaN;
 						else {
 							out[9]  = T->segment[seg]->data[GMT_X][kr];	/* Right longitude */
-							out[10]  = T->segment[seg]->data[GMT_Y][kr];	/* Right latitude */
+							out[10] = T->segment[seg]->data[GMT_Y][kr];	/* Right latitude */
 							out[11] = T->segment[seg]->data[GMT_Z][kr];	/* Right distance */
 						}
 						out[12] = out[11] - out[8];	/* Width = distance between left and right point */

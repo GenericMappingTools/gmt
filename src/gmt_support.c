@@ -14916,6 +14916,7 @@ struct GMT_DATASET * gmt_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET
 		D = gmtsupport_resample_data_spherical (GMT, Din, along_ds, mode, ex_cols, smode);
 	else
 		D = gmtsupport_resample_data_cartesian (GMT, Din, along_ds, mode, ex_cols, smode);
+	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
 
@@ -14927,6 +14928,7 @@ struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *
 		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, mode);
 	else
 		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, mode);
+	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
 
