@@ -1627,7 +1627,7 @@ GMT_LOCAL uint64_t gmtmap_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, doub
 
 /*! . */
 uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx) {
-	char *x_type = NULL;
+	char *x_type = NULL, *name = "SENW";
 	size_t n_alloc = 0, n_x_alloc = 0, n_t_alloc = 0;
 	uint64_t new_n, i, n_get, n, m, n_cross = 0, *x_index = NULL;
 	unsigned int j, np, side, in = 1, out = 0;
@@ -1781,7 +1781,7 @@ uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 			uint64_t add, last_index = 0, p, p_next;
 
 			if (n_cross%2 == 1) {	/* Should not happen with a polygon */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in map_wesn_clip: odd number of crossings?");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in map_wesn_clip, side %c: odd number of crossings?\n", name[side]);
 			}
 
 			/* First copy the current polygon */
