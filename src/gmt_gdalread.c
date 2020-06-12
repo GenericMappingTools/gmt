@@ -786,7 +786,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		prhs->O.mem_layout[0] = topdown  ? 'T' : 'B';
 		prhs->O.mem_layout[1] = rowmajor ? 'R' : 'C';
 		prhs->O.mem_layout[2] = do_BIP   ? 'P' : 'B';
-		prhs->O.mem_layout[3] = 'a';
+		prhs->O.mem_layout[3] = 'a';		/* If later we find image has 4 layers, this will become 'A' */
 	}
 
 	if (prhs->p.active) pad = prhs->p.pad;
@@ -973,6 +973,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 
 	nBands = GDALGetRasterCount(hDataset);
+
+	if (nBands == 4) prhs->O.mem_layout[3] = 'A';
 
 	if (nReqBands) nBands = MIN(nBands,nReqBands);	/* If a band selection was made */
 
