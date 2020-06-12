@@ -860,15 +860,8 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (Ctrl->S.selected[STACK_ADD_RES]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked residuals(s) in each profile */
 		}
 		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.mode)) == NULL) Return (API->error);
-#if 0
-		if (Ctrl->D.active) {
-			if (GMT_Destroy_Data (API, &Dtmp) != GMT_NOERROR) {
-				Return (API->error);
-			}
-		}
-		else	/* Never written */
-#endif
-		if (Ctrl->F.active) {	/* Keep a record of the along-track distances for -C */
+
+		if (Ctrl->F.active) {	/* Keep a record of the along-track distances produced in -C */
 			dist = gmt_M_memory (GMT, NULL, Dtmp->n_records, double);
 			for (tbl = prof = 0; tbl < Dtmp->n_tables; tbl++) {
 				T = Dtmp->table[tbl];
@@ -880,6 +873,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				}
 			}
 		}
+
 		gmt_free_dataset (GMT, &Dtmp);
 
 		/* Sample the grids along all profiles in Dout */
