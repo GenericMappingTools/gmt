@@ -1430,7 +1430,7 @@ GMT_LOCAL uint64_t gmtmap_rect_clip (struct GMT_CTRL *GMT, double *lon, double *
 
 	if (n == 0) return (0);
 
-	polygon = !gmt_polygon_is_open (GMT, lon, lat, n);	/* true if input segment is a closed polygon */
+	polygon = (n > 2 && !gmt_polygon_is_open (GMT, lon, lat, n));	/* true if input segment is a closed polygon */
 
 	*total_nx = 1;	/* So that calling program will not discard the clipped polygon */
 
@@ -1660,7 +1660,7 @@ uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 
 	/* Here we can try the Sutherland/Hodgman algorithm */
 
-	polygon = !gmt_polygon_is_open (GMT, lon, lat, n);	/* true if input segment is a closed polygon */
+	polygon = (n > 2 && !gmt_polygon_is_open (GMT, lon, lat, n));	/* true if input segment is a closed polygon */
 
 	*total_nx = 1;	/* So that calling program will not discard the clipped polygon */
 
@@ -6449,7 +6449,7 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 			n = 0;
 		else {	/* All points are outside, but they are not just to one side so lines _may_ intersect the region */
 			n = (*GMT->current.map.clip) (GMT, lon, lat, np, x, y, &total_nx);
-			polygon = !gmt_polygon_is_open (GMT, lon, lat, np);	/* The following can only be used on closed polygons */
+			polygon = (np > 2 && !gmt_polygon_is_open (GMT, lon, lat, np));	/* The following can only be used on closed polygons */
 			/* Polygons that completely contains the -R region will not generate crossings, just duplicate -R box */
 			if (polygon && n > 0 && total_nx == 0) {	/* No crossings and all points outside means one of two things: */
 				/* Either the polygon contains portions of the -R region including corners or it does not.  We pick the corners and check for insidedness: */
@@ -6516,7 +6516,7 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 				L[side]->data[GMT_X][m] = xx[j]; L[side]->data[GMT_Y][m] = yy[j]; m++;
 			}
 		}
-		if (gmt_polygon_is_open (GMT, L[side]->data[GMT_X], L[side]->data[GMT_Y], m)) {	/* Do we need to explicitly close this clipped polygon? */
+		if (m > 2 && gmt_polygon_is_open (GMT, L[side]->data[GMT_X], L[side]->data[GMT_Y], m)) {	/* Do we need to explicitly close this clipped polygon? */
 			if (m == n_alloc) L[side] = GMT_Alloc_Segment (GMT->parent, smode, n_alloc << 2, S->n_columns, NULL, L[side]);
 			L[side]->data[GMT_X][m] = L[side]->data[GMT_X][0];	L[side]->data[GMT_Y][m] = L[side]->data[GMT_Y][0];	m++;	/* Yes. */
 		}
