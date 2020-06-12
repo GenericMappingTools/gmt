@@ -4499,7 +4499,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					return (true);
 					break;
 			}
-			if (strstr (args, "+v"))	/* To guard against -JOa120W/25N/150/6i+dh+v and loosing the +v */
+			if (strstr (args, "+v"))	/* To guard against -JOa120W/25N/150/6i+dh+v and losing the +v */
 				GMT->current.proj.obl_flip = true;
 			d[0] = '\0';	/* Chop off this modifier */
 		}
@@ -14902,7 +14902,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			p->w_type = type;
 		}
-		else if (!(symbol_type == 'r' && strstr (text, "+s"))) {	/* Dont want to interpret -Sr+s a dimension */
+		else if (!(symbol_type == 'r' && strstr (text, "+s"))) {	/* Don't want to interpret -Sr+s a dimension */
 			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
 			if (n == 3)
 				p->size_y = p->given_size_y = gmt_M_to_inch (GMT, txt_b);

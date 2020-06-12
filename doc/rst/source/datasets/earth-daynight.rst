@@ -23,7 +23,7 @@ by specifying the special names
 
    @earth_day_\ *rr*\ *u*
 
-Similarly for the nightime view:
+Similarly for the nighttime view:
 
    @earth_night_\ *rr*\ *u*
 

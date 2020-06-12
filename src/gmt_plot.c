@@ -7366,7 +7366,7 @@ GMT_LOCAL void gmtplot_prog_indicator_A (struct GMT_CTRL *GMT, double x, double 
 		dim[1] = 90.0 - 360 * t;	/* Go clockwise. Convert t to 0-360 degrees */
 		dim[2] = 90.0;	/* Start is 12 'oclock */
 		dim[7] = 1;	/* Lay down filled wedge */
-		PSL_command (GMT->PSL, "/PSL_spiderpen {} def\n");	/* So wedge wont fuss about not being set (like in psxy) */
+		PSL_command (GMT->PSL, "/PSL_spiderpen {} def\n");	/* So wedge won't fuss about not being set (like in psxy) */
 		PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_WEDGE);	/* Plot wedge */
 	}
 }
@@ -7945,7 +7945,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 		for (T = 0; T < n_movie_items[k]; T++) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d:  %s\n", T, movie_item_arg[k][T]);
-			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|offX|offY|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG# strings (- means we dont parse but skip) */
+			/* Parse -|x|y|-|-|just|clearance_x|clearance_Y|offX|offY|pen|-|fill|-|font|txt in MOVIE_LABEL_ARG# strings (- means we don't parse but skip) */
 			/* Replace the 15 leading slashes first with spaces */
 			for (kk = nc = 0; movie_item_arg[k][T][kk] && nc < 13; kk++) if (movie_item_arg[k][T][kk] == '|') { movie_item_arg[k][T][kk] = ' '; nc++;}
 			if (sscanf (movie_item_arg[k][T], "%*c %lg %lg %*s %*s %d %lg %lg %s %*s %s %*s %s %[^\n]", &plot_x, &plot_y, &justify, &clearance[GMT_X], &clearance[GMT_Y], PP, FF, font, label) != 9) {
