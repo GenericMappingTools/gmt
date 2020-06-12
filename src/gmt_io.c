@@ -5728,7 +5728,7 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 	double dlon, lon_sum = 0.0, lat_sum = 0.0, lat_S = 90.0, lat_N = -90.0;
 	static char *pole[5] = {"south (CCW)", "south (CW)", "no", "north (CW)", "north (CCW)"};
 
-	if (n == 0) return -99;	/* Nothing given */
+	if (n < 3) return -99;	/* Cannot be a polygon that was given */
 	if (gmt_polygon_is_open (GMT, lon, lat, n)) {	/* No repeat last = first point so reuse first */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling gmtlib_determine_pole on an open polygon\n");
 		n_unique = n;	/* Need to loop over all input points and then go to point 0 for last leg */
@@ -7748,7 +7748,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 			pol_check = check_geometry = poly = false;
 			*geometry = GMT_IS_NONE;
 		}
-		if (pol_check) this_is_poly = (!gmt_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row));	/* true if this segment is closed polygon */
+		if (pol_check) this_is_poly = (row > 2 && !gmt_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row));	/* true if this segment is closed polygon */
 		if (this_is_poly) n_poly_seg++;
 		if (check_geometry) {	/* Determine if dealing with closed polygons or lines based on first segment only */
 			if (this_is_poly) poly = true;

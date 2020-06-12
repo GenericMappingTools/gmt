@@ -2914,7 +2914,7 @@ GMT_LOCAL void gmtsupport_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, 
 	struct GMT_LABEL L;	/* Needed to pick up angles */
 	if (nn < 2) return;	/* You, sir, are not a line! */
 
-	closed = !gmt_polygon_is_open (GMT, xx, yy, nn);	/* true if this is a polygon */
+	closed = (nn > 2 && !gmt_polygon_is_open (GMT, xx, yy, nn));	/* true if this is a polygon */
 
 	/* Calculate distance along line and store in track_dist array */
 
@@ -5109,7 +5109,7 @@ GMT_LOCAL double gmtsupport_polygon_area (struct GMT_CTRL *GMT, double x[], doub
 
 	/* Sign will be +ve if polygon is CW, negative if CCW */
 
-	last = (gmt_polygon_is_open (GMT, x, y, n)) ? n : n - 1;	/* Skip repeating vertex */
+	last = (n > 2 && gmt_polygon_is_open (GMT, x, y, n)) ? n : n - 1;	/* Skip repeating vertex */
 
 	area = yold = 0.0;
 	xold = x[last-1];
@@ -10835,7 +10835,7 @@ unsigned int gmt_non_zero_winding (struct GMT_CTRL *GMT, double xp, double yp, d
 	bool above, free = false;
 	double y_sect, *x, *y;
 
-	if (n_path < 2) return (GMT_OUTSIDE);	/* Cannot be inside a null set or a point so default to outside */
+	if (n_path < 3) return (GMT_OUTSIDE);	/* Cannot be inside a null set, a point or a straight line so default to outside */
 
 	if (gmt_polygon_is_open (GMT, x_in, y_in, n_path)) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_non_zero_winding given non-closed polygon - must create closed polygon\n");
@@ -14415,7 +14415,7 @@ int gmt_polygon_centroid (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n
 	double A, d, xold, yold;
 
 	A = gmtsupport_polygon_area (GMT, x, y, n);
-	last = (gmt_polygon_is_open (GMT, x, y, n)) ? n : n - 1;	/* Skip repeating vertex */
+	last = (n > 2 && gmt_polygon_is_open (GMT, x, y, n)) ? n : n - 1;	/* Skip repeating vertex */
 	*Cx = *Cy = 0.0;
 	xold = x[last-1];	yold = y[last-1];
 	for (i = 0; i < last; i++) {

@@ -1554,7 +1554,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, last_c);	/* Free last item */
 				if (!use_it) continue;	/* No, go to next */
 
-				is_closed = !gmt_polygon_is_open (GMT, xp, yp, m);
+				is_closed = (m > 2 && !gmt_polygon_is_open (GMT, xp, yp, m));
 
 				if (Ctrl->Q.active) {	/* Avoid plotting short contours based on map length or point count */
 					if (Ctrl->Q.unit) {	/* Need length of contour */
