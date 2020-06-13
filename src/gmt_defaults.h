@@ -58,6 +58,7 @@ struct GMT_ENCODING {
 
 /*! Holds all variables directly controlled by GMT Default parameters */
 struct GMT_DEFAULTS {
+	bool par_set[GMT_N_KEYS];		/* True if a parameter is set via --PAR=value on the command line */
 	/* COLOR group [sorted by type to optimize storage] */
 	unsigned int color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2]
 									 * Add 128 to disallow output of color names */
