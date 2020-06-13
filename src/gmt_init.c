@@ -9490,6 +9490,19 @@ void gmtlib_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 	}
 }
 
+GMT_LOCAL bool gmtinit_no_fontsize (char *string) {
+	/* Font specs look like one of these:
+	* size,name,color[=style]
+	* size
+	*
+	* If no size is given then only the font family is set and we are allowed to scale size later.
+	* So we look for a leading fontsize spec, e.g. 0.7i, 12p, 1c
+	*/
+
+	if (string[0] == '.' || isdigit (string[0])) return false;	/* Apparently we specified size */
+	return true;
+}
+
 /*! . */
 unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core) {
 	/* core is true if we are calling gmtlib_setparameter from gmtinit_loaddefaults, while it is
@@ -9667,7 +9680,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			else {
 				if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
-				if (strstr (value, "p,") == NULL) updated = false;	/* No size given */
+				if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			}
 			break;
 		case GMTCASE_ANNOT_FONT_SECONDARY:
@@ -9675,31 +9688,31 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_FONT_ANNOT_SECONDARY:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
-			if (strstr (value, "p,") == NULL) updated = false;	/* No size given */
+			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_HEADING:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_heading)) error = true;
-			if (strstr (value, "p,") == NULL) updated = false;	/* No size given */
+			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_TITLE:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
-			if (strstr (value, "p,") == NULL) updated = false;	/* No size given */
+			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_TAG:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_tag)) error = true;
-			if (strstr (value, "p,") == NULL) updated = false;	/* No size given */
+			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_LABEL_FONT:
 			GMT_COMPAT_TRANSLATE ("FONT_LABEL");
-			if (strstr (value, "p,") == NULL) updated = false;	/* No size given */
+			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_LABEL:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_label)) error = true;
-			if (strstr (value, "p,") == NULL) updated = false;	/* No size given */
+			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_LOGO:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_logo)) error = true;
-			if (strstr (value, "p,") == NULL) updated = false;	/* No size given */
+			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 
 		/* FONT GROUP ... obsolete options */
