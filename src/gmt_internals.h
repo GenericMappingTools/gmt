@@ -52,6 +52,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC void gmtlib_auto_font_tick_sizes (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file);
 EXTERN_MSC int gmtlib_download_remote_file (struct GMT_CTRL *GMT, const char* file_name, char *path, int k_data, unsigned int mode);
 EXTERN_MSC int gmtlib_get_serverfile_index (struct GMTAPI_CTRL *API, const char *file);
