@@ -4,7 +4,7 @@ gmt begin GMT_atan
 	gmt grd2xyz -Z tt.t.nc > tt.d
 	gmt histogram tt.d -R-0.75/0.75/0/20 -JX1.5i/1i -Bx0.5 -By5f5 -BWSne -W0.01 -Gblack -Z1
 
-	gmt text -F+f9p+jLB << EOF
+	gmt text -F+f9p,Helvetica+jLB << EOF
 -0.7	17	Raw
 -0.7	15	slopes
 EOF
@@ -25,7 +25,7 @@ EOF
 	gmt grdgradient -A45 @tut_relief.nc -Nt -fg -Gtt.tt.nc
 	gmt grd2xyz -Z tt.tt.nc > tt.d
 	gmt histogram tt.d -R-0.75/0.75/0/5 -Bx0.5 -By2f1 -BWSne -W0.01  -Gblack -X1.85i -Z1
-	gmt text -F+f9p+jLB << EOF
+	gmt text -F+f9p,Helvetica+jLB << EOF
 -0.7	4.3	tan@+-1@+
 -0.7	3.7	transformed
 EOF

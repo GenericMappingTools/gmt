@@ -2,12 +2,10 @@
 #		GMT EXAMPLE 22
 #
 # Purpose:	Automatic map of last month of world-wide seismicity
-# GMT modules:	set, coast, plot, legend
+# GMT modules:	coast, plot, legend
 # Unix progs:	cat, sed, awk, wget|curl
 #
 gmt begin ex22
-	gmt set FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
-
 	# Get the data (-s silently) from USGS using the curl
 	# Hardwired here to the month of October, 2017
 	# SITE="https://earthquake.usgs.gov/fdsnws/event/1/query.csv"
@@ -81,7 +79,7 @@ gmt begin ex22
 
 	# OK, now we can actually run gmt legend.  We center the legend below the map.
 	# Trial and error shows that 1.7i is a good legend height:
-	gmt legend -DJBC+o0/1c+w18c/4.2c -F+p+glightyellow neis.legend
+	gmt legend -DJBC+o0/1c+w18c/4.2c -F+p+glightyellow neis.legend --FONT_ANNOT_PRIMARY=10p,Helvetica
 
 	rm neis.legend usgs_quakes_22.txt
 gmt end show

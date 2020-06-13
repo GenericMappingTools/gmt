@@ -34,7 +34,7 @@ EOF
 EOF
 	gmt text -F+f12p+jCM -Gwhite -W0.25p -C50% << EOF
 -2.8 0.75 FILES OR STDIN
-+2.8 0.75 FILES OR STDIN
++2.8 0.75 FILES OR STDOUT
 EOF
 	gmt text -F+f12p+jCM -Glightblue -W0.25p -C50% << EOF
 -2.8 0.0 STREAMS, FILE DESCRIPTORS
