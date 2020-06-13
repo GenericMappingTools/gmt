@@ -148,7 +148,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallocat
 }
 
 GMT_LOCAL void psxy_plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_x[], double error_width2, int line, int kind) {
-	double x_1, x_2, y_1, y_2;
+	double x_0, y_0, x_1, x_2, y_1, y_2;
 	bool tip1, tip2;
 	unsigned int first = 0, second = (kind == EBAR_ASYMMETRICAL) ? 1 : 0;	/* first and second are either both 0 or second is 1 for asymmetrical bars */
 
@@ -156,14 +156,16 @@ GMT_LOCAL void psxy_plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	gmt_geo_to_xy (GMT, x - fabs (delta_x[first]),  y, &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x + fabs (delta_x[second]), y, &x_2, &y_2);
 	if (gmt_M_is_dnan (x_1)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "X error bar exceeded domain near line %d. Reset to x_min\n", line);
-		x_1 = GMT->current.proj.rect[XLO];
+		gmt_geo_to_xy (GMT, x, y,  &x_0, &y_0);
+		x_1 = MIN (GMT->current.proj.rect[XLO], x_0);
 		tip1 = false;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "X error bar exceeded domain near line %d. Left bar point reset to %g\n", line, x_1);
 	}
 	if (gmt_M_is_dnan (x_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "X error bar exceeded domain near line %d. Reset to x_max\n", line);
-		x_2 = GMT->current.proj.rect[XHI];
+		gmt_geo_to_xy (GMT, x, y,  &x_0, &y_0);
+		x_2 = MAX (GMT->current.proj.rect[XHI], x_0);
 		tip2 = false;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "X error bar exceeded domain near line %d. Right bar point reset to %g\n", line, x_1);
 	}
 	PSL_plotsegment (PSL, x_1, y_1, x_2, y_2);
 	if (tip1) PSL_plotsegment (PSL, x_1, y_1 - error_width2, x_1, y_1 + error_width2);
@@ -171,7 +173,7 @@ GMT_LOCAL void psxy_plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 }
 
 GMT_LOCAL void psxy_plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_y[], double error_width2, int line, int kind) {
-	double x_1, x_2, y_1, y_2;
+	double x_0, y_0, x_1, x_2, y_1, y_2;
 	bool tip1, tip2;
 	unsigned int first = 0, second = (kind == EBAR_ASYMMETRICAL) ? 1 : 0;	/* first and second are either both 0 or second is 1 for asymmetrical bars */
 
@@ -179,14 +181,16 @@ GMT_LOCAL void psxy_plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	gmt_geo_to_xy (GMT, x, y - fabs (delta_y[first]),  &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x, y + fabs (delta_y[second]), &x_2, &y_2);
 	if (gmt_M_is_dnan (y_1)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Y error bar exceeded domain near line %d. Reset to y_min\n", line);
-		y_1 = GMT->current.proj.rect[YLO];
+		gmt_geo_to_xy (GMT, x, y,  &x_0, &y_0);
+		y_1 = MIN (GMT->current.proj.rect[YLO], y_0);
 		tip1 = false;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Y error bar exceeded domain near line %d. Bottom bar point reset to %g\n", line, y_1);
 	}
 	if (gmt_M_is_dnan (y_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Y error bar exceeded domain near line %d. Reset to y_max\n", line);
-		y_2 = GMT->current.proj.rect[YHI];
+		gmt_geo_to_xy (GMT, x, y,  &x_0, &y_0);
+		y_2 = MAX (GMT->current.proj.rect[YHI], y_0);
 		tip2 = false;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Y error bar exceeded domain near line %d. Top bar point reset to %g\n", line, y_1);
 	}
 	PSL_plotsegment (PSL, x_1, y_1, x_2, y_2);
 	if (tip1) PSL_plotsegment (PSL, x_1 - error_width2, y_1, x_1 + error_width2, y_1);
@@ -1354,7 +1358,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_illuminate (GMT, in[icol], current_fill.rgb);
 			}
 
-			if (!Ctrl->N.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
+			if (!Ctrl->N.active && !Ctrl->E.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
 				/* Skip points outside map */
 				gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 				may_intrude_inside = false;
