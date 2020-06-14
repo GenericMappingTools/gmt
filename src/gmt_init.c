@@ -6080,6 +6080,11 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	int i, error = 0;
 	double const pt = 1.0/72.0;	/* points to inch */
 
+	/* These settings override the classic defaults settings and make the modern settings.
+	 * In addition to some changes in fonts, the key thing is lack of dimension as those
+	 * will be set based on map size.  The user can override any of those with a specific
+	 * dimension (font size, length, etc.) with gmt set or --PAR=value */
+	
 	/* FONT group */
 
 	/* FONT_ANNOT_PRIMARY */
