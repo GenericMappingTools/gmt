@@ -9281,16 +9281,18 @@ GMT_LOCAL unsigned int gmtinit_parse_map_annot_oblique (struct GMT_CTRL *GMT, ch
 	unsigned int bits = 0, k, found;
 
 	if (isdigit (text[0])) return (atoi (text));	/* That was easy */
+
 	tofree = string = strdup (text);
 	while ((token = strsep (&string, ",")) != NULL) {
-		for (k = found = 0; !found && k < N_MAP_ANNOT_OBLIQUE_ITEMS; k++)
-			found = !strcmp (token, map_annot_oblique_item[k]);
-		if (found)
-			bits += (k == 0) ? 0 : urint (pow (2.0, k-1));
+		for (k = 0, found = UINT_MAX; found == UINT_MAX && k < N_MAP_ANNOT_OBLIQUE_ITEMS; k++)
+			if (!strcmp (token, map_annot_oblique_item[k])) found = k;
+		if (found != UINT_MAX)
+			bits += (found == 0) ? 0 : urint (pow (2.0, found-1));
 		else
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "MAP_ANNOT_OBLIQUE: Unrecognized flag name %s - ignored\n", token);
 	}
 	gmt_M_str_free (tofree);
+	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Converted %s to %d\n", text, bits);
 
 	return (bits);
 }
