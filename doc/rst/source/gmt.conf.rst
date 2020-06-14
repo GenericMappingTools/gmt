@@ -572,20 +572,18 @@ MAP Parameters
         occur for certain oblique projections.) [0p]
 
     **MAP_ANNOT_OBLIQUE**
-        This integer is a sum of 6 bit flags (most of which only are
-        relevant for oblique projections): If bit 1 is set (1),
-        annotations will occur wherever a gridline crosses the map
-        boundaries, else longitudes will be annotated on the lower and upper
-        boundaries only, and latitudes will be annotated on the left and
-        right boundaries only. If bit 2 is set (2), then
-        longitude annotations will be plotted horizontally. If bit 3 is set
-        (4), then latitude annotations will be plotted
-        horizontally. If bit 4 is set (8), then oblique
-        tick-marks are extended to give a projection equal to the specified
-        tick length. If bit 5 is set (16), tick-marks will be drawn normal
-        to the border regardless of gridline angle. If bit 6 is set (32),
-        then latitude annotations will be plotted parallel to the border. To
-        set a combination of these, add up the values in parentheses. [1].
+        This argument is a comma-separated list of up to seven keywords:
+        **separate** means longitudes will be annotated on the lower and upper
+        boundaries only, and latitudes will be annotated on the left and right
+        boundaries only;
+        **anywhere** means annotations will occur wherever an imaginary gridline
+        crosses the map boundaries; **lon_horizontal** means longitude annotations
+        will be plotted horizontally; **lat_horizontal** means latitude annotations
+        will be plotted horizontally; **tick_extend** means tick-marks are extended
+        so the distance from the tip of the oblique tick to the map frame equals
+        the specified tick length; **tick_normal** means tick-marks will be drawn
+        normal to the border regardless of gridline angle; **lat_parallel** means
+        latitude annotations will be plotted parallel to the border. [anywhere].
 
     **MAP_ANNOT_OFFSET**
         Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and :term:`MAP_ANNOT_OFFSET_SECONDARY` to the value specified.
