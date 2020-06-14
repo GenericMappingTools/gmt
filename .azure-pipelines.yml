@@ -239,6 +239,8 @@ jobs:
         containerImage: ubuntu:16.04
       Ubuntu1804:   # CMake 3.10.2 + GNU 7.4.0
         containerImage: ubuntu:18.04
+      Ubuntu2004:   # CMake 3.16.3 + GNU 9.3.0
+        containerImage: ubuntu:20.04
 
   container:
     image: $[ variables['containerImage'] ]
