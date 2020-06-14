@@ -9289,17 +9289,16 @@ GMT_LOCAL unsigned int gmtinit_parse_map_annot_oblique (struct GMT_CTRL *GMT, ch
 		if (found != UINT_MAX)
 			bits += (found == 0) ? 0 : urint (pow (2.0, found-1));
 		else
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "MAP_ANNOT_OBLIQUE: Unrecognized flag name %s - ignored\n", token);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtinit_parse_map_annot_oblique: Unrecognized flag name %s - ignored\n", token);
 	}
 	gmt_M_str_free (tofree);
-	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Converted %s to %d\n", text, bits);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtinit_parse_map_annot_oblique: Converted %s to %d\n", text, bits);
 
 	return (bits);
 }
 
 GMT_LOCAL char * gmtinit_print_map_annot_oblique (struct GMT_CTRL *GMT, unsigned int val) {
-	/* Create text-equivalent using keywords for MAP_ANNOT_OBLIQUE
-	 */
+	/* Create text-equivalent using keywords for MAP_ANNOT_OBLIQUE */
 	char string[GMT_LEN128] = {""};
 	unsigned int bit, k, first = 1;
 
@@ -9311,6 +9310,7 @@ GMT_LOCAL char * gmtinit_print_map_annot_oblique (struct GMT_CTRL *GMT, unsigned
 			first = 0;
 		}
 	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtinit_print_map_annot_oblique: Converted %d to %sn", val, string);
 	return (strdup (string));
 }
 
