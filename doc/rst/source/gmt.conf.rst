@@ -575,14 +575,14 @@ MAP Parameters
         This argument is a comma-separated list of up to seven keywords:
         **separate** means longitudes will be annotated on the lower and upper
         boundaries only, and latitudes will be annotated on the left and right
-        boundaries only.
+        boundaries only;
         **anywhere** means annotations will occur wherever an imaginary gridline
-        crosses the map boundaries. **lon_horizontal** means longitude annotations
-        will be plotted horizontally. **lat_horizontal** means latitude annotations
-        will be plotted horizontally. **tick_extend** means tick-marks are extended
+        crosses the map boundaries; **lon_horizontal** means longitude annotations
+        will be plotted horizontally; **lat_horizontal** means latitude annotations
+        will be plotted horizontally; **tick_extend** means tick-marks are extended
         so the distance from the tip of the oblique tick to the map frame equals
-        the specified tick length. **tick_normal** means tick-marks will be drawn
-        normal to the border regardless of gridline angle. **lat_parallel** means
+        the specified tick length; **tick_normal** means tick-marks will be drawn
+        normal to the border regardless of gridline angle; **lat_parallel** means
         latitude annotations will be plotted parallel to the border. [anywhere].
 
     **MAP_ANNOT_OFFSET**
