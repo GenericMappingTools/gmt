@@ -26,4 +26,4 @@ gmt psxy -R -J -O -K -Sc0.1i -Gred << EOF >> $ps
 -120.01540	33.83507
 -120.76423	38.40270
 EOF
-gmt pscoast $PROJ1 -B1g1 -W.75p -Na/.5,80/80/80 -Slightblue -Df -Clightblue -Ir/.24p,lightblue -O -Y4.5i --MAP_ANNOT_OBLIQUE=0 >> $ps
+gmt pscoast $PROJ1 -B1g1 -W.75p -Na/.5,80/80/80 -Slightblue -Df -Clightblue -Ir/.24p,lightblue -O -Y4.5i --MAP_ANNOT_OBLIQUE=separate >> $ps

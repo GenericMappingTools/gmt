@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Testing map directional roses
 ps=rose_dir.ps
-gmt set FONT_LABEL 10p FONT_TITLE 14p MAP_ANNOT_OBLIQUE 34 MAP_TITLE_OFFSET 7p MAP_FRAME_WIDTH 3p
+gmt set FONT_LABEL 10p FONT_TITLE 14p MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel MAP_TITLE_OFFSET 7p MAP_FRAME_WIDTH 3p
 # 4th row left: Fancy kind = 1
 gmt psbasemap -R-7/7/-5/5 -JM2.75i -Baf -BWSne+gazure1 -Tdg0/0+w1i+f1+l+jCM -P -K -X1.25i > $ps
 # 4th row right: Fancy kind = 2

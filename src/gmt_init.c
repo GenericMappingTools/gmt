@@ -354,6 +354,18 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 
 #define DEF_HEADER_MARKERS "#%!;\"\'"
 
+#define N_MAP_ANNOT_OBLIQUE_ITEMS 7
+
+static char *map_annot_oblique_item[N_MAP_ANNOT_OBLIQUE_ITEMS] = {
+	"separate",
+	"anywhere",
+	"lon_horizontal",
+	"lat_horizontal",
+	"tick_extend",
+	"tick_normal",
+	"lat_parallel"
+};
+
 #if defined(USE_COMMON_LONG_OPTIONS)
 /* List of GMT common keyword/options pairs.  This list is used in gmtinit_kw_replace to convert
  * the new long-format GMT options (e.g., --timestamp="My plot"+offset=5c/6c) to regular GMT short format
@@ -9507,6 +9519,47 @@ GMT_LOCAL bool gmtinit_no_fontsize (char *string) {
 	return true;
 }
 
+GMT_LOCAL unsigned int gmtinit_parse_map_annot_oblique (struct GMT_CTRL *GMT, char *text) {
+	/* Break down a comma-separated list of keywords for MAP_ANNOT_OBLIQUE or
+	 * just return the integer if old-fashion bit-sum
+	 */
+	char *string = NULL, *token = NULL, *tofree = NULL;
+	unsigned int bits = 0, k, found;
+
+	if (isdigit (text[0])) return (atoi (text));	/* That was easy */
+
+	tofree = string = strdup (text);
+	while ((token = strsep (&string, ",")) != NULL) {
+		for (k = 0, found = UINT_MAX; found == UINT_MAX && k < N_MAP_ANNOT_OBLIQUE_ITEMS; k++)
+			if (!strcmp (token, map_annot_oblique_item[k])) found = k;
+		if (found != UINT_MAX)
+			bits += (found == 0) ? 0 : urint (pow (2.0, found-1));
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtinit_parse_map_annot_oblique: Unrecognized flag name %s - ignored\n", token);
+	}
+	gmt_M_str_free (tofree);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtinit_parse_map_annot_oblique: Converted %s to %d\n", text, bits);
+
+	return (bits);
+}
+
+GMT_LOCAL char * gmtinit_print_map_annot_oblique (struct GMT_CTRL *GMT, unsigned int val) {
+	/* Create text-equivalent using keywords for MAP_ANNOT_OBLIQUE */
+	char string[GMT_LEN128] = {""};
+	unsigned int bit, k, first = 1;
+
+	for (k = 1; k < N_MAP_ANNOT_OBLIQUE_ITEMS; k++) {
+		bit = urint (pow (2.0, k-1));
+		if (val & bit) {	/* This one was set */
+			if (!first) strcat (string, ",");
+			strcat (string, map_annot_oblique_item[k]);
+			first = 0;
+		}
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtinit_print_map_annot_oblique: Converted %d to %sn", val, string);
+	return (strdup (string));
+}
+
 /*! . */
 unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core) {
 	/* core is true if we are calling gmtlib_setparameter from gmtinit_loaddefaults, while it is
@@ -9800,7 +9853,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("MAP_ANNOT_OBLIQUE");
 			break;
 		case GMTCASE_MAP_ANNOT_OBLIQUE:
-			ival = atoi (value);
+			ival = gmtinit_parse_map_annot_oblique (GMT, value);
 			if (ival >= GMT_OBL_ANNOT_LON_X_LAT_Y && ival < GMT_OBL_ANNOT_FLAG_LIMIT)
 				GMT->current.setting.map_annot_oblique = ival;
 			else
@@ -11087,7 +11140,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 /*! . */
 char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	/* value must hold at least GMT_BUFSIZ chars */
-	static char value[GMT_BUFSIZ] = {""}, txt[GMT_LEN8], *PRE[3] = {"", "-", "+"};
+	static char value[GMT_BUFSIZ] = {""}, txt[GMT_LEN8], *PRE[3] = {"", "-", "+"}, *string = NULL;
 	int case_val;
 	bool error = false;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
@@ -11303,7 +11356,9 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_ANNOT_OBLIQUE:
-			snprintf (value, GMT_LEN256, "%d", GMT->current.setting.map_annot_oblique);
+			string = gmtinit_print_map_annot_oblique (GMT, GMT->current.setting.map_annot_oblique);
+			snprintf (value, GMT_LEN256, "%s", string);
+			gmt_M_str_free (string);
 			break;
 		case GMTCASE_ANNOT_MIN_ANGLE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
