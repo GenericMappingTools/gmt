@@ -117,7 +117,8 @@
 
 /* Leave a record that this keyword is no longer a default one
    So far, only gmtset calls this function with core = true, but this is a too fragile solution */
-#define GMT_KEYWORD_UPDATE(val) if (core) GMT_keywords_updated[val] = true; else GMT->current.setting.par_set[val] = updated
+//#define GMT_KEYWORD_UPDATE(val) if (core) GMT_keywords_updated[val] = true; else GMT->current.setting.par_set[val] = updated
+#define GMT_KEYWORD_UPDATE(val) GMT->current.setting.par_set[val] = updated; if (core) GMT_keywords_updated[val] = true
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
