@@ -7,7 +7,6 @@
 
 gmt begin ex50
 	# Left column have all the PDFs
-	gmt set FONT_ANNOT_PRIMARY 10p,Helvetica,black
 	# Binomial distribution
 	gmt math -T0/8/1 0.25 8 T BPDF = p.txt
 	gmt plot -R-0.6/8.6/0/0.35 -JX7.5c/1.25c -Glightgreen p.txt -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf

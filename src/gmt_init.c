@@ -9397,12 +9397,16 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 }
 
 GMT_LOCAL bool gmtinit_auto_allowed (struct GMT_CTRL *GMT, char *item) {
+	bool ret_val;
 	int kase = gmt_hash_lookup (GMT, item, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	if (kase == -1) return false;	/* WTF? */
-	return !GMT->current.setting.par_set[kase];
+	if (kase == -1) ret_val = false;	/* WTF? */
+	else
+		ret_val = !GMT->current.setting.par_set[kase];
+	if (ret_val) GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Scaling %s\n", item);
+	return (ret_val);
 }
 
-void gmtlib_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
+void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 	/* If MAP_AUTO_SCALE is on then we must adjust all frame items according to plot size */
 	bool geo_frame = false;
 	double fontsize, map_dim_cm, scale;
@@ -9447,7 +9451,7 @@ void gmtlib_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 	if (gmtinit_auto_allowed (GMT, "MAP_ANNOT_OFFSET_PRIMARY"))
 		GMT->current.setting.map_annot_offset[GMT_PRIMARY] = 3 * pt * scale; /* 3p */
 	if (gmtinit_auto_allowed (GMT, "MAP_ANNOT_OFFSET_SECONDARY"))
-		GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = 3 * pt * scale; /* 3p */
+		GMT->current.setting.map_annot_offset[GMT_SECONDARY] = 3 * pt * scale; /* 3p */
 	if (gmtinit_auto_allowed (GMT, "MAP_LABEL_OFFSET"))
 		GMT->current.setting.map_label_offset = 6 * pt * scale;	/* 6p */
 	if (gmtinit_auto_allowed (GMT, "MAP_TITLE_OFFSET"))

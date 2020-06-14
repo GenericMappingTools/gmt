@@ -496,6 +496,8 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	gmt_M_memset (S, N_DAT, struct GMT_DATASEGMENT *);
 	gmt_M_memset (krow, N_DAT, uint64_t);
 
+	gmt_auto_font_tick_sizes (GMT);	/* Need to do any auto-scaling here since font-sizes are used below to compute heights */
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
 	if (gmt_M_compat_check (GMT, 4)) {
 		/* Since pslegend v4 used '>' to indicate a paragraph record we avoid confusion with multiple segment-headers by *

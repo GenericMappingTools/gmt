@@ -5442,8 +5442,6 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	double w, e, s, n;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	gmtlib_auto_font_tick_sizes (GMT);
-
 	if (!GMT->common.B.active[GMT_PRIMARY] && !GMT->common.B.active[GMT_SECONDARY]) return;	/* No frame annotation/ticks/gridlines specified */
 
 	if (GMT->common.B.active[GMT_PRIMARY] && GMT->common.B.active[GMT_SECONDARY]) {
@@ -7569,6 +7567,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
 
 	PSL = GMT->PSL;	/* Shorthand */
+
+	gmt_auto_font_tick_sizes (GMT);	/* if MAP_AUTO_SCALE is in effect we must change some defaults */
 
 	PSL->internal.verbose = GMT->current.setting.verbose;		/* Inherit verbosity level from GMT */
 	if (gmt_M_compat_check (GMT, 4) && GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
