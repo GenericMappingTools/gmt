@@ -223,7 +223,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Docker | '
-  condition: eq(variables['Build.Reason'], 'Schedule')
+  #condition: eq(variables['Build.Reason'], 'Schedule')
 
   variables:
     BUILD_DOCS: false
