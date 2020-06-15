@@ -1377,6 +1377,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 						if (gmt_M_is_fnan (Grid_proj[0]->data[kk + col])) Out->alpha[node] = 0;
 					}
 				}
+				if (Out->header->n_bands == 4) Out->header->n_bands = 3;
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Creating 24-bit color image %s\n", way[Ctrl->A.way]);
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
