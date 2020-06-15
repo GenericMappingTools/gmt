@@ -9427,15 +9427,28 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 	return (n_errors);
 }
 
-GMT_LOCAL bool gmtinit_auto_allowed (struct GMT_CTRL *GMT, char *item) {
+GMT_LOCAL bool gmtinit_auto_allowed_if_zero (struct GMT_CTRL *GMT, char *item, double size) {
 	bool ret_val;
 	int kase = gmt_hash_lookup (GMT, item, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 	if (kase == -1) ret_val = false;	/* WTF? */
 	else
 		ret_val = !GMT->current.setting.par_set[kase];
+	if (size > 0.0) ret_val = false;	/* Already set */
 	if (ret_val) GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Scaling %s\n", item);
 	return (ret_val);
 }
+
+GMT_LOCAL bool gmtinit_auto_allowed_if_NaN (struct GMT_CTRL *GMT, char *item, double size) {
+	bool ret_val;
+	int kase = gmt_hash_lookup (GMT, item, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+	if (kase == -1) ret_val = false;	/* WTF? */
+	else
+		ret_val = !GMT->current.setting.par_set[kase];
+	if (!gmt_M_is_dnan (size)) ret_val = false;	/* Already set */
+	if (ret_val) GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Scaling %s\n", item);
+	return (ret_val);
+}
+
 
 void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 	/* If MAP_AUTO_SCALE is on then we must adjust all frame items with unspecified size according to plot size */
@@ -9451,7 +9464,7 @@ void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 			if (GMT->current.map.frame.side[k] & GMT_AXIS_DRAW) GMT->current.map.frame.side[k] |= GMT_AXIS_BARB;
 	}
 
-	if (!GMT->current.setting.map_auto_scale) return;	/* Auto scaling is off; we are done here */
+	//if (!GMT->current.setting.map_auto_scale) return;	/* Auto scaling is off; we are done here */
 
 	/* Use this equation for fontsize to compute the primary annotation font size given map max dimension */
 
@@ -9462,64 +9475,64 @@ void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 
 	/* Only apply the automatic scaling to items NOT specifically set via a --PAR=value option */
 
-	if (gmtinit_auto_allowed (GMT, "FONT_ANNOT_PRIMARY") && gmt_M_is_zero (GMT->current.setting.font_annot[GMT_PRIMARY].size))
+	if (gmtinit_auto_allowed_if_zero (GMT, "FONT_ANNOT_PRIMARY", GMT->current.setting.font_annot[GMT_PRIMARY].size))
 		GMT->current.setting.font_annot[GMT_PRIMARY].size = fontsize;
-	if (gmtinit_auto_allowed (GMT, "FONT_ANNOT_SECONDARY") && gmt_M_is_zero (GMT->current.setting.font_annot[GMT_SECONDARY].size))
+	if (gmtinit_auto_allowed_if_zero (GMT, "FONT_ANNOT_SECONDARY", GMT->current.setting.font_annot[GMT_SECONDARY].size))
 		GMT->current.setting.font_annot[GMT_SECONDARY].size = fontsize * (12.0/10.0);	/* Modern 12p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_LABEL") && gmt_M_is_zero (GMT->current.setting.font_label.size))
+	if (gmtinit_auto_allowed_if_zero (GMT, "FONT_LABEL", GMT->current.setting.font_label.size))
 		GMT->current.setting.font_label.size = fontsize * (14.0/10.0);	/* Modern 14p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_HEADING") && gmt_M_is_zero (GMT->current.setting.font_heading.size))
+	if (gmtinit_auto_allowed_if_zero (GMT, "FONT_HEADING", GMT->current.setting.font_heading.size))
 		GMT->current.setting.font_heading.size = fontsize * (28.0/10.0);	/* Modern 28p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_TAG") && gmt_M_is_zero (GMT->current.setting.font_tag.size))
+	if (gmtinit_auto_allowed_if_zero (GMT, "FONT_TAG", GMT->current.setting.font_tag.size))
 		GMT->current.setting.font_tag.size = fontsize * (18.0/10.0);	/* Modern 18p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_TITLE") && gmt_M_is_zero (GMT->current.setting.font_title.size))
+	if (gmtinit_auto_allowed_if_zero (GMT, "FONT_TITLE", GMT->current.setting.font_title.size))
 		GMT->current.setting.font_title.size = fontsize * (22.0/10.0);	/* Modern 22p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_LOGO") && gmt_M_is_zero (GMT->current.setting.font_logo.size))
+	if (gmtinit_auto_allowed_if_zero (GMT, "FONT_LOGO", GMT->current.setting.font_logo.size))
 		GMT->current.setting.font_logo.size = fontsize * (8.0/10.0);	/* Classic 8p vs 10p */
 
 	/* Offsets */
 
-	if (gmtinit_auto_allowed (GMT, "MAP_ANNOT_OFFSET_PRIMARY") && gmt_M_is_dnan (GMT->current.setting.map_annot_offset[GMT_PRIMARY]))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_ANNOT_OFFSET_PRIMARY", GMT->current.setting.map_annot_offset[GMT_PRIMARY]))
 		GMT->current.setting.map_annot_offset[GMT_PRIMARY] = 3 * pt * scale; /* 3p */
-	if (gmtinit_auto_allowed (GMT, "MAP_ANNOT_OFFSET_SECONDARY") && gmt_M_is_dnan (GMT->current.setting.map_annot_offset[GMT_SECONDARY]))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_ANNOT_OFFSET_SECONDARY", GMT->current.setting.map_annot_offset[GMT_SECONDARY]))
 		GMT->current.setting.map_annot_offset[GMT_SECONDARY] = 3 * pt * scale; /* 3p */
-	if (gmtinit_auto_allowed (GMT, "MAP_LABEL_OFFSET") && gmt_M_is_dnan (GMT->current.setting.map_label_offset))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_LABEL_OFFSET", GMT->current.setting.map_label_offset))
 		GMT->current.setting.map_label_offset = 6 * pt * scale;	/* 6p */
-	if (gmtinit_auto_allowed (GMT, "MAP_TITLE_OFFSET") && gmt_M_is_dnan (GMT->current.setting.map_title_offset))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_TITLE_OFFSET", GMT->current.setting.map_title_offset))
 		GMT->current.setting.map_title_offset = 12 * pt * scale;	/* 12p */
-	if (gmtinit_auto_allowed (GMT, "MAP_HEADING_OFFSET") && gmt_M_is_dnan (GMT->current.setting.map_heading_offset))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_HEADING_OFFSET", GMT->current.setting.map_heading_offset))
 		GMT->current.setting.map_heading_offset = 16 * pt * scale;	/* 16p */
 
 	/* Tick lengths */
 
-	if (gmtinit_auto_allowed (GMT, "MAP_TICK_LENGTH_PRIMARY") && gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER])) {
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_TICK_LENGTH_PRIMARY", GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER])) {
 		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 3 * pt * scale;	/* 3p */
 		GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 1.5 * pt * scale;	/* 1.5p */
 	}
-	if (gmtinit_auto_allowed (GMT, "MAP_TICK_LENGTH_SECONDARY") && gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER])) {
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_TICK_LENGTH_SECONDARY", GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER])) {
 		GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 12 * pt * scale;	/* 12p */
 		GMT->current.setting.map_tick_length[GMT_TICK_LOWER] = 3 * pt * scale;	/* 3p */
 	}
 
 	/* Frame, tick and gridline pens */
 
-	if (gmtinit_auto_allowed (GMT, "MAP_FRAME_WIDTH") && gmt_M_is_dnan (GMT->current.setting.map_frame_width))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_FRAME_WIDTH", GMT->current.setting.map_frame_width))
 		GMT->current.setting.map_frame_width = 3 * pt * scale; /* 3p */
-	if (gmtinit_auto_allowed (GMT, "MAP_FRAME_PEN") && gmt_M_is_dnan (GMT->current.setting.map_frame_pen.width))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_FRAME_PEN", GMT->current.setting.map_frame_pen.width))
 		GMT->current.setting.map_frame_pen.width = 1.5 * scale; /* 1.5p (thicker) */
-	if (gmtinit_auto_allowed (GMT, "MAP_TICK_PEN_PRIMARY") && gmt_M_is_dnan (GMT->current.setting.map_tick_pen[GMT_PRIMARY].width))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_TICK_PEN_PRIMARY", GMT->current.setting.map_tick_pen[GMT_PRIMARY].width))
 		GMT->current.setting.map_tick_pen[GMT_PRIMARY].width = 0.5 * scale;	/* 0.5p (thinner) */
-	if (gmtinit_auto_allowed (GMT, "MAP_TICK_PEN_SECONDARY") && gmt_M_is_dnan (GMT->current.setting.map_tick_pen[GMT_SECONDARY].width))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_TICK_PEN_SECONDARY", GMT->current.setting.map_tick_pen[GMT_SECONDARY].width))
 		GMT->current.setting.map_tick_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
-	if (gmtinit_auto_allowed (GMT, "MAP_GRID_PEN_PRIMARY") && gmt_M_is_dnan (GMT->current.setting.map_grid_pen[GMT_PRIMARY].width))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_GRID_PEN_PRIMARY", GMT->current.setting.map_grid_pen[GMT_PRIMARY].width))
 		GMT->current.setting.map_grid_pen[GMT_PRIMARY].width = 0.25 * scale;	/* 0.25p (default) */
-	if (gmtinit_auto_allowed (GMT, "MAP_GRID_PEN_SECONDARY") && gmt_M_is_dnan (GMT->current.setting.map_grid_pen[GMT_SECONDARY].width))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_GRID_PEN_SECONDARY", GMT->current.setting.map_grid_pen[GMT_SECONDARY].width))
 		GMT->current.setting.map_grid_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
 
-	if (gmtinit_auto_allowed (GMT, "MAP_VECTOR_SHAPE") && gmt_M_is_dnan (GMT->current.setting.map_vector_shape))
+	if (gmtinit_auto_allowed_if_NaN (GMT, "MAP_VECTOR_SHAPE", GMT->current.setting.map_vector_shape))
 		GMT->current.setting.map_vector_shape = 0.5;
 
-	if (geo_frame) {
+	if (geo_frame && GMT->current.setting.run_mode == GMT_MODERN) {
 		/* Extend ticks by the width of the fancy frame */
 		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] += GMT->current.setting.map_frame_width;
 		GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  += GMT->current.setting.map_frame_width;
