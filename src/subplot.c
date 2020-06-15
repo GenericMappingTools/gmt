@@ -719,6 +719,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		bool add_annot, no_frame = false;
 		FILE *fp = NULL;
 
+		gmt_auto_font_tick_sizes (GMT);	/* Need to do any auto-scaling here since font-sizes are used below to compute heights */
+
 		/* Determine if the subplot itself is an overlay of an existing plot */
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 		if (!access (file, F_OK)) {	/* Plot file already exists, so enter overlay mode if -X -Y nare ot set */
@@ -741,7 +743,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Please run 'gmt clear sessions' (or equivalent if from Julia, Matlab, Python, etc...) to solve this issue.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		/* COmpute dimensions such as ticks and distance from tick to top of annotation etc */
+		/* Compute dimensions such as ticks and distance from tick to top of annotation etc */
 		tick_height   = MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Allow for axis ticks */
 		annot_height  = (GMT_LETTER_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
 		label_height  = (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
