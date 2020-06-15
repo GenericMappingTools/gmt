@@ -613,10 +613,11 @@ GMT_LOCAL int gmtapi_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, struct GM
 	if (I == NULL) return (GMT_PTR_IS_NULL);
 	if (I->data) return (GMT_PTR_NOT_NULL);
 	if (I->header->size == 0U) return (GMT_SIZE_IS_ZERO);
-	if ((I->data = gmt_M_memory_aligned (GMT, NULL, I->header->size * I->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	if (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4)) {
 		if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+		I->header->n_bands--;	/* transparency is in a separate alpha array, not in the image data */
 	}
+	if ((I->data = gmt_M_memory_aligned (GMT, NULL, I->header->size * I->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	return (GMT_NOERROR);
 }
 
