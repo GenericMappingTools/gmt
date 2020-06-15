@@ -6462,8 +6462,9 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 
 	/* Assign font size, type, and fill, if given */
 	if (!size[0] || size[0] == '-') { /* Skip */ }
-	//else if ((pointsize = gmt_convert_units (GMT, size, GMT_PT, GMT_PT)) < GMT_CONV4_LIMIT)
-	else if ((pointsize = gmt_convert_units (GMT, size, GMT_PT, GMT_PT)) < 0)
+	else if (!strncmp (size, "auto", 4U))
+		F->size = GMT->session.d_NaN;
+	else if ((pointsize = gmt_convert_units (GMT, size, GMT_PT, GMT_PT)) < GMT_CONV4_LIMIT)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of font size not recognized. Using default.\n");
 	else
 		F->size = pointsize;
@@ -6496,7 +6497,7 @@ char *gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 	static char text[GMT_BUFSIZ];
 	char size[GMT_LEN32] = {""};
 
-	if (F->size > 0)
+	if (!gmt_M_is_dnan (F->size))
 		snprintf (size, GMT_LEN32, "%gp,", F->size);
 
 	if (F->form & 2) {
