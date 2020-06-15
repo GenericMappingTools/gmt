@@ -117,8 +117,7 @@
 
 /* Leave a record that this keyword is no longer a default one
    So far, only gmtset calls this function with core = true, but this is a too fragile solution */
-//#define GMT_KEYWORD_UPDATE(val) if (core) GMT_keywords_updated[val] = true; else GMT->current.setting.par_set[val] = updated
-#define GMT_KEYWORD_UPDATE(val) GMT->current.setting.par_set[val] = updated; if (core) GMT_keywords_updated[val] = true
+#define GMT_KEYWORD_UPDATE(val) if (core) GMT_keywords_updated[val] = true
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
@@ -209,7 +208,6 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "MAP_ANNOT_OFFSET_PRIMARY"},
 	{ 0, "MAP_ANNOT_OFFSET_SECONDARY"},
 	{ 0, "MAP_ANNOT_ORTHO"},
-	{ 0, "MAP_AUTO_SCALE"},
 	{ 0, "MAP_DEFAULT_PEN"},
 	{ 0, "MAP_DEGREE_SYMBOL"},
 	{ 0, "MAP_FRAME_AXES"},
@@ -5804,8 +5802,6 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
 	/* MAP_ANNOT_ORTHO */
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
-	/* MAP_AUTO_SCALE */
-	GMT->current.setting.map_auto_scale = false;
 	/* MAP_DEGREE_SYMBOL (degree) */
 	GMT->current.setting.map_degree_symbol = gmt_degree;
 	/* MAP_FRAME_AXES */
@@ -6120,8 +6116,6 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT->session.d_NaN; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
-	/* MAP_AUTO_SCALE */
-	GMT->current.setting.map_auto_scale = true;
 	/* MAP_DEGREE_SYMBOL (degree) */
 	GMT->current.setting.map_degree_symbol = gmt_degree;
 	/* MAP_FRAME_AXES */
@@ -9317,7 +9311,7 @@ int GMT_get_V (char arg) {
 	return gmt_get_V (arg);
 }
 
-GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT);
+GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT);	/* Must set this here since the next two functions call each other */
 
 /*! . */
 GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
@@ -9427,20 +9421,8 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 	return (n_errors);
 }
 
-GMT_LOCAL bool gmtinit_auto_allowed (struct GMT_CTRL *GMT, char *item, double size) {
-	bool ret_val;
-	int kase = gmt_hash_lookup (GMT, item, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	if (kase == -1) ret_val = false;	/* WTF? */
-	else
-		ret_val = !GMT->current.setting.par_set[kase];
-	if (!gmt_M_is_dnan (size)) ret_val = false;	/* Already set */
-	if (ret_val) GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Scaling %s\n", item);
-	return (ret_val);
-}
-
-
 void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
-	/* If MAP_AUTO_SCALE is on then we must adjust all frame items with unspecified size according to plot size */
+	/* We must adjust all frame items with unspecified size according to plot size */
 	bool geo_frame = false;
 	double fontsize, map_dim_cm, scale;
 	double const pt = 1.0/72.0;	/* points to inch */
@@ -9453,8 +9435,6 @@ void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 			if (GMT->current.map.frame.side[k] & GMT_AXIS_DRAW) GMT->current.map.frame.side[k] |= GMT_AXIS_BARB;
 	}
 
-	//if (!GMT->current.setting.map_auto_scale) return;	/* Auto scaling is off; we are done here */
-
 	/* Use this equation for fontsize to compute the primary annotation font size given map max dimension */
 
 	map_dim_cm = MAX (GMT->current.map.width, GMT->current.map.height) * GMT->session.u2u[GMT_INCH][GMT_CM];
@@ -9464,61 +9444,61 @@ void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 
 	/* Only apply the automatic scaling to items NOT specifically set via a --PAR=value option */
 
-	if (gmtinit_auto_allowed (GMT, "FONT_ANNOT_PRIMARY", GMT->current.setting.font_annot[GMT_PRIMARY].size))
+	if (gmt_M_is_dnan (GMT->current.setting.font_annot[GMT_PRIMARY].size))
 		GMT->current.setting.font_annot[GMT_PRIMARY].size = fontsize;
-	if (gmtinit_auto_allowed (GMT, "FONT_ANNOT_SECONDARY", GMT->current.setting.font_annot[GMT_SECONDARY].size))
+	if (gmt_M_is_dnan (GMT->current.setting.font_annot[GMT_SECONDARY].size))
 		GMT->current.setting.font_annot[GMT_SECONDARY].size = fontsize * (12.0/10.0);	/* Modern 12p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_LABEL", GMT->current.setting.font_label.size))
+	if (gmt_M_is_dnan (GMT->current.setting.font_label.size))
 		GMT->current.setting.font_label.size = fontsize * (14.0/10.0);	/* Modern 14p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_HEADING", GMT->current.setting.font_heading.size))
+	if (gmt_M_is_dnan (GMT->current.setting.font_heading.size))
 		GMT->current.setting.font_heading.size = fontsize * (28.0/10.0);	/* Modern 28p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_TAG", GMT->current.setting.font_tag.size))
+	if (gmt_M_is_dnan (GMT->current.setting.font_tag.size))
 		GMT->current.setting.font_tag.size = fontsize * (18.0/10.0);	/* Modern 18p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_TITLE", GMT->current.setting.font_title.size))
+	if (gmt_M_is_dnan (GMT->current.setting.font_title.size))
 		GMT->current.setting.font_title.size = fontsize * (22.0/10.0);	/* Modern 22p vs 10p */
-	if (gmtinit_auto_allowed (GMT, "FONT_LOGO", GMT->current.setting.font_logo.size))
+	if (gmt_M_is_dnan (GMT->current.setting.font_logo.size))
 		GMT->current.setting.font_logo.size = fontsize * (8.0/10.0);	/* Classic 8p vs 10p */
 
 	/* Offsets */
 
-	if (gmtinit_auto_allowed (GMT, "MAP_ANNOT_OFFSET_PRIMARY", GMT->current.setting.map_annot_offset[GMT_PRIMARY]))
+	if (gmt_M_is_dnan (GMT->current.setting.map_annot_offset[GMT_PRIMARY]))
 		GMT->current.setting.map_annot_offset[GMT_PRIMARY] = 3 * pt * scale; /* 3p */
-	if (gmtinit_auto_allowed (GMT, "MAP_ANNOT_OFFSET_SECONDARY", GMT->current.setting.map_annot_offset[GMT_SECONDARY]))
+	if (gmt_M_is_dnan (GMT->current.setting.map_annot_offset[GMT_SECONDARY]))
 		GMT->current.setting.map_annot_offset[GMT_SECONDARY] = 3 * pt * scale; /* 3p */
-	if (gmtinit_auto_allowed (GMT, "MAP_LABEL_OFFSET", GMT->current.setting.map_label_offset))
+	if (gmt_M_is_dnan (GMT->current.setting.map_label_offset))
 		GMT->current.setting.map_label_offset = 6 * pt * scale;	/* 6p */
-	if (gmtinit_auto_allowed (GMT, "MAP_TITLE_OFFSET", GMT->current.setting.map_title_offset))
+	if (gmt_M_is_dnan (GMT->current.setting.map_title_offset))
 		GMT->current.setting.map_title_offset = 12 * pt * scale;	/* 12p */
-	if (gmtinit_auto_allowed (GMT, "MAP_HEADING_OFFSET", GMT->current.setting.map_heading_offset))
+	if (gmt_M_is_dnan (GMT->current.setting.map_heading_offset))
 		GMT->current.setting.map_heading_offset = 16 * pt * scale;	/* 16p */
 
 	/* Tick lengths */
 
-	if (gmtinit_auto_allowed (GMT, "MAP_TICK_LENGTH_PRIMARY", GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER])) {
+	if (gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER])) {
 		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 3 * pt * scale;	/* 3p */
 		GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 1.5 * pt * scale;	/* 1.5p */
 	}
-	if (gmtinit_auto_allowed (GMT, "MAP_TICK_LENGTH_SECONDARY", GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER])) {
+	if (gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER])) {
 		GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 12 * pt * scale;	/* 12p */
 		GMT->current.setting.map_tick_length[GMT_TICK_LOWER] = 3 * pt * scale;	/* 3p */
 	}
 
 	/* Frame, tick and gridline pens */
 
-	if (gmtinit_auto_allowed (GMT, "MAP_FRAME_WIDTH", GMT->current.setting.map_frame_width))
+	if (gmt_M_is_dnan (GMT->current.setting.map_frame_width))
 		GMT->current.setting.map_frame_width = 3 * pt * scale; /* 3p */
-	if (gmtinit_auto_allowed (GMT, "MAP_FRAME_PEN", GMT->current.setting.map_frame_pen.width))
+	if (gmt_M_is_dnan (GMT->current.setting.map_frame_pen.width))
 		GMT->current.setting.map_frame_pen.width = 1.5 * scale; /* 1.5p (thicker) */
-	if (gmtinit_auto_allowed (GMT, "MAP_TICK_PEN_PRIMARY", GMT->current.setting.map_tick_pen[GMT_PRIMARY].width))
+	if (gmt_M_is_dnan (GMT->current.setting.map_tick_pen[GMT_PRIMARY].width))
 		GMT->current.setting.map_tick_pen[GMT_PRIMARY].width = 0.5 * scale;	/* 0.5p (thinner) */
-	if (gmtinit_auto_allowed (GMT, "MAP_TICK_PEN_SECONDARY", GMT->current.setting.map_tick_pen[GMT_SECONDARY].width))
+	if (gmt_M_is_dnan (GMT->current.setting.map_tick_pen[GMT_SECONDARY].width))
 		GMT->current.setting.map_tick_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
-	if (gmtinit_auto_allowed (GMT, "MAP_GRID_PEN_PRIMARY", GMT->current.setting.map_grid_pen[GMT_PRIMARY].width))
+	if (gmt_M_is_dnan (GMT->current.setting.map_grid_pen[GMT_PRIMARY].width))
 		GMT->current.setting.map_grid_pen[GMT_PRIMARY].width = 0.25 * scale;	/* 0.25p (default) */
-	if (gmtinit_auto_allowed (GMT, "MAP_GRID_PEN_SECONDARY", GMT->current.setting.map_grid_pen[GMT_SECONDARY].width))
+	if (gmt_M_is_dnan (GMT->current.setting.map_grid_pen[GMT_SECONDARY].width))
 		GMT->current.setting.map_grid_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
 
-	if (gmtinit_auto_allowed (GMT, "MAP_VECTOR_SHAPE", GMT->current.setting.map_vector_shape))
+	if (gmt_M_is_dnan (GMT->current.setting.map_vector_shape))
 		GMT->current.setting.map_vector_shape = 0.5;
 
 	if (geo_frame && GMT->current.setting.run_mode == GMT_MODERN) {
@@ -9528,19 +9508,6 @@ void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 		GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] += GMT->current.setting.map_frame_width;
 		GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  += GMT->current.setting.map_frame_width;
 	}
-}
-
-GMT_LOCAL bool gmtinit_no_fontsize (char *string) {
-	/* Font specs look like one of these:
-	* size,name,color[=style]
-	* size
-	*
-	* If no size is given then only the font family is set and we are allowed to scale size later.
-	* So we look for a leading fontsize spec, e.g. 0.7i, 12p, 1c
-	*/
-
-	if (string[0] == '.' || isdigit (string[0])) return false;	/* Apparently we specified size */
-	return true;
 }
 
 GMT_LOCAL unsigned int gmtinit_parse_map_annot_oblique (struct GMT_CTRL *GMT, char *text) {
@@ -9594,7 +9561,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	unsigned int pos;
 	size_t len;
 	int i, ival, case_val, manual, limit;
-	bool error = false, tf_answer = false, updated = true;
+	bool error = false, tf_answer = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, lower_value[GMT_BUFSIZ] = {""};
 
 	double dval;
@@ -9706,7 +9673,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
 				gmtlib_setparameter (GMT, "FONT_LABEL", value, core);
 			/*      FONT_LOGO is purposely skipped */
-			updated = false;	/* No size was specified so auto-scaling is still possible */
 			break;
 		case GMTCASE_FONT_ANNOT:
 			error = gmtlib_setparameter (GMT, "FONT_ANNOT_PRIMARY", value, core) +
@@ -9761,7 +9727,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			else {
 				if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
-				if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			}
 			break;
 		case GMTCASE_ANNOT_FONT_SECONDARY:
@@ -9769,31 +9734,24 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_FONT_ANNOT_SECONDARY:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
-			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_HEADING:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_heading)) error = true;
-			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_TITLE:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
-			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_TAG:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_tag)) error = true;
-			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_LABEL_FONT:
 			GMT_COMPAT_TRANSLATE ("FONT_LABEL");
-			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_LABEL:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_label)) error = true;
-			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 		case GMTCASE_FONT_LOGO:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_logo)) error = true;
-			if (gmtinit_no_fontsize (value)) updated = false;	/* No size given */
 			break;
 
 		/* FONT GROUP ... obsolete options */
@@ -9922,14 +9880,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_MAP_ANNOT_ORTHO:
 			strncpy (GMT->current.setting.map_annot_ortho, lower_value, 5U);
 			break;
-		case GMTCASE_MAP_AUTO_SCALE:
-			if (value[0] == '\0' || !strcmp (lower_value, "off"))	/* Default */
-				GMT->current.setting.map_auto_scale = false;
-			else if (!strcmp (lower_value, "on"))
-				GMT->current.setting.map_auto_scale = true;
-			else
-				error = true;
-			break;
 		case GMTCASE_DEGREE_SYMBOL:
 			GMT_COMPAT_TRANSLATE ("MAP_DEGREE_SYMBOL");
 			break;
@@ -9975,7 +9925,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_FRAME_PEN:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_frame_pen);
-			if (gmt_M_is_zero (GMT->current.setting.map_frame_pen.width)) updated = false;	/* No pen width set so auto-scaling can still happen */
 			break;
 		case GMTCASE_BASEMAP_TYPE:
 			GMT_COMPAT_TRANSLATE ("MAP_FRAME_TYPE");
@@ -10053,14 +10002,12 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_GRID_PEN_PRIMARY:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
-			if (gmt_M_is_zero (GMT->current.setting.map_grid_pen[GMT_PRIMARY].width)) updated = false;	/* No pen width set so auto-scaling can still happen */
 			break;
 		case GMTCASE_GRID_PEN_SECONDARY:
 			GMT_COMPAT_TRANSLATE ("MAP_GRID_PEN_SECONDARY");
 			break;
 		case GMTCASE_MAP_GRID_PEN_SECONDARY:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
-			if (gmt_M_is_zero (GMT->current.setting.map_grid_pen[GMT_SECONDARY].width)) updated = false;	/* No pen width set so auto-scaling can still happen */
 			break;
 		case GMTCASE_MAP_HEADING_OFFSET:
 			GMT->current.setting.map_heading_offset = gmt_M_to_inch (GMT, value);
@@ -10177,11 +10124,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_TICK_PEN_PRIMARY:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
-			if (gmt_M_is_zero (GMT->current.setting.map_tick_pen[GMT_PRIMARY].width)) updated = false;	/* No pen width set so auto-scaling can still happen */
 			break;
 		case GMTCASE_MAP_TICK_PEN_SECONDARY:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
-			if (gmt_M_is_zero (GMT->current.setting.map_tick_pen[GMT_SECONDARY].width)) updated = false;	/* No pen width set so auto-scaling can still happen */
 			break;
 		case GMTCASE_HEADER_OFFSET:
 			GMT_COMPAT_TRANSLATE ("MAP_TITLE_OFFSET");
@@ -11414,12 +11359,6 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			/* Intentionally fall through */
 		case GMTCASE_MAP_ANNOT_ORTHO:
 			strncpy (value, GMT->current.setting.map_annot_ortho, GMT_BUFSIZ-1);
-			break;
-		case GMTCASE_MAP_AUTO_SCALE:
-			if (GMT->current.setting.map_auto_scale)
-				snprintf (value, GMT_LEN256, "on");
-			else
-				snprintf (value, GMT_LEN256, "off");
 			break;
 		case GMTCASE_DEGREE_SYMBOL:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */

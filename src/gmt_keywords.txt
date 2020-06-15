@@ -99,7 +99,6 @@ MAP_ANNOT_ORTHO			# Specifies which axes should have orthogonal annotations [WES
 MAP_ANNOT_OBLIQUE		# Bit-flags to control behavior of annotations for oblique projections
 MAP_ANNOT_MIN_ANGLE		# Cut-off angle to eliminate very oblique annotations
 MAP_ANNOT_MIN_SPACING		# Cut-off distance to eliminate crowding of annotations
-MAP_AUTO_SCALE			# Set font sizes, offsets, tick lengths, and pen widths relative to map size
 MAP_DEFAULT_PEN			# Default for all pens
 MAP_DEGREE_SYMBOL		# Symbol for "degree" to use on maps
 MAP_FRAME_AXES			# Which axes should be plotted [WESNZ]

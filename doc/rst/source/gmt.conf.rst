@@ -611,11 +611,6 @@ MAP Parameters
         **e**, **s**, **n**, **z** (uppercase allowed as well). [we] (if nothing specified).
         Note that this setting can be overridden via the **+a** modifier in **-B**.
 
-    **MAP_AUTO_SCALE**
-        Determines if basemap font sizes, pen thicknesses, tick-lengths, and offsets will
-        be computed from the plot dimensions (**on**) or if they should be set manually (**off**)
-        [off for classic mode, on for modern].
-
     **MAP_DEFAULT_PEN**
         Sets the default of all pens related to **-W** options. Prepend
         **+** to overrule the color of the parameters

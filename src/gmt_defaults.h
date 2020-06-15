@@ -58,7 +58,6 @@ struct GMT_ENCODING {
 
 /*! Holds all variables directly controlled by GMT Default parameters */
 struct GMT_DEFAULTS {
-	bool par_set[GMT_N_KEYS];		/* True if a parameter is set via --PAR=value on the command line */
 	/* COLOR group [sorted by type to optimize storage] */
 	unsigned int color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2]
 									 * Add 128 to disallow output of color names */
@@ -151,7 +150,6 @@ struct GMT_DEFAULTS {
 	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
 	unsigned int map_graph_extension_unit;	/* If mapframetype is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */
 	bool map_logo;			/* Plot time and map projection on map [false] */
-	bool map_auto_scale;	/* Auto-scale pens, fonts, offsets based on map dimension [manual|auto] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
 	struct GMT_PEN map_grid_pen[2];		/* Pen attributes for primary and secondary gridlines [default,black/thinner,black] */
