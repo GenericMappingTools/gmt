@@ -701,7 +701,6 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 
-
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
@@ -718,8 +717,6 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		char vfile[GMT_VF_LEN] = {""}, xymode = 'r';
 		bool add_annot, no_frame = false;
 		FILE *fp = NULL;
-
-		gmt_auto_font_tick_sizes (GMT);	/* Need to do any auto-scaling here since font-sizes are used below to compute heights */
 
 		/* Determine if the subplot itself is an overlay of an existing plot */
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);

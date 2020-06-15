@@ -6080,7 +6080,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	 * will be set based on map size.  The user can override any of those with a specific
 	 * dimension (font size, length, etc.) with gmt set or --PAR=value. Below, all modern
 	 * font sizes are set to auto [->NaN] and all dimensions are set to NaN.  If these remain
-	 * NaN after reading gmt.conf then they are auto-scaled in gmt_auto_font_tick_sizes. */
+	 * NaN after reading gmt.conf then they are auto-scaled in gmtlib_set_undefined_defaults. */
 
 	/* FONT group */
 
@@ -9414,7 +9414,7 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 	return (n_errors);
 }
 
-void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
+void gmtlib_set_undefined_defaults (struct GMT_CTRL *GMT) {
 	/* We must adjust all frame items with unspecified size according to plot size */
 	bool geo_frame = false;
 	double fontsize, map_dim_cm, scale;

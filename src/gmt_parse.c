@@ -1067,6 +1067,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	API->GMT->current.options = options;
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
 	if (gmt_M_is_geographic (API->GMT, GMT_IN)) API->GMT->current.io.warn_geo_as_cartesion = false;	/* Don't need this warning */
+	gmtlib_set_undefined_defaults (API->GMT);	/* We must change any undefined defaults */
 
 	return (GMT_OK);
 }
