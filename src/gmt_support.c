@@ -976,6 +976,8 @@ GMT_LOCAL int gmtsupport_pen2name (double width) {
 
 	int i, k;
 
+	if (gmt_M_is_dnan (width)) return -2;	/* Pen width undefined */
+
 	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (gmt_M_eq (width, GMT_penname[i].width)) k = i;
 
 	return (k);
@@ -6460,7 +6462,8 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 
 	/* Assign font size, type, and fill, if given */
 	if (!size[0] || size[0] == '-') { /* Skip */ }
-	else if ((pointsize = gmt_convert_units (GMT, size, GMT_PT, GMT_PT)) < GMT_CONV4_LIMIT)
+	//else if ((pointsize = gmt_convert_units (GMT, size, GMT_PT, GMT_PT)) < GMT_CONV4_LIMIT)
+	else if ((pointsize = gmt_convert_units (GMT, size, GMT_PT, GMT_PT)) < 0)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of font size not recognized. Using default.\n");
 	else
 		F->size = pointsize;
@@ -6491,15 +6494,19 @@ char *gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 	/* gmt_putfont creates a GMT textstring equivalent of the specified font */
 
 	static char text[GMT_BUFSIZ];
+	char size[GMT_LEN32] = {""};
+
+	if (F->size > 0)
+		snprintf (size, GMT_LEN32, "%gp,", F->size);
 
 	if (F->form & 2) {
 		if (F->form & 8)
-			snprintf (text, GMT_BUFSIZ, "%gp,%s,%s=~%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
+			snprintf (text, GMT_BUFSIZ, "%s%s,%s=~%s", size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
 		else
-			snprintf (text, GMT_BUFSIZ, "%gp,%s,%s=%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
+			snprintf (text, GMT_BUFSIZ, "%s%s,%s=%s", size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
 	}
 	else
-		snprintf (text, GMT_BUFSIZ, "%gp,%s,%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill));
+		snprintf (text, GMT_BUFSIZ, "%s%s,%s", size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill));
 	return (text);
 }
 
@@ -6713,18 +6720,22 @@ char *gmt_putpen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 
 	k = gmtsupport_pen2name (P->width);
 	if (P->style[0]) {
-		if (k < 0)
+		if (k == -2)	/* Width is undefined */
+			snprintf (text, GMT_BUFSIZ, "%s,%s:%.5gp", gmt_putcolor (GMT, P->rgb), P->style, P->offset);
+		else if (k == -1)	/* Width has no name */
 			snprintf (text, GMT_BUFSIZ, "%.5gp,%s,%s:%.5gp", P->width, gmt_putcolor (GMT, P->rgb), P->style, P->offset);
-		else
+		else	/* Named pen width */
 			snprintf (text, GMT_BUFSIZ, "%s,%s,%s:%.5gp", GMT_penname[k].name, gmt_putcolor (GMT, P->rgb), P->style, P->offset);
 		for (i = 0; text[i]; i++) if (text[i] == ' ') text[i] = '_';
 	}
-	else
-		if (k < 0)
+	else {
+		if (k == -2)	/* Width is undefined */
+			snprintf (text, GMT_BUFSIZ, "%s", gmt_putcolor (GMT, P->rgb));
+		else if (k == -1)	/* Width has no name */
 			snprintf (text, GMT_BUFSIZ, "%.5gp,%s", P->width, gmt_putcolor (GMT, P->rgb));
-		else
+		else	/* Named pen width */
 			snprintf (text, GMT_BUFSIZ, "%s,%s", GMT_penname[k].name, gmt_putcolor (GMT, P->rgb));
-
+	}
 	return (text);
 }
 
