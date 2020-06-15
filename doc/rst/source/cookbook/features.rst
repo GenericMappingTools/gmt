@@ -224,6 +224,61 @@ placed in a separate parameter file:
    scenarios into separate ``gmt.conf`` files will minimize headaches associated with
    micro-editing of illustrations.
 
+Automatic GMT settings
+~~~~~~~~~~~~~~~~~~~~~~
+
+In modern mode (as well as in classic when **GMT_THEME** is set to *modern*), a series of
+dimensions for items affecting plots are set to *auto*.  This flag signals that suitable
+dimensions will be automatically computed when the plot dimensions are known. The items
+affected by this mechanism are:
+
+================================== ===============================================
+:term:`FONT_LOGO`                  Logo font [8p,Helvetica]
+:term:`FONT_ANNOT_PRIMARY`         Primary annotation font [10p,AvantGarde-Book]
+:term:`FONT_ANNOT_SECONDARY`       Secondary annotation font [12p,AvantGarde-Book]
+:term:`FONT_LABEL`                 Axis label font [14p,AvantGarde-Book]
+:term:`FONT_TAG`                   Tag/labeling font [18p,AvantGarde-Book]
+:term:`FONT_TITLE`                 Plot title font [22p,AvantGarde-Demi]
+:term:`FONT_HEADING`               Subplot heading font [28p,AvantGarde-Demi]
+:term:`MAP_ANNOT_OFFSET_PRIMARY`   Primary annotation offset from axis [3p]
+:term:`MAP_ANNOT_OFFSET_SECONDARY` Secondary annotation offset from axis [3p]
+:term:`MAP_FRAME_WIDTH`            Width of fancy frame [3p]
+:term:`MAP_HEADING_OFFSET`         Heading offset from subplot [16p]
+:term:`MAP_LABEL_OFFSET`           Label offset from annotations [6p]
+:term:`MAP_TICK_LENGTH_PRIMARY`    Length of primary tick marks [3p/1.5p]
+:term:`MAP_TICK_LENGTH_SECONDARY`  Length of secondary tick marks [12p/3p]
+:term:`MAP_TITLE_OFFSET`           Title offset from plot [12p]
+:term:`MAP_FRAME_PEN`              Pen width of plain frame [thicker]
+:term:`MAP_TICK_PEN_PRIMARY`       Pen width of primary tick marks [thinner]
+:term:`MAP_TICK_PEN_SECONDARY`     Pen width of secondary tick marks [thinner]
+:term:`MAP_GRID_PEN_PRIMARY`       Pen width of primary gridline [default]
+:term:`MAP_GRID_PEN_SECONDARY`     Pen width of secondary gridline [thinner]
+================================== ===============================================
+
+The fonts and reference dimensions listed in brackets are the values you get for a plot
+that has a maximum dimension of exactly 25 cm.  Larger and smaller illustrations
+will see a linear magnification or attenuation of these dimensions. The primary
+annotation font size will be computed as::
+
+    size = (2/15) * (map_size_in_cm - 10) + 8 [in points]
+
+and all other items will have their reference sizes scaled by *scale = size / 10*.
+If you do nothing then all of the above dimensions will be automatically set
+based on your plot dimensions.  However, you are free to override any of them
+using the methods described in the next section. **Note**: The particular scaling
+relationship is experimental in 6.1 and we reserve the right to adjust it pending
+further experimentation and user feedback.
+
+A few default settings items have different values as well but are not subject
+to any scaling:
+
+========================== =========================================
+:term:`FORMAT_GEO_MAP`     Geographic annotation format [ddd:mm:ssF]
+:term:`MAP_FRAME_AXES`     Axes selection and draw mode [WrStZ]
+:term:`MAP_FRAME_TYPE`     Style of geographic map frame [plain]
+:term:`MAP_VECTOR_SHAPE`   Vector head shape parameter [0.5]
+========================== =========================================
+
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~
 

@@ -6116,8 +6116,6 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT->session.d_NaN; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
-	/* MAP_DEGREE_SYMBOL (degree) */
-	GMT->current.setting.map_degree_symbol = gmt_degree;
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "WrStZ");
 	for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
@@ -9306,11 +9304,6 @@ char gmt_set_V (int mode) {
 	return val;
 }
 
-EXTERN_MSC int GMT_get_V (char arg);		/* For backward compatibility in MEX for 5.2 */
-int GMT_get_V (char arg) {
-	return gmt_get_V (arg);
-}
-
 GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT);	/* Must set this here since the next two functions call each other */
 
 /*! . */
@@ -9447,17 +9440,17 @@ void gmt_auto_font_tick_sizes (struct GMT_CTRL *GMT) {
 	if (gmt_M_is_dnan (GMT->current.setting.font_annot[GMT_PRIMARY].size))
 		GMT->current.setting.font_annot[GMT_PRIMARY].size = fontsize;
 	if (gmt_M_is_dnan (GMT->current.setting.font_annot[GMT_SECONDARY].size))
-		GMT->current.setting.font_annot[GMT_SECONDARY].size = fontsize * (12.0/10.0);	/* Modern 12p vs 10p */
+		GMT->current.setting.font_annot[GMT_SECONDARY].size = scale * 12.0;	/* Modern 12p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_label.size))
-		GMT->current.setting.font_label.size = fontsize * (14.0/10.0);	/* Modern 14p vs 10p */
+		GMT->current.setting.font_label.size = scale * 14.0;	/* Modern 14p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_heading.size))
-		GMT->current.setting.font_heading.size = fontsize * (28.0/10.0);	/* Modern 28p vs 10p */
+		GMT->current.setting.font_heading.size = scale * 28.0;	/* Modern 28p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_tag.size))
-		GMT->current.setting.font_tag.size = fontsize * (18.0/10.0);	/* Modern 18p vs 10p */
+		GMT->current.setting.font_tag.size = scale * 18.0;		/* Modern 18p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_title.size))
-		GMT->current.setting.font_title.size = fontsize * (22.0/10.0);	/* Modern 22p vs 10p */
+		GMT->current.setting.font_title.size = scale * 22.0;	/* Modern 22p vs 10p */
 	if (gmt_M_is_dnan (GMT->current.setting.font_logo.size))
-		GMT->current.setting.font_logo.size = fontsize * (8.0/10.0);	/* Classic 8p vs 10p */
+		GMT->current.setting.font_logo.size = scale * 8.0;		/* Classic 8p vs 10p */
 
 	/* Offsets */
 
