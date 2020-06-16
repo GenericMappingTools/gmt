@@ -300,7 +300,7 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	/* Regular plot behaviour */
+	/* Regular plot behavior */
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
