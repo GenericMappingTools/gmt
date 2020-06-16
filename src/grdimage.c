@@ -728,8 +728,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		mixed = grdimage_clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
-		//if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
-		//	GMT_Report(API, GMT_MSG_WARNING, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
+		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
+			GMT_Report(API, GMT_MSG_WARNING, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
 
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
@@ -1216,7 +1216,17 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 							rgb[0] = gmt_M_is255 (Img_proj->data[node_RGBA++]);
 						else {
 							for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Img_proj->data[node_RGBA++]);
-							if (Img_proj->header->n_bands == 4) node_RGBA++;	/* Must skip the alpha transparency byte in the image */
+							//if (Img_proj->header->n_bands == 4) node_RGBA++;	/* Must skip the alpha transparency byte in the image */
+							if (Img_proj->header->n_bands == 4) {
+								/* Here we assume background color is white, hence t * 1.
+								   But what would it take to have a user selected bg color? */
+								double o, t;		/* o - opacity, t = transparency */
+								o = Img_proj->data[node_RGBA] / 255.0;	t = 1 - o;
+								rgb[0] = o * rgb[0] + t * GMT->current.map.frame.fill.rgb[0];
+								rgb[1] = o * rgb[1] + t * GMT->current.map.frame.fill.rgb[1];
+								rgb[2] = o * rgb[2] + t * GMT->current.map.frame.fill.rgb[2];
+								node_RGBA++;
+							}
 						}
 					}
 					else	/* Got three grids with red, green, blue values */
