@@ -94,7 +94,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Linux | Test'
-  condition: eq(variables['Build.Reason'], 'Schedule')
+  # condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
     vmImage: 'ubuntu-18.04'
@@ -148,7 +148,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Mac | Test'
-  condition: eq(variables['Build.Reason'], 'Schedule')
+  # condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
     vmImage: 'macOS-10.15'
@@ -204,7 +204,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Windows | Test'
-  condition: eq(variables['Build.Reason'], 'Schedule')
+  # condition: eq(variables['Build.Reason'], 'Schedule')
   timeoutInMinutes: 180
 
   pool:
