@@ -12675,7 +12675,7 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 	/* Images may be column vs row oriented, from top or from bottom and may be Band|Line|Pixel interleaved
 	   That sums up to a lot of combinations. We will add them on a by-need basis. */
 
-	if (old_layout == 8 && new_layout == 2) {	/* Change from TRP to TCB */
+	if (old_layout == 8 && new_layout == 2) {		/* Change from TRP to TCB */
 		for (row = from_node = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < I->header->n_bands; band++, from_node++) {
@@ -12683,14 +12683,14 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 					tmp[to_node] = (uint8_t)I->data[from_node];
 				}
 		if (I->alpha) {
-			for (row = from_node = 0; row < I->header->my; row++, from_node++)
-				for (col = 0; col < I->header->mx; col++) {
+			for (row = from_node = 0; row < I->header->my; row++)
+				for (col = 0; col < I->header->mx; col++, from_node++) {
 					to_node = row + col*I->header->my;
 					alpha[to_node] = (uint8_t)I->alpha[from_node];
 				}
 		}
 	}
-	else if (old_layout == 0 && new_layout == 4) {	/* Change from TRB to TRL [UNTESTED] */
+	else if (old_layout == 0 && new_layout == 4) {		/* Change from TRB to TRL [UNTESTED] */
 		for (row = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < I->header->n_bands; band++) {
@@ -12701,7 +12701,7 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		if (I->alpha)	/* Same since only one band of alpha */
 			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
 	}
-	else if (old_layout == 4 && new_layout == 0) {	/* Change from TRL to TRB [UNTESTED] */
+	else if (old_layout == 4 && new_layout == 0) {		/* Change from TRL to TRB [UNTESTED] */
 		for (row = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < I->header->n_bands; band++) {
@@ -12712,7 +12712,7 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		if (I->alpha)	/* Same since only one band of alpha */
 			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
 	}
-	else if (old_layout == 0 && new_layout == 8) {	/* Change from TRB to TRP */
+	else if (old_layout == 0 && new_layout == 8) {		/* Change from TRB to TRP */
 		for (row = to_node = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < I->header->n_bands; band++, to_node++) {
@@ -12722,7 +12722,7 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		if (I->alpha)	/* Same since only one band of alpha */
 			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
 	}
-	else if (old_layout == 8 && new_layout == 0) {	/* Change from TRP to TRB [UNTESTED] */
+	else if (old_layout == 8 && new_layout == 0) {		/* Change from TRP to TRB [UNTESTED] */
 		for (row = from_node = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < I->header->n_bands; band++, from_node++) {
@@ -12732,7 +12732,57 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		if (I->alpha)	/* Same since only one band of alpha */
 			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
 	}
-	else if (old_layout == 9 && new_layout == 0) {	/* Change from BRP to TRB */
+	else if (old_layout == 0 && new_layout == 9) {		/* Change from TRB to BRP */
+		for (row = to_node = 0; row < I->header->my; row++)		/* Not UD flipping so what we call B is probably T */
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < I->header->n_bands; band++, to_node++) {
+					from_node = col + row*I->header->mx + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node];
+				}
+		if (I->alpha)	/* Same since only one band of alpha and no transposition */
+			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
+	}
+	else if (old_layout == 2 && new_layout == 9) {		/* Change from TCB to BRP */
+		for (row = to_node = 0; row < I->header->my; row++)		/* Not UD flipping so what we call B is probably T */
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < I->header->n_bands; band++, to_node++) {
+					from_node = row + col*I->header->my + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node];
+				}
+		if (I->alpha) {
+			for (row = to_node = 0; row < I->header->my; row++)
+				for (col = 0; col < I->header->mx; col++, to_node++) {
+					from_node = row + col*I->header->my;
+					alpha[to_node] = (uint8_t)I->alpha[from_node];
+				}
+		}
+	}
+	else if (old_layout == 11 && new_layout == 9) {		/* Change from BCP to BRP */
+		for (row = to_node = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < I->header->n_bands; band++, to_node++) {
+					from_node = row + col*I->header->my + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node];
+				}
+		if (I->alpha)	/* Same since only one band of alpha and no transposition */
+			gmt_M_memcpy (alpha, I->alpha, I->header->size, uint8_t);
+	}
+	else if (old_layout == 3 && new_layout == 9) {		/* Change from BCB to BRP. Here we believe in first B but not 2nd */
+		for (row = to_node = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < I->header->n_bands; band++, to_node++) {
+					from_node = (I->header->my - 1 - row) + col*I->header->my + band * I->header->size;
+					tmp[to_node] = (uint8_t)I->data[from_node];
+				}
+		if (I->alpha) {
+			for (row = to_node = 0; row < I->header->my; row++)
+				for (col = 0; col < I->header->mx; col++, to_node++) {
+					from_node = (I->header->my - 1 - row) + col*I->header->my;
+					alpha[to_node] = (uint8_t)I->alpha[from_node];
+				}
+		}
+	}
+	else if (old_layout == 9 && new_layout == 0) {		/* Change from BRP to TRB */
 		for (row = from_node = 0; row < I->header->my; row++)
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < I->header->n_bands; band++, from_node++) {
@@ -12764,6 +12814,7 @@ GMT_LOCAL int gmtapi_change_imagelayout (struct GMTAPI_CTRL *API, char *code, un
 		I->data = tmp;
 	}
 	if (out2 == NULL && alpha) {	/* Means we must update the alpha data */
+		if (!IH) IH = gmt_get_I_hidden (I);
 		if (IH->alloc_mode != GMT_ALLOC_EXTERNALLY)
 			gmt_M_free_aligned (API->GMT, I->alpha);		/* Free previous aligned image transparency */
 		I->alpha = alpha;
