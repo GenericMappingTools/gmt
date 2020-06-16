@@ -192,7 +192,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Show user's ~/.gmt hidden dir */
-			else if (!strncmp (argv[arg_n], "--show-gmthidden", 14U)) {
+			else if (!strncmp (argv[arg_n], "--show-userdir", 14U)) {
 				fprintf(stdout, "%s/.gmt\n", api_ctrl->GMT->session.HOMEDIR);
 				status = GMT_NOERROR;
 			}
@@ -339,7 +339,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver Show URL of the remote GMT data server.\n");
 			fprintf (stderr, "  --show-doi        Show the DOI for the current release.\n");
-			fprintf (stderr, "  --show-gmthidden  Show full path of user's ~/.gmt dir\n");
+			fprintf (stderr, "  --show-userdir    Show full path of user's ~/.gmt dir\n");
 			fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-modules    Show all modern module names.\n");
 			fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
