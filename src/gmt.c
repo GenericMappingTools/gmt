@@ -217,7 +217,7 @@ int main (int argc, char *argv[]) {
 
 			/* Show user's ~/.gmt hidden dir */
 			else if (!strncmp (argv[arg_n], "--show-userdir", 14U)) {
-				fprintf(stdout, "%s/.gmt\n", api_ctrl->GMT->session.HOMEDIR);
+				fprintf(stdout, "%s/sessions\n", api_ctrl->GMT->session.USERDIR);
 				status = GMT_NOERROR;
 			}
 
