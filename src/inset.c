@@ -281,7 +281,7 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->M.margin[XLO], Ctrl->D.inset.refpoint->y + Ctrl->M.margin[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
 
 		/* First get the -B options in place before inset was called */
-		sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
+		sprintf (ffile, "%s/gmt.frame", API->gwf_dir);
 		if ((fp = fopen (ffile, "r")) == NULL)
 			GMT_Report (API, GMT_MSG_INFORMATION, "No file %s with frame information - no adjustments made\n", ffile);
 		else {
@@ -340,7 +340,7 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 			gmt_chop (Bopts);
 			fclose (fp);	/* Done reading the gmt.frame file */
 			if (!strncmp (Bopts, "# FRAME: ", 9U) && strlen (Bopts) > 9 && Bopts[9]) {	/* Got a previously saved -B frame setting */
-				sprintf (ffile, "%s/gmt%d.%s/gmt.frame", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
+				sprintf (ffile, "%s/gmt.frame", API->gwf_dir);
 				if ((fp = fopen (ffile, "w")) == NULL) {	/* Not good */
 					GMT_Report (API, GMT_MSG_ERROR, "Cannot create frame file %s\n", ffile);
 					Return (GMT_ERROR_ON_FOPEN);
