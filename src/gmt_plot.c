@@ -7555,18 +7555,25 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	 * and places a time stamp, if selected */
 
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last, form, justify;
-	bool O_active = GMT->common.O.active, auto_media = false;
+	bool O_active = GMT->common.O.active, auto_media = false, do_paint = false;
 	unsigned int this_proj, write_to_mem = 0, switch_charset = 0, n_movie_items[2] = {0, 0};
 	char *mode[2] = {"w","a"}, *movie_item_arg[2][GMT_LEN32];
 	static char *ps_mode[2] = {"classic", "modern"}, *F_name[2] = {"label", "prog_indicator"};
 	double media_size[2], plot_x, plot_y;
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
+	struct GMT_FILL fill;
 	struct GMT_OPTION *Out = NULL;
 	struct PSL_CTRL *PSL= NULL;
 	struct GMT_SUBPLOT *P = NULL;
 	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
 
 	PSL = GMT->PSL;	/* Shorthand */
+
+	if (GMT->current.map.frame.paint) {	/* Must squirrel this away for now since we may call psbasemap during the movie-indicators below */
+		do_paint = true;
+		gmt_M_memcpy (&fill, &GMT->current.map.frame.fill, 1U, struct GMT_FILL);
+		GMT->current.map.frame.paint = false;	/* Turn off for now */
+	}
 
 	PSL->internal.verbose = GMT->current.setting.verbose;		/* Inherit verbosity level from GMT */
 	if (gmt_M_compat_check (GMT, 4) && GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
@@ -7992,12 +7999,17 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
 				PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
 				gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+				gmt_M_memcpy (PSL->current.rgb[PSL_IS_FILL], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
 			}
 			PSL->current.linewidth = -1.0;	/* Make sure pen widths reprocessed */
 		PSL_command (PSL, "U\n");
 		}
 		PSL_comment (PSL, "End of movie progress indicators\n");
 		PSL_command (PSL, "}!\n");
+	}
+	if (do_paint) {	/* Reset any canvas coloring here */
+		GMT->current.map.frame.paint = true;
+		gmt_M_memcpy (&GMT->current.map.frame.fill, &fill, 1U, struct GMT_FILL);
 	}
 
 	return (PSL);

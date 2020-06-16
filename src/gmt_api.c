@@ -605,18 +605,24 @@ GMT_LOCAL int gmtapi_alloc_grid_xy (struct GMTAPI_CTRL *API, struct GMT_GRID *G)
 }
 
 /*! . */
-GMT_LOCAL int gmtapi_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, struct GMT_IMAGE *I) {
+GMT_LOCAL int gmtapi_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, unsigned int mode, struct GMT_IMAGE *I) {
 	/* Use information in Image header to allocate the image data.
 	 * We assume gmtapi_init_grdheader has been called.
-	 * If dim given and is 2 or 4 then we have 1 or 3 bands plus alpha channel */
+	 * If dim given and is 2 or 4 then we have 1 or 3 bands plus alpha channel
+	 * Depending on mode, the alpha layer is part of image or separate array. */
+	unsigned int n_bands = I->header->n_bands;
 
 	if (I == NULL) return (GMT_PTR_IS_NULL);
 	if (I->data) return (GMT_PTR_NOT_NULL);
 	if (I->header->size == 0U) return (GMT_SIZE_IS_ZERO);
-	if ((I->data = gmt_M_memory_aligned (GMT, NULL, I->header->size * I->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
-	if (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4)) {
-		if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+	if (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4)) {	/* Transparency layer is requested */
+		if ((mode & GMT_IMAGE_ALPHA_LAYER) == 0) {	/* Use a separate alpha array */
+			if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+			n_bands--;	/* One less layer to allocate */
+		}
 	}
+	if ((I->data = gmt_M_memory_aligned (GMT, NULL, I->header->size * n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+	I->header->n_bands = n_bands;	/* Update as needed */
 	return (GMT_NOERROR);
 }
 
@@ -9297,7 +9303,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 
 	int error = GMT_NOERROR;
 	int def_direction = GMT_IN;	/* Default direction is GMT_IN  */
-	unsigned int module_input, actual_family;
+	unsigned int module_input, actual_family, i_mode;
 	uint64_t n_layers = 0, zero_dim[4] = {0, 0, 0, 0}, *this_dim = dim;
 	int64_t n_cols = 0;
 	bool already_registered = false, has_ID = false;
@@ -9308,6 +9314,8 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 
+	i_mode = (family & GMT_IMAGE_ALPHA_LAYER);
+	family -= i_mode;
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we creating a resource that is a module input? */
 	family -= module_input;
 	actual_family = gmtapi_separate_families (&family);
@@ -9366,7 +9374,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				already_registered = true;
 			}
 			if (def_direction == GMT_IN && (mode & GMT_CONTAINER_ONLY) == 0) {	/* Allocate the image array unless we asked for header only */
-				if ((error = gmtapi_alloc_image (API->GMT, dim, new_obj)) != GMT_NOERROR)
+				if ((error = gmtapi_alloc_image (API->GMT, dim, i_mode, new_obj)) != GMT_NOERROR)
 					return_null (API, error);	/* Allocation error */
 					/* Also allocate and populate the image x,y vectors */
 				if ((error = gmtapi_alloc_image_xy (API, new_obj)) != GMT_NOERROR)

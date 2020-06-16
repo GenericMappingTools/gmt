@@ -14430,6 +14430,10 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmtlib_free_custom_symbols (GMT);	/* Free linked list of custom psxy[z] symbols, if any */
 	gmtinit_free_user_media (GMT);	/* Free user-specified media formats */
 
+	/* Reset frame fill painting */
+	Ccopy->current.map.frame.paint = GMT->current.map.frame.paint;
+	gmt_M_memcpy (Ccopy->current.map.frame.fill.rgb, GMT->current.map.frame.fill.rgb, 3, double);
+
 	/* GMT_IO */
 
 	gmtlib_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
@@ -14492,10 +14496,6 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmt_M_memset (&GMT->current.gdal_read_in,  1, struct GMT_GDALREAD_IN_CTRL);
 	gmt_M_memset (&GMT->current.gdal_read_out, 1, struct GMT_GDALREAD_OUT_CTRL);
 	gmt_M_memset (&GMT->current.gdal_write,    1, struct GMT_GDALWRITE_CTRL);
-
-	/* Reset frame fill painting */
-	GMT->current.map.frame.paint = false;
-	GMT->current.map.frame.fill.rgb[0] = GMT->current.map.frame.fill.rgb[1] = GMT->current.map.frame.fill.rgb[2] = 1.0;
 
 	gmt_M_str_free (Ccopy);	/* Good riddance */
 }
