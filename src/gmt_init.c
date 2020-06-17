@@ -2931,7 +2931,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	else if (GMT->session.HOMEDIR)	/* Try home directory instead */
 		snprintf (hfile, PATH_MAX, "%s/%s", GMT->session.HOMEDIR, GMT_HISTORY_FILE);
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to determine a writeable directory - gmt history not updated.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to determine a writable directory - gmt history not updated.\n");
 		return (GMT_NOERROR);
 	}
 	if ((fp = fopen (hfile, "w")) == NULL) return (-1);	/* Not OK to be unsuccessful in creating this file */
@@ -17372,7 +17372,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	int err = 0, fig, error = GMT_NOERROR;
 	struct stat S;
 
-	snprintf (dir, PATH_MAX, "%s/gmt%d.%s", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
+	snprintf (dir, PATH_MAX, "%s/gmt_session.%s", API->session_dir, API->session_name);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 
@@ -17384,8 +17384,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				GMT_Report (API, GMT_MSG_ERROR, "A file named %s already exist and prevents us creating a workflow directory by that name\n", API->gwf_dir);
 				error = GMT_RUNTIME_ERROR;
 			}
-			else if (err == 0 && S_ISDIR (S.st_mode) && (S.st_mode & S_IWUSR) == 0) {	/* Directory already exists and is not writeable */
-				GMT_Report (API, GMT_MSG_ERROR, "Workflow directory %s already exist but is not writeable\n", API->gwf_dir);
+			else if (err == 0 && S_ISDIR (S.st_mode) && (S.st_mode & S_IWUSR) == 0) {	/* Directory already exists and is not writable */
+				GMT_Report (API, GMT_MSG_ERROR, "Workflow directory %s already exist but is not writable\n", API->gwf_dir);
 				error = GMT_RUNTIME_ERROR;
 			}
 			else {	/* Create the new workflow directory */
@@ -17394,7 +17394,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				This can cause a time-of-check, time-of-use race condition.
 				we will use "dir" instead of "API->gwf_dir" below  */
 				if (err == 0 && S.st_mode & S_IWUSR) {	/* Remove abandoned directory */
-					GMT_Report (API, GMT_MSG_DEBUG, "Workflow directory %s already exist and is writeable (we will delete are recreate)\n", API->gwf_dir);
+					GMT_Report (API, GMT_MSG_DEBUG, "Workflow directory %s already exist and is writable (we will delete are recreate)\n", API->gwf_dir);
 					error = gmt_remove_dir (API, dir, true);	/* Remove and recreate */
 				}
 				else {	/* Can create a fresh new directory */
@@ -17554,7 +17554,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Determined colorbar side = %c and axis = %c\n", side, axis);
 
-	snprintf (file, PATH_MAX, "%s/gmt%d.%s/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->session_name);
+	snprintf (file, PATH_MAX, "%s/gmt.frame", GMT->parent->gwf_dir);
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No file %s with frame information - no adjustments made\n", file);
 		return;
