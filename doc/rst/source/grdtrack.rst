@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
-[ |-F|\ [**+b**][**+n**][**+z**\ *z0*] ]
+[ |-F|\ [**+b**][**+n**][**+r**][**+z**\ *z0*] ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *method*/*modifiers* ]
@@ -168,7 +168,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+b**][**+n**][**+z**\ *z0*]
+**-F**\ [**+b**][**+n**][**+r**][**+z**\ *z0*]
     Find critical points along each cross-profile as a function of along-track distance.
     Requires **-C** and a single input grid (*z*). We examine each cross-profile generated
     and report (*dist*, *lonc*, *latc*, *distc*, *azimuthc*, *zc*) at the center peak of
@@ -182,7 +182,8 @@ Optional Arguments
     positive. The threshold *z0* value is always given as >= 0; use **+z** to change it [0].
     Alternatively, use **+b** to determine the balance point and standard deviation of the
     profile; this is the weighted mean and weighted standard deviation of the distances,
-    with *z* acting as the weight. **Note**: We round the exact results to the nearest
+    with *z* acting as the weight. Finally, use **+r** to obtain the weighted rms about the
+    cross-track center (*distc* == 0).  **Note**: We round the exact results to the nearest
     distance nodes along the cross-profiles.  We write 13 output columns per track:
     *dist, lonc, latc, distc, azimuthc, zc, lonl, latl, distl, lonr, latr, distr, width*.
 
