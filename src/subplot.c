@@ -966,7 +966,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 				axes[k++] = 's';	/* Just needs ticks on south frame */
 				if (row < last_row) y -= tick_height;
 			}
-			else if (strchr (Ctrl->S[GMT_X].axes, 'b'))
+			else if (strchr (Ctrl->S[GMT_X].axes, 'b') || strchr (Ctrl->S[GMT_X].axes, 'S'))	/* If we have S and get here it means b */
 				axes[k++] = 'b';	/* Just draw line frame at south end */
 			By[row] = strdup (axes);	/* Those are all the y-frame settings */
 			if (Ctrl->F.debug) {	/* All rows share this lower y-coordinate */
@@ -1005,7 +1005,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 				if (col) x += tick_height;
 				axes[k++] = 'w';	/* Only ticks at west frame */
 			}
-			else if (strchr (Ctrl->S[GMT_Y].axes, 'l'))
+			else if (strchr (Ctrl->S[GMT_Y].axes, 'l') || strchr (Ctrl->S[GMT_Y].axes, 'W'))	/* If we get here with W it means l */
 				axes[k++] = 'l';	/* Just draw west frame simple line */
 			px[col] = x;	/* Now at correct x for left side or this subplot */
 			x += Ctrl->F.w[col];	/* Position x at the right side of subplot */

@@ -19,11 +19,11 @@ gmt begin ex42
 	gmt coast -Glightblue -Sroyalblue2 -X5c -Y12c
 	gmt coast -Glightbrown -A+ag -Bafg
 	gmt legend -DjLM+w3.5c+jRM+o1c/0 -F+p+i <<- EOF
-	H 18p,Times-Roman Legend
+	H 12 Legend
 	D 0.25c 1p
-	S 0.4c s 0.5c blue       0.25p 0.75c Ocean
-	S 0.4c s 0.5c lightblue  0.25p 0.75c Ice front
-	S 0.4c s 0.5c lightbrown 0.25p 0.75c Grounding line
+	S 0.4c s 0.3c blue       0.25p 0.75c Ocean
+	S 0.4c s 0.3c lightblue  0.25p 0.75c Ice front
+	S 0.4c s 0.3c lightbrown 0.25p 0.75c Grounding line
 	EOF
 	# Fancy line
 	gmt plot -R0/19/0/25 -Jx1c -B0 -W2p -X-6c -Y-13.5c <<- EOF
