@@ -122,7 +122,7 @@ to problems for gmt to properly determine the unique PPID.  The most common situ
 related to a shell spawning sub-shells when you are linking two or more processes via UNIX pipes.
 Each sub-shell will then have its own process ID and gmt modules started by the sub-shell will then
 have that ID as PPID and it will differ from the one determined by gmt begin.
-If you are using pipes in your modern mode script and you get strange errors about not finding gmt6.#####
+If you are using pipes in your modern mode script and you get strange errors about not finding gmt_session.#####
 then you can add this command to the top of your script to make the issue go away (in Bourne shell)::
 
     export GMT_SESSION_NAME=$$
