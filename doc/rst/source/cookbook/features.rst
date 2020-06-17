@@ -240,6 +240,7 @@ affected by this mechanism are:
 :term:`FONT_TAG`                   Tag/labeling font [18p,AvantGarde-Book]
 :term:`FONT_TITLE`                 Plot title font [22p,AvantGarde-Demi]
 :term:`FONT_HEADING`               Subplot heading font [28p,AvantGarde-Demi]
+:term:`MAP_ANNOT_MIN_SPACING`      PMinimum spacing between annotations [36p]
 :term:`MAP_ANNOT_OFFSET_PRIMARY`   Primary annotation offset from axis [3p]
 :term:`MAP_ANNOT_OFFSET_SECONDARY` Secondary annotation offset from axis [3p]
 :term:`MAP_FRAME_WIDTH`            Width of fancy frame [3p]

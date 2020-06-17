@@ -5798,7 +5798,7 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	/* MAP_ANNOT_MIN_ANGLE */
 	GMT->current.setting.map_annot_min_angle = 20;
 	/* MAP_ANNOT_MIN_SPACING */
-	GMT->current.setting.map_annot_min_spacing = 0; /* 0p */
+	GMT->current.setting.map_annot_min_spacing = 0; /* p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
 	/* MAP_ANNOT_ORTHO */
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
@@ -6112,6 +6112,9 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 
 	/* MAP group */
 
+	/* MAP_ANNOT_MIN_SPACING */
+	GMT->current.setting.map_annot_min_spacing = GMT->session.d_NaN; /* 36p */
+	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
 	/* MAP_ANNOT_OFFSET_PRIMARY, MAP_ANNOT_OFFSET_SECONDARY */
 	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT->session.d_NaN; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
@@ -9464,6 +9467,8 @@ void gmtlib_set_undefined_defaults (struct GMT_CTRL *GMT) {
 		GMT->current.setting.map_title_offset = 12 * pt * scale;	/* 12p */
 	if (gmt_M_is_dnan (GMT->current.setting.map_heading_offset))
 		GMT->current.setting.map_heading_offset = 16 * pt * scale;	/* 16p */
+	if (gmt_M_is_dnan (GMT->current.setting.map_annot_min_spacing))
+		GMT->current.setting.map_annot_min_spacing = 36 * pt * scale; /* 36p */
 
 	/* Tick lengths */
 
@@ -11343,7 +11348,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_ANNOT_MIN_SPACING:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_min_spacing * GMT_def_scale(GMTCASE_MAP_ANNOT_MIN_SPACING), GMT_def_unit(GMTCASE_MAP_ANNOT_MIN_SPACING));
+			gmtinit_place_value (GMT, GMT->current.setting.map_annot_min_spacing, GMTCASE_MAP_ANNOT_MIN_SPACING, value);
 			break;
 		case GMTCASE_Y_AXIS_TYPE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */

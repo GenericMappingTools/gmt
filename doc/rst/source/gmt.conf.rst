@@ -577,7 +577,7 @@ MAP Parameters
     **MAP_ANNOT_MIN_SPACING**
         If an annotation would be plotted less than this minimum distance
         from its closest neighbor, the annotation is not plotted (this may
-        occur for certain oblique projections.) [0p]
+        occur for certain oblique or polar projections.) [32p]
 
     **MAP_ANNOT_OBLIQUE**
         This argument is a comma-separated list of up to seven keywords:
