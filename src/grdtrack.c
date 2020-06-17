@@ -165,7 +165,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+b|B][+n][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
