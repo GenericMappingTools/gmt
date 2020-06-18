@@ -70,7 +70,7 @@ struct GMTREGRESS_CTRL {
 		bool active;
 		char *file;
 	} Out;
-	struct GMTREGRESS_A {	/* 	-A[<min>/<max>/<inc>][+f] */
+	struct GMTREGRESS_A {	/* 	-A[<min>/<max>/<inc>][+f[n|p]] */
 		bool active;
 		bool force;
 		double min, max, inc;
