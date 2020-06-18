@@ -994,6 +994,8 @@ GMT_LOCAL int gmtsupport_getpenwidth (struct GMT_CTRL *GMT, char *line, struct G
 		/* Pen thickness with optional unit at end */
 		P->width = gmt_convert_units (GMT, line, GMT_PT, GMT_PT);
 	}
+	else if (!strcmp (line, "auto"))
+		P->width = GMT->session.d_NaN;
 	else {	/* Pen name was given - these refer to fixed widths in points */
 		if ((n = gmtsupport_name2pen (line)) < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pen name %s not recognized!\n", line);
@@ -6497,7 +6499,9 @@ char *gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 	static char text[GMT_BUFSIZ];
 	char size[GMT_LEN32] = {""};
 
-	if (!gmt_M_is_dnan (F->size))
+	if (gmt_M_is_dnan (F->size))
+		snprintf (size, GMT_LEN32, "auto,");
+	else
 		snprintf (size, GMT_LEN32, "%gp,", F->size);
 
 	if (F->form & 2) {

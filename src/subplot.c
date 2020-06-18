@@ -711,12 +711,38 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot attributes once */
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
-		double x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
+		double PD = 0.0, x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
 		double *cx = NULL, *cy = NULL, *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
 		char vfile[GMT_VF_LEN] = {""}, xymode = 'r';
 		bool add_annot, no_frame = false;
 		FILE *fp = NULL;
+
+		/* Need an approximate panel dimension here to set the undefined quantities */
+
+		if (Ctrl->F.mode == SUBPLOT_FIGURE) {	/* Got figure dimension, compute subplot dimensions */
+			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) PD = MAX (PD, Ctrl->F.w[col] * Ctrl->F.dim[GMT_X]);
+			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) PD = MAX (PD, Ctrl->F.h[row] * Ctrl->F.dim[GMT_Y]);
+		}
+		else {	/* Already got subplot dimension, compute total figure dimension */
+			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
+				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
+			}
+			/* Sum up individual widths or heights and add the fluff space */
+			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) PD = MAX (PD, Ctrl->F.w[col]);
+			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) PD = MAX (PD, Ctrl->F.h[row]);
+		}
+		GMT_Report (API, GMT_MSG_NOTICE, "Subplot max panel dimension estimated: %g inch\n", PD);
+
+		gmt_set_undefined_defaults (GMT, PD);	/* We must change any undefined defaults given max panel dimension */
+		/* Update defaults settings that depend on fonts etc */
+		if (gmt_M_is_dnan (Ctrl->A.off[GMT_X]))
+			Ctrl->A.off[GMT_X] = Ctrl->A.off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
+		if (gmt_M_is_dnan (Ctrl->A.clearance[GMT_X]))
+			Ctrl->A.clearance[GMT_X] = Ctrl->A.clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% */
+		if (gmt_M_is_dnan (Ctrl->M.margin[XLO])) {
+			for (unsigned int k = 0; k < 4; k++) Ctrl->M.margin[k] = 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Split annot font across two sides */
+		}
 
 		/* Determine if the subplot itself is an overlay of an existing plot */
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
@@ -841,9 +867,6 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] *= (Ctrl->F.dim[GMT_Y] - fluff[GMT_Y]);
 		}
 		else {	/* Already got subplot dimension, compute total figure dimension */
-			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
-				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
-			}
 			/* Sum up individual widths or heights and add the fluff space */
 			for (col = 0, Ctrl->F.dim[GMT_X] = fluff[GMT_X]; col < Ctrl->N.dim[GMT_X]; col++) Ctrl->F.dim[GMT_X] += Ctrl->F.w[col];
 			for (row = 0, Ctrl->F.dim[GMT_Y] = fluff[GMT_Y]; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.dim[GMT_Y] += Ctrl->F.h[row];

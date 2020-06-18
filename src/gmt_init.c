@@ -6080,7 +6080,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	 * will be set based on map size.  The user can override any of those with a specific
 	 * dimension (font size, length, etc.) with gmt set or --PAR=value. Below, all modern
 	 * font sizes are set to auto [->NaN] and all dimensions are set to NaN.  If these remain
-	 * NaN after reading gmt.conf then they are auto-scaled in gmtlib_set_undefined_defaults. */
+	 * NaN after reading gmt.conf then they are auto-scaled in gmt_set_undefined_defaults. */
 
 	/* FONT group */
 
@@ -9417,11 +9417,14 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 	return (n_errors);
 }
 
-void gmtlib_set_undefined_defaults (struct GMT_CTRL *GMT) {
-	/* We must adjust all frame items with unspecified size according to plot size */
+void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim) {
+	/* We must adjust all frame items with unspecified size according to plot dimension */
 	bool geo_frame = false;
-	double fontsize, map_dim_cm, scale;
+	double fontsize, scale;
 	double const pt = 1.0/72.0;	/* points to inch */
+
+	/* Refuse to do this in gmtset */
+	if (!strcmp (GMT->init.module_name, "gmtset")) {fprintf (stderr, "Not doing it\n"); return; }
 
 	/* If a geographic map frame is fancy then we cannot have lrbt regardless of mode */
 
@@ -9433,9 +9436,16 @@ void gmtlib_set_undefined_defaults (struct GMT_CTRL *GMT) {
 
 	/* Use this equation for fontsize to compute the primary annotation font size given map max dimension */
 
-	map_dim_cm = MAX (GMT->current.map.width, GMT->current.map.height) * GMT->session.u2u[GMT_INCH][GMT_CM];
-	fontsize = (2.0/15.0) * (map_dim_cm - 10.0) + 8;	/* Gives result in points for plot dimension in cm */
-	scale = fontsize / 10.0;	/* scaling for offsets, pen widths and lengths normalized to the modern 10p size */
+	if (gmt_M_is_zero (plot_dim)) {	/* Get nominal reference values */
+		fontsize = 10;
+		scale = 1.0;
+	}
+	else {	/* Use map dimensions to get scale */
+		double map_dim_cm = plot_dim * GMT->session.u2u[GMT_INCH][GMT_CM];
+		fontsize = (2.0/15.0) * (map_dim_cm - 10.0) + 8;	/* Gives result in points for plot dimension in cm */
+		scale = fontsize / 10.0;	/* scaling for offsets, pen widths and lengths normalized to the modern 10p size */
+	}
+
 	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Computed primary annotation font size: %g p  Dimension scaling: %g\n", fontsize, scale);
 
 	/* Only apply the automatic scaling to items NOT specifically set via a --PAR=value option */
@@ -17815,6 +17825,8 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	double GMT_LETTER_HEIGHT = 0.736;
 	FILE *fp = NULL;
 	/* Initialize the default settings before considering any -B history */
+	gmt_set_undefined_defaults (GMT, 0.0);	/* Must set undefined to their reference values for now */
+
 	offset[GMT_OUT] = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
 	offset[GMT_IN]  = GMT->current.setting.map_label_offset;
 
@@ -17856,6 +17868,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Adding label space\n");
 		offset[GMT_OUT] += (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
 	}
+	gmtinit_conf_modern_override (GMT);	/* Reset */
 }
 
 unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it) {
