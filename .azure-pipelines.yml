@@ -8,7 +8,6 @@ trigger:
     include:
     - master
     - 6.?
-    - 5.4
     - refs/tags/*
 
 # Global variables
