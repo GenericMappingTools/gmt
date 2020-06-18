@@ -187,6 +187,14 @@ These are in order: *N* (number of points), *x0* (weighted mean x), *y0* (weight
 standard regression (**-Ey**) we also report the Pearsonian correlation (*r*) and
 coefficient of determination (*R*).
 
+.. figure:: /_images/GMT_slopes.*
+   :width: 400 px
+   :align: center
+
+   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (-Nr) criterion
+   varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
+   but there is another local minimum for an angle of 78.6 degrees that is almost as good.
+
 Examples
 --------
 
