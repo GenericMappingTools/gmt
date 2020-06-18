@@ -188,7 +188,7 @@ standard regression (**-Ey**) we also report the Pearsonian correlation (*r*) an
 coefficient of determination (*R*).
 
 .. figure:: /_images/GMT_slopes.*
-   :width: 400 px
+   :width: 500 px
    :align: center
 
    Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (-Nr) criterion

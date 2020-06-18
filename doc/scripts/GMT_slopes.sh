@@ -23,7 +23,7 @@ cat << EOF > data
 EOF
 
 gmt regress data -A-90/90/0.1 -Eo -Nr > tmp.txt
-gmt psxy tmp.txt -R-90/90/0/35 -JX15c/5c -Bxa30+u@.+l"Regression line angle, @~a@~" -Byaf+l"Misfit, E(@~a@~)" -BWSrt -P -K > $ps
+gmt psxy tmp.txt -R-90/90/0/35 -JX15c/5c -Bxa30+u@.+l"Regression line angle, @~a@~" -Byaf+l"Misfit, E(@~a@~)" -BWSrt -P -K -W0.75p > $ps
 echo -90 5.29462 90 5.29462 | gmt psxy -R -J -O -K -Sv12p+s -W0.25p,dashed >> $ps
 gmt psxy -R -J -O -K -Sv12p+b -Gblack -W0.5p --MAP_VECTOR_SHAPE=0.5 << EOF >> $ps
 78.6 6.32 90 2.6c
