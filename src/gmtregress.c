@@ -621,7 +621,8 @@ GMT_LOCAL double gmtregress_demeaning (struct GMT_CTRL *GMT, double *X, double *
 		if (beta && alpha) {	/* Compute beta (as alpha above) which is needed for weighted orthogonal regression */
 			for (i = 0; i < n; i++) {
 				if (w[GMT_Z]) corr_i = w[GMT_Z][i];
-				beta[i] = (corr_i > 0.0) ? W[i] * (U[i] / w[GMT_Y][i] + par[GMTREGRESS_SLOPE] * V[i] / w[GMT_X][i] - (par[GMTREGRESS_SLOPE] * U[i] + V[i]) * corr_i / alpha[i]) : 0.0;
+				beta[i] = W[i] * (U[i] / w[GMT_Y][i] + par[GMTREGRESS_SLOPE] * V[i] / w[GMT_X][i] - (par[GMTREGRESS_SLOPE] * U[i] + V[i]) * corr_i / alpha[i]);
+				if (gmt_M_is_dnan (beta[i])) beta[i] = 0.0;	/* Prevent division by zero */
 			}
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Computed single weights from separate x- and y-weights %s\n",
