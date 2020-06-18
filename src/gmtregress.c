@@ -318,6 +318,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.force && Ctrl->N.mode == GMTREGRESS_NORM_L2, "Option -A: Cannot force limited angle range for -N2 norm.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->T.active, "Option -S: Cannot simultaneously specify -T.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_XY && Ctrl->W.n_weights == 1, "Option -Eo: Needs errors in both x,y or neither.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == GMTREGRESS_RMA && Ctrl->W.n_weights == 1, "Option -Er: Needs errors in both x,y or neither.\n");
