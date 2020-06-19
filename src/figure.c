@@ -70,7 +70,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
-	/* This parses the options provided to grdcut and sets parameters in CTRL.
+	/* This parses the options provided to figure and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
@@ -93,6 +93,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	opt = opt->next;	/* Skip the figure prefix since we don't need to check it here */
 
 	while (opt) {
+		if (opt->option == 'I') { opt = opt->next; continue; }	/* Skip the special undocumented movie option here */
 		gmt_filename_set (opt->arg);
 		arg_category = GMT_NOTSET;	/* We know noothing */
 		pos = 0;
@@ -127,7 +128,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
 EXTERN_MSC int GMT_figure (void *V_API, int mode, void *args) {
 	int error = 0;
-	char *arg = NULL;
+	char *arg = NULL, *param_file = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -155,8 +156,14 @@ EXTERN_MSC int GMT_figure (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the figure main code ----------------------------*/
 
-	if (options) arg = GMT_Create_Cmd (API, options);
-	if (gmt_add_figure (API, arg))
+	if (options) {
+		if ((opt = GMT_Find_Option (API, 'I', options))) {	/* Magic option issued by movie to pass parameter file  */
+			if (opt->arg[0]) param_file = strdup (opt->arg);	/* Isolate the parameter file */
+			GMT_Delete_Option (API, opt, &options);
+		}
+		arg = GMT_Create_Cmd (API, options);
+	}
+	if (gmt_add_figure (API, arg, param_file))
 		error = GMT_RUNTIME_ERROR;
 
 	if (options) GMT_Destroy_Cmd (API, &arg);
@@ -168,6 +175,8 @@ EXTERN_MSC int GMT_figure (void *V_API, int mode, void *args) {
 	}
 
 	gmt_reset_history (GMT);	/* Prevent gmt figure from copying previous history to this new fig */
+
+	if (param_file) gmt_M_str_free (param_file);
 
 	Return (error);
 }

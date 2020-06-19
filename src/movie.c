@@ -54,26 +54,28 @@
  * like a MOVIE_WORD0="Time is 64.5".  If it worked that way, why would there be
  * a -L (or -P) option if you have to do all the work anyway? So, we want movie
  * to automatically set these labels, just like it works for subplot tags.
- * The solution chosen for this is to set this content as environmental variables.
- * As an example, the parameter file for frame 29 may have these statements:
+ * The solution chosen for this is write this content as comments.
+ * As an example, the parameter file for frame 29 may have this comment:
  *
- * export MOVIE_N_LABELS=1
- * export MOVIE_LABEL_ARG0="L|0.1|4.7|0.5|0|9|0.0416667|0.0416667|-|-|-|-|20p,Helvetica,black|29"
+ * # MOVIE_L: L|0.1|4.7|0.5|0|9|0.0416667|0.0416667|-|-|-|-|20p,Helvetica,black|29
  *
- * This is bash syntax; it will look different in csh or DOS batch. What it says
- * is that we only have one movie label (ARG0) [-L is repeatable so we could have more].
+ * or in DOS
+ *
+ * REM MOVIE_L: L|0.1|4.7|0.5|0|9|0.0416667|0.0416667|-|-|-|-|20p,Helvetica,black|29
+ *
+ * Here, we only have one movie label [-L is repeatable so we could have more].
  * In this case, we want to place the frame string "29".  The rest is information gmt needs
  * to know what to do: placement, offsets, font, etc. OK, then the rest of the frame script
  * composed by the user (which knows nothing of the above) happens.  Unbeknownst to
  * the user, her script is actually embellished by movie in various ways.  For instance,
  * we call gmt figure to define the plot format before the user's commands are appended.
  * When gmt figure runs we end up calling gmt_add_figure (gmt_init.c) and it actually
- * checks the calling environment to see if a MOVIE_N_LABELS is defined.  If it is then
+ * is passed a special option -I<parameterfile>.  if gmt figure is given this s[pecial option]
  * we get its value and learn (1) that gmt figure is called from a movie script and (2)
- * that we have labels to place.  Now, we loop over all the labels (here just 1) and get
- * the MOVIE_LABEL_ARG# strings from the environment. These labels are then written to
- * a file under the session directory called gmt.movie_labels.  Only the current frame
- * process will find that file since each frame is run in separate session directories.
+ * that we have labels to place.  Now, we extract all such labels (here just 1) from
+ * that parameter file.  These labels are then written to a file under the session directory
+ * called gmt.movie_labels.  Only the current frame process will find that file since each
+ * frame is run in separate session directories.
  * If you used -P then the exact same thing happens for movie progress bars and there will
  * be a file called gmt.movie_prog_indicators created.  So -L -P lead to one or two files
  * being created in the session directory before the first gmt command after gmt figure
@@ -86,9 +88,7 @@
  * that when gmt end comes and calls PSL_endplot, it is time to execute these two
  * PostScript functions, should they exist.  Once completed, they are redefined as
  * NULL functions.  Unlike PSL_plot_completion, the movie functions are more complicated
- * and may plot more than one label and more than one progress indicator.  This is the
- * only way I could think of to implement this feature without the user being involved in
- * all the scripting themselves.
+ * and may plot more than one label and more than one progress indicator.
  */
 
 #include "gmt_dev.h"
@@ -1175,7 +1175,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
 	static char *mvfile[3] = {"mv -f", "mv -f", "move"}, *sc_call[3] = {"bash ", "csh ", "start /B"}, var_token[4] = "$$%";
-	static char *LP_name[2] = {"LABEL", "PROG_INDICATOR"};
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
@@ -1839,29 +1838,26 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		spacer = ' ';	/* Use a space to separate date and clock for labels; this will change to T for progress -R settings */
 		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++) {
 			if (Ctrl->item_active[k]) {	/* Want to place a user label or progress indicator */
-				char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""}, font[GMT_LEN64] = {""};
+				char label[GMT_LEN256] = {""}, font[GMT_LEN64] = {""};
 				unsigned int type, use_frame, p;
 				double t;
 				struct GMT_FONT *F = (k == MOVIE_ITEM_IS_LABEL) ? &GMT->current.setting.font_tag : &GMT->current.setting.font_annot[GMT_SECONDARY];	/* Default font for labels and progress indicators  */
-				/* Set MOVIE_N_{LABEL|PROG_INDICATOR}S as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movielabels in session directory */
+				/* Place all movie labels and progress indicator information as comments in the parameter file - there will be read by gmt figure and converted to gmt.movie{labels,progress_indicators} files */
 				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
-				fprintf (fp, "%s", export[Ctrl->In.mode]);
-				sprintf (name, "MOVIE_N_%sS", LP_name[k]);
-				gmt_set_ivalue (fp, Ctrl->In.mode, true, name, Ctrl->n_items[k]);
+
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
 					t = (frame + 1.0) / n_frames;
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
-					sprintf (name, "MOVIE_%s_ARG%d", LP_name[k], T);
 					/* Set selected font: Prepend + if user specified a font, else just give current default font */
 					if (I->font.size > 0.0)	/* Users selected font */
 						sprintf (font, "+%s", gmt_putfont (GMT, &I->font));
 					else	/* Default font */
 						sprintf (font, "%s", gmt_putfont (GMT, F));
 					/* Place kind|x|y|t|width|just|clearance_x|clearance_Y|pen|pen2|fill|fill2|font|txt in MOVIE_{LABEL|PROG_INDICATOR}_ARG */
-					sprintf (label, "%c|%g|%g|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", I->kind, I->x, I->y, t, I->width,
+					sprintf (label, "MOVIE_%c: %c|%g|%g|%g|%g|%d|%g|%g|%s|%s|%s|%s|%s|", which[k], I->kind, I->x, I->y, t, I->width,
 						I->justify, I->clearance[GMT_X], I->clearance[GMT_Y], I->pen, I->pen2, I->fill, I->fill2, font);
 					string[0] = '\0';
-					for (p = 0; p < I->n_labels; p++) {	/* Here, n_lables is 0 (no labels), 1 (just at the current time) or 2 (start/end times) */
+					for (p = 0; p < I->n_labels; p++) {	/* Here, n_labels is 0 (no labels), 1 (just at the current time) or 2 (start/end times) */
 						if (I->n_labels == 2)	/* Want start/stop values, not current frame value */
 							use_frame = (p == 0) ? 0 : n_frames - 1;
 						else	/* Current frame only */
@@ -1941,9 +1937,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						else if (p < (I->n_labels-1)) strcat (label, ";");
 					}
 					if (I->kind == 'F') strcat (label, "/0/1");
-					/* Set MOVIE_{LABEL|PROG_INDICATOR}_ARG# as exported environmental variable. gmt figure will check for this and if found create gmt.movie{label|prog_indicator}s in session directory */
-					fprintf (fp, "%s", export[Ctrl->In.mode]);
-					gmt_set_tvalue (fp, Ctrl->In.mode, true, name, label);
+					gmt_set_comment (fp, Ctrl->In.mode, label);
 				}
 			}
 			spacer = 'T';	/* For ISO time stamp as used in -R */
@@ -2025,9 +2019,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 				fprintf (fp, " %s", extra);
 				if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
-					fprintf (fp, "\n");	/* No dpu needed */
+					{}	/* No dpu needed */
 				else
-					fprintf (fp, ",E%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
+					fprintf (fp, ",E%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
+				fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 				fprintf (fp, "\tgmt plot -R0/%g/0/%g -Jx1%c -X0 -Y0 -T\n", Ctrl->C.dim[GMT_X], Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "gmt end\n");		/* Eliminate show from gmt end in this script */
@@ -2040,9 +2035,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 						fprintf (fp, " %s", extra);
 						if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
-							fprintf (fp, "\n");	/* No dpu needed */
+							{}	/* No dpu needed */
 						else
-							fprintf (fp, ",E%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
+							fprintf (fp, ",E%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
+						fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */
 						fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 					}
 					else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
@@ -2061,9 +2057,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 					fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 					fprintf (fp, " %s", extra);
 					if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
-						fprintf (fp, "\n");	/* No dpu needed */
+						{}	/* No dpu needed */
 					else
-						fprintf (fp, ",E%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
+						fprintf (fp, ",E%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
+					fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 				}
 				else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
@@ -2187,7 +2184,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			gmt_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 			fprintf (fp, "\tgmt figure ../%s %s", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
 			fprintf (fp, " E%s,%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
-			fprintf (fp, "%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_BACKGROUND"));
+			fprintf (fp, "%s", gmt_place_var (Ctrl->In.mode, "MOVIE_BACKGROUND"));
+			fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s GMT_MAX_CORES 1\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
