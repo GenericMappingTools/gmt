@@ -97,10 +97,10 @@ struct GRDTRACK_CTRL {
 		double step;
 		char unit;
 	} E;
-	struct GRDTRACK_F {	/* -F[+b][+n][+z<z0>] */
+	struct GRDTRACK_F {	/* -F[+b][+n][+r][+z<z0>] */
 		bool active;
 		bool negative;
-		bool balance;
+		unsigned int balance;
 		double z0;
 	} F;
 	struct GRDTRACK_G {	/* -G<grdfile> */
@@ -165,7 +165,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+b][+n][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -217,6 +217,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   We assume a positive center peak; append +n if dealing with a negative trough.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z<z0> to change the detection level for left or right [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use +b to compute the balance point and standard deviation of the profile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +r for using the track d = 0 as get the rms about this line instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
@@ -358,11 +359,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "bnz"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "bnrz"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'C', c, "bnz", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'C', c, "bnrz", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'b': Ctrl->F.balance = true; break;		/* Select balance point per profile */
+							case 'b': Ctrl->F.balance = 1; break;		/* Select balance point per profile */
+							case 'r': Ctrl->F.balance = 2; break;		/* Fix balance point at track to compute rms about track */
 							case 'n': Ctrl->F.negative = true; break;		/* Profiles are negative (troughs)*/
 							case 'z': Ctrl->F.z0 = atof (&p[1]); break;		/* cross-profile starts at line and go to right side only */
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -1051,8 +1053,14 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 					}
 					if (Ctrl->F.balance && n > 0) {	/* Compute mean and std and find corresponding points */
 						double d, d0, s;
-						d = Swd / Sw;	/* weighted mean location of balance point */
-						s = sqrt ((Sw * Swd2 - Swd*Swd) / (Sw*Sw*(n-1)/n));	/* One-sigma deviation on the weighted mean */
+						if (Ctrl->F.balance == 2) {	/* Use d = 0 as population mean (hence no n-1) and get track rms = std about population mean (d = 0) */
+							d = 0.0;
+							s = sqrt (Swd2 / Sw);
+						}
+						else {	/* Find both the mean and std about that mean */
+							d = Swd / Sw;	/* weighted mean location of balance point */
+							s = sqrt ((Sw * Swd2 - Swd*Swd) / (Sw*Sw*(n-1)/n));	/* One-sigma deviation on the weighted mean */
+						}
 						d0 = T->segment[seg]->data[GMT_Z][0];	/* Left distance start value */
 						/* We report the left, center, right points to nearest distance increment */
 						kc = irint ((d - d0) / Ctrl->C.ds);		/* Nearest point to the mean location */

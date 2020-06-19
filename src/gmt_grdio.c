@@ -2218,7 +2218,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	 */
 
 	bool global, error = false;
-	double val, dx, small;
+	double val, dx, small, was;
 	char format[GMT_LEN256] = {""};
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
@@ -2272,26 +2272,28 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		dx = fabs (wesn[XLO] - val);
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
+			was = wesn[XLO];
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "(w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			snprintf (format, GMT_LEN256, "w reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[XLO], val);
 			wesn[XLO] = val - header->inc[GMT_X];
 			if (wesn[XLO] < header->wesn[XLO]) val += header->inc[GMT_X];
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[XLO]);
 		}
 
 		val = header->wesn[XLO] + lrint ((wesn[XHI] - header->wesn[XLO]) * HH->r_inc[GMT_X]) * header->inc[GMT_X];
 		dx = fabs (wesn[XHI] - val);
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
+			was = wesn[XHI];
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "(e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			snprintf (format, GMT_LEN256, "e reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[XHI], val);
 			wesn[XHI] = val + header->inc[GMT_X];
 			if (wesn[XHI] > header->wesn[XHI]) val -= header->inc[GMT_X];
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[XHI]);
 		}
 	}
 
@@ -2300,24 +2302,26 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 
 	val = header->wesn[YLO] + lrint ((wesn[YLO] - header->wesn[YLO]) * HH->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YLO] - val) > small) {
+		was = wesn[YLO];
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "(s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
 		snprintf (format, GMT_LEN256, "s reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[YLO], val);
 		wesn[YLO] = val - header->inc[GMT_Y];
 		if (wesn[YLO] < header->wesn[YLO]) val += header->inc[GMT_Y];
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[YLO]);
 	}
 
 	val = header->wesn[YLO] + lrint ((wesn[YHI] - header->wesn[YLO]) * HH->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
+		was = wesn[YHI];
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "(n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
 		snprintf (format, GMT_LEN256, "n reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, wesn[YHI], val);
 		wesn[YHI] = val + header->inc[GMT_Y];
 		if (wesn[YHI] > header->wesn[YHI]) val -= header->inc[GMT_Y];
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[YHI]);
 	}
 	return (GMT_NOERROR);
 }
