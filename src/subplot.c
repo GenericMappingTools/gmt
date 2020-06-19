@@ -30,13 +30,30 @@
  *	   gmt subplot end [-V]
  */
 
-/* Note: subplot is currently not able to be nested (i.e., a subplot inside another subplot).
+/* Note 1: subplot is currently not able to be nested (i.e., a subplot inside another subplot).
  * This will be required to do more complicated layouts where the number of items vary for
  * different columns and/or rows.  So until such time, all subplots must have a constant number
  * of items in all rows and a constant number of items in all columns.  The dimensions can vary
  * on a per-column or per-row basis, but the number of items must remain the same. To implement
  * nesting we would place all the subplot control files inside a subdirectory and have nested
  * subdirectories.
+ *
+ * Note 2: The way the tagging of each panel works (via the settings in -A) is a bit of black magic.
+ * When subplot runs we have no idea what will be plotting in any panel.  It could be nothing or
+ * images, contours, whatever.  Yet, we do want the tag (here, I will just assume it is some string
+ * like "a)" but -A may select other formats) to be placed ON TOP OF the panel, after everything else
+ * has been plotted.  That means we must somehow wait until the last layer has been laid down in
+ * the panel before placing the tag.  This note explains how this works:  When a new panel is
+ * started we read the subplot information file and learn that this panel should have a tag like "a)"
+ * In the function gmt_plotinit (gmt_plot.c) we check if we are doing a subplot panel, and if it is there
+ * we write a PostScript function called PSL_plot_completion to the PostScript file.  This function
+ * has all the PostScript commands needed to place the tag, including things like painting a background
+ * rectangle if so chosen, but the function is not called, just defined.  Then, each time we detect
+ * we are starting a new panel we first execute the PSL_plot_completion function before redefining
+ * in for the next panel.  In addition, when subplot end is call we must also call it to finish the
+ * tagging of the last panel we touched.  Each time it is called (this happens in PSL_beginplot) it
+ * gets reset to a null function that does nothing.  Then the next panel redefines it and the cycle
+ * continues until the subplot is completed.
  */
 
 #include "gmt_dev.h"
