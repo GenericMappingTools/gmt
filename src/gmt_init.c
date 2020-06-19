@@ -16995,7 +16995,7 @@ bool gmt_is_integer (char *L) {
 	return true;	/* Everything came up roses */
 }
 
-int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
+int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg, char *parfile) {
 	/* Add another figure to the gmt.figure queue.
 	 * arg = "[prefix] [format] [options]"
 	 * Rules: No prefix may start with a hyphen
@@ -17012,10 +17012,10 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	int n = 0, n_figs, this_k = 0, k, err;
 	bool found = false;
 	char prefix[GMT_LEN256] = {""}, formats[GMT_LEN64] = {""}, options[GMT_LEN128] = {""};
-	char *L = NULL;
-	static char *LP_name[2] = {"LABEL", "PROG_INDICATOR"}, *F_name[2] = {"label", "prog_indicator"};
+	char *L = NULL, line[GMT_LEN256] = {""}, file[PATH_MAX] = {""};
+	static char *F_name[2] = {"label", "prog_indicator"};
 	struct GMT_FIGURE *fig = NULL;
-	FILE *fp = NULL;
+	FILE *fp = NULL, *fpM[2] = {NULL, NULL};
 
 	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmt figure: No workflow directory set\n");
@@ -17071,40 +17071,39 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	if (gmtinit_set_current_figure (API, prefix, this_k))
 		return GMT_ERROR_ON_FOPEN;
 
-	/* See if movie set up a set of frame labels and/or progress indicators */
+	if (parfile == NULL) return GMT_NOERROR;	/* Not a movie so no parameter file */
 
-	for (k = 0; k < 2; k++) {
-		sprintf (prefix, "MOVIE_N_%sS", LP_name[k]);	/* Recycle prefix here as name */
-		if ((L = getenv (prefix)) != NULL) {	/* MOVIE_N_{LABEL|PROG_INDICATOR}S was set */
-			unsigned int T, n_tags;
-			char file[PATH_MAX] = {""}, name[GMT_LEN32] = {""};
-			if (!gmt_is_integer (L)) {
-				GMT_Report (API, GMT_MSG_ERROR, "%s = %s but must be an integer\n", prefix, L);
-				return GMT_RUNTIME_ERROR;
-			}
-			GMT_Report (API, GMT_MSG_DEBUG, "New figure: Found special %s = %s\n", prefix, L);
+	/* See if movie set up a set of frame labels and/or progress indicators - there may be none */
+
+	if ((fp = fopen (parfile, "r")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmt figure: Unable to open movie parameter file %s\n", parfile);
+		return GMT_RUNTIME_ERROR;
+	}
+
+	while (fgets (line, GMT_LEN256, fp)) {
+		if (!(strncmp (line, "REM ", 4U) == 0 || strncmp (line, "# ", 2U) == 0)) continue;	/* Not a comment */
+		if (!strchr (line, '|')) continue;	/* No bars means it cannot be a movie label or progress indicator */
+		if ((L = strstr (line, "MOVIE_L: ")))	/* Found a movie label */
+			k = 0;
+		else if ((L = strstr (line, "MOVIE_P: ")))	/* Found a movie progress indicator */
+			k = 1;
+		else
+			continue;	/* Found a regular comment - skip */
+
+		if (fpM[k] == NULL) {	/* It is a first time for everything */
 			snprintf (file, PATH_MAX, "%s/gmt.movie%ss", API->gwf_dir, F_name[k]);
-			if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
+			if ((fpM[k] = fopen (file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Cannot create file %s\n", file);
 				return GMT_ERROR_ON_FOPEN;
 			}
-			fprintf (fp, "# movie %s information file\n", F_name[k]);
-			n_tags = atoi (L);
-			for (T = 0; T < n_tags; T++) {
-				snprintf (name, GMT_LEN32, "MOVIE_%s_ARG%d", LP_name[k], T);
-				if ((L = getenv (name)) != NULL) {	/* MOVIE_{LABEL|PROG_INDICATOR}_ARG# was set */
-					/* Special processing for gmt movie:
-					 * If -L is used to set labeling or -P to set progress indicators then we
-				 	* need to ensure the item is on top of the frame and unaffected by any
-				 	* -X -Y that may have been used in the main script. We do this by implementing
-				 	* the item via a PSL procedure that is called at the end of the file.
-				 	* This is set up by gmt_plotinit in gmt_plot.c */
-					fprintf (fp, "%s\n", L);
-				}
-			}
-			fclose (fp);
+			fprintf (fpM[k], "# movie %s information file\n", F_name[k]);
 		}
+		fprintf (fpM[k], "%s", &L[9]);
 	}
+	fclose (fp);
+
+	for (k = 0; k < 2; k++)
+		if (fpM[k]) fclose (fpM[k]);
 
 	return GMT_NOERROR;
 }
