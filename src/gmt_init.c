@@ -17080,7 +17080,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg, char *parfile) {
 		return GMT_RUNTIME_ERROR;
 	}
 
-	while (fgets (line, GMT_LEN256, fp)) {	/* Recycle the array file to read the records here */
+	while (fgets (line, GMT_LEN256, fp)) {
 		if (!(strncmp (line, "REM ", 4U) == 0 || strncmp (line, "# ", 2U) == 0)) continue;	/* Not a comment */
 		if (!strchr (line, '|')) continue;	/* No bars means it cannot be a movie label or progress indicator */
 		if ((L = strstr (line, "MOVIE_L: ")))	/* Found a movie label */

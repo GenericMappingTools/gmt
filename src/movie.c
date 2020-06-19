@@ -1842,7 +1842,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				unsigned int type, use_frame, p;
 				double t;
 				struct GMT_FONT *F = (k == MOVIE_ITEM_IS_LABEL) ? &GMT->current.setting.font_tag : &GMT->current.setting.font_annot[GMT_SECONDARY];	/* Default font for labels and progress indicators  */
-				/* Place all movie labels nad progress indicator information as comments in the parameter file - there will be read by gmt figure and converted to gmt.movie{labels,progress_indicators} files */
+				/* Place all movie labels and progress indicator information as comments in the parameter file - there will be read by gmt figure and converted to gmt.movie{labels,progress_indicators} files */
 				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
 
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
