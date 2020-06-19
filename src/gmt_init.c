@@ -16995,7 +16995,7 @@ bool gmt_is_integer (char *L) {
 	return true;	/* Everything came up roses */
 }
 
-int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
+int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg, char *frame) {
 	/* Add another figure to the gmt.figure queue.
 	 * arg = "[prefix] [format] [options]"
 	 * Rules: No prefix may start with a hyphen
