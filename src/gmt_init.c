@@ -12834,6 +12834,9 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_begin_module_sub (struct GMTAPI_CTRL *API, co
 	GMT->init.module_name = mod_name;
 	GMT->init.module_lib  = lib_name;
 
+	if (gmt_M_is_dnan (GMT->current.setting.map_vector_shape))	/* Do it here since independent on map size */
+		GMT->current.setting.map_vector_shape = 0.5;
+
 	return (GMT);
 }
 
