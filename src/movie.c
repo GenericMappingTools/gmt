@@ -33,6 +33,62 @@
  * the title page and/or the main animation.  The fore-, back-ground, and
  * title page scripts can also just be ready-to-use PostScripts plot of
  * correct canvas size.
+ *
+ * Note 1: movie has options -L and -P that let each frame plot have an
+ * overlay of one or more movie labels and one or more sets of movie progress
+ * indicators.  Like tags in subplots (e.g., "a)"), these must be plotted
+ * ON TOP OF everything else plotted in each frame.  When movie is run it
+ * does not have the brains to figure that out, but it knows that these items,
+ * if specified, must be plotted at the end, yet the options are given to
+ * movie.  Here is how I implemented this:  This black magic is similar to
+ * what happens in subplot (see the Note in subplot.c first) but there are
+ * differences.  movie creates a bunch of parameter files and a master
+ * script, and then we launch that master script with an frame number that lets
+ * it read the corresponding parameters set.  Many of the items in the parameter
+ * file are things that change from frame to frame and may have originated in
+ * the time file (-T).  For instance, we may have a shell assignment of a variable
+ * like MOVIE_COL0=-77.2085847092.  This may be a quantity that the master
+ * script can use to plot a string or use to get a color via a CPT, for instance.
+ * That is nice, but how about labels? Well, this is the problem: We want those
+ * labels to just happen, not make the user write pstext calls using something
+ * like a MOVIE_WORD0="Time is 64.5".  If it worked that way, why would there be
+ * a -L (or -P) option if you have to do all the work anyway? So, we want movie
+ * to automatically set these labels, just like it works for subplot tags.
+ * The solution chosen for this is to set this content as environmental variables.
+ * As an example, the parameter file for frame 29 may have these statements:
+ *
+ * export MOVIE_N_LABELS=1
+ * export MOVIE_LABEL_ARG0="L|0.1|4.7|0.5|0|9|0.0416667|0.0416667|-|-|-|-|20p,Helvetica,black|29"
+ *
+ * This is bash syntax; it will look different in csh or DOS batch. What it says
+ * is that we only have one movie label (ARG0) [-L is repeatable so we could have more].
+ * In this case, we want to place the frame string "29".  The rest is information gmt needs
+ * to know what to do: placement, offsets, font, etc. OK, then the rest of the frame script
+ * composed by the user (which knows nothing of the above) happens.  Unbeknownst to
+ * the user, her script is actually embellished by movie in various ways.  For instance,
+ * we call gmt figure to define the plot format before the user's commands are appended.
+ * When gmt figure runs we end up calling gmt_add_figure (gmt_init.c) and it actually
+ * checks the calling environment to see if a MOVIE_N_LABELS is defined.  If it is then
+ * we get its value and learn (1) that gmt figure is called from a movie script and (2)
+ * that we have labels to place.  Now, we loop over all the labels (here just 1) and get
+ * the MOVIE_LABEL_ARG# strings from the environment. These labels are then written to
+ * a file under the session directory called gmt.movie_labels.  Only the current frame
+ * process will find that file since each frame is run in separate session directories.
+ * If you used -P then the exact same thing happens for movie progress bars and there will
+ * be a file called gmt.movie_prog_indicators created.  So -L -P lead to one or two files
+ * being created in the session directory before the first gmt command after gmt figure
+ * starts.  From here on it is very similar to the subplot story: In gmt_plotinit, we
+ * check if these files exist, and if they do we build a PostScript function called
+ * PSL_movie_label_completion [for labels] or PSL_movie_prog_indicator_completion [for
+ * progress indicators].  These are used a bit differently from the PSL_plot_completion
+ * function for subplots since there are many panels and finishing one panel is not
+ * necessarily the end of the plot.  However, for the movie embellishments, we know
+ * that when gmt end comes and calls PSL_endplot, it is time to execute these two
+ * PostScript functions, should they exist.  Once completed, they are redefined as
+ * NULL functions.  Unlike PSL_plot_completion, the movie functions are more complicated
+ * and may plot more than one label and more than one progress indicator.  This is the
+ * only way I could think of to implement this feature without the user being involved in
+ * all the scripting themselves.
  */
 
 #include "gmt_dev.h"
