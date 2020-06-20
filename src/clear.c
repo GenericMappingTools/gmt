@@ -157,7 +157,7 @@ static int clear_sessions (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "No directory named %s\n", API->session_dir);
 		return GMT_FILE_NOT_FOUND;
 	}
-#ifdef WIN32
+#ifdef _WIN32
 	sprintf (del_cmd, "rmdir /s /q %s", API->session_dir);
 #else
 	sprintf (del_cmd, "rm -rf %s", API->session_dir);
