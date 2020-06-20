@@ -6110,6 +6110,9 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.format_geo_map, "ddd:mm:ssF");
 	gmtlib_plot_C_format (GMT);	/* Update format statements */
 
+	/* GMT_THEME */
+	strcpy (GMT->current.setting.theme, "modern");
+
 	/* MAP group */
 
 	/* MAP_ANNOT_MIN_SPACING */
