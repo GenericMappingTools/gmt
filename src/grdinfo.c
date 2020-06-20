@@ -335,30 +335,34 @@ GMT_LOCAL void grdinfo_report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, d
 	bool use = true, num_report;
 	unsigned int nx, ny, i, j, js = 0, jn = 0, ie, iw;
 	uint64_t row, col, node;
-	double wesn[4], out[4], box[4];
+	double wesn[4], out[4], box[4], dx = 0.0, dy = 0.0;
 	char text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	struct GMT_RECORD *Out = NULL;
 
 	num_report = (Ctrl->C.active);
 	Out = gmt_new_record (GMT, num_report ? out : NULL, (num_report && Ctrl->C.mode != GRDINFO_TRAILING) ? NULL : record);
 
-	nx = gmt_M_get_n (GMT, w, e, Ctrl->I.inc[GMT_X], 1);
-	ny = gmt_M_get_n (GMT, s, n, Ctrl->I.inc[GMT_Y], 1);
+	nx = gmt_M_get_n (GMT, w, e, Ctrl->I.inc[GMT_X], GMT_GRID_PIXEL_REG);	/* Pass GMT_GRID_PIXEL_REG since the tiles are sort of large "pixels" inside ... */
+	ny = gmt_M_get_n (GMT, s, n, Ctrl->I.inc[GMT_Y], GMT_GRID_PIXEL_REG);	/* ... the w/e/s/n bounds regardless of the registration of the grid being given */
+
+	if (G) dx = G->header->inc[GMT_X] * G->header->xy_off, dy = G->header->inc[GMT_Y] * G->header->xy_off;
+	/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
+
 	for (j = 0; j < ny; j++) {
 		box[YLO] = wesn[YLO] = s + j * Ctrl->I.inc[GMT_Y];	box[YHI] = wesn[YHI] = wesn[YLO] + Ctrl->I.inc[GMT_Y];
 		if (G && Ctrl->D.mode) {	/* Must determine if there is at least one data point inside this subset */
 			if (wesn[YLO] < G->header->wesn[YLO]) wesn[YLO] = G->header->wesn[YLO];
 			if (wesn[YHI] > G->header->wesn[YHI]) wesn[YHI] = G->header->wesn[YHI];
-			js = gmt_M_grd_y_to_row (GMT, wesn[YLO], G->header);
-			jn = gmt_M_grd_y_to_row (GMT, wesn[YHI], G->header);
+			js = gmt_M_grd_y_to_row (GMT, wesn[YLO] + dy, G->header);
+			jn = gmt_M_grd_y_to_row (GMT, wesn[YHI] - dy, G->header);
 		}
 		for (i = 0; i < nx; i++) {
 			box[XLO] = wesn[XLO] = w + i * Ctrl->I.inc[GMT_X];	box[XHI] = wesn[XHI] = wesn[XLO] + Ctrl->I.inc[GMT_X];
 			if (G && Ctrl->D.mode) {	/* Must determine if there is at least one data point inside this subset */
 				if (wesn[XLO] < G->header->wesn[XLO]) wesn[XLO] = G->header->wesn[XLO];
 				if (wesn[XHI] > G->header->wesn[XHI]) wesn[XHI] = G->header->wesn[XHI];
-				iw = gmt_M_grd_x_to_col (GMT, wesn[XLO], G->header);
-				ie = gmt_M_grd_x_to_col (GMT, wesn[XHI], G->header);
+				iw = gmt_M_grd_x_to_col (GMT, wesn[XLO] + dx, G->header);
+				ie = gmt_M_grd_x_to_col (GMT, wesn[XHI] - dx, G->header);
 				use = true;
 				for (row = jn; row <= js; row++) {
 					for (col = iw; col <= ie; col++) {
@@ -372,7 +376,7 @@ L_use_it:			row = 0;	/* Get here by goto and use is still true */
 			}
 			if (use) {
 				gmt_M_memcpy (out, box, 4, double);
-				out[XLO] -= Ctrl->D.inc[GMT_X];
+				out[XLO] -= Ctrl->D.inc[GMT_X];	/* Adjust region for given overlap */
 				out[XHI] += Ctrl->D.inc[GMT_X];
 				out[YLO] -= Ctrl->D.inc[GMT_Y];
 				out[YHI] += Ctrl->D.inc[GMT_Y];
