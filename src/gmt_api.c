@@ -4845,7 +4845,7 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 				return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 			API->object[new_item]->resource = I_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
-			API->object[new_item]->method = GMT_IS_DUPLICATE|GMT_VIA_MATRIX;
+			API->object[new_item]->method = method;
 			IH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			via = true;
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
@@ -5248,7 +5248,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 				return_null (API, GMT_OBJECT_NOT_FOUND);
 			if ((new_item = gmtlib_validate_id (API, GMT_IS_GRID, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET)
 				return_null (API, GMT_OBJECT_NOT_FOUND);
-			API->object[new_item]->method = GMT_IS_DUPLICATE|GMT_VIA_MATRIX;
+			API->object[new_item]->method = method;
 			GH = gmt_get_G_hidden (G_obj);
 			HH = gmt_get_H_hidden (G_obj->header);
 			G_obj->header->complex_mode = mode;	/* Set the complex mode */
