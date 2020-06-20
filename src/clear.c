@@ -151,35 +151,23 @@ static int clear_data (struct GMTAPI_CTRL *API, char *planet) {
 }
 
 static int clear_sessions (struct GMTAPI_CTRL *API) {
-	unsigned int n_dirs, k;
-	char **dirlist = NULL, *here = NULL;
+	int error;
+	char del_cmd[PATH_MAX] = {""};
 	if (access (API->session_dir, F_OK)) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "No directory named %s\n", API->session_dir);
 		return GMT_FILE_NOT_FOUND;
 	}
-	if ((here = getcwd (NULL, 0)) == NULL) {	/* Get the current directory */
-		GMT_Report (API, GMT_MSG_ERROR, "Cannot determine current directory!\n");
+#ifdef WIN32
+	sprintf (del_cmd, "rmdir /s /q %s", API->session_dir);
+#else
+	sprintf (del_cmd, "rm -rf %s", API->session_dir);
+#endif
+
+	if ((error = system (del_cmd))) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to remove session directory %s [error = %d]\n", API->session_dir, error);
 		return GMT_RUNTIME_ERROR;
 	}
-	if (chdir (API->session_dir)) {	/* Cd into sessions directory */
-		perror (API->session_dir);
-		return GMT_RUNTIME_ERROR;
-	}
-	if ((n_dirs = (unsigned int)gmtlib_glob_list (API->GMT, "gmt*", &dirlist))) {	/* Find the gmt.<session_name> directories */
-		for (k = 0; k < n_dirs; k++) {
-			if (gmt_remove_dir (API, dirlist[k], false))
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", dirlist[k]);
-		}
-		gmt_free_list (API->GMT, dirlist, n_dirs);	/* Free the dir list */
-	}
-	if (chdir (here)) {		/* Get back to where we were */
-		perror (here);
-		gmt_M_str_free (here);
-		return GMT_RUNTIME_ERROR;
-	}
-	gmt_M_str_free (here);
-	if (gmt_remove_dir (API, API->session_dir, false))
-		return GMT_RUNTIME_ERROR;
+
 	return GMT_NOERROR;
 }
 
