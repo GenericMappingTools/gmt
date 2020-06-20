@@ -1984,7 +1984,6 @@ GMT_LOCAL int gmtapi_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 	/* If range = inc = NULL then add dimensioning is set via dim: ncols, nrow, nlayers, type.
 	 * else, ncols,nrows is set via range and inc and registration. dim, if not null, sets dim[2] = nlayers [1] and dim[3] = type [double]
 	 */
-	double off = 0.5 * registration;
 	int error;
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
 	size_t size = 0;
@@ -1999,8 +1998,8 @@ GMT_LOCAL int gmtapi_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 			if (!inc || (inc[GMT_X] == 0.0 && inc[GMT_Y] == 0.0)) return (GMT_VALUE_NOT_SET);
 			gmt_M_memcpy (M->range, range, 2 * dims, double);
 			gmt_M_memcpy (M->inc, inc, dims, double);
-			M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
-			M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
+			M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], registration);
+			M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], registration);
 			M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;	/* Matrix layout order */
 		}
 		return (GMT_NOERROR);
@@ -2016,11 +2015,12 @@ GMT_LOCAL int gmtapi_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 		if (!inc || (inc[GMT_X] == 0.0 && inc[GMT_Y] == 0.0)) return (GMT_VALUE_NOT_SET);
 		gmt_M_memcpy (M->range, range, 2 * dims, double);
 		gmt_M_memcpy (M->inc, inc, dims, double);
-		M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
-		M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
+		M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], registration);
+		M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], registration);
 	}
 	M->type = (dim == NULL) ? GMT_DOUBLE : dim[3];	/* Use selected data type for export or default to double */
 	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;
+	M->registration = registration;
 	size = M->n_rows * M->n_columns * ((size_t)M->n_layers);	/* Size in bytes of the initial matrix allocation */
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate data memory */
 		struct GMT_MATRIX_HIDDEN *MH = gmt_get_M_hidden (M);
@@ -2042,7 +2042,7 @@ GMT_LOCAL uint64_t gmtapi_vector_nrows (uint64_t dim[], double *range, double *i
 	if (dim && dim[GMTAPI_DIM_ROW]) return dim[GMTAPI_DIM_ROW];	/* Gave the dimension directly */
 	if (dir == GMT_IN && (!inc || inc[GMT_X] == 0.0)) return ((uint64_t)GMT_NOTSET);
 	if (dir == GMT_IN && (!range || (range[XLO] == 0.0 && range[XHI] == 0.0))) return ((uint64_t)GMT_NOTSET);
-	if (range && inc) return (gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], 0.5 * registration));
+	if (range && inc) return (gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], registration));
 	return (0);	/* When dir == GMT_OUT */
 }
 
