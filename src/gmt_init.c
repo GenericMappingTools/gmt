@@ -17822,7 +17822,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 
 	char side, axis, B_delim[2] = {30, 0}, p[GMT_BUFSIZ] = {""};	/* Use ASCII 30 RS Record Separator between -B strings */
 	char file[PATH_MAX] = {""};
-	unsigned int pos = 0;
+	unsigned int pos = 0, sides[5];
 	bool add_label = false, add_annot = false, axis_set = false;
 	double GMT_LETTER_HEIGHT = 0.736;
 	FILE *fp = NULL;
@@ -17870,7 +17870,10 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Adding label space\n");
 		offset[GMT_OUT] += (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
 	}
+	/* Because the next call will reset frame sides i will make a copy and override the override here */
+	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
 	gmtinit_conf_modern_override (GMT);	/* Reset */
+	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
 }
 
 unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it) {
