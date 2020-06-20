@@ -17874,6 +17874,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
 	gmtinit_conf_modern_override (GMT);	/* Reset */
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
+	GMT->current.map.frame.draw = false;
 }
 
 unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it) {
