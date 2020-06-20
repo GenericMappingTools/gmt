@@ -9302,6 +9302,10 @@ GMT_LOCAL char * gmtinit_print_map_annot_oblique (struct GMT_CTRL *GMT, unsigned
 	char string[GMT_LEN128] = {""};
 	unsigned int bit, k, first = 1;
 
+	if ((val & 1) == 0) {	/* separate and anywhere are mutually exclusive */
+		strcpy (string, map_annot_oblique_item[0]);
+		first = 0;
+	}
 	for (k = 1; k < N_MAP_ANNOT_OBLIQUE_ITEMS; k++) {
 		bit = urint (pow (2.0, k-1));
 		if (val & bit) {	/* This one was set */
