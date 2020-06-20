@@ -12,7 +12,7 @@ int main (int argc, char **argv) {
 	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN, M, input);
 
 	/* Prepare the module arguments */
-	if (argc == 2) /* Want shading */
+	if (argc >= 2 && !strcmp (argv[1], "-I")) /* Want shading */
 		sprintf (args, "%s -JX6i -P -Baf -Cgeo -I+d", input);
 	else /* Just the image */
 		sprintf (args, "%s -JX6i -P -Baf -Cgeo", input);
