@@ -17823,7 +17823,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	char side, axis, B_delim[2] = {30, 0}, p[GMT_BUFSIZ] = {""};	/* Use ASCII 30 RS Record Separator between -B strings */
 	char file[PATH_MAX] = {""};
 	unsigned int pos = 0, sides[5];
-	bool add_label = false, add_annot = false, axis_set = false;
+	bool add_label = false, add_annot = false, axis_set = false, was;
 	double GMT_LETTER_HEIGHT = 0.736;
 	FILE *fp = NULL;
 	/* Initialize the default settings before considering any -B history */
@@ -17872,9 +17872,10 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	}
 	/* Because the next call will reset frame sides i will make a copy and override the override here */
 	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
+	was = GMT->current.map.frame.draw;
 	gmtinit_conf_modern_override (GMT);	/* Reset */
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
-	GMT->current.map.frame.draw = false;
+	GMT->current.map.frame.draw = was;
 }
 
 unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it) {

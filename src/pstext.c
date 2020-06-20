@@ -796,14 +796,11 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
-	pstext_load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 	tcol = 2 + Ctrl->Z.active;
 
 	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread + GMT->common.t.variable;	/* Normal number of columns to read, plus any text. This includes x,y */
 	if (Ctrl->M.active) n_expected_cols += 3;
 	no_in_txt = (Ctrl->F.get_text > 1);	/* No text in the input record */
-	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
-	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
@@ -815,6 +812,13 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (Ctrl->G.mode) gmt_map_basemap (GMT);	/* Must lay down basemap before text clipping is activated, otherwise we do it at the end */
+
+	if (gmt_M_is_dnan (Ctrl->F.font.size))
+		Ctrl->F.font.size = GMT->current.setting.font_annot[GMT_PRIMARY].size;
+
+	pstext_load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
+	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
+	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
 	if (!(Ctrl->N.active || Ctrl->Z.active)) {
 		gmt_BB_clip_on (GMT, GMT->session.no_rgb, 3);
