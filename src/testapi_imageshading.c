@@ -1,6 +1,6 @@
 #include "gmt.h"
 
-int main () {
+int main (int argc, char **argv) {
 	void *API = NULL;                /* The API control structure */
 	struct GMT_MATRIX *M = NULL;    /* Structure to hold input matrix */
 	char input[GMT_VF_LEN] = {""};	/* String to hold virtual input filename */
@@ -12,7 +12,10 @@ int main () {
 	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN, M, input);
 
 	/* Prepare the module arguments */
-	sprintf (args, "%s -JX6i -P -Baf -Cgeo -I+d", input);
+	if (argc == 2) /* Want shading */
+		sprintf (args, "%s -JX6i -P -Baf -Cgeo -I+d", input);
+	else /* Just the image */
+		sprintf (args, "%s -JX6i -P -Baf -Cgeo", input);
 	/* Call the grdimage module */
 	GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, args);
 
