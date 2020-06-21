@@ -888,7 +888,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	for (k = 0; k < n_grids; k++) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate and read data from file %s\n", Ctrl->In.file[k]);
 		if (got_data_grid && k == 0) continue;	/* Only true if we already read a SRTM tile bunch earlier under I.derive = true */
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY|GMT_IO_RESET, wesn, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
 			Return (API->error);
 		}
 		mixed = grdimage_clean_global_headers (GMT, Grid_orig[k]->header);
