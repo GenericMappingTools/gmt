@@ -209,12 +209,20 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 	return (strncmp (name_1, name_2, len));
 }
 
+int gmtremote_wind_to_file (const char *file) {
+	int k = strlen (file) - 2;	/* This jumps past any trailing / for tiles */
+	while (k >= 0 && file[k] != '/') k--;
+	return (k+1);
+}
+
 int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	/* Return the entry in the remote file table of file is found, else -1 */
 	int pos = 0;
 	struct GMT_DATA_INFO *key = NULL;
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
 	if (file[0] == '@') pos = 1;	/* Skip any leading remote flag */
+	/* Exclude leading directory for local saved versions of the file */
+	if (pos == 0) pos = gmtremote_wind_to_file (file);	/* Skip any leading directories */
 	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	return ((key == NULL) ? GMT_NOTSET : key->id);
 }

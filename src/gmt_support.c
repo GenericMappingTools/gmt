@@ -7785,7 +7785,7 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 		if (srtm_flag == GMT_SRTM_ONLY) return srtm_cpt;
 	}
 	if (API->remote_info[k_data].CPT[0] == '-') return (NULL);
-
+	
 	return (API->remote_info[k_data].CPT);
 }
 
