@@ -6374,11 +6374,6 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	GMT->common.x.n_threads = gmtlib_get_num_processors();
 #endif
 
-	/* Set the names of the default CPTs */
-	strcpy (GMT->init.cpt[0], GMT_DEFAULT_CPT_NAME);	/* GMT default CPT unless overridden by data type specific CPT */
-	strcpy (GMT->init.cpt[1], GMT_DEM_CPT_NAME);		/* GMT default CPT for earth_relief grids */
-	strcpy (GMT->init.cpt[2], GMT_SRTM_CPT_NAME);		/* GMT default CPT for srtm_relief grids */
-
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  gmtinit_new_GMT_ctrl\n");
 	return (GMT);
 }

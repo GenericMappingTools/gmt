@@ -43,6 +43,7 @@ struct GMT_DATA_INFO {
 	char tag[GMT_LEN64];		/* Tag for tiling.  E.g., earth_relief_01m_g, SRTMGL3 */
 	char coverage[GMT_LEN64];	/* File with tile coverage. E.g., srtm_tiles.nc or - for none */
 	char filler[GMT_LEN64];		/* File with backtround filler. E.g., earth_relief_tiles_15s.grd or - for none */
+	char CPT[GMT_LEN64];		/* Name of default master CPT. E.g., geo or - for none */
 	char remark[GMT_LEN128];	/* Attribution and information about this data set */
 };
 

@@ -666,10 +666,10 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)) {	/* If no cpt given or just a master then we must compute a scaled one from the full-size grid and use it throughout */
-		unsigned int zmode = gmt_cpt_default (GMT, G->header);
+		char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file);
 		char cptfile[PATH_MAX] = {""};
 		struct GMT_PALETTE *P = NULL;
-		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, G->header->z_min, G->header->z_max, Ctrl->C.dz, zmode)) == NULL) {
+		if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, G->header->z_min, G->header->z_max, Ctrl->C.dz)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to create a CPT\n");
 			Return (API->error);	/* Well, that did not go well... */
 		}

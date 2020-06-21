@@ -314,7 +314,6 @@ struct GMT_INIT { /* Holds misc run-time parameters */
 	char *runtime_library;        /* Name of the main shared library at run-time */
 	char *runtime_plugindir;      /* Directory that contains the main supplemental plugins at run-time */
 	char *history[GMT_N_UNIQUE];  /* The internal gmt.history information */
-	char cpt[GMT_N_CPT][GMT_LEN16];	/* The default CPTs for different data types; see gmt_cpt_default() */
 	struct GMT_CUSTOM_SYMBOL **custom_symbol; /* For custom symbol plotting in psxy[z]. */
 };
 
