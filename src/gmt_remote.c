@@ -1165,6 +1165,8 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn[], int k_dat
 	}
 
 	/* Get nearest whole multiple of tile size wesn boundary.  This ASSUMES all global grids are -Rd  */
+	/* Also, the srtm_tiles.nc grid is gridline-registered and we check if the node corresponding to
+	 * the lon/lat of the SW corner of a tile is 1 or 0 */
 	iw = (int)(-180 + floor ((wesn[XLO] + 180) / I->tile_size) * I->tile_size);
 	ie = (int)(-180 + ceil  ((wesn[XHI] + 180) / I->tile_size) * I->tile_size);
 	is = (int)( -90 + floor ((wesn[YLO] +  90) / I->tile_size) * I->tile_size);
