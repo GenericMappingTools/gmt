@@ -6382,7 +6382,6 @@ int gmtlib_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
 		S_obj = API->object[i];	/* Shorthand only */
 		if (!S_obj) continue;								/* Empty object */
-		//if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this input object once */
 		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED && object_ID == GMT_NOTSET) continue;		/* Already used this input object once */
 		if (!(family == GMT_NOTSET || (int)S_obj->family == family)) {		/* Not the required data type; check for exceptions... */
 			if (family == GMT_IS_DATASET && (S_obj->actual_family == GMT_IS_VECTOR || S_obj->actual_family == GMT_IS_MATRIX))
