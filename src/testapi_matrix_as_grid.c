@@ -37,6 +37,11 @@ int main () {
 	if ((M_p = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, range_p, inc, GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	GMT_Put_Matrix (API, M_p, GMT_DOUBLE, 0, coord);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, M_p, input_p);
+	/* call grdinfo to make sure it doesn't crash
+	 * See https://github.com/GenericMappingTools/gmt/pull/3514 */
+	sprintf (args_p, "%s -C", input_p);
+	GMT_Call_Module (API, "grdinfo", GMT_MODULE_CMD, args_p);
+	/* call grdimage */
 	sprintf (args_p, "%s -R-1/3/-1/3 -JX6c -Baf -BWSen+tPixel -O -X8c >> api_matrix_as_grid.ps", input_p);
 	GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, args_p);
 	GMT_Close_VirtualFile (API, input_p);
