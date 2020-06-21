@@ -2814,6 +2814,7 @@ bool gmt_is_an_object (struct GMT_CTRL *GMT, void *ptr) {
 }
 
 /*! Determine if resource is a filename that has already been registered */
+#if 0
 GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, void *resource) {
 	int object_ID = 0, item;
 	unsigned int module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we dealing with a resource that is a module input? */
@@ -2824,6 +2825,31 @@ GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_f
 	if ((item = gmtlib_validate_id (API, family, object_ID, direction, GMT_NOTSET)) == GMT_NOTSET) return (GMT_NOTSET);	/* Not the right attributes */
 	if (module_input && direction == GMT_IN) API->object[item]->module_input = true;	/* Flag this object as a module input resource */
 	return (object_ID);	/* resource is a registered and valid item */
+}
+#endif
+
+/*! Determine if resource is a filename that has already been registered */
+GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *filename) {
+	char SP, D, F, A, G, M;
+	int k, object_ID;
+	if (!gmt_M_file_is_memory (filename)) return GMT_NOTSET;	/* If not a memory reference then there is no ID etc */
+	/* Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.
+	 * S stands for P(rimary) or S(econdary) input or output object (command line is primary, files via options are secondary).
+	 * D stands for Direction and is either I(n) or O(ut).
+	 * F stands for Family and is one of D(ataset), G(rid), I(mage), C(PT), X(PostScript), M(atrix), V(ector), U(ndefined).
+	 * A stands for Actual Family and is one of D, G, I, C, X, M, V, and U as well.
+	 *   Actual family may differ from family if a Dataset is actually passed as a Matrix, for instance.
+	 * G stands for Geometry and is one of (poin)T, L(ine), P(olygon), C(Line|Polygon), A(POint|Line|Polygon), G(rid), N(one), X(text), or U(ndefined).
+	 * M stands for Messenger and is either Y(es) or N(o).
+	 * Limitation:  object_ID must be <= GMTAPI_MAX_ID */
+
+	SP = D = F = A = G = M = 0;	/* Initialize */
+	if ((k = sscanf (&filename[GMTAPI_PREFIX_LEN], "%c-%c-%c-%c-%c-%c-%d", &SP, &D, &F, &A, &G, &M, &object_ID)) != 7) {
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_memory_registered: Failed to decode memory name [%s], only %d conversions were successful.\n", filename, k);
+		return (GMT_NOTSET);	/* Get the object ID unless we fail scanning */
+	}
+	if (direction == GMT_IN && D != 'I') return GMT_NOTSET;	/* Not the right direction */
+	return object_ID;
 }
 
 /*! . */
@@ -6356,7 +6382,8 @@ int gmtlib_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
 		S_obj = API->object[i];	/* Shorthand only */
 		if (!S_obj) continue;								/* Empty object */
-		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this input object once */
+		//if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this input object once */
+		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED && object_ID == GMT_NOTSET) continue;		/* Already used this input object once */
 		if (!(family == GMT_NOTSET || (int)S_obj->family == family)) {		/* Not the required data type; check for exceptions... */
 			if (family == GMT_IS_DATASET && (S_obj->actual_family == GMT_IS_VECTOR || S_obj->actual_family == GMT_IS_MATRIX))
 				S_obj->family = GMT_IS_DATASET;	/* Vectors or Matrix masquerading as dataset are valid. Change their family here. */

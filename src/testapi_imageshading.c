@@ -1,4 +1,5 @@
 #include "gmt.h"
+#include <string.h>
 
 int main (int argc, char **argv) {
 	void *API = NULL;                /* The API control structure */
