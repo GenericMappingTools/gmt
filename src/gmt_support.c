@@ -7773,12 +7773,16 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 	 * default CPT then we use that, else we return NULL which means use
 	 * the GMT default CPT given by GMT_DEFAULT_CPT_NAME */
 	int k_data;
+	unsigned int srtm_flag = 0;
+	static char *srtm_cpt = "srtm";
 
 	if (cpt) return cpt;	/* CPT was already specified */
 	if (file == NULL) return NULL;	/* No file given, so there */
 	if ((k_data = gmt_remote_dataset_id (API, file)) == GMT_NOTSET) {
 		if ((k_data = gmt_get_tile_id (API, file)) == GMT_NOTSET)
 			return NULL;	/* Go with the default, whatever that is */
+		if ((k_data = gmtlib_remote_file_is_tiled (API, file, &srtm_flag)) == GMT_NOTSET) return NULL;	/* Cannot happen since we just checked it was a tile, but...*/
+		if (srtm_flag == GMT_SRTM_ONLY) return srtm_cpt;
 	}
 	if (API->remote_info[k_data].CPT[0] == '-') return (NULL);
 
