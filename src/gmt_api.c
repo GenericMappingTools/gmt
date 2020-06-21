@@ -2021,7 +2021,7 @@ GMT_LOCAL int gmtapi_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 	M->type = (dim == NULL) ? GMT_DOUBLE : dim[3];	/* Use selected data type for export or default to double */
 	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;
 	M->registration = registration;
-	size = M->n_rows * M->n_columns * ((size_t)M->n_layers);	/* Size in bytes of the initial matrix allocation */
+	size = M->n_rows * M->n_columns * ((size_t)M->n_layers);	/* Size of the initial matrix allocation (number of elements) */
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate data memory */
 		struct GMT_MATRIX_HIDDEN *MH = gmt_get_M_hidden (M);
 		if (size) {	/* Must allocate data matrix and possibly string array */
@@ -2814,6 +2814,7 @@ bool gmt_is_an_object (struct GMT_CTRL *GMT, void *ptr) {
 }
 
 /*! Determine if resource is a filename that has already been registered */
+#if 0
 GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, void *resource) {
 	int object_ID = 0, item;
 	unsigned int module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we dealing with a resource that is a module input? */
@@ -2824,6 +2825,31 @@ GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_f
 	if ((item = gmtlib_validate_id (API, family, object_ID, direction, GMT_NOTSET)) == GMT_NOTSET) return (GMT_NOTSET);	/* Not the right attributes */
 	if (module_input && direction == GMT_IN) API->object[item]->module_input = true;	/* Flag this object as a module input resource */
 	return (object_ID);	/* resource is a registered and valid item */
+}
+#endif
+
+/*! Determine if resource is a filename that has already been registered */
+GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *filename) {
+	char SP, D, F, A, G, M;
+	int k, object_ID;
+	if (!gmt_M_file_is_memory (filename)) return GMT_NOTSET;	/* If not a memory reference then there is no ID etc */
+	/* Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.
+	 * S stands for P(rimary) or S(econdary) input or output object (command line is primary, files via options are secondary).
+	 * D stands for Direction and is either I(n) or O(ut).
+	 * F stands for Family and is one of D(ataset), G(rid), I(mage), C(PT), X(PostScript), M(atrix), V(ector), U(ndefined).
+	 * A stands for Actual Family and is one of D, G, I, C, X, M, V, and U as well.
+	 *   Actual family may differ from family if a Dataset is actually passed as a Matrix, for instance.
+	 * G stands for Geometry and is one of (poin)T, L(ine), P(olygon), C(Line|Polygon), A(POint|Line|Polygon), G(rid), N(one), X(text), or U(ndefined).
+	 * M stands for Messenger and is either Y(es) or N(o).
+	 * Limitation:  object_ID must be <= GMTAPI_MAX_ID */
+
+	SP = D = F = A = G = M = 0;	/* Initialize */
+	if ((k = sscanf (&filename[GMTAPI_PREFIX_LEN], "%c-%c-%c-%c-%c-%c-%d", &SP, &D, &F, &A, &G, &M, &object_ID)) != 7) {
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_memory_registered: Failed to decode memory name [%s], only %d conversions were successful.\n", filename, k);
+		return (GMT_NOTSET);	/* Get the object ID unless we fail scanning */
+	}
+	if (direction == GMT_IN && D != 'I') return GMT_NOTSET;	/* Not the right direction */
+	return object_ID;
 }
 
 /*! . */
@@ -4846,6 +4872,7 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 				return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 			API->object[new_item]->resource = I_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
+			API->object[new_item]->method = S_obj->method;
 			IH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			via = true;
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
@@ -5249,7 +5276,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 				return_null (API, GMT_OBJECT_NOT_FOUND);
 			if ((new_item = gmtlib_validate_id (API, GMT_IS_GRID, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET)
 				return_null (API, GMT_OBJECT_NOT_FOUND);
-			API->object[new_item]->method = GMT_IS_DUPLICATE;
+			API->object[new_item]->method = S_obj->method;
 			GH = gmt_get_G_hidden (G_obj);
 			HH = gmt_get_H_hidden (G_obj->header);
 			G_obj->header->complex_mode = mode;	/* Set the complex mode */
@@ -5294,6 +5321,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
 				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
+			API->object[new_item]->actual_family = GMT_IS_GRID;	/* Done reading from matrix */
 			GH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			break;
 
@@ -6354,7 +6382,7 @@ int gmtlib_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
 		S_obj = API->object[i];	/* Shorthand only */
 		if (!S_obj) continue;								/* Empty object */
-		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this input object once */
+		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED && object_ID == GMT_NOTSET) continue;		/* Already used this input object once */
 		if (!(family == GMT_NOTSET || (int)S_obj->family == family)) {		/* Not the required data type; check for exceptions... */
 			if (family == GMT_IS_DATASET && (S_obj->actual_family == GMT_IS_VECTOR || S_obj->actual_family == GMT_IS_MATRIX))
 				S_obj->family = GMT_IS_DATASET;	/* Vectors or Matrix masquerading as dataset are valid. Change their family here. */
