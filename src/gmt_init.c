@@ -13148,7 +13148,7 @@ GMT_LOCAL int gmtinit_determine_R_option_from_data (struct GMTAPI_CTRL *API, con
 
 	if (GMT_Find_Option (API, 'R', *options)) return GMT_NOERROR;	/* Set explicitly, so do nothing */
 	if (strchr (args, 'g'))	/* Use the input grid to add a valid -R into the options */
-		return (gmtinit_set_missing_R_from_grid (API, args, exact, options));
+		return (gmtinit_set_missing_R_from_grid (API, args, true, options));
 	else if (strchr (args, 'd'))	/* Use input dataset(s) to find and add -R in this module */
 		return (gmtinit_set_missing_R_from_datasets (API, args, exact, options));
 	/* Nothing could be done */
@@ -13924,7 +13924,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available.\n");
 			}
 			else if (strchr (required, 'g') || strchr (required, 'd')) {	/* No history but can examine input data sets */
-				if (gmtinit_determine_R_option_from_data (API, required, true, options)) {
+				if (gmtinit_determine_R_option_from_data (API, required, false, options)) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Failure while determining the region from input data.\n");
 				}
 			}
