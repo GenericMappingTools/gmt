@@ -136,6 +136,26 @@ GMT_LOCAL int gmtremote_compare_names (const void *item_1, const void *item_2) {
 	return (strcmp (name_1, name_2));
 }
 
+GMT_LOCAL int gmtremote_parse_version (char *line) {
+	/* Parse a line like "# 6.1.0 or later GMT version required" and we will make no
+	 * assumptions about how much space before the version. */
+	int k = 1, start, major, minor, release;
+	char text[GMT_LEN64] = {""};
+	if (line[0] != '#') return 1;	/* Not a comment record! */
+	strncpy (text, line, GMT_LEN64-1);
+	while (isspace (text[k])) k++;	/* Skip until we get to the version */
+	start = k;
+	while (isdigit(text[k]) || text[k] == '.') k++;	/* Wind to end of version */
+	text[k] = '\0';	/* Chop off the rest */
+	if (sscanf (&text[start], "%d.%d.%d", &major, &minor, &release) != 3) return 1;
+	if (major > GMT_MAJOR_VERSION) return 2;	/* Definitively too old */
+	if (major < GMT_MAJOR_VERSION) return 0;	/* Should be fine */
+	if (minor > GMT_MINOR_VERSION) return 2;	/* Definitively too old */
+	if (minor < GMT_MINOR_VERSION) return 0;	/* Should be fine */
+	if (release > GMT_RELEASE_VERSION) return 2;	/* Definitively too old */
+	return GMT_NOERROR;
+}
+
 GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *n) {
 	/* Read contents of the info file into an array of structs */
 	int k = 0, nr;
@@ -162,6 +182,19 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad record counter in file %s\n", file);
 		return NULL;
 	}
+	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get second record */
+		fclose (fp);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error second record in file %s\n", file);
+		return NULL;
+	}
+	if ((k = gmtremote_parse_version (line))) {
+		fclose (fp);
+		if (k == 2)
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your GMT version too old to use the remote data mechanism - please upgrade to %s or later\n", line);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse %s to extract GMT version\n", line);
+		return NULL;
+	}	
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to allocated %d GMT_DATA_INFO structures!\n", *n);
 		return NULL;
