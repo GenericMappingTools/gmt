@@ -408,7 +408,7 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	else {	/* No table specified; set default table */
 		Ctrl->C.active = true;
-		Ctrl->C.file = strdup (GMT->init.cpt[0]);
+		Ctrl->C.file = strdup (GMT_DEFAULT_CPT_NAME);
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Prepare CPT via the master file %s\n", Ctrl->C.file);

@@ -7766,20 +7766,27 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	return (X);
 }
 
-unsigned int gmt_cpt_default (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
-	/* Return which type of default CPT this data set should use */
-	unsigned int zmode = GMT_DEFAULT_CPT;
-	gmt_M_unused (GMT);
-	if (strstr (h->remark, "@earth_relief_"))	/* Detected a DEM grid blend */
-		zmode = 1;
-	else if (strstr (h->remark, "@srtm_relief_"))	/* Detected a SRTM land-only grid blend */
-		zmode = 2;
-	else if (strstr (h->command, "earth_relief_"))	/* Detected a DEM grid */
-		zmode = 1;
-	else if (strstr (h->command, "srtm_relief_"))	/* Detected a SRTM land-only grid */
-		zmode = 2;
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given grid header, select default CPT to be %s\n", GMT->init.cpt[zmode]);
-	return zmode;
+char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
+	/* Return which type of default CPT this data set should use.
+	 * If cpt is specified then that is what we will use. If not, then
+	 * we determine if file is a remote data set, and if it is and has a
+	 * default CPT then we use that, else we return NULL which means use
+	 * the GMT default CPT given by GMT_DEFAULT_CPT_NAME */
+	int k_data;
+	static char *srtm_cpt = "srtm";
+
+	if (cpt) return cpt;	/* CPT was already specified */
+	if (file == NULL) return NULL;	/* No file given, so there */
+	if ((k_data = gmt_remote_dataset_id (API, file)) == GMT_NOTSET) {
+		size_t LOX;
+		if ((k_data = gmt_get_tile_id (API, file)) == GMT_NOTSET)
+			return NULL;	/* Go with the default, whatever that is */
+		LOX = strlen (file) - 8;	/* Position of the L|O|X flag */
+		if (file[LOX] == 'L') return srtm_cpt;
+	}
+	if (API->remote_info[k_data].CPT[0] == '-') return (NULL);
+	
+	return (API->remote_info[k_data].CPT);
 }
 
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
@@ -7890,7 +7897,7 @@ FOUND_NOTHING:
 }
 
 /*! . */
-struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz, unsigned int zmode) {
+struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz) {
 	/* Will read in a CPT.  However, if file does not exist in the current directory we may provide
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
@@ -7936,7 +7943,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (P);
 		}
 
-		master = (file && file[0]) ? file : GMT->init.cpt[zmode];	/* Set master CPT prefix */
+		master = (file && file[0]) ? file : GMT_DEFAULT_CPT_NAME;	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* Stretch to fit the data range */

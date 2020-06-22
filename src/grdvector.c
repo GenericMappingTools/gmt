@@ -433,7 +433,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 				if (vec_data_length > v_data_max) v_data_max = vec_data_length;
 			}
 		}
-		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_data_min, v_data_max, Ctrl->C.dz, GMT_DEFAULT_CPT)) == NULL) {
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_data_min, v_data_max, Ctrl->C.dz)) == NULL) {
 			Return (API->error);
 		}
 	}
