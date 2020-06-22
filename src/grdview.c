@@ -908,6 +908,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		if (P->categorical && Ctrl->W.active) {
 			GMT_Report (API, GMT_MSG_ERROR, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 		}
+		if (cpt) gmt_M_str_free (cpt);
 	}
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P && P->n_colors > 1);
 

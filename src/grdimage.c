@@ -1055,6 +1055,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
 				Return (API->error);	/* Well, that did not go well... */
 			}
+			if (cpt) gmt_M_str_free (cpt);
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a grayscale image below */
 		}
 		else

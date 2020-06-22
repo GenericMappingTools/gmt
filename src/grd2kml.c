@@ -673,6 +673,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to create a CPT\n");
 			Return (API->error);	/* Well, that did not go well... */
 		}
+		if (cpt) gmt_M_str_free (cpt);
 		sprintf (cptfile, "%s/grd2kml_%d.cpt", API->tmp_dir, uniq);
 		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, cptfile, P) != GMT_NOERROR) {
 			Return (API->error);
