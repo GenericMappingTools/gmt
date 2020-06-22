@@ -1050,11 +1050,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->In.do_rgb) {	/* Got a single grid so need to convert z to color via a CPT, or a grayscale image */
 		if (Ctrl->C.active) {		/* Read a palette file */
-			unsigned int zmode = gmt_cpt_default (GMT, header_work);
-			if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max, Ctrl->C.dz, zmode)) == NULL) {
+			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file[0]);
+			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max, Ctrl->C.dz)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
 				Return (API->error);	/* Well, that did not go well... */
 			}
+			if (cpt) gmt_M_str_free (cpt);
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a grayscale image below */
 		}
 		else
@@ -1413,16 +1414,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	for (k = 0; k < n_grids; k++) {	/* If memory grids are passed in we must restore the headers */
-		if (mem_G[k]) {
+		if (mem_G[k] && Grid_orig[k]) {
 			gmt_copy_gridheader (GMT, Grid_orig[k]->header, header_G[k]);
 			gmt_free_header (API->GMT, &header_G[k]);
 		}
 	}
-	if (mem_I) {
+	if (mem_I && Intens_orig) {
 		gmt_copy_gridheader (GMT, Intens_orig->header, header_I);
 		gmt_free_header (API->GMT, &header_I);
 	}
-	if (mem_D) {
+	if (mem_D && I) {
 		gmt_copy_gridheader (GMT, I->header, header_D);
 		gmt_free_header (API->GMT, &header_D);
 	}
