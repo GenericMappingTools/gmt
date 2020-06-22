@@ -190,9 +190,9 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 	if ((k = gmtremote_parse_version (line))) {
 		fclose (fp);
 		if (k == 2)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your GMT version too old to use the remote data mechanism - please upgrade to %s or later\n", line);
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Your GMT version too old to use the remote data mechanism - please upgrade to %s or later\n", line);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse %s to extract GMT version\n", line);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse \"%s\" to extract GMT version\n", line);
 		return NULL;
 	}	
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
