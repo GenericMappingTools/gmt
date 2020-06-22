@@ -6139,8 +6139,8 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_label_offset = GMT->session.d_NaN;	/* 6p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_LABEL_OFFSET] = 'p';
 	/* MAP_TICK_LENGTH_PRIMARY */
-	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = GMT->session.d_NaN;	/* 3p */
-	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = GMT->session.d_NaN;	/* 1.5p */
+	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = GMT->session.d_NaN;	/* 4p */
+	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = GMT->session.d_NaN;	/* 2p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_TICK_LENGTH_PRIMARY] = 'p';
 	/* MAP_TICK_LENGTH_SECONDARY */
 	GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = GMT->session.d_NaN;	/* 12p */
@@ -9445,7 +9445,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim) {
 	}
 	else {	/* Use map dimensions to get scale */
 		double map_dim_cm = plot_dim * GMT->session.u2u[GMT_INCH][GMT_CM];
-		fontsize = (2.0/15.0) * (map_dim_cm - 10.0) + 8;	/* Gives result in points for plot dimension in cm */
+		fontsize = (2.0/15.0) * (map_dim_cm - 10.0) + 9;	/* Gives result in points for plot dimension in cm */
 		scale = fontsize / 10.0;	/* scaling for offsets, pen widths and lengths normalized to the modern 10p size */
 	}
 
@@ -9486,8 +9486,8 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim) {
 	/* Tick lengths */
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER])) {
-		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 3 * pt * scale;	/* 3p */
-		GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 1.5 * pt * scale;	/* 1.5p */
+		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 4 * pt * scale;	/* 4p */
+		GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 2 * pt * scale;	/* 2p */
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER])) {
 		GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 12 * pt * scale;	/* 12p */
