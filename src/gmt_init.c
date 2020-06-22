@@ -9486,12 +9486,26 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim) {
 	/* Tick lengths */
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER])) {
-		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 4 * pt * scale;	/* 4p */
-		GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 2 * pt * scale;	/* 2p */
+		if (geo_frame && GMT->current.setting.run_mode == GMT_MODERN) {
+			/* Use 50% lengths but extend ticks by the width of the fancy frame */
+			GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 2 * pt * scale + GMT->current.setting.map_frame_width;
+			GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  = 1 * pt * scale + GMT->current.setting.map_frame_width;
+		}
+		else {
+			GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 4 * pt * scale;	/* 4p */
+			GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  = 2 * pt * scale;	/* 2p */
+		}
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER])) {
-		GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 12 * pt * scale;	/* 12p */
-		GMT->current.setting.map_tick_length[GMT_TICK_LOWER] = 3 * pt * scale;	/* 3p */
+		if (geo_frame && GMT->current.setting.run_mode == GMT_MODERN) {
+			/* Use 50% lengths but extend ticks by the width of the fancy frame */
+			GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 6   * pt * scale + GMT->current.setting.map_frame_width;
+			GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  = 1.5 * pt * scale + GMT->current.setting.map_frame_width;
+		}
+		else {
+			GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 12 * pt * scale;	/* 12p */
+			GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  = 3  * pt * scale;	/* 3p */
+		}
 	}
 
 	/* Frame, tick and gridline pens */
@@ -9511,14 +9525,6 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim) {
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_vector_shape))
 		GMT->current.setting.map_vector_shape = 0.5;
-
-	if (geo_frame && GMT->current.setting.run_mode == GMT_MODERN) {
-		/* Extend ticks by the width of the fancy frame */
-		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] += GMT->current.setting.map_frame_width;
-		GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  += GMT->current.setting.map_frame_width;
-		GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] += GMT->current.setting.map_frame_width;
-		GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  += GMT->current.setting.map_frame_width;
-	}
 }
 
 GMT_LOCAL unsigned int gmtinit_parse_map_annot_oblique (struct GMT_CTRL *GMT, char *text) {
