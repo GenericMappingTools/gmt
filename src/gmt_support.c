@@ -7774,19 +7774,22 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 	 * the GMT default CPT given by GMT_DEFAULT_CPT_NAME */
 	int k_data;
 	static char *srtm_cpt = "srtm";
+	char *curr_cpt = NULL;
 
-	if (cpt) return cpt;	/* CPT was already specified */
+	if (cpt) return strdup (cpt);	/* CPT was already specified */
 	if (file == NULL) return NULL;	/* No file given, so there */
+	if (API->GMT->current.setting.run_mode == GMT_MODERN && (curr_cpt = gmt_get_current_item (API->GMT, "cpt", false))) return curr_cpt;	/* Use current CPT */
+
 	if ((k_data = gmt_remote_dataset_id (API, file)) == GMT_NOTSET) {
 		size_t LOX;
 		if ((k_data = gmt_get_tile_id (API, file)) == GMT_NOTSET)
 			return NULL;	/* Go with the default, whatever that is */
 		LOX = strlen (file) - 8;	/* Position of the L|O|X flag */
-		if (file[LOX] == 'L') return srtm_cpt;
+		if (file[LOX] == 'L') return strdup (srtm_cpt);
 	}
 	if (API->remote_info[k_data].CPT[0] == '-') return (NULL);
 	
-	return (API->remote_info[k_data].CPT);
+	return (strdup (API->remote_info[k_data].CPT));
 }
 
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
