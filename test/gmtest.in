@@ -82,7 +82,10 @@ for apiprog in \
     testapi_uservectors \
     testapi_vector \
     testapiconv \
-    testgrdio
+    testgrdio \
+    testapi_imageshading \
+    testapi_matrix_as_grid \
+    testapi_vector_strings
 do
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done
