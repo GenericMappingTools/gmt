@@ -2782,8 +2782,8 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 	return (GMT_NOERROR);
 }
 
-void gmt_hierarchy_tag (struct GMTAPI_CTRL *API, const char *file, unsigned int direction, char *tag) {
-	/* Under modern mode we maintain separate history files for
+void gmt_hierarchy_tag (struct GMTAPI_CTRL *API, const char *kind, unsigned int direction, char *tag) {
+	/* Under modern mode we maintain separate history and setting files for
 	 * figures, subplot, panels, and insets, since they should not share
 	 * settings like -R -J between them.
 	 * tag should be of size 32 */
@@ -2792,34 +2792,39 @@ void gmt_hierarchy_tag (struct GMTAPI_CTRL *API, const char *file, unsigned int 
 
 	/* Modern mode */
 
-	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
+	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the hierarchical level */
 
-	/* Find the appropriate history file for where we are but may have to go up the hierarchy (if reading) */
+	/* Find the appropriate file of this kind for where we are, but may have to go up the hierarchy (if reading) */
 
-	if (inset) {	/* See if an inset history exists or should be created */
+	if (inset) {	/* See if an inset level file exists or should be created */
 		sprintf (tag, ".inset");
-		snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, file, tag);
-		if (!access (path, R_OK) || direction == GMT_OUT) return;	/* Yes, found it or we should write it */
+		if (direction == GMT_OUT) return;	/* We should write it at this level */
+		snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
+		if (!access (path, R_OK)) return;	/* Yes, found it */
 	}
 	if ((subplot & GMT_SUBPLOT_ACTIVE)) {	/* Nothing yet, see if subplot has one */
 		if ((subplot & GMT_PANEL_NOTSET) == 0) {	/* Panel-specific item available? */
 			sprintf (tag, ".%d.panel.%s", fig, panel);
-			snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, file, tag);
-			if (!access (path, R_OK) || direction == GMT_OUT) return;	/* Yes, found it or we should write it */
+			if (direction == GMT_OUT) return;	/* We should write it at this level */
+			snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
+			if (!access (path, R_OK)) return;	/* Yes, found it */
 		}
-		/* No, try subplot master item instead? */
+		/* No, try subplot master item instead */
 		sprintf (tag, ".%d.subplot", fig);
-		snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, file, tag);
-		if (!access (path, R_OK) || direction == GMT_OUT) return;	/* Yes, found it or we should write it */
+		if (direction == GMT_OUT) return;	/* We should write it at this level */
+		snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
+		if (!access (path, R_OK)) return;	/* Yes, found it */
 	}
-	/* Not found a history file yet, so default to the one for this specific figure */
-	sprintf (tag, ".%d", fig);
-	snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, file, tag);
-	if (!access (path, R_OK) || direction == GMT_OUT) return;	/* Yes, found it or we should write it */
-	/* Fall back is session file */
+	/* Not found the kind file yet, so try it for this specific figure */
+	if (fig) {
+		sprintf (tag, ".%d", fig);
+		if (direction == GMT_OUT) return;	/* We should write it at this level */
+		snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
+		if (!access (path, R_OK)) return;	/* Yes, found it */
+	}
+	/* Fall back is session level */
 	sprintf (tag, "");
-	snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, file, tag);
-	if (!access (path, R_OK) || direction == GMT_OUT) return;	/* Yes, found it or we should write it */
+	snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
 }
 
 /*! . */
