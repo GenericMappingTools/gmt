@@ -679,6 +679,29 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+EXTERN_MSC void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset);
+
+void subplot_wipe_history (struct GMTAPI_CTRL *API) {
+	/* Called by subplot end and removes any/all panel history files
+	 * as well as any subplot history file.
+	 */
+
+	int fig, subplot, inset;
+	unsigned int row, col;
+	char file[PATH_MAX] = {""}, panel[GMT_LEN32] = {""};
+	struct GMT_SUBPLOT *P = NULL;
+
+	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
+	if (subplot && (P = gmt_subplot_info (API, fig))) {
+		for (row = 0; row < P->nrows; row++) for (col = 0; col < P->ncolumns; col++) {
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);		
+			gmt_remove_file (API->GMT, file);
+		}
+	}
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_HISTORY_FILE, fig);		
+	gmt_remove_file (API->GMT, file);	
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1262,11 +1285,12 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		if ((error = gmt_set_current_panel (API, fig, Ctrl->In.row, Ctrl->In.col, Ctrl->C.active ? Ctrl->C.gap : gap, Ctrl->A.format, 1)))
 			Return (error)
+		gmt_reload_history (GMT);	/* Start fresh in this panel */
 	}
 	else {	/* SUBPLOT_END */
 		int k, id;
-		char *wmode[2] = {"w","a"}, vfile[GMT_VF_LEN] = {""}, Rtxt[GMT_LEN64] = {""}, tag[GMT_LEN16] = {""};
-		char legend_justification[4] = {""}, Jstr[3] = {"J"}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
+		char *wmode[2] = {"w","a"}, vfile[GMT_VF_LEN] = {""}, Rtxt[GMT_LEN64] = {""}, off[GMT_LEN32] = {""};
+		char legend_justification[4] = {""}, Jstr[3] = {"J"}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""};
 		double legend_width = 0.0, legend_scale = 1.0;
 		FILE *fp = NULL;
 
@@ -1305,9 +1329,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		/* Remove all subplot information files */
-		gmt_history_tag (API, tag);
-		sprintf (file, "%s/%s.%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
-		gmt_remove_file (GMT, file);
+		subplot_wipe_history (API);
 		sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 		gmt_remove_file (GMT, file);
 		sprintf (file, "%s/gmt.subplotorder.%d", API->gwf_dir, fig);

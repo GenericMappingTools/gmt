@@ -2782,20 +2782,39 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 	return (GMT_NOERROR);
 }
 
-void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag) {
+void gmt_history_tag (struct GMTAPI_CTRL *API, unsigned int direction, char *tag) {
 	/* Under modern mode we maintain separate history files for
-	 * figures, subplot, and inset, since they should not share
+	 * figures, subplot, panels, and insets, since they should not share
 	 * settings like -R -J between them.
-	 * tag should be of size 16 */
-	int fig = gmt_get_current_figure (API);
-	int inset = gmtinit_get_inset_dimensions (API, fig, NULL);	/* 1 if inset is active */
-	unsigned int subplot_status = gmtinit_subplot_status (API, fig); /* >0 if subplot is true */
-	if (inset)	/* Only one inset active at the time */
-		sprintf (tag, "%d.inset", fig);
-	else if (subplot_status & GMT_SUBPLOT_ACTIVE)	/* Subplot is active */
+	 * tag should be of size 32 */
+	char path[PATH_MAX] = {""}, panel[GMT_LEN32] = {""};
+	int fig, subplot, inset;
+
+	/* Modern mode */
+
+	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
+
+	/* Find the appropriate history file for where we are but may have to go up the hierarchy (if reading) */
+
+	if (inset) {	/* See if an inset history exists or should be created */
+		sprintf (tag, "inset");
+		snprintf (path, PATH_MAX, "%s/%s.%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
+		if (!access (path, R_OK) || direction == GMT_OUT) return;	/* Yes, found it or we should write it */
+	}
+	if ((subplot & GMT_SUBPLOT_ACTIVE)) {	/* Nothing yet, see if subplot has one */
+		if ((subplot & GMT_PANEL_NOTSET) == 0) {	/* Panel-specific item available? */
+			sprintf (tag, "%d.panel.%s", fig, panel);
+			snprintf (path, PATH_MAX, "%s/%s.%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
+			if (!access (path, R_OK) || direction == GMT_OUT) return;	/* Yes, found it or we should write it */
+		}
+		/* No, try subplot master item instead? */
 		sprintf (tag, "%d.subplot", fig);
-	else
-		sprintf (tag, "%d", fig);
+		snprintf (path, PATH_MAX, "%s/%s.%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
+		if (!access (path, R_OK) || direction == GMT_OUT) return;	/* Yes, found it or we should write it */
+	}
+	/* Not found a history file yet, so default to the one for this specific figure */
+	sprintf (tag, "%d", fig);
+	snprintf (path, PATH_MAX, "%s/%s.%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
 }
 
 /*! . */
@@ -2824,7 +2843,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory and one history per figure */
 		char tag[GMT_LEN16] = {""};
-		gmt_history_tag (GMT->parent, tag);
+		gmt_history_tag (GMT->parent, GMT_IN, tag);
 		snprintf (hfile, PATH_MAX, "%s/%s.%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
 	}
 	else if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
@@ -2921,7 +2940,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
 		char tag[GMT_LEN16] = {""};
-		gmt_history_tag (GMT->parent, tag);
+		gmt_history_tag (GMT->parent, GMT_OUT, tag);
 		snprintf (hfile, PATH_MAX, "%s/%s.%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
 	}
 	else if (GMT->session.TMPDIR)			/* Classic isolation mode: Use GMT->session.TMPDIR/gmt.history */
@@ -13786,6 +13805,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					}
 					if (gmt_set_current_panel (API, fig, row, col, gap, NULL, 1)) return NULL;	/* Make this the current panel */
 					if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here so not causing trouble downstream */
+					gmt_reload_history (GMT);	/* Start fresh in this panel */
 				}
 				else if (subplot_status & GMT_PANEL_NOTSET) {	/* Did NOT do -c the first time, which we will declare to mean -c as well */
 					gmt_subplot_gaps (API, fig, gap);	/* First see if there were subplot-wide -Cgaps settings in effect */

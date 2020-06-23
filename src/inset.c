@@ -331,7 +331,7 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		PSL_command (PSL, "U %% End inset\n");	/* Restore graphics state to what it was before the map inset */
 
 		/* Remove the inset history file */
-		gmt_history_tag (API, tag);
+		gmt_history_tag (API, GMT_IN, tag);
 		sprintf (ffile, "%s/%s.%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
 		gmt_remove_file (GMT, ffile);
 		/* Restore the old frame B setting to what it was before inset begin was called, if any */
