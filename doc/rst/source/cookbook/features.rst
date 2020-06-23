@@ -198,7 +198,7 @@ Overview and the gmt.conf file
 
 There are almost 150 parameters which can be adjusted individually to
 modify the appearance of plots or affect the manipulation of data. When
-a new session starts, it initializes all parameters to the
+a new session starts (unless **-C** is given), it initializes all parameters to the
 GMT defaults [9]_, then tries to open the file ``gmt.conf`` in the current
 directory [10]_. If not found, it will look for that file in a
 sub-directory ``/.gmt`` of your home directory, and finally in your home directory
