@@ -30,6 +30,7 @@
 
 #define GMT_HISTORY_FILE	"gmt.history"
 #define GMT_SESSION_FILE	"gmt.session"
+#define GMT_SETTINGS_FILE	"gmt.conf"
 
 /* Session settings for default plot file prefix and format (extension) */
 

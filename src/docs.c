@@ -70,7 +70,7 @@ EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 	const char *group = NULL, *docname = NULL;
 	char *ps_viewer = NULL;
 	static const char *known_group[2] = {"core", "other"};
-	static const char *known_doc[9] = {"gmtcolors", "cookbook", "api", "tutorial", "gallery", "gmt.conf", "gmt", "datasets", "index"};
+	static const char *known_doc[9] = {"gmtcolors", "cookbook", "api", "tutorial", "gallery", GMT_SETTINGS_FILE, "gmt", "datasets", "index"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -202,7 +202,7 @@ EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 			else if (!strcmp (t, "gallery")) {
 				docname = known_doc[4];	group   = known_group[0];	/* Pretend it is in the core */
 			}
-			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "setting", 7U)) {
+			else if (!strcmp (t, GMT_SETTINGS_FILE) || !strncmp (t, "setting", 7U)) {
 				docname = known_doc[5];	group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (!strcmp (t, "gmt")) {

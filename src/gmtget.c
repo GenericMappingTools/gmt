@@ -73,7 +73,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D<download>] [-G<defaultsfile>] [-I<inc>] [-L] [-N] [PARAMETER1 PARAMETER2 PARAMETER3 ...] [%s]\n", name, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see gmt.conf man page\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see %s man page\n", GMT_SETTINGS_FILE);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -85,7 +85,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append =<planet> to only download the data/<planet> directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append =<dataset1,dataset2...> to only download the stated datasets.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    -Dall downloads both cache and all datasets.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific gmt.conf file to process.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific %s file to process.\n", GMT_SETTINGS_FILE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses the GMT defaults].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Limit the download of data sets to grid spacings of <inc> or larger [0].\n");

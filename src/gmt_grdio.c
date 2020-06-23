@@ -842,7 +842,7 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 			gmt_M_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
 			units = strchr (string[i], '[');
 			if (!units || gmt_get_time_system (GMT, ++units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Time units [%s] in grid not recognised, defaulting to gmt.conf.\n", units);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Time units [%s] in grid not recognized, defaulting to %s settings.\n", units, GMT_SETTINGS_FILE);
 
 			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
 			scale = time_system.scale * GMT->current.setting.time_system.i_scale;
