@@ -13092,7 +13092,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 			/* Close the virtual files */
 			if (GMT_Close_VirtualFile (API, virt_file) != GMT_NOERROR)
 				return (API->error);
-			if (Out->n_columns > 4) {	/* No can do */
+			if (Out->n_columns < 4) {	/* No can do */
 				GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Not enough data columns (%d) to determine region %s.\n", (unsigned int)Out->n_columns);
 				return (GMT_RUNTIME_ERROR);
 			}
