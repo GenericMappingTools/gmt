@@ -7093,7 +7093,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-+ (or +) Print longer synopsis message.\n");
 			gmt_message (GMT, "\t-? (or no arguments) Print this usage message.\n");
 			gmt_message (GMT, "\t--PAR=<value> Temporarily override GMT default setting(s) (repeatable).\n");
-			gmt_message (GMT, "\t(See gmt.conf man page for GMT default parameters).\n");
+			gmt_message (GMT, "\t(See %s man page for GMT default parameters).\n", GMT_SETTINGS_FILE);
 			break;
 
 		case ';':	/* Trailer message without --PAR=value etc */
@@ -7881,7 +7881,7 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 
 		case '-':	/* --PAR=value  */
 			gmt_message (GMT, "\t--<PARAMETER>=<value>.\n");
-			gmt_message (GMT, "\t   See gmt.conf for list of parameters.\n");
+			gmt_message (GMT, "\t   See %s for list of parameters.\n", GMT_SETTINGS_FILE);
 			break;
 
 		default:
@@ -9202,9 +9202,9 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 
 		if (rec != 2) { /* Nothing */ }
 		else if (strlen (line) < 7 || (ver = strtol (&line[6], NULL, 10)) < 5 )
-			gmt_message (GMT, "Your gmt.conf file (%s) may not be GMT %d compatible\n", file, gmt_version_major);
+			gmt_message (GMT, "Your %s file (%s) may not be GMT %d compatible\n", GMT_SETTINGS_FILE, file, gmt_version_major);
 		else if (!strncmp (&line[6], "5.0.0", 5))
-			gmt_message (GMT, "Your gmt.conf file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", file, file);
+			gmt_message (GMT, "Your %s file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", GMT_SETTINGS_FILE, file, file);
 		if (line[0] == '#') continue;	/* Skip comments */
 		if (line[0] == '\0') continue;	/* Skip Blank lines */
 
@@ -12056,11 +12056,11 @@ void gmt_putdefaults (struct GMT_CTRL *GMT, char *this_file) {
 	else {	/* Use local dir, tempdir, or workflow dir */
 		char path[PATH_MAX] = {""};
 		if (GMT->current.setting.run_mode == GMT_MODERN)	/* Modern mode: Use the workflow directory */
-			snprintf (path, PATH_MAX, "%s/gmt.conf", GMT->parent->gwf_dir);
+			snprintf (path, PATH_MAX, "%s/%s", GMT->parent->gwf_dir, GMT_SETTINGS_FILE);
 		else if (GMT->session.TMPDIR)	/* Write GMT->session.TMPDIR/gmt.conf */
-			snprintf (path, PATH_MAX, "%s/gmt.conf", GMT->session.TMPDIR);
+			snprintf (path, PATH_MAX, "%s/%s", GMT->session.TMPDIR, GMT_SETTINGS_FILE);
 		else	/* Write gmt.conf in current directory */
-			strcpy (path, "gmt.conf");
+			strcpy (path, GMT_SETTINGS_FILE);
 		gmtinit_savedefaults (GMT, path);
 	}
 }
@@ -12074,10 +12074,10 @@ void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
 	else {	/* Use local dir, tempdir, or workflow dir (modern mode) */
 		if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
 			char path[PATH_MAX] = {""};
-			snprintf (path, PATH_MAX, "%s/gmt.conf", GMT->parent->gwf_dir);
+			snprintf (path, PATH_MAX, "%s/%s", GMT->parent->gwf_dir, GMT_SETTINGS_FILE);
 			gmtinit_loaddefaults (GMT, path);
 		}
-		else if (gmtlib_getuserpath (GMT, "gmt.conf", file))
+		else if (gmtlib_getuserpath (GMT, GMT_SETTINGS_FILE, file))
 			gmtinit_loaddefaults (GMT, file);
 	}
 }
@@ -17405,7 +17405,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			if (error) return (error);			/* Bail at this point */
 			gmt_conf (API->GMT);				/* Get the original system defaults */
 			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
-			snprintf (dir, PATH_MAX, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
+			snprintf (dir, PATH_MAX, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
 			error = gmtinit_put_session_name (API, text);		/* Store session name, possibly setting psconvert options */
 			gmt_putdefaults (API->GMT, dir);		/* Write current GMT defaults to this sessions gmt.conf file in the workflow directory */

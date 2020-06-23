@@ -46,7 +46,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   data      Deletes the user\'s data download directory [%s/server].\n", API->GMT->session.USERDIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t             Append =<planet> to limit removal to such data for a specific <planet> [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   sessions  Deletes the user\'s sessions directory [%s].\n", API->session_dir);
-	GMT_Message (API, GMT_TIME_NONE, "\t   settings  Deletes a modern mode session\'s gmt.conf file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   settings  Deletes a modern mode session\'s %s file.\n", GMT_SETTINGS_FILE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "V,;");
@@ -77,7 +77,7 @@ static int clear_cache (struct GMTAPI_CTRL *API) {
 
 static int clear_defaults (struct GMTAPI_CTRL *API) {
 	char file[PATH_MAX] = {""};
-	sprintf (file, "%s/gmt.conf", API->gwf_dir);
+	sprintf (file, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);
 	if (gmt_remove_file (API->GMT, file))
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
