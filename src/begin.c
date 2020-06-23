@@ -82,9 +82,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	if (opt == NULL) return GMT_NOERROR;	/* Done */
 	if (opt->option == GMT_OPT_INFILE) opt = opt->next;	/* Skip session name, now at formats */
 	if (opt == NULL) return GMT_NOERROR;	/* Done, no formats */
-	if (opt->option == 'V' || opt->option == 'C')	/* Skip any -V -C here given in-between words*/
+	if (opt->option == 'V' || opt->option == 'C')	/* Skip any -V -C here given in-between words */
 		opt = opt->next;
-	if (opt == NULL) return GMT_NOERROR;	/* Done, still no formats */
+	if (opt == NULL) return GMT_NOERROR;	/* Done, still no formats found */
 	if (opt) {	/* Also gave replacement primary format(s) */
 		int k;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check each format to make sure each is OK */
