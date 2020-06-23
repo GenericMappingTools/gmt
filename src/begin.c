@@ -75,16 +75,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
 	if ((opt = options) == NULL) return GMT_NOERROR;	/* No arguments given to begin, done here */
 
-	/* May have <sessionname> [<formats> [<psconvertoptions>]] with options -V and -V anywhere */
+	/* May have <sessionname> [<formats> [<psconvertoptions>]] with options -C and -V anywhere */
 
 	if (opt->option == 'V' || opt->option == 'C')	/* Skip any -V -C here */
 		opt = opt->next;
 	if (opt == NULL) return GMT_NOERROR;	/* Done */
-	if (opt->option == GMT_OPT_INFILE) opt = opt->next;	/* Skip session name */
-	if (opt == NULL) return GMT_NOERROR;	/* Done */
-	if (opt->option == 'V' || opt->option == 'C')	/* Skip any -V -C here */
+	if (opt->option == GMT_OPT_INFILE) opt = opt->next;	/* Skip session name, now at formats */
+	if (opt == NULL) return GMT_NOERROR;	/* Done, no formats */
+	if (opt->option == 'V' || opt->option == 'C')	/* Skip any -V -C here given in-between words*/
 		opt = opt->next;
-	if (opt == NULL) return GMT_NOERROR;	/* Done */
+	if (opt == NULL) return GMT_NOERROR;	/* Done, still no formats */
 	if (opt) {	/* Also gave replacement primary format(s) */
 		int k;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check each format to make sure each is OK */
@@ -94,7 +94,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 			}
 		}
 	}
-	/* There may be other arguments as well but not tested here */
+	/* There may be other arguments as well (psconvert string, -C -V) but not tested here */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
