@@ -37,7 +37,7 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<prefix>] [<format(s)>] [<psconvertoptions] [%s]\n\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<prefix>] [<format(s)>] [<psconvertoptions] [-C] [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -55,10 +55,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<psconvertoptions> contains one or more comma-separated options that\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   will be passed to psconvert when preparing this figure [%s].\n", GMT_SESSION_CONVERT);
+	GMT_Message (API, GMT_TIME_NONE, "\t   will be passed to psconvert when preparing figures [%s].\n", GMT_SESSION_CONVERT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   The valid subset of psconvert options are\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Clean start: Ignore any %s files in the normal search path.\n", GMT_SETTINGS_FILE);
 	GMT_Option (API, "V,;");
 
 	return (GMT_MODULE_USAGE);
@@ -72,11 +73,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	char p[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	if ((opt = options)) {	/* Gave possibly a replacement session name and possibly more */
-		if (opt->option == GMT_OPT_INFILE) opt = opt->next;	/* Skip session name */
-	}
-	if (opt && opt->option == 'V')	/* Skip any -V already processed by GMT_Parse_Common */
+	if ((opt = options) == NULL) return GMT_NOERROR;	/* No arguments given to begin, done here */
+
+	/* May have <sessionname> [<formats> [<psconvertoptions>]] with options -C and -V anywhere */
+
+	if (opt->option == 'V' || opt->option == 'C')	/* Skip any -V -C here */
 		opt = opt->next;
+	if (opt == NULL) return GMT_NOERROR;	/* Done */
+	if (opt->option == GMT_OPT_INFILE) opt = opt->next;	/* Skip session name, now at formats */
+	if (opt == NULL) return GMT_NOERROR;	/* Done, no formats */
+	if (opt->option == 'V' || opt->option == 'C')	/* Skip any -V -C here given in-between words */
+		opt = opt->next;
+	if (opt == NULL) return GMT_NOERROR;	/* Done, still no formats found */
 	if (opt) {	/* Also gave replacement primary format(s) */
 		int k;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check each format to make sure each is OK */
@@ -86,20 +94,22 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 			}
 		}
 	}
+	/* There may be other arguments as well (psconvert string, -C -V) but not tested here */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-static char * begin_get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, int *error) {
+static char * begin_get_session_name_and_format (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, unsigned int *mode, int *error) {
 	/* Extract session arguments (including optional graphics format) from options:
-	 * gmt begin [<sessionname>] [<formats>] [<psconvertopts>] [-V<arg>]  */
+	 * gmt begin [<sessionname>] [<formats>] [<psconvertopts>] [-C] [-V<arg>]  */
 	char buffer[GMT_LEN256] = {""};
 	bool space = false;
 	unsigned int n = 0;
 	size_t len = 0;
 	*error = GMT_NOERROR;
+	*mode = GMT_BEGIN_WORKFLOW;
 	if (opt == NULL) return NULL;	/* Go with the default settings */
-	while (opt && n < 3) {
+	while (opt && n < 3) {	/* May have up to 3 valid arguments (not counting -C -V) */
 		if (opt->option == GMT_OPT_INFILE) {	/* Valid "file" argument */
 			gmt_filename_set (opt->arg);	/* Replace any spaces with ASCII 29 */
 			if (space) len++, strncat (buffer, " ", GMT_LEN256-len);
@@ -109,6 +119,8 @@ static char * begin_get_session_name_and_format (struct GMTAPI_CTRL *API, struct
 			gmt_filename_get (opt->arg);	/* Undo ASCII 29 */
 			n++;
 		}
+		else if (opt->option == 'C')	/* Flag mode that we want a clean start with no user setting overrides */
+			*mode |= GMT_CLEAN_WORKFLOW;
 		else if (opt->option != 'V') {
 			GMT_Report (API, GMT_MSG_ERROR, "Unrecognized argument -%c%s\n", opt->option, opt->arg);
 			*error = GMT_PARSE_ERROR;
@@ -123,6 +135,7 @@ static char * begin_get_session_name_and_format (struct GMTAPI_CTRL *API, struct
 
 EXTERN_MSC int GMT_begin (void *V_API, int mode, void *args) {
 	int error = 0;
+	unsigned int workflow_mode;
 	char *arg = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -147,12 +160,12 @@ EXTERN_MSC int GMT_begin (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the begin main code ----------------------------*/
 
-	arg = begin_get_session_name_and_format (API, options, &error);
+	arg = begin_get_session_name_and_format (API, options, &workflow_mode, &error);
 	if (error) {
 		if (arg) gmt_M_str_free (arg);
 		Return (error);
 	}
-	if (gmt_manage_workflow (API, GMT_BEGIN_WORKFLOW, arg))
+	if (gmt_manage_workflow (API, workflow_mode, arg))
 		error = GMT_RUNTIME_ERROR;
 
 	if (arg) gmt_M_str_free (arg);
