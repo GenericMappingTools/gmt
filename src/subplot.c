@@ -681,9 +681,9 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 
 EXTERN_MSC void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset);
 
-void subplot_wipe_history (struct GMTAPI_CTRL *API) {
+void subplot_wipe_history_and_settings (struct GMTAPI_CTRL *API) {
 	/* Called by subplot end and removes any/all panel history files
-	 * as well as any subplot history file.
+	 * as well as any subplot history file.  Same for settings.
 	 */
 
 	int fig, subplot, inset;
@@ -696,10 +696,14 @@ void subplot_wipe_history (struct GMTAPI_CTRL *API) {
 		for (row = 0; row < P->nrows; row++) for (col = 0; col < P->ncolumns; col++) {
 			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);		
 			gmt_remove_file (API->GMT, file);
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);		
+			gmt_remove_file (API->GMT, file);
 		}
 	}
 	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_HISTORY_FILE, fig);		
 	gmt_remove_file (API->GMT, file);	
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_SETTINGS_FILE, fig);		
+	gmt_remove_file (API->GMT, file);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -1286,6 +1290,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		if ((error = gmt_set_current_panel (API, fig, Ctrl->In.row, Ctrl->In.col, Ctrl->C.active ? Ctrl->C.gap : gap, Ctrl->A.format, 1)))
 			Return (error)
 		gmt_reload_history (GMT);	/* Start fresh in this panel */
+		gmt_reload_settings (GMT);	/* Start fresh in this panel */
 	}
 	else {	/* SUBPLOT_END */
 		int k, id;
@@ -1329,7 +1334,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		/* Remove all subplot information files */
-		subplot_wipe_history (API);
+		subplot_wipe_history_and_settings (API);
 		sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 		gmt_remove_file (GMT, file);
 		sprintf (file, "%s/gmt.subplotorder.%d", API->gwf_dir, fig);
