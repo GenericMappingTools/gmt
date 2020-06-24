@@ -754,6 +754,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot attributes once */
+		int RP_id, RG_id;
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
 		double x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
@@ -1262,6 +1263,15 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, By);
 		gmt_M_free (GMT, Lx);
 		gmt_M_free (GMT, Ly);
+
+		/* if -R was given, set it for both plot and data regions */
+
+		RP_id = gmt_get_option_id (0, "R");	/* The -RP history item */
+		RG_id = RP_id + 1;	/* The -RG history item */
+		if (GMT->init.history[RP_id] && !GMT->init.history[RG_id])	/* History for -RP but not -RG, duplicate*/
+			GMT->init.history[RG_id] = strdup (GMT->init.history[RP_id]);
+		else if (GMT->init.history[RG_id] && !GMT->init.history[RP_id])	/* History for -RP but not -RG, duplicate*/
+			GMT->init.history[RP_id] = strdup (GMT->init.history[RG_id]);
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
 		char legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
