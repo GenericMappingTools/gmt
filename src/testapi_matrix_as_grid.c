@@ -30,6 +30,10 @@ int main () {
 	/* call grdimage */
 	sprintf (args_g, "%s -R-1/3/-1/3 -JX6c -Baf -BWSen+tGridline -K -P > api_matrix_as_grid.ps", input_g);
 	GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, args_g);
+
+	sprintf (args_g, "%s -R0/1/0/1 -Goutput.nc", input_g);
+	GMT_Call_Module (API, "grdcut", GMT_MODULE_CMD, args_g);
+
 	GMT_Close_VirtualFile (API, input_g);
 
 	/* pass matrix as pixel-registered grid */
