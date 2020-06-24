@@ -6750,7 +6750,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 			else if (op == GRDMATH_ARG_IS_FILE) {		/* Filename given */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) GMT_Message (API, GMT_TIME_NONE, "%s ", opt->arg);
 				/* Passing GMT_VIA_MODULE_INPUT since these are command line file arguments but processed here instead of by GMT_Init_IO */
-				if ((stack[nstack]->G = GMT_Read_Data (API, GMT_IS_GRID|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, wesn, opt->arg, NULL)) == NULL) {	/* Get header only */
+				if ((stack[nstack]->G = GMT_Read_Data (API, GMT_IS_GRID|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
 					Return (API->error);
 				}
 				if (!subset && !gmt_M_grd_same_shape (GMT, stack[nstack]->G, info.G)) {
