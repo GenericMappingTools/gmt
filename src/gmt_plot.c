@@ -8786,6 +8786,8 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 			gap = s[n-1] / (ngap - 1);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given number of front gaps: %d Computed gap: %g\n", ngap, gap);
 	}
+	
+	PSL_command (GMT->PSL, "V\n");	/* In case we change the graphic state regarding pens */
 
 	len2 = 0.5 * f->f_len;
 	len4 = 0.25 * f->f_len;
@@ -8981,6 +8983,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 		PSL_setlinejoin (PSL, tmp_join);
 		PSL_setmiterlimit (PSL, tmp_limit);
 	}
+	PSL_command (GMT->PSL, "U\n");
 }
 
 void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
