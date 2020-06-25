@@ -1571,7 +1571,7 @@ different data types.
     Here, ``mode`` determines how we read the grid: To read the entire
     grid and its header, pass ``GMT_CONTAINER_AND_DATA``. However, if you may need to
     extract a sub-region you must first read the header by passing
-    ``GMT_CONTAINER_ONLY``, then examine the header structure range
+    ``GMT_CONTAINER_ONLY`` with ``wesn`` = NULL, then examine the header structure range
     attributes, specify a subset via the array ``wesn``, and
     finally call GMT_Read_Data_ a second time, now with ``mode`` =
     ``GMT_DATA_ONLY``, passing your ``wesn`` array and the grid
