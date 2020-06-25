@@ -6584,14 +6584,17 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 
 	if (!G->n_segments) return;	/* Northing to do here */
 
-	if (G->debug) gmtplot_contlabel_debug (GMT, PSL, G);		/* Debugging lines and points */
-
 	/* See if there are labels at all */
 	for (i = 0, no_labels = true; i < G->n_segments && no_labels; i++)
 		if (G->segment[i]->n_labels) no_labels = false;
 
+	if (!G->delay) PSL_command (GMT->PSL, "V\n");	/* Plotting something, so protect current graphics state */
+
+	if (G->debug) gmtplot_contlabel_debug (GMT, PSL, G);		/* Debugging lines and points */
+
 	if (no_labels) {	/* No labels, just draw lines; no clipping required */
 		gmtplot_contlabel_drawlines (GMT, PSL, G, 0);
+		PSL_command (GMT->PSL, "U\n");	/* Restore to where we were */
 		return;
 	}
 
@@ -6606,7 +6609,7 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 		gmtplot_contlabel_plotlabels (GMT, PSL, G, mode);	/* Take the above actions */
 	}
 	else {	/* Opaque text boxes */
-		mode = PSL_TXT_INIT | PSL_TXT_DRAW;	/* Plot text */
+		mode = PSL_TXT_INIT;	/* Plot text */
 		if (G->draw) mode |= PSL_TXT_DRAW;	/* Draw lines */
 		gmtplot_contlabel_plotlabels (GMT, PSL, G, mode);	/* Place PSL variables and draw lines */
 		mode = PSL_TXT_SHOW;				/* Plot text */
@@ -6615,6 +6618,8 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	}
 	PSL_command (GMT->PSL, "[] 0 B\n");	/* Ensure no pen textures remain in effect */
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
+
+	if (!G->delay) PSL_command (GMT->PSL, "U\n");	/* Restore to where we were */
 }
 
 #if 0        	// We have no current need for this anymore
@@ -8786,6 +8791,8 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 			gap = s[n-1] / (ngap - 1);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given number of front gaps: %d Computed gap: %g\n", ngap, gap);
 	}
+	
+	PSL_command (GMT->PSL, "V\n");	/* In case we change the graphic state regarding pens */
 
 	len2 = 0.5 * f->f_len;
 	len4 = 0.25 * f->f_len;
@@ -8981,6 +8988,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 		PSL_setlinejoin (PSL, tmp_join);
 		PSL_setmiterlimit (PSL, tmp_limit);
 	}
+	PSL_command (GMT->PSL, "U\n");
 }
 
 void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {

@@ -5102,6 +5102,10 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 		GMT_Report (API, GMT_MSG_ERROR, "Can only use method GMT_IS_FILE when row-by-row reading of grid is selected\n");
 		return_null (API, GMT_NOT_A_VALID_METHOD);
 	}
+	if ((mode & GMT_CONTAINER_ONLY) && S_obj->region) {
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot request a subset when just inquiring about the grid header\n");
+		return_null (API, GMT_SUBSET_NOT_ALLOWED);		
+	}
 
 	if (S_obj->region && grid) {	/* See if this is really a subset or just the same region as the grid */
 		if (grid->header->wesn[XLO] == S_obj->wesn[XLO] && grid->header->wesn[XHI] == S_obj->wesn[XHI] && grid->header->wesn[YLO] == S_obj->wesn[YLO] && grid->header->wesn[YHI] == S_obj->wesn[YHI]) S_obj->region = false;
