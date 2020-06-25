@@ -5286,19 +5286,19 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			G_obj->header->complex_mode = mode;	/* Set the complex mode */
 			GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
+			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+			if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
+				return_null (API, GMT_NOT_A_VALID_TYPE);
+			G_obj->header->z_min = +DBL_MAX;
+			G_obj->header->z_max = -DBL_MAX;
+			HH = gmt_get_H_hidden (G_obj->header);
+			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 
 			if (! (mode & GMT_DATA_ONLY)) {	/* Must init header and copy the header information from the matrix header*/
 				gmtapi_matrixinfo_to_grdheader (GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode & GMT_CONTAINER_ONLY) {	/* Just needed the header */
 					/* Must set the zmin/max range since unknown per header */
-					HH = gmt_get_H_hidden (G_obj->header);
-					GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-					G_obj->header->z_min = +DBL_MAX;
-					G_obj->header->z_max = -DBL_MAX;
-					HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
-					if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
-						return_null (API, GMT_NOT_A_VALID_TYPE);
-					gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
+						gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
 						ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
 						api_get_val (&(M_obj->data), ij_orig, &d);
 						if (gmt_M_is_dnan (d))
@@ -5312,13 +5312,6 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 				}
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Importing grid data from user memory location\n");
-			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-			if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
-				return_null (API, GMT_NOT_A_VALID_TYPE);
-			HH = gmt_get_H_hidden (G_obj->header);
-			G_obj->header->z_min = +DBL_MAX;
-			G_obj->header->z_max = -DBL_MAX;
-			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
