@@ -211,8 +211,8 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	}
 	/* Hook the user input array up to this container */
 	GMT_Put_Matrix (API, M[GMT_IN], intype, 0, in_data);
-	/* Associate our matrix container with a virtual grid file to "read" from */
-	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, M[GMT_IN], input);
+	/* Associate our matrix container with a virtual grid file to "read" from via duplication */
+	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN, M[GMT_IN], input);
 	if (alloc_in_GMT)	/* Request matrix container for output data to be allocated by GMT */
 	    GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, out_via, GMT_OUT, NULL, output);
 	else {	/* Preallocate array space here in the app */

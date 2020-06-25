@@ -5363,14 +5363,14 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 	 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
 			/* Getting a matrix info S_obj->resource. Create grid header and then pass the grid pointer via the matrix pointer */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
+			//if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			/* This method requires the input data to be a GMT_GRD_FORMAT matrix - otherwise we should be DUPLICATING */
 			MH = gmt_get_M_hidden (M_obj);
 			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_GRDFLOAT && MH->alloc_mode == GMT_ALLOC_EXTERNALLY && (mode & GMT_GRID_IS_COMPLEX_MASK) == 0))
 				 return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
-			if (grid == NULL) {	/* Only allocate when not already allocated */
+			if (grid == NULL) {	/* Only allocate when not already allocated.  Note cannot have pad since input matrix wont have one */
 				uint64_t dim[3] = {M_obj->n_rows, M_obj->n_columns, 1};
-				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, M_obj->range, M_obj->inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
+				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, M_obj->range, M_obj->inc, M_obj->registration, 0, NULL)) == NULL)
 					return_null (API, GMT_MEMORY_ERROR);
 			}
 			else
@@ -5418,16 +5418,14 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			API->object[new_item]->resource = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			GH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
-#if 0
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = G_obj->header->reset_pad = 0;
+					S_obj->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = G_obj->header->reset_pad = 1;
+					S_obj->reset_pad = 1;
 			}
-#endif
 			break;
 
 		default:
@@ -6283,7 +6281,7 @@ void gmtlib_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 		if (!(level == GMT_NOTSET || S_obj->alloc_level == u_level)) {	/* Not the right module level (or not end of session yet) */
 			if (S_obj->reset_pad && S_obj->no_longer_owner == false) {	/* Temporarily changed pad to access a sub-region of a memory grid - now reset this if still the owner */
 				address = S_obj->resource;	/* Try to get the data object */
-				gmtlib_contract_pad (API->GMT, address, S_obj->family, S_obj->orig_pad, S_obj->orig_wesn);
+				gmtlib_contract_pad (API->GMT, address, S_obj->actual_family, S_obj->orig_pad, S_obj->orig_wesn);
 				S_obj->reset_pad = 0;
 			}
 			i++;	continue;
@@ -7352,29 +7350,25 @@ GMT_LOCAL unsigned int gmtapi_separate_families (unsigned int *family) {
 	return actual_family;
 }
 
-GMT_LOCAL void gmtapi_maybe_change_method_to_duplicate (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *S_obj, bool readonly) {
-	/* We want to pass a matrix from the outside as a grid.  If it is a float matrix then should be possible to pass
-	 * as is but the test below changes REF to DUPLICATE.  Without this we crash.  Need to either explain why it cannot
-	 * work that way or make changes.  As it stands, it seems all REF methods are converted to DUPLICATE. PW 6/6/2018 */
-	if (readonly) {	/* We must duplicate this resource */
-		S_obj->method = GMT_IS_DUPLICATE;
-		GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE per input flag\n");
-	}
-	else if (S_obj->actual_family == GMT_IS_MATRIX && S_obj->family == GMT_IS_GRID && !gmtapi_matrix_data_conforms_to_grid (S_obj->resource)) {
+GMT_LOCAL void gmtapi_maybe_change_method_to_duplicate (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *S_obj) {
+	/* We want to pass a matrix or set of vectors from the outside as a grid or as a dataset.
+	 * grid: If it is a float matrix in row-order layout then we can, else we must duplicate
+	 * dataset: If matrix or vector are in columns and they are all doubles then we can, else we must duplicate */
+	if (S_obj->actual_family == GMT_IS_MATRIX && S_obj->family == GMT_IS_GRID && !gmtapi_matrix_data_conforms_to_grid (S_obj->resource)) {
 		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
-		GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input matrix is not compatible with a GMT gmt_grdfloat grid\n");
+		GMT_Report (API, GMT_MSG_WARNING, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input matrix is not compatible with a GMT gmt_grdfloat grid\n");
 	}
 	else if (S_obj->actual_family == GMT_IS_MATRIX && S_obj->family == GMT_IS_DATASET && !gmtapi_matrix_data_conforms_to_dataset (S_obj->resource)) {
 		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
-		GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input matrix is not compatible with a GMT dataset\n");
+		GMT_Report (API, GMT_MSG_WARNING, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input matrix is not compatible with a GMT dataset\n");
 	}
 	else if (S_obj->actual_family == GMT_IS_VECTOR && S_obj->family == GMT_IS_GRID) {
 		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
-		GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as vectors are not compatible with a GMT grid\n");
+		GMT_Report (API, GMT_MSG_WARNING, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as vectors are not compatible with a GMT grid\n");
 	}
 	else if (S_obj->actual_family == GMT_IS_VECTOR && S_obj->family == GMT_IS_DATASET && !gmtapi_vector_data_conforms_to_dataset (S_obj->resource, S_obj->type)) {
 		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
-		GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input vectors are not compatible with a GMT dataset\n");
+		GMT_Report (API, GMT_MSG_WARNING, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input vectors are not compatible with a GMT dataset\n");
 	}
 }
 
@@ -7448,7 +7442,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			S_obj->direction = GMT_IN;			/* Make sure it now is flagged for reading */
 		}
 		/* If the input a container masquerading as another then we may have to replace method GMT_IS_REFERENCE by GMT_IS_DUPLICATE */
-		gmtapi_maybe_change_method_to_duplicate (API, S_obj, readonly);
+		if (S_obj->method == GMT_IS_REFERENCE) gmtapi_maybe_change_method_to_duplicate (API, S_obj);
 	}
 	else {	/* Set things up for writing */
 		if (data) {	/* Was provided an object to use */
@@ -7484,7 +7478,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			messenger = 1;
 		}
 		/* If the output is a matrix masquerading as grid then it must be GMT_FLOAT, otherwise change to DUPLICATE */
-		gmtapi_maybe_change_method_to_duplicate (API, S_obj, readonly);
+		if (S_obj->method == GMT_IS_REFERENCE) gmtapi_maybe_change_method_to_duplicate (API, S_obj);
 	}
 	/* Obtain the unique VirtualFile name */
 	if (gmtapi_encode_id (API, module_input, direction, family, actual_family, geometry, messenger, object_ID, name) != GMT_NOERROR)
