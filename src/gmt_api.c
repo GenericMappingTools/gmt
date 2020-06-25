@@ -5112,6 +5112,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 	}
 	method = gmtapi_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
 	switch (method) {
+		/* Status: This case is fully tested and operational */
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
 			if (gmt_file_is_tiled_list (API, S_obj->filename, NULL, NULL, NULL)) {	/* Special list file */
 				if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
@@ -5265,10 +5266,10 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_import_grid: Return from GMT_IS_REFERENCE\n");
 			break;
 
+		/* Status: This case is fully tested and operational */
 	 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the matrix header */
 			/* Must create a grid container from matrix info S_obj->resource and hence a new object is required */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			if (grid == NULL) {	/* Only allocate when not already allocated */
 				uint64_t dim[3] = {M_obj->n_columns, M_obj->n_rows, 1};
 				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, M_obj->range, M_obj->inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
@@ -5294,11 +5295,11 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			HH = gmt_get_H_hidden (G_obj->header);
 			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 
-			if (! (mode & GMT_DATA_ONLY)) {	/* Must init header and copy the header information from the matrix header*/
+			if (! (mode & GMT_DATA_ONLY)) {	/* Must first init header and copy the header information from the matrix header */
 				gmtapi_matrixinfo_to_grdheader (GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode & GMT_CONTAINER_ONLY) {	/* Just needed the header */
-					/* Must set the zmin/max range since unknown per header */
-						gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
+					/* Must get the full zmin/max range since not provided by the matrix header */
+					gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
 						ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
 						api_get_val (&(M_obj->data), ij_orig, &d);
 						if (gmt_M_is_dnan (d))
@@ -5308,10 +5309,11 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 							G_obj->header->z_max = MAX (G_obj->header->z_max, (gmt_grdfloat)d);
 						}
 					}
-					break;
+					break;	/* Done for now */
 				}
 			}
-			GMT_Report (API, GMT_MSG_INFORMATION, "Importing grid data from user memory location\n");
+
+			GMT_Report (API, GMT_MSG_INFORMATION, "Importing grid data from user matrix memory location\n");
 
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
@@ -5321,20 +5323,24 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 				j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YHI]-dy, G_obj->header);
 				i0 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XLO]+dx, G_obj->header);
 				i1 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XHI]-dx, G_obj->header);
-				gmt_M_memcpy (G_obj->header->wesn, S_obj->wesn, 4U, double);	/* Update the header region to match subset request */
-				gmt_set_grddim (GMT, G_obj->header);	/* Adjust all dimensions accordingly */
+				gmt_M_memcpy (G_obj->header->wesn, S_obj->wesn, 4U, double);	/* Update the grid header region to match subset request */
+				gmt_set_grddim (GMT, G_obj->header);	/* Adjust all dimensions accordingly before allocating space */
 			}
-			else {	/* Get the whole enchilada */
+			else {	/* Easy, get the whole enchilada */
 				j0 = i0 = 0;
-				j1 = G_obj->header->n_rows - 1;
+				j1 = G_obj->header->n_rows - 1;	/* Minus 1 since we loop up to and including below */
 				i1 = G_obj->header->n_columns - 1;
 			}
-			if (G_obj->data) {	/* Array is not allocated, do so now. We only expect header (and possibly subset w/e/s/n) to have been set correctly */
-				G_obj->data = gmt_M_memory_aligned (GMT, NULL, G_obj->header->size, gmt_grdfloat);
+			if (G_obj->data) {	/* This is an error - there cannot be a data pointer yet */
+				GMT_Report (API, GMT_MSG_ERROR, "G->data is not NULL when memory allocation is about to happen\n");
+				return_null (API, GMT_PTR_IS_NULL);
 			}
+			else
+				G_obj->data = gmt_M_memory_aligned (GMT, NULL, G_obj->header->size, gmt_grdfloat);
+
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
-					ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
+					ij_orig = GMT_2D_to_index (row, col, M_obj->dim);	/* Position of this (row,col) in input matrix organization */
 					ij = gmt_M_ijp (G_obj->header, row, col);	/* Position of this (row,col) in output grid organization */
 					api_get_val (&(M_obj->data), ij_orig, &d);	/* Get the next item from the matrix */
 					G_obj->data[ij] = (gmt_grdfloat)d;
@@ -7690,6 +7696,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				return_null (API, API->error);
 			}
 			gmt_M_memcpy (API->object[item]->wesn, wesn, 4, double);
+			API->object[item]->region = true;
 		}
 	}
 	else if (input) {	/* Case 1: Load from a single input, given source. Register it first. */
