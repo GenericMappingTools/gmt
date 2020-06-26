@@ -8,6 +8,52 @@ summarizes the philosophy behind the system. Some of the features
 described here may make more sense once you reach the cook-book section
 where we present actual examples of their use.
 
+GMT Modern Mode Hierarchical Levels
+-----------------------------------
+
+As you read below of how we handle default settings, command-line history, and
+color tables, it is important to understand that under GMT **modern mode** we
+maintain several *levels* of these parameters.  As you will see later, this affects
+*three* aspects of GMT: The chosen default settings, the current history of
+previous common option arguments, and the current color table.  All three items
+are given a consistent treatment in GMT modern mode (in classic mode there is
+only a single level and no concept of a current color table). Below, *item* refers
+to any of those three aspects.
+
+#. The top level is the *session*.  Any item set here is accessible to all other
+   levels.
+
+#. The next level is the *figure* level.  A session may create numerous figures
+   and items determined at this level are only accessible to that figure and
+   plot constructs below it (like subplots).
+
+#. A figure may include a *subplot*.  Before any panels are started, any
+   items determined at this level apply to *all* the panels in the subplot.
+   For instance, setting a new color table will apply to all the panels that
+   need it.
+
+#. Once you start a specific *panel* in a subplot, any items determined at this
+   level only apply to that panel.  For instance, changing the font used for
+   frame annotations for this panel is not affecting any other panels.
+
+#. Figures or panels may include a map *inset*.  Any items determined in an
+   inset is private to that inset and does not affect the higher levels.
+
+There is a distinction between *setting* an item (e.g., a font choice, an option
+like plot region, or a color table) and *getting* that item.  When we *specify*
+a particular item it is recorded at that level.  When we need to *access*
+that item, there may or may not be an item at the current hierarchical level.
+If there is not, we look at the level above the current level to see if it has
+the required item, and this search may go all the way back to the session level.
+In other words, we always give preference to items set at or just above the
+current hierarchical level as possible.  If no such item is found anywhere then
+we use the GMT defaults or color table, or we must terminate with an error if a
+required setting such as a region cannot be determined from your options or data sets.
+
+Discussions below on GMT defaults and history are presented as they apply to
+classic mode, but under modern mode these files are maintained at the levels we
+just discussed.
+
 GMT units
 ---------
 
@@ -152,11 +198,11 @@ Overview and the gmt.conf file
 
 There are almost 150 parameters which can be adjusted individually to
 modify the appearance of plots or affect the manipulation of data. When
-a program is run, it initializes all parameters to the
-GMT\ defaults [9]_, then tries to open the file ``gmt.conf`` in the current
+a new session starts (unless **-C** is given), it initializes all parameters to the
+GMT defaults [9]_, then tries to open the file ``gmt.conf`` in the current
 directory [10]_. If not found, it will look for that file in a
 sub-directory ``/.gmt`` of your home directory, and finally in your home directory
-itself. If successful, the program will read the contents and set the
+itself. If successful, the session will read the contents and set the
 default values to those provided in the file. By editing this file you
 can affect features such as pen thicknesses used for maps, fonts and
 font sizes used for annotations and labels, color of the pens,
