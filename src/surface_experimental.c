@@ -2450,7 +2450,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		GMT_Put_Vector (API, V, GMT_X, GMT_DOUBLE, data[GMT_X]);
 		GMT_Put_Vector (API, V, GMT_Y, GMT_DOUBLE, data[GMT_Y]);
 		/* Create a virtual file for reading the input data grid */
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V, input) == GMT_NOTSET) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V, input) == GMT_NOTSET) {
 			Return (API->error);
 		}
 		/* Create a virtual file to hold the mask grid */

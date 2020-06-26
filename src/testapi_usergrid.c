@@ -199,6 +199,8 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 
 	if (V) mode += (6 << 16);				/* Activate -Vd */
 	in_data = get_array (intype, 1);			/* Create dummy user grid in_data[] = k */
+	if (intype == GMT_FLOAT)
+		bad = 0;
 
 	/* Initialize a GMT session */
 	API = GMT_Create_Session ("test", 2U, mode, NULL);

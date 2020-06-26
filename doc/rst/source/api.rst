@@ -1684,11 +1684,11 @@ to ``family`` so that the module knows what to do.  Finally, in the case of pass
 ``data`` as NULL you may also control what type of matrix or vector will be created in
 GMT for the output by adding in the modifiers GMT_VIA_type, as listed in :ref:`types <tbl-viatypes>`.
 **Note**: GMT tries to minimize data duplication if possible, so if your input arrays are
-compatible with the data type used by the modules then we may use your array directly.
-This *may* have the side-effect that your input array is modified by the module.
-If you want to prevent this from happening then add GMT_IS_DUPLICATE to the ``direction``
-argument and we will duplicate the array internally to make sure your input is truly
-read-only.
+compatible with the data type used by the modules then we could use your array directly.
+This *may* have the side-effect that your input array is modified by the module, especially
+if the module writes the results to a netCDF grid file.
+If that is a price you are willing to pay then you can add GMT_IS_REFERENCE to the ``direction``
+argument and we will pass the array internally to avoid duplicating memory.
 
 Import from a virtual file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
