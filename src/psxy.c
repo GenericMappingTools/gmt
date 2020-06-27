@@ -978,8 +978,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				(void)gmt_get_rgb_from_z (GMT, P, Ctrl->Z.value, rgb);
 				if (Ctrl->W.set_color)	/* To be used in polygon or symbol outline */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, rgb);
-				if (Ctrl->G.set_color)	/* To be used in polygon or symbol fill */
+				else if (Ctrl->G.set_color)	/* To be used in polygon or symbol fill */
 					gmt_M_rgb_copy (Ctrl->G.fill.rgb, rgb);
+				else  if (Ctrl->W.active)	/* Probably did not use the +z flag */
+					gmt_M_rgb_copy (Ctrl->W.pen.rgb, rgb);
 			}
 			get_rgb = false;	/* Not reading z from data */
 		}
