@@ -149,6 +149,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 	                                 "Option -D: Cannot be used with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->L.active,
 	                                 "Option -D: Cannot be used with -L\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.dir == NULL,
+	                                 "Option -D: Requires a selection\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
