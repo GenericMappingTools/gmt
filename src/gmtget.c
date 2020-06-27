@@ -160,6 +160,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 	                                 "Option -D: Requires a selection\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !Ctrl->D.active,
 	                                 "Option -Q: Requires -D\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->N.active,
+	                                 "Option -Q: -N will be ignored\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -206,7 +208,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			double world[4] = {-180.0, +180.0, -90.0, +90.0};
 			struct GMT_RECORD *Out = NULL;
 
-			if (Ctrl->Q.active) {
+			if (Ctrl->Q.active) {	/* Must activate data output machinery for a DATASET with no numerical columns */
 				Out = gmt_new_record (GMT, NULL, message);
 				if ((error = GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (API->error);
 				if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
@@ -268,7 +270,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				}
 			}
 			if (list) gmt_free_list (GMT, list, n_items);
-			if (Ctrl->Q.active) {
+			if (Ctrl->Q.active) {	/* Terminate i/o */
 				gmt_M_free (GMT, Out);
 				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 					Return (API->error);
