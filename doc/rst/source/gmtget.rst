@@ -83,7 +83,7 @@ PARAMETER
 
 **-Q**
     Can be used in conjunction with **-D** (and **-I**) to provide a listing of
-    available datasets (no downloading takes place)  The output is one record per
+    available datasets (no downloading takes place). The output is one record per
     dataset giving the information as *planet group dataset size remark*.  For datasets
     that are tiled, the *size* is set to N/A (tile sizes vary but are usually just
     a few Mb each).
