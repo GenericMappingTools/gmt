@@ -2782,20 +2782,49 @@ GMT_LOCAL int gmtinit_get_inset_dimensions (struct GMTAPI_CTRL *API, int fig, st
 	return (GMT_NOERROR);
 }
 
-void gmt_history_tag (struct GMTAPI_CTRL *API, char *tag) {
-	/* Under modern mode we maintain separate history files for
-	 * figures, subplot, and inset, since they should not share
+void gmt_hierarchy_tag (struct GMTAPI_CTRL *API, const char *kind, unsigned int direction, char *tag) {
+	/* Under modern mode we maintain separate history and setting files for
+	 * figures, subplot, panels, and insets, since they should not share
 	 * settings like -R -J between them.
-	 * tag should be of size 16 */
-	int fig = gmt_get_current_figure (API);
-	int inset = gmtinit_get_inset_dimensions (API, fig, NULL);	/* 1 if inset is active */
-	unsigned int subplot_status = gmtinit_subplot_status (API, fig); /* >0 if subplot is true */
-	if (inset)	/* Only one inset active at the time */
-		sprintf (tag, "%d.inset", fig);
-	else if (subplot_status & GMT_SUBPLOT_ACTIVE)	/* Subplot is active */
-		sprintf (tag, "%d.subplot", fig);
-	else
-		sprintf (tag, "%d", fig);
+	 * tag should be of size 32 */
+	char path[PATH_MAX] = {""}, panel[GMT_LEN32] = {""};
+	int fig, subplot, inset;
+
+	/* Modern mode */
+
+	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the hierarchical level */
+
+	/* Find the appropriate file of this kind for where we are, but may have to go up the hierarchy (if reading) */
+
+	if (inset) {	/* See if an inset level file exists or should be created */
+		sprintf (tag, ".inset");
+		if (direction == GMT_OUT) return;	/* We should write it at this level */
+		snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
+		if (!access (path, R_OK)) return;	/* Yes, found it */
+	}
+	if ((subplot & GMT_SUBPLOT_ACTIVE)) {	/* Nothing yet, see if subplot has one */
+		if ((subplot & GMT_PANEL_NOTSET) == 0) {	/* Panel-specific item available? */
+			sprintf (tag, ".%d.panel.%s", fig, panel);
+			if (direction == GMT_OUT) return;	/* We should write it at this level */
+			snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
+			if (!access (path, R_OK)) return;	/* Yes, found it */
+		}
+		/* No, try subplot master item instead */
+		sprintf (tag, ".%d.subplot", fig);
+		if (direction == GMT_OUT) return;	/* We should write it at this level */
+		snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
+		if (!access (path, R_OK)) return;	/* Yes, found it */
+	}
+	/* Not found the kind file yet, so try it for this specific figure */
+	if (fig) {
+		sprintf (tag, ".%d", fig);
+		if (direction == GMT_OUT) return;	/* We should write it at this level */
+		snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
+		if (!access (path, R_OK)) return;	/* Yes, found it */
+	}
+	/* Fall back is session level */
+	sprintf (tag, "");
+	snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
 }
 
 /*! . */
@@ -2824,8 +2853,8 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory and one history per figure */
 		char tag[GMT_LEN16] = {""};
-		gmt_history_tag (GMT->parent, tag);
-		snprintf (hfile, PATH_MAX, "%s/%s.%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
+		gmt_hierarchy_tag (GMT->parent, GMT_HISTORY_FILE, GMT_IN, tag);
+		snprintf (hfile, PATH_MAX, "%s/%s%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
 	}
 	else if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		snprintf (hfile, PATH_MAX, "%s/%s", GMT->session.TMPDIR, GMT_HISTORY_FILE);
@@ -2921,8 +2950,8 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
 		char tag[GMT_LEN16] = {""};
-		gmt_history_tag (GMT->parent, tag);
-		snprintf (hfile, PATH_MAX, "%s/%s.%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
+		gmt_hierarchy_tag (GMT->parent, GMT_HISTORY_FILE, GMT_OUT, tag);
+		snprintf (hfile, PATH_MAX, "%s/%s%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
 	}
 	else if (GMT->session.TMPDIR)			/* Classic isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		snprintf (hfile, PATH_MAX, "%s/%s", GMT->session.TMPDIR, GMT_HISTORY_FILE);
@@ -2972,6 +3001,11 @@ void gmt_reset_history (struct GMT_CTRL *GMT) {
 void gmt_reload_history (struct GMT_CTRL *GMT) {
 	gmt_reset_history (GMT);	/* First remove our memory */
 	gmtinit_get_history (GMT);	/* Get the latest history for current scope */
+}
+
+void gmt_reload_settings (struct GMT_CTRL *GMT) {
+	gmt_conf (GMT);				/* Get the original system defaults */
+	gmt_getdefaults (GMT, NULL);	/* Overload user defaults */
 }
 
 /*! . */
@@ -7286,7 +7320,6 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 		gmt_message (GMT, "%s +g[<color>] paints text box [transparent]; append color [white].\n", pad);
 	else
 		gmt_message (GMT, "%s +g<fill> sets the fill for the symbol [transparent]\n", pad);
-	if (kind == 1) gmt_message (GMT, "%s +h hide the lines [Draw the lines].\n", pad);
 	if (kind) gmt_message (GMT, "%s +i makes the main line invisible [drawn using pen settings from -W].\n", pad);
 	if (kind < 2) gmt_message (GMT, "%s +j<just> sets %s justification [Default is MC].\n", pad, feature[kind]);
 	if (kind == 1) {
@@ -12346,9 +12379,11 @@ void gmt_putdefaults (struct GMT_CTRL *GMT, char *this_file) {
 	if (this_file)	/* File name is defined: use it as is */
 		gmtinit_savedefaults (GMT, this_file);
 	else {	/* Use local dir, tempdir, or workflow dir */
-		char path[PATH_MAX] = {""};
-		if (GMT->current.setting.run_mode == GMT_MODERN)	/* Modern mode: Use the workflow directory */
-			snprintf (path, PATH_MAX, "%s/%s", GMT->parent->gwf_dir, GMT_SETTINGS_FILE);
+		char path[PATH_MAX] = {""}, tag[GMT_LEN32] = {""};
+		if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory and below */
+			gmt_hierarchy_tag (GMT->parent, GMT_SETTINGS_FILE, GMT_OUT, tag);
+			snprintf (path, PATH_MAX, "%s/%s%s", GMT->parent->gwf_dir, GMT_SETTINGS_FILE, tag);
+		}
 		else if (GMT->session.TMPDIR)	/* Write GMT->session.TMPDIR/gmt.conf */
 			snprintf (path, PATH_MAX, "%s/%s", GMT->session.TMPDIR, GMT_SETTINGS_FILE);
 		else	/* Write gmt.conf in current directory */
@@ -12365,8 +12400,9 @@ void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
 		gmtinit_loaddefaults (GMT, this_file);
 	else {	/* Use local dir, tempdir, or workflow dir (modern mode) */
 		if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
-			char path[PATH_MAX] = {""};
-			snprintf (path, PATH_MAX, "%s/%s", GMT->parent->gwf_dir, GMT_SETTINGS_FILE);
+			char path[PATH_MAX] = {""}, tag[GMT_LEN32] = {""};
+			gmt_hierarchy_tag (GMT->parent, GMT_SETTINGS_FILE, GMT_IN, tag);
+			snprintf (path, PATH_MAX, "%s/%s%s", GMT->parent->gwf_dir, GMT_SETTINGS_FILE, tag);
 			gmtinit_loaddefaults (GMT, path);
 		}
 		else if (gmtlib_getuserpath (GMT, GMT_SETTINGS_FILE, file))
@@ -13352,7 +13388,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 			/* Close the virtual files */
 			if (GMT_Close_VirtualFile (API, virt_file) != GMT_NOERROR)
 				return (API->error);
-			if (Out->n_columns > 4) {	/* No can do */
+			if (Out->n_columns < 4) {	/* No can do */
 				GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Not enough data columns (%d) to determine region %s.\n", (unsigned int)Out->n_columns);
 				return (GMT_RUNTIME_ERROR);
 			}
@@ -13889,6 +13925,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	if (options && strstr (mod_name, "mapproject") && (opt = GMT_Find_Option (API, 'W', *options))) /* Must turn on JR */
 		required = "JR";
 
+	if (options && strstr (mod_name, "grdflexure") && (opt = GMT_Find_Option (API, 'Q', *options))) /* Must turn of g */
+		required = "";
+
 	if (options && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
 		/* Running pscoast -E without -R: Must make sure any the region-information in -E is added as args to new -R.
 		 * If there are no +r|R in the -E then we consult the history to see if there is an -R in effect. */
@@ -14084,6 +14123,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					}
 					if (gmt_set_current_panel (API, fig, row, col, gap, NULL, 1)) return NULL;	/* Make this the current panel */
 					if (GMT_Delete_Option (API, opt, options)) n_errors++;	/* Remove -c option here so not causing trouble downstream */
+					gmt_reload_history (GMT);	/* Start fresh in this panel */
+					gmt_reload_settings (GMT);	/* Start fresh in this panel */
 				}
 				else if (subplot_status & GMT_PANEL_NOTSET) {	/* Did NOT do -c the first time, which we will declare to mean -c as well */
 					gmt_subplot_gaps (API, fig, gap);	/* First see if there were subplot-wide -Cgaps settings in effect */
@@ -14513,8 +14554,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	/*
 	if (GMT->parent->external) {
-		gmt_conf_SI (GMT);
-		gmt_getdefaults (GMT, NULL);	// Re-read local GMT default settings (if any)
+		gmt_reload_settings (GMT);	// Re-read local GMT default settings (if any) and override with user settings
 	}
 	*/
 	GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;
@@ -16690,11 +16730,9 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 
-	gmt_conf_SI (GMT);	/* Initialize the standard GMT system default SI settings */
-
-	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_getdefaults\n");
-	gmt_getdefaults (GMT, NULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
-	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  gmt_getdefaults\n");
+	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_reload_settings\n");
+	gmt_reload_settings (GMT);	/* Initialize the standard GMT system default settings and overload with user's settings */
+	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  gmt_reload_settings\n");
 
 	if (API->runmode) GMT->current.setting.run_mode = GMT_MODERN;	/* Enforced at API Creation */
 
@@ -17666,11 +17704,14 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	char file[PATH_MAX] = {""}, dir[PATH_MAX] = {""};
 	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"};
 	int err = 0, fig, error = GMT_NOERROR;
+	unsigned int clean_start = 0;
 	struct stat S;
 
 	snprintf (dir, PATH_MAX, "%s/gmt_session.%s", API->session_dir, API->session_name);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
+	clean_start = (mode & GMT_CLEAN_WORKFLOW);
+	mode -= clean_start;
 
 	switch (mode) {
 		case GMT_BEGIN_WORKFLOW:	/* Must create a new temporary directory */
@@ -17701,8 +17742,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				}
 			}
 			if (error) return (error);			/* Bail at this point */
-			gmt_conf_SI (API->GMT);				/* Get the original system defaults */
-			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
+			gmt_conf (API->GMT);				/* Get the original system defaults */
+			if (!clean_start) gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			snprintf (dir, PATH_MAX, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
 			error = gmtinit_put_session_name (API, text);		/* Store session name, possibly setting psconvert options */

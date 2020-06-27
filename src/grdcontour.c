@@ -197,7 +197,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     implied by the information provided in -C.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively prepend + to annotation interval to plot that as a single contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
-	gmt_label_syntax (API->GMT, 5, 0);
+	gmt_label_syntax (API->GMT, 5, 1);
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of four ways:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval.\n");
