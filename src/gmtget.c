@@ -202,7 +202,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) {	/* Data download */
 		if (!strncmp (Ctrl->D.dir, "all", 3U) || !strncmp (Ctrl->D.dir, "data", 4U)) {	/* Want data */
 			bool found;
-			unsigned int n_tiles, k, d = 0, t, n_items = 0;
+			unsigned int n_tiles, k, d = 0, t, n_items = 0, n;
 			char **list = NULL, *string = NULL, *token = NULL, *tofree = NULL;
 			char planet[GMT_LEN32] = {""}, group[GMT_LEN32] = {""}, dataset[GMT_LEN64] = {""}, size[GMT_LEN32] = {""}, message[GMT_LEN256] = {""};
 			double world[4] = {-180.0, +180.0, -90.0, +90.0};
@@ -247,13 +247,15 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 					if (dataset[strlen(dataset)-1] == '/') {	/* Tiles */
 						dataset[strlen(dataset)-1] = '\0';	/* Chop off slash */
 						strcpy (size, "N/A");
+						n = (API->remote_info[k].inc[2] == 's' && strchr ("13", API->remote_info[k].inc[1])) ? 14297 : urint (360.0 * 180.0 / (API->remote_info[k].tile_size * API->remote_info[k].tile_size));
 					}
 					else {
 						(void) gmt_chop_ext (dataset);
 						strcpy (size, API->remote_info[k].size);
+						n = 1;
 					}
 					message[0] = '\0';
-					sprintf (message, "%s\t%s\t%s\t%s\t%s", planet, group, dataset, size, API->remote_info[k].remark);
+					sprintf (message, "%s\t%s\t%s\t%s\t%u\t%s", planet, group, dataset, size, n, API->remote_info[k].remark);
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 				else {
