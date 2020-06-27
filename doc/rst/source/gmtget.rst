@@ -19,6 +19,7 @@ Synopsis
 [ |-I|\ *inc*\ [**m**\|\ **s**] ]
 [ |-L| ]
 [ |-N| ]
+[ |-Q| ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -77,6 +78,13 @@ PARAMETER
     of downloaded compressed JP2000 tiles to locally (compressed) netCDF grids.
     This speeds up the total data request and defers the conversion to when the
     tile is requested by a module.
+
+.. _-Q:
+
+**-Q**
+    Can be used in conjunction with **-D** (and **-I**) to provide a listing of
+    available datasets (no downloading takes place)  The output is one record per
+    dataset giving the information as *planet group dataset size remark*.
 
 .. _-V:
 
