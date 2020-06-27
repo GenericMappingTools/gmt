@@ -870,7 +870,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
 			Return (API->error);
 		if (Topo->data) {	/* If not NULL it means we have a tiled and blended grid, use as is */
-			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Topo, data_file))
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, Topo, data_file))
 				Return (API->error);
 		}
 		else

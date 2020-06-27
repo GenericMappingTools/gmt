@@ -876,7 +876,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	/* Set up machinery to call mapproject */
 
 	/* Register In as input virtual file and define an output virtual file */
-	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, In, in_string) == GMT_NOTSET)
+	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, In, in_string) == GMT_NOTSET)
 		return (GMT->parent->error);
 	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, out_string) == GMT_NOTSET)
 		return (GMT->parent->error);
