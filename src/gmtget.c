@@ -85,6 +85,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append =<planet> to only download the data/<planet> directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        Append =<dataset1,dataset2...> to only download the stated datasets.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    -Dall downloads both cache and all datasets.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Run \"gmt docs data\" to learn about available data sets.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific %s file to process.\n", GMT_SETTINGS_FILE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses the GMT defaults].\n");
