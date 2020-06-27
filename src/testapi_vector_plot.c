@@ -18,7 +18,7 @@ int main () {
 	GMT_Put_Vector(API, V, 1, GMT_DOUBLE, y);
 	/* Associate our data table with a virtual file */
 	//GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V, input);
-	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V, input);
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V, input);
 	/* Prepare the module arguments */
 	sprintf (args, "%s -JX10c -R0/10/0/10 -Baf -W1p,black+ve0.2c -P -Vd > vectors.ps", input);
 	/* Call the psxy module */

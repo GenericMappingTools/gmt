@@ -251,7 +251,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GM
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
-	bool first = false, periodic, duplicate_col;
+	bool first = false, periodic, duplicate_col, duplicate = false;
 	int error = 0, s_row, south_row, north_row, w_col, e_col;
 
 	unsigned int row, col, p_col, west_col, east_col, nx1, n_in = 0;
@@ -479,15 +479,21 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 	duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	gmt_set_inside_mode (GMT, NULL, GMT_IOO_SPHERICAL);
 
-	if (Ctrl->Q.active)	/* Pre-chewed, just get number of nodes */
+	if (Ctrl->Q.active) {	/* Pre-chewed, just get number of nodes */
+		struct GMT_DATASET_HIDDEN *QH =  gmt_get_DD_hidden (Qin);
 		n = Table->n_segments;
+		duplicate = (QH->alloc_mode == GMT_ALLOC_EXTERNALLY);
+	}
 	else
 		V = &T.V;
 
 	for (node = 0; node < n; node++) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing polygon %7ld\r", node);
 		if (Ctrl->Q.active) {	/* Just point to next polygon */
-			P = Table->segment[node];
+			if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
+				P = gmt_duplicate_segment (GMT, Table->segment[node]);
+			else
+				P = Table->segment[node];
 		}
 		else {	/* Obtain current polygon from Voronoi listings */
 			if (P == NULL) {	/* Need a single polygon structure that we reuse for each polygon */
@@ -529,7 +535,6 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 				case SPHD_VALUES:	f_val = z_val[node];	break;
 				default:	break;	/* Must compute distances below */
 			}
-
 		}
 
 		/* Here we have the polygon in P */
@@ -576,6 +581,8 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 				}
 			}
 		}
+		if (duplicate)	/* Free duplicate segment */
+			gmt_free_segment (GMT, &P);
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing polygon %7ld\n", node);
 
