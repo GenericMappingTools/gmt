@@ -135,7 +135,7 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| replace:: This is useful when all subplots share a common plot domain.
+.. |Add_-R| replace:: This is useful when all subplots share a common plot domain. In this module, the chosen region will also become the default for any data region needed by computational modules.
 .. include:: explain_-R.rst_
 
 .. _-S:

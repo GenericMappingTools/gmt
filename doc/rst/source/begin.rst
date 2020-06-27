@@ -13,6 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt begin** [*prefix*] [*formats*] [*options*]
+[ |-C| ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -61,6 +62,12 @@ Optional Arguments
     Note that the leading hyphens should not be given.
     See the :doc:`psconvert` documentation for details on these options.
 
+.. _-C:
+
+**-C**
+    Start this session with a clean slate: Any gmt.conf files in the usual search path
+    directories are ignored [Default starts session with the prevailing user settings].
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -105,9 +112,10 @@ are produced then we do not need to give any further arguments::
 Should we give such a command and still produce a plot then it will automatically
 be called gmtsession.pdf (assuming :term:`GMT_GRAPHICS_FORMAT` is pdf).
 
-To set up proceedings for a jpg figure with 0.5c white margin, we would run::
+To set up proceedings for a jpg figure with 0.5c white margin, and strictly using
+the GMT default settings, we would run::
 
-    gmt begin 'My Figure4' jpg A+m0.5c
+    gmt begin 'My Figure4' jpg A+m0.5c -C
 
 .. include:: explain_postscript.rst_
 

@@ -363,7 +363,8 @@ enum GMT_enum_runmode {
 enum GMT_enum_workflowmode {
 	GMT_USE_WORKFLOW = 0, 	/* Default is to use current workflow if initiated and ignore if otherwise */
 	GMT_BEGIN_WORKFLOW = 1,	/* Initiate a new workflow via gmt begin */
-	GMT_END_WORKFLOW = 2};  /* Terminate current workflow via gmt begin */
+	GMT_END_WORKFLOW = 2,  /* Terminate current workflow via gmt begin */
+	GMT_CLEAN_WORKFLOW = 4};  /* If given with BEGIN we ignore any gmt.conf files */
 
 /*! Selections for pen/fill color replacements in custom symbol macros */
 enum GMT_enum_colorswap {
