@@ -116,7 +116,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report in fields on a single line using the format\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <file w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med L1scale] [mean std rms] [n_nan] [mode LMSscale] registration type>,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   where -M adds [x0 y0 x1 y1] and [n_nan], -L1 adds [median L1scale], -L2 adds [mean std rms],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and -Lp adds [mode LMSscale]) registration is 0 (gridline), 1 (pixel), and type = 0 (Cartesian) or 1 (geographic).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and -Lp adds [mode LMSscale]). Ends with registration (0=gridline), 1=pixel) and type (0=Cartesian, 1=geographic).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ct to place <file> at the end of the output record, or -Cn to write only numerical columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Report tiles using tile size set in -I. Optionally, extend each tile region by <offx>/<offy>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to only report tiles if the subregion has data (limited to one input grid).\n");
