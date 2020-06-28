@@ -7844,7 +7844,6 @@ int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 	return (GMT_NOERROR);
 }
 
-
 /*! . */
 int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *O, bool inverse) {
 	/* Generalized grid projection that deals with both interpolation and averaging effects.
@@ -7874,11 +7873,20 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	double *x_in = NULL, *x_out = NULL, *x_in_proj = NULL, *x_out_proj = NULL;
 	double *y_in = NULL, *y_out = NULL, *y_in_proj = NULL, *y_out_proj = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);
+	struct GMT_GRID *I2 = NULL;
 
-	/* Only input grid MUST have at least 2 rows/cols padding */
+	/* Only input grid MUST have at least 2 rows/cols padding - otherwise we must allocate a temp grid */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_project: Input grid does not have sufficient (2) padding\n");
-		return GMT_RUNTIME_ERROR;
+		unsigned int pad2[4] = {2, 2, 2, 2};
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_project: Input grid has insufficient padding - create and work on a duplicate with r row/col pad\n");
+		if ((I2 = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, I)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_project: Unable to duplicate grid\n");
+			return GMT_RUNTIME_ERROR;
+		}	
+		gmt_grd_pad_on (GMT, I2, pad2);	/* Add pad */
+		gmt_BC_init (GMT, I2->header);	/* Initialize grid interpolation and boundary condition parameters */
+		gmt_grd_BC_set (GMT, I2, GMT_IN);	/* Set boundary conditions */
+		I = I2;	/* Use this input grid instead */
 	}
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_grd_project: In [%.12g/%.12g/%.12g/%.12g] and out [%.12g/%.12g/%.12g/%.12g]\n",
@@ -8050,6 +8058,10 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 	if (GMT->common.n.antialias) gmt_M_free (GMT, nz);
 
+	if (I2 && GMT_Destroy_Data (GMT->parent, &I2)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_project: Unable to free padded grid\n");
+		return GMT_RUNTIME_ERROR;
+	}
 	return (GMT_NOERROR);
 }
 
