@@ -7878,7 +7878,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	/* Only input grid MUST have at least 2 rows/cols padding - otherwise we must allocate a temp grid */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
 		unsigned int pad2[4] = {2, 2, 2, 2};
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_project: Input grid has no pad - create and work on a duplicate with pad\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_project: Input grid has insufficient padding - create and work on a duplicate with r row/col pad\n");
 		if ((I2 = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, I)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_project: Unable to duplicate grid\n");
 			return GMT_RUNTIME_ERROR;
