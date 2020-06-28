@@ -20,7 +20,7 @@ int main () {
 	//GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V, input);
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V, input);
 	/* Prepare the module arguments */
-	sprintf (args, "%s -JX10c -R0/10/0/10 -Baf -W1p,black+ve0.2c -P -Vd > vectors.ps", input);
+	sprintf (args, "%s -JX10c -R0/10/0/10 -Baf -W1p,black+ve0.2c -P", input);
 	/* Call the psxy module */
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, args);
 	GMT_Close_VirtualFile (API, input);
