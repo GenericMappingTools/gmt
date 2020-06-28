@@ -222,7 +222,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	/* Associate our vectors container with a virtual dataset file to "read" from */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V[GMT_IN], input);
 	if (alloc_in_GMT)	/* Request vectors container for output data to be allocated by GMT */
-		GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, out_via, GMT_OUT, NULL, output);
+		GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, out_via, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
 	else {	/* Preallocate array space here in the app */
 		out_data[GMT_X] = get_array (outtype, 0);	/* Make user space for output */
 		out_data[GMT_Y] = get_array (outtype, 0);	/* Make user space for output */
