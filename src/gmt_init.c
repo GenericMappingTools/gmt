@@ -3004,7 +3004,7 @@ void gmt_reload_history (struct GMT_CTRL *GMT) {
 }
 
 void gmt_reload_settings (struct GMT_CTRL *GMT) {
-	gmt_conf (GMT);				/* Get the original system defaults */
+	gmt_conf_SI(GMT);				/* Get the original system defaults */
 	gmt_getdefaults (GMT, NULL);	/* Overload user defaults */
 }
 
@@ -6116,6 +6116,8 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	 * font sizes are set to auto [->NaN] and all dimensions are set to NaN.  If these remain
 	 * NaN after reading gmt.conf then they are auto-scaled in gmt_set_undefined_defaults. */
 
+	return;	/* Not make default action for 6.1 yet */
+	
 	/* FONT group */
 
 	/* FONT_ANNOT_PRIMARY */
@@ -17743,7 +17745,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				}
 			}
 			if (error) return (error);			/* Bail at this point */
-			gmt_conf (API->GMT);				/* Get the original system defaults */
+			gmt_conf_SI (API->GMT);				/* Get the original system defaults */
 			if (!clean_start) gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			snprintf (dir, PATH_MAX, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);	/* Reuse dir string for saving gmt.conf to this dir */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
