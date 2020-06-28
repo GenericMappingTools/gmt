@@ -1688,7 +1688,8 @@ compatible with the data type used by the modules then we could use your array d
 This *may* have the side-effect that your input array is modified by the module, especially
 if the module writes the results to a netCDF grid file.
 If that is a price you are willing to pay then you can add GMT_IS_REFERENCE to the ``direction``
-argument and we will pass the array internally to avoid duplicating memory.
+argument and we will pass the array internally to avoid duplicating memory. For output it is
+best to pass GMT_IS_REFERENCE as well.
 
 Import from a virtual file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
