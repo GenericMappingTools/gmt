@@ -8060,7 +8060,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	if (I2 && GMT_Destroy_Data (GMT->parent, &I2)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_project: Unable to free padded grid\n");
-		return GMT_RUNTIME_ERROR;		
+		return GMT_RUNTIME_ERROR;
 	}
 	return (GMT_NOERROR);
 }
