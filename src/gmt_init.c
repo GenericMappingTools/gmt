@@ -14016,7 +14016,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
-	if (options) {	/* Check if any filename argument is s remote tiled dataset */
+	if (options) {	/* Check if any filename argument is a remote tiled dataset */
 		bool first_time = true;
 		int k_data;
 		unsigned int srtm_flag;
@@ -14048,6 +14048,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 				if (opt_R == NULL) {	/* In this context we imply -Rd */
 					wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Assuming -Rd since %s was given and no -R specified\n", opt->arg);
 				}
 				else {
 					char codes[3] = {""};
