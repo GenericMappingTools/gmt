@@ -1269,8 +1269,26 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (gmt_check_executable (GMT, "ffmpeg", "-version", "FFmpeg developers", line)) {
 				sscanf (line, "%*s %*s %s %*s", version);
 				GMT_Report (API, GMT_MSG_INFORMATION, "FFmpeg %s found.\n", version);
-				if (p_width % 2)	/* Don't like odd pixel widths */
-					GMT_Report (API, GMT_MSG_ERROR, "Your frame width is an odd number of pixels (%u). This may not work with FFmpeg...\n", p_width);
+				if (p_width % 2) {	/* Don't like odd pixel widths */
+					unsigned int p2_width;
+					GMT_Report (API, GMT_MSG_WARNING, "Your frame width is an odd number of pixels (%u). This will not work with FFmpeg\n", p_width);
+					do {
+						Ctrl->C.dim[GMT_X] += 0.1 / Ctrl->C.dim[GMT_Z];
+						p2_width = urint (ceil (Ctrl->C.dim[GMT_X] * Ctrl->C.dim[GMT_Z]));
+					} while (p2_width == p_width);
+					p_width = p2_width;
+					GMT_Report (API, GMT_MSG_WARNING, "Your frame width was adjusted to %g%c, giving an even width of %u pixels\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit , p_width);
+				}
+				if (p_height % 2) {	/* Don't like odd pixel heights */
+					unsigned int p2_height;
+					GMT_Report (API, GMT_MSG_WARNING, "Your frame width is an odd number of pixels (%u). This will not work with FFmpeg\n", p_width);
+					do {
+						Ctrl->C.dim[GMT_Y] += 0.1 / Ctrl->C.dim[GMT_Z];
+						p2_height = urint (ceil (Ctrl->C.dim[GMT_Y] * Ctrl->C.dim[GMT_Z]));
+					} while (p2_height == p_height);
+					p_height = p2_height;
+					GMT_Report (API, GMT_MSG_WARNING, "Your frame height was adjusted to %g%c, giving an even height of %u pixels\n", Ctrl->C.dim[GMT_Y], Ctrl->C.unit , p_height);
+				}
 			}
 			else {
 				GMT_Report (API, GMT_MSG_ERROR, "FFmpeg is not installed - cannot build MP4 or WEbM movies.\n");
