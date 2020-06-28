@@ -2914,7 +2914,7 @@ GMT_LOCAL void gmtsupport_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, 
 	struct GMT_LABEL L;	/* Needed to pick up angles */
 	if (nn < 2) return;	/* You, sir, are not a line! */
 
-	closed = !gmt_polygon_is_open (GMT, xx, yy, nn);	/* true if this is a polygon */
+	closed = (nn > 2 && !gmt_polygon_is_open (GMT, xx, yy, nn));	/* true if this is a polygon */
 
 	/* Calculate distance along line and store in track_dist array */
 
@@ -5109,7 +5109,7 @@ GMT_LOCAL double gmtsupport_polygon_area (struct GMT_CTRL *GMT, double x[], doub
 
 	/* Sign will be +ve if polygon is CW, negative if CCW */
 
-	last = (gmt_polygon_is_open (GMT, x, y, n)) ? n : n - 1;	/* Skip repeating vertex */
+	last = (n > 2 && gmt_polygon_is_open (GMT, x, y, n)) ? n : n - 1;	/* Skip repeating vertex */
 
 	area = yold = 0.0;
 	xold = x[last-1];
@@ -7766,20 +7766,30 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	return (X);
 }
 
-unsigned int gmt_cpt_default (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
-	/* Return which type of default CPT this data set should use */
-	unsigned int zmode = GMT_DEFAULT_CPT;
-	gmt_M_unused (GMT);
-	if (strstr (h->remark, "@earth_relief_"))	/* Detected a DEM grid blend */
-		zmode = 1;
-	else if (strstr (h->remark, "@srtm_relief_"))	/* Detected a SRTM land-only grid blend */
-		zmode = 2;
-	else if (strstr (h->command, "earth_relief_"))	/* Detected a DEM grid */
-		zmode = 1;
-	else if (strstr (h->command, "srtm_relief_"))	/* Detected a SRTM land-only grid */
-		zmode = 2;
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given grid header, select default CPT to be %s\n", GMT->init.cpt[zmode]);
-	return zmode;
+char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
+	/* Return which type of default CPT this data set should use.
+	 * If cpt is specified then that is what we will use. If not, then
+	 * we determine if file is a remote data set, and if it is and has a
+	 * default CPT then we use that, else we return NULL which means use
+	 * the GMT default CPT given by GMT_DEFAULT_CPT_NAME */
+	int k_data;
+	static char *srtm_cpt = "srtm";
+	char *curr_cpt = NULL;
+
+	if (cpt) return strdup (cpt);	/* CPT was already specified */
+	if (file == NULL) return NULL;	/* No file given, so there */
+	if (API->GMT->current.setting.run_mode == GMT_MODERN && (curr_cpt = gmt_get_current_item (API->GMT, "cpt", false))) return curr_cpt;	/* Use current CPT */
+
+	if ((k_data = gmt_remote_dataset_id (API, file)) == GMT_NOTSET) {
+		size_t LOX;
+		if ((k_data = gmt_get_tile_id (API, file)) == GMT_NOTSET)
+			return NULL;	/* Go with the default, whatever that is */
+		LOX = strlen (file) - 8;	/* Position of the L|O|X flag */
+		if (file[LOX] == 'L') return strdup (srtm_cpt);
+	}
+	if (API->remote_info[k_data].CPT[0] == '-') return (NULL);
+	
+	return (strdup (API->remote_info[k_data].CPT));
 }
 
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
@@ -7890,7 +7900,7 @@ FOUND_NOTHING:
 }
 
 /*! . */
-struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz, unsigned int zmode) {
+struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz) {
 	/* Will read in a CPT.  However, if file does not exist in the current directory we may provide
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
@@ -7936,7 +7946,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (P);
 		}
 
-		master = (file && file[0]) ? file : GMT->init.cpt[zmode];	/* Set master CPT prefix */
+		master = (file && file[0]) ? file : GMT_DEFAULT_CPT_NAME;	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* Stretch to fit the data range */
@@ -10835,7 +10845,7 @@ unsigned int gmt_non_zero_winding (struct GMT_CTRL *GMT, double xp, double yp, d
 	bool above, free = false;
 	double y_sect, *x, *y;
 
-	if (n_path < 2) return (GMT_OUTSIDE);	/* Cannot be inside a null set or a point so default to outside */
+	if (n_path < 3) return (GMT_OUTSIDE);	/* Cannot be inside a null set, a point or a straight line so default to outside */
 
 	if (gmt_polygon_is_open (GMT, x_in, y_in, n_path)) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_non_zero_winding given non-closed polygon - must create closed polygon\n");
@@ -14415,7 +14425,7 @@ int gmt_polygon_centroid (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n
 	double A, d, xold, yold;
 
 	A = gmtsupport_polygon_area (GMT, x, y, n);
-	last = (gmt_polygon_is_open (GMT, x, y, n)) ? n : n - 1;	/* Skip repeating vertex */
+	last = (n > 2 && gmt_polygon_is_open (GMT, x, y, n)) ? n : n - 1;	/* Skip repeating vertex */
 	*Cx = *Cy = 0.0;
 	xold = x[last-1];	yold = y[last-1];
 	for (i = 0; i < last; i++) {
@@ -14916,6 +14926,7 @@ struct GMT_DATASET * gmt_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET
 		D = gmtsupport_resample_data_spherical (GMT, Din, along_ds, mode, ex_cols, smode);
 	else
 		D = gmtsupport_resample_data_cartesian (GMT, Din, along_ds, mode, ex_cols, smode);
+	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
 
@@ -14927,6 +14938,7 @@ struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *
 		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, mode);
 	else
 		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, mode);
+	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
 

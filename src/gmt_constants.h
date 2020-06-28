@@ -222,14 +222,10 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 #define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 
-/* Default CPTs are initialized in gmt_init.c; see end of gmtinit_new_GMT_ctrl */
-#define GMT_DEFAULT_CPT		0	/* Default index into GMT->init.cpt[] array */
-#define GMT_N_CPT		3		/* Number of default CPT types (see GMT->init.cpt in gmt_init.c) */
+/* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
-#define GMT_DEM_CPT_NAME		"geo"
-#define GMT_SRTM_CPT_NAME		"srtm"
 
-#define GMT_IS_ROMAN_LCASE	1	/* For converting arabic numerals to Roman */
+#define GMT_IS_ROMAN_LCASE	1	/* For converting Arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
 
 /* Settings for the MAP_FRAME_TYPE = graph */
@@ -367,7 +363,8 @@ enum GMT_enum_runmode {
 enum GMT_enum_workflowmode {
 	GMT_USE_WORKFLOW = 0, 	/* Default is to use current workflow if initiated and ignore if otherwise */
 	GMT_BEGIN_WORKFLOW = 1,	/* Initiate a new workflow via gmt begin */
-	GMT_END_WORKFLOW = 2};  /* Terminate current workflow via gmt begin */
+	GMT_END_WORKFLOW = 2,  /* Terminate current workflow via gmt begin */
+	GMT_CLEAN_WORKFLOW = 4};  /* If given with BEGIN we ignore any gmt.conf files */
 
 /*! Selections for pen/fill color replacements in custom symbol macros */
 enum GMT_enum_colorswap {

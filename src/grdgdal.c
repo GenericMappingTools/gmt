@@ -235,31 +235,34 @@ EXTERN_MSC int GMT_grdgdal (void *V_API, int mode, void *args) {
 
 	/* Call the selected GDAL program [grid] */
 	if (!Ctrl->A.active || !strcmp (Ctrl->A.prog_name, "grid"))
-		error += gmt_gdal_grid (GMT, st);
+		error = gmt_gdal_grid (GMT, st);
 	else if (!strcmp (Ctrl->A.prog_name, "info"))
-		error += gmt_gdal_info (GMT, st);
+		error = gmt_gdal_info (GMT, st);
 	else if (!strcmp(Ctrl->A.prog_name, "dem")) {
 		if (!GMT->common.R.active[RSET]) 	/* Here, -R should be only needed if grid it to be written by GMT, but easier to do it for all cases */
 			gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
 
 		if (Ctrl->A.dem_method) st->dem_method = Ctrl->A.dem_method;
 		if (Ctrl->A.dem_cpt) st->dem_cpt = Ctrl->A.dem_cpt;
-		error += gmt_gdal_dem (GMT, st);
+		error = gmt_gdal_dem (GMT, st);
 	}
 	else if (!strcmp(Ctrl->A.prog_name, "rasterize"))
-		error += gmt_gdal_rasterize (GMT, st);
+		error = gmt_gdal_rasterize (GMT, st);
 	else if (!strcmp(Ctrl->A.prog_name, "translate")) {
 		if (!GMT->common.R.active[RSET]) gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
-		error += gmt_gdal_translate (GMT, st);
+		error = gmt_gdal_translate (GMT, st);
 	}
 	else if (!strcmp(Ctrl->A.prog_name, "warp")) {
 		if (!GMT->common.R.active[RSET]) gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
-		error += gmt_gdal_warp (GMT, st);
+		error = gmt_gdal_warp (GMT, st);
 	}
 	else {
 		GMT_Report (API, GMT_MSG_ERROR, "GDAL PROG-> \"%s\" is unknown or not implemented\n", Ctrl->A.prog_name);
 		error++;
 	}
+
+	if (error)
+		GMT_Report (API, GMT_MSG_ERROR, "GDAL PROG-> \"%s\" failed.\n", Ctrl->A.prog_name);
 
 	gmt_M_free (GMT, st);
 

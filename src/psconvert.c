@@ -2748,7 +2748,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 #endif
 
 	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failure while opening HKLM key\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Fallback to PATH.\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 
@@ -2783,7 +2783,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
 #endif
 	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failure while opening HKLM key\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Fallback to PATH.\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 

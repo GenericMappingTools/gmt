@@ -1117,16 +1117,25 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		wesn[XLO] = F.wesn[YLO];	wesn[XHI] = F.wesn[YHI];
 		wesn[YLO] = F.wesn[XLO];	wesn[YHI] = F.wesn[XHI];
+		gmt_M_memcpy (GMT->common.R.wesn, wesn, 4, double);
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 	else {
+		gmt_M_memcpy (GMT->common.R.wesn, F.wesn, 4, double);
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, F.wesn), "")) {
 			gmt_M_free (GMT, data);
 			if (F.weights) gmt_M_free (GMT, weights);
 			Return (GMT_PROJECTION_ERROR);
 		}
 	}
-
+	if (automatic) {	/* Must add the result to the history */
+		char Rtxt[GMT_LEN128] = {""};
+		int id = gmt_get_option_id (0, "R");	/* The -RP history index */
+		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Remove whatever this was */
+		sprintf (Rtxt, "%.16g/%.16g/%.16g/%.16g", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		GMT->init.history[id] = strdup (Rtxt);	/* Update with the dimension of the whole subplot frame */
+	}
+	
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);

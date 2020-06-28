@@ -136,6 +136,26 @@ GMT_LOCAL int gmtremote_compare_names (const void *item_1, const void *item_2) {
 	return (strcmp (name_1, name_2));
 }
 
+GMT_LOCAL int gmtremote_parse_version (char *line) {
+	/* Parse a line like "# 6.1.0 or later GMT version required" and we will make no
+	 * assumptions about how much space before the version. */
+	int k = 1, start, major, minor, release;
+	char text[GMT_LEN64] = {""};
+	if (line[0] != '#') return 1;	/* Not a comment record! */
+	strncpy (text, line, GMT_LEN64-1);
+	while (isspace (text[k])) k++;	/* Skip until we get to the version */
+	start = k;
+	while (isdigit(text[k]) || text[k] == '.') k++;	/* Wind to end of version */
+	text[k] = '\0';	/* Chop off the rest */
+	if (sscanf (&text[start], "%d.%d.%d", &major, &minor, &release) != 3) return 1;
+	if (major > GMT_MAJOR_VERSION) return 2;	/* Definitively too old */
+	if (major < GMT_MAJOR_VERSION) return 0;	/* Should be fine */
+	if (minor > GMT_MINOR_VERSION) return 2;	/* Definitively too old */
+	if (minor < GMT_MINOR_VERSION) return 0;	/* Should be fine */
+	if (release > GMT_RELEASE_VERSION) return 2;	/* Definitively too old */
+	return GMT_NOERROR;
+}
+
 GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *n) {
 	/* Read contents of the info file into an array of structs */
 	int k = 0, nr;
@@ -162,6 +182,19 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad record counter in file %s\n", file);
 		return NULL;
 	}
+	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get second record */
+		fclose (fp);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error second record in file %s\n", file);
+		return NULL;
+	}
+	if ((k = gmtremote_parse_version (line))) {
+		fclose (fp);
+		if (k == 2)
+			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Your GMT version too old to use the remote data mechanism - please upgrade to %s or later\n", line);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse \"%s\" to extract GMT version\n", line);
+		return NULL;
+	}	
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to allocated %d GMT_DATA_INFO structures!\n", *n);
 		return NULL;
@@ -169,9 +202,8 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 
 	while (fgets (line, GMT_LEN512, fp) != NULL) {
 		if (line[0] == '#') continue;	/* Skip any comments */
-		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile_size, I[k].date, I[k].coverage, I[k].filler, I[k].remark)) != 12) {
-			/* New format - soon the only format once testing of 6.1 is over */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s should have 12 fields but only %d read for record %d - download error???\n", file, nr, k);
+		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile_size, I[k].date, I[k].coverage, I[k].filler, I[k].CPT, I[k].remark)) != 13) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s should have 13 fields but only %d read for record %d - download error???\n", file, nr, k);
 			gmt_M_free (GMT, I);
 			fclose (fp);
 			return NULL;
@@ -210,12 +242,20 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 	return (strncmp (name_1, name_2, len));
 }
 
+int gmtremote_wind_to_file (const char *file) {
+	int k = strlen (file) - 2;	/* This jumps past any trailing / for tiles */
+	while (k >= 0 && file[k] != '/') k--;
+	return (k+1);
+}
+
 int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	/* Return the entry in the remote file table of file is found, else -1 */
 	int pos = 0;
 	struct GMT_DATA_INFO *key = NULL;
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
 	if (file[0] == '@') pos = 1;	/* Skip any leading remote flag */
+	/* Exclude leading directory for local saved versions of the file */
+	if (pos == 0) pos = gmtremote_wind_to_file (file);	/* Skip any leading directories */
 	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	return ((key == NULL) ? GMT_NOTSET : key->id);
 }
@@ -1165,6 +1205,8 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn[], int k_dat
 	}
 
 	/* Get nearest whole multiple of tile size wesn boundary.  This ASSUMES all global grids are -Rd  */
+	/* Also, the srtm_tiles.nc grid is gridline-registered and we check if the node corresponding to
+	 * the lon/lat of the SW corner of a tile is 1 or 0 */
 	iw = (int)(-180 + floor ((wesn[XLO] + 180) / I->tile_size) * I->tile_size);
 	ie = (int)(-180 + ceil  ((wesn[XHI] + 180) / I->tile_size) * I->tile_size);
 	is = (int)( -90 + floor ((wesn[YLO] +  90) / I->tile_size) * I->tile_size);
@@ -1329,9 +1371,9 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 		return NULL;
 	}
 
-	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
-	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co- to override using negative earth_relief_15s values */
-	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%s -r%c -G%s -N0 -Co-", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], API->remote_info[k_data].inc, API->remote_info[k_data].reg, grid);
+	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, grid);
+	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co+n to override using negative earth_relief_15s values */
+	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%s -r%c -G%s -N0 -Co+n", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], API->remote_info[k_data].inc, API->remote_info[k_data].reg, grid);
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;

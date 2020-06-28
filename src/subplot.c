@@ -30,13 +30,30 @@
  *	   gmt subplot end [-V]
  */
 
-/* Note: subplot is currently not able to be nested (i.e., a subplot inside another subplot).
+/* Note 1: subplot is currently not able to be nested (i.e., a subplot inside another subplot).
  * This will be required to do more complicated layouts where the number of items vary for
  * different columns and/or rows.  So until such time, all subplots must have a constant number
  * of items in all rows and a constant number of items in all columns.  The dimensions can vary
  * on a per-column or per-row basis, but the number of items must remain the same. To implement
  * nesting we would place all the subplot control files inside a subdirectory and have nested
  * subdirectories.
+ *
+ * Note 2: The way the tagging of each panel works (via the settings in -A) is a bit of black magic.
+ * When subplot runs we have no idea what will be plotting in any panel.  It could be nothing or
+ * images, contours, whatever.  Yet, we do want the tag (here, I will just assume it is some string
+ * like "a)" but -A may select other formats) to be placed ON TOP OF the panel, after everything else
+ * has been plotted.  That means we must somehow wait until the last layer has been laid down in
+ * the panel before placing the tag.  This note explains how this works:  When a new panel is
+ * started we read the subplot information file and learn that this panel should have a tag like "a)"
+ * In the function gmt_plotinit (gmt_plot.c) we check if we are doing a subplot panel, and if it is there
+ * we write a PostScript function called PSL_plot_completion to the PostScript file.  This function
+ * has all the PostScript commands needed to place the tag, including things like painting a background
+ * rectangle if so chosen, but the function is not called, just defined.  Then, each time we detect
+ * we are starting a new panel we first execute the PSL_plot_completion function before redefining
+ * in for the next panel.  In addition, when subplot end is call we must also call it to finish the
+ * tagging of the last panel we touched.  Each time it is called (this happens in PSL_beginplot) it
+ * gets reset to a null function that does nothing.  Then the next panel redefines it and the cycle
+ * continues until the subplot is completed.
  */
 
 #include "gmt_dev.h"
@@ -662,6 +679,33 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+EXTERN_MSC void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset);
+
+void subplot_wipe_history_and_settings (struct GMTAPI_CTRL *API) {
+	/* Called by subplot end and removes any/all panel history files
+	 * as well as any subplot history file.  Same for settings.
+	 */
+
+	int fig, subplot, inset;
+	unsigned int row, col;
+	char file[PATH_MAX] = {""}, panel[GMT_LEN32] = {""};
+	struct GMT_SUBPLOT *P = NULL;
+
+	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
+	if (subplot && (P = gmt_subplot_info (API, fig))) {
+		for (row = 0; row < P->nrows; row++) for (col = 0; col < P->ncolumns; col++) {
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);		
+			gmt_remove_file (API->GMT, file);
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);		
+			gmt_remove_file (API->GMT, file);
+		}
+	}
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_HISTORY_FILE, fig);		
+	gmt_remove_file (API->GMT, file);	
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_SETTINGS_FILE, fig);		
+	gmt_remove_file (API->GMT, file);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -710,6 +754,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot attributes once */
+		int RP_id, RG_id;
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
 		double x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
@@ -1159,7 +1204,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			T->table[0]->segment[0]->text[0] = strdup (Ctrl->T.title);
 			T->table[0]->segment[0]->n_rows = 1;
 			T->n_records = T->table[0]->n_records = T->table[0]->segment[0]->n_rows = 1;
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, T, vfile) != GMT_NOERROR) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, T, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=false",
@@ -1187,7 +1232,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 		if (Ctrl->F.Lpen[0]) {	/* Draw lines between interior tiles */
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, L, vfile) != GMT_NOERROR) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, L, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=false", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->F.Lpen, vfile);
@@ -1218,6 +1263,15 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, By);
 		gmt_M_free (GMT, Lx);
 		gmt_M_free (GMT, Ly);
+
+		/* if -R was given, set it for both plot and data regions */
+
+		RP_id = gmt_get_option_id (0, "R");	/* The -RP history item */
+		RG_id = RP_id + 1;	/* The -RG history item */
+		if (GMT->init.history[RP_id] && !GMT->init.history[RG_id])	/* History for -RP but not -RG, duplicate*/
+			GMT->init.history[RG_id] = strdup (GMT->init.history[RP_id]);
+		else if (GMT->init.history[RG_id] && !GMT->init.history[RP_id])	/* History for -RP but not -RG, duplicate*/
+			GMT->init.history[RP_id] = strdup (GMT->init.history[RG_id]);
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
 		char legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
@@ -1245,11 +1299,13 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		if ((error = gmt_set_current_panel (API, fig, Ctrl->In.row, Ctrl->In.col, Ctrl->C.active ? Ctrl->C.gap : gap, Ctrl->A.format, 1)))
 			Return (error)
+		gmt_reload_history (GMT);	/* Start fresh in this panel */
+		gmt_reload_settings (GMT);	/* Start fresh in this panel */
 	}
 	else {	/* SUBPLOT_END */
 		int k, id;
-		char *wmode[2] = {"w","a"}, vfile[GMT_VF_LEN] = {""}, Rtxt[GMT_LEN64] = {""}, tag[GMT_LEN16] = {""};
-		char legend_justification[4] = {""}, Jstr[3] = {"J"}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
+		char *wmode[2] = {"w","a"}, vfile[GMT_VF_LEN] = {""}, Rtxt[GMT_LEN64] = {""}, off[GMT_LEN32] = {""};
+		char legend_justification[4] = {""}, Jstr[3] = {"J"}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""};
 		double legend_width = 0.0, legend_scale = 1.0;
 		FILE *fp = NULL;
 
@@ -1288,9 +1344,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		/* Remove all subplot information files */
-		gmt_history_tag (API, tag);
-		sprintf (file, "%s/%s.%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE, tag);
-		gmt_remove_file (GMT, file);
+		subplot_wipe_history_and_settings (API);
 		sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 		gmt_remove_file (GMT, file);
 		sprintf (file, "%s/gmt.subplotorder.%d", API->gwf_dir, fig);
@@ -1303,7 +1357,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, 0, NULL, file, NULL)) == NULL) {
 				Return (API->error);
 			}
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, D, vfile) != GMT_NOERROR) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			sprintf (command, "-R%s -Jx1i %s -L -Wfaint,red -Xa0i -Ya0i --GMT_HISTORY=false", D->table[0]->header[0], vfile);

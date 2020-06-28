@@ -1571,7 +1571,7 @@ different data types.
     Here, ``mode`` determines how we read the grid: To read the entire
     grid and its header, pass ``GMT_CONTAINER_AND_DATA``. However, if you may need to
     extract a sub-region you must first read the header by passing
-    ``GMT_CONTAINER_ONLY``, then examine the header structure range
+    ``GMT_CONTAINER_ONLY`` with ``wesn`` = NULL, then examine the header structure range
     attributes, specify a subset via the array ``wesn``, and
     finally call GMT_Read_Data_ a second time, now with ``mode`` =
     ``GMT_DATA_ONLY``, passing your ``wesn`` array and the grid
@@ -1684,11 +1684,12 @@ to ``family`` so that the module knows what to do.  Finally, in the case of pass
 ``data`` as NULL you may also control what type of matrix or vector will be created in
 GMT for the output by adding in the modifiers GMT_VIA_type, as listed in :ref:`types <tbl-viatypes>`.
 **Note**: GMT tries to minimize data duplication if possible, so if your input arrays are
-compatible with the data type used by the modules then we may use your array directly.
-This *may* have the side-effect that your input array is modified by the module.
-If you want to prevent this from happening then add GMT_IS_DUPLICATE to the ``direction``
-argument and we will duplicate the array internally to make sure your input is truly
-read-only.
+compatible with the data type used by the modules then we could use your array directly.
+This *may* have the side-effect that your input array is modified by the module, especially
+if the module writes the results to a netCDF grid file.
+If that is a price you are willing to pay then you can add GMT_IS_REFERENCE to the ``direction``
+argument and we will pass the array internally to avoid duplicating memory. For output it is
+best to pass GMT_IS_REFERENCE as well.
 
 Import from a virtual file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

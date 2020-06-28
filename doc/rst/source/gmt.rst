@@ -119,6 +119,9 @@ If no module is given then several other options are available:
 **--show-sharedir**
     Show share directory and exit.
 
+**--show-userdir**
+    Show full path of user's ~/.gmt dir and exit.
+
 **--version**
     Print version and exit.
 

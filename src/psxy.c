@@ -148,7 +148,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallocat
 }
 
 GMT_LOCAL void psxy_plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_x[], double error_width2, int line, int kind) {
-	double x_1, x_2, y_1, y_2;
+	double x_0, y_0, x_1, x_2, y_1, y_2;
 	bool tip1, tip2;
 	unsigned int first = 0, second = (kind == EBAR_ASYMMETRICAL) ? 1 : 0;	/* first and second are either both 0 or second is 1 for asymmetrical bars */
 
@@ -156,14 +156,16 @@ GMT_LOCAL void psxy_plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	gmt_geo_to_xy (GMT, x - fabs (delta_x[first]),  y, &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x + fabs (delta_x[second]), y, &x_2, &y_2);
 	if (gmt_M_is_dnan (x_1)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "X error bar exceeded domain near line %d. Reset to x_min\n", line);
-		x_1 = GMT->current.proj.rect[XLO];
+		gmt_geo_to_xy (GMT, x, y,  &x_0, &y_0);
+		x_1 = MIN (GMT->current.proj.rect[XLO], x_0);
 		tip1 = false;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "X error bar exceeded domain near line %d. Left bar point reset to %g\n", line, x_1);
 	}
 	if (gmt_M_is_dnan (x_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "X error bar exceeded domain near line %d. Reset to x_max\n", line);
-		x_2 = GMT->current.proj.rect[XHI];
+		gmt_geo_to_xy (GMT, x, y,  &x_0, &y_0);
+		x_2 = MAX (GMT->current.proj.rect[XHI], x_0);
 		tip2 = false;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "X error bar exceeded domain near line %d. Right bar point reset to %g\n", line, x_1);
 	}
 	PSL_plotsegment (PSL, x_1, y_1, x_2, y_2);
 	if (tip1) PSL_plotsegment (PSL, x_1, y_1 - error_width2, x_1, y_1 + error_width2);
@@ -171,7 +173,7 @@ GMT_LOCAL void psxy_plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 }
 
 GMT_LOCAL void psxy_plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_y[], double error_width2, int line, int kind) {
-	double x_1, x_2, y_1, y_2;
+	double x_0, y_0, x_1, x_2, y_1, y_2;
 	bool tip1, tip2;
 	unsigned int first = 0, second = (kind == EBAR_ASYMMETRICAL) ? 1 : 0;	/* first and second are either both 0 or second is 1 for asymmetrical bars */
 
@@ -179,14 +181,16 @@ GMT_LOCAL void psxy_plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	gmt_geo_to_xy (GMT, x, y - fabs (delta_y[first]),  &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x, y + fabs (delta_y[second]), &x_2, &y_2);
 	if (gmt_M_is_dnan (y_1)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Y error bar exceeded domain near line %d. Reset to y_min\n", line);
-		y_1 = GMT->current.proj.rect[YLO];
+		gmt_geo_to_xy (GMT, x, y,  &x_0, &y_0);
+		y_1 = MIN (GMT->current.proj.rect[YLO], y_0);
 		tip1 = false;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Y error bar exceeded domain near line %d. Bottom bar point reset to %g\n", line, y_1);
 	}
 	if (gmt_M_is_dnan (y_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Y error bar exceeded domain near line %d. Reset to y_max\n", line);
-		y_2 = GMT->current.proj.rect[YHI];
+		gmt_geo_to_xy (GMT, x, y,  &x_0, &y_0);
+		y_2 = MAX (GMT->current.proj.rect[YHI], y_0);
 		tip2 = false;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Y error bar exceeded domain near line %d. Top bar point reset to %g\n", line, y_1);
 	}
 	PSL_plotsegment (PSL, x_1, y_1, x_2, y_2);
 	if (tip1) PSL_plotsegment (PSL, x_1 - error_width2, y_1, x_1 + error_width2, y_1);
@@ -292,7 +296,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		return GMT_NOERROR;
 
 	/* Here we have symbols.  Open up virtual file for the call to psxy */
-	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D, string) != GMT_NOERROR)
+	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, D, string) != GMT_NOERROR)
 		return (GMT->parent->error);
 	if (decorate_custom) {	/* Must find the custom symbol */
 		if ((type = gmt_locate_custom_symbol (GMT, &symbol_code[1], name, path, &pos)) == 0) return (GMT_RUNTIME_ERROR);
@@ -974,8 +978,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				(void)gmt_get_rgb_from_z (GMT, P, Ctrl->Z.value, rgb);
 				if (Ctrl->W.set_color)	/* To be used in polygon or symbol outline */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, rgb);
-				if (Ctrl->G.set_color)	/* To be used in polygon or symbol fill */
+				else if (Ctrl->G.set_color)	/* To be used in polygon or symbol fill */
 					gmt_M_rgb_copy (Ctrl->G.fill.rgb, rgb);
+				else  if (Ctrl->W.active)	/* Probably did not use the +z flag */
+					gmt_M_rgb_copy (Ctrl->W.pen.rgb, rgb);
 			}
 			get_rgb = false;	/* Not reading z from data */
 		}
@@ -1354,7 +1360,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_illuminate (GMT, in[icol], current_fill.rgb);
 			}
 
-			if (!Ctrl->N.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
+			if (!Ctrl->N.active && !Ctrl->E.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
 				/* Skip points outside map */
 				gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 				may_intrude_inside = false;
@@ -1929,6 +1935,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 				SH = gmt_get_DS_hidden (L);
 
+				duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && (polygon || gmt_trim_requested (GMT, &current_pen) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
+				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
+					L = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
+
 				resampled = false;
 				if (!polygon && gmt_trim_requested (GMT, &current_pen)) {	/* Needs a haircut */
 					if (L->n_rows == 2) {	/* Given endpoints we need to resample in order to trim */
@@ -1944,7 +1954,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
 						resampled = true;	/* To avoid doing it twice */
 					}
-					if (gmt_trim_line (GMT, &L->data[GMT_X], &L->data[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
+					if (gmt_trim_line (GMT, &L->data[GMT_X], &L->data[GMT_Y], &L->n_rows, &current_pen)) {
+						if (duplicate)	/* Free duplicate segment */
+							gmt_free_segment (GMT, &L);
+						continue;	/* Trimmed away completely */
+					}
 				}
 
 				if (D->n_tables > 1)
@@ -1972,11 +1986,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, SH->ogr);
 					outline_setting = outline_active ? 1 : 0;
 				}
-				if (P && PH->skip) continue;	/* Chosen CPT indicates skip for this z */
-
-				duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && gmt_polygon_is_open (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
-				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
-					L = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
+				if (P && PH->skip) {
+					if (duplicate)	/* Free duplicate segment */
+						gmt_free_segment (GMT, &L);
+					continue;	/* Chosen CPT indicates skip for this z */
+				}
 
 				if (L->header && L->header[0]) {
 					PSL_comment (PSL, "Segment header: %s\n", L->header);
@@ -2018,6 +2032,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_ERROR, "Segment header did not supply enough parameters for -S~; skipping this segment\n");
 					else
 						GMT_Report (API, GMT_MSG_ERROR, "Segment header did not supply enough parameters for -Sq; skipping this segment\n");
+					if (duplicate)	/* Free duplicate segment */
+						gmt_free_segment (GMT, &L);
 					continue;
 				}
 				if (Ctrl->I.active) {
@@ -2100,7 +2116,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 					}
 					else {	/* Just one line, which may even be closed */
-						closed = !(gmt_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n));
+						closed = (GMT->current.plot.n > 2 && !(gmt_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n)));
 						gmt_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, closed, false, &S.G);
 						GMT->current.plot.n_alloc = GMT->current.plot.n;	/* Since gmt_hold_contour reallocates to fit the array */
 					}

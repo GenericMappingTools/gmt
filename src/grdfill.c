@@ -213,7 +213,7 @@ GMT_LOCAL int grdfill_do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G
 		return (API->error);
 	}
 	/* Create a virtual file to hold the resampled grid */
-	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output) == GMT_NOTSET) {
+	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, output) == GMT_NOTSET) {
 		return (API->error);
 	}
 	/* Add up to 2 rows/cols around hole, but watch for grid edges */
@@ -248,7 +248,7 @@ GMT_LOCAL int grdfill_do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G
 	GMT_Put_Vector (API, V, GMT_Y, GMT_DOUBLE, y);
 	GMT_Put_Vector (API, V, GMT_Z, GMT_FLOAT,  z);
 	/* Associate our input data vectors with a virtual input file */
-	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V, input) == GMT_NOTSET)
+	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V, input) == GMT_NOTSET)
 		return (API->error);
 	/* Prepare the greenspline command-line arguments */
 	mode = (gmt_M_is_geographic (GMT, GMT_IN)) ? 2 : 1;

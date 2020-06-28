@@ -666,13 +666,14 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)) {	/* If no cpt given or just a master then we must compute a scaled one from the full-size grid and use it throughout */
-		unsigned int zmode = gmt_cpt_default (GMT, G->header);
+		char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file);
 		char cptfile[PATH_MAX] = {""};
 		struct GMT_PALETTE *P = NULL;
-		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, G->header->z_min, G->header->z_max, Ctrl->C.dz, zmode)) == NULL) {
+		if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, G->header->z_min, G->header->z_max, Ctrl->C.dz)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to create a CPT\n");
 			Return (API->error);	/* Well, that did not go well... */
 		}
+		if (cpt) gmt_M_str_free (cpt);
 		sprintf (cptfile, "%s/grd2kml_%d.cpt", API->tmp_dir, uniq);
 		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, cptfile, P) != GMT_NOERROR) {
 			Return (API->error);
@@ -738,7 +739,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			gmt_M_str_free (S->text[c]);	/* Free previous string */
 			S->text[c] = strdup (line);	/* Update string */
 		}
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, C, contour_file) != GMT_NOERROR) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, C, contour_file) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual file for contours\n");
 			gmt_M_free (GMT, Q);
 			GMT_Destroy_Data (API, &C);
@@ -847,7 +848,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 				if (use_tile) {	/* Found data inside this tile, make plot and rasterize (if PostScript) */
 					char z_data[GMT_VF_LEN] = {""}, psfile[PATH_MAX] = {""};
 					/* Open the grid subset as a virtual file we can pass to grdimage */
-					if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, T, z_data) == GMT_NOTSET) {
+					if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, T, z_data) == GMT_NOTSET) {
 						GMT_Report (API, GMT_MSG_ERROR, "Unable to open grid tile as virtual file!\n");
 						gmt_M_free (GMT, Q);
 						if (Ctrl->W.active) GMT_Destroy_Data (API, &C);

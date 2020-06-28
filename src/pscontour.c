@@ -409,7 +409,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give -An to disable all contour annotations\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     implied by the information provided in -C.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
-	gmt_label_syntax (API->GMT, 5, 0);
+	gmt_label_syntax (API->GMT, 5, 1);
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of four ways:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval.\n");
@@ -1554,7 +1554,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, last_c);	/* Free last item */
 				if (!use_it) continue;	/* No, go to next */
 
-				is_closed = !gmt_polygon_is_open (GMT, xp, yp, m);
+				is_closed = (m > 2 && !gmt_polygon_is_open (GMT, xp, yp, m));
 
 				if (Ctrl->Q.active) {	/* Avoid plotting short contours based on map length or point count */
 					if (Ctrl->Q.unit) {	/* Need length of contour */

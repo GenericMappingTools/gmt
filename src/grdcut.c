@@ -465,6 +465,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		add_mode = GMT_IO_RESET;	/* Pass this to allow reading the data again. */
 	}
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */
+		/* Note: The use of g and gmt_M_grd_row_to_y is correct since lon and lat args are not
+		 * coordinates computed from west or south in whole increments of dx dy. */
 		int row, col;
 		bool wrap;
 
@@ -497,6 +499,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
 			wesn_new[YLO] = lat + (1.0 - G->header->xy_off) * G->header->inc[GMT_Y];	/* Go one back since last row was outside */
+			/* The (1-xy_off) adjust since grid boundaries for pixel grids do not coincide with pixel node coordinates - they are a half off */
 			if (wesn_new[YLO] <= G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO];
 		}
 		wesn_new[YHI] += radius;	/* Approximate north limit in degrees */
@@ -512,6 +515,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
 			wesn_new[YHI] = lat - (1.0 - G->header->xy_off) * G->header->inc[GMT_Y];	/* Go one back since last row was outside */
+			/* The (1-xy_off) adjust since grid boundaries for pixel grids do not coincide with pixel node coordinates - they are a half off */
 			if (wesn_new[YHI] >= G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI];
 		}
 		if (doubleAlmostEqual (wesn_new[YLO], -90.0) || doubleAlmostEqual (wesn_new[YHI], 90.0)) {	/* Need all longitudes when a pole is included */
@@ -520,9 +524,9 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		else {	/* Determine longitude limits */
 			wrap = gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI]);	/* true if grid is 360 global */
-			radius /= cosd (Ctrl->S.lat);					/* Approximate e-w width in degrees longitude */
-			wesn_new[XLO] -= radius;					/* Approximate west limit in degrees */
-			if (!wrap && wesn_new[XLO] < G->header->wesn[XLO]) {		/* Outside non-periodic grid range */
+			radius /= cosd (Ctrl->S.lat);	/* Approximate e-w width in degrees longitude at center point */
+			wesn_new[XLO] -= radius;	/* Approximate west limit in degrees */
+			if (!wrap && wesn_new[XLO] < G->header->wesn[XLO]) {	/* Outside non-periodic grid range */
 				wesn_new[XLO] = G->header->wesn[XLO];
 			}
 			else {
@@ -678,6 +682,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->N.active && extend) {	/* Now shrink pad back to default and simultaneously extend region and apply nodata values */
 		unsigned int xlo, xhi, ylo, yhi, row, col, n_zero, n_zero_e;
+		double dx, dy;
 		n_zero = 0;	/* Count zeros in the grid before extension */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
 			if (G->data[node] == 0.0) n_zero++;
@@ -687,10 +692,13 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		gmt_M_grd_setpad (GMT, G->header, GMT->current.io.pad);	/* Set the default pad */
 		gmt_set_grddim (GMT, G->header);			/* Update dimensions given the change of wesn and pad */
 		gmt_M_memcpy (wesn_new, wesn_requested, 4, double);	/* So reporting below is accurate */
-		xlo = outside[XLO] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XLO], G->header) : 0;
-		xhi = outside[XHI] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XHI], G->header) : G->header->n_columns - 1;
-		ylo = outside[YLO] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO], G->header) : G->header->n_rows - 1;
-		yhi = outside[YHI] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI], G->header) : 0;
+		/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
+		dx = G->header->inc[GMT_X] * G->header->xy_off;	dy = G->header->inc[GMT_Y] * G->header->xy_off;
+
+		xlo = outside[XLO] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XLO] + dx, G->header) : 0;
+		xhi = outside[XHI] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XHI] - dx, G->header) : G->header->n_columns - 1;
+		ylo = outside[YLO] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO] + dy, G->header) : G->header->n_rows - 1;
+		yhi = outside[YHI] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI] - dy, G->header) : 0;
 		if (outside[XLO]) {
 			for (row = 0; row < G->header->n_rows; row++)
 				for (col = 0; col < xlo; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;

@@ -527,7 +527,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create output dataset for time-series\n");
 			Return (API->error);
 		}
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, In, i_file) != GMT_NOERROR) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, In, i_file) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");
 			Return (API->error);
 		}
@@ -538,7 +538,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				sprintf (grid, "%s", Ctrl->In.file[k]);
 			else	/* Get the k'th layer from 3D cube */
 				sprintf (grid, "%s?%s[%" PRIu64 "]", Ctrl->In.file[0], cube_layer, k);
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, o_file) == GMT_NOTSET) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT|GMT_IS_REFERENCE, NULL, o_file) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");
 				Return (API->error);
 			}
@@ -597,11 +597,11 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_OUT, col, level_type);	/* This is the grid-level data type which on output is in this column */
 
 		if (Ctrl->T.active) {	/* Want to interpolate through the sampled points using the specified spline */
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, Out, i_file) != GMT_NOERROR) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, Out, i_file) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
 				Return (API->error);
 			}
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, NULL, o_file) == GMT_NOTSET) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, o_file) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
 				Return (API->error);
 			}
