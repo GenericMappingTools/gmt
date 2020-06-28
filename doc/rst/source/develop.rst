@@ -101,8 +101,9 @@ Here are some simple rules to live by; see actual examples in the modules.
 #. Every variable addressed by the for-loop must be listed in either the *private* or *shared*
    groups in the pragma statement.  Be very careful when doing this as pretty much all failures
    to get it to work has to do with making mistakes here.  This simple rule should help: If a
-   variable is *assigned* inside the for-loop then it must go in *private*, all else must go in
-   *shared*.  None can be left out.
+   variable is just *accessed* (read) inside the for-loop then it should go in *shared*, all else must go in
+   *private*.  None can be left out.  Often, loops are over grids and the grid pointer is *shared*
+   so that all threads can add their contributions - this is the whole point of the splitting.
 #. Try to avoid having if-tests inside the for-loop.  It may be much faster to move the if-test
    outside the loop and possibly do a near-duplication of the loop.
 #. At this point, the OpenMP builds work well on all platforms, but not well integrated with
@@ -122,3 +123,42 @@ For the purpose of this discussion, we will distinguish between several types of
    example are the MB-System src/gmt tools.
 #. External supplements not part of the GMT distribution but has their own build setup.
    THe modules only depend on (and include) gmt.h, the official GMT API.
+
+::
+
+    !! This section will be under construction as long as this sign is present !!
+
+Regular supplements
+===================
+
+If you (presumably a developers) is considering to add a new official GMT supplement then
+you should completely model it based on one of the existing supplements.  You will notice that
+your supplement name (the directory) needs to be added to src/CMakeLists.txt.  Just search for
+an existing name there and it is obvious what to change.  Rebuilding everything will automatically
+include your new modules.
+
+Lazy External supplements
+=========================
+
+These are supplements that uses the same layout as the official supplements but of course they
+are not blessed by us and thus cannot go into src.  The solution is to place the supplemental
+directory somewhere else and then set a symbolic link from src to your supplement.  These links
+must be called *newsuppl1*, *newsuppl2*, etc.  Your supplements CMakeLists.txt must set a few
+variables to be included by the GMT build process: **SUPPL_LIB_NAME** is the name of your supplement.
+If it is set we build a separate shared library for it, but if not set it gets added to the GMT
+supplemental shared library.
+
+External supplements needing gmt_dev.h
+======================================
+
+These are stand-alone software that can be built as shared libraries we can access from GMT
+via the **GMT_CUSTOM_LIBS** default setting.  The MB-System is a good example of such a system,
+since it requires access to lower-level (developmental) libraries in GMT and thus must include
+gmt_dev.h.
+
+
+External supplements only using the API
+=======================================
+
+These are supplements that contains modules that are all build just using the GMT API, i.e., they
+only include gmt.h.  These typically have their own build system and only link with libgmt.
