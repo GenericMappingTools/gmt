@@ -1414,16 +1414,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	for (k = 0; k < n_grids; k++) {	/* If memory grids are passed in we must restore the headers */
-		if (mem_G[k] && Grid_orig[k]) {
+		if (mem_G[k] && Grid_orig[k] && header_G[k]) {
 			gmt_copy_gridheader (GMT, Grid_orig[k]->header, header_G[k]);
 			gmt_free_header (API->GMT, &header_G[k]);
 		}
 	}
-	if (mem_I && Intens_orig) {
+	if (mem_I && Intens_orig && header_I) {
 		gmt_copy_gridheader (GMT, Intens_orig->header, header_I);
 		gmt_free_header (API->GMT, &header_I);
 	}
-	if (mem_D && I) {
+	if (mem_D && I && header_D) {
 		gmt_copy_gridheader (GMT, I->header, header_D);
 		gmt_free_header (API->GMT, &header_D);
 	}
