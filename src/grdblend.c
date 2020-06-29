@@ -194,7 +194,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	/* Returns how many blend files or a negative error value if something went wrong */
 	int type, status, not_supported = 0, t_data, k_data = GMT_NOTSET;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
-	bool srtm_job = false, common_inc = true;
+	bool srtm_job = false, common_inc = true, common_reg = true;
 	struct GRDBLEND_INFO *B = NULL;
 	struct GMT_GRID_HEADER *h = *h_ptr;	/* Input header may be NULL or preset */
 	struct GMT_GRID_HIDDEN *GH = NULL;
@@ -330,6 +330,8 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 					fabs((B[n].G->header->inc[GMT_Y] - B[0].G->header->inc[GMT_Y]) / B[0].G->header->inc[GMT_Y]) > 0.002)
 						common_inc = false;
 			}
+			if (B[n].G->header->registration != B[0].G->header->registration)
+				common_reg = false;
 		}
 		gmt_M_str_free (L[n].file);	/* Done with these now */
 		gmt_M_str_free (L[n].region);
@@ -338,9 +340,9 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 
 	if (h == NULL) {	/* Must use the common region from the tiles */
 		uint64_t pp;
-		if (!common_inc) {
+		if (!common_inc || !common_reg) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
-			            "Must specify -I if input grids have different increments\n");
+			    "Must specify -I and -r if input grids have different increments and/or registrations\n");
 			return (-GMT_RUNTIME_ERROR);
 		}
 		/* While the inc may be fixed, our wesn may not be in phase, so since gmt_set_grddim
