@@ -340,11 +340,14 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 
 	if (h == NULL) {	/* Must use the common region from the tiles */
 		uint64_t pp;
-		if (!common_inc || !common_reg) {
+		if (!common_inc)
+			GMT_Report (GMT->parent, GMT_MSG_WARNING,
+			    "Must specify -I if input grids have different increments\n");
+		if (!common_reg)
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			    "Must specify -I and -r if input grids have different increments and/or registrations\n");
+		if (!common_inc || !common_reg)
 			return (-GMT_RUNTIME_ERROR);
-		}
 		/* While the inc may be fixed, our wesn may not be in phase, so since gmt_set_grddim
 		 * will plow through and modify inc if it does not fit, we don't want that here. */
 		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/B[0].G->header->inc[GMT_X] - GMT_CONV6_LIMIT);
