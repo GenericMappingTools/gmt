@@ -337,11 +337,18 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	gmt_M_free (GMT, L);	/* Done with this now */
 
 	if (h == NULL) {	/* Must use the common region from the tiles */
+		uint64_t pp;
 		if (!common_inc) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "Must specify -I if input grids have different increments\n");
 			return (-GMT_RUNTIME_ERROR);
 		}
+		/* While the inc may be fixed, our wesn may not be in phase, so since gmt_set_grddim
+		 * will plow through and modify inc if it does not fit, we don't want that here. */
+		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/B[0].G->header->inc[GMT_X] - GMT_CONV6_LIMIT);
+		wesn[XHI] = wesn[XLO] + pp * B[0].G->header->inc[GMT_X];
+		pp = (uint64_t)ceil ((wesn[YHI] - wesn[YLO])/B[0].G->header->inc[GMT_Y] - GMT_CONV6_LIMIT);
+		wesn[YHI] = wesn[YLO] + pp * B[0].G->header->inc[GMT_Y];
 		/* Create the h structure and initialize it */
 		h = gmt_get_header (GMT);
 		gmt_M_memcpy (h->wesn, wesn, 4, double);
