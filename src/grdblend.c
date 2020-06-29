@@ -345,7 +345,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			    "Must specify -I if input grids have different increments\n");
 		if (!common_reg)
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
-			    "Must specify -I and -r if input grids have different increments and/or registrations\n");
+			    "Must specify -r if input grids have different registrations\n");
 		if (!common_inc || !common_reg)
 			return (-GMT_RUNTIME_ERROR);
 		/* While the inc may be fixed, our wesn may not be in phase, so since gmt_set_grddim
