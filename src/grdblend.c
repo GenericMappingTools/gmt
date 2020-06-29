@@ -362,6 +362,8 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		gmt_M_grd_setpad (GMT, h, GMT->current.io.pad); /* Assign default pad */
 		gmt_set_grddim (GMT, h);	/* Update dimensions */
 		*h_ptr = h;			/* Pass out the updated settings */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
+			"We determined the region %.12g/%.12g/%.12g/%.12g from the given grids", h->wesn[XLO], h->wesn[XHI], h->wesn[YLO], h->wesn[YHI]);
 	}
 
 	HH = gmt_get_H_hidden (h);
