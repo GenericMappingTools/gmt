@@ -395,12 +395,16 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			unsigned int k;
 			k = (unsigned int)rint ((MAX (h->wesn[XLO], B[n].G->header->wesn[XLO]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XLO] = gmt_M_grd_col_to_x (GMT, k, h);
+			while (wesn[XLO] < B[n].G->header->wesn[XLO]) wesn[XLO] += h->inc[GMT_X];	/* Make sure we are not outside this grid */
 			k = (unsigned int)rint  ((MIN (h->wesn[XHI], B[n].G->header->wesn[XHI]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XHI] = gmt_M_grd_col_to_x (GMT, k, h);
+			while (wesn[XHI] > B[n].G->header->wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];	/* Make sure we are not outside this grid */
 			k = h->n_rows - 1 - (unsigned int)rint ((MAX (h->wesn[YLO], B[n].G->header->wesn[YLO]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YLO] = gmt_M_grd_row_to_y (GMT, k, h);
+			while (wesn[YLO] < B[n].G->header->wesn[YLO]) wesn[YLO] += h->inc[GMT_Y];	/* Make sure we are not outside this grid */
 			k = h->n_rows - 1 - (unsigned int)rint  ((MIN (h->wesn[YHI], B[n].G->header->wesn[YHI]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YHI] = gmt_M_grd_row_to_y (GMT, k, h);
+			while (wesn[YHI] > B[n].G->header->wesn[YHI]) wesn[YHI] -= h->inc[GMT_Y];	/* Make sure we are not outside this grid */
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
 			do_sample |= 1;
