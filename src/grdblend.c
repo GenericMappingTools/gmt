@@ -194,7 +194,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	/* Returns how many blend files or a negative error value if something went wrong */
 	int type, status, not_supported = 0, t_data, k_data = GMT_NOTSET;
 	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
-	bool srtm_job = false, common_inc = true;
+	bool srtm_job = false, common_inc = true, common_reg = true;
 	struct GRDBLEND_INFO *B = NULL;
 	struct GMT_GRID_HEADER *h = *h_ptr;	/* Input header may be NULL or preset */
 	struct GMT_GRID_HIDDEN *GH = NULL;
@@ -330,6 +330,8 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 					fabs((B[n].G->header->inc[GMT_Y] - B[0].G->header->inc[GMT_Y]) / B[0].G->header->inc[GMT_Y]) > 0.002)
 						common_inc = false;
 			}
+			if (B[n].G->header->registration != B[0].G->header->registration)
+				common_reg = false;
 		}
 		gmt_M_str_free (L[n].file);	/* Done with these now */
 		gmt_M_str_free (L[n].region);
@@ -337,11 +339,21 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	gmt_M_free (GMT, L);	/* Done with this now */
 
 	if (h == NULL) {	/* Must use the common region from the tiles */
-		if (!common_inc) {
+		uint64_t pp;
+		if (!common_inc)
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
-			            "Must specify -I if input grids have different increments\n");
+			    "Must specify -I if input grids have different increments\n");
+		if (!common_reg)
+			GMT_Report (GMT->parent, GMT_MSG_WARNING,
+			    "Must specify -r if input grids have different registrations\n");
+		if (!common_inc || !common_reg)
 			return (-GMT_RUNTIME_ERROR);
-		}
+		/* While the inc may be fixed, our wesn may not be in phase, so since gmt_set_grddim
+		 * will plow through and modify inc if it does not fit, we don't want that here. */
+		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/B[0].G->header->inc[GMT_X] - GMT_CONV6_LIMIT);
+		wesn[XHI] = wesn[XLO] + pp * B[0].G->header->inc[GMT_X];
+		pp = (uint64_t)ceil ((wesn[YHI] - wesn[YLO])/B[0].G->header->inc[GMT_Y] - GMT_CONV6_LIMIT);
+		wesn[YHI] = wesn[YLO] + pp * B[0].G->header->inc[GMT_Y];
 		/* Create the h structure and initialize it */
 		h = gmt_get_header (GMT);
 		gmt_M_memcpy (h->wesn, wesn, 4, double);
@@ -350,6 +362,8 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		gmt_M_grd_setpad (GMT, h, GMT->current.io.pad); /* Assign default pad */
 		gmt_set_grddim (GMT, h);	/* Update dimensions */
 		*h_ptr = h;			/* Pass out the updated settings */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
+			"We determined the region %.12g/%.12g/%.12g/%.12g from the given grids", h->wesn[XLO], h->wesn[XHI], h->wesn[YLO], h->wesn[YHI]);
 	}
 
 	HH = gmt_get_H_hidden (h);
