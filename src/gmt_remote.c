@@ -902,7 +902,10 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	is_url = (gmt_M_file_is_url (file));	/* A remote file or query given via an URL */
 	is_query = (gmt_M_file_is_query (file));	/* A remote file or query given via an URL */
 
-	if ((c = strchr (file, '?')) && !strchr (file, '=')) {	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
+	if (strchr (file, '?') && (c = strstr (file, "=gd"))) {	/* Must be a netCDF sliced file to be read via GDAL so chop off the =gd?layer/variable specifications */
+		was = c[0]; c[0] = '\0';
+	}
+	else if ((c = strchr (file, '?')) && !strchr (file, '=')) {	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
 		was = c[0]; c[0] = '\0';
 	}
 	else if (c == NULL && (c = strchr (file, '='))) {	/* If no ? then = means grid attributes (e.g., =bf) */

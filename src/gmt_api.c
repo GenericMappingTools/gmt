@@ -13490,7 +13490,7 @@ int GMT_Extract_Region (void *V_API, char *file, double wesn[]) {
 }
 
 float GMT_Get_Version (void *API, unsigned int *major, unsigned int *minor, unsigned int *patch) {
-	/* Return the current lib version as a float, e.g. 6.0, and optionally its constituints.
+	/* Return the current lib version as a float, e.g. 6.0, and optionally its constituents.
 	 * Either one or all of in *major, *minor, *patch args can be NULL. If they are not, one
 	 * gets the corresponding version component. */
 	int major_loc, minor_loc, patch_loc;
