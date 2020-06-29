@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 
 /*
- * Include file for getting GMT API enum codes programmatically via GMT_API_enum ()
+ * Include file for getting GMT API enum codes programmatically via GMT_Get_Enum ()
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
@@ -28,9 +28,9 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 232
+#define GMT_N_API_ENUMS 242
 
-GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
+static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
 	{"GMT_ADD_EXISTING", 16},
 	{"GMT_ADD_FILES_ALWAYS", 2},
@@ -83,6 +83,9 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_FFT_INV", 1},
 	{"GMT_FFT_REAL", 0},
 	{"GMT_FGD", 1},
+	{"GMT_FILE_CHECK", 2},
+	{"GMT_FILE_LOCAL", 0},
+	{"GMT_FILE_REMOTE", 1},
 	{"GMT_FLOAT", 8},
 	{"GMT_GRID_COMMAND_LEN320", 320},
 	{"GMT_GRID_DEFAULT_REG", 1024},
@@ -108,6 +111,8 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_HEADER_OFF", 0},
 	{"GMT_HEADER_ON", 1},
 	{"GMT_HSV", 2},
+	{"GMT_IMAGE_ALPHA_LAYER", 8192},
+	{"GMT_IMAGE_NO_INDEX", 4096},
 	{"GMT_IN", 0},
 	{"GMT_INT", 4},
 	{"GMT_IO", 2},
@@ -158,8 +163,13 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_MODULE_CLASSIC", -5},
 	{"GMT_MODULE_CMD", 0},
 	{"GMT_MODULE_EXIST", -3},
+	{"GMT_MODULE_GROUP", 1},
+	{"GMT_MODULE_HELP", 0},
+	{"GMT_MODULE_KEYS", 0},
 	{"GMT_MODULE_LIST", -4},
 	{"GMT_MODULE_PURPOSE", -2},
+	{"GMT_MODULE_SHOW_CLASSIC", 2},
+	{"GMT_MODULE_SHOW_MODERN", 1},
 	{"GMT_MODULE_SYNOPSIS", -6},
 	{"GMT_MODULE_USAGE", -7},
 	{"GMT_MSG_COMPAT", 6},

@@ -89,7 +89,8 @@ Optional Arguments
     Use **-A+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
     Use **-A+g**\ *paint* to paint the BoundingBox behind the illustration and
     use **-A+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
-    the default pen of 0.25p,black).
+    the default pen of 0.25p,black).  **Note**: If both **+g** and **+f** are used
+    then we use *paint* as the fade color instead of black.
 
 .. _-C:
 
@@ -213,7 +214,7 @@ Optional Arguments
     with the **-B** option is that it creates a frame and very likely
     its annotations. That introduces pixels outside the map data extent,
     and therefore the map extents estimation will be wrong. To avoid
-    this problem use *-*\ *-*\ MAP_FRAME_TYPE=inside option which plots all
+    this problem use **--MAP_FRAME_TYPE**\ =inside option which plots all
     annotations and ticks inside the image and therefore does not
     compromise the coordinate computations. Pay attention also to the
     cases when the plot has any of the sides with whites only because
@@ -234,7 +235,8 @@ Optional Arguments
     sets **-A** **-P**.
 
     Use **-W+k** to create a minimalist KML file that allows loading the
-    image in GoogleEarth. Note that for this option the image must be in
+    image in GoogleEarth. Note that for this option to work it is necessary that the postscript
+    image must have been created with **-JX** or **-Jx** cartesian projection of
     geographical coordinates. If not, a warning is issued but the KML
     file is created anyway. Several modifier options are available to
     customize the KML file in the form of **+**\ *opt* strings. Append
@@ -425,4 +427,3 @@ See Also
 
 :doc:`gmt`,
 :doc:`coast`
-

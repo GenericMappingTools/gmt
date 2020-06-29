@@ -59,6 +59,14 @@ steps:
     cmake --build .
   displayName: Compile GMT
 
+# Cache the ${HOME}/.gmt directory, for docs and testing
+- task: Cache@2
+  inputs:
+    key: cachedata | 20200607
+    path: $(HOME)/.gmt
+    cacheHitVar: CACHE_CACHEDATA_RESTORED
+  displayName: Cache GMT remote data for testing
+
 - bash: |
     set -x -e
     cd build
@@ -66,7 +74,11 @@ steps:
     cmake --build . --target optimize_images
     cmake --build . --target animation
     cmake --build . --target docs_html
+    # if html.log isn't empty (i.e., sphinx raise warnings), return 1
+    ! [ -s doc/rst/html.log ]
     cmake --build . --target docs_man
+    # if man.log isn't empty (i.e., sphinx raise warnings), return 1
+    ! [ -s doc/rst/man.log ]
   displayName: Build documentations
   condition: eq(variables['BUILD_DOCS'], true)
 
@@ -82,18 +94,26 @@ steps:
     gmt defaults -Vd
     gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
     gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-    gmt grdimage @earth_relief_60m -JH10c -Baf -pdf map
+    gmt grdimage @earth_relief_01d -JH10c -Baf -pdf map
     gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
   displayName: Check a few simple commands
 
-# Run the full tests
+# Download remote files, if not already cached
 - bash: |
     set -x -e
-    # Download cache files from remote server before testing, see see #939.
-    $(gmt --show-sharedir)/tools/gmt_getremote.sh cache
-    # Download earth relief files used in testing
-    gmt which -Gu @earth_relief_01m @earth_relief_02m @earth_relief_04m @earth_relief_05m @earth_relief_10m @earth_relief_15m
-    # run all jobs, and rerun failed jobs
+    gmt get -Dcache
+    gmt which -Ga @earth_relief_30m @earth_relief_20m @earth_relief_15m \
+        @earth_relief_10m @earth_relief_10m_g @earth_relief_06m \
+        @earth_relief_05m_g @earth_relief_05m @earth_relief_04m \
+        @earth_relief_02m @earth_relief_01m
+    gmt which -Ga @earth_day_01d @earth_day_20m
+    gmt which -Ga @earth_night_20m
+  displayName: Download remote data
+  condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
+
+# Run the full tests, and rerun failed tests
+- bash: |
+    set -x -e
     cd build
     ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed
   displayName: Full tests

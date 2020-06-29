@@ -3,9 +3,6 @@
 Example Gallery
 ===============
 
-The 50 Examples
-----------------
-
 In this section we will be giving numerous examples of typical usage of
 GMT programs. In general, we will start with a raw data set,
 manipulate the numbers in various ways, then display the results in
@@ -15,9 +12,9 @@ complex illustration.
 
 .. cssclass:: gmtgallary
 
-.. jinja::
+.. jinja:: jinja_ctx
 
-   {% for i in range(1, 51) %}
+   {% for i in range(1, no_of_examples + 1) %}
    {% set i = '%02d' % i %}
    -  .. figure:: /_images/ex{{i}}.*
          :target: ./gallery/ex{{i}}.html
@@ -30,26 +27,3 @@ complex illustration.
    :glob:
 
    gallery/ex*
-
-Animations
-----------
-
-.. cssclass:: gmtgallary
-
-.. jinja::
-
-    {% for i in range(1, 9) %}
-    {% set i = '%02d' % i %}
-    -  .. figure:: /_images/anim{{i}}.*
-          :target: ./gallery/anim{{i}}.html
-
-          :ref:`anim{{i}}`
-
-    {% endfor %}
-
-.. toctree::
-   :hidden:
-   :glob:
-
-   gallery/anim-introduction.rst
-   gallery/anim*

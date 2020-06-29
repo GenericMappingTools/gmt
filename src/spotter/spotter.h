@@ -14,7 +14,7 @@
  *   Contact info: www.soest.hawaii.edu/wessel
  *--------------------------------------------------------------------*/
 /*
- * SPOTTER.H: Include file for programs that link with libspotter.a.
+ * SPOTTER.H: Include file for programs that link with spotter.a.
  *
  * Author:	Paul Wessel, SOEST, Univ. of Hawaii, Honolulu, HI, USA
  * Date:	19-JUL-2010
@@ -24,7 +24,7 @@
 
 /*!
  * \file spotter.h
- * \brief Include file for programs that link with libspotter.
+ * \brief Include file for programs that link with spotter.
  */
 
 #define EQ_RAD 6371.0087714
@@ -34,9 +34,9 @@
 #define PA_2_T  (1.0 / T_2_PA)
 #define SQRT_CHI2 2.44774689322	/* This is sqrt (Chi^2) for 95% and 2 degrees of freedom */
 
-/* Latest GPlates rotation model and polygon IDs [GPlates 2.0.0] */
+/* Latest GPlates rotation model and polygon IDs [Muller 2019] */
 #define GPLATES_PLATES    "Global_EarthByte_Plate_ID_Table"		/* .txt */
-#define GPLATES_ROTATIONS "Matthews_etal_GPC_2016_410-0Ma_GK07"		/* .rot */
+#define GPLATES_ROTATIONS "Global_250-0Ma_Rotations_2019_v2"		/* .rot */
 
 #define SPOTTER_E_OPT "-E<rottable>[+i]|<ID1>-<ID2>[+i]|<plon>/<plat>/<prot>"
 
@@ -86,7 +86,7 @@ struct SPOTTER_ROT {	/* Holds -E information */
 	double lon, lat, w, age;	/* Single finite rotation, if given */
 };
 
-/* ANSI-C Function prototypes (see libspotter.c for details): */
+/* ANSI-C Function prototypes (see spotter.c for details): */
 
 EXTERN_MSC void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e);
 EXTERN_MSC unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct SPOTTER_ROT *R);

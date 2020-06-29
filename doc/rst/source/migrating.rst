@@ -1,5 +1,5 @@
-Migrating from an earlier GMT version
-=====================================
+Migrating from an earlier version
+=================================
 
 Many longtime GMT users have older scripts written in GMT 4 and even in GMT 5
 that may not work immediately in GMT 6.  This reason is not that the syntax

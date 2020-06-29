@@ -42,24 +42,24 @@
 #define INT_2D_GEO	2	/* Spherical 2-D path interpolation */
 
 struct SAMPLE1D_CTRL {
-	struct SAMP1D_Out {	/* -> */
+	struct SAMPLE1D_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct SAMP1D_A {	/* -A[f|m|p|r|R|l][+l] */
+	struct SAMPLE1D_A {	/* -A[f|m|p|r|R|l][+l] */
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct SAMP1D_F {	/* -Fl|a|c[1|2] */
+	struct SAMPLE1D_F {	/* -Fl|a|c[1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
 	} F;
-	struct SAMP1D_N {	/* -N<time_col> */
+	struct SAMPLE1D_N {	/* -N<time_col> */
 		bool active;
 		unsigned int col;
 	} N;
-	struct SAMP1D_T {	/* -T<tmin/tmax/tinc>[+a|n] */
+	struct SAMPLE1D_T {	/* -T<tmin/tmax/tinc>[+a|n] */
 		bool active;
 		struct GMT_ARRAY T;
 	} T;
@@ -70,7 +70,7 @@ struct SAMPLE1D_CTRL {
 	/* -T<time_col> */
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SAMPLE1D_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct SAMPLE1D_CTRL);
@@ -81,14 +81,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	char type[3] = {'l', 'a', 'c'};
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -130,7 +130,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to sample1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -169,13 +169,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -294,7 +294,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sample1d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	unsigned int geometry, int_mode;
 	int error = 0, result;
 

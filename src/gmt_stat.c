@@ -1576,7 +1576,7 @@ double gmt_Fcrit (struct GMT_CTRL *GMT, double alpha, double nu1, double nu2) {
 	return (F_mid);
 }
 
-static inline uint64_t mix64 (uint64_t a, uint64_t b, uint64_t c) {
+static inline uint64_t gmtstat_mix64 (uint64_t a, uint64_t b, uint64_t c) {
 	/* Mix 3 64-bit values, from lookup8.c by Bob Jenkins
 	 * (http://burtleburtle.net/bob/index.html) */
 	a -= b; a -= c; a ^= (c>>43);
@@ -1603,7 +1603,7 @@ double gmt_rand (struct GMT_CTRL *GMT) {
 	while (seed == 0) { /* repeat in case of unsigned overflow */
 		/* Initialize random seed, idea from Jonathan
 		 * Wright (http://stackoverflow.com/q/322938) */
-		seed = (unsigned) mix64 (clock(), time(NULL), getpid());
+		seed = (unsigned) gmtstat_mix64 (clock(), time(NULL), getpid());
 		srand (seed);
 	}
 
@@ -1805,7 +1805,8 @@ int gmt_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 		}
 		else {	/* If we get here, I made a mistake!  */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal goof in gmt_median; please report to developers!\n");
-			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+			*med = GMT->session.d_NaN;
+			return -1;
 		}
 
 	} while (!finished);
@@ -2737,7 +2738,7 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	return lmsscl;
 }
 
-GMT_LOCAL void get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
+GMT_LOCAL void gmtstat_get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Calculate geographic SPHERICAL area in km^2 and place in grid G.
 	 * Integrating the area between two parallels +/- yinc/2 to either side of latitude y on a sphere
 	 * and partition it amount all cells in longitude yields the exact area (angles in radians)
@@ -2788,7 +2789,7 @@ GMT_LOCAL void get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	}
 }
 
-GMT_LOCAL void get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
+GMT_LOCAL void gmtstat_get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Calculate Cartesian cell areas in user units */
 	uint64_t node;
 	unsigned int row, col, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
@@ -2806,7 +2807,7 @@ GMT_LOCAL void get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Calculate geographic spherical in km^2 or plain Cartesian area in suer_unit^2 and place in grid G. */
 	if (gmt_M_is_geographic (GMT, GMT_IN))
-		get_geo_cellarea (GMT, G);
+		gmtstat_get_geo_cellarea (GMT, G);
 	else
-		get_cart_cellarea (GMT, G);
+		gmtstat_get_cart_cellarea (GMT, G);
 }

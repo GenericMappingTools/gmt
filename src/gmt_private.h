@@ -149,6 +149,7 @@ struct GMTAPI_CTRL {
 	int shelf;				/* Place to pass hidden values within API */
 	unsigned int log_level;			/* 0 = stderr, 1 = just this module, 2 = set until unset */
 	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */
+	double tile_wesn[GMTAPI_N_GRID_ARGS];	/* Original region used when getting tiles (perhaps result of -Roblique -J) */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
@@ -164,7 +165,7 @@ struct GMTAPI_CTRL {
 	bool deep_debug;			/* temporary for debugging */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
 	unsigned int do_not_exit;		/* 0 by default, meaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
-	struct Gmt_libinfo *lib;		/* List of shared libs to consider */
+	struct GMT_LIBINFO *lib;		/* List of shared libs to consider */
 	unsigned int n_shared_libs;		/* How many in lib */
 	/* Items used by GMT_Put_Record and sub-functions */
 	int (*api_put_record) (struct GMTAPI_CTRL *API, unsigned int, struct GMT_RECORD *);
@@ -198,6 +199,10 @@ struct GMTAPI_CTRL {
 	GMT_getfunction *current_get_V_val;
 	/* These are used for -O -K -P -c and set to blank under modern/classic modes */
 	char *O_OPT, *K_OPT, *P_OPT, *c_OPT;
+	/* structure array of remote file information (sorted alphabetically) */
+	int n_remote_info;	/* How many remote server files we know of */
+	struct GMT_DATA_INFO *remote_info;
+	bool server_announced;	/* Set to true after we have announced which GMT data server we are using */
 };
 
 /* Macro to test if filename is a special name indicating memory location */

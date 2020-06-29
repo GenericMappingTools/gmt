@@ -69,7 +69,7 @@
  * PSL_setlinecap	: Changes the line cap setting
  * PSL_setlinejoin	: Changes the line join setting
  * PSL_setlinewidth	: Sets a new linewidth
- * PSL_setimage		: Sets up a image pattern fill in PS
+ * PSL_setimage		: Sets up an image pattern fill in PS
  * PSL_setmiterlimit	: Changes the miter limit setting for joins
  * PSL_setorigin	: Translates/rotates the coordinate system
  * PSL_setparagraph	: Sets parameters used to typeset text paragraphs

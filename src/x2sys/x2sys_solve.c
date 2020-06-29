@@ -69,23 +69,23 @@
 #define F_IS_SCALE_OFF	7	/* Apply a scale and offset to the observations for each track */
 
 struct X2SYS_SOLVE_CTRL {
-	struct X2S_SOLVE_In {
+	struct X2SYS_SOLVE_In {
 		bool active;
 		char *file;
 	} In;
-	struct X2S_SOLVE_C {	/* -C */
+	struct X2SYS_SOLVE_C {	/* -C */
 		bool active;
 		char *col;
 	} C;
-	struct X2S_SOLVE_E {	/* -E */
+	struct X2SYS_SOLVE_E {	/* -E */
 		bool active;
 		int mode;
 	} E;
-	struct X2S_SOLVE_T {	/* -T */
+	struct X2SYS_SOLVE_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
-	struct X2S_SOLVE_W {	/* -W[+u] */
+	struct X2SYS_SOLVE_W {	/* -W[+u] */
 		bool active;
 		bool unweighted_stats;
 	} W;
@@ -118,46 +118,46 @@ struct X2SYS_SOLVE_CTRL {
  * col:	  The crossover number we are working on.
  */
 
-GMT_LOCAL double basis_constant (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a constant c*f = c*1 : == 1 */
+GMT_LOCAL double x2syssolve_basis_constant (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a constant c*f = c*1 : == 1 */
 	gmt_M_unused(P); gmt_M_unused(which); gmt_M_unused(row);
 	return (1.0);	/* which, row are not used here */
 }
 
-GMT_LOCAL double basis_tdrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in time c*f = c*t : t */
+GMT_LOCAL double x2syssolve_basis_tdrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in time c*f = c*t : t */
 	return (P[COL_T1+which][row]);	/* When this is called the time columns have been corrected for t0 (start of track) */
 }
 
-GMT_LOCAL double basis_ddrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in dist c*f = c*d : d */
+GMT_LOCAL double x2syssolve_basis_ddrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in dist c*f = c*d : d */
 	return (P[COL_D1+which][row]);
 }
 
-GMT_LOCAL double basis_cosh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(h)  c*f = c*cos(h) : cos(h) */
+GMT_LOCAL double x2syssolve_basis_cosh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(h)  c*f = c*cos(h) : cos(h) */
 	return (cosd(P[COL_H1+which][row]));
 }
 
-GMT_LOCAL double basis_cos2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(2*h)  c*f = c*cos(2*h) : cos(2*h) */
+GMT_LOCAL double x2syssolve_basis_cos2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(2*h)  c*f = c*cos(2*h) : cos(2*h) */
 	return (cosd(2.0*P[COL_H1+which][row]));
 }
 
-GMT_LOCAL double basis_sinh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(h)  c*f = c*sin(h) : sin(h) */
+GMT_LOCAL double x2syssolve_basis_sinh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(h)  c*f = c*sin(h) : sin(h) */
 	return (sind(P[COL_H1+which][row]));
 }
 
-GMT_LOCAL double basis_sin2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(2*h)  c*f = c*sin(2*h) : sin(2*h) */
+GMT_LOCAL double x2syssolve_basis_sin2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(2*h)  c*f = c*sin(2*h) : sin(2*h) */
 	return (sind(2.0*P[COL_H1+which][row]));
 }
 
-GMT_LOCAL double basis_siny2 (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin^2(y)  c*f = c*sin^2(y) : sin^2(y) */
+GMT_LOCAL double x2syssolve_basis_siny2 (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin^2(y)  c*f = c*sin^2(y) : sin^2(y) */
 	gmt_M_unused(which);
 	return (pow (sind(P[COL_YY][row]), 2.0));	/* which not used since y is common to both tracks */
 }
 
-GMT_LOCAL double basis_z (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on value c*f = c*z : z */
+GMT_LOCAL double x2syssolve_basis_z (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on value c*f = c*z : z */
 	return (P[COL_Z1+which][row]);
 }
 
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_SOLVE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_SOLVE_CTRL);
@@ -167,7 +167,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->C.col);
@@ -175,7 +175,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -Ec|d|g|h|s|t|z -T<TAG> [<coedata>] [%s] [-W[+u]]\n\t[%s] [%s]%s[%s]\n\n",
@@ -203,7 +203,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -287,14 +287,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL uint64_t next_unused_track (uint64_t *cluster, uint64_t n) {
+GMT_LOCAL uint64_t x2syssolve_next_unused_track (uint64_t *cluster, uint64_t n) {
 	/* Determines the next track not yet assigned to a cluster */
 	uint64_t k;
 	for (k = 0; k < n; k++) if (cluster[k] == 0) return (k);
 	return (n);	/* Found nothing so we are done */
 }
 
-int GMT_x2sys_solve (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	char **trk_list = NULL, text[GMT_BUFSIZ] = {""}, frmt_name[16] = {""};
 	char trk[2][GMT_LEN64], line[GMT_BUFSIZ] = {""};
 	char file_TAG[GMT_LEN64] = {""}, file_column[GMT_LEN64] = {""};
@@ -356,45 +356,45 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
 		case F_IS_CONSTANT:
 			n_par = n_in = 1;
-			basis[0] = &basis_constant;
+			basis[0] = &x2syssolve_basis_constant;
 			break;
 		case F_IS_DRIFT_T:
 			active_col[COL_T1] = active_col[COL_T2] = true;
 			n_par = 2;	n_in = 3;
-			basis[0] = &basis_constant;
-			basis[1] = &basis_tdrift;
+			basis[0] = &x2syssolve_basis_constant;
+			basis[1] = &x2syssolve_basis_tdrift;
 			break;
 		case F_IS_DRIFT_D:
 			active_col[COL_D1] = active_col[COL_D2] = true;
 			n_par = 2;	n_in = 3;
-			basis[0] = &basis_constant;
-			basis[1] = &basis_ddrift;
+			basis[0] = &x2syssolve_basis_constant;
+			basis[1] = &x2syssolve_basis_ddrift;
 			break;
 		case F_IS_GRAV1930:
 			active_col[COL_YY] = true;
 			n_par = 2;	n_in = 2;
-			basis[0] = &basis_constant;
-			basis[1] = &basis_siny2;
+			basis[0] = &x2syssolve_basis_constant;
+			basis[1] = &x2syssolve_basis_siny2;
 			break;
 		case F_IS_HEADING:
 			active_col[COL_H1] = active_col[COL_H2] = true;
 			n_par = 5;	n_in = 3;
-			basis[0] = &basis_constant;
-			basis[1] = &basis_cosh;
-			basis[2] = &basis_cos2h;
-			basis[3] = &basis_sinh;
-			basis[4] = &basis_sin2h;
+			basis[0] = &x2syssolve_basis_constant;
+			basis[1] = &x2syssolve_basis_cosh;
+			basis[2] = &x2syssolve_basis_cos2h;
+			basis[3] = &x2syssolve_basis_sinh;
+			basis[4] = &x2syssolve_basis_sin2h;
 			break;
 		case F_IS_SCALE:
 			active_col[COL_Z1] = active_col[COL_Z2] = true;
 			n_par = 1;	n_in = 2;
-			basis[0] = &basis_z;
+			basis[0] = &x2syssolve_basis_z;
 			break;
 		case F_IS_SCALE_OFF:
 			active_col[COL_Z1] = active_col[COL_Z2] = true;
 			n_par = 2;	n_in = 2;
-			basis[0] = &basis_constant;
-			basis[1] = &basis_z;
+			basis[0] = &x2syssolve_basis_constant;
+			basis[1] = &x2syssolve_basis_z;
 			break;
 	}
 	if (Ctrl->W.active) n_in++;
@@ -475,6 +475,11 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 				break;
 			continue;
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		in = In->data;
 		if (In->text) {
 			if ((ks = sscanf (In->text, "%s %s", trk[0], trk[1])) != 2) {
@@ -663,7 +668,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		member = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);	/* Temp array to keep all members of current cluster */
 		n_constraints = 0;
 		/* Below, cluster[] array will use counting from 1 to n_constraints, but later we reset to run from 0 instead */
-		while ((p = next_unused_track (cluster, n_tracks)) < n_tracks) {	/* Still more clusters to form */
+		while ((p = x2syssolve_next_unused_track (cluster, n_tracks)) < n_tracks) {	/* Still more clusters to form */
 			n_constraints++;		/* Increment number of constraints, this will happen at least once (i.e., for each cluster) */
 			gmt_M_memset (member, n_tracks, uint64_t);	/* Cluster starts off with no members */
 			member[0] = p;			/* This is the first member of this cluster */

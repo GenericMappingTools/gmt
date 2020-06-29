@@ -25,6 +25,7 @@ install (DIRECTORY ${_gmt_share_dirs}
 	DESTINATION ${GMT_DATADIR}
 	COMPONENT Runtime
 	PATTERN "CMakeLists.txt" EXCLUDE
+	PATTERN ".DS_Store" EXCLUDE
 	REGEX "[.](cmake|in)$" EXCLUDE)
 
 # only attempt to install shorelines when requested and path is known

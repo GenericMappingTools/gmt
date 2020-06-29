@@ -63,7 +63,7 @@ struct GRDMASK_CTRL {
 	} S;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDMASK_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
@@ -73,13 +73,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
@@ -139,7 +139,7 @@ GMT_LOCAL double grdmask_assign (struct GMT_CTRL *GMT, char *p) {
 	return (value);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdmask and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -154,7 +154,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -170,10 +170,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'G':	/* Output filename */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -270,7 +269,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdmask (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 	bool periodic = false, periodic_grid = false, do_test = true;
 	bool wrap_180, replicate_x, replicate_y, worry_about_jumps;
 	unsigned int side = 0, known_side, *d_col = NULL, d_row = 0;
@@ -363,7 +362,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 			for (rowu = 0; rowu < Grid->header->n_rows; rowu++) d_col[rowu] = max_d_col;
 		}
 		else {
-			gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+		if (gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 			if (!Ctrl->S.variable_radius) {	/* Read x,y, fixed radius from -S */
 				radius = Ctrl->S.radius;
 				d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */

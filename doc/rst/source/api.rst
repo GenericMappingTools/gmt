@@ -174,7 +174,7 @@ For the purpose of this documentation a few definitions are needed:
 #. "\ GMT plugin library" refers to a collection of one or more new custom
    GMT-like modules that are presented as a plugin library.  It such libraries
    are placed in the official GMT plugin directory or their path is added to
-   the GMT defaults parameter GMT_CUSTOM_LIBS then the :doc:`gmt` executable can find them.
+   the GMT defaults parameter :term:`GMT_CUSTOM_LIBS` then the :doc:`gmt` executable can find them.
 
 #. "Family" refers to one of the many high-level GMT data types (e.g., grids, CPTs)
    and is typically a required argument to some API functions.
@@ -761,6 +761,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Enum_            | Obtain one of the API enum constants                  |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Get_FilePath_        | Verify input file exist and replace with full path    |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Get_Index_           | Convert row, col into a grid or image index           |
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Info_            | Obtain meta data (range, dimension), ... from object  |
@@ -948,6 +950,32 @@ and can do all sorts of stuff after the GMT session is destroyed, as long as
 no GMT functions or resources are accessed.  It may be convenient to isolate
 the GMT-specific processing from the custom part of the program and only
 maintain an active GMT session when needed.
+
+Get full path to local or remote files
+--------------------------------------
+
+If given a filename, GMT will look in several directories to find the given
+input file.  However, GMT can also look for files remotely, either via the
+remote file mechanism or URLs.  When you have a remote file (@filename) you
+may wish to have GMT automatically download the file and provide you with the
+local path.  This is a job for GMT_Get_FilePath_, whose prototype is
+
+.. _GMT_Get_FilePath:
+
+  ::
+
+    int GMT_Get_FilePath (void *API, unsigned int family, unsigned int direction,
+      unsigned int mode, char **ptr);
+
+where :ref:`family <tbl-family>` and ``direction`` set the data file type and whether it is
+for input or output, ``mode`` modifies the behavior of the function, and
+``*ptr`` is a pointer to a character string with the filename in question.  Normally,
+we only look for local files (GMT_FILE_LOCAL [0]), but if ``mode`` contains
+the bit flag GMT_FILE_REMOTE [1] we will try to download any remote files given
+to the function.  By default, we will replace the filename with the full
+path.  Add the bit flag GMT_FILE_CHECK [2] to only check for the files and return
+error codes but leave ``*ptr`` alone.
+
 
 Register input or output resources
 ----------------------------------
@@ -1289,7 +1317,9 @@ For vectors the same principles apply:
 where ``V`` is the :ref:`GMT_VECTOR <struct-vector>` created by GMT_Create_Data_, ``col`` is the vector
 column in question, ``type`` is one of the
 recognized data :ref:`types <tbl-types>` used for this vector, and ``vector`` is
-a pointer to this custom vector.
+a pointer to this custom vector.  In addition, ``type`` may be also **GMT_DATETIME**, in which case
+we expect an array of strings with ISO datetime strings and we do the conversion to internal
+GMT time and allocate a vector to hold the result in the given ``col``.
 To extract a custom vector from an output :ref:`GMT_VECTOR <struct-vector>` you can use
 
 .. _GMT_Get_Vector:
@@ -1541,7 +1571,7 @@ different data types.
     Here, ``mode`` determines how we read the grid: To read the entire
     grid and its header, pass ``GMT_CONTAINER_AND_DATA``. However, if you may need to
     extract a sub-region you must first read the header by passing
-    ``GMT_CONTAINER_ONLY``, then examine the header structure range
+    ``GMT_CONTAINER_ONLY`` with ``wesn`` = NULL, then examine the header structure range
     attributes, specify a subset via the array ``wesn``, and
     finally call GMT_Read_Data_ a second time, now with ``mode`` =
     ``GMT_DATA_ONLY``, passing your ``wesn`` array and the grid
@@ -1654,11 +1684,12 @@ to ``family`` so that the module knows what to do.  Finally, in the case of pass
 ``data`` as NULL you may also control what type of matrix or vector will be created in
 GMT for the output by adding in the modifiers GMT_VIA_type, as listed in :ref:`types <tbl-viatypes>`.
 **Note**: GMT tries to minimize data duplication if possible, so if your input arrays are
-compatible with the data type used by the modules then we may use your array directly.
-This *may* have the side-effect that your input array is modified by the module.
-If you want to prevent this from happening then add GMT_IS_DUPLICATE to the ``direction``
-argument and we will duplicate the array internally to make sure your input is truly
-read-only.
+compatible with the data type used by the modules then we could use your array directly.
+This *may* have the side-effect that your input array is modified by the module, especially
+if the module writes the results to a netCDF grid file.
+If that is a price you are willing to pay then you can add GMT_IS_REFERENCE to the ``direction``
+argument and we will pass the array internally to avoid duplicating memory. For output it is
+best to pass GMT_IS_REFERENCE as well.
 
 Import from a virtual file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2285,7 +2316,7 @@ where ``data`` is a pointer to any of the four structures discussed previously.
     **GMT_WRITE_TABLE**
         Each table in the data set is written to individual files [1].
         You can either specify an output file name that *must* contain
-        one C-style format specifier for a int variable (e.g.,
+        one C-style format specifier for an int variable (e.g.,
         "New_Table_%06d.txt"), which will be replaced with the table
         number (a running number from 0) *or* you must assign to each
         table *i* a unique output file name via the
@@ -3636,7 +3667,7 @@ The full definition of the ``GMT_GRID_HEADER`` structure.  Most of these members
 										                       grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
        unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
        size_t       nm;                 /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
-       size_t       size;               /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
+       size_t       size;               /* Actual number of items (not bytes) required to hold this grid (= mx * my), per band */
        size_t       n_alloc;            /* Bytes allocated for this grid */
        unsigned int n_bands;            /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
        unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */
@@ -3654,6 +3685,8 @@ An image is similar to a grid except it may have more than one layer (i.e., band
 It is represented by a :ref:`GMT_IMAGE <struct-image>` structure that consists of the
 :ref:`GMT_GRID_HEADER <struct-gridheader>` structure and an char array ``data`` that
 contains the image values.  The type of the array is determined by the value of ``type``.
+**Note**: The header *size* value reflects number of nodes per band, so the actual memory
+allocated will be *size * n_bands*.
 
 .. _struct-image:
 

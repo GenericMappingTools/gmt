@@ -231,7 +231,6 @@ EXTERN_MSC FILE *x2sys_fopen (struct GMT_CTRL *GMT, char *fname, char *mode);
 EXTERN_MSC int x2sys_access (struct GMT_CTRL *GMT, char *fname, int mode);
 EXTERN_MSC void x2sys_path (struct GMT_CTRL *GMT, char *fname, char *path);
 
-EXTERN_MSC int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
 EXTERN_MSC int x2sys_read_file        (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
 EXTERN_MSC int x2sys_read_gmtfile     (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
 EXTERN_MSC int x2sys_read_mgd77file   (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
@@ -246,7 +245,6 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 
 EXTERN_MSC double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n);
 
-EXTERN_MSC void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_fclose (struct GMT_CTRL *GMT, char *fname, FILE *fp);
 EXTERN_MSC void x2sys_free_info (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
 EXTERN_MSC void x2sys_free_data (struct GMT_CTRL *GMT, double **data, unsigned int n, struct X2SYS_FILE_INFO *p);
@@ -266,9 +264,7 @@ EXTERN_MSC int x2sys_bix_free (struct GMT_CTRL *GMT, struct X2SYS_BIX *B);
 
 EXTERN_MSC void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, char *suffix);
-EXTERN_MSC int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file);
 EXTERN_MSC int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file);
-EXTERN_MSC const char * x2sys_strerror (struct GMT_CTRL *GMT, int err);
 
 EXTERN_MSC uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *ntracks);
 EXTERN_MSC void x2sys_free_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_COE_PAIR *P, uint64_t np);

@@ -28,11 +28,11 @@
   * Joaquim Luis, Mars 2011.
   */
 
-#include "common_byteswap.h"
+#include "gmt_common_byteswap.h"
 
 /* Private function visible only in this file */
 
-GMT_LOCAL int esri_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
+GMT_LOCAL int gmtesriio_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
 	/* Note: fp is an open file pointer passed in; it will be closed upstream and not here */
 	char record[GMT_BUFSIZ] = {""}, item[GMT_LEN64] = {""};
 
@@ -72,9 +72,9 @@ GMT_LOCAL int esri_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_H
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+GMT_LOCAL int gmtesriio_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Parse the contents of a .HDR file */
-	int nB;
+	int nB, error;
 	char record[GMT_BUFSIZ];
 	FILE *fp = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -167,14 +167,15 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 	header->wesn[XHI] = header->wesn[XLO] + (header->n_columns - 1 + header->registration) * header->inc[GMT_X];
 	header->wesn[YLO] = header->wesn[YHI] - (header->n_rows - 1 + header->registration) * header->inc[GMT_Y];
 
-	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), HH->name);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), HH->name)))
+		return error;
 
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
+GMT_LOCAL int gmtesriio_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
 	/* Note: fp is an open file pointer passed in; it will be closed upstream and not here */
-	int c;
+	int c, error;
 	char record[GMT_BUFSIZ];
 	FILE *fp2 = NULL, *fpBAK = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -185,7 +186,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 
 	if (HH->flags[0] == 'M' || HH->flags[0] == 'I') {	/* We are dealing with a ESRI .hdr file */
 		int error;
-		if ((error = esri_read_info_hdr (GMT, header)) != 0) 		/* Continue the work someplace else */
+		if ((error = gmtesriio_read_info_hdr (GMT, header)) != 0) 		/* Continue the work someplace else */
 			return (error);
 		else
 			return (GMT_NOERROR);
@@ -326,7 +327,8 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	header->wesn[XHI] = header->wesn[XLO] + (header->n_columns - 1 + header->registration) * header->inc[GMT_X];
 	header->wesn[YHI] = header->wesn[YLO] + (header->n_rows - 1 + header->registration) * header->inc[GMT_Y];
 
-	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), HH->name);
+	if ((error = gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), HH->name)))
+		return error;
 
 	if (fpBAK) {		/* Case of Arc/Info binary file with a separate header file. We still have things to do. */
 		char tmp[16];
@@ -351,7 +353,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	return (GMT_NOERROR);
 }
 
-int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an ESRI Interchange ASCII file */
 	FILE *fp = NULL;
 	char record[GMT_BUFSIZ];
@@ -432,7 +434,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				HH->orig_datatype = GMT_SHORT;
 			}
 			else if (name_len > 3 && !(strncmp (&HH->name[name_len-4], ".hgt", 4) && strncmp (&HH->name[name_len-4], ".HGT", 4))) {
-				/* Probably a SRTM1|3 file. In esri_read_info we'll check further if it is a 1 or 3 sec */
+				/* Probably a SRTM1|3 file. In gmtesriio_read_info we'll check further if it is a 1 or 3 sec */
 				if ((file[len-4] == 'E' || file[len-4] == 'e' || file[len-4] == 'W' || file[len-4] == 'w') &&
 					(file[len-7] == 'N' || file[len-7] == 'n' || file[len-7] == 'S' || file[len-7] == 's')) {
 					HH->flags[0] = 'B';	/* SRTM1|3 are Big Endians */
@@ -465,7 +467,7 @@ int gmt_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	else if ((fp = gmt_fopen (GMT, HH->name, "r")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	if ((error = esri_read_info (GMT, fp, header)) != 0) {
+	if ((error = gmtesriio_read_info (GMT, fp, header)) != 0) {
 		gmt_fclose (GMT, fp);
 		return (error);
 	}
@@ -484,7 +486,7 @@ int gmt_esri_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	else if ((fp = gmt_fopen (GMT, HH->name, "w")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
-	esri_write_info (GMT, fp, header);
+	gmtesriio_write_info (GMT, fp, header);
 
 	gmt_fclose (GMT, fp);
 
@@ -520,7 +522,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	if (!strcmp (HH->name, "="))	/* Read from pipe */
 		fp = GMT->session.std[GMT_IN];
 	else if ((fp = gmt_fopen (GMT, HH->name, r_mode)) != NULL) {
-		if ((error = esri_read_info (GMT, fp, header)) != 0) {
+		if ((error = gmtesriio_read_info (GMT, fp, header)) != 0) {
 			gmt_fclose (GMT, fp);
 			return (error);
 		}
@@ -677,7 +679,7 @@ int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	else if ((fp = gmt_fopen (GMT, HH->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	else
-		esri_write_info (GMT, fp, header);
+		gmtesriio_write_info (GMT, fp, header);
 
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), HH->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */

@@ -179,14 +179,19 @@ enum GMT_enum_apierr {
 };
 
 enum GMT_enum_module {
-	GMT_MODULE_USAGE	= -7,	/* What GMT_Call_Module returns if told to print usage only */
-	GMT_MODULE_SYNOPSIS	= -6,	/* What GMT_Call_Module returns if told to print synopsis only */
-	GMT_MODULE_CLASSIC	= -5,	/* mode for GMT_Call_Module to print list of all classic modules */
-	GMT_MODULE_LIST		= -4,	/* mode for GMT_Call_Module to print list of all modern modules */
-	GMT_MODULE_EXIST	= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
-	GMT_MODULE_PURPOSE	= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
-	GMT_MODULE_OPT		= -1,	/* Gave linked list of option structures to GMT_Call_Module */
-	GMT_MODULE_CMD		=  0	/* Gave an array of text strings (argv[]) to GMT_Call_Module */
+	GMT_MODULE_USAGE		= -7,	/* What GMT_Call_Module returns if told to print usage only */
+	GMT_MODULE_SYNOPSIS		= -6,	/* What GMT_Call_Module returns if told to print synopsis only */
+	GMT_MODULE_CLASSIC		= -5,	/* mode for GMT_Call_Module to print list of all classic modules */
+	GMT_MODULE_LIST			= -4,	/* mode for GMT_Call_Module to print list of all modern modules */
+	GMT_MODULE_EXIST		= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
+	GMT_MODULE_PURPOSE		= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
+	GMT_MODULE_OPT			= -1,	/* Gave linked list of option structures to GMT_Call_Module */
+	GMT_MODULE_CMD			=  0,	/* Gave an array of text strings (argv[]) to GMT_Call_Module */
+	GMT_MODULE_HELP     	 	=  0,	/* Mode for GMT_Show_ModuleInfo to do gmt --help */
+	GMT_MODULE_SHOW_MODERN   	=  1,	/* Mode for GMT_Show_ModuleInfo to list all modern modules in gmt --show-modules */
+	GMT_MODULE_SHOW_CLASSIC  	=  2,	/* Mode for GMT_Show_ModuleInfo to list all classic modules in gmt --show-classic */
+	GMT_MODULE_KEYS  		=  0,	/* Mode for GMT_Get_ModuleInfo to request the module keys */
+	GMT_MODULE_GROUP   		=  1	/* Mode for GMT_Get_ModuleInfo to request the module group */
 };
 
 /* Array indices for input/output/stderr variables */
@@ -212,6 +217,13 @@ enum GMT_enum_freg {
 	GMT_ADD_STDIO_ALWAYS  =  8,	/* Tell GMT_Init_IO to always register std(in|out) */
 	GMT_ADD_EXISTING      = 16,	/* Tell GMT_Init_IO to only use already registered resources */
 	GMT_ADD_DEFAULT       =  6	/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
+};
+
+/* Three constants for GMT_Get_DataPath modes */
+enum GMT_enum_files {
+	GMT_FILE_LOCAL        =  0,	/* Tell GMT_Get_DataPath to only consider local files and ignore remote files */
+	GMT_FILE_REMOTE       =  1,	/* Tell GMT_Get_DataPath to try to download remote files if given such files (@filename) */
+	GMT_FILE_CHECK        =  2,	/* Tell GMT_Get_DataPath to only return error codes but not update the path */
 };
 
 enum GMT_enum_ioset {
@@ -345,7 +357,9 @@ enum GMT_enum_gridio {
 	GMT_GRID_ROW_BY_ROW_MANUAL = 64U,   /* Read|write the grid array one row at the time in any order */
 	GMT_GRID_XY		   = 128U,  /* Allocate and initialize x,y vectors */
 	GMT_GRID_IS_GEO		   = 256U,  /* Grid is a geographic grid, not Cartesian */
-	GMT_GRID_IS_IMAGE	   = 512U   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
+	GMT_GRID_IS_IMAGE	   = 512U,   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
+	GMT_IMAGE_NO_INDEX	   = 4096,	/* If reading an indexed grid, convert to rgb so we can interpolate */
+	GMT_IMAGE_ALPHA_LAYER  = 8192	/* Place any alpha layer in the image band, not alpha array */
 };
 
 #define GMT_GRID_ALL		0U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_AND_DATA */
@@ -771,6 +785,19 @@ struct GMT_RESOURCE {	/* Information related to passing resources between GMT an
 	int pos;			/* Corresponding index into external object in|out arrays */
 	int mode;			/* Either primary (0) or secondary (1) resource */
 	void *object;			/* Pointer to the actual GMT object */
+};
+
+/*============================================================ */
+/*  struct GMT_MODULEINFO is for supplement Developers only == */
+/*============================================================ */
+
+/* Shared library structure: name (classic and modern), library, purpose, keys for each module */
+struct GMT_MODULEINFO {
+	const char *mname;            /* Program (modern) name */
+	const char *cname;            /* Program (classic) name */
+	const char *component;        /* Component (core, supplement, custom) */
+	const char *purpose;          /* Program purpose */
+	const char *keys;             /* Program option info for external APIs */
 };
 
 #endif /* GMT_RESOURCES_H */

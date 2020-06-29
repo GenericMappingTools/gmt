@@ -82,7 +82,7 @@
  * PSL_setlinejoin	   : Changes the line join setting
  * PSL_setlinewidth	   : Sets a new linewidth
  * PSL_setmiterlimit	   : Changes the miter limit setting for joins
- * PSL_setimage		   : Sets up a image pattern fill in PS
+ * PSL_setimage		   : Sets up an image pattern fill in PS
  * PSL_setorigin	   : Translates/rotates the coordinate system
  * PSL_setparagraph	   : Sets parameters used to typeset text paragraphs
  * PSL_settransparencymode : Set a new mode for how transparency is understoody
@@ -199,13 +199,6 @@ static inline uint32_t inline_bswap32 (uint32_t x) {
 	}
 #	define bswap32 inline_bswap32
 #endif /* HAVE___BUILTIN_BSWAP32 */
-
-/* Macro for exit since this should be returned when called from Matlab */
-#ifdef DO_NOT_EXIT
-#define PSL_exit(code) return(code)
-#else
-#define PSL_exit(code) exit(code)
-#endif
 
 #define PSL_M_unused(x) (void)(x)
 
@@ -545,7 +538,7 @@ static void psl_dos_path_fix (char *dir) {
 		}
 	}
 
-	/* Replace ...:C:/... by ...;C:/... as that was a multi-path set by a e.g. bash shell (msys or cygwin) */
+	/* Replace ...:C:/... by ...;C:/... as that was a multi-path set by an e.g. bash shell (msys or cygwin) */
 	for (k = 4; k < n-2; k++) {
 		if ((dir[k-1] == ':' && dir[k+1] == ':' && dir[k+2] == '/' && isalpha ((int)dir[k])) )
 			dir[k-1] = ';';
@@ -1764,15 +1757,15 @@ static char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const c
 
 static int psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
 	/* Write the specified encoding string to file */
-	int k = 0, match = 0;
+	int k = 0, match = 0, err = 0;
 	while (PSL_ISO_name[k] && (match = strcmp (encoding, PSL_ISO_name[k])) != 0) k++;
 	if (match == 0)
 		PSL_command (PSL, "%s", PSL_ISO_encoding[k]);
 	else {
 		PSL_message (PSL, PSL_MSG_ERROR, "Fatal Error: Could not find ISO encoding %s\n", encoding);
-		PSL_exit (EXIT_FAILURE);
+		err = -1;
 	}
-	return 0;
+	return err;
 }
 
 /* psl_bulkcopy copies the given long static string (defined in PSL_strings.h)
@@ -2285,7 +2278,7 @@ static int psl_mathrightangle (struct PSL_CTRL *PSL, double x, double y, double 
 	double size, xx[3], yy[3];
 
 	PSL_comment (PSL, "Start of Math right angle\n");
-	PSL_command (PSL, "V %d %d T %lg R\n", psl_ix (PSL, x), psl_iy (PSL, y), param[1]);
+	PSL_command (PSL, "V %d %d T %.12g R\n", psl_ix (PSL, x), psl_iy (PSL, y), param[1]);
 	size = param[0] / M_SQRT2;
 
 	xx[0] = xx[1] = size;	xx[2] = 0.0;
@@ -2474,13 +2467,13 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 	else {	/* User image, check to see if already used */
 		if (imagefile == NULL) {
 			PSL_message (PSL, PSL_MSG_ERROR, "Error: Gave NULL as imagefile name\n");
-			PSL_exit (EXIT_FAILURE);
+			return (-1);
 		}
 		i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
 		if (i >= 0) return (PSL_N_PATTERNS + i + 1);	/* Already registered, just return number */
 		if (PSL->internal.n_userimages > (PSL_N_PATTERNS-1)) {
 			PSL_message (PSL, PSL_MSG_ERROR, "Error: Already maintaining %d user images and cannot accept any more\n", PSL->internal.n_userimages+1);
-			PSL_exit (EXIT_FAILURE);
+			return (-1);
 		}
 		/* Must initialize a previously unused image */
 		PSL->internal.user_image[PSL->internal.n_userimages] = PSL_memory (PSL, NULL, strlen (imagefile)+1, char);
@@ -2539,7 +2532,7 @@ void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], do
 		PSL_setfill (PSL, rgb, outline);
 	angle = atan2 ((ytip-ytail),(xtip-xtail)) * R2D;			/* Angle vector makes with horizontal, in radians */
 	PSL_command (PSL, "V %d %d T ", psl_ix (PSL, xtail), psl_ix (PSL, ytail));	/* Temporarily set tail point the local origin (0, 0) */
-	if (angle != 0.0) PSL_command (PSL, "%g R ", angle);		/* Rotate so vector is horizontal in local coordinate system */
+	if (angle != 0.0) PSL_command (PSL, "%.12g R ", angle);		/* Rotate so vector is horizontal in local coordinate system */
 	w2 = psl_ix (PSL, 0.5 * tailwidth);	if (w2 == 0) w2 = 1;	/* Half-width of vector tail */
 	hw = psl_ix (PSL, headwidth);	if (hw == 0) hw = 1;		/* Width of vector head */
 	hl = psl_ix (PSL, headlength);								/* Length of vector head */
@@ -2621,7 +2614,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	s = sqrt (headlength * headwidth)/2;		/* Same square 	area as vector head */
 	PSL_comment (PSL, "Start of Cartesian vector\n");
 	PSL_command (PSL, "V %d %d T ", psl_ix (PSL, x), psl_iy (PSL, y));	/* Temporarily set tail point the local origin (0, 0) */
-	if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
+	if (angle != 0.0) PSL_command (PSL, "%.12g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
 	/* Make any adjustments caused by trim */
 	xx[0] = (heads & 1) ? off[PSL_BEGIN] : 0.0;
 	xx[1] = (heads & 2) ? length_inch - off[PSL_END] : length_inch;
@@ -2764,7 +2757,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 		double f = (kind[PSL_END] == PSL_VEC_ARROW_PLAIN) ? 4.0 : 2.0;
 		PSL_comment (PSL, "Cartesian vector head at end\n");
 		PSL_command (PSL, "V %d %d T ", psl_ix (PSL, xtip), psl_iy (PSL, ytip));	/* Temporarily set head point the local origin (0, 0) */
-		if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
+		if (angle != 0.0) PSL_command (PSL, "%.12g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
 		PSL_command (PSL, "PSL_vecheadpen\n");		/* Switch to vector head pen */
 		psl_forcelinewidth (PSL, f * h_penwidth);	/* Force pen width update */
 		switch (kind[PSL_END]) {
@@ -2893,16 +2886,16 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 	bool fill = flags & 1, outline = flags & 2;
 
 	if (status == 0 && !windshield) {	/* Good old plain pie wedge */
-		PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+		PSL_command (PSL, "%d %.12g %.12g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
 		return (PSL_NO_ERROR);
 	}
 	/* Somewhat more involved */
 	if (fill) {	/* Paint wedge given fill first but not outline (if desired) */
 		if (windshield)
-			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P fs U\n", psl_ix (PSL, x), psl_iy (PSL, y),
+			PSL_command (PSL, "V %d %d T 0 0 %d %.12g %.12g arc 0 0 %d %.12g %.12g arcn P fs U\n", psl_ix (PSL, x), psl_iy (PSL, y),
 				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
 		else
-			PSL_command (PSL, "%d %g %g %d %d 2 copy M 5 2 roll arc fs\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+			PSL_command (PSL, "%d %.12g %.12g %d %d 2 copy M 5 2 roll arc fs\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
 	}
 	/* Next, if spiderweb is desired we need to set up a save/restore section and change the pen to PSL_spiderpen */
 	if (status) PSL_command (PSL, "V PSL_spiderpen\n");
@@ -2950,10 +2943,10 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 	if (status) PSL_command (PSL, "U\n");	/* Restore graphics state after messing with spiders */
 	if (outline) {	/* Draw wedge outline on top */
 		if (windshield)
-			PSL_command (PSL, "V %d %d T 0 0 %d %g %g arc 0 0 %d %g %g arcn P os U\n", psl_ix (PSL, x), psl_iy (PSL, y),
+			PSL_command (PSL, "V %d %d T 0 0 %d %.12g %.12g arc 0 0 %d %.12g %.12g arcn P os U\n", psl_ix (PSL, x), psl_iy (PSL, y),
 				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
 		else
-			PSL_command (PSL, "%d %g %g %d %d 2 copy M 5 2 roll arc os\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+			PSL_command (PSL, "%d %.12g %.12g %d %d 2 copy M 5 2 roll arc os\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
 	}
 	return (PSL_NO_ERROR);
 }
@@ -3174,7 +3167,7 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 		if ((in = fopen (fullname, "r")) == NULL) {	/* File exist but opening fails? WTF! */
 			PSL_message (PSL, PSL_MSG_ERROR, "Fatal Error: ");
 			perror (fullname);
-			PSL_exit (EXIT_FAILURE);
+			return (EXIT_FAILURE);
 		}
 
 		while (fgets (buf, PSL_BUFSIZ, in)) {
@@ -3390,7 +3383,7 @@ static char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]) {
 	}
 	if (!PSL_eq (rgb[3], 0.0)) {
 		/* Transparency */
-		sprintf (&text[strlen(text)], " %g /%s PSL_transp", 1.0 - rgb[3], PSL->current.transparency_mode);
+		sprintf (&text[strlen(text)], " %.12g /%s PSL_transp", 1.0 - rgb[3], PSL->current.transparency_mode);
 	}
 	return (text);
 }
@@ -3459,12 +3452,12 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int flags, char *sharedir, 
 		psl_dos_path_fix (PSL->internal.SHAREDIR);
 		if (access(PSL->internal.SHAREDIR, R_OK)) {
 			PSL_message (PSL, PSL_MSG_ERROR, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
-			PSL_exit (EXIT_FAILURE);
+			return (EXIT_FAILURE);
 		}
 	}
 	else {	/* No sharedir found */
 		PSL_message (PSL, PSL_MSG_ERROR, "Error: Could not locate PSL_SHAREDIR.\n");
-		PSL_exit (EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	}
 
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
@@ -3537,7 +3530,7 @@ int PSL_plotarc (struct PSL_CTRL *PSL, double x, double y, double radius, double
 	if (radius < 0.0) return (PSL_BAD_SIZE);
 	ir = psl_iz (PSL, radius);
 	if (type & PSL_MOVE) PSL_command (PSL, "N ");
-	PSL_command (PSL, "%d %d %d %g %g arc", psl_ix(PSL, x), psl_iy(PSL, y), ir, az1, az2);
+	PSL_command (PSL, "%d %d %d %.12g %.12g arc", psl_ix(PSL, x), psl_iy(PSL, y), ir, az1, az2);
 	if (az1 > az2) PSL_command(PSL, "n");
 	PSL_command (PSL, (type & PSL_STROKE) ? " S\n" : "\n");
 	return (PSL_NO_ERROR);
@@ -3579,7 +3572,7 @@ int PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label, doub
 	annot_justify = label_justify = (side < 2) ? -10 : -2;	/* And how to justify */
 	dy = sign * annotfontsize * PSL->internal.p2u;	/* Font size in user units */
 
-	PSL_command (PSL, "\nV %d %d T %g R\n", psl_iz (PSL, x), psl_iz (PSL, y), angle);
+	PSL_command (PSL, "\nV %d %d T %.12g R\n", psl_iz (PSL, x), psl_iz (PSL, y), angle);
 	PSL_command (PSL, "N 0 0 M %d 0 D S\n", psl_iz (PSL, length));
 	scl = length / (val1 - val0);
 	annot_off = dy;
@@ -3851,14 +3844,14 @@ int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], int
 		case PSL_WEDGE:		/* A wedge or pie-slice. size[0] = radius, size[1..2] = azimuth range of arc */
 			psl_wedge (PSL, x, y, size);
 #if 0
-			PSL_command (PSL, "%d %g %g %d %d Sw\n", psl_iz (PSL, size[0]), size[1], size[2], psl_ix (PSL, x), psl_iy (PSL, y));
+			PSL_command (PSL, "%d %.12g %.12g %d %d Sw\n", psl_iz (PSL, size[0]), size[1], size[2], psl_ix (PSL, x), psl_iy (PSL, y));
 #endif
 			break;
 		case PSL_MARC:		/* An arc with optional arrows. size[0] = radius, size[1..2] = azimuth range of arc, size[3] = shape, size[4] = arrows (0 = none, 1 = backward, 2 = forward, 3 = both) */
 			psl_matharc (PSL, x, y, size);
 			break;
 		case PSL_ELLIPSE:	/* An ellipse. size[0] = angle of major axis, size[1..2] = length of major and minor axis */
-			PSL_command (PSL, "%d %d %g %d %d Se\n", psl_iz (PSL, 0.5 * size[1]), psl_iz (PSL, 0.5 * size[2]), size[0], psl_ix (PSL, x), psl_iy (PSL, y));
+			PSL_command (PSL, "%d %d %.12g %d %d Se\n", psl_iz (PSL, 0.5 * size[1]), psl_iz (PSL, 0.5 * size[2]), size[0], psl_ix (PSL, x), psl_iy (PSL, y));
 			break;
 		case PSL_RECT:		/* A rectangle. size[0..1] = width and height */
 			PSL_command (PSL, "%d %d %d %d Sr\n", psl_iz (PSL, size[1]), psl_iz (PSL, size[0]), psl_ix (PSL, x), psl_iy (PSL, y));
@@ -3867,7 +3860,7 @@ int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], int
 			PSL_command (PSL, "%d %d %d %d %d SR\n", psl_iz (PSL, size[1]), psl_iz (PSL, size[0]), psl_iz (PSL, size[2]), psl_ix (PSL, x), psl_iy (PSL, y));
 			break;
 		case PSL_ROTRECT:	/* A rotated rectangle. size[0] = angle, size[1..2] = width and height */
-			PSL_command (PSL, "%d %d %g %d %d Sj\n", psl_iz (PSL, size[2]), psl_iz (PSL, size[1]), size[0], psl_ix (PSL, x), psl_iy (PSL, y));
+			PSL_command (PSL, "%d %d %.12g %d %d Sj\n", psl_iz (PSL, size[2]), psl_iz (PSL, size[1]), size[0], psl_ix (PSL, x), psl_iy (PSL, y));
 			break;
 		case PSL_VECTOR:	/* A zero-, one- or two-headed vector (x,y = tail coordinates) */
 			status = psl_vector (PSL, x, y, size);
@@ -3908,7 +3901,7 @@ int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
 	}
 	if (transparency == PSL->current.transparency) return (PSL_NO_ERROR);	/* Quietly return if same as before */
 
-	PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
+	PSL_command (PSL, "%.12g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
 	PSL->current.transparency = transparency;	/* Remember current setting */
 	return (PSL_NO_ERROR);
 }
@@ -4007,14 +4000,16 @@ int PSL_setimage (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned 
 
 	/* Determine if image was used before */
 
-	if ((image_no > 0 && image_no <= PSL_N_PATTERNS) && !PSL->internal.pattern[image_no-1].status)	/* Unused predefined */
-		image_no = psl_pattern_init (PSL, image_no, NULL, NULL, 64, 64, 1);
+	if ((image_no > 0 && image_no <= PSL_N_PATTERNS) && !PSL->internal.pattern[image_no-1].status) {	/* Unused predefined */
+		if ((image_no = psl_pattern_init (PSL, image_no, NULL, NULL, 64, 64, 1)) < 0) return -1;	/* Error in psl_pattern_init */
+	}
 	else if (image_no < 0) {	/* User image, check if already used */
 		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
 		if (i == -1)	/* Not found or no previous user images loaded */
 			image_no = psl_pattern_init (PSL, -1, imagefile, image, dim[0], dim[1], dim[2]);
 		else
 			image_no = PSL_N_PATTERNS + i + 1;
+		if (image_no < 0) return -1;	/* Error in psl_pattern_init */
 	}
 	k = image_no - 1;	/* Image array index */
 	nx = PSL->internal.pattern[k].nx;
@@ -4086,9 +4081,9 @@ int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, do
 	}
 
 	PSL_command (PSL, "PSL_eps_begin\n");
-	PSL_command (PSL, "%d %d T %g %g scale\n", psl_ix (PSL, x), psl_iy (PSL, y), xsize * PSL->internal.dpu / width, ysize * PSL->internal.dpu / height);
-	PSL_command (PSL, "%g %g T\n", -h->llx, -h->lly);
-	PSL_command (PSL, "N %g %g M %g %g L %g %g L %g %g L P clip N\n", h->llx, h->lly, h->trx, h->lly, h->trx, h->try, h->llx, h->try);
+	PSL_command (PSL, "%d %d T %.12g %.12g scale\n", psl_ix (PSL, x), psl_iy (PSL, y), xsize * PSL->internal.dpu / width, ysize * PSL->internal.dpu / height);
+	PSL_command (PSL, "%.12g %.12g T\n", -h->llx, -h->lly);
+	PSL_command (PSL, "N %.12g %.12g M %.12g %.12g L %.12g %.12g L %.12g %.12g L P clip N\n", h->llx, h->lly, h->trx, h->lly, h->trx, h->try, h->llx, h->try);
 	PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
 	if (PSL->internal.memory) {
 		psl_prepare_buffer (PSL, h->length); /* Make sure we have enough memory to hold the EPS */
@@ -4306,6 +4301,9 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 			PSL->internal.fp = NULL;
 		}
 	}
+	PSL->internal.offset[0] = PSL->internal.prev_offset[0];
+	PSL->internal.offset[1] = PSL->internal.prev_offset[1];
+
 	PSL->internal.call_level--;	/* Done with this module call */
 	return (PSL_NO_ERROR);
 }
@@ -4386,6 +4384,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	right_now = time ((time_t *)0);
 	PSL->internal.landscape = !(overlay || orientation);	/* Only rotate if not overlay and not Portrait */
+	PSL->internal.prev_offset[0] = PSL->internal.offset[0];
+	PSL->internal.prev_offset[1] = PSL->internal.offset[1];
 	PSL->internal.offset[0] = offset[0];
 	PSL->internal.offset[1] = offset[1];
 
@@ -4469,7 +4469,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		if (manual_feed)	/* Manual media feed requested */
 			PSL_command (PSL, "PSLevel 1 gt { << /ManualFeed true >> setpagedevice } if\n");
 		else if (PSL->internal.p_width > 0.0 && PSL->internal.p_height > 0.0)	/* Specific media selected */
-			PSL_command (PSL, "PSLevel 1 gt { << /PageSize [%g %g] /ImagingBBox null >> setpagedevice } if\n",
+			PSL_command (PSL, "PSLevel 1 gt { << /PageSize [%.12g %.12g] /ImagingBBox null >> setpagedevice } if\n",
 			             PSL->internal.p_width, PSL->internal.p_height);
 		if (PSL->init.copies > 1) PSL_command (PSL, "/#copies %d def\n", PSL->init.copies);
 		PSL_command (PSL, "%%%%EndSetup\n\n");
@@ -4479,11 +4479,11 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_command (PSL, "%%%%BeginPageSetup\n");
 		PSL_comment (PSL, "Init coordinate system and scales\n");
 		scl = 1.0 / PSL->internal.dpp;
-		PSL_comment (PSL, "Scale initialized to %g, so 1 %s equals %g Postscript units\n", scl, uname[PSL->init.unit], PSL->internal.dpu);
+		PSL_comment (PSL, "Scale initialized to %.12g, so 1 %s equals %.12g Postscript units\n", scl, uname[PSL->init.unit], PSL->internal.dpu);
 
 		PSL_command (PSL, "V ");
-		if (PSL->internal.landscape) PSL_command (PSL, "%g 0 T 90 R ", PSL->internal.p_width);
-		PSL_command (PSL, "%g %g scale\n", PSL->init.magnify[0] * scl, PSL->init.magnify[1] * scl);
+		if (PSL->internal.landscape) PSL_command (PSL, "%.12g 0 T 90 R ", PSL->internal.p_width);
+		PSL_command (PSL, "%.12g %.12g scale\n", PSL->init.magnify[0] * scl, PSL->init.magnify[1] * scl);
 		PSL_command (PSL, "%%%%EndPageSetup\n\n");
 
 		if (!(PSL_is_gray(PSL->init.page_rgb) && PSL_eq(PSL->init.page_rgb[0],1.0)))	/* Change background color from white but not if PSL_no_pagefill is set via psconvert */
@@ -4543,7 +4543,7 @@ int PSL_setlinejoin (struct PSL_CTRL *PSL, int join) {
 
 int PSL_setmiterlimit (struct PSL_CTRL *PSL, int limit) {
 	if (limit != PSL->internal.miter_limit) {
-		PSL_command (PSL, "%g setmiterlimit\n", (limit == 0) ? 10.0 : 1.0 / sin (0.5 * limit * D2R));
+		PSL_command (PSL, "%.12g setmiterlimit\n", (limit == 0) ? 10.0 : 1.0 / sin (0.5 * limit * D2R));
 		PSL->internal.miter_limit = limit;
 	}
 	return (PSL_NO_ERROR);
@@ -4832,7 +4832,7 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 		PSL_command (PSL, "%d %d T ", PSL->internal.ix, PSL->internal.iy);
 	}
 
-	if (angle != 0.0) PSL_command (PSL, "%.3g R ", angle);
+	if (angle != 0.0) PSL_command (PSL, "%.12g R ", angle);
 	if (justify > 1) {			/* Move the new origin so (0,0) is lower left of box */
 		x_just = (justify + 3) % 4;	/* Gives 0 (left justify, i.e., do nothing), 1 (center), or 2 (right justify) */
 		y_just = justify / 4;		/* Gives 0 (bottom justify, i.e., do nothing), 1 (middle), or 2 (top justify) */
@@ -5137,7 +5137,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		string = psl_prepare_text (PSL, PSL->current.string);	/* Check for escape sequences */
 	}
 
-	if (angle != 0.0) PSL_command (PSL, "V %.3g R ", angle);
+	if (angle != 0.0) PSL_command (PSL, "V %.12g R ", angle);
 
 	if (!strchr (string, '@')) {	/* Plain text ... this is going to be easy! */
 		PSL_command (PSL, "(%s) %s%s", string, justcmd[justify], op[mode]);
@@ -5501,9 +5501,9 @@ int PSL_setorigin (struct PSL_CTRL *PSL, double x, double y, double angle, int m
 	/* mode = PSL_FWD: Translate origin, then rotate axes.
 	 * mode = PSL_INV: Rotate axes, then translate origin. */
 
-	if (mode != PSL_FWD && !PSL_eq(angle,0.0)) PSL_command (PSL, "%g R\n", angle);
+	if (mode != PSL_FWD && !PSL_eq(angle,0.0)) PSL_command (PSL, "%.12g R\n", angle);
 	if (!PSL_eq(x,0.0) || !PSL_eq(y,0.0)) PSL_command (PSL, "%d %d T\n", psl_ix (PSL, x), psl_iy (PSL, y));
-	if (mode == PSL_FWD && !PSL_eq(angle,0.0)) PSL_command (PSL, "%g R\n", angle);
+	if (mode == PSL_FWD && !PSL_eq(angle,0.0)) PSL_command (PSL, "%.12g R\n", angle);
 	return (PSL_NO_ERROR);
 }
 

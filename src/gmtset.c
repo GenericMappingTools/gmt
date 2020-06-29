@@ -36,51 +36,51 @@
 /* Control structure for gmtset */
 
 struct GMTSET_CTRL {
-	struct C {	/* -C */
+	struct GMTSET_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D[s|u] */
+	struct GMTSET_D {	/* -D[s|u] */
 		bool active;
 		char mode;
 	} D;
-	struct G {	/* -Gfilename */
+	struct GMTSET_G {	/* -Gfilename */
 		bool active;
 		char *file;
 	} G;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSET_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GMTSET_CTRL);
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSET_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSET_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-C | -D[s|u] | -G<defaultsfile>] [-[" GMT_SHORTHAND_OPTIONS "]<value>] PARAMETER1 [=] value1 PARAMETER2 [=] value2 PARAMETER3 [=] value3 ...\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see gmt.conf man page.\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-C | -D[s|u] | -G<defaultsfile>] [-[" GMT_SHORTHAND_OPTIONS "]<value>] PARAMETER1 value1 PARAMETER2 value2 PARAMETER3 value3 ...\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see %s man page.\n\n", GMT_SETTINGS_FILE);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert GMT4 .gmtdefaults4 to a gmt.conf file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert GMT4 .gmtdefaults4 to a %s file.\n", GMT_SETTINGS_FILE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   The original file is retained.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Modify the default settings based on the GMT system defaults.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of defaults.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to see the US version of defaults.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific gmt.conf file to modify.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific %s file to modify.\n", GMT_SETTINGS_FILE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses GMT defaults.]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOnly settings that differ from the GMT SI system defaults are written\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to the file gmt.conf in the current directory (under classic mode)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to the file %s in the current directory (under classic mode)\n", GMT_SETTINGS_FILE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   or in the current session directory (under modern mode).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\t-[" GMT_SHORTHAND_OPTIONS "]<value> (any of these options).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Set the expansion of any of these shorthand options.\n");
@@ -88,7 +88,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtset and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -115,10 +115,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_
 				Ctrl->D.mode = opt->arg[0];
 				break;
 			case 'G':	/* Optional defaults file on input and output */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			default:	/* Report bad options */
@@ -135,7 +134,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_
 
 EXTERN_MSC void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg);
 
-int GMT_gmtset (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtset (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	struct GMTSET_CTRL *Ctrl = NULL;

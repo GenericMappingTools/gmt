@@ -153,6 +153,12 @@ enum GMT_swap_direction {
 	k_swap_in,
 	k_swap_out};
 
+/*! Scripting languages */
+enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
+	GMT_CSH_MODE,			/* Write C-shell script */
+	GMT_DOS_MODE};			/* Write DOS script */
+
+#define GMT_VERBOSE_CODES	"q ewticd"	/* List of valid codes to -V (the blank is for NOTICE which is not user selectable */
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
 #define GMT_LEN_UNITS2	"efkMnu"	/* Distances in meter, foot, survey foot, km, Mile, nautical mile */
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
@@ -216,14 +222,10 @@ enum GMT_swap_direction {
 #define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 
-/* Default CPTs are initialized in gmt_init.c; see end of gmtinit_new_GMT_ctrl */
-#define GMT_DEFAULT_CPT		0	/* Default index into GMT->init.cpt[] array */
-#define GMT_N_CPT		3		/* Number of default CPT types (see GMT->init.cpt in gmt_init.c) */
+/* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
-#define GMT_DEM_CPT_NAME		"geo"
-#define GMT_SRTM_CPT_NAME		"srtm"
 
-#define GMT_IS_ROMAN_LCASE	1	/* For converting arabic numerals to Roman */
+#define GMT_IS_ROMAN_LCASE	1	/* For converting Arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
 
 /* Settings for the MAP_FRAME_TYPE = graph */
@@ -236,6 +238,9 @@ enum GMT_swap_direction {
 
 /* Fraction of increment to force outward region expansion */
 #define GMT_REGION_INCFACTOR 0.25
+
+/* Allowable refpoint codes */
+#define GMT_REFPOINT_CODES "gjJnx"
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
@@ -256,6 +261,11 @@ enum GMT_enum_inside {
 	GMT_OUTSIDE = 0,
 	GMT_ONEDGE,
 	GMT_INSIDE};
+
+/*! Return codes from gmt_polygon_orientation */
+enum GMT_enum_polorient {
+	GMT_POL_IS_CCW = 0,
+	GMT_POL_IS_CW  = 1};
 
 /*! Codes for -q selections */
 enum GMT_enum_skiprows {
@@ -301,7 +311,7 @@ enum GMT_enum_download {
 
 /*! Various mode for auto-legend pens */
 enum GMT_enum_autolegend {
-	GMT_LEGEND_PEN_D  = 0, GMT_LEGEND_PEN_V  = 1,
+	GMT_LEGEND_PEN_D  = 0, GMT_LEGEND_PEN_V  = 1, GMT_LEGEND_PEN_P  = 2,
 	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2};
 
 /*! Various mode for custom symbols */
@@ -353,7 +363,8 @@ enum GMT_enum_runmode {
 enum GMT_enum_workflowmode {
 	GMT_USE_WORKFLOW = 0, 	/* Default is to use current workflow if initiated and ignore if otherwise */
 	GMT_BEGIN_WORKFLOW = 1,	/* Initiate a new workflow via gmt begin */
-	GMT_END_WORKFLOW = 2};  /* Terminate current workflow via gmt begin */
+	GMT_END_WORKFLOW = 2,  /* Terminate current workflow via gmt begin */
+	GMT_CLEAN_WORKFLOW = 4};  /* If given with BEGIN we ignore any gmt.conf files */
 
 /*! Selections for pen/fill color replacements in custom symbol macros */
 enum GMT_enum_colorswap {
@@ -525,15 +536,10 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 	GMT_DATA_FILE  = 2,	/* Official GMT data file destined for the user's user dir */
 	GMT_URL_FILE   = 3,	/* Data given by an URL destined for the cache */
 	GMT_URL_QUERY  = 4,	/* Data given by an URL CGI command destined for the cache */
-	GMT_CACHE_DIR  = 0,	/* Use the cache directory */
-	GMT_DATA_DIR   = 1,	/* Use the data directory */
-	GMT_LOCAL_DIR  = 2};	/* Use the local (current) directory */
-
-#define GMT_DATA_PREFIX "earth_relief_"				/* Special prefix for global relief data sets */
-#define GMT_SRTM_PREFIX "srtm_relief_"				/* Special prefix for srtm relief data sets when ocean is not requested */
-#define GMT_SRTM_EXTENSION_REMOTE  "jp2"			/* Tile extension of JPEG2000 files to be downloaded */
-#define GMT_SRTM_EXTENSION_REMOTE_LEN  4U			/* Length of JPEG2000 file extension (+1) */
-#define GMT_SRTM_EXTENSION_LOCAL "nc"				/* Tile extension of nc short int files to be saved */
-#define GMT_SRTM_EXTENSION_LOCAL_LEN 2U				/* Length of  nc short int file extension */
+	GMT_AUTO_DIR   = 0,	/* Use the directory given per internal rules */
+	GMT_CACHE_DIR  = 1,	/* Use the cache directory */
+	GMT_DATA_DIR   = 2,	/* Use the data directory */
+	GMT_LOCAL_DIR  = 3,	/* Use the local (current) directory */
+	GMT_REMOTE_DIR = 4}; /* File is on the remote server */
 
 #endif  /* GMT_CONSTANTS_H */

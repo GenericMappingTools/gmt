@@ -34,17 +34,17 @@
 #define THIS_MODULE_OPTIONS "-Vf"
 
 struct GRDPASTE_CTRL {
-	struct In {
+	struct GRDPASTE_In {
 		bool active;
 		char *file[2];
 	} In;
-	struct G {	/* -G<output_grdfile> */
+	struct GRDPASTE_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDPASTE_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDPASTE_CTRL);
@@ -54,7 +54,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->In.file[GMT_IN]);
@@ -62,7 +62,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* De
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid1> <grid2> -G<outgrid> [%s] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
@@ -82,7 +82,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdpaste and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -96,23 +96,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->In.file[n_in++] = strdup (opt->arg);
-				else if (n_in == 1 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					Ctrl->In.file[n_in++] = strdup (opt->arg);
-				else {
+				if (n_in == 2) {
 					n_errors++;
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only two files may be pasted\n");
+				}
+				else {
+					Ctrl->In.file[n_in] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_in]))) n_errors++;
+					n_in++;
 				}
 				break;
 
 			/* Processes program-specific parameters */
 
  			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			default:	/* Report bad options */
@@ -131,7 +131,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* True if grid is a COARDS/CF netCDF file */
-GMT_LOCAL inline bool is_nc_grid (struct GMT_GRID *grid) {
+GMT_LOCAL inline bool grdpaste_is_nc_grid (struct GMT_GRID *grid) {
 	return
 		grid->header->type == GMT_GRID_IS_NB ||
 		grid->header->type == GMT_GRID_IS_NS ||
@@ -140,7 +140,7 @@ GMT_LOCAL inline bool is_nc_grid (struct GMT_GRID *grid) {
 		grid->header->type == GMT_GRID_IS_ND;
 }
 
-int GMT_grdpaste (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 	int error = 0, way = 0;
 	unsigned int one_or_zero;
 	bool common_y = false;
@@ -349,7 +349,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 1:         /* B is on top of A */
 		case 10:		/* B is on top of A but their grid reg limits underlap by one cell */
 		case 11:        /* B is on top of A but their pixel reg limits overlap by one cell */
-			if (is_nc_grid(A)) {
+			if (grdpaste_is_nc_grid(A)) {
 				AH->data_offset = B->header->n_columns * (B->header->n_rows - one_or_zero);
 				if (way == 11)
 					AH->data_offset -= B->header->n_columns;
@@ -368,7 +368,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
-			if (is_nc_grid(B)) {
+			if (grdpaste_is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
 			}
 			else {
@@ -388,7 +388,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 2:         /* A is on top of B */
 		case 21:        /* A is on top of B but their grid reg limits underlap by one cell */
 		case 22:        /* A is on top of B but their pixel reg limits overlap by one cell */
-			if (!is_nc_grid(A)) {
+			if (!grdpaste_is_nc_grid(A)) {
 				GMT->current.io.pad[YLO] = B->header->n_rows - one_or_zero;
 				if (way == 22)
 					GMT->current.io.pad[YLO]--;
@@ -400,7 +400,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
-			if (is_nc_grid(B)) {
+			if (grdpaste_is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
 				BH->data_offset = A->header->n_columns * (A->header->n_rows - one_or_zero);
 				if (way == 22)
@@ -425,7 +425,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 3:         /* A is on the right of B */
 		case 32:        /* A is on right of B but their grid reg limits underlap by one cell */
 		case 33:        /* A is on right of B but their pixel reg limits overlap by one cell */
-			if (is_nc_grid(A)) {
+			if (grdpaste_is_nc_grid(A)) {
 				AH->stride = C->header->n_columns;
 				AH->data_offset = B->header->n_columns - one_or_zero;
 				if (way == 33)
@@ -445,7 +445,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
-			if (is_nc_grid(B)) {
+			if (grdpaste_is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
 				BH->stride = C->header->n_columns;
 			}
@@ -465,7 +465,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 4:         /* A is on the left of B */
 		case 43:        /* A is on left of B but their grid reg limits underlap by one cell */
 		case 44:        /* A is on left of B but their pixel reg limits overlap by one cell */
-			if (is_nc_grid(A)) {
+			if (grdpaste_is_nc_grid(A)) {
 				AH->stride = C->header->n_columns;
 			}
 			else {
@@ -480,7 +480,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
 				Return (API->error);
 			}
-			if (is_nc_grid(B)) {
+			if (grdpaste_is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
 				BH->stride = C->header->n_columns;
 				BH->data_offset = A->header->n_columns - one_or_zero;

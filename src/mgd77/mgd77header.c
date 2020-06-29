@@ -40,18 +40,18 @@ EXTERN_MSC int MGD77_Read_File_nohdr (struct GMT_CTRL *GMT, char *file, struct M
 
 struct MGD77HEADER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct H {	/* -H<file> */
+	struct MGD77HEADER_H {	/* -H<file> */
 		bool active;
 		char *file;
 	} H;
-	struct M {	/* -Mf[<item>|r|t] */
+	struct MGD77HEADER_M {	/* -Mf[<item>|r|t] */
 		bool active;
 		unsigned int mode;
 		unsigned int flag;
 	} M;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77HEADER_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct MGD77HEADER_CTRL);
@@ -62,13 +62,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->H.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	struct MGD77_CONTROL M;
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -97,7 +97,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct GMT_OPTION *options, struct MGD77_CONTROL *M) {
+static int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct GMT_OPTION *options, struct MGD77_CONTROL *M) {
 	/* This parses the options provided to mgd77info and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -157,7 +157,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77header (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 	int i, id, argno, length, id_col, t_col, x_col, y_col, saved_range, use;
 	int n_paths, counter[MGD77_MAX_COLS], quad_no, n_quad;
 	int b_col, twt_col, g_col, m_col, f_col, mt1_col, mt2_col;
