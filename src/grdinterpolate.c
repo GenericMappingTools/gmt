@@ -40,46 +40,46 @@
 #define THIS_MODULE_OPTIONS	"->RVfn"
 
 struct GRDINTERPOLATE_CTRL {
-	struct In {
+	struct GRDINTERPOLATE_In {
 		bool active;
 		char **file;
 		unsigned int n_files;
 	} In;
-	struct E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
+	struct GRDINTERPOLATE_E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
 		bool active;
 		unsigned int mode;
 		char *lines;
 		double step;
 		char unit;
 	} E;
-	struct F {	/* -Fl|a|c[1|2] */
+	struct GRDINTERPOLATE_F {	/* -Fl|a|c[1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
 		char spline[GMT_LEN8];
 	} F;
-	struct G {	/* -G<output_grdfile>  */
+	struct GRDINTERPOLATE_G {	/* -G<output_grdfile>  */
 		bool active;
 		char *file;
 	} G;
-	struct S {	/* -S<x>/<y>|<pointfile>[+h<header>] */
+	struct GRDINTERPOLATE_S {	/* -S<x>/<y>|<pointfile>[+h<header>] */
 		bool active;
 		double x, y;
 		char *file;
 		char *header;
 	} S;
-	struct T {	/* -T<start>/<stop>/<inc> or -T<value> */
+	struct GRDINTERPOLATE_T {	/* -T<start>/<stop>/<inc> or -T<value> */
 		bool active;
 		struct GMT_ARRAY T;
 		char *string;
 	} T;
-	struct Z {	/* -Z<min>/<max>/<inc>, -Z<file>, or -Z<list> */
+	struct GRDINTERPOLATE_Z {	/* -Z<min>/<max>/<inc>, -Z<file>, or -Z<list> */
 		bool active[2];
 		struct GMT_ARRAY T;
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	static char type[3] = {'l', 'a', 'c'};
 	struct GRDINTERPOLATE_CTRL *C;
 
@@ -90,15 +90,15 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void free_files (struct GMT_CTRL *GMT, char ***list, unsigned int n) {
+GMT_LOCAL void grdinterpolate_free_files (struct GMT_CTRL *GMT, char ***list, unsigned int n) {
 	for (unsigned int k = 0; k < n; k++)
 		gmt_M_str_free ((*list)[k]);
 	gmt_M_free (GMT, *list);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	free_files (GMT, &(C->In.file), C->In.n_files);
+	grdinterpolate_free_files (GMT, &(C->In.file), C->In.n_files);
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->S.file);
 	gmt_M_str_free (C->S.header);
@@ -108,7 +108,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *C) {
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	static char type[3] = {'l', 'a', 'c'};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -166,7 +166,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -182,15 +182,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))) {
-					if (n_alloc <= Ctrl->In.n_files) {
-						n_alloc += GMT_SMALL_CHUNK;
-						Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc, char *);
-					}
-					Ctrl->In.file[Ctrl->In.n_files++] = strdup (opt->arg);
+				if (n_alloc <= Ctrl->In.n_files) {
+					n_alloc += GMT_SMALL_CHUNK;
+					Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc, char *);
 				}
-				else
-					n_errors++;
+				Ctrl->In.file[Ctrl->In.n_files] = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_files]))) n_errors++;
+				Ctrl->In.n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -215,11 +213,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 				strcpy (Ctrl->F.spline, opt->arg);	/* Keep track of what was given since it may need to be passed verbatim to other modules */
 				break;
 			case 'G':	/* Output file or name template */
-				if (n_files++ > 0) break;
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) { n_errors++; continue; }
+				Ctrl->G.file = strdup (opt->arg);
+				if (strchr (Ctrl->G.file, '%') == NULL) {	/* Gave a fixed output file, can check */
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				}
 				break;
 			case 'T':	/* Set level sampling spacing */
 				Ctrl->T.active = true;
@@ -251,12 +249,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 							gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->S.y), txt_b);
 					}
 				}
-				else if (!gmt_check_filearg (GMT, 'S', opt->arg, GMT_IN, GMT_IS_DATASET)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Cannot parse the name or find point file %s\n", opt->arg);
-					n_errors++;
-				}
-				else	/* File exist */
+				else {
 					Ctrl->S.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->S.file))) n_errors++;
+				}
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
@@ -296,7 +292,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, str
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int nz) {
+GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int nz) {
 	/* Return true if spacing between layers is constant */
 	unsigned int k;
 	double dz;
@@ -315,7 +311,7 @@ GMT_LOCAL bool equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdinterpolate (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	char file[PATH_MAX] = {""}, cube_layer[GMT_LEN64] = {""}, *nc_layer = NULL;
 	bool equi_levels;
 	int error = 0;
@@ -345,6 +341,8 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdinterpolate main code ----------------------------*/
+
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	if (Ctrl->Z.active[GMT_IN]) {	/* Create the input level array */
 		if (gmt_create_array (GMT, 'Z', &(Ctrl->Z.T), NULL, NULL)) {
@@ -379,7 +377,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -T: Unable to set up output level array\n");
 		Return (API->error);
 	}
-	equi_levels = equidistant_levels (GMT, level, n_layers);	/* Are levels equidistant? */
+	equi_levels = grdinterpolate_equidistant_levels (GMT, level, n_layers);	/* Are levels equidistant? */
 	level_type = gmt_M_type (GMT, GMT_IN, GMT_Z);	/* Either time or floating point values like depth */
 
 	/* Determine the range of input layers needed for interpolation */
@@ -425,7 +423,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, Si->data[GMT_Z]);	/* Free it so we can add it next */
 				Si->data[GMT_Z] = gmt_dist_array (GMT, Si->data[GMT_X], Si->data[GMT_Y], Si->n_rows, true);
 			}
-			if (!equidistant_levels (GMT, Si->data[GMT_Z], Si->n_rows)) {
+			if (!grdinterpolate_equidistant_levels (GMT, Si->data[GMT_Z], Si->n_rows)) {
 				GMT_Report (API, GMT_MSG_ERROR, "File %s does not contain equidistant coordinates\n", Ctrl->E.lines);
 				Return (API->error);
 			}
@@ -440,7 +438,8 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Cannot mix units in -E (%s)\n", Ctrl->E.lines);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
+			if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
+				Return (GMT_NOT_A_VALID_TYPE);
 
 			/* Need to get dx,dy from one grid */
 			if (Ctrl->Z.active[GMT_IN])	/* Get the first file */
@@ -528,7 +527,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create output dataset for time-series\n");
 			Return (API->error);
 		}
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, In, i_file) != GMT_NOERROR) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, In, i_file) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");
 			Return (API->error);
 		}
@@ -539,7 +538,7 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				sprintf (grid, "%s", Ctrl->In.file[k]);
 			else	/* Get the k'th layer from 3D cube */
 				sprintf (grid, "%s?%s[%" PRIu64 "]", Ctrl->In.file[0], cube_layer, k);
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, o_file) == GMT_NOTSET) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT|GMT_IS_REFERENCE, NULL, o_file) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");
 				Return (API->error);
 			}
@@ -598,11 +597,11 @@ int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_OUT, col, level_type);	/* This is the grid-level data type which on output is in this column */
 
 		if (Ctrl->T.active) {	/* Want to interpolate through the sampled points using the specified spline */
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, Out, i_file) != GMT_NOERROR) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, Out, i_file) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
 				Return (API->error);
 			}
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, NULL, o_file) == GMT_NOTSET) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, o_file) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
 				Return (API->error);
 			}

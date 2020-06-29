@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #               GMT EXAMPLE 40
 #
-# Purpose:      Illustrate line simplification and area calculations
+# Purpose:      Illustrate line simplification and spherical area calculations
 # GMT modules:  basemap, text, plot, gmtsimplify, gmtspatial, subplot
 # Unix progs:   awk, rm
 #
@@ -11,7 +11,7 @@ AWK=${AWK:-awk}
 
 gmt begin ex40
 	gmt spatial @GSHHS_h_Australia.txt -fg -Qk > centroid.txt
-	gmt spatial @GSHHS_h_Australia.txt -fg -Qk | $AWK '{printf "Full area = %.0f km@+2@+\n", $3}' > area.txt
+	$AWK '{printf "Full area = %.0f km@+2@+\n", $3}' centroid.txt > area.txt
 
 	gmt subplot begin 2x1 -Fs14c/12c -R112/154/-40/-10 -JM14c
 		gmt subplot set 0
@@ -23,7 +23,7 @@ gmt begin ex40
 		gmt plot -W1p,blue T100k.txt
 		gmt plot -Sx0.75c -W3p centroid.txt
 		gmt text -Dj8p -F+cLT+jTL+f18p+t"T = 100 km"
-		gmt text area.txt -F+f14p+cCM
+		gmt text area.txt -F+f14p+cCM -D0/1c
 		gmt text area_T100k.txt -F+f14p+cLB -Dj14p
 
 		gmt subplot set 1
@@ -35,7 +35,7 @@ gmt begin ex40
 		gmt plot -W1p,blue T500k.txt
 		gmt plot -Sx0.75c -W3p centroid.txt
 		gmt text -Dj8p -F+cLT+jTL+f18p+t"T = 500 km"
-		gmt text area.txt -F+f14p+cCM
+		gmt text area.txt -F+f14p+cCM -D0/1c
 		gmt text area_T500k.txt -F+f14p+cLB -Dj14p
 	gmt subplot end
 	rm -f centroid.txt area*.txt T*.txt

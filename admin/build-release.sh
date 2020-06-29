@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
+#
 # Script that builds a GMT release and makes the compressed tarballs.
-# If run under macOS it also builds the macOS Bundle
+# If run under macOS it also builds the macOS Bundle.
+#
 # Requirements in addition to libraries and tools to build GMT:
 #	1) pngquant for squeezing PNG files down in size
-#	2) GMT_GSHHG_SOURCE and GMT_DCW_SOURCE enviromental parameters set
+#	2) GMT_GSHHG_SOURCE and GMT_DCW_SOURCE environmental parameters set
 #	3) A ghostscript version we can include in the macOS bundle [MacPort]
+#	4) sphinx-build 
+#	5) grealpath (package coreutils)
+#	6) GNU tar (package gnutar)
 
 reset_config() {
 	rm -f ${TOPDIR}/cmake/ConfigUser.cmake
@@ -54,11 +59,11 @@ if [ "X${GMT_DCW_SOURCE}" = "X" ]; then
 	exit 1
 fi
 
-S_ver=$(sphinx-build --version | awk '{print substr($2,1,1)}')
-if [ $S_ver -ne 1 ]; then
-	echo "build-release.sh: Need Sphinx version 1 to build release" >&2
+if [ $(egrep -c '^set \(GMT_PUBLIC_RELEASE TRUE\)' cmake/ConfigDefault.cmake) -eq 0 ]; then
+	echo "build-release.sh: Need to set GMT_PUBLIC_RELEASE to TRUE in cmake/ConfigDefault.cmake" >&2
 	exit 1
 fi
+
 G_ver=$(gs --version)
 echo "build-release.sh: You will be including Ghostscript version $G_ver"
 echo "build-release.sh: Remember to run admin/gs-check.sh to ensure it passes our test" >&2
@@ -75,8 +80,21 @@ mkdir build
 # 2b. Build list of external programs and shared libraries
 admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
 cd build
+# 2c. Set CMake cache for MP build:
+cat << EOF > cache-mp-gcc.cmake
+# Cache settings for building the macOS release with GCC and OpenMP
+# This cache file is set for the binary paths of macports
+#
+SET ( CMAKE_C_COMPILER "/opt/local/bin/gcc-mp-9" CACHE STRING "GNU MP C compiler" )
+SET ( CMAKE_CXX_COMPILER "/opt/local/bin/g++-mp-9" CACHE STRING "GNU MP C++ compiler" )
+SET ( CMAKE_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS")
+SET ( CMAKE_C_FLAGS_DEBUG -flax-vector-conversions CACHE STRING "C FLAGS DEBUG")
+SET ( CMAKE_C_FLAGS_RELEASE -flax-vector-conversions CACHE STRING "C FLAGS RELEASE")
+SET ( OpenMP_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS OPENMP")
+EOF
+
 echo "build-release.sh: Configure and build tarballs" >&2
-cmake -G Ninja ..
+cmake -G Ninja  -C cache-mp-gcc.cmake ..
 # 3. Build the release and the tarballs
 cmake --build . --target gmt_release
 cmake --build . --target gmt_release_tar

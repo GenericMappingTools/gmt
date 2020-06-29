@@ -45,61 +45,61 @@
 #define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
 
 struct GRD2CPT_CTRL {
-	struct In {
+	struct GRD2CPT_In {
 		bool active;
 	} In;
-	struct Out {	/* -> */
+	struct GRD2CPT_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A<transp>[+a] */
+	struct GRD2CPT_A {	/* -A<transp>[+a] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} A;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct GRD2CPT_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[i|o] */
+	struct GRD2CPT_D {	/* -D[i|o] */
 		bool active;
 		unsigned int mode;
 	} D;
-	struct E {	/* -E<nlevels> */
+	struct GRD2CPT_E {	/* -E<nlevels> */
 		bool active;
 		unsigned int levels;
 	} E;
-	struct F {	/* -F[r|R|h|c][+c] */
+	struct GRD2CPT_F {	/* -F[r|R|h|c][+c] */
 		bool active;
 		bool cat;
 		unsigned int model;
 	} F;
-	struct G {	/* -Glow/high for input CPT truncation */
+	struct GRD2CPT_G {	/* -Glow/high for input CPT truncation */
 		bool active;
 		double z_low, z_high;
 	} G;
-	struct H {	/* -H */
+	struct GRD2CPT_H {	/* -H */
 		bool active;
 	} H;
-	struct I {	/* -I[z][c] */
+	struct GRD2CPT_I {	/* -I[z][c] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct L {	/* -L<min_limit>/<max_limit> */
+	struct GRD2CPT_L {	/* -L<min_limit>/<max_limit> */
 		bool active;
 		double min, max;
 	} L;
-	struct M {	/* -M */
+	struct GRD2CPT_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct GRD2CPT_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q[i|o] */
+	struct GRD2CPT_Q {	/* -Q[i|o] */
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct T {	/* -T<start>/<stop>/<inc> or -T<n_levels> */
+	struct GRD2CPT_T {	/* -T<start>/<stop>/<inc> or -T<n_levels> */
 		bool active;
 		bool interpolate;
 		unsigned int mode;	/* 0 or 1 (-Tn) */
@@ -107,20 +107,20 @@ struct GRD2CPT_CTRL {
 		double low, high, inc;
 		char *file;
 	} T;
-	struct S {	/* -S<kind> */
+	struct GRD2CPT_S {	/* -S<kind> */
 		bool active;
 		int kind; /* -1 symmetric +-zmin, +1 +-zmax, -2 = +-Minx(|zmin|,|zmax|), +2 = +-Max(|zmin|,|zmax|), 0 = min to max [Default] */
 	} S;
-	struct W {	/* -W[w] */
+	struct GRD2CPT_W {	/* -W[w] */
 		bool active;
 		bool wrap;
 	} W;
-	struct Z {	/* -Z */
+	struct GRD2CPT_Z {	/* -Z */
 		bool active;
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2CPT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRD2CPT_CTRL);
@@ -130,7 +130,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->C.file);
@@ -138,7 +138,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -192,7 +192,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -212,7 +212,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			case '<':	/* Input files */
 				Ctrl->In.active = true;
 				n_files[GMT_IN]++;
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files[GMT_OUT]++ == 0) Ctrl->Out.file = strdup (opt->arg);
@@ -252,7 +252,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'F':	/* Set color model for output */
-				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
 					Ctrl->F.cat = true;
 					if (txt_a[0] == '\0') break;
@@ -415,7 +415,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, char **grdfile, uint64_t n) {
+GMT_LOCAL int grd2cpt_free_the_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, char **grdfile, uint64_t n) {
 	/* Free what we are pointing to */
 	uint64_t k;
 	for (k = 0; k < n; k++) {
@@ -429,7 +429,7 @@ GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, cha
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grd2cpt (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
@@ -475,7 +475,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	}
 	else {	/* No table specified; set GMT_DEFAULT_CPT_NAME table */
 		Ctrl->C.active = true;
-		Ctrl->C.file = strdup (GMT->init.cpt[0]);
+		Ctrl->C.file = strdup (GMT_DEFAULT_CPT_NAME);
 	}
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->T.n_levels > 0) ? Ctrl->T.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
@@ -514,7 +514,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
 		if ((G[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, opt->arg, NULL)) == NULL) {
-			error = free_them_grids (API, G, grdfile, k);
+			error = grd2cpt_free_the_grids (API, G, grdfile, k);
 			gmt_M_free (GMT, G);
 			gmt_M_free (GMT, grdfile);
 			Return ((error) ? error : API->error);
@@ -522,7 +522,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->n_columns == G[k-1]->header->n_columns && G[k]->header->n_rows == G[k-1]->header->n_rows)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Grids do not have the same domain!\n");
-			error = free_them_grids (API, G, grdfile, k);
+			error = grd2cpt_free_the_grids (API, G, grdfile, k);
 			gmt_M_free (GMT, G);
 			gmt_M_free (GMT, grdfile);
 			Return ((error) ? error : API->error);
@@ -606,7 +606,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		}
 		if (!write)
 			gmt_save_current_cpt (GMT, Pout, cpt_flags);	/* Save for use by session, if modern */
-		free_them_grids (API, G, grdfile, ngrd);
+		grd2cpt_free_the_grids (API, G, grdfile, ngrd);
 		gmt_M_free (GMT, G);
 		gmt_M_free (GMT, grdfile);
 
@@ -647,7 +647,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		}
 		if (j == Ctrl->E.levels-1) cdf_cpt[j].z = G[0]->header->z_max;
 	}
-	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make a equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
+	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make an equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
 		double start, range;
 
 		switch (Ctrl->S.kind) {
@@ -743,9 +743,9 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, cdf_cpt);
 	gmt_M_free (GMT, z);
 	if (error == GMT_NOERROR)
-		error = free_them_grids (API, G, grdfile, ngrd);
+		error = grd2cpt_free_the_grids (API, G, grdfile, ngrd);
 	else
-		free_them_grids (API, G, grdfile, ngrd);
+		grd2cpt_free_the_grids (API, G, grdfile, ngrd);
 	gmt_M_free (GMT, G);
 	gmt_M_free (GMT, grdfile);
 

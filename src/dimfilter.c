@@ -79,52 +79,52 @@ struct DIMFILTER_INFO {
 };
 
 struct DIMFILTER_CTRL {
-	struct In {
+	struct DIMFILTER_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C */
+	struct DIMFILTER_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D<distflag> */
+	struct DIMFILTER_D {	/* -D<distflag> */
 		bool active;
 		int mode;
 	} D;
-	struct E {	/* -E */
+	struct DIMFILTER_E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* <type><filter_width>*/
+	struct DIMFILTER_F {	/* <type><filter_width>*/
 		bool active;
 		int filter;	/* Id for the filter */
 		double width;
 		int mode;
 	} F;
-	struct G {	/* -G<file> */
+	struct DIMFILTER_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L */
+	struct DIMFILTER_L {	/* -L */
 		bool active;
 	} L;
-	struct N {	/* -N */
+	struct DIMFILTER_N {	/* -N */
 		bool active;
 		unsigned int n_sectors;
 		int filter;	/* Id for the filter */
 		int mode;
 	} N;
-	struct Q {	/* -Q */
+	struct DIMFILTER_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S<file> */
+	struct DIMFILTER_S {	/* -S<file> */
 		bool active;
 		char *file;
 	} S;
-	struct T {	/* -T */
+	struct DIMFILTER_T {	/* -T */
 		bool active;
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct DIMFILTER_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct DIMFILTER_CTRL);
@@ -136,7 +136,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->G.file);
@@ -257,7 +257,7 @@ static char *dimtemplate =
 	"\n"
 	"fi\n";
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -D<distance_flag> -F<type><filter_width>[<modifier>] -G<outgrid> -N<type><n_sectors>[<modifier>]\n", name);
@@ -306,7 +306,27 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL double dimfilter_get_filter_width (struct GMT_CTRL *GMT, char *text) {
+	/* Most filter setups expect a constant filter width, but some may pass a grid.  if so
+	   then we must read the grid and find the largest filter and return that value. */
+	double width = 0.0, scl = 1.0;
+	size_t L = strlen (text);
+	char c = 0;
+	gmt_M_unused (GMT);
+
+	if (L && strchr ("ms", text[L-1])) {	/* Appended m or s for arc units */
+		L--;
+		if (text[L] == 'm') scl = GMT_MIN2DEG;		/* Got width in arc minutes */
+		else scl = GMT_SEC2DEG;	/* Got width in arc seconds */
+		c = text[L];
+		text[L] = '\0';	/* Chop off unit */
+	}
+	width = atof (text) * scl;
+	if (c) text[L] = c;	/* Restore m|s */
+	return (width);
+}
+
+static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to dimfilter and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -326,10 +346,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
+				else
+					Ctrl->In.active = true;
 				set++;
 				break;
 
@@ -376,14 +397,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 						n_errors++;
 						break;
 				}
-				Ctrl->F.width = atof (&opt->arg[1]);
+				Ctrl->F.width = dimfilter_get_filter_width (GMT, &opt->arg[1]);
 				set++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				set++;
 				break;
 			case 'I':
@@ -465,7 +485,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h, double y_0, int fast) {
+GMT_LOCAL void dimfilter_set_weight_matrix (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h, double y_0, int fast) {
 /* Last two gives offset between output node and 'origin' input node for this window (0,0 for integral grids) */
 /* true when input/output grids are offset by integer values in dx/dy */
 
@@ -536,7 +556,7 @@ GMT_LOCAL void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_dimfilter (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_dimfilter (void *V_API, int mode, void *args) {
 	unsigned short int **sector = NULL;
 
 	unsigned int *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
@@ -744,7 +764,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		else
 			effort_level = 3;
 
-		if (effort_level == 1) set_weight_matrix_dim (&F, Gout->header, 0.0, shift);	/* Only need this once */
+		if (effort_level == 1) dimfilter_set_weight_matrix (&F, Gout->header, 0.0, shift);	/* Only need this once */
 
 		if (Ctrl->C.active) {	/* Use fixed-width diagonal corridors instead of bow-ties */
 			n_sectors_2 = Ctrl->N.n_sectors / 2;
@@ -780,11 +800,11 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing output line %d\r", row_out);
 			y_out = gmt_M_grd_row_to_y (GMT, row_out, Gout->header);
 			j_origin = (int)gmt_M_grd_y_to_row (GMT, y_out, Gin->header);
-			if (effort_level == 2) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
+			if (effort_level == 2) dimfilter_set_weight_matrix (&F, Gout->header, y_out, shift);
 
 			for (col_out = 0; col_out < Gout->header->n_columns; col_out++) {
 
-				if (effort_level == 3) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
+				if (effort_level == 3) dimfilter_set_weight_matrix (&F, Gout->header, y_out, shift);
 				gmt_M_memset (n_in_median, Ctrl->N.n_sectors, unsigned int);
 				gmt_M_memset (value, Ctrl->N.n_sectors, double);
 				gmt_M_memset (wt_sum, Ctrl->N.n_sectors, double);

@@ -36,30 +36,30 @@
 #define THIS_MODULE_OPTIONS "-JRVnr" GMT_OPT("S")
 
 struct GRDPROJECT_CTRL {
-	struct GRDPRJ_In {	/* Input grid */
+	struct GRDPROJECT_In {	/* Input grid */
 		bool active;
 		char *file;
 	} In;
-	struct GRDPRJ_C {	/* -C[<dx/dy>] */
+	struct GRDPROJECT_C {	/* -C[<dx/dy>] */
 		bool active;
 		double easting, northing;
 	} C;
-	struct GRDPRJ_E {	/* -E<dpi> */
+	struct GRDPROJECT_E {	/* -E<dpi> */
 		bool active;
 		int dpi;
 	} E;
-	struct GRDPRJ_F {	/* -F[k|m|n|i|c|p] */
+	struct GRDPROJECT_F {	/* -F[k|m|n|i|c|p] */
 		bool active;
 		char unit;
 	} F;
-	struct GRDPRJ_G {	/* -G */
+	struct GRDPROJECT_G {	/* -G */
 		bool active;
 		char *file;
 	} G;
-	struct GRDPRJ_I {	/* -I */
+	struct GRDPROJECT_I {	/* -I */
 		bool active;
 	} I;
-	struct GRDPRJ_M {	/* -Mc|i|m */
+	struct GRDPROJECT_M {	/* -Mc|i|m */
 		bool active;
 		char unit;
 	} M;
@@ -67,7 +67,7 @@ struct GRDPROJECT_CTRL {
 
 EXTERN_MSC void gmtlib_ellipsoid_name_convert (char *inname, char outname[]);
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDPROJECT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDPROJECT_CTRL);
@@ -77,14 +77,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->G.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [-C[<dx>/<dy>]] [-D%s]\n",
@@ -115,7 +115,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdproject and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -132,11 +132,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -169,10 +168,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				Ctrl->F.unit = opt->arg[0];
 				break;
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Inverse projection */
 				Ctrl->I.active = true;
@@ -224,10 +222,10 @@ EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction,
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdproject (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 	bool set_n = false, shift_xy = false;
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
-	int error = 0;
+	int error = 0, is;
 
 	char format[GMT_LEN256+6] = {""}, unit_name[GMT_GRID_UNIT_LEN80] = {""}, scale_unit_name[GMT_GRID_UNIT_LEN80] = {""};
 
@@ -258,14 +256,23 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdproject main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((GMT->common.R.active[ISET] + Ctrl->E.active) == 0) set_n = true;
-	if (Ctrl->M.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M");
+	if (Ctrl->M.active && ((error = gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M"))))
+		Return (error);
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);
 
-	unit = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name);
-	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+	if ((is = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name)) == -1) {
+		Return (GMT_PARSE_ERROR);
+	}
+	else
+		unit = (unsigned int)is;
+	if ((error = gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
+		Return (error);
+	}
 
 	if (GMT->common.R.active[RSET])	/* Load the w/e/s/n from -R */
 		gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
@@ -313,7 +320,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			}
 			gmt_xy_to_geo (GMT, &lon_t, &lat_t, x_c, y_c);
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", lon_t-1, lon_t+1, lat_t-1, lat_t+1);
-			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
+			GMT_Report (API, GMT_MSG_INFORMATION, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
 			GMT->common.R.active[RSET] = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -348,7 +355,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			}
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", MIN(xSW, xNW), yB, MAX(xNE, xSE), yT);
 
-			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active[RSET] = false;
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Load up our best wesn setting - it will be used below if -I */
@@ -358,7 +365,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), ""))
+		Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->I.active) {			/* Must flip the column types since in is Cartesian and out is geographic */
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
@@ -403,7 +411,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	                                  GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	if (Ctrl->I.active) {	/* Transforming from rectangular projection to geographical */
-		char buf[GMT_LEN128] = {""}, gdal_ellipsoid_name[GMT_LEN16] = {""};
+		char buf[GMT_LEN256] = {""}, gdal_ellipsoid_name[GMT_LEN16] = {""};
 
 		/* if (GMT->common.R.oblique) gmt_M_double_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
 
@@ -411,7 +419,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if ((Geo = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Rect)) == NULL) Return (API->error);	/* Just to get a header we can change */
+		if ((Geo = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Rect)) == NULL)
+			Return (API->error);	/* Just to get a header we can change */
 		HH = gmt_get_H_hidden (Geo->header);	/* Get the hidden info structure */
 
 		if (gmt_M_is_azimuthal(GMT) && GMT->current.proj.polar) {	/* Watch out for polar cap grids */
@@ -437,9 +446,11 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			use_nx = Rect->header->n_columns;
 			use_ny = Rect->header->n_rows;
 		}
-		gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Geo->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file))
+			Return (GMT_PROJECTION_ERROR);
 		gmt_set_grddim (GMT, Geo->header);
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL)
+			Return (API->error);
 		gmt_grd_init (GMT, Geo->header, options, true);
 		gmt_BC_init (GMT, Geo->header);
 
@@ -484,23 +495,27 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		/* Need to convert between GMT and GDAL ellipsoid names. But all are available in both sides. */
 		k = GMT->current.setting.proj_ellipsoid;
 		if (!strcmp (GMT->current.setting.ref_ellipsoid[k].name, "Sphere"))
-			sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+			sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
 			         GMT->current.setting.ref_ellipsoid[k].eq_radius);
 		else {
 			gmtlib_ellipsoid_name_convert (GMT->current.setting.ref_ellipsoid[k].name, gdal_ellipsoid_name);
-			if (!strcmp (gdal_ellipsoid_name, "unknown"))
+			if (strcmp (gdal_ellipsoid_name, "unknown") != 0)
 				sprintf (buf, "+proj=longlat +ellps=%s +no_defs", gdal_ellipsoid_name);
 			else if (!strcmp (gdal_ellipsoid_name, "Web-Mercator"))
-				sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
 				         GMT->current.setting.ref_ellipsoid[k].eq_radius);
 			else {
-				sprintf (buf, "+proj=longlat +a=%f +b%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
+				sprintf (buf, "+proj=longlat +a=%f +b=%f +no_defs", GMT->current.setting.ref_ellipsoid[k].eq_radius,
 				         GMT->current.setting.ref_ellipsoid[k].eq_radius);
 				GMT_Report (API, GMT_MSG_WARNING, "Unknown conversion between GMT and GDAL ellipsoid names. Using a generic spherical body.");
 			}
 		}
+		if (Geo->header->ProjRefPROJ4) gmt_M_str_free (Geo->header->ProjRefPROJ4);
+		if (Geo->header->ProjRefWKT)   gmt_M_str_free(Geo->header->ProjRefWKT);
+		Geo->header->ProjRefEPSG = 0;
+		Geo->header->ProjRefPROJ4 = strdup(buf);
 
-		gmt_grd_project (GMT, Rect, Geo, true);
+		if (gmt_grd_project (GMT, Rect, Geo, true)) Return (GMT_RUNTIME_ERROR);
 
 		HH->grdtype = gmtlib_get_grdtype (GMT, GMT_OUT, Geo->header);	/* Determine grid type */
 
@@ -548,11 +563,12 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		offset = Geo->header->registration;	/* Same as input */
 		if (GMT->common.R.active[GSET]) offset = !offset;	/* Toggle */
 
-		gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Rect->header, GMT->common.R.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file))
+			Return (GMT_PROJECTION_ERROR);
 		gmt_set_grddim (GMT, Rect->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		gmt_BC_init (GMT, Rect->header);
-		gmt_grd_project (GMT, Geo, Rect, false);
+		if (gmt_grd_project (GMT, Geo, Rect, false)) Return (GMT_RUNTIME_ERROR);
 		gmt_grd_init (GMT, Rect->header, options, true);
 
 		/* Modify output rect header if -F, -C, -M have been set */
@@ -584,12 +600,17 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 
-		if (GMT->common.J.proj4string[0])
-			Rect->header->ProjRefPROJ4 = strdup (GMT->common.J.proj4string);
+		if (GMT->common.J.proj4string[0]) {
+			Rect->header->ProjRefPROJ4 = strdup(GMT->common.J.proj4string);
+			if (Rect->header->ProjRefWKT)				/* Make sure previous Ref System info is wipped out (WKT has precedence over proj4) */
+				Rect->header->ProjRefWKT[0] = '\0';
+		}
 		else if (GMT->common.J.WKTstring[0])
 			Rect->header->ProjRefWKT = strdup (GMT->common.J.WKTstring);
-		else
-			Rect->header->ProjRefPROJ4 = gmt_export2proj4 (GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
+		else {
+			Rect->header->ProjRefPROJ4 = gmt_export2proj4(GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
+			if (Rect->header->ProjRefWKT) Rect->header->ProjRefWKT[0] = '\0';
+		}
 
 		/* rect xy values are here in GMT projected units chosen by user */
 

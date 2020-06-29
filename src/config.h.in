@@ -33,7 +33,11 @@
 
 /* path to executables/libs */
 #define GMT_BINDIR_RELATIVE "@GMT_BINDIR@"
-#define GMT_LIBDIR_RELATIVE "@GMT_LIBDIR@"
+#ifndef WIN32
+    #define GMT_LIBDIR_RELATIVE "@GMT_LIBDIR@"
+#else
+    #define GMT_LIBDIR_RELATIVE "@GMT_BINDIR@"
+#endif
 
 /* path to shared files */
 #define GMT_SHARE_DIR "@CMAKE_INSTALL_PREFIX@/@GMT_DATADIR@"
@@ -58,7 +62,7 @@
 #define GMT_CORE_LIB_NAME "@GMT_CORE_LIB_NAME@"
 
 /* Name of supplemental library */
-#define GMT_SUPPL_LIB_NAME "@GMT_SUPPL_LIB_NAME@"
+#define GMT_SUPPL_LIBRARY "@GMT_SUPPL_LIBRARY@"
 
 /* Name of PSL library */
 #define PSL_LIB_NAME "@PSL_LIB_NAME@"

@@ -38,6 +38,14 @@
     margin-right: 15px;
 }
 
+/* style for gmt movies */
+.gmtmovie li {
+    list-style: none;
+    width: 45%;
+    display: inline-grid;
+    margin: 10px;
+}
+
 /* Set tab-width to 2 spaces */
 .highlight {
     tab-size: 2;

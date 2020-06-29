@@ -105,6 +105,7 @@ struct GMT_DEFAULTS {
 	unsigned int history_orig;     /* Copy of history */
 	unsigned int export_type;     /* What data type to export to external APIs [GMT_DOUBLE] */
 	unsigned graphics_format;	/* The default graphics format in modern mode [GMT_SESSION_FORMAT] */
+	int max_cores;		/* The maximum number of cores for a multi-threaded module [GMT_MAX_CORES] */
 	/* IO group */
 	uint64_t n_bin_header_cols;		/* Minimum number of columns in a binary file for which the all cols == NaN means segment header [2] */
 	unsigned int io_n_header_items;		/* Number of header records expected when -h is used [1]; else 0 */
@@ -122,7 +123,8 @@ struct GMT_DEFAULTS {
 	char io_col_separator[GMT_LEN8];    /* Separator between output ASCII data columns [tab] */
 	char io_gridfile_format[GMT_LEN64]; /* Default grid file format */
 	char io_seg_marker[2];              /* Character used to recognize and write segment headers [>,>] */
-	char io_head_marker[2];             /* Character used to recognize and write header records [#,#] */
+	char io_head_marker_in[GMT_LEN32];  /* Characters used to recognize input header records [#%!;"'] */
+	char io_head_marker_out;            /* Character used to recognize and write header records [#,#] */
 	/* MAP group */
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
@@ -141,6 +143,7 @@ struct GMT_DEFAULTS {
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
 	double map_graph_extension;		/* If mapframetype is graph, how must longer to make axis length. [7.5%] */
 	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [GMT_OBL_ANNOT_ANYWHERE] */
+	unsigned int map_grid_cross_type[2];	/* 0 = normal cross, 1 = symmetric tick, 2 = asymmetric tick */
 	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
 	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
 	unsigned int map_graph_extension_unit;	/* If mapframetype is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */

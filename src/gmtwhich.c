@@ -35,22 +35,22 @@
 
 struct GMTWHICH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A */
+	struct GMTWHICH_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C */
+	struct GMTWHICH_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D */
+	struct GMTWHICH_D {	/* -D */
 		bool active;
 	} D;
-	struct G {	/* -G[c|l|u] */
+	struct GMTWHICH_G {	/* -G[c|l|u] */
 		bool active;
 		unsigned int mode;
 	} G;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTWHICH_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GMTWHICH_CTRL);
@@ -60,15 +60,15 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [files] [-A] [-C] [-D] [-G[c|l|u]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [files] [-A] [-C] [-D] [-G[a|c|l|u]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -77,6 +77,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Download file if possible and not found locally.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append a to place under the user directory in the appropriate folder.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to place it in the cache directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to place it in the current local directory [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to place it in the user\'s data directory.\n");
@@ -85,7 +86,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtwhich and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -116,6 +117,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 			case 'G':	/* Download file first, if required */
 				Ctrl->G.active = true;
 				switch (opt->arg[0]) {
+					case 'a': Ctrl->G.mode = GMT_AUTO_DIR;		break;
 					case 'c': Ctrl->G.mode = GMT_CACHE_DIR;		break;
 					case 'u': Ctrl->G.mode = GMT_DATA_DIR;		break;
 					case '\0': case 'l': Ctrl->G.mode = GMT_LOCAL_DIR;	break;
@@ -138,11 +140,56 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+
+GMT_LOCAL int gmtwhich_list_tiles (struct GMTAPI_CTRL *API, char *list, bool YN, struct GMT_RECORD *Out) {
+	/* List all tiles and whether found/not found */
+	int t_data, fail;
+	uint64_t n, k, nf = 0;
+	char dir[PATH_MAX] = {""}, path[PATH_MAX] = {""};
+	char **file = NULL;
+
+	if ((t_data = gmt_get_tile_id (API, list)) == GMT_NOTSET) return GMT_RUNTIME_ERROR;
+	if ((n = gmt_read_list (API->GMT, list, &file)) == 0) return GMT_RUNTIME_ERROR;
+	snprintf (dir, PATH_MAX, "%s%s%s", API->GMT->session.USERDIR, API->remote_info[t_data].dir, API->remote_info[t_data].file);
+
+	for (k = 0; k < n; k++) {
+		sprintf (path, "%s%s", dir, &file[k][1]);
+		fail = access (path, R_OK);
+		if (fail) {	/* Look for jp2 version instead */
+			char *jp2_file = gmt_strrep (path, GMT_TILE_EXTENSION_LOCAL, GMT_TILE_EXTENSION_REMOTE);
+			strcpy (path, jp2_file);
+			fail = access (path, R_OK);
+			gmt_M_str_free (jp2_file);
+		}
+		if (fail) {
+			if (YN) {
+				strcpy (path, "N");
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			}
+			strcpy (Out->text, path);
+			GMT_Report (API, GMT_MSG_ERROR, "Tile %s not found!\n", file[k]);
+
+		}
+		else {	/* Found */
+			if (YN)	/* Just want a Yes */
+				strcpy (path, "Y");
+			strcpy (Out->text, path);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			nf++;
+		}
+	}
+	GMT_Report (API, GMT_MSG_INFORMATION, "Tiled dataset %s has %" PRIu64 " tiles; %" PRIu64 " are present in %s\n", API->remote_info[t_data].file, n, nf, dir);
+
+	gmt_free_list (API->GMT, file, n);
+	return GMT_NOERROR;
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtwhich (void *V_API, int mode, void *args) {
-	int error = 0, fmode;
+EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
+	bool list;
+	int error = 0, fmode, k_data;
 	unsigned int first = 0;	/* Real start of filename */
 
 	char path[PATH_MAX] = {""}, file[PATH_MAX] = {""}, *Yes = "Y", *No = "N", cwd[PATH_MAX] = {""}, *p = NULL;
@@ -191,15 +238,29 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
-		if (Ctrl->G.active)
-			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
+		list = gmt_file_is_tiled_list (API, opt->arg, NULL, NULL, NULL);
+
+		if (Ctrl->G.active) {
+			if (list) {
+				gmt_download_tiles (API, opt->arg, Ctrl->G.mode);
+				if ((error = gmtwhich_list_tiles (API, opt->arg, Ctrl->C.active, Out)))
+					Return (error);
+				continue;
+			}
+			else
+				first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
+		}
 		else if (opt->arg[0] == '@') /* Gave @ without -G is likely a user mistake; remove it */
 			first = 1;
-		if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd"))
-			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote earth_relief grids */
+		if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET)
+			sprintf (file, "%s%s", opt->arg, API->remote_info[k_data].ext);	/* Append the implicit extension for remote grids */
 		else
 			strcpy (file, opt->arg);
-		if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */
+		if (list) {
+			if ((error = gmtwhich_list_tiles (API, opt->arg, Ctrl->C.active, Out)))
+				Return (error);
+		}
+		else if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */
 			char *L = NULL;
 			if (Ctrl->D.active) {
 				p = strstr (path, &file[first]);	/* Start of filename */

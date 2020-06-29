@@ -33,40 +33,40 @@
 #define THIS_MODULE_OPTIONS "-:Vbdo"
 
 struct GSHHG_CTRL {
-	struct In {	/* <file> */
+	struct GSHHG_In {	/* <file> */
 		bool active;
 		char *file;
 	} In;
-	struct Out {	/* > <file> */
+	struct GSHHG_Out {	/* > <file> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A */
+	struct GSHHG_A {	/* -A */
 		bool active;
 		double min;	/* Cutoff area in km^2 */
 	} A;
-	struct L {	/* -L */
+	struct GSHHG_L {	/* -L */
 		bool active;
 	} L;
-	struct G {	/* -G */
+	struct GSHHG_G {	/* -G */
 		bool active;
 	} G;
-	struct I {	/* -I[<id>|c] */
+	struct GSHHG_I {	/* -I[<id>|c] */
 		bool active;
 		unsigned int mode;
 		unsigned int id;
 	} I;
-	struct N {	/* -N<level> */
+	struct GSHHG_N {	/* -N<level> */
 		bool active;
 		unsigned int level;
 	} N;
-	struct Q {	/* -Qe|i */
+	struct GSHHG_Q {	/* -Qe|i */
 		bool active;
 		unsigned int mode;
 	} Q;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GSHHG_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GSHHG_CTRL);
@@ -74,14 +74,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->Out.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] [%s] [%s]\n\n",
@@ -105,7 +105,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gshhg and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -120,11 +120,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Count input files */
-				n_files++;
-				if (n_files == 1 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			case '>':	/* Got output file */
@@ -185,7 +184,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gshhg (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gshhg (void *V_API, int mode, void *args) {
 	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id;
 	int error, gmode, version, greenwich, is_river, src;
 	int32_t max_east = 270000000;

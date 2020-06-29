@@ -9,22 +9,22 @@
 gmt begin ex37
 	# Testing gmt grdfft coherence calculation with Karen Marks example data
 	# Prefix of two .nc files
-	G=@grav.V18.par.surf.1km.sq
-	T=@mb.par.surf.1km.sq
+	G=grav.V18.par.surf.1km.sq
+	T=mb.par.surf.1km.sq
 	gmt set FONT_TITLE 14p GMT_FFT kiss
 
-	gmt grdinfo $T.nc -Ib > bbox
+	gmt grdinfo @$T.nc -Ib > bbox
 	scl=1.4e-5
 	sclkm=1.4e-2
 	gmt makecpt -Crainbow -T-5000/-3000
-	gmt grdimage $T.nc -I+a0+nt1 -R$T.nc -Jx${scl}i -C -X1.474i -Y1i
+	gmt grdimage @${T}.nc -I+a0+nt1 -R@${T}.nc -Jx${scl}i -C -X1.474i -Y1i
 	gmt basemap -R-84/75/-78/81 -Jx${sclkm}i -Ba -BWSne+t"Multibeam bathymetry"
 
 	gmt makecpt -Crainbow -T-50/25
-	gmt grdimage $G.nc -I+a0+nt1 -R$G.nc -Jx${scl}i -C -X3.25i
+	gmt grdimage @${G}.nc -I+a0+nt1 -R@${G}.nc -Jx${scl}i -C -X3.25i
 	gmt basemap -R-84/75/-78/81 -Jx${sclkm}i -Ba -BWSne+t"Satellite gravity"
 
-	gmt grdfft $T.nc $G.nc -E+wk -N192/192+d+wtmp > cross.txt
+	gmt grdfft @${T}.nc @${G}.nc -E+wk -N192/192+d+wtmp > cross.txt
 
 	gmt makecpt -Crainbow -T-1500/1500
 	gmt grdimage ${T}_tmp.nc -I+a0+nt1 -R${T}_tmp.nc -Jx${scl}i -X-3.474i -Y3i

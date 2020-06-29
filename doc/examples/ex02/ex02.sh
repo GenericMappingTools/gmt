@@ -5,7 +5,7 @@
 # GMT modules:	set, grd2cpt, grdimage, makecpt, colorbar, subplot
 #
 gmt begin ex02
-	gmt set MAP_ANNOT_OBLIQUE 0
+	gmt set MAP_ANNOT_OBLIQUE separate
 	gmt subplot begin 2x1 -A+JTL -Fs16c/9c -M0 -R160/20/220/30+r -JOc190/25.5/292/69/16c -B10 -T"H@#awaiian@# T@#opo and @#G@#eoid@#"
 		gmt subplot set 0,0 -Ce3c
 		gmt grd2cpt @HI_topo_02.nc -Crelief -Z

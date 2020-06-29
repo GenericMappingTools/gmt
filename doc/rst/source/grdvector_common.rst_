@@ -72,20 +72,21 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [**i**\|\ **l**]\ *scale*
-    Sets scale for vector plot length in data units per plot distance measurement
-    unit [1]. Append **c**, **i**, or **p** to indicate the measurement
+    Sets scale for vector plot lengths in data units per plot distance measurement unit. 
+    Append **c**, **i**, or **p** to indicate the desired plot distance measurement
     unit (cm, inch, or point); if no unit is given we use the default value that
-    is controlled by :term:`PROJ_LENGTH_UNIT`. Alternatively,
-    use **-Sl**\ *length* to set a fixed plot length for all vectors.  Vectors given
-    via plot unit scaling will plot as straight vectors and their lengths are not
+    is controlled by :term:`PROJ_LENGTH_UNIT`.  Vector lengths converted via plot unit
+    scaling will plot as straight Cartesian vectors and their lengths are not
     affected by map projection and coordinate locations.
-    For geographic data you may alternatively give *scale* in data units per
-    map distance unit (see `Units`_). Then, your user units are scaled to map distances in the given unit
-    which are projected to plot dimensions.  These are geo-vectors that follow
-    great circle paths and their lengths are affected by the map projection and their
-    coordinates.  Finally, use **-Si** if it is simpler to give the reciprocal scale in
-    measurement unit per data unit or km per data unit.  To report the minimum, maximum,
-    and mean scaled vector length, use **-Vi**.
+    For geographic data you may alternatively give *scale* in data units per map distance
+    unit (see `Units`_). Then, your vector magnitudes (in data units) are scaled to map
+    *distances* in the given distance unit, and finally projected onto the Earth to give
+    *plot* dimensions.  These are geo-vectors that follow great circle paths and their
+    lengths may be affected by the map projection and their coordinates.  Finally, use
+    **-Si** if it is simpler to give the reciprocal scale in plot length or distance units
+    per data unit.  To report the minimum, maximum, and mean data and plot vector lengths
+    of all vectors plotted, use **-V**.  Alternatively, use **-Sl**\ *length* to set a fixed
+    plot length for all vectors.
 
 .. _-T:
 

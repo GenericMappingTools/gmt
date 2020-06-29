@@ -49,33 +49,33 @@ EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, doub
 #define GMT_INFO_TABLEINFO	2
 #define GMT_INFO_DATAINFO	3
 
-struct MINMAX_CTRL {	/* All control options for this program (except common args) */
+struct GMTINFO_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	unsigned int n_files;
-	struct A {	/* -A */
+	struct GMTINFO_A {	/* -A */
 		bool active;
 		unsigned int mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
 	} A;
-	struct C {	/* -C */
+	struct GMTINFO_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D[dx[/dy[/<dz>..]]] */
+	struct GMTINFO_D {	/* -D[dx[/dy[/<dz>..]]] */
 		bool active;
 		unsigned int ncol;
 		unsigned int mode;	/* 0 means center, 1 means use dx granularity */
 		double inc[GMT_MAX_COLUMNS];
 	} D;
-	struct E {	/* -E<L|l|H|h>[<col>] */
+	struct GMTINFO_E {	/* -E<L|l|H|h>[<col>] */
 		bool active;
 		bool abs;
 		int mode;	/* -1, 0, +1 */
 		uint64_t col;
 	} E;
-	struct F {	/* -F<i|d|t> */
+	struct GMTINFO_F {	/* -F<i|d|t> */
 		bool active;
 		int mode;	/*  */
 	} F;
-	struct I {	/* -I[b|e|f|p|s]dx[/dy[/<dz>..]][[+e|r|R<incs>]] */
+	struct GMTINFO_I {	/* -I[b|e|f|p|s]dx[/dy[/<dz>..]][[+e|r|R<incs>]] */
 		bool active;
 		unsigned int extend;
 		unsigned int ncol;
@@ -83,21 +83,21 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		double inc[GMT_MAX_COLUMNS];
 		double delta[4];
 	} I;
-	struct L {	/* -L */
+	struct GMTINFO_L {	/* -L */
 		bool active;
 	} L;
-	struct S {	/* -S[x|y] */
+	struct GMTINFO_S {	/* -S[x|y] */
 		bool active;
 		bool xbar, ybar;
 	} S;
-	struct T {	/* -T<dz>[/<col>] */
+	struct GMTINFO_T {	/* -T<dz>[/<col>] */
 		bool active;
 		double inc;
 		unsigned int col;
 	} T;
 };
 
-GMT_LOCAL int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col) {
+GMT_LOCAL int gmtinfo_strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col) {
 	/* Alternative to GMT_ascii_output_col that strips off leading blanks first */
 
 	int k;
@@ -107,22 +107,22 @@ GMT_LOCAL int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double 
 	return (k);	/* This is the position in text that we should start reporting from */
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct MINMAX_CTRL *C = NULL;
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+	struct GMTINFO_CTRL *C = NULL;
 
-	C = gmt_M_memory (GMT, NULL, 1, struct MINMAX_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMTINFO_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.col = UINT_MAX;	/* Meaning not set */
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] [-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..][+e|r|R<incs>]]\n", name);
@@ -173,14 +173,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtinfo and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int j;
+	int j, ival;
 	unsigned int n_errors = 0, k;
 	bool special = false;
 	char *c = NULL;
@@ -191,7 +191,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				Ctrl->n_files++;
 				break;
 
@@ -221,7 +221,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 			case 'D':	/* Region adjustment Granularity */
 				Ctrl->D.active = true;
 				if (opt->arg[0]) {
-					Ctrl->D.ncol = gmt_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS);
+					if ((Ctrl->D.ncol = gmt_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS)) < 0) n_errors++;
 					Ctrl->D.mode = 1;
 				}
 				break;
@@ -288,8 +288,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 						n_errors++;
 						GMT_Report (API, GMT_MSG_ERROR, "Option -I: No increment given.\n");
 				}
-				else
+				else {
+					if (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)
+						Ctrl->I.ncol = 2;
+					else {
+						if ((ival = gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS)) < 0) n_errors++;
+						else Ctrl->I.ncol = (unsigned int)ival;
+					}
 					Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
+				}
 				break;
 			case 'L':	/* Detect limiting range */
 				Ctrl->L.active = true;
@@ -367,7 +374,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, xyzminL); gmt_M_free (GMT, lonmin);  gmt_M_free (GMT, lonmax); gmt_M_free (GMT, xyzmaxL); gmt_M_free (GMT, Q); gmt_M_free (GMT, Z); gmt_M_free (GMT, Out); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtinfo (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	bool got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
@@ -384,7 +391,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	struct GMT_QUAD *Q = NULL;
 	struct GMT_RANGE **Z = NULL;
-	struct MINMAX_CTRL *Ctrl = NULL;
+	struct GMTINFO_CTRL *Ctrl = NULL;
 	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -490,13 +497,15 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must check that output format won't mess things up by printing wesn[XLO] > wesn[XHI] */
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
-			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
+			if ((error = gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "")))
+				Return (error);
 			GMT_Report (API, GMT_MSG_INFORMATION, "FORMAT_GEO_OUT reset from D to %s to ensure wesn[XHI] > wesn[XLO]\n",
 			            GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
-			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
+			if ((error = gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "")))
+				Return (error);
 			GMT_Report (API, GMT_MSG_INFORMATION, "FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure wesn[XHI] > wesn[XLO]\n",
 			            GMT->current.setting.format_geo_out);
 		}
@@ -668,19 +677,19 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					sprintf (record, "-R%g/%g/", wesn[XLO], wesn[XHI]);
 				else {
 					sprintf (record, "-R");
-					i = strip_blanks_and_output (GMT, buffer, wesn[XLO], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
-					i = strip_blanks_and_output (GMT, buffer, wesn[XHI], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+					i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XLO], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+					i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XHI], GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
 				}
-				i = strip_blanks_and_output (GMT, buffer, wesn[YLO], GMT_Y);	strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, wesn[YHI], GMT_Y);	strcat (record, &buffer[i]);
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[YLO], GMT_Y);	strcat (record, &buffer[i]);	strcat (record, "/");
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[YHI], GMT_Y);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->T.active) {	/* Return -T string */
 				wesn[XLO]  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
 				wesn[XHI]  = ceil  (xyzmax[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
 				sprintf (record, "-T");
-				i = strip_blanks_and_output (GMT, buffer, wesn[XLO], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, wesn[XHI], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XLO], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XHI], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
+				i = gmtinfo_strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
 				gmt_M_memcpy (Out->data, dchosen, ncol, double);
@@ -765,10 +774,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (gmt_M_rec_is_file_break (GMT)) continue;
 
 		/* We get here once we have read a data record */
-		if ((in = In->data) == NULL) {	/* Only need to process numerical part here */
-			GMT_Report (API, GMT_MSG_ERROR, "No data columns to work with - exiting\n");
-			Return (GMT_DIM_TOO_SMALL);
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
 		}
+
+		in = In->data;
+
 		if (first_data_record) {	/* First time we read data, we must allocate arrays based on the number of columns */
 
 			if (Ctrl->C.active) {	/* Must set output column types since each input col will produce two output cols. */
@@ -911,4 +923,15 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	for (col = 0; col < ncol; col++) gmt_M_free (GMT, Z[col]);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_minmax (void *V_API, int mode, void *args) {
+	/* This was the GMT4 name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (gmt_M_compat_check (API->GMT, 4)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Module minmax is deprecated; use gmtinfo.\n");
+		return (GMT_Call_Module (API, "gmtinfo", mode, args));
+	}
+	GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: minmax\n");
+	return (GMT_NOT_A_VALID_MODULE);
 }

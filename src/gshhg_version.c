@@ -47,7 +47,7 @@
 
 /* Get value from VERSION_ATT_NAME of netCDF file and populate gshhg_version,
  * gshhg_version_major, gshhg_version_minor, and gshhg_version_patch */
-int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version) {
+static int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version) {
 	int    status;                         /* error status */
 	int    ncid;                           /* netCDF ID */
 	size_t v_len;                          /* version length */

@@ -2,7 +2,7 @@
 #
 # Tests mapproject for oblique Mercator -R-20/40/-15/65r -Joa-30/60/105/1:30000000
 
-gmt set MAP_ANNOT_OBLIQUE 0 FORMAT_GEO_MAP dddF
+gmt set MAP_ANNOT_OBLIQUE separate FORMAT_GEO_MAP dddF
 ps=oblmerc_up.ps
 lon=-30
 lat=60

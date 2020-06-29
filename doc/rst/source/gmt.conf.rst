@@ -422,6 +422,10 @@ GMT Miscellaneous Parameters
         or ~/.gmt. **Note**: Some of these languages may require you to also
         change the :term:`PS_CHAR_ENCODING` setting.
 
+    **GMT_MAX_CORES**
+        Sets the upper limit on the number of cores any multi-threaded module might
+        use (whether **-x** is selected or not) [0, i.e., as many as are available].
+
     **GMT_TRIANGULATE**
         Determines if we use the **Watson** [Default] or **Shewchuk**
         algorithm (if configured during installation) for triangulation.
@@ -473,10 +477,11 @@ I/O Parameters
         (**-h**) Specifies whether input/output ASCII files have header record(s) or not [false].
 
     **IO_HEADER_MARKER**
-        This holds the character we expect to indicate a header record in
-        an incoming ASCII data or text table [#]. If this marker should be
-        different for output then append another character for the output
-        header record marker. The two characters must be separated by a comma.
+        Give a string from which any character will indicate a header record in
+        an incoming ASCII data table if found in the first position [#%!;"']. If another marker
+        should be used for output than the first character in the list, then append a single
+        character for the output header record marker. The two sets must be separated by a comma.
+        **Note**: A maximum of 7 input markers can be specified.
 
     **IO_LONLAT_TOGGLE**
         (**-:**) Set if the first two columns of input and output files
@@ -567,20 +572,18 @@ MAP Parameters
         occur for certain oblique projections.) [0p]
 
     **MAP_ANNOT_OBLIQUE**
-        This integer is a sum of 6 bit flags (most of which only are
-        relevant for oblique projections): If bit 1 is set (1),
-        annotations will occur wherever a gridline crosses the map
-        boundaries, else longitudes will be annotated on the lower and upper
-        boundaries only, and latitudes will be annotated on the left and
-        right boundaries only. If bit 2 is set (2), then
-        longitude annotations will be plotted horizontally. If bit 3 is set
-        (4), then latitude annotations will be plotted
-        horizontally. If bit 4 is set (8), then oblique
-        tick-marks are extended to give a projection equal to the specified
-        tick length. If bit 5 is set (16), tick-marks will be drawn normal
-        to the border regardless of gridline angle. If bit 6 is set (32),
-        then latitude annotations will be plotted parallel to the border. To
-        set a combination of these, add up the values in parentheses. [1].
+        This argument is a comma-separated list of up to seven keywords:
+        **separate** means longitudes will be annotated on the lower and upper
+        boundaries only, and latitudes will be annotated on the left and right
+        boundaries only;
+        **anywhere** means annotations will occur wherever an imaginary gridline
+        crosses the map boundaries; **lon_horizontal** means longitude annotations
+        will be plotted horizontally; **lat_horizontal** means latitude annotations
+        will be plotted horizontally; **tick_extend** means tick-marks are extended
+        so the distance from the tip of the oblique tick to the map frame equals
+        the specified tick length; **tick_normal** means tick-marks will be drawn
+        normal to the border regardless of gridline angle; **lat_parallel** means
+        latitude annotations will be plotted parallel to the border. [anywhere].
 
     **MAP_ANNOT_OFFSET**
         Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and :term:`MAP_ANNOT_OFFSET_SECONDARY` to the value specified.
@@ -654,12 +657,24 @@ MAP Parameters
         This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_CROSS_SIZE_PRIMARY**
-        Size (>= 0) of grid cross at lon-lat intersections. 0 means draw
-        continuous gridlines instead [0p].
+        Size of grid cross at lon-lat intersections. 0 means draw
+        continuous gridlines instead.  A nonzero size will draw a symmetric grid
+        cross. Signed sizes have special meaning and imply grid line ticks that
+        embellish an already drawn set of gridlines: A negative size will only
+        draw ticks away from Equator and Greenwich, while a positive size will
+        draw symmetric ticks [0p].
 
     **MAP_GRID_CROSS_SIZE_SECONDARY**
-        Size (>= 0) of grid cross at secondary lon-lat intersections. 0
-        means draw continuous gridlines instead [0p].
+        Size of grid cross at secondary lon-lat intersections. 0 means draw
+        continuous gridlines instead.  A nonzero size will draw a symmetric grid
+        cross.  Signed sizes have special meaning and imply grid line ticks that
+        embellish an already drawn set of gridlines: A negative size will only
+        draw ticks away from Equator and Greenwich, while a positive size will
+        draw symmetric ticks [0p].
+
+    **MAP_GRID_PEN**
+        Sets both :term:`MAP_GRID_PEN_PRIMARY` and :term:`MAP_GRID_PEN_SECONDARY` to
+        the value specified. This setting is not include in the **gmt.conf** file.
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or

@@ -87,7 +87,7 @@ struct GRDINFO_CTRL {
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDINFO_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDINFO_CTRL);
@@ -98,12 +98,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|L|u|U]] [-F] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] [-M]\n", name);
@@ -114,9 +114,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> may be one or more grid files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report in fields on a single line using the format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <file w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med L1scale] [mean std rms] [n_nan] [mode LMSscale]>,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <file w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med L1scale] [mean std rms] [n_nan] [mode LMSscale] registration type>,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   where -M adds [x0 y0 x1 y1] and [n_nan], -L1 adds [median L1scale], -L2 adds [mean std rms],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and -Lp adds [mode LMSscale]).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and -Lp adds [mode LMSscale]). Ends with registration (0=gridline), 1=pixel) and type (0=Cartesian, 1=geographic).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ct to place <file> at the end of the output record, or -Cn to write only numerical columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Report tiles using tile size set in -I. Optionally, extend each tile region by <offx>/<offy>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to only report tiles if the subregion has data (limited to one input grid).\n");
@@ -151,7 +151,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -171,10 +171,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-					n_files++;
-				else
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg)))
 					n_errors++;
+				else
+					n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -272,7 +272,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 				}
 				else
 					strncpy (text, opt->arg, GMT_LEN32-1);
-				if (gmt_validate_modifiers (GMT, text, opt->option, "as")) {
+				if (gmt_validate_modifiers (GMT, text, opt->option, "as", GMT_MSG_ERROR)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -T: Syntax is -T[<dz>][+s][+a[<alpha>]] next time.\n");
 					n_errors++;
 				}
@@ -330,35 +330,39 @@ struct GMT_TILES {
 	double wesn[4];
 };
 
-GMT_LOCAL void report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w, double e, double s, double n, struct GRDINFO_CTRL *Ctrl) {
+GMT_LOCAL void grdinfo_report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w, double e, double s, double n, struct GRDINFO_CTRL *Ctrl) {
 	/* Find the tiles covering the present grid, if given */
 	bool use = true, num_report;
 	unsigned int nx, ny, i, j, js = 0, jn = 0, ie, iw;
 	uint64_t row, col, node;
-	double wesn[4], out[4], box[4];
+	double wesn[4], out[4], box[4], dx = 0.0, dy = 0.0;
 	char text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	struct GMT_RECORD *Out = NULL;
 
 	num_report = (Ctrl->C.active);
 	Out = gmt_new_record (GMT, num_report ? out : NULL, (num_report && Ctrl->C.mode != GRDINFO_TRAILING) ? NULL : record);
 
-	nx = gmt_M_get_n (GMT, w, e, Ctrl->I.inc[GMT_X], 1);
-	ny = gmt_M_get_n (GMT, s, n, Ctrl->I.inc[GMT_Y], 1);
+	nx = gmt_M_get_n (GMT, w, e, Ctrl->I.inc[GMT_X], GMT_GRID_PIXEL_REG);	/* Pass GMT_GRID_PIXEL_REG since the tiles are sort of large "pixels" inside ... */
+	ny = gmt_M_get_n (GMT, s, n, Ctrl->I.inc[GMT_Y], GMT_GRID_PIXEL_REG);	/* ... the w/e/s/n bounds regardless of the registration of the grid being given */
+
+	if (G) dx = G->header->inc[GMT_X] * G->header->xy_off, dy = G->header->inc[GMT_Y] * G->header->xy_off;
+	/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
+
 	for (j = 0; j < ny; j++) {
 		box[YLO] = wesn[YLO] = s + j * Ctrl->I.inc[GMT_Y];	box[YHI] = wesn[YHI] = wesn[YLO] + Ctrl->I.inc[GMT_Y];
 		if (G && Ctrl->D.mode) {	/* Must determine if there is at least one data point inside this subset */
 			if (wesn[YLO] < G->header->wesn[YLO]) wesn[YLO] = G->header->wesn[YLO];
 			if (wesn[YHI] > G->header->wesn[YHI]) wesn[YHI] = G->header->wesn[YHI];
-			js = gmt_M_grd_y_to_row (GMT, wesn[YLO], G->header);
-			jn = gmt_M_grd_y_to_row (GMT, wesn[YHI], G->header);
+			js = gmt_M_grd_y_to_row (GMT, wesn[YLO] + dy, G->header);
+			jn = gmt_M_grd_y_to_row (GMT, wesn[YHI] - dy, G->header);
 		}
 		for (i = 0; i < nx; i++) {
 			box[XLO] = wesn[XLO] = w + i * Ctrl->I.inc[GMT_X];	box[XHI] = wesn[XHI] = wesn[XLO] + Ctrl->I.inc[GMT_X];
 			if (G && Ctrl->D.mode) {	/* Must determine if there is at least one data point inside this subset */
 				if (wesn[XLO] < G->header->wesn[XLO]) wesn[XLO] = G->header->wesn[XLO];
 				if (wesn[XHI] > G->header->wesn[XHI]) wesn[XHI] = G->header->wesn[XHI];
-				iw = gmt_M_grd_x_to_col (GMT, wesn[XLO], G->header);
-				ie = gmt_M_grd_x_to_col (GMT, wesn[XHI], G->header);
+				iw = gmt_M_grd_x_to_col (GMT, wesn[XLO] + dx, G->header);
+				ie = gmt_M_grd_x_to_col (GMT, wesn[XHI] - dx, G->header);
 				use = true;
 				for (row = jn; row <= js; row++) {
 					for (col = iw; col <= ie; col++) {
@@ -372,7 +376,7 @@ L_use_it:			row = 0;	/* Get here by goto and use is still true */
 			}
 			if (use) {
 				gmt_M_memcpy (out, box, 4, double);
-				out[XLO] -= Ctrl->D.inc[GMT_X];
+				out[XLO] -= Ctrl->D.inc[GMT_X];	/* Adjust region for given overlap */
 				out[XHI] += Ctrl->D.inc[GMT_X];
 				out[YLO] -= Ctrl->D.inc[GMT_Y];
 				out[YHI] += Ctrl->D.inc[GMT_Y];
@@ -402,7 +406,7 @@ L_use_it:			row = 0;	/* Get here by goto and use is still true */
 	gmt_M_free (GMT, Out);
 }
 
-GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned int which, char *text) {
+GMT_LOCAL void grdinfo_smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned int which, char *text) {
 	char tmptxt[GMT_LEN64] = {""};
 	if (gmt_M_is_geographic (GMT, GMT_IN) && ((which == 2 && inc[GMT_X] < 1.0 && inc[GMT_Y] < 1.0) || (which != 2 && inc[which] < 1.0))) {	/* See if we can report smart increments */
 		unsigned int col, s, k, int_inc[2], use_unit[2], kind;
@@ -469,16 +473,16 @@ GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned in
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdinfo (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0;
-	unsigned int n_grds = 0, n_cols = 0, col, i_status, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
+	unsigned int n_grds = 0, n_cols = 0, col, i_status, gtype, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	bool subset, delay, num_report;
 
 	uint64_t ij, n_nan = 0, n = 0;
 
 	double x_min = 0.0, y_min = 0.0, z_min = 0.0, x_max = 0.0, y_max = 0.0, z_max = 0.0, wesn[4];
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
-	double z_mean = 0.0, z_median = 0.0, z_mode = 0.0, z_stdev = 0.0, z_scale = 0.0, z_lmsscl = 0.0, z_rms = 0.0, out[22];
+	double z_mean = 0.0, z_median = 0.0, z_mode = 0.0, z_stdev = 0.0, z_scale = 0.0, z_lmsscl = 0.0, z_rms = 0.0, out[24];
 
 	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN512] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[PATH_MAX] = {""};
 	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL, *projStr = NULL, *answer[2] = {"", " no"};
@@ -533,6 +537,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->L.norm & 1) n_cols += 2;	/* Add median scale */
 			if (Ctrl->L.norm & 2) n_cols += 3;	/* Add mean stdev rms */
 			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
+			n_cols += 2;		/* Add registration and type */
 		}
 		if (Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
 		geometry = GMT_IS_NONE;
@@ -576,7 +581,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		subset = gmt_M_is_subset (GMT, G->header, wesn);	/* Subset requested */
-		if (subset) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
+		if (subset && ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), ""))))	/* Make sure wesn matches header spacing */
+			Return (error);
 		HH = gmt_get_H_hidden (G->header);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing grid %s\n", HH->name);
 
@@ -714,7 +720,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 			else
 				GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+			gtype = 1;
 		}
+		else
+			gtype = 0;
 
 		/* OK, time to report results */
 
@@ -743,7 +752,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_INCREMENTS) {
 			sprintf (record, "-I");
-			smart_increments (GMT, G->header->inc, 2, text);	strcat (record, text);
+			grdinfo_smart_increments (GMT, G->header->inc, 2, text);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_BOUNDBOX) {
@@ -789,6 +798,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				if (Ctrl->L.norm & 4) {
 					out[col++] = z_mode;	out[col++] = z_lmsscl;
 				}
+				out[col++] = G->header->registration;
+				out[col++] = gtype;	/* 0 = Cart, 1 = geo */
 				if (Ctrl->C.mode == GRDINFO_TRAILING)
 					sprintf (record, "%s", HH->name);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
@@ -840,6 +851,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_mode,   GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_lmsscl, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
+				strcat (record, sep);	gmt_ascii_format_col (GMT, text, (double)G->header->registration, GMT_OUT, GMT_Z);	strcat (record, text);
+				strcat (record, sep);	gmt_ascii_format_col (GMT, text, (double)gtype, GMT_OUT, GMT_Z);	strcat (record, text);
 				if (Ctrl->C.mode == GRDINFO_TRAILING) { sprintf (text, "%s%s", sep, HH->name);	strcat (record, text); }
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
@@ -912,7 +925,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);
 				strcat (record, " x_max: ");
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);
-				strcat (record, " x_inc: ");	smart_increments (GMT, G->header->inc, GMT_X, text);	strcat (record, text);
+				strcat (record, " x_inc: ");	grdinfo_smart_increments (GMT, G->header->inc, GMT_X, text);	strcat (record, text);
 				strcat (record, " name: ");
 				if ((c = strstr (G->header->x_units, " [degrees"))) {	/* Strip off [degrees ...] from the name of the longitude variable */
 					c[0] = '\0'; strcat (record, G->header->x_units); if (c) c[0] = ' ';
@@ -925,7 +938,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
 				strcat (record, " y_max: ");
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-				strcat (record, " y_inc: ");	smart_increments (GMT, G->header->inc, GMT_Y, text);	strcat (record, text);
+				strcat (record, " y_inc: ");	grdinfo_smart_increments (GMT, G->header->inc, GMT_Y, text);	strcat (record, text);
 				strcat (record, " name: ");
 				if ((c = strstr (G->header->y_units, " [degrees"))) {	/* Strip off [degrees ...] from the name of the latitude variable */
 					c[0] = '\0'; strcat (record, G->header->y_units); if (c) c[0] = ' ';
@@ -1056,7 +1069,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 		}
 		if (Ctrl->D.active)
-			report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
+			grdinfo_report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
 		else if (num_report) {	/* External interface, return as data with no leading text */
 			/* w e s n z0 z1 */
 			out[XLO] = global_xmin;		out[XHI] = global_xmax;
@@ -1141,7 +1154,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 		}
 		if (Ctrl->D.active)
-			report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
+			grdinfo_report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
 		else {
 			sprintf (record, "-R");
 			gmt_ascii_format_col (GMT, text, global_xmin, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");

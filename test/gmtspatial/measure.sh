@@ -13,6 +13,6 @@ echo "0.5	0.5	1" > answer
 gmt spatial -Q area.txt > result
 diff -q --strip-trailing-cr answer result > fail
 # Geographic centroid and area
-echo "0.5	0.500019546308	12308.3096995" > answer
+echo "0.5	0.500007020071	12281.2810988" > answer
 gmt spatial -Q area.txt  -fg > result
 diff -q --strip-trailing-cr answer result >> fail

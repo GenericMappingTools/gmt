@@ -40,6 +40,19 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
+**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**]
+    By default, geographic line segments are drawn as great circle arcs by resampling
+    coarse input data along such arcs. To disable this sampling and draw them as
+    straight lines, use the **-A** flag.  Alternatively, add **m** to draw
+    the line by first following a meridian, then a parallel. Or append **p**
+    to start following a parallel, then a meridian. (This can be practical
+    to draw a line along parallels, for example).  For Cartesian data, points
+    are simply connected, unless you append **x** or **y** to draw stair-case
+    curves that whose first move is along *x* or *y*, respectively. **Note**:
+    The **-A** option requires constant *z*-coordinates.
+
 .. _-B:
 
 .. include:: explain_-B.rst_
@@ -74,6 +87,8 @@ Optional Arguments
     Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that the module will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
+    If **-Z** is set, use **-G+z** to assign fill color via **-C**\ *cpt* and the
+    *z*-values obtained.
 
 .. _-I:
 
@@ -94,6 +109,8 @@ Optional Arguments
     append **+yb**\|\ **t**\|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
     Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
     All constructed polygons are assumed to have a constant *z* value.
+    **Note**: When options like **-G** and **-Z** are passed via segment headers you will need **-L** to ensure
+    your segments are interpreted as polygons.
 
 .. _-N:
 
@@ -134,6 +151,8 @@ Optional Arguments
     is appended then the color of the line are taken from the CPT (see
     **-C**). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.
+    If **-Z** is set, then append **+z** to **-W** to assign pen color via **-C**\ *cpt* and the
+    *z*-values obtained.
 
 .. _-X:
 
@@ -141,11 +160,11 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *value*\|\ *file*\ [**+f**\|\ **l**]
+**-Z**\ *value*\|\ *file*
     Instead of specifying a symbol or polygon fill and outline color via **-G** and **-W**,
     give both a *value* via **-Z** and a color lookup table via **-C**.  Alternatively,
     give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
-    To just set the fill or outline, append **+f** or **+l**, respectively [both]. 
+    To apply the color obtain to a fill, use **-G+z**; to apply it to the pen color, append **+z** to **-W**.
 
 .. include:: explain_-aspatial.rst_
 

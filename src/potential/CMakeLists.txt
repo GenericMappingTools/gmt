@@ -17,8 +17,8 @@
 #
 # CMake settings for supplemental package:
 #
-# 	SUPPL_NAME:          name of the supplemental package
-#   SUPPL_HEADERS:       header files. Will be installed if BUILD_SUPPLEMENTS is TRUE
+#   SUPPL_NAME:          name of the supplemental package
+#   SUPPL_HEADERS:       header files. Will be installed if BUILD_DEVELOPER is TRUE
 #   SUPPL_PROGS_SRCS:    list of C source codes for supplemental modules
 #   SUPPL_LIB_SRCS:      list of C source codes for supplemental library
 #   SUPPL_EXAMPLE_FILES: README and other example files

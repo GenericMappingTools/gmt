@@ -325,7 +325,10 @@ but you may also split this into two separate invocations for clarity, i.e.,
 -   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
     The first optional flag following **-B** selects **p** (rimary) [Default] or
-    **s** (econdary) axes information (mostly used for time axes annotations).
+    **s** (econdary) axes information (mostly used for time axes annotations but
+    is available for geographic axes as well. **Note**: primary refers to annotations
+    closest to the axis and secondary to annotations further away.  Hence, primary
+    annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts).
     The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
     If none are given then we default to **xy**.  If you wish to give different annotation intervals
     or labels for the various axes then you must repeat the **B** option for
@@ -756,7 +759,7 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 Timestamps on plots: The **-U** option
 --------------------------------------
 
-The **-U** option draws the GMT UNIX System time stamp on the plot.
+The **-U** option draws the GMT system time stamp on the plot.
 By appending **+j**\ *just* and/or **+o**\ *dx/dy*, the user may
 specify the justification of the stamp and where the stamp should fall
 on the page relative to lower left corner of the plot.

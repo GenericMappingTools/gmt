@@ -427,6 +427,7 @@ struct GMT_PROJ {
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0, proj4_scl;
 	bool is_proj4;
+	bool proj4_is_cart[2];	/* Fist is for origin ref sys and second (if requested) for destiny */
 };
 
 enum GMT_enum_frame {GMT_IS_PLAIN = 0,	/* Plain baseframe */

@@ -41,26 +41,26 @@
 #define THIS_MODULE_OPTIONS "->V"
 
 struct X2SYS_PUT_CTRL {
-	struct In {	/* -In */
+	struct X2SYS_PUT_In {	/* -In */
 		bool active;
 		char *file;
 	} In;
-	struct D {	/* -D */
+	struct X2SYS_PUT_D {	/* -D */
 		bool active;
 	} D;
-	struct F {	/* -F */
+	struct X2SYS_PUT_F {	/* -F */
 		bool active;
 	} F;
-	struct S {	/* -S */
+	struct X2SYS_PUT_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct X2SYS_PUT_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_PUT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_PUT_CTRL);
@@ -70,14 +70,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->T.TAG);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<info.tbf>] -T<TAG> [-D] [-F] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
@@ -95,7 +95,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -147,7 +147,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SYS_BIX *B) {
+GMT_LOCAL int x2sysput_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SYS_BIX *B) {
 	/* Remove all traces of the track with id track_id from structure tree for all bins */
 
 	struct X2SYS_BIX_TRACK *track = NULL, *skip_track = NULL;
@@ -172,7 +172,7 @@ GMT_LOCAL int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, s
 	return (track_id);	/* Return the track id we passed in */
 }
 
-GMT_LOCAL struct X2SYS_BIX_TRACK_INFO *x2sys_bix_find_track (char *track, bool *found_it, struct X2SYS_BIX *B) {
+GMT_LOCAL struct X2SYS_BIX_TRACK_INFO *x2sysput_bix_find_track (char *track, bool *found_it, struct X2SYS_BIX *B) {
 	/* Looks for given track in data base and if found returns pointer to the track before it and sets found_it to true.
 	 * I.e., the track is actually this_info->next_info.  If not found set found_it to false and return pointer where
 	 * this track should be inserted */
@@ -186,7 +186,7 @@ GMT_LOCAL struct X2SYS_BIX_TRACK_INFO *x2sys_bix_find_track (char *track, bool *
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_put (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 
@@ -272,7 +272,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 		/* Determine if this track is already in the data base */
 
-		this_info = x2sys_bix_find_track (track, &found_it, &B);	/* Returns found_it = true if found */
+		this_info = x2sysput_bix_find_track (track, &found_it, &B);	/* Returns found_it = true if found */
 
 		/* In either case, this_info now points to the previous track so that this_info->next is the found track OR
 		 * it is the point after which a new track should be inserted */
@@ -281,7 +281,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		if (found_it) {	/* This track already exists in the database */
 			if (Ctrl->D.active) {	/* Here we wish to delete it (and possibly replace the contents) */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Removing existing information for track: %s\n", track);
-				free_id = x2sys_bix_remove_track (GMT, this_info->next_info->track_id, &B);
+				free_id = x2sysput_bix_remove_track (GMT, this_info->next_info->track_id, &B);
 				GMT_Report (API, GMT_MSG_INFORMATION, "track %s removed\n", track);
 				this_info->next_info = this_info->next_info->next_info;
 				skip = !Ctrl->F.active;	/* If we are not replacing the info then we skip the new info */

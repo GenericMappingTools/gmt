@@ -23,7 +23,6 @@ foreach (_fig ${_scripts_ps2png})
 	list (APPEND _scripts_png ${RST_BINARY_DIR}/_images/${_png_fig})
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 		COMMAND ${CMAKE_COMMAND} -E env
-		GMT_USERDIR=${GMT_BINARY_DIR}/share
 		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
 		-A -P -E150 -Tg -Qg4 -Qt4
@@ -41,7 +40,6 @@ foreach (_fig ${_scripts_ps2pdf})
 	list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 		COMMAND ${CMAKE_COMMAND} -E env
-		GMT_USERDIR=${GMT_BINARY_DIR}/share
 		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
 		-D${RST_BINARY_DIR}/_images

@@ -44,26 +44,26 @@
 
 struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct E {	/* -E<empty> */
+	struct NEARNEIGHBOR_E {	/* -E<empty> */
 		bool active;
 		double value;
 	} E;
-	struct G {	/* -G<grdfile> */
+	struct NEARNEIGHBOR_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N<sectors>[+m<min_sectors>] | -Nn */
+	struct NEARNEIGHBOR_N {	/* -N<sectors>[+m<min_sectors>] | -Nn */
 		bool active;
 		unsigned int sectors, min_sectors;
 		unsigned int mode;
 	} N;
-	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
+	struct NEARNEIGHBOR_S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		bool active;
 		int mode;	/* May be negative */
 		double radius;
 		char unit;
 	} S;
-	struct W {	/* -W */
+	struct NEARNEIGHBOR_W {	/* -W */
 		bool active;
 	} W;
 };
@@ -77,7 +77,7 @@ struct NEARNEIGHBOR_POINT {	/* Structure with input data constraints */
 	gmt_grdfloat x, y, z, w;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct NEARNEIGHBOR_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_CTRL);
@@ -87,13 +87,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n) {
+GMT_LOCAL struct NEARNEIGHBOR_NODE *nearneighbor_add_new_node (struct GMT_CTRL *GMT, unsigned int n) {
 	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
 	struct NEARNEIGHBOR_NODE *new_node = gmt_M_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
 	new_node->distance = gmt_M_memory (GMT, NULL, n, gmt_grdfloat);
@@ -103,17 +103,17 @@ GMT_LOCAL struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned
 	return (new_node);
 }
 
-GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, unsigned int n_sector, unsigned int sector, double distance, uint64_t id) {
+GMT_LOCAL void nearneighbor_assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, unsigned int n_sector, unsigned int sector, double distance, uint64_t id) {
 	/* Allocates node space if not already used and updates the value if closer to node than the current value */
 
-	if (!(*node)) *node = add_new_node (GMT, n_sector);
+	if (!(*node)) *node = nearneighbor_add_new_node (GMT, n_sector);
 	if ((*node)->datum[sector] == -1 || (*node)->distance[sector] > distance) {
 		(*node)->distance[sector] = (gmt_grdfloat)distance;
 		(*node)->datum[sector] = id;
 	}
 }
 
-GMT_LOCAL void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node) {
+GMT_LOCAL void nearneighbor_free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node) {
 	/* Frees allocated node space */
 
 	if (!node) return;	/* Nothing to do */
@@ -122,7 +122,7 @@ GMT_LOCAL void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node) 
 	gmt_M_free (GMT, node);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
@@ -161,7 +161,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to nearneighbor and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -178,7 +178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -193,10 +193,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 				}
 				break;
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -272,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_nearneighbor (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	int col_0, row_0, row, col, row_end, col_end, ii, jj, error = 0;
 	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
 	bool wrap_180, replicate_x, replicate_y;
@@ -335,7 +334,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 	/* Regular nearest neighbor moving average operation */
 
-	gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
@@ -400,6 +400,11 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				break;
 			continue;	/* Go back and read the next record */
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		in = In->data;	/* Only need to process numerical part here */
 
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */
@@ -455,7 +460,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				/* OK, this point should constrain this node.  Calculate which sector and assign the value */
 
 				sector = urint (floor (((d_atan2 (dy, dx) + M_PI) * factor))) % Ctrl->N.sectors;
-				assign_node (GMT, &grid_node[kk], Ctrl->N.sectors, sector, distance, n);
+				nearneighbor_assign_node (GMT, &grid_node[kk], Ctrl->N.sectors, sector, distance, n);
 
 				/* With periodic, gridline-registered grids there are duplicate rows and/or columns
 				   so we may have to assign the point to more than one node.  The next section deals
@@ -464,15 +469,15 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 				if (replicate_x) {	/* Must check if we have to replicate a column */
 					if (colu == 0) 	/* Must replicate left to right column */
-						assign_node (GMT, &grid_node[kk+x_wrap], Ctrl->N.sectors, sector, distance, n);
+						nearneighbor_assign_node (GMT, &grid_node[kk+x_wrap], Ctrl->N.sectors, sector, distance, n);
 					else if (colu == HH->nxp)	/* Must replicate right to left column */
-						assign_node (GMT, &grid_node[kk-x_wrap], Ctrl->N.sectors, sector, distance, n);
+						nearneighbor_assign_node (GMT, &grid_node[kk-x_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
 					if (rowu == 0)	/* Must replicate top to bottom row */
-						assign_node (GMT, &grid_node[kk+y_wrap], Ctrl->N.sectors, sector, distance, n);
+						nearneighbor_assign_node (GMT, &grid_node[kk+y_wrap], Ctrl->N.sectors, sector, distance, n);
 					else if (rowu == HH->nyp)	/* Must replicate bottom to top row */
-						assign_node (GMT, &grid_node[kk-y_wrap], Ctrl->N.sectors, sector, distance, n);
+						nearneighbor_assign_node (GMT, &grid_node[kk-y_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 			}
 		}
@@ -520,7 +525,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			if (n_filled < Ctrl->N.min_sectors) { 	/* Not minimum set of neighbors in all sectors, set to empty and goto next node */
 				n_almost++;
 				Grid->data[ij] = (gmt_grdfloat)Ctrl->E.value;
-				free_node (GMT, grid_node[ij0]);
+				nearneighbor_free_node (GMT, grid_node[ij0]);
 				ij0++;
 				continue;
 			}
@@ -539,7 +544,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				}
 			}
 			Grid->data[ij] = (gmt_grdfloat)(grd_sum / weight_sum);
-			free_node (GMT, grid_node[ij0]);
+			nearneighbor_free_node (GMT, grid_node[ij0]);
 			ij0++;
 		}
 		if ((row % 128) == 0) GMT_Report (API, GMT_MSG_INFORMATION, "Gridded row %10ld\r", row);

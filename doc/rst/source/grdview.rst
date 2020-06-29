@@ -52,7 +52,7 @@ elevation, run
 
     gmt grdview hawaii_grav.nc -Jl18/24/1.5c -Chawaii.cpt -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
 
-To create a illuminated color perspective plot of the gridded data set
+To create an illuminated color perspective plot of the gridded data set
 image.nc, using the CPT color.cpt, with linear scaling at
 10 cm/x-unit and tickmarks every 5 units, with intensities provided by
 the file intens.nc, and looking from the SE, use

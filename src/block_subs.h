@@ -87,7 +87,7 @@ struct BLOCK_CTRL {
 	} W;
 };
 
-GMT_LOCAL struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all the block* modules */
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all the block* modules */
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
 	{ 0, 'A', "fields", "", "", "", "" },
 	{ 0, 'C', "center", "", "", "", "" },
@@ -202,7 +202,7 @@ struct BLK_DATA {
 /* Declaring the standard functions to allocate and free the program Ctrl structure */
 
 /*! Allocate and initialize a new control structure */
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {
+static void *New_Ctrl (struct GMT_CTRL *GMT) {
 	struct BLOCK_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
@@ -218,7 +218,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {
 }
 
 /*! Deallocate control structure */
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	unsigned int k;
 	if (!C) return;
 	for (k = 0; k < C->G.n; k++)
@@ -226,7 +226,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void strip_commas (const char *in, char out[]) {
+static void strip_commas (const char *in, char out[]) {
 	/* Remove the commas in the input and return the remaining characters via out */
 	size_t i, o = 0;
 	for (i = 0; in[i]; i++)
@@ -246,7 +246,7 @@ enum GMT_enum_blockcases {BLK_CASE_X = 0,
 	BLK_CASE_Z	= 2};
 
 /*! Sort on index, then the specified item a[0,1,2] = x, y, z */
-GMT_LOCAL int BLK_compare_sub (const void *point_1, const void *point_2, int item) {
+static int BLK_compare_sub (const void *point_1, const void *point_2, int item) {
 	const struct BLK_DATA *p1 = point_1, *p2 = point_2;
 
 	/* First sort on bin index ij */
@@ -260,17 +260,17 @@ GMT_LOCAL int BLK_compare_sub (const void *point_1, const void *point_2, int ite
 }
 
 /*! Sort on index, then x */
-GMT_LOCAL int BLK_compare_x (const void *point_1, const void *point_2) {
+static int BLK_compare_x (const void *point_1, const void *point_2) {
 	return (BLK_compare_sub (point_1, point_2, BLK_CASE_X));
 }
 
 /* Sort on index, then y */
-GMT_LOCAL int BLK_compare_y (const void *point_1, const void *point_2) {
+static int BLK_compare_y (const void *point_1, const void *point_2) {
 	return (BLK_compare_sub (point_1, point_2, BLK_CASE_Y));
 }
 
 /*! Sort on index, then z */
-GMT_LOCAL int BLK_compare_index_z (const void *point_1, const void *point_2) {
+static int BLK_compare_index_z (const void *point_1, const void *point_2) {
 	return (BLK_compare_sub (point_1, point_2, BLK_CASE_Z));
 }
 

@@ -18,7 +18,7 @@ int main () {
 	/* Associate our data table with a virtual file */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_PLP, GMT_IN, V[GMT_IN], input);
 	/* Create a virtual file to hold the sampled points */
-	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_PLP, GMT_OUT, NULL, output);
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_PLP, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
 	/* Prepare the module arguments */
 	sprintf (args, "-sa %s -Gtopo.nc ->%s", input, output);
 	/* Call the grdtrack module */

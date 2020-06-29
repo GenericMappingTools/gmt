@@ -59,8 +59,10 @@ struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
 	char header[GMT_LEN128];	/* Header for the whole legend H */
 	char subheader[GMT_LEN128];	/* Subheader, i.e., line label L*/
 	char font[GMT_LEN32];		/* Fontsize to use for current H or L */
+	char fill[GMT_LEN32];		/* Fill of the canvas behind the legend */
 	char gap[GMT_LEN32];		/* Move this much down before placing symbol entry */
-	char pen[2][GMT_LEN32];		/* Pens to use with +d and +v */
+	char off[GMT_LEN32];		/* Offset of anchor point for frame */
+	char pen[3][GMT_LEN32];		/* Pens to use with +d and +v and +p */
 	int draw;			/* 0 no draw, 1 draw horizontal +d, 2 draw vertical +v */
 	int just;			/* Legend placement [TR] */
 	char code;			/* Label justification code (L|C|R) [L] */
@@ -170,6 +172,7 @@ struct GMT_COMMON {
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
 		bool active;
+		bool selected;
 		unsigned int n_methods;			/* How many different criteria to apply */
 		uint64_t n_col;				/* Largest column-number needed to be read */
 		bool match_all;				/* If true then all specified criteria must be met to be a gap [default is any of them] */
