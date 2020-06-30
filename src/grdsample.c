@@ -219,13 +219,13 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 	/* There are two separate regions that we need to worry about and ensure they are consistent when a user
 	 * selects a subset. This is because the grid region and the desired region may not only be different, but
 	 * may be phase-shifted. That means a single w/e/s/n cannot be used both to specify a subset for READING and
-	 * also as a OUTPUT region.  Thus, below we create two regions:
+	 * also as an OUTPUT region.  Thus, below we create two regions:
 	 * wesn_i: This is initially the input grid's domain.  If no -R is given then that is what we will read.
 	 * wesn_o: This is the region given by -R.  If no -R then it is the same as wesn_i.
 	 * If no -R is given then wesn_i == wesn_o and (presumably) there is only differences in inc and registration.
 	 * If there is a -R, then we adjust wesn_i and wesn_o thus:
-	 *   wesn_i: We move the boundaries inwards by the grid spacing until the bounds are equal to or inside the -R.
-	 *   wesn_o: We move the boundaries inwards by the -Iinc spacing until the bounds are eqaul to or inside the input grid.
+	 *   wesn_i: We move the boundaries inwards by the grid's own increments until the bounds are equal to or inside the -R.
+	 *   wesn_o: We move the boundaries inwards by the -Iinc spacing until the bounds are equal to or inside the input grid.
 	 */
 
 	gmt_M_memcpy (wesn_i, Gin->header->wesn, 4, double);	/* wesn_i is eventually the subset we will read from this grid */

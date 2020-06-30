@@ -408,7 +408,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			double wesn[4];	/* Make sure wesn is equal to or larger than B[n].G->header->wesn so all points are included */
 			unsigned int k;
 			/* The goal below is to come up with a wesn that a proper subset of the output grid while still not
-			 * exceeding the bounds of the current tile grid. Th wesn below will be compatible with the output grid
+			 * exceeding the bounds of the current tile grid. The wesn below will be compatible with the output grid
 			 * but is not compatible with the input grid.  grdsample will make the adjustment */
 			k = (unsigned int)rint ((MAX (h->wesn[XLO], t->wesn[XLO]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XLO] = h->wesn[XLO] + k * h->inc[GMT_X];
