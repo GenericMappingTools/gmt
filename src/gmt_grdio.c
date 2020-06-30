@@ -3009,6 +3009,7 @@ bool gmtlib_found_url_for_gdal (char *fname) {
 	   are either meant to be read via GDAL.  Regular URLs (e.g., htthp://, ftp:// are read via libcurl. */
 	if (!strncmp(fname,"WCS:", 4)  ||
 		!strncmp(fname,"WMS:", 4)  ||
+		!strncmp(fname,"MVT:", 4)  ||
 		!strncmp(fname,"/vsi", 4)) {
 #ifdef WIN32
 		/* On Windows libcurl does not care about the certificates file (see https://github.com/curl/curl/issues/1538)
