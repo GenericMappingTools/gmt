@@ -50,65 +50,65 @@
 #define PLOT_OFFSET	2
 
 struct PSSEGY_CTRL {
-	struct In {	/* -In */
+	struct PSSEGY_In {	/* -In */
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct PSSEGY_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct PSSEGY_C {	/* -C<cpt> */
 		bool active;
 		double value;
 	} C;
-	struct D {	/* -D */
+	struct PSSEGY_D {	/* -D */
 		bool active;
 		double value;
 	} D;
-	struct E {	/* -E */
+	struct PSSEGY_E {	/* -E */
 		bool active;
 		double value;
 	} E;
-	struct F {	/* -F<fill> */
+	struct PSSEGY_F {	/* -F<fill> */
 		bool active;
 		double rgb[4];
 	} F;
-	struct I {	/* -I */
+	struct PSSEGY_I {	/* -I */
 		bool active;
 	} I;
-	struct L {	/* -L */
+	struct PSSEGY_L {	/* -L */
 		bool active;
 		uint32_t value;
 	} L;
-	struct M {	/* -M */
+	struct PSSEGY_M {	/* -M */
 		bool active;
 		uint32_t value;
 	} M;
-	struct N {	/* -N */
+	struct PSSEGY_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Qb|i|u|x|y */
+	struct PSSEGY_Q {	/* -Qb|i|u|x|y */
 		bool active[5];
 		double value[5];
 	} Q;
-	struct S {	/* -S */
+	struct PSSEGY_S {	/* -S */
 		bool active;
 		unsigned int mode;
 		int value;
 	} S;
-	struct T {	/* -T */
+	struct PSSEGY_T {	/* -T */
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* -W */
+	struct PSSEGY_W {	/* -W */
 		bool active;
 	} W;
-	struct Z {	/* -Z */
+	struct PSSEGY_Z {	/* -Z */
 		bool active;
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSEGY_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSSEGY_CTRL);
@@ -122,14 +122,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->T.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<segyfile>] -D<dev> -F<color> | -W %s\n", name, GMT_Jx_OPT);
@@ -174,7 +174,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pssegy and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -191,10 +191,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -301,7 +300,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_
 }
 
 /* function to return rms amplitude of n_samp values from the array data */
-GMT_LOCAL float segy_rms (float *data, uint32_t n_samp) {
+GMT_LOCAL float pssegy_rms (float *data, uint32_t n_samp) {
 	uint32_t ix;
 	double sumsq = 0.0;
 
@@ -312,7 +311,7 @@ GMT_LOCAL float segy_rms (float *data, uint32_t n_samp) {
 	return (float) sumsq;
 }
 
-GMT_LOCAL int segy_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny) {	/* pixel to paint */
+GMT_LOCAL int pssegy_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny) {	/* pixel to paint */
 	int byte, quot, rem;
 	static unsigned char bmask[8]={128, 64, 32, 16, 8, 4, 2, 1};
 
@@ -326,7 +325,7 @@ GMT_LOCAL int segy_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int 
 	return (0);
 }
 
-GMT_LOCAL void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) { /* apply current sample with all options to bitmap */
+GMT_LOCAL void pssegy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) { /* apply current sample with all options to bitmap */
 
 	int px0, px1, py0, py1, ix, iy;
 	double xp0, xp1, yp0, yp1, slope;
@@ -345,13 +344,13 @@ GMT_LOCAL void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, floa
 		if (px0 < px1) {
 			for (ix = px0; ix <= px1; ix++) {
 				iy = py0 + irint (slope * (float) (ix - px0));
-				segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				pssegy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (ix = px1; ix <= px0; ix++) {
 				iy = py0 + irint (slope * (float) (ix - px0));
-				segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				pssegy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 
 		}
@@ -360,19 +359,19 @@ GMT_LOCAL void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, floa
 		if (py0 < py1) {
 			for (iy = py0; iy <= py1; iy++) {
 				ix = px0 + irint (((float) (iy - py0)) / slope);
-				segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				pssegy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (iy=py1; iy<=py0; iy++) {
 				ix = px0 + irint (((float) (iy - py0)) / slope);
-				segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				pssegy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 	}
 }
 
-GMT_LOCAL void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, int negative, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) { /* apply current samples with all options to bitmap */
+GMT_LOCAL void pssegy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, int negative, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) { /* apply current samples with all options to bitmap */
 
 	int px0, px00, py0, py1, ixx, ix, iy;
 	double xp0, xp00, xp1, yp0, yp1, interp, slope;
@@ -409,10 +408,10 @@ GMT_LOCAL void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, fl
 		for (iy = py0; iy <= py1; iy++) {
 			ixx = px0 + irint (((float) (iy - py0)) / slope);
 			if (ixx < px00) {
-				for (ix = ixx; ix <= px00; ix++) segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				for (ix = ixx; ix <= px00; ix++) pssegy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 			else {
-				for (ix = px00; ix <= ixx; ix++) segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				for (ix = px00; ix <= ixx; ix++) pssegy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 	}
@@ -420,16 +419,16 @@ GMT_LOCAL void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, fl
 		for (iy = py1; iy <= py0; iy++) {
 			ixx = px0 + irint (((float) (iy - py0)) / slope);
 			if (ixx < px00) {
-				for (ix = ixx; ix <= px00; ix++) segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				for (ix = ixx; ix <= px00; ix++) pssegy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 			else {
-				for (ix = px00; ix<= ixx; ix++) segy_paint (ix, iy, bitmap, bm_nx, bm_ny);
+				for (ix = px00; ix<= ixx; ix++) pssegy_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 	}
 }
 
-GMT_LOCAL void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
+GMT_LOCAL void pssegy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
 	/* shell function to loop over all samples in the current trace, determine plot options
 	 * and call the appropriate bitmap routine */
 
@@ -438,10 +437,10 @@ GMT_LOCAL void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, do
 
 	for (iy = 1; iy < n_samp; iy++) {	/* loop over samples on trace - refer to pairs iy-1, iy */
 		y1 = dy * (float) iy + toffset;
-		if (plot_wig) segy_wig_bmap (GMT, x0, data[iy-1],data[iy], y0, y1, dpi, bitmap, bm_nx, bm_ny); /* plotting wiggle */
+		if (plot_wig) pssegy_wig_bmap (GMT, x0, data[iy-1],data[iy], y0, y1, dpi, bitmap, bm_nx, bm_ny); /* plotting wiggle */
 		if (do_fill) {	/* plotting VA -- check data points first */
 			paint_wiggle = ((!negative && ((data[iy-1] >= 0.0) || (data[iy] >= 0.0))) || (negative && ((data[iy-1] <= 0.0) || (data[iy] <= 0.0))));
-			if (paint_wiggle) segy_shade_bmap (GMT, x0, data[iy-1], data[iy], y0, y1, negative, dpi, bitmap, bm_nx, bm_ny);
+			if (paint_wiggle) pssegy_shade_bmap (GMT, x0, data[iy-1], data[iy], y0, y1, negative, dpi, bitmap, bm_nx, bm_ny);
 		}
 		y0=y1;
 	}
@@ -450,17 +449,7 @@ GMT_LOCAL void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, do
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_segy (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: segy\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_pssegy (V_API, mode, args);
-}
-
-int GMT_pssegy (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pssegy (void *V_API, int mode, void *args) {
 	bool plot_it = false;
 	unsigned int i, nm, ix, iy;
 	uint32_t n_samp = 0, n_tracelist = 0;
@@ -686,7 +675,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->N.active || Ctrl->Z.active) {
-			scale = segy_rms (data, n_samp);
+			scale = pssegy_rms (data, n_samp);
 			GMT_Report (API, GMT_MSG_INFORMATION, "rms value is %f\n", scale);
 		}
 		for (iy = 0; iy < n_samp; iy++) { /* scale bias and clip each sample in the trace */
@@ -698,7 +687,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 
 		if ((!Ctrl->Z.active || scale) && (plot_it || !n_tracelist)) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "trace %d plotting at %f \n", ix+1, x0);
-			segy_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, (int)n_samp, (int)Ctrl->F.active, (int)Ctrl->I.active, (int)Ctrl->W.active, toffset, Ctrl->Q.value[I_ID], bitmap, bm_nx, bm_ny);
+			pssegy_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, (int)n_samp, (int)Ctrl->F.active, (int)Ctrl->I.active, (int)Ctrl->W.active, toffset, Ctrl->Q.value[I_ID], bitmap, bm_nx, bm_ny);
 		}
 		gmt_M_str_free (data);
 		gmt_M_str_free (header);
@@ -720,4 +709,14 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active) gmt_M_free (GMT, tracelist);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_segy (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: segy\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_pssegy (V_API, mode, args);
 }

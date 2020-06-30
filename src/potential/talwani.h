@@ -32,7 +32,7 @@
 
 #include "../mgd77/mgd77_IGF_coeffs.h"	/* Normal gravity coefficients */
 
-GMT_LOCAL double g_normal (double lat) {
+static double g_normal (double lat) {
 	/* IAG 1980 model */
 	double slat2 = sind (lat);
 	slat2 *= slat2;

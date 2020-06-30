@@ -219,7 +219,7 @@ ffmpeg -loglevel $blabber -f image2 -pattern_type glob -framerate $rate -y -i "$
 	fi
 }
 
-# For animations: Build a animation script template
+# For animations: Build an animation script template
 gmt_movie_script() {
 	if [ $# -eq 0 ]; then
 		cat << EOF >&2

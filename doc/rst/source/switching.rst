@@ -1,5 +1,5 @@
-Switching between different GMT versions
-========================================
+Switching between different versions
+====================================
 
 We encourage all GMT users to start using version 5 immediately; it
 has been tested extensively by the GMT team and has benefitted from

@@ -42,46 +42,46 @@
 #define THIS_MODULE_OPTIONS "-:JRVbdefhi" GMT_OPT("H")
 
 struct GRDEDIT_CTRL {
-	struct In {
+	struct GRDEDIT_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct GRDEDIT_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C */
+	struct GRDEDIT_C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
+	struct GRDEDIT_D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
 		char *information;
 	} D;
-	struct E {	/* -E[a|h|l|r|t|v] */
+	struct GRDEDIT_E {	/* -E[a|h|l|r|t|v] */
 		bool active;
 		char mode;	/* l rotate 90 degrees left (CCW), t = transpose, r = rotate 90 degrees right (CW) */
 				/* a rotate around (180), h flip grid horizontally (FLIPLR), v flip grid vertically (FLIPUD) */
 	} E;
-	struct G {
+	struct GRDEDIT_G {
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L[+n|p] */
+	struct GRDEDIT_L {	/* -L[+n|p] */
 		bool active;
 		int mode;
 	} L;
-	struct N {	/* N<xyzfile> */
+	struct GRDEDIT_N {	/* N<xyzfile> */
 		bool active;
 		char *file;
 	} N;
-	struct S {	/* -S */
+	struct GRDEDIT_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct GRDEDIT_T {	/* -T */
 		bool active;
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDEDIT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDEDIT_CTRL);
@@ -91,7 +91,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->D.information);
@@ -100,7 +100,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A] [-C] [%s]\n", name, GMT_GRDEDIT);
@@ -139,7 +139,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdedit and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -156,11 +156,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -187,10 +186,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'G':	/* Separate output grid file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'L':	/* Rotate w/e */
 				Ctrl->L.active = true;
@@ -200,10 +198,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 					n_errors++;
 				break;
 			case 'N':	/* Replace nodes */
-				if ((Ctrl->N.active = gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)))
-					Ctrl->N.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->N.active = true;
+				if (opt->arg[0]) Ctrl->N.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
 				break;
 			case 'S':	/* Rotate global grid */
 				Ctrl->S.active = true;
@@ -243,7 +240,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdedit (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdedit task */
 	bool grid_was_read = false, do_J = false;
 
@@ -281,7 +278,6 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdedit main code ----------------------------*/
 
 	if ((do_J = GMT->common.J.active)) {	/* Only gave -J to set the proj4 flag, so grid is already projected (i.e., Cartesian) */
-		EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
 		projstring = gmt_export2proj4 (GMT);	/* Convert the GMT -J<...> into a proj4 string */
  		if (strstr (projstring, "+proj=longlat") || strstr (projstring, "+proj=latlong")) {	/* These means we have a geographic grid */
 			gmt_set_geographic (GMT, GMT_IN);	/* Force Geographic */
@@ -397,6 +393,11 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 					break;
 				continue;	/* Go back and read the next record */
 			}
+			if (In->data == NULL) {
+				gmt_quit_bad_record (API, In);
+				Return (API->error);
+			}
+			
 			in = In->data;	/* Only need to process numerical part here */
 
 			/* Data record to process */

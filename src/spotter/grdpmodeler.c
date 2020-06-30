@@ -47,38 +47,38 @@
 
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct In {
+	struct GRDPMODELER_In {
 		bool active;
 		char *file;
 	} In;
-	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
+	struct GRDPMODELER_E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
 		bool active;
 		struct SPOTTER_ROT rot;
 	} E;
-	struct F {	/* -Fpolfile */
+	struct GRDPMODELER_F {	/* -Fpolfile */
 		bool active;
 		char *file;
 	} F;
-	struct G {	/* -Goutfile */
+	struct GRDPMODELER_G {	/* -Goutfile */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N */
+	struct GRDPMODELER_N {	/* -N */
 		bool active;
 		double t_upper;
 	} N;
-	struct S {	/* -Sa|d|s|v|w|x|y|X|Y */
+	struct GRDPMODELER_S {	/* -Sa|d|s|v|w|x|y|X|Y */
 		bool active, center;
 		unsigned int mode[N_PM_ITEMS];
 		unsigned int n_items;
 	} S;
-	struct T {	/* -T<fixtime> */
+	struct GRDPMODELER_T {	/* -T<fixtime> */
 		bool active;
 		double value;
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDROTATER_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
@@ -88,7 +88,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->E.rot.file);
@@ -97,7 +97,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* 
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <agegrdfile> %s [-F<polygontable>] [-G<outgrid>]\n", name, SPOTTER_E_OPT);
@@ -134,7 +134,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdpmodeler and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -148,11 +148,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Supplemental parameters */
@@ -162,16 +161,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 			case 'F':
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -249,7 +246,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_M_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdpmodeler (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	unsigned int col, row, inside, stage, n_stages, registration, k;
 	int retval, error = 0;
 
@@ -412,7 +409,8 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 
 
-	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
+	if (gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Great circle distances in degrees */
+		Return (GMT_NOT_A_VALID_TYPE);
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
 	gmt_M_grd_loop (GMT, G, row, col, node) {

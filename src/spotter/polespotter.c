@@ -31,31 +31,31 @@
 
 struct POLESPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A<abyssalhilefile> */
+	struct POLESPOTTER_A {	/* -A<abyssalhilefile> */
 		bool active;
 		char *file;
 		double weight;
 	} A;
-	struct D {	/* -D<spacing> */
+	struct POLESPOTTER_D {	/* -D<spacing> */
 		bool active;
 		double length;
 	} D;
-	struct E {	/* -Ea|f<sigma> */
+	struct POLESPOTTER_E {	/* -Ea|f<sigma> */
 		bool active;
 	} E;
-	struct F {	/* -F<fzfile> */
+	struct POLESPOTTER_F {	/* -F<fzfile> */
 		bool active;
 		char *file;
 		double weight;
 	} F;
-	struct G {	/* -Goutfile */
+	struct POLESPOTTER_G {	/* -Goutfile */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N */
+	struct POLESPOTTER_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -Ss|l|p[<modifiers>] */
+	struct POLESPOTTER_S {	/* -Ss|l|p[<modifiers>] */
 		bool active;
 		bool dump_lines;
 		bool dump_crossings;
@@ -71,7 +71,7 @@ enum spotter_modes {
 	SPOTTER_SCAN_LINES = 1,
 	SPOTTER_SCAN_POLES = 2};
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct POLESPOTTER_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct POLESPOTTER_CTRL);
@@ -82,7 +82,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->F.file);
@@ -91,7 +91,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-G<polegrid>] [%s]\n", name, GMT_Id_OPT, GMT_Rgeo_OPT);
@@ -124,7 +124,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to polespotter and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -142,10 +142,9 @@ int n;
 			/* Supplemental parameters */
 
 			case 'A':	/* File with abyssal hill traces */
-				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->A.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->A.active = true;
+				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
 				break;
 			case 'D':	/* Step length */
 				Ctrl->D.active = true;
@@ -159,16 +158,14 @@ int n;
 				Ctrl->E.active = true;
 				break;
 			case 'F':	/* File with fracture zone traces */
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -181,7 +178,7 @@ int n;
 					case 'p': Ctrl->S.mode = SPOTTER_SCAN_POLES;
 						break;
 					case 'l': Ctrl->S.mode = SPOTTER_SCAN_LINES;
-						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "m")) n_errors++;
+						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "m", GMT_MSG_ERROR)) n_errors++;
 						if ((c = strstr (opt->arg, "+m"))) {	/* Do midpoint analysis instead */
 							Ctrl->S.midpoint = true;
 							c[0] = '\0';	/* Chop off modifier */
@@ -197,7 +194,7 @@ int n;
 						if (c) c[0] = '+';	/* Restore modifier */
 						break;
 					case 's': Ctrl->S.mode = SPOTTER_SCAN_SPOTS;
-						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "cl")) n_errors++;
+						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "cl", GMT_MSG_ERROR)) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'l', txt_a))	/* Dump lines to stdout */
 							Ctrl->S.dump_lines = true;
 						if (gmt_get_modifier (opt->arg, 'c', txt_a) && txt_a[0]) {	/* Crossing output file */
@@ -238,33 +235,33 @@ int n;
 EXTERN_MSC void gmtlib_load_rot_matrix (double w, double R[3][3], double E[]);
 EXTERN_MSC void gmtlib_init_rot_matrix (double R[3][3], double E[]);
 
-GMT_LOCAL void get_cross_normalized (struct GMT_CTRL *GMT, double P1[], double P2[], double G[]) {
+GMT_LOCAL void polespotter_get_cross_normalized (struct GMT_CTRL *GMT, double P1[], double P2[], double G[]) {
 	gmt_cross3v (GMT, P1, P2, G);	/* G is the pole of the great circle that passes through P1 & P2 */
 	gmt_normalize3v (GMT, G);	/* But we need to normalize it */
 }
 
-GMT_LOCAL void get_great_circle_pole (struct GMT_CTRL *GMT, double P1[], double P2[], unsigned int type, double M[], double G[]) {
+GMT_LOCAL void polespotter_get_great_circle_pole (struct GMT_CTRL *GMT, double P1[], double P2[], unsigned int type, double M[], double G[]) {
 	/* Input is P1 and P2, the two cartesian points defining a small great circle segment.
 	 * Output is M (the mid point of the segment) and G, the great circle defining the bisector (FZ) or segment itself (AH) */
 	unsigned int k;
 	for (k = 0; k < 3; k++) M[k] = 0.5 * (P1[k] + P2[k]);	/* Mid-point M */
 	gmt_normalize3v (GMT, M);	/* To get a unit length vector M */
-	get_cross_normalized (GMT, P1, P2, G);	/* G is the pole of the great circle that passes through P1 & P2 */
+	polespotter_get_cross_normalized (GMT, P1, P2, G);	/* G is the pole of the great circle that passes through P1 & P2 */
 	if (type == POLESPOTTER_FZ) {	/* Must get the bisector pole instead, so cross it with M */
 		double B[3];	/* Temp vector */
-		get_cross_normalized (GMT, M, G, B);	/* This gives the normalied bisector pole instead */
+		polespotter_get_cross_normalized (GMT, M, G, B);	/* This gives the normalied bisector pole instead */
 		gmt_M_memcpy (G, B, 3, double);		/* Put bisector pole into G which is what we return */
 	}
 }
 
-GMT_LOCAL double get_angle_between_trends (struct GMT_CTRL *GMT, double P1[], double P2[], unsigned int type, double X[]) {
+GMT_LOCAL double polespotter_get_angle_between_trends (struct GMT_CTRL *GMT, double P1[], double P2[], unsigned int type, double X[]) {
 	/* P1 and P2 are two points on a FZ or AH.  Midpoint of P1 and P2 is M.  X is a trial pole.
 	 * If type = FZ: Find difference in orientations between bisector to P1-P2 and great circle from X through M.
 	 * If type = AH: Find difference in orientations between great circle through P1-P2 and great circle from X through M.
 	 */
 	double M[3], G[3], B[3], cos_del_angle, del_angle;
-	get_great_circle_pole (GMT, P1, P2, type, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) as well as mid-point M */
-	get_cross_normalized (GMT, M, X, B);			/* B is pole for great circle through selected pole and M */
+	polespotter_get_great_circle_pole (GMT, P1, P2, type, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) as well as mid-point M */
+	polespotter_get_cross_normalized (GMT, M, X, B);			/* B is pole for great circle through selected pole and M */
 	cos_del_angle = gmt_dot3v (GMT, G, B);			/* Cos of angle between great circles is our other weight */
 	del_angle = fabs (d_acos (cos_del_angle));		/* Get |angle| between the two great circles */
 	if (del_angle > M_PI_2) del_angle = M_PI - del_angle;	/* Since angles are actually orientation differences */
@@ -274,7 +271,7 @@ GMT_LOCAL double get_angle_between_trends (struct GMT_CTRL *GMT, double P1[], do
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_polespotter (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_polespotter (void *V_API, int mode, void *args) {
 	bool create_great_circles;
 	int error;
 	unsigned int d, n_steps, grow, gcol, k;
@@ -378,7 +375,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 						if (Ctrl->G.active) gmt_M_memset (layer, Grid->header->size, gmt_grdfloat);
 						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * seg_weight;	/* Weighted length of this segment */
-						get_great_circle_pole (GMT, P1, P2, d, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) */
+						polespotter_get_great_circle_pole (GMT, P1, P2, d, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) */
 						if (Ctrl->S.dump_crossings) {	/* Keep track of great circles to each line */
 							gmt_M_memcpy (&GG[4*ng], G, 3, double);
 							GG[4*ng+3] = L;
@@ -439,7 +436,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 			S = C->table[0]->segment[0];	/* Only have a single segment here*/
 			for (g1 = k = 0; g1 < ng; g1++) {
 				for (g2 = g1+1; g2 < ng; g2++) {	/* Get circle intersections (2) */
-					get_cross_normalized (GMT, &GG[4*g1], &GG[4*g2], X);	/* X is great circle intersection */
+					polespotter_get_cross_normalized (GMT, &GG[4*g1], &GG[4*g2], X);	/* X is great circle intersection */
 					gmt_cart_to_geo (GMT, &S->data[GMT_Y][k], &S->data[GMT_X][k], X, true);		/* Get lon/lat of this point along crossing profile */
 					S->data[GMT_Y][k] = gmt_lat_swap (GMT, S->data[GMT_Y][k], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
 					S->data[GMT_Z][k] = S->data[GMT_Z][k+1] = hypot (GG[4*g1+3], GG[4*g2+3]);	/* Combined length in quadrature */
@@ -495,7 +492,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 					for (row = 1; row < S->n_rows; row++) {
 						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM;	/* Length of this segment */
-						del_angle =  get_angle_between_trends (GMT, P1, P2, d, X);
+						del_angle =  polespotter_get_angle_between_trends (GMT, P1, P2, d, X);
 						this_chi2 = pow (del_angle * seg_weight, 2.0);	/* The chi2 increment from the P1-P2 line */
 						gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */
 						if (Ctrl->S.midpoint) {	/* Report for this mid-point */
@@ -576,7 +573,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 							for (row = 1; row < S->n_rows; row++) {
 								gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 								L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM;	/* Length of this segment */
-								del_angle =  get_angle_between_trends (GMT, P1, P2, d, X);
+								del_angle =  polespotter_get_angle_between_trends (GMT, P1, P2, d, X);
 								chi2 = L * pow (del_angle * seg_weight, 2.0);	/* The weighted chi2 increment from this line */
 								Grid->data[node] += (gmt_grdfloat)chi2;		/* Add to total chi2 misfit for this pole */
 								gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */

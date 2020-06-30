@@ -1184,10 +1184,10 @@ group parameters into logical groups and to use more consistent naming.
 However, under compatibility mode (see below) the old names are still recognized.
 New capabilities have been implemented by introducing new GMT default settings:
 
-*  :ref:`DIR_DCW <DIR Parameters>` specifies where to look for the optional
+*  :term:`DIR_DCW` specifies where to look for the optional
    Digital Charts of the World database (for country coloring or selections).
 
-*  :ref:`DIR_GSHHG <DIR Parameters>` specifies where to look for the required
+*  :term:`DIR_GSHHG` specifies where to look for the required
    Global Self-consistent Hierarchical High-resolution Geography database.
 
 *  :term:`GMT_COMPATIBILITY` can be set to 4 to allow

@@ -97,10 +97,10 @@ struct GRDTRACK_CTRL {
 		double step;
 		char unit;
 	} E;
-	struct GRDTRACK_F {	/* -F[+b][+n][+z<z0>] */
+	struct GRDTRACK_F {	/* -F[+b][+n][+r][+z<z0>] */
 		bool active;
 		bool negative;
-		bool balance;
+		unsigned int balance;
 		double z0;
 	} F;
 	struct GRDTRACK_G {	/* -G<grdfile> */
@@ -134,7 +134,7 @@ struct GRDTRACK_CTRL {
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDTRACK_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDTRACK_CTRL);
@@ -144,7 +144,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deallocate control structure */
 	unsigned int g;
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
@@ -161,11 +161,11 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* De
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+b][+n][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -217,6 +217,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   We assume a positive center peak; append +n if dealing with a negative trough.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z<z0> to change the detection level for left or right [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use +b to compute the balance point and standard deviation of the profile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +r for using the track d = 0 as get the rms about this line instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
@@ -239,7 +240,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_CTRL *Ctrl, unsigned int ng) {
+GMT_LOCAL int grdtrack_process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_CTRL *Ctrl, unsigned int ng) {
 	/* Handle processing of a single file argument.  Return 1 if successful, 0 if error */
 	int j;
 	unsigned int n_errors = 0;
@@ -250,10 +251,11 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -G: Give imgfile, scale, mode [and optionally max_lat]\n");
 			return (0);
 		}
-		else if (gmt_check_filearg (GMT, '<', line, GMT_IN, GMT_IS_GRID))
-			Ctrl->G.file[ng] = strdup (line);
-		else
-			return (0);
+		else {
+			if (line[0]) Ctrl->G.file[ng] = strdup (line);
+			if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[ng])))
+				return (0);
+		}
 		Ctrl->G.type[ng] = 1;
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Option -G: mode must be in 0-3 range\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Option -G: max latitude should be positive\n");
@@ -261,15 +263,14 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 	}
 	else {	/* Regular grid file */
 		sscanf (record, "%s", line);	/* Since we may have more than one word in the line */
-		if (gmt_check_filearg (GMT, '<', line, GMT_IN, GMT_IS_GRID))
-			Ctrl->G.file[ng] = strdup (line);
-		else
+		if (line[0]) Ctrl->G.file[ng] = strdup (line);
+		if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[ng])))
 			return (0);
 	}
 	return 1;
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdsample and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -288,13 +289,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Specified output file */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -358,11 +359,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "bnz"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "bnrz"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'C', c, "bnz", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'C', c, "bnrz", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'b': Ctrl->F.balance = true; break;		/* Select balance point per profile */
+							case 'b': Ctrl->F.balance = 1; break;		/* Select balance point per profile */
+							case 'r': Ctrl->F.balance = 2; break;		/* Fix balance point at track to compute rms about track */
 							case 'n': Ctrl->F.negative = true; break;		/* Profiles are negative (troughs)*/
 							case 'z': Ctrl->F.z0 = atof (&p[1]); break;		/* cross-profile starts at line and go to right side only */
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -387,7 +389,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					/* Process all the grids listed in this text table */
 					while (fgets (file, PATH_MAX, fp)) {
 						if (file[0] == '#') continue;	/* Skip all headers */
-						if (process_one (GMT, file, Ctrl, ng) == 0)
+						if (grdtrack_process_one (GMT, file, Ctrl, ng) == 0)
 							n_errors++;
 						else
 							ng++;
@@ -399,7 +401,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					fclose (fp);
 				}
 				else {	/* Got a single grid */
-					if (process_one (GMT, opt->arg, Ctrl, ng) == 0)
+					if (grdtrack_process_one (GMT, opt->arg, Ctrl, ng) == 0)
 						n_errors++;
 					else
 						ng++;
@@ -509,7 +511,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, unsigned int mode, double x_in, double y_in, double value[]) {
+GMT_LOCAL int grdtrack_sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, unsigned int mode, double x_in, double y_in, double value[]) {
 	/* Mode = 0: Cartesian, 1 = geographic, 2 = img mercmator */
 	unsigned int g, n_in, n_set;
 	double x, y, x0 = 0.0, y0 = 0.0;
@@ -554,9 +556,9 @@ GMT_LOCAL int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, 
 	return (n_set);
 }
 
-/* The following two scanners are used below in the gmt_grdspiral_search */
+/* The following two scanners are used below in the grdtrack_grd_spiral_search */
 
-GMT_LOCAL unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t l_col, int64_t r_col, struct GMT_ZSEARCH *S) {
+GMT_LOCAL unsigned int grdtrack_scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t l_col, int64_t r_col, struct GMT_ZSEARCH *S) {
 	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is returned, 0 if all NaN */
 	unsigned int ret_code = 0;
 	int64_t col, node;
@@ -580,7 +582,7 @@ GMT_LOCAL unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t 
 	return (ret_code);
 }
 
-GMT_LOCAL unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t t_row, int64_t b_row, struct GMT_ZSEARCH *S) {
+GMT_LOCAL unsigned int grdtrack_scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t t_row, int64_t b_row, struct GMT_ZSEARCH *S) {
 	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN or beyond max radius*/
 	unsigned int ret_code = 0;
 	int64_t row, node;
@@ -604,7 +606,7 @@ GMT_LOCAL unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t 
 	return (ret_code);
 }
 
-/* gmt_grdspiral_search is used when the nearest node to the given point
+/* grdtrack_grd_spiral_search is used when the nearest node to the given point
  * is NaN and no interpolation is possible.  With -T we will determine
  * the nearest node that is not NaN AND within a specific radius (if not
  * given then no limiting radius is used).
@@ -621,7 +623,7 @@ GMT_LOCAL unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t 
  * The -T is experimental: Contact P. Wessel for issues.
  */
 
-GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZSEARCH *S, double x, double y) {
+GMT_LOCAL unsigned int grdtrack_grd_spiral_search (struct GMT_CTRL *GMT, struct GMT_ZSEARCH *S, double x, double y) {
 	unsigned int T, B, L, R;
 	int64_t t_row, b_row, l_col, r_col, step = 0, col0, row0;
 	bool done = false, found = false;
@@ -645,10 +647,10 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 		 *    a) max_radius in this frame > radius and we just return NaN
 		 *    b) If no radius limit we continue to go until we exceed grid borders
 		 * 2) Found non-NaN node and return the one closest to (row0,col0). */
-		T = scan_grd_row (GMT, t_row, l_col, r_col, S);	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
-		B = scan_grd_row (GMT, b_row, l_col, r_col, S);	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
-		L = scan_grd_col (GMT, l_col, t_row, b_row, S);	/* Look along this col, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
-		R = scan_grd_col (GMT, r_col, t_row, b_row, S);	/* Look along this col, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
+		T = grdtrack_scan_grd_row (GMT, t_row, l_col, r_col, S);	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
+		B = grdtrack_scan_grd_row (GMT, b_row, l_col, r_col, S);	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
+		L = grdtrack_scan_grd_col (GMT, l_col, t_row, b_row, S);	/* Look along this col, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
+		R = grdtrack_scan_grd_col (GMT, r_col, t_row, b_row, S);	/* Look along this col, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN */
 		done = ((T + B + L + R) == 8U);	/* Now completely outside grid on all sides */
 		found = (T == 1 || B == 1 || L == 1 || R == 1);	/* Found a non-NaN and its distance from node */
 	} while (!done && !found);
@@ -661,9 +663,9 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 			d_col = lrint (ceil (S->max_radius / dx));
 		else	/* Must search the entire row */
 			d_col = S->C->G->header->n_columns;	/* This is obviously too large but will get truncated later */
-		l_col = col0 - d_col;	/* Go to both sides, scan_grd_row will truncate to 0,n_columns-1 anyway */
+		l_col = col0 - d_col;	/* Go to both sides, grdtrack_scan_grd_row will truncate to 0,n_columns-1 anyway */
 		r_col = col0 + d_col;
-		C = scan_grd_row (GMT, row0, l_col, r_col, S);	/* C is nonzero if we found a non-NaN node */
+		C = grdtrack_scan_grd_row (GMT, row0, l_col, r_col, S);	/* C is nonzero if we found a non-NaN node */
 		if (C) return (1);	/* Did pick up a closer node along this row */
 	}
 	return (found) ? 1 : 0;
@@ -672,7 +674,7 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdtrack (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdtrack task */
 
 	int status, error, ks;
@@ -682,7 +684,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	char line[GMT_BUFSIZ] = {""}, run_cmd[BUFSIZ] = {""}, *cmd = NULL;
 
-	double *value, wesn[4];
+	double *value = NULL, *dist = NULL, wesn[4];
 
 	struct GRDTRACK_CTRL *Ctrl = NULL;
 	struct GRD_CONTAINER *GC = NULL;
@@ -713,6 +715,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdtrack main code ----------------------------*/
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	cmd = GMT_Create_Cmd (API, options);
 	sprintf (run_cmd, "# %s %s", GMT->init.module_name, cmd);	/* Build command line argument string */
 	gmt_M_free (GMT, cmd);
@@ -732,7 +736,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
-			if (GMT->common.R.active[RSET]) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "");		/* Subset requested; make sure wesn matches header spacing */
+			if (GMT->common.R.active[RSET]) {		/* Subset requested; make sure wesn matches header spacing */
+				if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "")))
+					Return (error);
+			}
 
 			if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
 
@@ -772,7 +779,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, GC);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
+		if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
+			Return (GMT_NOT_A_VALID_TYPE);
 
 		/* Set default spacing to half the min grid spacing: */
 		Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
@@ -796,7 +804,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	xy_mode = (img_conv_needed) ? 2 : (gmt_M_is_geographic (GMT, GMT_IN) ? 1 : 0);
 
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
-		uint64_t tbl, col, row, seg, n_cols = Ctrl->G.n_grids;
+		uint64_t tbl, col, row, seg, prof, n_cols = Ctrl->G.n_grids;
 		struct GMT_DATASET *Dtmp = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
@@ -820,7 +828,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Ctrl->C.dist_mode = GMT_GREATCIRCLE;
 			}
 			if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.dist_mode = 1 + GMT_LOXODROME;
-			gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.dist_mode, GMT_MAP_DIST);
+			if (gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.dist_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+				Return (GMT_NOT_A_VALID_TYPE);
 		}
 
 		/* Expand with dist,az columns (mode = 2) (and possibly make space for more) and optionally resample */
@@ -834,7 +843,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 					S = T->segment[seg];
 					for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
-						status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
+						status = grdtrack_sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
 						if (status < 0) some_outside = true;
 						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->data[col][row] = value[k];
 					}
@@ -853,15 +862,21 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (Ctrl->S.selected[STACK_ADD_RES]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked residuals(s) in each profile */
 		}
 		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.mode)) == NULL) Return (API->error);
-#if 0
-		if (Ctrl->D.active) {
-			if (GMT_Destroy_Data (API, &Dtmp) != GMT_NOERROR) {
-				Return (API->error);
+
+		if (Ctrl->F.active) {	/* Keep a record of the along-track distances produced in -C */
+			dist = gmt_M_memory (GMT, NULL, Dtmp->n_records, double);
+			for (tbl = prof = 0; tbl < Dtmp->n_tables; tbl++) {
+				T = Dtmp->table[tbl];
+				for (seg = 0; seg < T->n_segments; seg++) {
+					S = T->segment[seg];
+					for (row = 0; row < S->n_rows; row++, prof++) {
+						dist[prof] = S->data[GMT_Z][row];
+					}
+				}
 			}
 		}
-		else	/* Never written */
-#endif
-			gmt_free_dataset (GMT, &Dtmp);
+
+		gmt_free_dataset (GMT, &Dtmp);
 
 		/* Sample the grids along all profiles in Dout */
 
@@ -871,7 +886,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 				S = T->segment[seg];
 				for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
-					status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
+					status = grdtrack_sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, S->data[GMT_X][row], S->data[GMT_Y][row], value);
 					for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->data[col][row] = value[k];
 					if (status < 0)
 						some_outside = true;
@@ -980,14 +995,14 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		if (Ctrl->F.active) {	/* Find left, center, right point along the crosslines, with width */
+		if (Ctrl->F.active) {	/* Find left, center, right point along the crosslines, with width, report distance-series as function of along-track distance */
 			bool do_headers = (Dout->n_tables > 1);
-			unsigned int col, tbl, seg, row, n;
+			unsigned int col, tbl, seg, row, n, prof;
 			int kl, kc, kr;
-			double out[12], z, this_zc, this_zr, Sw, Swd, Swd2, z_scl = (Ctrl->F.negative) ? -1 : +1;
+			double out[13], z, this_zc, this_zr, Sw, Swd, Swd2, z_scl = (Ctrl->F.negative) ? -1 : +1;
 			struct GMT_DATASEGMENT *S = NULL;
 
-			if ((error = GMT_Set_Columns (API, GMT_OUT, 12, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 13, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
@@ -1000,26 +1015,29 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Ensure proper formatting of geographic coordinates */
-				gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LON);
-				gmt_set_column (GMT, GMT_OUT, 6, GMT_IS_LAT);
-				gmt_set_column (GMT, GMT_OUT, 8, GMT_IS_LON);
-				gmt_set_column (GMT, GMT_OUT, 9, GMT_IS_LAT);
+				gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_FLOAT);
+				gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_LON);
+				gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
+				gmt_set_column (GMT, GMT_OUT, 6, GMT_IS_LON);
+				gmt_set_column (GMT, GMT_OUT, 7, GMT_IS_LAT);
+				gmt_set_column (GMT, GMT_OUT, 9, GMT_IS_LON);
+				gmt_set_column (GMT, GMT_OUT, 10, GMT_IS_LAT);
 			}
 			Out = gmt_new_record (GMT, out, NULL);
-			for (tbl = 0; tbl < Dout->n_tables; tbl++) {
+			for (tbl = prof = 0; tbl < Dout->n_tables; tbl++) {
 				T = Dout->table[tbl];
 				if (do_headers) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
-				for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to examine */
+				for (seg = 0; seg < T->n_segments; seg++, prof++) {	/* For each segment to examine */
 					S = T->segment[seg];	/* Shorthand pointer */
-					z = -DBL_MAX;	/* I.e., not set */
-					if (Ctrl->F.balance) {	/* Reset sums */
+					z = -DBL_MAX;	/* I.e., not set yet */
+					if (Ctrl->F.balance) {	/* Reset sums for a new cross-profile */
 						Sw = Swd = Swd2 = 0.0;
 						n = 0;
 					}
 					kr = kl = kc = GMT_NOTSET;	/* Not yet found */
 					for (row = 0; row < S->n_rows; row++) {	/* For each row across this segment */
-						if (gmt_M_is_dnan (T->segment[seg]->data[4][row])) continue;	/* Must skip any NaN entries in any profile */
-						this_zc = T->segment[seg]->data[4][row] * z_scl;				/* Current z: Force positive if a trough */
+						if (gmt_M_is_dnan (T->segment[seg]->data[4][row])) continue;	/* Must skip any NaN entries in any profile z-value */
+						this_zc = T->segment[seg]->data[4][row] * z_scl;				/* Current z: Force positive if a trough via z_scl */
 						this_zr = T->segment[seg]->data[4][S->n_rows-row-1] * z_scl;	/* Current symmetric point on the right: Force positive if a trough */
 						if (Ctrl->F.balance) {	/* Find balance point via weighted mean and std */
 							Sw   += this_zc;
@@ -1027,47 +1045,59 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 							Swd2 += this_zc * T->segment[seg]->data[GMT_Z][row] * T->segment[seg]->data[GMT_Z][row];
 							n++;
 						}
-						else {
-							if (kl == GMT_NOTSET && this_zc >= Ctrl->F.z0) kl = row;		/* Found the first point on the left */
+						else {	/* Find left and right points that equal or exceed threshold */
+							if (kl == GMT_NOTSET && this_zc >= Ctrl->F.z0) kl = row;	/* Found the first point on the left */
 							if (kr == GMT_NOTSET && this_zr >= Ctrl->F.z0) kr = S->n_rows-row-1;	/* Found the last point on the right */
 							if (this_zc > z) z = this_zc, kc = row;	/* Found a new maximum point */
 						}
 					}
-					if (Ctrl->F.balance) {	/* Compute mean and std and find corresponding points */
+					if (Ctrl->F.balance && n > 0) {	/* Compute mean and std and find corresponding points */
 						double d, d0, s;
-						if (n == 0) continue;	/* Nothing to do for this profile */
-						d = Swd / Sw;	/* weighted mean location of balance point */
-						s = sqrt ((Sw * Swd2 - Swd*Swd) / (Sw*Sw*(n-1)/n));	/* One-sigma deviation on the weighted mean */
+						if (Ctrl->F.balance == 2) {	/* Use d = 0 as population mean (hence no n-1) and get track rms = std about population mean (d = 0) */
+							d = 0.0;
+							s = sqrt (Swd2 / Sw);
+						}
+						else {	/* Find both the mean and std about that mean */
+							d = Swd / Sw;	/* weighted mean location of balance point */
+							s = sqrt ((Sw * Swd2 - Swd*Swd) / (Sw*Sw*(n-1)/n));	/* One-sigma deviation on the weighted mean */
+						}
 						d0 = T->segment[seg]->data[GMT_Z][0];	/* Left distance start value */
 						/* We report the left, center, right points to nearest distance increment */
 						kc = irint ((d - d0) / Ctrl->C.ds);		/* Nearest point to the mean location */
 						kl = ((d - s) < d0) ? GMT_NOTSET : irint ((d - s - d0)/ Ctrl->C.ds);	/* Nearest point to 1-sigma left of center */
 						kr = ((d + s) > T->segment[seg]->data[GMT_Z][S->n_rows-1]) ? GMT_NOTSET : irint ((d + s - d0)/ Ctrl->C.ds);	/* Nearest point to 1-sigma right of center */
+					}	/* Else we have nothing and kc remains GMT_NOTSET and we get a NaN record */
+					out[0] = dist[prof];	/* The original along-track distance */
+					if (kc == GMT_NOTSET) {	/* Just print a NaN record */
+						for (col = 1; col < 13; col++)
+							out[col] = GMT->session.d_NaN;
 					}
-					else if (kc == GMT_NOTSET) continue;	/* Nothing to print */
-					for (col = 0; col < 5; col++)	/* Copy over lon, lat, dist, azimuth, z */
-						out[col] = T->segment[seg]->data[col][kc];
-					if (kl == GMT_NOTSET)	/* Left start not detected, report NaN */
-						out[5] = out[6] = out[7] = GMT->session.d_NaN;
-					else {
-						out[5] = T->segment[seg]->data[GMT_X][kl];	/* Left longitude */
-						out[6] = T->segment[seg]->data[GMT_Y][kl];	/* Left latitude */
-						out[7] = T->segment[seg]->data[GMT_Z][kl];	/* Left distance */
+					else {	/* Got something to report that is not just NaNs */
+						for (col = 0; col < 5; col++)	/* Copy over lon, lat, dist, azimuth, z */
+							out[col+1] = T->segment[seg]->data[col][kc];
+						if (kl == GMT_NOTSET)	/* Left start not detected, report NaN */
+							out[6] = out[7] = out[8] = GMT->session.d_NaN;
+						else {
+							out[6] = T->segment[seg]->data[GMT_X][kl];	/* Left longitude */
+							out[7] = T->segment[seg]->data[GMT_Y][kl];	/* Left latitude */
+							out[8] = T->segment[seg]->data[GMT_Z][kl];	/* Left distance */
+						}
+						if (kr == GMT_NOTSET)	/* Right stop not detected, report NaN */
+							out[9] = out[10] = out[11] = GMT->session.d_NaN;
+						else {
+							out[9]  = T->segment[seg]->data[GMT_X][kr];	/* Right longitude */
+							out[10] = T->segment[seg]->data[GMT_Y][kr];	/* Right latitude */
+							out[11] = T->segment[seg]->data[GMT_Z][kr];	/* Right distance */
+						}
+						out[12] = out[11] - out[8];	/* Width = distance between left and right point */
 					}
-					if (kr == GMT_NOTSET)	/* Right stop not detected, report NaN */
-						out[8] = out[9] = out[10] = GMT->session.d_NaN;
-					else {
-						out[8]  = T->segment[seg]->data[GMT_X][kr];	/* Right longitude */
-						out[9]  = T->segment[seg]->data[GMT_Y][kr];	/* Right latitude */
-						out[10] = T->segment[seg]->data[GMT_Z][kr];	/* Right distance */
-					}
-					out[11] = out[10] - out[7];	/* Width = distance between left and right point */
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 				Return (API->error);
 			}
+			gmt_M_free (GMT, dist);
 			gmt_M_free (GMT, Out);
 		}
 		else {
@@ -1101,7 +1131,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Sout = Dout->table[0]->segment[seg];	/* Shorthand */
 			for (col = 0; col < Din->n_columns; col++) gmt_M_memcpy (Sout->data[col], Sin->data[col], Sin->n_rows, double);
 			for (row = 0; row < Sin->n_rows; row++) {	/* For each row  */
-				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, Sin->data[GMT_X][row], Sin->data[GMT_Y][row], value);
+				status = grdtrack_sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, Sin->data[GMT_X][row], Sin->data[GMT_Y][row], value);
 				if (status < 0) some_outside = true;
 				for (col = Din->n_columns, k = 0; k < Ctrl->G.n_grids; k++, col++) Sout->data[col][row] = value[k];
 				n_points++;
@@ -1158,7 +1188,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			h = GC[0].G->header;
 			Ctrl->T.S = gmt_M_memory (GMT, NULL, 1, struct GMT_ZSEARCH);
 			Ctrl->T.S->C = &GC[0];	/* Since we know there is only one grid */
-			gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
+			if (gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+				Return (GMT_NOT_A_VALID_TYPE);
 			Ctrl->T.S->x = gmt_grd_coord (GMT, h, GMT_X);
 			Ctrl->T.S->y = gmt_grd_coord (GMT, h, GMT_Y);
 			Ctrl->T.S->max_radius = (Ctrl->T.radius == 0.0) ? DBL_MAX : Ctrl->T.radius;
@@ -1178,12 +1209,13 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					break;
 				continue;	/* Go back and read the next record */
 			}
+			if (In->data == NULL) {
+				gmt_quit_bad_record (API, In);
+				Return (API->error);
+			}
 
 			/* Data record to process */
-			if ((in = In->data) == NULL) {	/* Only need to process numerical part here */
-				GMT_Report (API, GMT_MSG_ERROR, "Record %" PRIu64 " did not have two coordinates - skipped.\n", n_read);
-				continue;
-			}
+			in = In->data;
 			if (n_out == 0) {	/* First time we need to determine # of columns and allocate output vector */
 				n_lead = (unsigned int)gmt_get_cols (GMT, GMT_IN);	/* Get total # of input cols */
 				n_out = n_lead + Ctrl->G.n_grids;	/* Get total # of output cols */
@@ -1198,14 +1230,14 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 			n_read++;
 
-			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);
+			status = grdtrack_sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);
 			if (status == -1) {	/* Point is outside the region of all grids */
 				some_outside = true;
 				if (!Ctrl->N.active) continue;
 			}
 			else if (Ctrl->T.active) {
 				if (status == 0) {	/* Found a NaN; need to search for nearest non-NaN node */
-					if (gmt_grdspiral_search (GMT, Ctrl->T.S, in[GMT_X], in[GMT_Y])) {	/* Did find a valid node */
+					if (grdtrack_grd_spiral_search (GMT, Ctrl->T.S, in[GMT_X], in[GMT_Y])) {	/* Did find a valid node */
 						uint64_t ij = gmt_M_ijp (GC[0].G->header, Ctrl->T.S->row, Ctrl->T.S->col);
 						value[0] = GC[0].G->data[ij];
 						if (Ctrl->T.mode == 1) {	/* Replace input coordinate with node coordinate */

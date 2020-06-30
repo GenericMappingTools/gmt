@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Showing map directional roses
 gmt begin GMT_dir_rose
-	gmt set FONT_LABEL 10p FONT_TITLE 12p MAP_ANNOT_OBLIQUE 34 MAP_TITLE_OFFSET 5p \
+	gmt set FONT_LABEL 10p FONT_TITLE 12p MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel MAP_TITLE_OFFSET 5p \
 		MAP_FRAME_WIDTH 3p FORMAT_GEO_MAP dddF FONT_ANNOT_PRIMARY 10p
 # left: Fancy kind = 1
 	gmt basemap -R-5/5/-5/5 -Jm0.15i -Ba5f -BWSne+gazure1 -Tdg0/0+w1i+jCM -X1i

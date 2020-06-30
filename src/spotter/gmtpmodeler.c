@@ -47,34 +47,34 @@
 
 struct GMTPMODELER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct In {
+	struct GMTPMODELER_In {
 		bool active;
 		char *file;
 	} In;
-	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
+	struct GMTPMODELER_E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
 		bool active;
 		struct SPOTTER_ROT rot;
 	} E;
-	struct F {	/* -Fpolfile */
+	struct GMTPMODELER_F {	/* -Fpolfile */
 		bool active;
 		char *file;
 	} F;
-	struct N {	/* -N */
+	struct GMTPMODELER_N {	/* -N */
 		bool active;
 		double t_upper;
 	} N;
-	struct S {	/* -Sa|d|s|v|w|x|y|X|Y */
+	struct GMTPMODELER_S {	/* -Sa|d|s|v|w|x|y|X|Y */
 		bool active, center;
 		unsigned int mode[N_PM_ITEMS];
 		unsigned int n_items;
 	} S;
-	struct T {	/* -T<fixtime> */
+	struct GMTPMODELER_T {	/* -T<fixtime> */
 		bool active;
 		double value;
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTPMODELER_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GMTPMODELER_CTRL);
@@ -82,7 +82,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->E.rot.file);
@@ -90,7 +90,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s [-F<polygontable>]\n", name, SPOTTER_E_OPT);
@@ -123,7 +123,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtpmodeler and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -138,10 +138,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Supplemental parameters */
@@ -151,10 +150,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 			case 'F':
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'N':	/* Extend oldest stage back to this time [no extension] */
 				Ctrl->N.active = true;
@@ -213,16 +211,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int signum (double x) {
-	if (x < 0.0) return -1;
-	if (x > 0.0) return +1;
-	return 0;
-}
-
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {if (p) gmt_M_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	unsigned int inside, stage, n_stages, k;
 	int retval, error = 0, n_fields;
 
@@ -325,7 +317,8 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
+	if (gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Great circle distances in degrees */
+		Return (GMT_NOT_A_VALID_TYPE);
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
 	out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
@@ -358,6 +351,11 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				continue;
 			}
+		}
+
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
 		}
 
 		/* Data record to process */
@@ -403,7 +401,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		for (k = 0; k < Ctrl->S.n_items; k++) {	/* Loop over desired output components */
 			switch (Ctrl->S.mode[k]) {
 				case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
-					value = gmt_az_backaz (GMT, in[GMT_X], lat_c, p[stage].lon, p[stage].lat, false) + 90.0 * signum (p[stage].omega);
+					value = gmt_az_backaz (GMT, in[GMT_X], lat_c, p[stage].lon, p[stage].lat, false) + 90.0 * gmt_signum (p[stage].omega);
 					gmt_lon_range_adjust (GMT->current.io.geo.range, &value);
 					break;
 				case PM_DIST:	/* Compute great-circle distance between node and point of origin at ridge */

@@ -31,7 +31,7 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 	bool do_IGRF;
 	bool do_CM4;
 	bool joint_IGRF_CM4;
-	struct MGD77_MAGREF_A {	/* -A */
+	struct MGD77MAGREF_A {	/* -A */
 		bool active;
 		bool fixed_alt;
 		bool fixed_time;
@@ -40,27 +40,27 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 		double altitude;
 		double time;
 	} A;
-	struct MGD77_MAGREF_C {	/* -C */
+	struct MGD77MAGREF_C {	/* -C */
 		bool active;
 	} C;
-	struct MGD77_MAGREF_D {	/* -D */
+	struct MGD77MAGREF_D {	/* -D */
 		bool active;
 	} D;
-	struct MGD77_MAGREF_F {	/* -F */
+	struct MGD77MAGREF_F {	/* -F */
 		bool active;
 	} F;
-	struct MGD77_MAGREF_G {	/* -G */
+	struct MGD77MAGREF_G {	/* -G */
 		bool active;
 	} G;
-	struct MGD77_MAGREF_L {	/* -L */
+	struct MGD77MAGREF_L {	/* -L */
 		bool active;
 	} L;
-	struct MGD77_MAGREF_S {	/* -S */
+	struct MGD77MAGREF_S {	/* -S */
 		bool active;
 	} S;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77MAGREF_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct MGD77MAGREF_CTRL);
@@ -72,7 +72,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->CM4->CM4_M.path);
 	gmt_M_str_free (C->CM4->CM4_D.path);
@@ -81,7 +81,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>]\n", name);
@@ -159,7 +159,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mgd77magref and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -408,7 +408,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77magref (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	unsigned int j, nval = 0, nfval = 0, error = 0;
 	unsigned int lval = 0, lfval = 0, n_field_components, tbl;
 	unsigned int n_out = 0, n_in, t_col = 3;

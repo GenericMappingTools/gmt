@@ -44,13 +44,13 @@ that copyright notice and this permission notice appear in supporting documentat
 #include "sacio.h"
 
 /* function prototype for local use */
-static void    byte_swap       (char *pt, size_t n);
-static int     check_sac_nvhdr (const int nvhdr);
-static void    map_chdr_in     (char *memar, char *buff);
-static int     read_head_in    (const char *name, SACHEAD *hd, FILE *strm);
+static void    sacio_byte_swap       (char *pt, size_t n);
+static int     sacio_check_sac_nvhdr (const int nvhdr);
+static void    sacio_map_chdr_in     (char *memar, char *buff);
+static int     sacio_read_head_in    (const char *name, SACHEAD *hd, FILE *strm);
 #if 0		/* These functions do not seem to be used anywhere */
-static void    map_chdr_out    (char *memar, char *buff);
-static int     write_head_out  (const char *name, SACHEAD hd, FILE *strm);
+static void    sacio_map_chdr_out    (char *memar, char *buff);
+static int     sacio_write_head_out  (const char *name, SACHEAD hd, FILE *strm);
 #endif
 
 /* a SAC structure containing all null values */
@@ -114,7 +114,7 @@ int read_sac_head(const char *name, SACHEAD *hd) {
 		return -1;
 	}
 
-	lswap = read_head_in(name, hd, strm);
+	lswap = sacio_read_head_in(name, hd, strm);
 
 	fclose(strm);
 
@@ -144,7 +144,7 @@ float *read_sac(const char *name, SACHEAD *hd) {
 		return NULL;
 	}
 
-	lswap = read_head_in(name, hd, strm);
+	lswap = sacio_read_head_in(name, hd, strm);
 
 	if (lswap == -1) {
 		fclose(strm);
@@ -169,7 +169,7 @@ float *read_sac(const char *name, SACHEAD *hd) {
 	}
 	fclose(strm);
 
-	if (lswap == true) byte_swap((char*)ar, sz);
+	if (lswap == true) sacio_byte_swap((char*)ar, sz);
 
 	return ar;
 }
@@ -242,7 +242,7 @@ int write_sac(const char *name, SACHEAD hd, const float *ar) {
 		return -1;
 	}
 
-	if (write_head_out(name, hd, strm) == -1) {
+	if (sacio_write_head_out(name, hd, strm) == -1) {
 		fclose(strm);
 		return -1;
 	}
@@ -338,7 +338,7 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 		return NULL;
 	}
 
-	lswap = read_head_in(name, hd, strm);
+	lswap = sacio_read_head_in(name, hd, strm);
 
 	if (lswap == -1) {
 		fclose(strm);
@@ -368,8 +368,8 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 	nt2 = nt1 + nn;
 	npts = hd->npts;
 	hd->npts = nn;
-	hd->b   = t1;
-	hd->e   = t1 + nn * hd->delta;
+	hd->b = hd->b + hd->delta * nt1;  /* the new begin time may not exactly match t1 */
+	hd->e = hd->b + (nn - 1) * hd->delta;
 
 	if (nt1 > npts || nt2 < 0) {
 		fclose(strm);
@@ -401,7 +401,7 @@ float *read_sac_pdw(const char *name, SACHEAD *hd, int tmark, float t1, float t2
 	}
 	fclose(strm);
 
-	if (lswap == true) byte_swap((char*)ar, ((size_t)nn)*sizeof(float));
+	if (lswap == true) sacio_byte_swap((char*)ar, ((size_t)nn)*sizeof(float));
 
 	return ar;
 }
@@ -518,7 +518,7 @@ int issac(const char *name) {
 	}
 	fclose(strm);
 
-	if (check_sac_nvhdr(nvhdr) == -1)
+	if (sacio_check_sac_nvhdr(nvhdr) == -1)
 		return false;
 	else
 		return true;
@@ -531,7 +531,7 @@ int issac(const char *name) {
  ******************************************************************************/
 
 /*
- *  byte_swap : reverse the byte order of 4 bytes int/float.
+ *  sacio_byte_swap : reverse the byte order of 4 bytes int/float.
  *
  *  IN:
  *      char    *pt : pointer to byte array
@@ -543,7 +543,7 @@ int issac(const char *name) {
  *      byte swapping means taking [0][1][2][3],
  *      and turning it into [3][2][1][0]
  */
-static void byte_swap(char *pt, size_t n) {
+static void sacio_byte_swap(char *pt, size_t n) {
 	size_t  i;
 	char    tmp;
 	for (i = 0; i < n; i += 4) {
@@ -558,7 +558,7 @@ static void byte_swap(char *pt, size_t n) {
 }
 
 /*
- *  check_sac_nvhdr
+ *  sacio_check_sac_nvhdr
  *
  *  Description: Determine the byte order of the SAC file
  *
@@ -571,11 +571,11 @@ static void byte_swap(char *pt, size_t n) {
  *      -1      not in sac format ( nvhdr != SAC_HEADER_MAJOR_VERSION )
  *
  */
-static int check_sac_nvhdr(const int nvhdr) {
+static int sacio_check_sac_nvhdr(const int nvhdr) {
 	int lswap = false;
 
 	if (nvhdr != SAC_HEADER_MAJOR_VERSION) {
-		byte_swap((char*) &nvhdr, SAC_DATA_SIZEOF);
+		sacio_byte_swap((char*) &nvhdr, SAC_DATA_SIZEOF);
 		if (nvhdr == SAC_HEADER_MAJOR_VERSION)
 			lswap = true;
 		else
@@ -585,10 +585,10 @@ static int check_sac_nvhdr(const int nvhdr) {
 }
 
 /*
- *  map_chdr_in:
+ *  sacio_map_chdr_in:
  *       map strings from buffer to memory
  */
-static void map_chdr_in(char *memar, char *buff) {
+static void sacio_map_chdr_in(char *memar, char *buff) {
 	char    *ptr1, *ptr2;
 	int     i;
 
@@ -614,7 +614,7 @@ static void map_chdr_in(char *memar, char *buff) {
 }
 
 /*
- *  read_head_in:
+ *  sacio_read_head_in:
  *      read sac header in and deal with possible byte swap.
  *
  *  IN:
@@ -627,7 +627,7 @@ static void map_chdr_in(char *memar, char *buff) {
  *      1   :   Succeed and byte swap
  *     -1   :   fail.
  */
-static int read_head_in(const char *name, SACHEAD *hd, FILE *strm) {
+static int sacio_read_head_in(const char *name, SACHEAD *hd, FILE *strm) {
 	char   *buffer;
 	int     lswap;
 
@@ -646,13 +646,13 @@ static int read_head_in(const char *name, SACHEAD *hd, FILE *strm) {
 	}
 
 	/* Check Header Version and Endian  */
-	lswap = check_sac_nvhdr(hd->nvhdr);
+	lswap = sacio_check_sac_nvhdr(hd->nvhdr);
 	if (lswap == -1) {
 		fprintf(stderr, "Warning: %s not in sac format.\n", name);
 		return -1;
 	}
 	else if (lswap == true) {
-		byte_swap((char *)hd, SAC_HEADER_NUMBERS_SIZE);
+		sacio_byte_swap((char *)hd, SAC_HEADER_NUMBERS_SIZE);
 	}
 
 	/* read string parts of the SAC header */
@@ -665,7 +665,7 @@ static int read_head_in(const char *name, SACHEAD *hd, FILE *strm) {
 		free(buffer);
 		return -1;
 	}
-	map_chdr_in((char *)(hd)+SAC_HEADER_NUMBERS_SIZE, buffer);
+	sacio_map_chdr_in((char *)(hd)+SAC_HEADER_NUMBERS_SIZE, buffer);
 	free(buffer);
 
 	return lswap;
@@ -673,7 +673,7 @@ static int read_head_in(const char *name, SACHEAD *hd, FILE *strm) {
 
 #if 0		/* These functions do not seem to be used anywhere */
 /*
- *  write_head_out
+ *  sacio_write_head_out
  *
  *  IN:
  *      const char *name : file name, only for debug
@@ -684,7 +684,7 @@ static int read_head_in(const char *name, SACHEAD *hd, FILE *strm) {
  *      -1  :   failed.
  *       0  :   success.
  */
-static int write_head_out(const char *name, SACHEAD hd, FILE *strm) {
+static int sacio_write_head_out(const char *name, SACHEAD hd, FILE *strm) {
 	char *buffer;
 
 #ifdef _MSC_VER
@@ -705,7 +705,7 @@ static int write_head_out(const char *name, SACHEAD hd, FILE *strm) {
 		free(buffer);
 		return -1;
 	}
-	map_chdr_out((char *)(&hd)+SAC_HEADER_NUMBERS_SIZE, buffer);
+	sacio_map_chdr_out((char *)(&hd)+SAC_HEADER_NUMBERS_SIZE, buffer);
 
 	if (fwrite(buffer, SAC_HEADER_STRINGS_SIZE, 1, strm) != 1) {
 		fprintf(stderr, "Error in writing SAC data for writing %s\n", name);
@@ -717,10 +717,10 @@ static int write_head_out(const char *name, SACHEAD hd, FILE *strm) {
 	return 0;
 }
 /*
- *   map_chdr_out:
+ *   sacio_map_chdr_out:
  *      map strings from memory to buffer
  */
-static void map_chdr_out(char *memar, char *buff) {
+static void sacio_map_chdr_out(char *memar, char *buff) {
 	char    *ptr1, *ptr2;
 	int     i;
 

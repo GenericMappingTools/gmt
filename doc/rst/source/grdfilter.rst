@@ -196,7 +196,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-The @earth_relief_05m.nc is a remote file of 5 minute bathymetry
+The @earth_relief_05m is a remote file of 5 minute bathymetry
 and you want to find the medians of
 values within a 300km radius (600km full width) of the output points,
 which you choose to be from 150E to 250E and 10N to 40N, and you want

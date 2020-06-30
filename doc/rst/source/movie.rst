@@ -15,15 +15,15 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
-[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**+i**\|\ **o**]\ *fade*\ [**s**]] ]
-[ |-F|\ *format*\ [**+o**\ *options*]]
+[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
+[ |-F|\ *format*\ [**+t**]\ [**+o**\ *options*]]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *factor*]
 [ |-I|\ *includefile* ]
-[ |-K|\ [**+i**\|\ **o**]\ *fade*\ [**s**]\ [**+p**] ]
+[ |-K|\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
 [ |-P|\ *progress* ]
@@ -31,8 +31,8 @@ Synopsis
 [ **-Sb**\ *background* ]
 [ **-Sf**\ *foreground* ]
 [ |SYN_OPT-V| ]
-[ |-Z| ]
-[ |-W|\ *workdir* ]
+[ |-Z|\ [**s**] ]
+[ |-W|\ [*workdir*] ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -46,7 +46,7 @@ that is repeated for all frames, with some variation using specific frame variab
 module simplifies (and hides) most of the steps normally needed to set up a full-blown
 animation job.  Instead, the user can focus on composing the main frame plot and let the
 parallel execution of frames and assembly of images into a movie take place in the background.
-Individual frames are converted from PostScript plots to lossless, transparent PNG images and optionally
+Individual frames are converted from *PostScript* plots to lossless, transparent PNG images and optionally
 assembled into an animation (this last step requires external tools that must be present in
 your path; see Technical Details below).  For opaque PNG images, simply specify a background
 color via **-G**.
@@ -90,14 +90,15 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
     Either specify how many image frames to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of frames instead), or supply a file with a set of parameters,
     one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
     string into individual words that can be accessed via variables **MOVIE_WORD0**, **MOVIE_WORD1**,
-    etc. The number of records equals
+    etc. By default we use any white-space to separate words.  Append *str* to select another character(s)
+    as the valid separator(s).  The number of records equals
     the number of frames. Note that the *background* script is allowed to create *timefile*,
     hence we check for its existence both before *and* after the background script has completed.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
@@ -127,20 +128,23 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]
-    Give *titlepage* script that creates a static title page for the movie [no title].
-    Alternatively, *titlepage* can be a PostScript plot layer of dimensions exactly matching the cancas size.
-    Control how long it should be displayed with **+d** in number of frames (append *s** for duration in seconds instead) [4s].
-    Optionally, supply *fade* **i**\ n and **o**\ ut durations (in frames or seconds [1s]) as well [no fading].
-    Fading affects the beginning and end of the title page *duration*.
+**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]
+    Give a *titlepage* script that creates a static title page for the movie [no title].
+    Alternatively, *titlepage* can be a *PostScript* plot (file extension .ps) of dimensions exactly matching
+    the canvas size set in **-C**. You control the duration of the title sequence with **+d** and specify
+    the number of frames (or append **s** for a duration in seconds instead) [4s].
+    Optionally, supply the fade length via **+f**\ *fade* (in frames or seconds [1s]) as well [no fading];
+    Use **+fi** and/or **+fo** to specify one-sided fading or to give unequal fade intervals [Default is same
+    duration for both]. The fading affects the beginning and end of the title page *duration*. We fade from and
+    to black by default; append **+g**\ *fill* to use another terminal fade color.
 
 .. _-F:
 
-**-F**\ *format*\ [**+o**\ *options*]
+**-F**\ *format*\ [**+t**]\ [**+o**\ *options*]
     Set the format of the final video product.  Repeatable.  Choose either **mp4** (MPEG-4 movie) or
-    **webm** (WebM movie).  You may optionally add additional ffmpeg encoding settings for this format
+    **webm** (WebM movie).  You may optionally add additional FFmpeg encoding settings for this format
     via the **+o** modifier (in quotes if more than one word). If **none** is chosen then no PNGs will
-    be created at all; this requires **-M**.
+    be created at all; this requires **-M**.  Choose **+t** to generate transparent PNG images [opaque].
 
 .. _-G:
 
@@ -151,7 +155,7 @@ Optional Arguments
 .. _-H:
 
 **-H**\ *factor*
-    Given the finite dots-per-unit used to rasterize PostScript frames to PNGs, the quantizing of features
+    Given the finite dots-per-unit used to rasterize *PostScript* frames to PNGs, the quantizing of features
     to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings.  However,
     changes from frame to frame is outside the control of the individual frame rasterization and we
     find that, in particular, moving text may appear jittery when seen in the final animation.  You can mitigate
@@ -160,7 +164,7 @@ Optional Arguments
     the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
     try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
     much higher resolution than your final frame pixel dimensions.  The **-H** option may then be used to smooth the
-    result to avoid aliasing [no downsampling].  This effect is called `sub-pixel rendering <https://en.wikipedia.org/wiki/Subpixel_rendering>`.
+    result to avoid aliasing [no downsampling].  This effect is called `subpixel <https://en.wikipedia.org/wiki/Subpixel_rendering>`_ rendering.
 
 .. _-I:
 
@@ -172,13 +176,15 @@ Optional Arguments
 .. _-K:
 
 
-**-K**\ [**+i**\|\ **o**]\ *fade*\ [**s**]\ [**+p**]
+**-K**\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
     Add fading in and out for the main animation sequence [no fading]. Append
     the length of the fading in number of frames (or seconds by appending **s**) [1s].
-    For different lengths of fading in and out you can repeat the **-K** option
-    by appending the **i** or **o** directives.  Normally, fading will affect the
-    first and last animation frames.  Append **+p** to preserve these by instead
-    fading in and out on only the first and last (repeated) animation frames.
+    Use **+fi** and/or **+fo** to specify one-sided fading or to give unequal fade
+    intervals [Default is same duration for both].  Normally, fading will be overlaid on the
+    first and last *fade* frames of the main animation.  Append **+p** to *preserve*
+    these frames by fading over only the first and last (repeated) animation frames instead.
+    Append **i** or **o** to only preserve the frame involved during the fade in or fade out instead.
+    We fade from and to black by default; append **+g**\ *fill* to use another terminal fade color.
 
 .. _-L:
 
@@ -242,7 +248,7 @@ Optional Arguments
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
     If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
     so that the layered plot will stack correctly (unless you actually want a different offset).  Alternatively,
-    *background* can be a PostScript plot layer of dimensions exactly matching the cancas size.
+    *background* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
 
 .. _-Sf:
 
@@ -250,7 +256,7 @@ Optional Arguments
     The optional GMT modern mode *foreground* (written in the same scripting language as *mainscript*) can be
     used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
     positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
-    *foreground* can be a PostScript plot layer of dimensions exactly matching the cancas size.
+    *foreground* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
 
 .. _movie-V:
 
@@ -259,15 +265,20 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *workdir*
-    By default, all temporary files and frame PNG file are built in the subdirectory *prefix* set via **-N**.
-    You can override that selection by giving another *workdir* as a relative or full directory path.
+**-W**\ [*workdir*]
+    By default, all temporary files and frame PNG file are created in the subdirectory *prefix* set via **-N**.
+    You can override that selection by giving another *workdir* as a relative or full directory path. If no
+    path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
+    of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
+    problems related to low space in the main directory.
 
 .. _-Z:
 
-**-Z**
+**-Z**\ [**s**]
     Erase the entire *prefix* directory after assembling the final movie [Default leaves directory with all images;
-    the script files, parameter files, and layer PostScript files are all removed (but see **-Q**)].
+    the temporary script files, parameter files, and layer *PostScript* files are all removed (but see **-Q**)].
+    If your *mainscript* and all input scripts via **-E**, **-I**, and **-S** should be deleted as well then
+    append **s**.
 
 .. _-cores:
 
@@ -286,8 +297,8 @@ Parameters
 Several parameters are automatically assigned and can be used when composing *mainscript* and the optional
 *background* and *foreground* scripts. There are two sets of parameters: Those that are constants
 and those that change with the frame number.  The constants are accessible by all the scripts:
-**MOVIE_WIDTH**\ : The width of the canvas,
-**MOVIE_HEIGHT**\ : The height of the canvas,
+**MOVIE_WIDTH**\ : The width of the canvas (the full movie frame),
+**MOVIE_HEIGHT**\ : The height of the canvas (the full movie frame),
 **MOVIE_DPU**\ : The current dots-per-unit,
 **MOVIE_RATE**\ : The current number of frames per second,
 **MOVIE_NFRAMES**\ : The total number of frames.
@@ -310,24 +321,45 @@ as well as any new files produced by *mainscript* or the optional scripts set vi
 No path specification is needed to access these files.  Other files may
 require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
 
+Plotting Temporal Changes
+-------------------------
+
+A movie is not very interesting if nothing changes.  For the animation to change you need to have your *mainscript*
+either access a *different* data set as the frame counter changes, or you need to plot only a varying *subset* of a data set,
+showing only the part that should be displayed in each frame.  There are several strategies you can use to
+accomplish these effects:
+
+#. Your *timefile* passed to **-T** may have names of specific data files and you simply have your *mainscript*
+   use the relevant **MOVIE_TEXT** or **MOVIE_WORD?** to access the frame-specific file name.
+#. You have a single data table which includes absolute time for each record, and you wish to plot these *events* as time
+   moves forward, yet not displaying events still in the future.  This effect is achieved via the module :doc:`events`.
+#. You have a 3-D grid (or a stack of 2-D grids) and you want to interpolate along the axis perpendicular to the
+   2-D slices (e.g., time, or it could be depth).  In this situation you will use the module :doc:`grdinterpolate`
+   to have the *mainscript* obtain a slice for the correct time (this may be an interpolation between two different
+   times or depths) and make the frame plot with this temporary grid file.
+#. You may be creating data on the fly using :doc:`gmtmath` or :doc:`grdmath`, or perhaps processing data slightly
+   differently per frame (using parameters in the *timefile*) and displaying these or the changes between frames.
+
 Your Canvas
 -----------
 
 As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
 or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the custom canvas sizes are just
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"); this has no effect on the size of the movie
-frames but allow us to use good sizes that work well with the dpu chosen.  You should compose your plots using
+frames but allow us to use good sizes that work well with the *dpu* chosen.  You should compose your plots using
 the given canvas size, and **movie** will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
 to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
 recommended that any static part of the movie be considered either a static background (to be made once by *background*) and/or
 a static foreground (to be made once by *foreground*); **movie** will then assemble these layers per frame.  Also, any computation of
 static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
-frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.
+frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.  **Note**: Using
+the variables **MOVIE_WIDTH** or **MOVIE_HIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
+exact canvas dimensions.
 
-External PostScript Layers
---------------------------
+External *PostScript* Layers
+----------------------------
 
-Instead of passing GMT modern scripts to **-S** you can alternatively provide the name of PostScript
+Instead of passing GMT modern scripts to **-S** you can alternatively provide the name of *PostScript*
 plot layer files. Note that these must exactly match the canvas size.  As a simple example, if you are
 making a HD movie using the US unit dimensions then a background pink layer would be created by::
 
@@ -335,6 +367,25 @@ making a HD movie using the US unit dimensions then a background pink layer woul
 
 Note the canvas selection via :term:`PS_MEDIA`, the matching region and projection, and
 the zero location of the origin.
+
+Basemap Frames
+--------------
+
+Some map projections will by default draw a *fancy* map frame; this feature is under the control of :term:`MAP_FRAME_TYPE`.
+However, whether a *fancy* or *plain* frame is actually drawn also depends on the projection center *latitude*.
+Thus, if your movie varies the projection center latitude by changing the view, you should set the frame
+setting to *plain* as part of your setup.
+
+Transparent Images
+------------------
+
+By default, **movie** will build *opaque* PNG images which can then be assembled into an animation.
+The vast majority of movies is likely to be made that way. Use the **-F** option's experimental modifier
+**+t** to make *transparent* PNG images.  Currently, very few video codecs support
+transparency.  It is claimed both H.265 (HECV) and VP9 (Webm) offer this capability; we have only been
+able to verify the latter by viewing a transparent webm movie in Chrome. Animated GIFs can be built from
+transparent PNGs as well and here each additional frame accumulate in the final movie. Experts may create
+transparent PNGs and create movies in professional tools that support a movie alpha channel.
 
 Technical Details
 -----------------
@@ -348,8 +399,10 @@ from **-Sb** and computes needed data files and possibly a background layer), *m
 argument and builds the frame image), and *movie_cleanup* (removes temporary files at the end of the
 run). For each frame there is a separate *movie_params_######* script that provides frame-specific
 variables (e.g., frame number and anything given via **-T**).  The pre- and post-flight scripts have
-access to the information in *movie_init* while the frame script in addition has access to the frame-
-specific parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
+access to the information in *movie_init* while the frame script in addition has access to the frame-specific
+parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
+**Note**: The *mainscript* is duplicated per frame and each copy is run simultaneously on all available cores.
+Multi-treaded GMT modules will therefore be limited to a single core as well.
 
 The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
@@ -410,7 +463,7 @@ the triangle size is scaled to twice the axis width (see below), and a font size
 Note for indicators d-f: If percentage labels are selected (**+ap**), then the axes display a unit label,
 otherwise no unit label is supplied.  The indicators d-f are horizontal for all *justify* codes except for **ML** and **MR**.
 The default pen thickness for the linear static lines is the smallest of 2.5% of their lengths and 8p (1.5% and 3p for f).
-If no size is specified (**+w**) then we default to 5% of cancas width for the three circular indicators and
+If no size is specified (**+w**) then we default to 5% of canvas width for the three circular indicators and
 60% of the relevant canvas dimension for the linear indicators.
 
 Title Sequence and Fading
@@ -423,17 +476,17 @@ Title Sequence and Fading
    The fade-level (0 means black, 100 means normal visibility) for the complete movie, including
    an optional title sequence.
 
-The complete movie may have a leading title sequence (**-E**) of given *duration*. A short section
-at the beginning and end may be designated to fade in/out via black.  The main animation
-sequence may also have fade in/out (**-K**). Here, you can choose to fade in/out during the beginning and end section of
-the animation or you can "freeze" the first and last animation frame and only fade in/out using
-those static images (via modifier **+p** to preserve the whole animation sequence).
+The complete movie may have an optional leading title sequence (**-E**) of a given *duration*. A short section
+at the beginning and/or end of this duration may be designated to fade in/out via the designated fade
+color [black].  The main animation sequence may also have an optional fade in and/or out section (**-K**). Here, you
+can choose to fade on top of the animation or you can "freeze" the first and/or last animation frame and only fade over
+those static images (via modifier **+p**) in order to preserve the whole animation sequence.
 
 Examples
 --------
 
 To make an animated GIF movie based on the script globe.sh, which simply spins a globe using the
-frame number to serve as the view longitude, using a custom square 600x600 pixel canvas and 360 frames,
+frame number to serve as the view longitude, using a custom square 600 by 600 pixel canvas and 360 frames,
 place a frame counter in the top left corner, and place a progress indicator in the top right corner, try::
 
     gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100 -Lf -P
@@ -459,7 +512,7 @@ Now, the globe.bat DOS script is simply::
 i.e., the syntax of how variables are used vary according to the scripting language. At the
 end of the execution we find the animated GIF globe.gif and a directory (called globe) that contains all 360 PNG images.
 Note that there is no information in the globe scripts that reflects the name of the plot, the canvas size,
-the dimensions of the rasterized PostScript, and so on.  That information is hidden from the user;
+the dimensions of the rasterized *PostScript*, and so on.  That information is hidden from the user;
 the actual movie scripts that execute are derived from the user-provided scripts and supply
 the extra machinery. The **movie** module automatically manages the parallel execution loop over all frames using
 all available cores.
@@ -467,22 +520,37 @@ all available cores.
 Longer Examples
 ---------------
 
-To explore more elaborate movies, see the Animations examples under our :doc:`Gallery <gallery>`.
+To explore more elaborate movies, see the Animations examples under our :doc:`GMT Animations <animations>` or view
+high-resolution movies on the GMT `Youtube <https://www.youtube.com/channel/UCo1drOh0OZPcB7S8TmIyf8Q/>`_ channel.
 
 Other Movie Formats
 -------------------
 
 As configured, **movie** only offers the MP4 and WebM formats for movies.  The conversion is performed by the
 tool `FFmpeg <https://www.ffmpeg.org/>`_, which has more codecs and processing options than there are children in China.
-If you wish to run ffmpeg with other options, select mp4 and run **movie** with verbose information on (**-Vi**).
-At the end it will print the ffmpeg command used.  You can copy, paste, and modify this command to
+If you wish to run FFmpeg with other options, run **movie** with one of the two video formats.
+At the end it will print the FFmpeg command used.  You can copy, paste, and modify this command to
 select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such
-as QuickTime Pro, iMovie, MovieMaker, and similar commercial programs to make a movie that way.
+as QuickTime Player, iMovie, MovieMaker, and other commercial programs to make a movie that way.
+
+Remaking Movie with Existing PNG Frames
+---------------------------------------
+
+Perhaps you made your movie and then decided you want to change the frame rate or adjust something else in
+how the movie is put together from all the still images.  If you kept all the frame images then
+you do not have to rerun the whole render process.  Assuming you want a MP4 movie and that you
+want to rerun just the ffmpeg command, here is an example::
+
+    ffmpeg -loglevel warning -f image2 -framerate 24 -y -i "mydir/myimages_%04d.png" -vcodec libx264 -pix_fmt yuv420p mymovie.mp4
+
+This command is also written out when movie performs this step.
+For other movie formats you will need to consult the `FFmpeg <https://www.ffmpeg.org/>`_ documentation.
+**Note**: On Windows, the percentage character is special (like the dollar sign under shells) so you will need to enter two (%%).
 
 Manipulating Multiple Movies
 ----------------------------
 
-If you are making a series of similar movies, you can use ffmpeg to paste and stitch them into a single movie.
+If you are making a series of similar movies, you can use FFmpeg to paste and stitch them into a single movie.
 Assume we have four movies called movie_1.mp4, movie_2.mp4, movie_3.mp4, and movie_4.mp4, and you wish to combine
 them into a 2x2 panel showing the four movies simultaneously.  You would first combine movies (1,2) and (3,4)
 horizontally, then combine the two resulting strips vertically::
@@ -497,5 +565,7 @@ See Also
 --------
 
 :doc:`gmt`,
-:doc:`events`,
-:doc:`psconvert`
+:doc:`gmtmath`,
+:doc:`grdinterpolate`,
+:doc:`grdmath`,
+:doc:`events`

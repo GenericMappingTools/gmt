@@ -38,7 +38,7 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [-S] [%s] <module-name> [<-option>]\n\n", name, GMT_V_OPT);
@@ -62,9 +62,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC const char *api_get_module_group (void *V_API, char *module);
-
-int GMT_docs (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 	bool other_file = false, print_url = false, got_file = false, called = false, remote = false, direct_URL = false;
 	int error = 0, id;
 	size_t vlen = 0;
@@ -72,7 +70,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	const char *group = NULL, *docname = NULL;
 	char *ps_viewer = NULL;
 	static const char *known_group[2] = {"core", "other"};
-	static const char *known_doc[9] = {"gmtcolors", "cookbook", "api", "tutorial", "gallery", "gmt.conf", "gmt", "datasets", "index"};
+	static const char *known_doc[9] = {"gmtcolors", "cookbook", "api", "tutorial", "gallery", GMT_SETTINGS_FILE, "gmt", "datasets", "index"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -204,7 +202,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			else if (!strcmp (t, "gallery")) {
 				docname = known_doc[4];	group   = known_group[0];	/* Pretend it is in the core */
 			}
-			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "setting", 7U)) {
+			else if (!strcmp (t, GMT_SETTINGS_FILE) || !strncmp (t, "setting", 7U)) {
 				docname = known_doc[5];	group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (!strcmp (t, "gmt")) {
@@ -228,7 +226,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				group = known_group[1];
 				other_file = true;
 			}
-			else if ((group = api_get_module_group (API, name)) == NULL) {
+			else if ((group = gmt_get_module_group (API, name)) == NULL) {
 				gmt_M_str_free (t);
 				Return (GMT_RUNTIME_ERROR);
 			}

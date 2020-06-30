@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt regress** [ *table* ] [ |-A|\ *min*\ /*max*\ /*inc* ]
+**gmt regress** [ *table* ] [ |-A|\ [*min*\ /*max*\ /*inc*][**+f**\ [**n**\|\ **p**]] ]
 [ |-C|\ *level* ]
 [ |-E|\ **x**\|\ **y**\|\ **o**\|\ **r** ]
 [ |-F|\ *flags* ]
@@ -63,14 +63,17 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *min*\ /*max*\ /*inc*
-    Instead of determining a best-fit regression we explore the full range of regressions.
-    Examine all possible regression lines with slope angles between *min* and *max*,
-    using steps of *inc* degrees [-90/+90/1].  For each slope the optimum intercept
-    is determined based on your regression type (**-E**) and misfit norm (**-N**) settings.
-    For each segment we report the four columns *angle*, *E*, *slope*, *intercept*, for
-    the range of specified angles. The best model parameters within this range
+**-A**\ [*min*\ /*max*\ /*inc*][**+f**\ [**n**\|\ **p**]]
+    There are two uses for this setting: (1) Instead of determining a best-fit regression
+    we explore the full range of regressions. Examine all possible regression lines with slope
+    angles between *min* and *max*, using steps of *inc* degrees [-90/+90/1].  For each slope,
+    the optimum intercept is determined based on your regression type (**-E**) and misfit norm
+    (**-N**) settings. For each data segment we report the four columns *angle*, *E*, *slope*,
+    *intercept*, for the range of specified angles. The best model parameters within this range
     are written into the segment header and reported in verbose information mode (**-Vi**).
+    (2) Except for **-N2**, append **+f** to force the best regression to
+    only consider the given restricted range of angles [all angles].  As shortcuts for negative
+    or positive slopes, just use **+fn** or **+fp**, respectively.
 
 .. _-C:
 
@@ -179,9 +182,18 @@ Note:
 -----
 
 The output segment header will contain all the various statistics we compute for each segment.
-These are in order: N (number of points), x0 (weighted mean x), y0 (weighted mean y),
-angle (of line), E (misfit), slope, intercept, sigma_slope, sigma_intercept, correlation (r),
-coefficient of determination (R).
+These are in order: *N* (number of points), *x0* (weighted mean x), *y0* (weighted mean y),
+*angle* (of line), *E* (misfit), *slope*, *intercept*, *sigma_slope*, and *sigma_intercept*.  More the
+standard regression (**-Ey**) we also report the Pearsonian correlation (*r*) and
+coefficient of determination (*R*).
+
+.. figure:: /_images/GMT_slopes.*
+   :width: 500 px
+   :align: center
+
+   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (-Nr) criterion
+   varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
+   but there is another local minimum for an angle of 78.6 degrees that is almost as good.
 
 Examples
 --------
@@ -227,6 +239,12 @@ in steps of 0.2 degrees for the same file, try
    ::
 
     gmt regress points.txt -A0/90/0.2 -Eo -Nr > points_analysis.txt
+
+To force an orthogonal LMS to pick the best solution with a positive slope, try
+
+   ::
+
+    gmt regress points.txt -A+fp -Eo -Nr > best_pos_slope.txt
 
 
 References

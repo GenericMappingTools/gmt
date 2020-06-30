@@ -58,7 +58,7 @@ enum S_Modes {
  * is required for external calls to make grids, even if just z is requested.  This differs from the command line where
  * -Az is the default and -G is required to set file name format.  */
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
@@ -106,7 +106,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to blockmean and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -122,7 +122,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -165,14 +165,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 					Ctrl->E.mode = BLK_MODE_SIMPLE;
 				break;
 			case 'G':	/* Write output grid(s) */
+				Ctrl->G.active = true;
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
-				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file[Ctrl->G.n++] = strdup (opt->arg);
-				else
-					n_errors++;
+				else {
+					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
+					Ctrl->G.n++;
+				}
 				break;
 			case 'I':	/* Get block dimensions */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -202,7 +204,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 				break;
 			case 'W':	/* Use in|out weights */
 				Ctrl->W.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s", GMT_MSG_ERROR)) n_errors++;
 				sigma = (gmt_get_modifier (opt->arg, 's', arg)) ? true : false;
 				switch (opt->arg[0]) {
 					case '\0':	case '+':
@@ -281,7 +283,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, zw); gmt_M_free (GMT, xy); gmt_M_free (GMT, np); gmt_M_free (GMT, slhg); gmt_M_free (GMT, Out); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
-int GMT_blockmean (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_blockmean (void *V_API, int mode, void *args) {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
 	unsigned int row, col, n_input, k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0}, field[BLK_N_FIELDS];
 	int error;
@@ -388,6 +390,11 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 				break;
 			continue;							/* Go back and read the next record */
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		in = In->data;	/* Only need to process numerical part here */
 		if (gmt_M_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
 			continue;

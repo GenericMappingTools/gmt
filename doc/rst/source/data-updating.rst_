@@ -1,0 +1,12 @@
+Data and Cache Updates
+----------------------
+
+Remote datasets and remote cache files are updated from time to time as it is our aim to provide
+only the very latest version of the data.  This means we (a) do not support multiple versions of
+a dataset (you must obtain earlier versions of any published data sets elsewhere), (b) as GMT
+detects a new version on the server it will download it the next time you access the remote data
+set and it will overwrite any previous version, and (c) any data set or file we deem obsolete will
+be removed from the server, and hence it will also be removed from your .gmt server and cache
+folders when the syncing occurs.  This is particularly true of the cache files that may come and go.
+If there are any cache files there that are important to you then we recommend you place a copy
+of them in another folder. Syncing occurs at most once a day and only when you actively use GMT.

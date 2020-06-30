@@ -199,6 +199,8 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 
 	if (V) mode += (6 << 16);				/* Activate -Vd */
 	in_data = get_array (intype, 1);			/* Create dummy user grid in_data[] = k */
+	if (intype == GMT_FLOAT)
+		bad = 0;
 
 	/* Initialize a GMT session */
 	API = GMT_Create_Session ("test", 2U, mode, NULL);
@@ -211,10 +213,10 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	}
 	/* Hook the user input array up to this container */
 	GMT_Put_Matrix (API, M[GMT_IN], intype, 0, in_data);
-	/* Associate our matrix container with a virtual grid file to "read" from */
-	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, M[GMT_IN], input);
+	/* Associate our matrix container with a virtual grid file to "read" from via duplication */
+	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN, M[GMT_IN], input);
 	if (alloc_in_GMT)	/* Request matrix container for output data to be allocated by GMT */
-	    GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, out_via, GMT_OUT, NULL, output);
+	    GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, out_via, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
 	else {	/* Preallocate array space here in the app */
 		out_data = get_array (outtype, 0);	/* Make user space for output */
  		/* Create a blank matrix container that will hold our user out_data, but pass dim so it can set the dimensions */

@@ -3,12 +3,13 @@
 Description
 -----------
 
-Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*]) data from *table* [or standard
+Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*] [, *label*]) data from *table* [or standard
 input] and plots how the symbol for each event should look for the specified *now* time.
 The reason they may differ is that events may have different lengths and we may
 wish to accentuate the symbol attributes in ways to draw attention to an event when
 it first happens and perhaps tone it down after a while to reduce clutter and focus
-on more recent events. This module is typically used in conjunction with :doc:`movie`
+on more recent events. Optionally, each symbol may have a label that can be displayed at the
+same time or delayed with respect to the symbol. This module is typically used in conjunction with :doc:`movie`
 where the implicit loop over time is used to call it over a time-sequence and
 thus plot symbols as events unfold.
 
@@ -37,12 +38,15 @@ Required Arguments
     are available in :doc:`psxy` can be used here.  At the moment we only support the basic
     symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
     be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
-    by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.
+    by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.  If you are only
+    plotting labels then **-S** is not required.
 
 .. _-T:
 
 **-T**\ *now*
-    Set the current plot time.  If absolute times are used you must also use **-fT**.
+    Set the current plot time. The time shifts and increments set in **-E** are all relative to this
+    current time.  If an absolute time is given you may need to  use :term:`TIME_UNIT` to indicate
+    the unit of the values given in options like **-E** and **-L**.
 
 Optional Arguments
 ------------------
@@ -81,8 +85,10 @@ Optional Arguments
     duration of the rise phase, **+p** to set the duration of the plateau phase, **+d**
     to specify the duration of the decay phase, and **+f** to set the duration of the
     fade phase.  These are all optional [and default to zero], and can be set separately for symbols and texts.
-    If neither **s** or **t** is given then we set the time knots for both features. Note that **+l** is
+    If neither **s** or **t** is given then we set the time knots for both features. **Note**: The **+l** modifier is
     restricted to **-Et** and specifies an alternative duration (visibility) of the text [same duration as symbol].
+    Furthermore, the **+p** and **+d** periods do not apply to text labels.  **Note**: The **-Et** option is
+    required if you wish to plot labels [plot symbols only].
 
 .. _-F:
 
@@ -165,6 +171,22 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+The meaning of time
+-------------------
+
+While normally the meaning of "time" (e.g., such as in the argument to **-T**)
+is in fact the time of the phenomenon being plotted, it may also be any other monotonically
+increasing quantity of convenience, such as elapsed time, model time, frame number, or other physical
+quantities such as distance.  It all depends on the context of the movie.  The values
+given for delays, fades, etc. in **-E** are assumed to be in the same unit as the
+given *time* argument to **-T**.  Thus, if *time* is a monotonically increasing frame
+counter then the values in **-E** and **-L** refer to number of frames.  A special
+situation occurs when *time* is in fact actual calendar time given by date/clock markers.
+Here, the unit of the arguments in **-E** and **-L** is determined by the :term:`TIME_UNIT`
+setting [second].  You will need to specify the desired time unit that should be used when
+interpreting your **-E** and **-L** arguments.  The example below for seismicity uses
+actual earthquake times but we use days as the unit as second is too small.
+
 The three time-functions
 ------------------------
 
@@ -218,8 +240,23 @@ Figure below illustrates how transparency may vary through time.
 While shown in these examples, the rise, plateau, fade, and coda periods are all optional
 and can be selected or ignored as you wish via **-E**.  You can choose to specify any or none
 of the three time histories.  By default the symbol size is constant, there is no intensity
-variation, and all symbols are opaque.  If trailing text is plotted (requires **-Et**) then
-only a transparency time-function is used.
+variation, and all symbols are opaque.
+
+If trailing text is plotted (i.e., by selecting **-Et**) then only the transparency time-function
+is used and neither the plateau nor decay periods apply.  The appearance and disappearance of a
+label is thus dictated by an initial (and optional) rise time (during which the label slowly
+becomes fully visible), an normal period (where it remains visible), followed by the optional
+fade period (where the text fades out).  The figure below illustrate the setup:
+
+.. figure:: /_images/psevents_labels.*
+   :width: 400 px
+   :align: center
+
+   Here we show how a label may go from being invisible to reaching full opaqueness
+   at the event begin time, staying visible for the given duration, and then finally
+   fade away completely. For labels, the plateau and decay periods do not apply.
+
+
 
 Sorting the data
 ----------------

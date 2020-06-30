@@ -2,9 +2,9 @@
 # Test all structural geology symbols from Jose
 ps=struct_geo.ps
 reg=-R0/10/0/10
-# Must temporarily change GMT_USERDIR to the gallery documentation dir
-export GMT_USERDIR=`gmt --show-sharedir`/../doc/rst/source/users-contrib-symbols/geology
-
+# Must copy the specific symbol files from the documentation to here.
+DIR=$(gmt --show-sharedir)/../doc/rst/source/users-contrib-symbols/geology
+cp -f ${DIR}/geo-*.def .
 gmt psxy $reg -JM12c -T -K -P > $ps
 
 echo 1 9 60 40 | gmt psxy -R -J -Skgeo-plane/24p -Wthin -O -K >> $ps
@@ -69,3 +69,4 @@ gmt pstext -R -J -F+f7p,29+jLT -M -O -N >> $ps << END
 > 0.5 4.3 6p 10.6c j
 1 - Strike and dip of beds. 2 - Horizontal beds. 3 - Strike of vertical beds. 4 - Strike and dip of overturned beds. 5 - Strike and dip of bed with rake of lineation. 6 - Strike and dip direction of gently dipping beds. 7 - Strike and dip direction of moderatly dipping beds. 8 - Strike and dip direction of steeply dipping beds. 9 - Strike and dip of crenulated or undulated beds. 10 - Strike and dip of foliation. 11 - Horizontal foliation. 12 - Strike of vertical foliation. 13. Strike and dip of cleavage. 14 - Horizontal cleavage. 15 - Strike of vertical cleavage. 16 - Strike and dip of foliation 2. 17 - Strike and dip of foliation 3. 18 - Strike and dip of joints. 19 - Horizontal joints. 20 - Strike of vertical joints. 21 - Trend and plunge of lineation. 22 - Vertical lineation. 23 - Horizontal lineation. 24 - Trend and plunge of lineation 2. 25 - Trend and plunge of lineation 3.
 END
+rm -f geo-*.def

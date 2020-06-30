@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Computes the gravity anomaly of a sphere both analytical and descrete triangles
+# Computes the gravity anomaly of a sphere both analytical and discrete triangles
 
 ps=spheres.ps
 

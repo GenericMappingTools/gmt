@@ -205,12 +205,12 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, GDALRasterBandH hBand, void *data, int n_rows, int n_cols) {
+GMT_LOCAL int gmtgdalwrite_write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, GDALRasterBandH hBand, void *data, int n_rows, int n_cols) {
 	int error = 0, i, j;
 	float *t = (float *)data;
 	uint64_t k, n, nm = (uint64_t)n_rows * n_cols;
 	/* In gmt_gdal_write_grd we made the pointer to point to the beginning of the non-padded zone, so to make it
-	   coherent we retriet pad[0]. However, nothing of this is taking into account a -R subregion so all of this
+	   coherent we retrieve pad[0]. However, nothing of this is taking into account a -R subregion so all of this
 	   (and not only this case) will probably fail for that case.
 	*/
 	t -= prhs->pad[0];
@@ -290,7 +290,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	unsigned char *outByte = NULL, *img = NULL, *tmpByte;
 	float *ptr;
 
-	if (prhs->driver) pszFormat = prhs->driver;
+	if (prhs->driver) pszFormat = prhs->driver;		/* Otherwise use the default GTiff format */
 	adfGeoTransform[0] =  prhs->ULx;
 	adfGeoTransform[3] =  prhs->ULy;
 	adfGeoTransform[1] =  prhs->x_inc;
@@ -340,7 +340,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		return -1;
 	}
 
-	/* Jpeg2000 driver doesn't accept float arrays so we'll have to copy it into a int16 */
+	/* Jpeg2000 driver doesn't accept float arrays so we'll have to copy it into an int16 */
 	if (!strcasecmp(pszFormat,"JP2OpenJPEG")) {
 		if (prhs->orig_type == GMT_UCHAR)       typeCLASS_f = GDT_Byte;
 		else if (prhs->orig_type == GMT_USHORT) typeCLASS_f = GDT_UInt16;
@@ -364,7 +364,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		   we assume that the decimal * 1000 is the number on the color matrix of the transparent color. And
 		   then we use it to set prhs->nan_value. In gmt_gdalwrite it will be used by GDALSetRasterNoDataValue.
 		*/
-		float dc = 0.0, nc;
+		float dc = 0.0, nc = 0.0;
 
 		nColors = prhs->C.n_colors;
 		if (nColors > 2000) {			/* If colormap is Mx4 or has encoded the alpha color */
@@ -393,7 +393,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			}
 		}
 		if (dc == 0.0)
-			prhs->nan_value = 0.5;		/* Just a non-integer to prevent settng a transp color in gmt_gdalwrite(). */
+			prhs->nan_value = 0.5;		/* Just a non-integer to prevent setting a transp color in gmt_gdalwrite(). */
 		else
 			prhs->nan_value = rint(dc * 1000) - 1;	/* This will be the alpha color as set in gmt_gdalwrite() */
 	}
@@ -410,7 +410,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 		hSRS_2 = OSRNewSpatialReference(NULL);
 
-		if (prhs->P.ProjRefWKT != NULL) {
+		if (prhs->P.ProjRefWKT != NULL && prhs->P.ProjRefWKT[0]) {
 			projWKT = prhs->P.ProjRefWKT;
 		}
 		else if (OSRImportFromProj4(hSRS_2, prhs->P.ProjRefPROJ4) == CE_None) {
@@ -558,7 +558,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				if (!strcasecmp(pszFormat,"JP2OpenJPEG")) {			/* JP2 driver doesn't accept floats, so we must make a copy */
-					if ((gdal_err = write_jp2 (GMT, prhs, hBand, data, n_rows, n_cols)) != CE_None)
+					if ((gdal_err = gmtgdalwrite_write_jp2 (GMT, prhs, hBand, data, n_rows, n_cols)) != CE_None)
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
 				}
 				else {
@@ -571,26 +571,27 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 		/* Compute and set image statistics (if possible) */
 		GDALComputeRasterStatistics(hBand, 0, NULL, NULL, NULL, NULL, NULL, NULL);
-
 	}
 
-	hOutDS = GDALCreateCopy(hDriverOut, fname, hDstDS, bStrict, papszOptions, pfnProgress, NULL);
-	if (hOutDS != NULL) GDALClose(hOutDS);
+	if (prhs->H.active)		/* Then save the GDAL dataset pointer to be used by caller */
+		prhs->H.hSrcDS = hDstDS;
+	else {
+		hOutDS = GDALCreateCopy(hDriverOut, fname, hDstDS, bStrict, papszOptions, pfnProgress, NULL);
+		if (hOutDS != NULL) GDALClose(hOutDS);
+		GDALClose(hDstDS);
+	}
 
-	CPLFree(pszSRS_WKT);
-	GDALClose(hDstDS);
-	GDALDestroyDriverManager();
-	gmt_M_free(GMT, outByte);
-	if (papszOptions != NULL) CSLDestroy (papszOptions);
-
-	if (gmt_strlcmp(pszFormat,"netCDF")) {
-		/* Change some attributes written by GDAL (not finished) */
-		int ncid;
-		int err;
+	if (!prhs->H.active && gmt_strlcmp(pszFormat,"netCDF")) { /* Change some attributes written by GDAL (not finished) */
+		int ncid, err;
 		gmt_M_err_trap (nc_open (fname, NC_WRITE, &ncid));
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(prhs->command), prhs->command));
 		gmt_M_err_trap (nc_close (ncid));
 	}
+
+	gmt_M_free(GMT, outByte);
+	if (pszSRS_WKT != NULL) CPLFree(pszSRS_WKT);
+	if (papszOptions != NULL) CSLDestroy (papszOptions);
+	GDALDestroyDriverManager();
 
 	return (GMT_NOERROR);
 }

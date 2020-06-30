@@ -36,28 +36,28 @@
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy" GMT_OPT("EZMmc")
 
 struct PSCLIP_CTRL {
-	struct A {	/* -A[m|p|step] */
+	struct PSCLIP_A {	/* -A[m|p|step] */
 		bool active;
 		unsigned int mode;
 		double step;
 	} A;
-	struct C {	/* -C */
+	struct PSCLIP_C {	/* -C */
 		bool active;
 		int n;	/* Number of levels to undo [1] */
 	} C;
-	struct N {	/* -N */
+	struct PSCLIP_N {	/* -N */
 		bool active;
 	} N;
-	struct T {	/* -T */
+	struct PSCLIP_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W<pen> */
+	struct PSCLIP_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSCLIP_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSCLIP_CTRL);
@@ -66,12 +66,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psclip synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -103,7 +103,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psclip and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -120,7 +120,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				n_files++;
 				break;
 
@@ -192,7 +192,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n) {
+GMT_LOCAL void psclip_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n) {
 	switch (n) {
 		case PSL_ALL_CLIP:
 			PSL_endclipping (PSL, n);	/* Reduce clipping to none */
@@ -208,17 +208,7 @@ GMT_LOCAL void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL,
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_clip (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: clip\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_psclip (V_API, mode, args);
-}
-
-int GMT_psclip (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	double x0, y0;
@@ -253,7 +243,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active && !GMT->current.map.frame.init) {
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
+		psclip_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 		gmt_plotend (GMT);
 		Return (GMT_NOERROR);
 	}
@@ -263,7 +253,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	if (Ctrl->C.active) gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
+	if (Ctrl->C.active) psclip_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 	gmt_map_basemap (GMT);
@@ -352,4 +342,14 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_clip (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: clip\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psclip (V_API, mode, args);
 }

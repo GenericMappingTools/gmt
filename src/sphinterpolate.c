@@ -44,37 +44,37 @@
 #define THIS_MODULE_OPTIONS "-:RVbdehiqrs" GMT_OPT("F")
 
 struct SPHINTERPOLATE_CTRL {
-	struct G {	/* -G<grdfile> */
+	struct SPHINTERPOLATE_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct Q {	/* -Q<interpolation> */
+	struct SPHINTERPOLATE_Q {	/* -Q<interpolation> */
 		bool active;
 		unsigned int mode;
 		double value[3];
 	} Q;
-	struct T {	/* -T for variable tension */
+	struct SPHINTERPOLATE_T {	/* -T for variable tension */
 		bool active;
 	} T;
-	struct Z {	/* -Z to scale data */
+	struct SPHINTERPOLATE_Z {	/* -Z to scale data */
 		bool active;
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPHINTERPOLATE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct SPHINTERPOLATE_CTRL);
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg) {
+GMT_LOCAL int sphinterpolate_get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg) {
 	int m;
 	char txt_a[32], txt_b[32], txt_c[32];
 	m = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
@@ -88,7 +88,7 @@ GMT_LOCAL int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg
 	return (m);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
@@ -125,7 +125,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to sphinterpolate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -141,16 +141,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -166,14 +165,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 						Ctrl->Q.mode = 2;
 						if (opt->arg[1]) {	/* Gave optional n/m/dgmx */
 							k = (opt->arg[1] == '/') ? 2 : 1;	/* Gave optional /n/m/dgmx */
-							if ((m = get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qg<N>[/<M>[/<U>]]")) < 0) n_errors++;
+							if ((m = sphinterpolate_get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qg<N>[/<M>[/<U>]]")) < 0) n_errors++;
 						}
 						break;
 					case 's':	case '3':	/* Smoothing s (3 is old mode) */
 						Ctrl->Q.mode = 3;
 						if (opt->arg[1]) {	/* Gave optional e/sm/niter */
 							k = (opt->arg[1] == '/') ? 2 : 1;	/* Gave optional /e/sm/niter */
-							if ((m = get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qs<E>[/<U>[/<niter>]]")) < 0) n_errors++;
+							if ((m = sphinterpolate_get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qs<E>[/<U>[/<niter>]]")) < 0) n_errors++;
 						}
 						break;
 					default:
@@ -206,7 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sphinterpolate (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	unsigned int row, col;
 	int error = 0;
 
@@ -275,6 +274,11 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 			continue;	/* Go back and read the next record */
+		}
+
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
 		}
 
 		/* Data record to process */
@@ -348,7 +352,8 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 	/* Do the interpolation */
 
-	gmt_ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd);
+	if (gmt_ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd))
+		Return (GMT_RUNTIME_ERROR);
 
 	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 	gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);

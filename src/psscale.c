@@ -19,7 +19,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  *
- * Brief synopsis: psscale draws a grayscale or colorscale either vertically
+ * Brief synopsis: psscale draws a grayscale or color bar either vertically
  * or horizontally, optionally with illumination.
  *
  */
@@ -34,7 +34,6 @@
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxyf" GMT_OPT("c")
 
-EXTERN_MSC void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
 EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
 EXTERN_MSC void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item);
 
@@ -61,11 +60,11 @@ enum psscale_shift {
 /* Control structure for psscale */
 
 struct PSSCALE_CTRL {
-	struct C {	/* -C<cpt> */
+	struct PSSCALE_C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]]+e[b|f][<length>][+n[<text>]] */
+	struct PSSCALE_D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]]+e[b|f][<length>][+n[<text>]] */
 		bool active;
 		bool horizontal;
 		bool move;
@@ -80,48 +79,48 @@ struct PSSCALE_CTRL {
 		char *etext;
 		char *opt;
 	} D;
-	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct PSSCALE_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
 	} F;
-	struct G {	/* -Glow/high for input CPT truncation */
+	struct PSSCALE_G {	/* -Glow/high for input CPT truncation */
 		bool active;
 		double z_low, z_high;
 	} G;
-	struct I {	/* -I[<intens>|<min_i>/<max_i>] */
+	struct PSSCALE_I {	/* -I[<intens>|<min_i>/<max_i>] */
 		bool active;
 		double min, max;
 	} I;
-	struct M {	/* -M */
+	struct PSSCALE_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N<dpi>|p */
+	struct PSSCALE_N {	/* -N<dpi>|p */
 		bool active;
 		unsigned int mode;
 		double dpi;
 	} N;
-	struct L {	/* -L[i][<gap>] */
+	struct PSSCALE_L {	/* -L[i][<gap>] */
 		bool active;
 		bool interval;
 		double spacing;
 	} L;
-	struct Q {	/* -Q */
+	struct PSSCALE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S */
+	struct PSSCALE_S {	/* -S */
 		bool active;
 	} S;
-	struct W {	/* -W<scale> */
+	struct PSSCALE_W {	/* -W<scale> */
 		bool active;
 		double scale;
 	} W;
-	struct Z {	/* -Z<zfile> */
+	struct PSSCALE_Z {	/* -Z<zfile> */
 		bool active;
 		char *file;
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSCALE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
@@ -136,7 +135,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->C.file);
 	gmt_free_refpoint (GMT, &C->D.refpoint);
@@ -147,7 +146,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psscale synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -164,7 +163,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-B Set scale annotation interval and label. Use y-label to set unit label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no annotation interval is set it is taken from the CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. If not set, stdin is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. If not set, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default all color changes are annotated (but see -B).  To use a subset,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   add an extra column to the CPT with a L, U, or B\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to annotate Lower, Upper, or Both color segment boundaries.\n");
@@ -217,7 +216,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psscale and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -441,7 +440,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					break;
 			}
 		}
-		if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnovw")) n_errors++;
+		if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnovw", GMT_MSG_ERROR)) n_errors++;
 		/* Required modifier +w */
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 			if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
@@ -508,23 +507,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	}
 	else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
 		n = sscanf (Ctrl->D.refpoint->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-		/* First deal with bar dimensions and horizontal vs vertical */
-		j = (unsigned int)strlen (txt_b) - 1;
-		if (txt_b[j] == 'h' || txt_b[j] == 'H') {	/* Want horizontal color bar */
-			Ctrl->D.horizontal = true;
-			txt_b[j] = 0;	/* Remove this to avoid unit confusion */
+		if (n < 2) {	/* Gave not enough args  */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: No bar dimensions provided\n");
+			n_errors++;
 		}
-		Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
-		Ctrl->D.dim[GMT_Y]  = gmt_M_to_inch (GMT, txt_b);
-		if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
-			Ctrl->D.justify = gmt_flip_justify (GMT, Ctrl->D.refpoint->justify);
-		else
-			Ctrl->D.justify = (Ctrl->D.horizontal) ? PSL_TC : PSL_ML;	/* Old default justifications for non-Dj settings */
-		/* Now deal with optional arguments, if any */
-		switch (n) {
-			case 3: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
-			case 4: Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_d); break;	/* Just got offsets */
-			case 5: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_e); break;	/* Got both */
+		else {	/* First deal with bar dimensions and horizontal vs vertical */
+			j = (unsigned int)strlen (txt_b) - 1;
+			if (txt_b[j] == 'h' || txt_b[j] == 'H') {	/* Want horizontal color bar */
+				Ctrl->D.horizontal = true;
+				txt_b[j] = 0;	/* Remove this to avoid unit confusion */
+			}
+			Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+			Ctrl->D.dim[GMT_Y]  = gmt_M_to_inch (GMT, txt_b);
+			if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
+				Ctrl->D.justify = gmt_flip_justify (GMT, Ctrl->D.refpoint->justify);
+			else
+				Ctrl->D.justify = (Ctrl->D.horizontal) ? PSL_TC : PSL_ML;	/* Old default justifications for non-Dj settings */
+			/* Now deal with optional arguments, if any */
+			switch (n) {
+				case 3: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
+				case 4: Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_d); break;	/* Just got offsets */
+				case 5: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_e); break;	/* Got both */
+			}
 		}
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
@@ -537,7 +541,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 			n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] <= 0.0, "Option -D: scale width must be positive\n");
 		}
 		if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
-			static char *kind = "gjJnx";	/* The five types of refpoint specifications */
+			static char *kind = GMT_REFPOINT_CODES;	/* The five types of refpoint specifications */
 			n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
 			n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Option -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 		}
@@ -559,7 +563,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n) {
+GMT_LOCAL double psscale_get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n) {
 	unsigned int i = 0;
 	double tmp;
 
@@ -569,7 +573,7 @@ GMT_LOCAL double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned
 	return (P->data[i].z_low + (x - tmp + width[i]) * (P->data[i].z_high - P->data[i].z_low) / width[i]);
 }
 
-GMT_LOCAL void fix_format (char *unit, char *format) {
+GMT_LOCAL void psscale_fix_format (char *unit, char *format) {
 	unsigned int i, j;
 	char text[GMT_LEN64] = {""}, new_format[GMT_BUFSIZ] = {""};
 
@@ -593,7 +597,7 @@ GMT_LOCAL void fix_format (char *unit, char *format) {
 	}
 }
 
-GMT_LOCAL void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
+GMT_LOCAL void psscale_plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	double vdim[PSL_MAX_DIMS], s = width / 0.1, p_width;
 	struct GMT_SYMBOL S;
 	struct GMT_FILL black;
@@ -620,16 +624,14 @@ GMT_LOCAL void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double widt
 
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height)
 
-GMT_LOCAL bool letter_hangs_down (char *text) {
+GMT_LOCAL bool psscale_letter_hangs_down (char *text) {
 	/* Returns true if text contains one of the 4 lower-case letters that hangs down below the baseline */
 	size_t k;
 	for (k = 0; k < strlen (text); k++) if (strchr ("jpqy", text[k])) return true;
 	return false;
 }
 
-EXTERN_MSC void gmt_xy_axis2 (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, bool annotate, unsigned side);
-
-GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
+GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0;
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify;
 	int this_just, p_val, center = 0;
@@ -732,7 +734,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 	if (ndec == 0) {	/* Not -B and no decimals are needed */
 		strncpy (format, GMT->current.setting.format_float_map, GMT_LEN256-1);
-		fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
+		psscale_fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
 	}
 
 	len = GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];	/* +ve means draw on the outside of bar */
@@ -794,7 +796,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		/* Load bar image */
 
 		for (i = 0; i < nx; i++) {
-			z = (resample) ? get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->data[i].z_low;
+			z = (resample) ? psscale_get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->data[i].z_low;
 			index = gmt_get_rgb_from_z (GMT, P, z, rrggbb);
 			skip = gmt_M_skip_cptslice (P, index);	/* Don't what intensity shading if slice is to be skipped */
 			ii = (reverse) ? nx - i - 1 : i;
@@ -842,7 +844,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			/* If a label then add space for offset and label height */
 			if (GMT->current.map.frame.axis[GMT_X].label[0]) {
 				label_off = 1.0;	/* 1-letter height */
-				if (!(flip & PSSCALE_FLIP_LABEL) && letter_hangs_down (GMT->current.map.frame.axis[GMT_X].label))
+				if (!(flip & PSSCALE_FLIP_LABEL) && psscale_letter_hangs_down (GMT->current.map.frame.axis[GMT_X].label))
 					label_off += 0.3;	/* Add 30% hang below baseline */
 				label_off *= GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;	/* Scale to inches */
 				label_off += MAX (0.0, GMT->current.setting.map_label_offset);	/* Add offset */
@@ -1194,7 +1196,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place in center */
 				x0 = 0.5 * (xleft + xright);
-			plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
+			psscale_plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
 		}
 	}
 	else {	/* Vertical scale */
@@ -1482,7 +1484,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place at center */
 				x0 = 0.5 * (xleft + xright);
-			plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
+			psscale_plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
 		}
 		PSL_setorigin (PSL, -width, 0.0, -90.0, PSL_INV);
 	}
@@ -1498,17 +1500,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 EXTERN_MSC int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in);
 
-int GMT_colorbar (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: colorbar\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_psscale (V_API, mode, args);
-}
-
-int GMT_psscale (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psscale task */
 	int error = 0;
 	unsigned int i;
@@ -1700,7 +1692,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar reference x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 
-	gmt_draw_colorbar (GMT, Ctrl, P, z_width);
+	psscale_draw_colorbar (GMT, Ctrl, P, z_width);
 
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 	gmt_plane_perspective (GMT, -1, 0.0);
@@ -1710,4 +1702,14 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if (!Ctrl->Z.active) gmt_M_free (GMT, z_width);
 
 	Return (GMT_NOERROR);
+}
+
+int GMT_colorbar (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: colorbar\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psscale (V_API, mode, args);
 }

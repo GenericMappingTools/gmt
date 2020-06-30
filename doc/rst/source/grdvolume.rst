@@ -13,6 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* or |-C|\ **r**\ *cval*]
+[ |-D| ]
 [ |-L|\ *base* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ [*unit*] ]
@@ -29,8 +30,8 @@ Synopsis
 Description
 -----------
 
-**grdvolume** reads a 2-D grid file and calculates the volume contained between the surface and the plane specified
-by the given contour (or zero if not given) and reports the area, volume, and maximum mean height (volume/area).
+**grdvolume** reads a 2-D grid file and calculates the volume contained below the surface and above the plane specified
+by the given contour (or zero if not given) and reports the contour, area, volume, and maximum mean height (volume/area).
 Alternatively, specify a range of contours to be tried and **grdvolume** will determine the volume and area inside
 the contour for all contour values. Using **-T**, the contour that produced the maximum mean height (or maximum
 curvature of heights vs contour value) is reported as well. This feature may be used with :doc:`grdfilter`
@@ -48,13 +49,22 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* or **-Cr**\ *cval*
-    find area, volume and mean height (volume/area) inside the *cval* contour. Alternatively, search using
+    find area, volume and mean height (volume/area) inside and above the *cval* contour. Alternatively, search using
     all contours from *low* to *high* in steps of *delta*. [Default returns area, volume and mean height
     of the entire grid]. The area is measured in the plane of the contour. The **Cr** form on the other
-    hand computes the volume between the grid surface and the plans defined by *low* and *high*,
+    hand computes the volume below the grid surface and above the planes defined by *low* and *high*,
     or below *cval* and grid's minimum. Note that this is an *outside* volume whilst the other forms
     compute an *inside* (below the surface) area volume. Use this form to compute for example the volume
-    of water between two contours.
+    of water between two contours. **Note**: If no **-C** is given then there is no contour and we return
+    the entire grid area, volume and the mean height; *cval* will be reported as 0 but we are not tracing
+    a zero-contour (which we do if **-C**\ 0 is given).
+
+.. _-D:
+
+**-D**
+    Requires **-C**\ *low/high/delta* and will compute the area and volume of each horizontal *slice* as defined by the
+    contours.  The reported contour and area values refer to the base of the slice, and the *height* is set to *delta*
+    (since that is the thickness of all slices).
 
 .. _-L:
 
@@ -112,13 +122,13 @@ To determine area (in km^2), volume (in km^3), and mean height (in km) of all la
 
     gmt grdvolume @earth_relief_05m -R190/210/15/25 -C0 -Sk -Z0.001
 
-To find the volume between the surface peaks.nc and the contour z = 250 m in meters, use
+To find the volume below the surface peaks.nc and above the contour z = 250 m in meters, use
 
    ::
 
     gmt grdvolume peaks.nc -Se -C250
 
-To search for the contour, between 100 and 300 in steps of 10, that
+To search for the contour, ranging from 100 to 300 in steps of 10, that
 maximizes the ratio of volume to surface area for the file peaks.nc, use
 
    ::
@@ -137,9 +147,22 @@ To find the volume of water in a lake with its free surface at 0 and max depth o
 
     gmt grdvolume lake.nc -Cr-300/0
 
+Volume integration
+------------------
+
+The surface will be approximated using a bilinear expression for the *z*-value inside each grid box
+defined by four grid nodes: :math:`z(x,y) = z_0 + z_x^{'}x + z_y^{'}y + z_{xy}^{''}xy`, where the
+first term is the grid value at the lower left corner of the cell (where our relative coordinates
+*x* = *y* = 0). The primed *z*-values are derivatives in *x*, *y*, and both directions, respectively.
+We analytically integrate this expression within each box, allowing for straight line contour intersections
+to go through a box and affect the integration domain and limits.
+
 Notes
 -----
 
+#. The output of **grdvolume** is one or more records (one per contour if **-C**
+   is set to search multiple contours) containing *contour area volume volume/area*.
+   These records are written to standard output.
 #. For geographical grids we convert degrees to "Flat Earth" distances in
    meter.  You can use **-S** to select another distance unit.  The
    area is then reported in this unit squared while the volume is reported

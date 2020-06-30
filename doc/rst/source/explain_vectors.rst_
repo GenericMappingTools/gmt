@@ -83,9 +83,9 @@ be a straight Cartesian vector. Yes, the old GMT4 vector shape remains accessibl
 you specify a vector (**-Sv**\|\ **V**) using the GMT4 syntax, explained here: *size*, if present, will
 be interpreted as *arrowwidth/headlength/headwidth* [Default is 0.075c/0.3c/0.25c (or
 0.03i/0.12i/0.1i)]. By default, arrow attributes remain invariant to the length of the
-arrow. To have the size of the vector scale down with decreasing size, append **n**\ *norm*,
-where vectors shorter than *norm* will have their attributes scaled by length/*norm*.
-To center the vector on the balance point, use **−Svb**; to align point with the vector head,
-use **−Svh**; to align point with the vector tail, use **−Svt** [Default]. To give the
-head point’s coordinates instead of direction and length, use **−Svs**. Upper case
+arrow. To have the size of the vector scale down with decreasing size, append **+n**\ *norm*,
+where vectors shorter than *norm* will have their attributes scaled by *length*/*norm*.
+To center the vector on the balance point, use **-Svb**; to align point with the vector head,
+use **-Svh**; to align point with the vector tail, use **-Svt** [Default]. To give the
+head point’s coordinates instead of direction and length, use **-Svs**. Upper case
 **B**, **H**, **T**, **S** will draw a double-headed vector [Default is single head].

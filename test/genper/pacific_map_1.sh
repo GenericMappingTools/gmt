@@ -21,9 +21,8 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${
 
 # first generate a gmt grdimage
 
-GRDFILE=@earth_relief_10m
+GRDFILE=@earth_relief_30m
 gmt makecpt -Cglobe > t.cpt
 
-gmt grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc -E200 $REGION $PROJ -Ct.cpt -K > $ps
-gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B10g10 -B+t${TITLE} -Ia -Na -Wfaint -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
-
+gmt grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc $REGION $PROJ -Ct.cpt -K > $ps
+gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B10g10 -B+t${TITLE} -Wfaint -A10000 -Dl -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps

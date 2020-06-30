@@ -314,7 +314,6 @@ struct GMT_INIT { /* Holds misc run-time parameters */
 	char *runtime_library;        /* Name of the main shared library at run-time */
 	char *runtime_plugindir;      /* Directory that contains the main supplemental plugins at run-time */
 	char *history[GMT_N_UNIQUE];  /* The internal gmt.history information */
-	char cpt[GMT_N_CPT][GMT_LEN16];	/* The default CPTs for different data types; see gmt_cpt_default() */
 	struct GMT_CUSTOM_SYMBOL **custom_symbol; /* For custom symbol plotting in psxy[z]. */
 };
 
@@ -446,7 +445,7 @@ typedef int (*p_to_io_func) (struct GMT_CTRL *, FILE *, uint64_t, double *);
    let GMT_exit possibly call exit, else it does nothing.  Thus, calls to GMT_exit
    must be followed by return <type> so that we return where we said we would. */
 
-/* If GMT is not set or no_not_exit is false then we call system exit, else we move along */
+/* If GMT is not set or do_not_exit is false then we call system exit, else we move along */
 static inline void GMT_exit (struct GMT_CTRL *GMT, int code) {
 	if (GMT == NULL || GMT->parent == NULL || GMT->parent->do_not_exit == false)
 		exit (code);

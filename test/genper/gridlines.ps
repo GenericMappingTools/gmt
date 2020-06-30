@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_4e1698c-dirty_2019.07.19 [64-bit] Document from psbasemap
+%%Title: GMT v6.1.0_59034fa-dirty_2020.05.02 [64-bit] Document from psbasemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Jul 20 12:00:24 2019
+%%CreationDate: Sat May  2 13:08:51 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -657,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -668,12 +670,12 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psbasemap -Rg -JG188.144925731/80.7167845195/1900/0/0/0/170/180/3i -Bxa30f10g10 -Bya5f5g5 -BWSne -P -K
-%@PROJ: nsper 0.00000000 360.00000000 42.39645821 90.00000000 -1892769.926 1892769.926 -1900000.000 1900000.000 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
-%GMTBoundingBox: 72 72 216 229.58
+%@PROJ: nsper 0.00000000 360.00000000 42.39645821 90.00000000 -1892769.926 1892769.926 -1900000.000 1900000.000 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
+%GMTBoundingBox: 72 72 216 229.579501669
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 25 W
 4 W
 1950 3826 M
@@ -4968,23 +4970,23 @@ N 1950 3826 M 8 41 D S
 P S
 -158 2820 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V 18.6 R (90è) mr Z U
--129 1824 M V 39.5 R (120è) mr Z U
-1428 -166 M V 85.4 R (180è) mr Z U
-2784 -165 M V -82.7 R (î150è) ml Z U
--91 747 M V -57 R (45è) mr Z U
-722 -96 M V -35.4 R (45è) ml Z U
-2878 -96 M V 35.3 R (45è) mr Z U
--91 796 M V -56.9 R (50è) mr Z U
-826 -85 M V -30.8 R (50è) ml Z U
-2774 -85 M V 30.7 R (50è) mr Z U
--91 3080 M V 57.1 R (55è) mr Z U
--92 950 M V -56.6 R (55è) mr Z U
-1107 -65 M V -23 R (55è) ml Z U
-2493 -65 M V 22.9 R (55è) mr Z U
--82 3024 M V 60.6 R (60è) mr Z U
--83 1248 M V -60.1 R (60è) mr Z U
--59 2789 M V 69.3 R (65è) mr Z U
+V 18.5521660581 R (90è) mr Z U
+-129 1824 M V 39.4800303778 R (120è) mr Z U
+1428 -166 M V 85.4306516423 R (180è) mr Z U
+2784 -165 M V -82.7250321274 R (î150è) ml Z U
+-91 747 M V -56.9773943191 R (45è) mr Z U
+722 -96 M V -35.3659000055 R (45è) ml Z U
+2878 -96 M V 35.3184544488 R (45è) mr Z U
+-91 796 M V -56.8765898169 R (50è) mr Z U
+826 -85 M V -30.7583515536 R (50è) ml Z U
+2774 -85 M V 30.7104639481 R (50è) mr Z U
+-91 3080 M V 57.0747017152 R (55è) mr Z U
+-92 950 M V -56.562800475 R (55è) mr Z U
+1107 -65 M V -22.9799700344 R (55è) ml Z U
+2493 -65 M V 22.9317392609 R (55è) mr Z U
+-82 3024 M V 60.6260356347 R (60è) mr Z U
+-83 1248 M V -60.1444147713 R (60è) mr Z U
+-59 2789 M V 69.3033953852 R (65è) mr Z U
 %%EndObject
 0 A
 FQ
@@ -4993,11 +4995,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psbasemap -Rg -JG210.651901558/78.8472134393/1900/0/0/0/170/180/3i -Bxa30f10g10 -Bya5f5g5 -BWSne -O -K -X3.5i
-%@PROJ: nsper 0.00000000 360.00000000 40.76174200 90.00000000 -1892769.926 1892769.926 -1900000.000 1900000.000 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@PROJ: nsper 0.00000000 360.00000000 40.76174200 90.00000000 -1892769.926 1892769.926 -1900000.000 1900000.000 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 25 W
 4 W
 2352 3826 M
@@ -9322,18 +9324,18 @@ N 2352 3826 M 28 31 D S
 P S
 -149 2713 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V 26.2 R (120è) mr Z U
--111 1648 M V 48.3 R (150è) mr Z U
-1769 -167 M V 89.7 R (î150è) mr Z U
--91 751 M V -57 R (45è) mr Z U
-745 -91 M V -33.2 R (45è) ml Z U
-2855 -91 M V 33.2 R (45è) mr Z U
--95 823 M V -55.4 R (50è) mr Z U
-896 -79 M V -28.4 R (50è) ml Z U
-2704 -79 M V 28.3 R (50è) mr Z U
--92 1008 M V -56.4 R (55è) mr Z U
--82 3037 M V 60.6 R (60è) mr Z U
--83 1341 M V -59.9 R (60è) mr Z U
+V 26.2382477976 R (120è) mr Z U
+-111 1648 M V 48.3034748759 R (150è) mr Z U
+1769 -167 M V 89.6706318819 R (î150è) mr Z U
+-91 751 M V -57.0491332722 R (45è) mr Z U
+745 -91 M V -33.2406266637 R (45è) ml Z U
+2855 -91 M V 33.1743723152 R (45è) mr Z U
+-95 823 M V -55.4302355552 R (50è) mr Z U
+896 -79 M V -28.416105568 R (50è) ml Z U
+2704 -79 M V 28.3494183726 R (50è) mr Z U
+-92 1008 M V -56.4248961265 R (55è) mr Z U
+-82 3037 M V 60.6155827136 R (60è) mr Z U
+-83 1341 M V -59.939344441 R (60è) mr Z U
 %%EndObject
 0 A
 FQ
@@ -9342,11 +9344,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psbasemap -Rg -JG190.718850211/82.2203558311/1900/0/0/0/170/180/3i -Bxa30f10g10 -Bya5f5g5 -BWSne -O -K -X-3.5i -Y4.5i
-%@PROJ: nsper 0.00000000 360.00000000 43.70141717 90.00000000 -1892769.926 1892769.926 -1900000.000 1900000.000 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@PROJ: nsper 0.00000000 360.00000000 43.70141717 90.00000000 -1892769.926 1892769.926 -1900000.000 1900000.000 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 25 W
 4 W
 2023 3826 M
@@ -13703,23 +13705,23 @@ N 2023 3826 M 10 41 D S
 P S
 -163 2817 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V 12.7 R (90è) mr Z U
--136 1806 M V 35.1 R (120è) mr Z U
-1329 -166 M V 83.4 R (180è) mr Z U
-2648 -164 M V -80 R (î150è) ml Z U
-715 -95 M V -34.7 R (45è) ml Z U
-2887 -98 M V 35.9 R (45è) mr Z U
--90 779 M V -57.1 R (50è) mr Z U
-785 -91 M V -33.1 R (50è) ml Z U
-2815 -91 M V 32.9 R (50è) mr Z U
--89 3078 M V 57.6 R (55è) mr Z U
--91 910 M V -56.9 R (55è) mr Z U
-999 -76 M V -27.1 R (55è) ml Z U
-2600 -75 M V 26.9 R (55è) mr Z U
--80 3010 M V 61.2 R (60è) mr Z U
--82 1181 M V -60.5 R (60è) mr Z U
--58 2764 M V 69.8 R (65è) mr Z U
--59 1675 M V -69.1 R (65è) mr Z U
+V 12.6772959835 R (90è) mr Z U
+-136 1806 M V 35.1464364392 R (120è) mr Z U
+1329 -166 M V 83.4492237482 R (180è) mr Z U
+2648 -164 M V -79.9689287531 R (î150è) ml Z U
+715 -95 M V -34.6671175331 R (45è) ml Z U
+2887 -98 M V 35.9024202836 R (45è) mr Z U
+-90 779 M V -57.1421087113 R (50è) mr Z U
+785 -91 M V -33.1337396334 R (50è) ml Z U
+2815 -91 M V 32.9144041888 R (50è) mr Z U
+-89 3078 M V 57.6226055192 R (55è) mr Z U
+-91 910 M V -56.9163876625 R (55è) mr Z U
+999 -76 M V -27.0819175122 R (55è) ml Z U
+2600 -75 M V 26.8607613859 R (55è) mr Z U
+-80 3010 M V 61.1960808398 R (60è) mr Z U
+-82 1181 M V -60.5332587083 R (60è) mr Z U
+-58 2764 M V 69.7984420722 R (65è) mr Z U
+-59 1675 M V -69.1101641194 R (65è) mr Z U
 %%EndObject
 0 A
 FQ
@@ -13728,11 +13730,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psbasemap -Rg -JG280.969616634/58.7193421224/2513/0/0/0/200/180/3i -Bxa30f10g10 -Bya5f5g5 -BWSne -O -X3.5i
-%@PROJ: nsper 0.00000000 360.00000000 15.07819726 90.00000000 -2474821.883 2474821.883 -2513000.000 2513000.000 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@PROJ: nsper 0.00000000 360.00000000 15.07819726 90.00000000 -2474821.883 2474821.883 -2513000.000 2513000.000 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 25 W
 4 W
 3507 2355 M
@@ -16410,13 +16412,14 @@ N 3600 2111 M 16 -39 D S
 P S
 -60 1972 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-V 68.7 R (î150è) mr Z U
--67 1355 M V -66.2 R (35è) mr Z U
--70 1506 M V -65.2 R (40è) mr Z U
+V 68.7266851914 R (î150è) mr Z U
+-67 1355 M V -66.2384620175 R (35è) mr Z U
+-70 1506 M V -65.172257932 R (40è) mr Z U
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

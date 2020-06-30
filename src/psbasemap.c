@@ -38,36 +38,36 @@
 /* Control structure for psbasemap */
 
 struct PSBASEMAP_CTRL {
-	struct A {	/* -A */
+	struct PSBASEMAP_A {	/* -A */
 		bool active;
 		char *file;
 	} A;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+s<file>][+t][+u<unit>] */
+	struct PSBASEMAP_D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+s<file>][+t][+u<unit>] */
 		bool active;
 		struct GMT_MAP_INSET inset;
 	} D;
-	struct F {	/* -F[d|f|l][+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct PSBASEMAP_F {	/* -F[d|f|l][+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		/* The panels are members of GMT_MAP_SCALE, GMT_MAP_ROSE, and GMT_MAP_INSET */
 	} F;
-	struct L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
+	struct PSBASEMAP_L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
 		bool active;
 		struct GMT_MAP_SCALE scale;
 	} L;
-	struct T {	/* -Td|m<params> */
+	struct PSBASEMAP_T {	/* -Td|m<params> */
 		bool active;
 		struct GMT_MAP_ROSE rose;
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSBASEMAP_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSBASEMAP_CTRL);
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->A.file);
 	if (C->D.inset.refpoint) gmt_free_refpoint (GMT, &C->D.inset.refpoint);
@@ -79,7 +79,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psbasemap synopsis and optionally full usage information */
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	bool classic = (API->GMT->current.setting.run_mode == GMT_CLASSIC);
@@ -127,7 +127,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psbasemap and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -236,17 +236,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
-int GMT_basemap (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: basemap\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_psbasemap (V_API, mode, args);
-}
-
-int GMT_psbasemap (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psbasemap task */
 	int error;
 
@@ -310,7 +300,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	/* Regular plot behaviour */
+	/* Regular plot behavior */
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
@@ -323,8 +313,10 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) {
 		if (Ctrl->L.scale.vertical)
 			gmt_draw_vertical_scale (GMT, &Ctrl->L.scale);
-		else
-			gmt_draw_map_scale (GMT, &Ctrl->L.scale);
+		else {
+			if ((error = gmt_draw_map_scale (GMT, &Ctrl->L.scale)))
+				Return (error);
+		}
 	}
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset, false);
@@ -334,4 +326,14 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_basemap (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: basemap\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psbasemap (V_API, mode, args);
 }

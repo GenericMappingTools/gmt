@@ -12,7 +12,7 @@
  *
  * Public functions (5):
  *
- *	gmt_is_mgg2_grid	:
+ *	gmtlib_is_mgg2_grid	:
  *	gmt_mgg2_read_grd_info  :
  *	gmt_mgg2_write_grd_info	:
  *	gmt_mgg2_read_grd       :
@@ -25,14 +25,14 @@
 
 /* Local functions */
 
-GMT_LOCAL void grd98_swap_word (void* ptr) {
+GMT_LOCAL void gmtmggheader2_swap_word (void* ptr) {
 	unsigned char *tmp = ptr;
 	unsigned char a = tmp[0];
 	tmp[0] = tmp[1];
 	tmp[1] = a;
 }
 
-GMT_LOCAL void grd98_swap_long (void *ptr) {
+GMT_LOCAL void gmtmggheader2_swap_long (void *ptr) {
 	unsigned char *tmp = ptr;
 	unsigned char a = tmp[0];
 	tmp[0] = tmp[3];
@@ -42,41 +42,41 @@ GMT_LOCAL void grd98_swap_long (void *ptr) {
 	tmp[2] = a;
 }
 
-GMT_LOCAL int grd98_swap_mgg_header (MGG_GRID_HEADER_2 *header) {
+GMT_LOCAL int gmtmggheader2_swap_mgg_header (MGG_GRID_HEADER_2 *header) {
 	int i, version;
 	/* Determine if swapping is needed */
 	if (header->version == (GRD98_MAGIC_NUM + GRD98_VERSION)) return (0);	/* Version matches, No need to swap */
 	version = header->version;
-	grd98_swap_long (&version);
+	gmtmggheader2_swap_long (&version);
 	if (version != (GRD98_MAGIC_NUM + GRD98_VERSION)) return (-1);		/* Cannot make sense of header */
 	/* Here we come when we do need to swap */
-	grd98_swap_long (&header->version);
-	grd98_swap_long (&header->length);
-	grd98_swap_long (&header->dataType);
-	grd98_swap_long (&header->latDeg);
-	grd98_swap_long (&header->latMin);
-	grd98_swap_long (&header->latSec);
-	grd98_swap_long (&header->latSpacing);
-	grd98_swap_long (&header->latNumCells);
-	grd98_swap_long (&header->lonDeg);
-	grd98_swap_long (&header->lonMin);
-	grd98_swap_long (&header->lonSec);
-	grd98_swap_long (&header->lonSpacing);
-	grd98_swap_long (&header->lonNumCells);
-	grd98_swap_long (&header->minValue);
-	grd98_swap_long (&header->maxValue);
-	grd98_swap_long (&header->gridRadius);
-	grd98_swap_long (&header->precision);
-	grd98_swap_long (&header->nanValue);
-	grd98_swap_long (&header->numType);
-	grd98_swap_long (&header->waterDatum);
-	grd98_swap_long (&header->dataLimit);
-	grd98_swap_long (&header->cellRegistration);
-	for (i = 0; i < GRD98_N_UNUSED; i++) grd98_swap_long (&header->unused[i]);
+	gmtmggheader2_swap_long (&header->version);
+	gmtmggheader2_swap_long (&header->length);
+	gmtmggheader2_swap_long (&header->dataType);
+	gmtmggheader2_swap_long (&header->latDeg);
+	gmtmggheader2_swap_long (&header->latMin);
+	gmtmggheader2_swap_long (&header->latSec);
+	gmtmggheader2_swap_long (&header->latSpacing);
+	gmtmggheader2_swap_long (&header->latNumCells);
+	gmtmggheader2_swap_long (&header->lonDeg);
+	gmtmggheader2_swap_long (&header->lonMin);
+	gmtmggheader2_swap_long (&header->lonSec);
+	gmtmggheader2_swap_long (&header->lonSpacing);
+	gmtmggheader2_swap_long (&header->lonNumCells);
+	gmtmggheader2_swap_long (&header->minValue);
+	gmtmggheader2_swap_long (&header->maxValue);
+	gmtmggheader2_swap_long (&header->gridRadius);
+	gmtmggheader2_swap_long (&header->precision);
+	gmtmggheader2_swap_long (&header->nanValue);
+	gmtmggheader2_swap_long (&header->numType);
+	gmtmggheader2_swap_long (&header->waterDatum);
+	gmtmggheader2_swap_long (&header->dataLimit);
+	gmtmggheader2_swap_long (&header->cellRegistration);
+	for (i = 0; i < GRD98_N_UNUSED; i++) gmtmggheader2_swap_long (&header->unused[i]);
 	return (1);	/* Signal we need to swap the data also */
 }
 
-GMT_LOCAL double grd98_dms2degrees (int deg, int min, int sec) {
+GMT_LOCAL double gmtmggheader2_dms2degrees (int deg, int min, int sec) {
 	double decDeg = (double)deg;
 
 	decDeg += (double)min * GMT_MIN2DEG;
@@ -85,7 +85,7 @@ GMT_LOCAL double grd98_dms2degrees (int deg, int min, int sec) {
     return decDeg;
 }
 
-GMT_LOCAL void grd98_degrees2dms (double degrees, int *deg, int *min, int *sec) {
+GMT_LOCAL void gmtmggheader2_degrees2dms (double degrees, int *deg, int *min, int *sec) {
 	/* Round off to the nearest half second */
 	if (degrees < 0) degrees -= (0.5 * GMT_SEC2DEG);
 
@@ -99,7 +99,7 @@ GMT_LOCAL void grd98_degrees2dms (double degrees, int *deg, int *min, int *sec) 
 	*sec = (int)(degrees * GMT_MIN2SEC_F);
 }
 
-GMT_LOCAL int grd98_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg) {
+GMT_LOCAL int gmtmggheader2_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg) {
 	double f;
 	gmt_M_memset (mgg, 1, MGG_GRID_HEADER_2);
 
@@ -112,13 +112,13 @@ GMT_LOCAL int grd98_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *m
 	f  = gmt->inc[GMT_X] * GMT_DEG2SEC_F;
 	mgg->lonSpacing  = irint(f);
 	if (fabs (f - (double)mgg->lonSpacing) > GMT_CONV8_LIMIT) return (GMT_GRDIO_GRD98_XINC);
-	grd98_degrees2dms(gmt->wesn[XLO], &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
+	gmtmggheader2_degrees2dms(gmt->wesn[XLO], &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
 
 	mgg->latNumCells = gmt->n_rows;
 	f  = gmt->inc[GMT_Y] * GMT_DEG2SEC_F;
 	mgg->latSpacing  = irint(gmt->inc[GMT_Y] * GMT_DEG2SEC_F);
 	if (fabs (f - (double)mgg->latSpacing) > GMT_CONV8_LIMIT) return (GMT_GRDIO_GRD98_YINC);
-	grd98_degrees2dms(gmt->wesn[YHI], &mgg->latDeg, &mgg->latMin, &mgg->latSec);
+	gmtmggheader2_degrees2dms(gmt->wesn[YHI], &mgg->latDeg, &mgg->latMin, &mgg->latSec);
 
 	/* Default values */
 	mgg->gridRadius  = -1;
@@ -146,7 +146,7 @@ GMT_LOCAL int grd98_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *m
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL void grd98_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *gmt) {
+GMT_LOCAL void gmtmggheader2_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *gmt) {
 	int one_or_zero;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (gmt);
 
@@ -156,13 +156,13 @@ GMT_LOCAL void grd98_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *
 	gmt->registration = mgg->cellRegistration;
 	one_or_zero = 1 - gmt->registration;
 	gmt->n_columns = mgg->lonNumCells;
-	gmt->wesn[XLO] = grd98_dms2degrees(mgg->lonDeg, mgg->lonMin, mgg->lonSec);
-	gmt->inc[GMT_X] = grd98_dms2degrees(0, 0, mgg->lonSpacing);
+	gmt->wesn[XLO] = gmtmggheader2_dms2degrees(mgg->lonDeg, mgg->lonMin, mgg->lonSec);
+	gmt->inc[GMT_X] = gmtmggheader2_dms2degrees(0, 0, mgg->lonSpacing);
 	gmt->wesn[XHI] = gmt->wesn[XLO] + (gmt->inc[GMT_X] * (gmt->n_columns - one_or_zero));
 
 	gmt->n_rows = mgg->latNumCells;
-	gmt->wesn[YHI] = grd98_dms2degrees(mgg->latDeg, mgg->latMin, mgg->latSec);
-	gmt->inc[GMT_Y] = grd98_dms2degrees(0, 0, mgg->latSpacing);
+	gmt->wesn[YHI] = gmtmggheader2_dms2degrees(mgg->latDeg, mgg->latMin, mgg->latSec);
+	gmt->inc[GMT_Y] = gmtmggheader2_dms2degrees(0, 0, mgg->latSpacing);
 	gmt->wesn[YLO] = gmt->wesn[YHI] - (gmt->inc[GMT_Y] * (gmt->n_rows - one_or_zero));
 
 	gmt->z_min = (double)mgg->minValue / (double)mgg->precision;
@@ -183,7 +183,7 @@ GMT_LOCAL void grd98_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *
  *----------------------------------------------------------|
  */
 
-int gmt_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmtlib_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
@@ -202,7 +202,7 @@ int gmt_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	}
 
 	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
-	ok = grd98_swap_mgg_header (&mggHeader);
+	ok = gmtmggheader2_swap_mgg_header (&mggHeader);
 
 	/* Check the magic number and size of header */
 	if (ok == -1) {
@@ -232,7 +232,7 @@ int gmt_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
-	ok = grd98_swap_mgg_header (&mggHeader);
+	ok = gmtmggheader2_swap_mgg_header (&mggHeader);
 
 	/* Check the magic number and size of header */
 	if (ok == -1) {
@@ -251,7 +251,7 @@ int gmt_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	gmt_fclose (GMT, fp);
 
-	grd98_MGG2toGMT (&mggHeader, header);
+	gmtmggheader2_MGG2toGMT (&mggHeader, header);
 
 	return (GMT_NOERROR);
 }
@@ -267,7 +267,7 @@ int gmt_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	else if ((fp = gmt_fopen (GMT, HH->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
-	if ((err = grd98_GMTtoMGG2 (header, &mggHeader)) != 0) {
+	if ((err = gmtmggheader2_GMTtoMGG2 (header, &mggHeader)) != 0) {
 		gmt_fclose (GMT, fp);
 		return (err);
 	}
@@ -309,7 +309,7 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_READ_FAILED);
 		}
-		swap_all = grd98_swap_mgg_header (&mggHeader);
+		swap_all = gmtmggheader2_swap_mgg_header (&mggHeader);
 		if (swap_all == -1) {
 			gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_GRD98_BADMAGIC);
@@ -361,18 +361,18 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
 			if (mggHeader.numType == sizeof (int)) {
-				if (swap_all) grd98_swap_long (&tLong[actual_col[i]]);
+				if (swap_all) gmtmggheader2_swap_long (&tLong[actual_col[i]]);
 				if (tLong[actual_col[i]] == mggHeader.nanValue) grid[kk] = GMT->session.f_NaN;
 				else grid[kk] = (gmt_grdfloat) tLong[actual_col[i]] / (gmt_grdfloat) mggHeader.precision;
 			}
 			else if (is_float) {
-				if (swap_all) grd98_swap_long (&tLong[actual_col[i]]);
+				if (swap_all) gmtmggheader2_swap_long (&tLong[actual_col[i]]);
 				if (tLong[actual_col[i]] == mggHeader.nanValue) grid[kk] = GMT->session.f_NaN;
 				else grid[kk] = tFloat[actual_col[i]];
 			}
 
 			else if (mggHeader.numType == sizeof (short)) {
-				if (swap_all) grd98_swap_word(&tShort[actual_col[i]]);
+				if (swap_all) gmtmggheader2_swap_word(&tShort[actual_col[i]]);
 				if (tShort[actual_col[i]] == mggHeader.nanValue) grid[kk] = GMT->session.f_NaN;
 				else grid[kk] = (gmt_grdfloat) tShort[actual_col[i]] / (gmt_grdfloat) mggHeader.precision;
 			}
@@ -474,7 +474,7 @@ int gmt_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 		header->z_min = header->z_max = NAN;
 
 	/* store header information and array */
-	if ((err = grd98_GMTtoMGG2(header, &mggHeader)) != 0) {
+	if ((err = gmtmggheader2_GMTtoMGG2(header, &mggHeader)) != 0) {
 		gmt_fclose (GMT, fp);
 		gmt_M_free (GMT, actual_col);
 		return (err);
