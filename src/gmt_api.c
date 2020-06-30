@@ -5562,6 +5562,8 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if (mode & GMT_CONTAINER_ONLY) return (gmtlib_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing grid data to GMT_GRID memory location\n");
 			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing */
+			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
+			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_OUT), "Grid memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = G_obj;	/* Set resource pointer to the grid */
 			GH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
@@ -7392,10 +7394,6 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 		readonly = true;
 		direction -= GMT_IS_REFERENCE;
 		the_mode = GMT_IS_REFERENCE;
-		if (direction == GMT_OUT) {
-			GMT_Report (API, GMT_MSG_ERROR, "GMT_Open_VirtualFile: GMT_IS_REFERENCE can only be added for inputs, not output files\n");
-			return_error (V_API, GMT_NOT_A_VALID_DIRECTION);
-		}
 	}
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return GMT_NOT_A_VALID_DIRECTION;
 	if (direction == GMT_IN && data == NULL) return GMT_PTR_IS_NULL;
@@ -13492,7 +13490,7 @@ int GMT_Extract_Region (void *V_API, char *file, double wesn[]) {
 }
 
 float GMT_Get_Version (void *API, unsigned int *major, unsigned int *minor, unsigned int *patch) {
-	/* Return the current lib version as a float, e.g. 6.0, and optionally its constituints.
+	/* Return the current lib version as a float, e.g. 6.0, and optionally its constituents.
 	 * Either one or all of in *major, *minor, *patch args can be NULL. If they are not, one
 	 * gets the corresponding version component. */
 	int major_loc, minor_loc, patch_loc;

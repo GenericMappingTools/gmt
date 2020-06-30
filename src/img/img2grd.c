@@ -779,7 +779,7 @@ EXTERN_MSC int GMT_img2grd (void *V_API, int mode, void *args) {
 	/* b. If -E: Register a grid struct Geo to be the destination allocated and written to by GMT_grdproject, else write to -G<file> */
 	if (Ctrl->E.active) {	/* Since we will resample again, register a memory location for the result */
 		GMT_Report (API, GMT_MSG_DEBUG, "Register memory Grid container as grdproject output\n");
-		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output) != GMT_NOERROR) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, output) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

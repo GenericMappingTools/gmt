@@ -902,7 +902,10 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	is_url = (gmt_M_file_is_url (file));	/* A remote file or query given via an URL */
 	is_query = (gmt_M_file_is_query (file));	/* A remote file or query given via an URL */
 
-	if ((c = strchr (file, '?')) && !strchr (file, '=')) {	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
+	if (strchr (file, '?') && (c = strstr (file, "=gd"))) {	/* Must be a netCDF sliced file to be read via GDAL so chop off the =gd?layer/variable specifications */
+		was = c[0]; c[0] = '\0';
+	}
+	else if ((c = strchr (file, '?')) && !strchr (file, '=')) {	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
 		was = c[0]; c[0] = '\0';
 	}
 	else if (c == NULL && (c = strchr (file, '='))) {	/* If no ? then = means grid attributes (e.g., =bf) */
@@ -1371,7 +1374,7 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 		return NULL;
 	}
 
-	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
+	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co+n to override using negative earth_relief_15s values */
 	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%s -r%c -G%s -N0 -Co+n", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], API->remote_info[k_data].inc, API->remote_info[k_data].reg, grid);
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
