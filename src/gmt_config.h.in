@@ -47,6 +47,9 @@
 /* compile with GDAL support <gdal.h> */
 #cmakedefine HAVE_GDAL
 
+/* compile with GEOS support <geos_c.h> */
+#cmakedefine HAVE_GEOS
+
 /* compile with LAPACK support */
 #cmakedefine HAVE_LAPACK
 
