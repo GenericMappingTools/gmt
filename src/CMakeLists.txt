@@ -159,7 +159,7 @@ if (GEOS_FOUND OR GEOS_LIBRARY)			# Because it fails to find GEOS on Win so I re
 	set (HAVE_GEOS TRUE CACHE INTERNAL "System has GEOS")
 	include_directories (${GEOS_INCLUDE_DIR})
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${GEOS_LIBRARY})
-endif (GEOS_FOUND)
+endif (GEOS_FOUND OR GEOS_LIBRARY)
 
 if (NOT DEFINED GMT_EXCLUDE_PCRE)
 	find_package (PCRE)

@@ -2180,6 +2180,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments were holes in other polygons\n", n_holes);
 	}
+#ifdef HAVE_GEOS
 	if (Ctrl->S.active && Ctrl->S.mode == POL_BUFFER) {	/* Compute buffer polygon */
 		error = geos_methods(GMT, D, Ctrl->Out.file, Ctrl->S.width, "buffer");
 		finishGEOS();
@@ -2192,6 +2193,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (error)
 			Return (error);
 	}
+#endif
 
 	if (Ctrl->F.active) {	/* We read as polygons to force closure, now write out revised data */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
