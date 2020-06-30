@@ -32,7 +32,7 @@
 
 .. |gmtdefaults_purpose| replace:: List current GMT default settings
 
-.. |gmtget_purpose| replace:: Get individual GMT default settings
+.. |gmtget_purpose| replace:: Get individual GMT default settings or download data sets
 
 .. |gmtinfo_purpose| replace:: Get information about data tables
 
@@ -229,3 +229,4 @@
 .. |triangulate_purpose| replace:: Delaunay triangulation or Voronoi partitioning and gridding of Cartesian data
 
 .. |xyz2grd_purpose| replace:: Convert data table to a grid
+
