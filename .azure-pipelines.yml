@@ -27,6 +27,7 @@ jobs:
       bash gmt_make_PSL_strings.sh
       bash gmt_make_enum_dicts.sh
       bash gmt_make_module_purpose.sh
+      cd ..
       # check if any files are changed
       if [ $(git ls-files -m) ]; then
         git diff HEAD
