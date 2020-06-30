@@ -148,7 +148,7 @@ You may also install other optional dependencies for more capabilities within GM
 ### RHEL/CentOS
 
 GMT binary packages are available from Extra Packages for Enterprise Linux (EPEL).
-However, EPEL is far hebind packaging a recent version.
+However, EPEL is far behind packaging a recent version.
 We provide [the GMT official RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt)
 to allow RHEL/CentOS users access the latest GMT releases in an easy way.
 
@@ -194,7 +194,7 @@ Install it via
 
 **Note** that the above command will install GMT 5.4 for older Ubuntu/Debian versions,
 e.g. Ubuntu 18.04 Bionic Beaver and Debian 10 Buster/Stable.
-If you want the latest GMT 6.0 release, your best bet then is to
+If you want the latest GMT 6.x release, your best bet then is to
 [build the latest release from source](BUILDING.md).
 Keep in mind that Ubuntu 16.04 LTS for mysterious reasons does not
 include the [supplemental modules](https://docs.generic-mapping-tools.org/latest/modules.html#supplemental-modules),
