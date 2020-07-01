@@ -1445,6 +1445,10 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 		c = gmt_M_memory (GMT, NULL, 3*n, double);
 		err_flag = gmtlib_cspline (GMT, x, y, n, c);
 	}
+	else if (spline_mode = GMT_SPLINE_SMOOTH) {	/* Smoothing spline */
+		c = gmt_M_memory (GMT, NULL, 4*n, double);
+		err_flag = gmtlib_smooth_spline (GMT, x, y, w, p, n, c);
+	}
 	if (err_flag != 0) {
 		gmt_M_free (GMT, c);
 		return (err_flag);
@@ -1509,6 +1513,9 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				break;
 			case GMT_SPLINE_NN+20:	/* Nearest neighbor curvatures are zero  */
 				v[i] = 0.0;
+				break;
+			case GMT_SPLINE_SMOOTH:	/* Smoothing spline */
+				dx = u[i] - x[j];
 				break;
 		}
 	}
@@ -8961,6 +8968,94 @@ int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 	gmt_M_free (GMT, u);
 
 	return (GMT_NOERROR);
+}
+
+/*! . */
+
+int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w, double p, uint64_t n, double *a) {
+	/* Implements a smoothing splines as per Lancaster & Salkauskas [1980].
+	 * w is optional weights or NULL, p is fit parameter. The x values are monotonic */
+	int error;
+	uint64_t n3 = n - 3, n2 = n - 2, n1 = n - 1, k, kk, kkt;
+	double ip = 1.0 / p;
+	double *D = NULL, *Dt = NULL, *B = NULL, *K = NULL, *Q = NULL;
+	double *lambda = NULL, *dtau = NULL, *inv_dtau = NULL, *c = NULL, *s = NULL;
+
+	/* Create the inverse lambda diagonal vector (assume w[k] = sigma_k)*/
+	lambda = gmt_M_memory (GMT, NULL, n, double);
+	for (k = 0; k < n; k++) lambda[k] = (w == NULL) ? ip : w[k] * w[k] * ip;
+	/* Create dtau and inv_dtau vectors */
+	dtau = gmt_M_memory (GMT, NULL, n1, double);
+	inv_dtau = gmt_M_memory (GMT, NULL, n1, double);
+	for (k = 0; k < n1; k++) {
+		dtau[k] = x[k+1] - x[k];
+		inv_dtau[k] = 1.0 / dtau[k];
+	}
+	/* Create B matrix */
+	B = gmt_M_memory (GMT, NULL, n2*n2, double);
+	for (k = 0; k < n2; k++) {	/* For rows 0 to n-3, a total of n-2 rows in B */
+		kk = k * n2 + k;	/* Diagonal index */
+		B[kk] = (dtau[k] + dtau[k+1]) / 3.0;
+		if (k > 0) B[kk-1] = dtau[k] / 6.0;	/* All but first row has entry to left of diagonal */
+		if (k < n3) B[kk+1] = dtau[k+1] / 6.0;	/* All but last row has entry to right of diagonal */
+	}
+
+	/* Create D and Dt matrix and temp matrix K = inv_lambd * Dt */
+	D  = gmt_M_memory (GMT, NULL, n2*n, double);
+	Dt = gmt_M_memory (GMT, NULL, n*n2, double);
+	K  = gmt_M_memory (GMT, NULL, n2*n, double);
+	for (k = 0; k < n2; k++) {	/* For rows 0 to n-3, a total of n-2 rows in D */
+		kk = k * n + k;	/* Diagonal index in D */
+		kkt = k * n2 + k;	/* Diagonal index in transpose */
+		D[kk] = Dt[kkt] = inv_dtau[k];
+		D[kk+1] = Dt[kkt+n2] = -(inv_dtau[k] + inv_dtau[k+1]);
+		D[kk+2] = Dt[kk+2*n2] = inv_dtau[k+1];
+		K[kkt] = Dt[kkt] * lambda[k];
+		K[kkt+n2] = Dt[kkt+n2] * lambda[k+1];
+		K[kk+2*n2] = Dt[kk+2*n2] * lambda[k+2];
+	}
+	/* Need to compute Q = D * K */
+	Q = gmt_M_memory (GMT, NULL, n2*n2, double);
+	gmt_matrix_matrix_mult (GMT, D, K, n2, n, n2, Q);
+	/* Now add B to Q */
+	gmt_matrix_matrix_add (GMT, Q, B, n2, n2, Q);
+	/* Set c = D * y */
+	c = gmt_M_memory (GMT, NULL, n, double);
+	gmt_matrix_matrix_mult (GMT, D, y, n2, n, 1, c);
+	/* Solve Q*x = c, with x returned in c; these are the curvatures (s" in the notes) */
+	error = gmt_gauss (GMT, Q, c, n2, n2, true);
+	if (error) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gauss returns error code %d\n", error);
+		error = GMT_RUNTIME_ERROR;
+		goto END_IT;
+	}
+	/* Set Q = K * c  which is a vector of length n */
+	gmt_matrix_matrix_mult (GMT, K, c, n, n2, 1, Q);
+	/* Solution for s = y - Q as in the notes */
+	s = gmt_M_memory (GMT, NULL, n, double);
+	for (k = 0; k < n; k++) s[k] = y[k] - Q[k];
+	/* Adjust c (n-2 items) by adding the first and last c = conditions */
+	for (k = n2; k > 1; k--) c[k] = c[k-1];
+	c[0] = c[n-1] = 0.0;	/* THe natural BCs */
+	/* Now build the coefficient matrix a (5.33) with y = s and c = s" */
+	for (k = kk = 0; k < n1; k++) {	/* The internal segments */
+		a[kk++] = c[k] * inv_dtau[k] / 6.0;
+		a[kk++] = c[k+1] * inv_dtau[k] / 6.0;
+		a[kk++] = s[k] * inv_dtau[k] - c[k] * dtau[k] / 6.0;
+		a[kk++] = s[k+1] * inv_dtau[k] - c[k+1] * dtau[k] / 6.0;
+	}
+END_IT:
+	gmt_M_free (GMT, c);
+	gmt_M_free (GMT, s);
+	gmt_M_free (GMT, dtau);
+	gmt_M_free (GMT, inv_dtau);
+	gmt_M_free (GMT, Q);
+	gmt_M_free (GMT, K);
+	gmt_M_free (GMT, D);
+	gmt_M_free (GMT, Dt);
+	gmt_M_free (GMT, B);
+
+	return (error);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
