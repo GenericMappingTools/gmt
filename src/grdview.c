@@ -86,6 +86,7 @@ struct GRDVIEW_CTRL {
 		char *azimuth;	/* Default azimuth(s) for shading */
 		char *file;
 		char *method;	/* Default scaling method */
+		char *ambient;	/* Default ambient offset */
 	} I;
 	struct GRDVIEW_N {	/* -N<level>[+g<fill>] */
 		bool active;
@@ -534,22 +535,27 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				Ctrl->I.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
+				if (!strcmp (opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
+					Ctrl->I.derive = true;
+				else if ((c = gmt_first_modifier (GMT, opt->arg, "amn"))) {	/* Want to control how grdgradient is run */
 					unsigned int pos = 0;
 					char p[GMT_BUFSIZ] = {""};
 					Ctrl->I.derive = true;
-					while (gmt_getmodopt (GMT, 'I', c, "an", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'I', c, "amn", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'a': gmt_M_str_free (Ctrl->I.azimuth); Ctrl->I.azimuth = strdup (&p[1]); break;
-							case 'n': gmt_M_str_free (Ctrl->I.method);  Ctrl->I.method  = strdup (&p[1]); break;
+							case 'a': gmt_M_str_free (Ctrl->I.azimuth); Ctrl->I.azimuth  = strdup (&p[1]); break;
+							case 'm': gmt_M_str_free (Ctrl->I.ambient);  Ctrl->I.ambient = strdup (&p[1]); break;
+							case 'n': gmt_M_str_free (Ctrl->I.method);  Ctrl->I.method   = strdup (&p[1]); break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
 					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 				}
 				else if (!opt->arg[0] || strstr (opt->arg, "+"))	/* No argument or just +, so derive intensities from input grid using default settings */
-					Ctrl->I.derive = true;
+					Ctrl->I.derive = true;	/* Need to have -I+ since otherwise, -I in mex would try to attach a grid */
 				else if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
+					Ctrl->I.file = strdup (opt->arg);
+				else if (gmt_M_file_is_remote (opt->arg))	/* Got a remote file */
 					Ctrl->I.file = strdup (opt->arg);
 				else if (opt->arg[0] && gmt_is_float (GMT, opt->arg)) {	/* Looks like a constant value */
 					Ctrl->I.value = atof (opt->arg);
@@ -877,8 +883,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				strcpy (data_file, Ctrl->In.file);
 
 		/* Prepare the grdgradient arguments using selected -A -N */
-		sprintf (cmd, "%s -G%s -A%s -N%s -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=false",
-			data_file, int_grd, Ctrl->I.azimuth, Ctrl->I.method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+		sprintf (cmd, "%s -G%s -A%s -N%s+a%s -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=false",
+			data_file, int_grd, Ctrl->I.azimuth, Ctrl->I.method, Ctrl->I.ambient, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdgradient with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
