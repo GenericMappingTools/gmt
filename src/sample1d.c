@@ -455,13 +455,13 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 						ttime[k] = (Ctrl->T.T.spatial) ? dist_in[row] : S->data[Ctrl->N.col][row];
 						data[k++] = S->data[col][row];
 					}
-					result = gmt_intpol (GMT, ttime, data, k, m, t_out, Sout->data[col], int_mode);
+					result = gmt_intpol (GMT, ttime, data, NULL, k, m, t_out, Sout->data[col], 0.0, int_mode);
 					gmt_M_free (GMT, ttime);
 					gmt_M_free (GMT, data);
 				}
 				else {
 					ttime = (Ctrl->T.T.spatial) ? dist_in : S->data[Ctrl->N.col];
-					result = gmt_intpol (GMT, ttime, S->data[col], S->n_rows, m, t_out, Sout->data[col], int_mode);
+					result = gmt_intpol (GMT, ttime, S->data[col], NULL, S->n_rows, m, t_out, Sout->data[col], 0.0, int_mode);
 				}
 
 				if (result != GMT_NOERROR) {

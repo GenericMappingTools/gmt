@@ -1419,11 +1419,98 @@ GMT_LOCAL double gmtsupport_csplintcurv (struct GMT_CTRL *GMT, double *x, double
 }
 
 /*! . */
-GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t m, double *u, double *v, int mode) {
+int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w, double p, uint64_t n, double *a) {
+	/* Implements a smoothing splines as per Lancaster & Salkauskas [1980].
+	 * w is optional weights or NULL, p is fit parameter. The x values are monotonic */
+	int error;
+	uint64_t n3 = n - 3, n2 = n - 2, n1 = n - 1, k, kk, kkt;
+	double ip = 1.0 / p;
+	double *D = NULL, *Dt = NULL, *B = NULL, *K = NULL, *Q = NULL;
+	double *lambda = NULL, *dtau = NULL, *inv_dtau = NULL, *c = NULL, *s = NULL;
+
+	/* Create the inverse lambda diagonal vector (assume w[k] = sigma_k)*/
+	lambda = gmt_M_memory (GMT, NULL, n, double);
+	for (k = 0; k < n; k++) lambda[k] = (w == NULL) ? ip : w[k] * w[k] * ip;
+	/* Create dtau and inv_dtau vectors */
+	dtau = gmt_M_memory (GMT, NULL, n1, double);
+	inv_dtau = gmt_M_memory (GMT, NULL, n1, double);
+	for (k = 0; k < n1; k++) {
+		dtau[k] = x[k+1] - x[k];
+		inv_dtau[k] = 1.0 / dtau[k];
+	}
+	/* Create B matrix */
+	B = gmt_M_memory (GMT, NULL, n2*n2, double);
+	for (k = 0; k < n2; k++) {	/* For rows 0 to n-3, a total of n-2 rows in B */
+		kk = k * n2 + k;	/* Diagonal index */
+		B[kk] = (dtau[k] + dtau[k+1]) / 3.0;
+		if (k > 0) B[kk-1] = dtau[k] / 6.0;	/* All but first row has entry to left of diagonal */
+		if (k < n3) B[kk+1] = dtau[k+1] / 6.0;	/* All but last row has entry to right of diagonal */
+	}
+
+	/* Create D and Dt matrix and temp matrix K = inv_lambd * Dt */
+	D  = gmt_M_memory (GMT, NULL, n2*n, double);
+	Dt = gmt_M_memory (GMT, NULL, n*n2, double);
+	K  = gmt_M_memory (GMT, NULL, n2*n, double);
+	for (k = 0; k < n2; k++) {	/* For rows 0 to n-3, a total of n-2 rows in D */
+		kk = k * n + k;	/* Diagonal index in D */
+		kkt = k * n2 + k;	/* Diagonal index in transpose */
+		D[kk] = Dt[kkt] = inv_dtau[k];
+		D[kk+1] = Dt[kkt+n2] = -(inv_dtau[k] + inv_dtau[k+1]);
+		D[kk+2] = Dt[kk+2*n2] = inv_dtau[k+1];
+		K[kkt] = Dt[kkt] * lambda[k];
+		K[kkt+n2] = Dt[kkt+n2] * lambda[k+1];
+		K[kk+2*n2] = Dt[kk+2*n2] * lambda[k+2];
+	}
+	/* Need to compute Q = D * K */
+	Q = gmt_M_memory (GMT, NULL, n2*n2, double);
+	gmt_matrix_matrix_mult (GMT, D, K, n2, n, n2, Q);
+	/* Now add B to Q */
+	gmt_matrix_matrix_add (GMT, Q, B, n2, n2, Q);
+	/* Set c = D * y */
+	c = gmt_M_memory (GMT, NULL, n, double);
+	gmt_matrix_matrix_mult (GMT, D, y, n2, n, 1, c);
+	/* Solve Q*x = c, with x returned in c; these are the curvatures (s" in the notes) */
+	error = gmt_gauss (GMT, Q, c, n2, n2, true);
+	if (error) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gauss returns error code %d\n", error);
+		error = GMT_RUNTIME_ERROR;
+		goto END_IT;
+	}
+	/* Set Q = K * c  which is a vector of length n */
+	gmt_matrix_matrix_mult (GMT, K, c, n, n2, 1, Q);
+	/* Solution for s = y - Q as in the notes */
+	s = gmt_M_memory (GMT, NULL, n, double);
+	for (k = 0; k < n; k++) s[k] = y[k] - Q[k];
+	/* Adjust c (n-2 items) by adding the first and last c = conditions */
+	for (k = n2; k > 1; k--) c[k] = c[k-1];
+	c[0] = c[n-1] = 0.0;	/* THe natural BCs */
+	/* Now build the coefficient matrix a (5.33) with y = s and c = s" */
+	for (k = kk = 0; k < n1; k++) {	/* The internal segments */
+		a[kk++] = c[k] * inv_dtau[k] / 6.0;
+		a[kk++] = c[k+1] * inv_dtau[k] / 6.0;
+		a[kk++] = s[k] * inv_dtau[k] - c[k] * dtau[k] / 6.0;
+		a[kk++] = s[k+1] * inv_dtau[k] - c[k+1] * dtau[k] / 6.0;
+	}
+END_IT:
+	gmt_M_free (GMT, c);
+	gmt_M_free (GMT, s);
+	gmt_M_free (GMT, dtau);
+	gmt_M_free (GMT, inv_dtau);
+	gmt_M_free (GMT, Q);
+	gmt_M_free (GMT, K);
+	gmt_M_free (GMT, D);
+	gmt_M_free (GMT, Dt);
+	gmt_M_free (GMT, B);
+
+	return (error);
+}
+
+/*! . */
+GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y, double *w, uint64_t n, uint64_t m, double *u, double *v, double p, int mode) {
 	/* Does the main work of interpolating a section that has no NaNs */
 	uint64_t i, j;
 	int err_flag = 0, spline_mode = mode % 10;
-	double dx, x_min, x_max, *c = NULL;
+	double dx, dx1, dx2, x_min, x_max, *c = NULL;
 
 	/* Set minimum and maximum */
 
@@ -1445,7 +1532,7 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 		c = gmt_M_memory (GMT, NULL, 3*n, double);
 		err_flag = gmtlib_cspline (GMT, x, y, n, c);
 	}
-	else if (spline_mode = GMT_SPLINE_SMOOTH) {	/* Smoothing spline */
+	else if (spline_mode == GMT_SPLINE_SMOOTH) {	/* Smoothing spline */
 		c = gmt_M_memory (GMT, NULL, 4*n, double);
 		err_flag = gmtlib_smooth_spline (GMT, x, y, w, p, n, c);
 	}
@@ -1515,7 +1602,9 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				v[i] = 0.0;
 				break;
 			case GMT_SPLINE_SMOOTH:	/* Smoothing spline */
-				dx = u[i] - x[j];
+				dx1 = u[i] - x[j];
+				dx2 = u[i+1] - x[j];
+				v[i] = c[4*j] * pow (dx2, 3.0) - c[4*j+1] * pow (dx1, 3.0) + c[4*j+2] * dx2 - c[4*j+3] * dx1;
 				break;
 		}
 	}
@@ -1525,7 +1614,7 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 }
 
 /*! . */
-GMT_LOCAL void gmtsupport_intpol_reverse(double *x, double *u, uint64_t n, uint64_t m) {
+GMT_LOCAL void gmtsupport_intpol_reverse (double *x, double *u, uint64_t n, uint64_t m) {
 	/* Changes sign on x and u */
 	uint64_t i;
 	for (i = 0; i < n; i++) x[i] = -x[i];
@@ -2306,7 +2395,7 @@ GMT_LOCAL int64_t gmtsupport_smooth_contour (struct GMT_CTRL *GMT, double **x_in
 	if (t_out[n_out-1] == t_out[n_out-2]) n_out--;
 	flag[n_out-1] = true;
 
-	if (gmt_intpol (GMT, t_in, x, n, n_out, t_out, x_tmp, stype)) {
+	if (gmt_intpol (GMT, t_in, x, NULL, n, n_out, t_out, x_tmp, 0.0, stype)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT internal error\n");
 		gmt_M_free (GMT, t_in);
 		gmt_M_free (GMT, t_out);
@@ -2315,7 +2404,7 @@ GMT_LOCAL int64_t gmtsupport_smooth_contour (struct GMT_CTRL *GMT, double **x_in
 		gmt_M_free (GMT, y_tmp);
 		return -GMT_RUNTIME_ERROR;
 	}
-	if (gmt_intpol (GMT, t_in, y, n, n_out, t_out, y_tmp, stype)) {
+	if (gmt_intpol (GMT, t_in, y, NULL, n, n_out, t_out, y_tmp, 0.0, stype)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT internal error\n");
 		gmt_M_free (GMT, t_in);
 		gmt_M_free (GMT, t_out);
@@ -8970,113 +9059,28 @@ int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 	return (GMT_NOERROR);
 }
 
-/*! . */
-
-int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w, double p, uint64_t n, double *a) {
-	/* Implements a smoothing splines as per Lancaster & Salkauskas [1980].
-	 * w is optional weights or NULL, p is fit parameter. The x values are monotonic */
-	int error;
-	uint64_t n3 = n - 3, n2 = n - 2, n1 = n - 1, k, kk, kkt;
-	double ip = 1.0 / p;
-	double *D = NULL, *Dt = NULL, *B = NULL, *K = NULL, *Q = NULL;
-	double *lambda = NULL, *dtau = NULL, *inv_dtau = NULL, *c = NULL, *s = NULL;
-
-	/* Create the inverse lambda diagonal vector (assume w[k] = sigma_k)*/
-	lambda = gmt_M_memory (GMT, NULL, n, double);
-	for (k = 0; k < n; k++) lambda[k] = (w == NULL) ? ip : w[k] * w[k] * ip;
-	/* Create dtau and inv_dtau vectors */
-	dtau = gmt_M_memory (GMT, NULL, n1, double);
-	inv_dtau = gmt_M_memory (GMT, NULL, n1, double);
-	for (k = 0; k < n1; k++) {
-		dtau[k] = x[k+1] - x[k];
-		inv_dtau[k] = 1.0 / dtau[k];
-	}
-	/* Create B matrix */
-	B = gmt_M_memory (GMT, NULL, n2*n2, double);
-	for (k = 0; k < n2; k++) {	/* For rows 0 to n-3, a total of n-2 rows in B */
-		kk = k * n2 + k;	/* Diagonal index */
-		B[kk] = (dtau[k] + dtau[k+1]) / 3.0;
-		if (k > 0) B[kk-1] = dtau[k] / 6.0;	/* All but first row has entry to left of diagonal */
-		if (k < n3) B[kk+1] = dtau[k+1] / 6.0;	/* All but last row has entry to right of diagonal */
-	}
-
-	/* Create D and Dt matrix and temp matrix K = inv_lambd * Dt */
-	D  = gmt_M_memory (GMT, NULL, n2*n, double);
-	Dt = gmt_M_memory (GMT, NULL, n*n2, double);
-	K  = gmt_M_memory (GMT, NULL, n2*n, double);
-	for (k = 0; k < n2; k++) {	/* For rows 0 to n-3, a total of n-2 rows in D */
-		kk = k * n + k;	/* Diagonal index in D */
-		kkt = k * n2 + k;	/* Diagonal index in transpose */
-		D[kk] = Dt[kkt] = inv_dtau[k];
-		D[kk+1] = Dt[kkt+n2] = -(inv_dtau[k] + inv_dtau[k+1]);
-		D[kk+2] = Dt[kk+2*n2] = inv_dtau[k+1];
-		K[kkt] = Dt[kkt] * lambda[k];
-		K[kkt+n2] = Dt[kkt+n2] * lambda[k+1];
-		K[kk+2*n2] = Dt[kk+2*n2] * lambda[k+2];
-	}
-	/* Need to compute Q = D * K */
-	Q = gmt_M_memory (GMT, NULL, n2*n2, double);
-	gmt_matrix_matrix_mult (GMT, D, K, n2, n, n2, Q);
-	/* Now add B to Q */
-	gmt_matrix_matrix_add (GMT, Q, B, n2, n2, Q);
-	/* Set c = D * y */
-	c = gmt_M_memory (GMT, NULL, n, double);
-	gmt_matrix_matrix_mult (GMT, D, y, n2, n, 1, c);
-	/* Solve Q*x = c, with x returned in c; these are the curvatures (s" in the notes) */
-	error = gmt_gauss (GMT, Q, c, n2, n2, true);
-	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gauss returns error code %d\n", error);
-		error = GMT_RUNTIME_ERROR;
-		goto END_IT;
-	}
-	/* Set Q = K * c  which is a vector of length n */
-	gmt_matrix_matrix_mult (GMT, K, c, n, n2, 1, Q);
-	/* Solution for s = y - Q as in the notes */
-	s = gmt_M_memory (GMT, NULL, n, double);
-	for (k = 0; k < n; k++) s[k] = y[k] - Q[k];
-	/* Adjust c (n-2 items) by adding the first and last c = conditions */
-	for (k = n2; k > 1; k--) c[k] = c[k-1];
-	c[0] = c[n-1] = 0.0;	/* THe natural BCs */
-	/* Now build the coefficient matrix a (5.33) with y = s and c = s" */
-	for (k = kk = 0; k < n1; k++) {	/* The internal segments */
-		a[kk++] = c[k] * inv_dtau[k] / 6.0;
-		a[kk++] = c[k+1] * inv_dtau[k] / 6.0;
-		a[kk++] = s[k] * inv_dtau[k] - c[k] * dtau[k] / 6.0;
-		a[kk++] = s[k+1] * inv_dtau[k] - c[k+1] * dtau[k] / 6.0;
-	}
-END_IT:
-	gmt_M_free (GMT, c);
-	gmt_M_free (GMT, s);
-	gmt_M_free (GMT, dtau);
-	gmt_M_free (GMT, inv_dtau);
-	gmt_M_free (GMT, Q);
-	gmt_M_free (GMT, K);
-	gmt_M_free (GMT, D);
-	gmt_M_free (GMT, Dt);
-	gmt_M_free (GMT, B);
-
-	return (error);
-}
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * gmt_intpol will interpolate from the dataset <x,y> onto a new set <u,v>
  * where <x,y> and <u> is supplied by the user. <v> is returned. The
  * parameter mode governs what interpolation scheme that will be used.
  * If u[i] is outside the range of x, then v[i] will contain a value
- * determined by the content of the GMT_EXTRAPOLATE_VAL. Namelly, NaN if
+ * determined by the content of the GMT_EXTRAPOLATE_VAL. Namely, NaN if
  * GMT_EXTRAPOLATE_VAL[0] = 1; pure extrapolation if GMT_EXTRAPOLATE_VAL[0] = 1;
  * or a constant value (GMT_EXTRAPOLATE_VAL[1]) if GMT_EXTRAPOLATE_VAL[0] = 2
  *
  * input:  x = x-values of input data
  *	   y = y-values "    "     "
+ *     w = weights or NULL [for smoothing spline only]
  *	   n = number of data pairs
  *	   m = number of desired interpolated values
  *	   u = x-values of these points
+ *     p = fit-value for smoothing spline
  *	  mode = type of interpolation, with added 10*derivative_level [0,1,2]
  *	  mode = GMT_SPLINE_LINEAR [0] : Linear interpolation
  *	  mode = GMT_SPLINE_AKIMA [1] : Quasi-cubic hermite spline (gmtlib_akima)
  *	  mode = GMT_SPLINE_CUBIC [2] : Natural cubic spline (cubspl)
- *        mode = GMT_SPLINE_NN [3] : No interpolation (closest point)
+ *	  mode = GMT_SPLINE_CUBIC [3] : Smooth cubic spline
+ *    mode = GMT_SPLINE_NN [4]    : No interpolation (closest point)
  *	  derivative_level = 0 :	The spline values
  *	  derivative_level = 1 :	The spline's 1st derivative
  *	  derivative_level = 2 :	The spline 2nd derivative
@@ -9091,11 +9095,11 @@ END_IT:
  */
 
 /*! . */
-int gmt_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t m, double *u, double *v, int mode) {
+int gmt_intpol (struct GMT_CTRL *GMT, double *x, double *y, double *w, uint64_t n, uint64_t m, double *u, double *v, double p, int mode) {
 	uint64_t i, this_n, this_m, start_i, start_j, stop_i, stop_j;
 	int err_flag = 0, smode, deriv;
 	bool down = false, check = true, clean = true;
-	double dx;
+	double dx, *wp = NULL;
 
 	if (mode < 0) {	/* No need to check for sanity */
 		check = false;
@@ -9139,7 +9143,7 @@ int gmt_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t
 	if (down) gmtsupport_intpol_reverse (x, u, n, m);	/* Must flip directions temporarily */
 
 	if (clean) {	/* No NaNs to worry about */
-		err_flag = gmtsupport_intpol_sub (GMT, x, y, n, m, u, v, mode);
+		err_flag = gmtsupport_intpol_sub (GMT, x, y, w, n, m, u, v, p, mode);
 		if (err_flag != GMT_NOERROR) return (err_flag);
 		if (down) gmtsupport_intpol_reverse (x, u, n, m);	/* Must flip directions back */
 		return (GMT_NOERROR);
@@ -9166,7 +9170,8 @@ int gmt_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t
 		stop_j = start_j;
 		while (stop_j < m && u[stop_j] <= x[stop_i]) stop_j++;
 		this_m = stop_j - start_j;	/* Number of output points to interpolate to */
-		err_flag = gmtsupport_intpol_sub (GMT, &x[start_i], &y[start_i], this_n, this_m, &u[start_j], &v[start_j], mode);
+		wp = (w) ? &w[start_j] : NULL;
+		err_flag = gmtsupport_intpol_sub (GMT, &x[start_i], &y[start_i], wp, this_n, this_m, &u[start_j], &v[start_j], p, mode);
 		if (err_flag != GMT_NOERROR) return (err_flag);
 		start_i = stop_i + 1;	/* Move to point after last usable point in current section */
 		while (start_i < n && gmt_M_is_dnan (y[start_i])) start_i++;	/* Next section's first non-NaN data point */

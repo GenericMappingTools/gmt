@@ -1037,7 +1037,7 @@ EXTERN_MSC int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->A.interpolate) {	/* Using given table to interpolate the values at all mgd77 records */
 				y = gmt_M_memory (GMT, NULL, D->H.n_records, double);
-				result = gmt_intpol (GMT, coldnt, colvalue, n, D->H.n_records, x, y, GMT->current.setting.interpolant);
+				result = gmt_intpol (GMT, coldnt, colvalue, NULL, n, D->H.n_records, x, y, 0.0, GMT->current.setting.interpolant);
 				if (result != 0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failure in gmt_intpol near row %d!\n", result+1);
 				Return (GMT_RUNTIME_ERROR);

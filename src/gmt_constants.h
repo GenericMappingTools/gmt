@@ -381,6 +381,7 @@ enum GMT_enum_spline {
 	GMT_SPLINE_LINEAR = 0, /* Linear spline */
 	GMT_SPLINE_AKIMA,      /* Akima spline */
 	GMT_SPLINE_CUBIC,      /* Cubic spline */
+	GMT_SPLINE_SMOOTH,     /* Smooth cubic spline */
 	GMT_SPLINE_NN,         /* Nearest neighbor */
 	GMT_SPLINE_NONE};      /* No spline set */
 
