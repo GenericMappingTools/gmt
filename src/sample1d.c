@@ -93,7 +93,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n][+1|2] [-N<time_col>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n|s<p>][+1|2] [-N<time_col>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T[<min>/<max>/]<inc>[+n|a] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 	             GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_PAR_OPT);
 
@@ -114,6 +114,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c Cubic spline interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n No interpolation (nearest point).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s Smooth spline interpolation (append fit parameter p).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +1 for 1st derivative or +2 for 2nd derivative.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -F%c].\n", type[API->GMT->current.setting.interpolant]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Give column number of the independent variable (time) [Default is 0 (first)].\n");
@@ -206,6 +207,10 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 						break;
 					case 'n':
 						Ctrl->F.mode = GMT_SPLINE_NN;
+						break;
+					case 's':
+						Ctrl->F.mode = GMT_SPLINE_SMOOTH;
+						Ctrl->F.fit = atof (&opt->arg[1]);
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Bad spline selector %c\n", opt->arg[0]);
@@ -455,13 +460,13 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 						ttime[k] = (Ctrl->T.T.spatial) ? dist_in[row] : S->data[Ctrl->N.col][row];
 						data[k++] = S->data[col][row];
 					}
-					result = gmt_intpol (GMT, ttime, data, NULL, k, m, t_out, Sout->data[col], 0.0, int_mode);
+					result = gmt_intpol (GMT, ttime, data, NULL, k, m, t_out, Sout->data[col], Ctrl->F.fit, int_mode);
 					gmt_M_free (GMT, ttime);
 					gmt_M_free (GMT, data);
 				}
 				else {
 					ttime = (Ctrl->T.T.spatial) ? dist_in : S->data[Ctrl->N.col];
-					result = gmt_intpol (GMT, ttime, S->data[col], NULL, S->n_rows, m, t_out, Sout->data[col], 0.0, int_mode);
+					result = gmt_intpol (GMT, ttime, S->data[col], NULL, S->n_rows, m, t_out, Sout->data[col], Ctrl->F.fit, int_mode);
 				}
 
 				if (result != GMT_NOERROR) {

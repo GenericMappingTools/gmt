@@ -1602,9 +1602,9 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				v[i] = 0.0;
 				break;
 			case GMT_SPLINE_SMOOTH:	/* Smoothing spline */
-				dx1 = u[i] - x[j];
-				dx2 = u[i+1] - x[j];
-				v[i] = c[4*j] * pow (dx2, 3.0) - c[4*j+1] * pow (dx1, 3.0) + c[4*j+2] * dx2 - c[4*j+3] * dx1;
+				dx1 = x[j+1] - u[i];
+				dx2 = u[i] - x[j];
+				v[i] = c[4*j] * pow (dx1, 3.0) + c[4*j+1] * pow (dx2, 3.0) + c[4*j+2] * dx1 + c[4*j+3] * dx2;
 				break;
 		}
 	}
