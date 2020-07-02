@@ -14,10 +14,11 @@ Synopsis
 
 **gmt sample1d** [ *table* ]
 [ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
-[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
+[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
+[ |-W|\ *col* ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -43,7 +44,8 @@ of the independent (monotonically increasing **or** decreasing)
 variable, here called *time* (it may of course be any type of quantity) when that is not the first column in data set.
 Equidistant or arbitrary sampling can be selected. All columns
 are resampled based on the new sampling interval. Several interpolation
-schemes are available. Extrapolation outside the range of the input data
+schemes are available, in addition to a *smoothing* spline which trades off misfit
+for curvature. Extrapolation outside the range of the input data
 is not supported.
 
 Required Arguments
@@ -77,13 +79,14 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**]
+**-Fl**\|\ **a**\|\ **c**\|\ **n**\ **s**\ *p*\ [**+d1**\|\ **2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
-    cubic spline), and **n** (no interpolation: nearest point) [Default
+    cubic spline), **n** (no interpolation: nearest point), or **s**
+    (smoothing cubic spline; append fit parameter *p*) [Default
     is **-Fa**]. You may change the default interpolant; see
     :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
-    by appending **+1** or **+2**, respectively.
+    by appending **+d1** or **+d2**, respectively.
 
 .. _-N:
 
@@ -101,6 +104,12 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+. _-W:
+
+**-W**\ *col*
+    Sets the column number of the weights to be used with a smoothing cubic
+    spline.  Requires **-Fs**.
 
 .. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by **-T**)].
 .. include:: explain_-bi.rst_
@@ -139,6 +148,32 @@ Optional Arguments
 
 .. include:: explain_array.rst_
 
+Notes
+-----
+
+The smoothing spline *s(t)* requires a fit parameter *p* that allows for the trade-off between an
+exact interpolation (fitting the data exactly; large *p*) to minimizing curvature (*p* approaching 0).
+Specifically, we seek to minimize
+
+.. math::
+
+    F_p (s)= K (s) + p E (s), \quad p > 0,
+
+where the misfit is evaluated as
+
+.. math::
+
+    E (s)= \sum^n_{i=1} \left [ \frac{s(t_i) - y_i}{\sigma_i} \right ]^2
+
+and the curvature is given by the integral over the domain of the second derivative of the spline
+
+.. math::
+
+    K (s) = \int ^b _a [s''(t) ]^2 dt.
+
+
+Trial and error may be needed to select a suitable *p*.
+
 Examples
 --------
 
@@ -164,7 +199,7 @@ interpolation, but output the first derivative instead (the slope), try
 
    ::
 
-    gmt sample1d points.txt -T0/6/0.01 -Fc+1 > slopes.txt
+    gmt sample1d points.txt -T0/6/0.01 -Fc+d1 > slopes.txt
 
 To resample the file track.txt which contains lon, lat, depth every 2
 nautical miles, use
@@ -191,6 +226,12 @@ To sample temperatures.txt every month from 2000 to 2018, use
    ::
 
     gmt sample1d temperatures.txt -T2000T/2018T/1o > monthly_temp.txt
+
+To use a smoothing spline on a topographic profile for a given fit parameter, try
+
+   ::
+
+    gmt sample1d @topo_crossection.txt -T300/500/0.1 -Fs0.001 > smooth.txt
 
 See Also
 --------

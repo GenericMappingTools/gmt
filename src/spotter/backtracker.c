@@ -616,8 +616,8 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 
 				while (t <= t_end) {
 					/* Determine location along the drift curve for this time */
-					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t, &hlon, GMT->current.setting.interpolant);
-					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t, &hlat, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], NULL, H->n_rows, 1, &t, &hlon, 0.0, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], NULL, H->n_rows, 1, &t, &hlat, 0.0, GMT->current.setting.interpolant);
 					lon = in[GMT_X];	lat = in[GMT_Y];
 					if (Ctrl->D.mode == SPOTTER_TOWARDS_PAST) {	/* Add the drift amount to our input point to simulate where drift would have placed this point */
 						lon += (hlon - H->data[GMT_X][0]);
@@ -641,8 +641,8 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 				}
 				t -= Ctrl->L.d_km;	/* Last time used in the loop */
 				if (!(doubleAlmostEqualZero (t_end, t))) {	/* One more point since t_end was not a multiple of d_km from t_start */
-					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t_end, &hlon, GMT->current.setting.interpolant);
-					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t_end, &hlat, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], NULL, H->n_rows, 1, &t_end, &hlon, 0.0, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], NULL, H->n_rows, 1, &t_end, &hlat, 0.0, GMT->current.setting.interpolant);
 					lon = in[GMT_X];	lat = in[GMT_Y];
 					if (Ctrl->D.mode == SPOTTER_TOWARDS_PAST) {	/* Add the drift amount to our input point to simulate where drift would have placed this point */
 						lon += (hlon - H->data[GMT_X][0]);
@@ -679,8 +679,8 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 					out[GMT_Y] = c[i+1] * R2D;
 					if (Ctrl->F.active && Ctrl->D.mode == SPOTTER_TOWARDS_PRESENT && Ctrl->L.mode == SPOTTER_TRAILLINE) {	/* Must account for hotspot drift, use interpolation for given age */
 						double t_use = H->data[GMT_Z][H->n_rows-1] - out[GMT_Z];
-						gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t_use, &hlon, GMT->current.setting.interpolant);
-						gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t_use, &hlat, GMT->current.setting.interpolant);
+						gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], NULL, H->n_rows, 1, &t_use, &hlon, 0.0, GMT->current.setting.interpolant);
+						gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], NULL, H->n_rows, 1, &t_use, &hlat, 0.0, GMT->current.setting.interpolant);
 						out[GMT_X] -= (hlon - H->data[GMT_X][0]);
 						out[GMT_Y] -= (hlat - H->data[GMT_Y][0]);
 					}
@@ -692,8 +692,8 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 		}
 		else {	/* Just return the projected final locations */
 			if (Ctrl->F.active) {	/* Must account for hotspot drift, use interpolation at given age */
-				gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &age, &hlon, GMT->current.setting.interpolant);
-				gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &age, &hlat, GMT->current.setting.interpolant);
+				gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], NULL, H->n_rows, 1, &age, &hlon, 0.0, GMT->current.setting.interpolant);
+				gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], NULL, H->n_rows, 1, &age, &hlat, 0.0, GMT->current.setting.interpolant);
 			}
 			lon = in[GMT_X];	lat = in[GMT_Y];
 			if (Ctrl->F.active && Ctrl->D.mode == SPOTTER_TOWARDS_PAST && Ctrl->L.mode == SPOTTER_TRAILLINE) {	/* Must account for hotspot drift */

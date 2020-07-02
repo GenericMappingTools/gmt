@@ -865,7 +865,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 							/* Ok, got enough data to interpolate at xover */
 
 							first = Ctrl->W.width - n_left;
-							n_errors = gmt_intpol (GMT, &t[first], &y[first], (n_left + n_right), 1, &time_x[k], &xdata[k][col], GMT->current.setting.interpolant);
+							n_errors = gmt_intpol (GMT, &t[first], &y[first], NULL, (n_left + n_right), 1, &time_x[k], &xdata[k][col], 0.0, GMT->current.setting.interpolant);
 							if (n_errors == 0) {	/* OK */
 								ok[j]++;
 								n_ok++;
