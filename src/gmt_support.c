@@ -1424,13 +1424,20 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 	 * w is optional weights or NULL, p is fit parameter. The x values are monotonic */
 	int error;
 	uint64_t n3 = n - 3, n2 = n - 2, n1 = n - 1, k, kk, kkt;
-	double ip = 1.0 / p;
+	double ip = 1.0 / p, sum_w = 0;
 	double *D = NULL, *Dt = NULL, *B = NULL, *K = NULL, *Q = NULL;
 	double *lambda = NULL, *dtau = NULL, *inv_dtau = NULL, *c = NULL, *s = NULL;
 
-	/* Create the inverse lambda diagonal vector (assume w[k] = sigma_k)*/
+	/* Create the inverse lambda diagonal vector (assume w[k] = sigma_k) */
 	lambda = gmt_M_memory (GMT, NULL, n, double);
-	for (k = 0; k < n; k++) lambda[k] = (w == NULL) ? ip : w[k] * w[k] * ip;
+	for (k = 0; k < n; k++) {
+		lambda[k] = (w == NULL) ? 1.0 : w[k] * w[k];
+		sum_w += lambda[k];
+	}
+	for (k = 0; k < n; k++) {
+		lambda[k] /= sum_w;	/* Normalize weights to sum to 1 */
+		lambda[k] *= ip;
+	}
 	/* Create dtau and inv_dtau vectors */
 	dtau = gmt_M_memory (GMT, NULL, n1, double);
 	inv_dtau = gmt_M_memory (GMT, NULL, n1, double);
