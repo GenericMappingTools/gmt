@@ -1180,12 +1180,13 @@ int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *infile, unsigned in
 	return (k_data);
 }
 
-char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn[], int k_data, unsigned int *n_tiles) {
+char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_data, unsigned int *n_tiles) {
 	/* Return the full list of tiles for this tiled dataset */
 	char **list = NULL, YS, XS, file[GMT_LEN64] = {""};
 	int x, lon, lat, iw, ie, is, in,  t_size;
 	uint64_t node, row, col;
 	unsigned int n_alloc = GMT_CHUNK, n = 0;
+	double wesn[4];
 	struct GMT_DATA_INFO *I = &API->remote_info[k_data];	/* Pointer to primary tiled dataset */
 	struct GMT_GRID *Coverage = NULL;
 
@@ -1207,6 +1208,11 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn[], int k_dat
 		return NULL;
 	}
 
+	/* Preprocess the selected wesn to make it work better for a -180/180 window */
+	gmt_M_memcpy (wesn, wesn_in, 4U, double);
+	if (gmt_M_360_range (wesn[XLO], wesn[XHI])) wesn[XLO] = -180, wesn[XHI] = +180.0;
+	else if (wesn[XLO] < -180.0) wesn[XLO] += 360.0, wesn[XHI] += 360.0;
+	else if (wesn[XLO] > +180.0) wesn[XLO] -= 360.0, wesn[XHI] -= 360.0;
 	/* Get nearest whole multiple of tile size wesn boundary.  This ASSUMES all global grids are -Rd  */
 	/* Also, the srtm_tiles.nc grid is gridline-registered and we check if the node corresponding to
 	 * the lon/lat of the SW corner of a tile is 1 or 0 */
