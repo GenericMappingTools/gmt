@@ -955,7 +955,7 @@ int gmt_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 
 	gmt_M_free (GMT, isub);
 	gmt_M_free (GMT, line);
-	return (iet + ieb);   /* Return final error flag*/
+	return (iet + ieb);   /* Return final error flag */
 }
 
 int gmt_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b) {
@@ -1223,6 +1223,16 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
 
 extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* b, int *ne, double* beta, double* c, int* nf);
 
+void gmt_matrix_vector_mult (struct GMT_CTRL *GMT, double *A, double *b, uint64_t n_rowsA, uint64_t n_colsA, double *c) {
+	uint64_t row, col, ij;
+	gmt_M_unused(GMT);
+	gmt_M_memset (c, n_colsA, double);
+	for (row = ij = 0; row < n_rowsA; row++) {
+		for (col = 0; col < n_colsA; col++, ij++)
+			c[row] += A[ij] * b[col];
+	}
+}
+
 void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C) {
 #ifdef HAVE_LAPACK
 	double one = 1.0, zero = 0.0;
@@ -1232,15 +1242,25 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 	gmt_M_memset (C, n_rowsA * n_colsB, double);
 	na = (int)n_rowsA, nb = (int)n_colsB, nc = (int)n_rowsB, nd = (int)n_rowsB, ne = (int)n_colsB, nf = (int)n_colsB;
 	// cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, (int)n_rowsA, (int)n_colsB, (int)n_rowsB, one, A, (int)n_rowsB, B, (int)n_colsB, zero, C, (int)n_colsB);
+	if (n_colsB == 1) {	/* Do those separately */
+		gmt_matrix_vector_mult (GMT, A, B, n_rowsA, n_rowsB, C);
+		return;
+	}
+#if 0
 	if (n_colsB == 1) {	/* Vector, so no transposing of the matrix */
 		tr[0] = 'n';
 		ne = nf = (int)n_rowsB;
 	}
+#endif
 	dgemm_ ("t", tr, &na, &nb, &nc, &one, A, &nd, B, &ne, &zero, C, &nf);
 #else
 	/* Plain matrix multiplication, no speed up; space must exist */
 	uint64_t row, col, k, a_ij, b_ij, c_ij, n_colsA = n_rowsB;
 	gmt_M_unused(GMT);
+	if (n_colsB == 1) {	/* Do those separately */
+		gmt_matrix_vector_mult (GMT, A, B, n_rowsA, n_rowsB, C);
+		return;
+	}
 	for (row = 0; row < n_rowsA; row++) {
 		for (col = 0; col < n_colsB; col++) {
 			a_ij = row * n_colsA;		/* Start address of row in A */
@@ -1252,6 +1272,15 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 		}
 	}
 #endif
+}
+
+void gmt_matrix_matrix_add (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_colsA, double *C) {
+	uint64_t row, col, ij;
+	for (row = ij = 0; row < n_rowsA; row++) {
+		for (col = 0; col < n_colsA; col++, ij++) {
+			C[ij] = A[ij] + B[ij];
+		}
+	}
 }
 
 void gmt_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3]) {
