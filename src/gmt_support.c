@@ -1419,7 +1419,7 @@ GMT_LOCAL double gmtsupport_csplintcurv (struct GMT_CTRL *GMT, double *x, double
 }
 
 /*! . */
-int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w, double p, uint64_t n, double *a) {
+int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w, double p, uint64_t n, int deriv, double *a) {
 	/* Implements a smoothing splines as per Lancaster & Salkauskas [1980].
 	 * w is optional weights or NULL, p is fit parameter. The x values are monotonic */
 	int error;
@@ -1498,6 +1498,23 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 		a[kk++] = s[k] * inv_dtau[k] - c[k] * dtau[k] / 6.0;
 		a[kk++] = s[k+1] * inv_dtau[k] - c[k+1] * dtau[k] / 6.0;
 	}
+	if (deriv == 1) {	/* Take first derivative and update coefficients */
+		for (k = kk = 0; k < n1; k++) {	/* The internal segments */
+			a[kk++] *= -3;
+			a[kk++] *= +3;
+			a[kk] = a[kk+1] - a[kk];
+			kk++;
+			a[kk++] = 0.0;
+		}
+	}
+	else if (deriv == 1) {	/* Take second derivative and update coefficients */
+		for (k = kk = 0; k < n1; k++) {	/* The internal segments */
+			a[kk++] *= 6;
+			a[kk++] *= 6;
+			a[kk++] = 0.0;
+			a[kk++] = 0.0;
+		}
+	}
 END_IT:
 	gmt_M_free (GMT, c);
 	gmt_M_free (GMT, s);
@@ -1517,7 +1534,7 @@ END_IT:
 GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y, double *w, uint64_t n, uint64_t m, double *u, double *v, double p, int mode) {
 	/* Does the main work of interpolating a section that has no NaNs */
 	uint64_t i, j;
-	int err_flag = 0, spline_mode = mode % 10;
+	int err_flag = 0, spline_mode = mode % 10, deriv = mode / 10;
 	double dx, dx1, dx2, x_min, x_max, *c = NULL;
 
 	/* Set minimum and maximum */
@@ -1542,7 +1559,7 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 	}
 	else if (spline_mode == GMT_SPLINE_SMOOTH) {	/* Smoothing spline */
 		c = gmt_M_memory (GMT, NULL, 4*n, double);
-		err_flag = gmtlib_smooth_spline (GMT, x, y, w, p, n, c);
+		err_flag = gmtlib_smooth_spline (GMT, x, y, w, p, n, deriv, c);
 	}
 	if (err_flag != 0) {
 		gmt_M_free (GMT, c);
@@ -1613,6 +1630,14 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				dx1 = x[j+1] - u[i];
 				dx2 = u[i] - x[j];
 				v[i] = c[4*j] * pow (dx1, 3.0) + c[4*j+1] * pow (dx2, 3.0) + c[4*j+2] * dx1 + c[4*j+3] * dx2;
+			case GMT_SPLINE_SMOOTH+10:	/* Derivative of smoothing spline */
+				dx1 = x[j+1] - u[i];
+				dx2 = u[i] - x[j];
+				v[i] = c[4*j] * pow (dx1, 2.0) + c[4*j+1] * pow (dx2, 2.0) + c[4*j+2];
+			case GMT_SPLINE_SMOOTH+20:	/* Curvature of smoothing spline */
+				dx1 = x[j+1] - u[i];
+				dx2 = u[i] - x[j];
+				v[i] = c[4*j] * dx1 + c[4*j+1] * dx2;
 				break;
 		}
 	}

@@ -50,7 +50,7 @@ struct SAMPLE1D_CTRL {
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct SAMPLE1D_F {	/* -Fl|a|c[1|2]|n|s<p> */
+	struct SAMPLE1D_F {	/* -Fl|a|c|n|s<p>[+1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
@@ -224,7 +224,8 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 						n_errors++;
 						break;
 				}
-				if (opt->arg[1] == '+') Ctrl->F.type = (opt->arg[2] - '0');	/* Want first or second derivatives */
+				if (strstr (opt->arg, "+1")) Ctrl->F.type = 1;	/* Want first derivative */
+				else if (strstr (opt->arg, "+2")) Ctrl->F.type = 2;	/* Want second derivative */
 				break;
 			case 'I':	/* Deprecated, but keep pointer to the arguments so we can build -T argument */
 				i_arg = opt->arg;
@@ -311,7 +312,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->F.mode != GMT_SPLINE_SMOOTH, "Option -W: Only available with -Fs<p>\n");
 
-	if (gmt_M_is_zero (Ctrl->F.fit))	/* Convenience check so -Fs0 is the same as -Fc. Place this hear to allow -W (which will be ignore) */
+	if (Ctrl->F.mode == GMT_SPLINE_SMOOTH && gmt_M_is_zero (Ctrl->F.fit))	/* Convenience check so -Fs0 is the same as -Fc. Place this hear to allow -W (which will be ignore) */
 		Ctrl->F.mode = GMT_SPLINE_CUBIC;
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
