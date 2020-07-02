@@ -433,7 +433,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	unsigned int tbl, pos, first = 0, ID, n_item = 0;
 	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan, status = 0, max_cols = 0;
 	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false;
-	bool drawn = false, b_cpt = false, C_is_active = false, do_width = false, in_PS_ok = true;
+	bool drawn = false, b_cpt = false, C_is_active = false, do_width = false, in_PS_ok = true, got_line = false;
 	uint64_t seg, row, n_fronts = 0, n_quoted_lines = 0, n_symbols = 0, n_par_lines = 0, n_par_total = 0, krow[N_DAT];
 	int64_t n_para = -1;
 	size_t n_char = 0;
@@ -453,7 +453,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 #endif
 
 	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, d_line_half_width, d_line_hor_offset, off_ss, off_tt, def_dx2 = 0.0;
-	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2], C_rgb[4] = {0.0, 0.0, 0.0, 0.0};
+	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2], line_size = 0.0, C_rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0, shrink[4] = {0.0, 0.0, 0.0, 0.0};
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
 
@@ -705,12 +705,16 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 						}
 						column_number++;
 						text[0] = '\0';
-						n_scan = sscanf (line, "%*s %*s %*s %s %*s %*s %s %[^\n]", size, txt_b, text);
+						n_scan = sscanf (line, "%*s %*s %s %s %*s %*s %s %[^\n]", symbol, size, txt_b, text);
 						/* Find the largest symbol size specified */
 						if ((c = strrchr (size, '/')))	/* Front, use the last arg as size since closest to height */
 							x = gmt_M_to_inch (GMT, &c[1]);
 						else
 							x = (strcmp (size, "-")) ? gmt_M_to_inch (GMT, size) : 0.0;
+						if (symbol[0] == '-') {	/* Line symbol */
+							got_line = true;
+							if (x > 0.0) line_size = x;
+						}
 						if (x > def_size) def_size = x;
 						if (n_scan > 1 && strcmp (txt_b, "-")) {
 							x = gmt_M_to_inch (GMT, txt_b);
@@ -754,8 +758,9 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-
-	if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
+	if (got_line && gmt_M_is_zero (line_size) && def_size > 0.0)	/* Got lines but no lengths specified an another symbol set the default */
+		def_size = 0.5 / 2.54;	/* In inches */
+	else if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
 		def_size = 0.5 / 2.54;	/* In inches */
 	if (def_dx2 == 0.0)	/* No dist to text label given; default to 2x default symbol size */
 		def_dx2 = Ctrl->S.scale * GMT_LEGEND_DX2_MUL * def_size;	/* In inches */
