@@ -1505,7 +1505,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 						/* --------------- Attack the NaNs problem -----------------*/
 						if (clean)		/* Nice, no NaNs at sight */
-							gmt_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, GMT->current.setting.interpolant);
+							gmt_intpol(GMT, cumdist, mtf_bak, NULL, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, 0.0, GMT->current.setting.interpolant);
 						else {
 							/* Need to allocate these auxiliary vectors */
 							ind = gmt_M_memory(GMT, NULL, D->H.n_records, int);
@@ -1523,7 +1523,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 									n++;
 								}
 							}
-							gmt_intpol(GMT, cumdist_cl, mtf_cl, n, n, cumdist_off_cl, mtf_int_cl, GMT->current.setting.interpolant);
+							gmt_intpol(GMT, cumdist_cl, mtf_cl, NULL, n, n, cumdist_off_cl, mtf_int_cl, 0.0, GMT->current.setting.interpolant);
 							for (k_off = n = 0; k_off < D->H.n_records; k_off++) {
 								if (ind[k_off])
 									mtf_int[k_off] = mtf_int_cl[n++];
