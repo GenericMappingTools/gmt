@@ -208,6 +208,12 @@ To sample temperatures.txt every month from 2000 to 2018, use
 
     gmt sample1d temperatures.txt -T2000T/2018T/1o > monthly_temp.txt
 
+To use a smoothing spline on a topographic profile for a given fit parameter, try
+
+   ::
+
+    gmt sample1d @topo_crossection.txtt -T300/500/0.1 -Fs0.001 > smooth.txt
+
 See Also
 --------
 
