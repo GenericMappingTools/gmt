@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and install GMT
+# Configure GMT settings under Windows
 
 # To return a failure if any commands inside fail
 set -e

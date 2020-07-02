@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2xyz** *grid* [ |-C|\ [**f**\|\ **i**] ]
+**gmt grd2xyz** *grid*
+[ |-C|\ [**f**\|\ **i**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**a**\|\ *weight*] ] [ |-Z|\ [*flags*] ]
@@ -132,6 +133,14 @@ Optional Arguments
 .. include:: explain_precision.rst_
 
 .. include:: explain_grd_inout_short.rst_
+
+Non-equidistant x/y Coordinates
+-------------------------------
+
+In general, GMT modules cannot accept grids with variable *x* and/or *y* coordinates as most
+algorithms and plotting options expect equidistant grids.  However, you can use **grd2xyz**
+to dump the original *x y z* triplets and then reprocess the data onto an equidistant
+lattice via :doc:`greenspline`, :doc:`nearneighbor` or :doc:`surface`, for instance.
 
 Time Coordinates
 ----------------

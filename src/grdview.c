@@ -86,6 +86,7 @@ struct GRDVIEW_CTRL {
 		char *azimuth;	/* Default azimuth(s) for shading */
 		char *file;
 		char *method;	/* Default scaling method */
+		char *ambient;	/* Default ambient offset */
 	} I;
 	struct GRDVIEW_N {	/* -N<level>[+g<fill>] */
 		bool active;
@@ -134,7 +135,7 @@ struct GRDVIEW_POINT {
 	struct GRDVIEW_POINT *next_point;
 };
 
-GMT_LOCAL struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
+GMT_LOCAL struct GRDVIEW_CONT * grdview_get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
 	struct GRDVIEW_CONT *cont, *new_cont;
 
 	if (!binij[bin].first_cont) binij[bin].first_cont = gmt_M_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
@@ -151,7 +152,7 @@ GMT_LOCAL struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t b
 	return (new_cont);
 }
 
-GMT_LOCAL struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, double y) {
+GMT_LOCAL struct GRDVIEW_POINT * grdview_get_point (struct GMT_CTRL *GMT, double x, double y) {
 	struct GRDVIEW_POINT *point = gmt_M_memory (GMT, NULL, 1, struct GRDVIEW_POINT);
 	point->x = x;
 	point->y = y;
@@ -161,7 +162,7 @@ GMT_LOCAL struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, doubl
 #if 0
 /* RS: Removed this because it yields unpredictable results, making it impossible to line up different 3D plots */
 
-void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_plane, double plane_level) {
+GMT_LOCAL void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_plane, double plane_level) {
 	int row, col, ij;
 	double xtmp, ytmp, tmp;
 
@@ -200,12 +201,12 @@ void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_p
 }
 #endif
 
-GMT_LOCAL double get_intensity (struct GMT_GRID *I, uint64_t k) {
+GMT_LOCAL double grdview_get_intensity (struct GMT_GRID *I, uint64_t k) {
 	/* Returns the average intensity for this tile */
 	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
 }
 
-GMT_LOCAL unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, int64_t bin, int bin_inc[]) {
+GMT_LOCAL unsigned int grdview_pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, int64_t bin, int bin_inc[]) {
 	/* Returns true of the ip,jp point is inside the polygon defined by the tile */
 	unsigned int i, what;
 	double x[6], y[6];
@@ -219,14 +220,14 @@ GMT_LOCAL unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *
 	return (what);
 }
 
-GMT_LOCAL int quick_idist (int x1, int y1, int x2, int y2) {
+GMT_LOCAL int grdview_quick_idist (int x1, int y1, int x2, int y2) {
 	/* Fast integer distance calculation */
 	if ((x2 -= x1) < 0) x2 = -x2;
 	if ((y2 -= y1) < 0) y2 = -y2;
 	return (x2 + y2 - (((x2 > y2) ? y2 : x2) >> 1));
 }
 
-GMT_LOCAL unsigned int get_side (double x, double y, double x_left, double y_bottom, double inc[], double inc2[]) {
+GMT_LOCAL unsigned int grdview_get_side (double x, double y, double x_left, double y_bottom, double inc[], double inc2[]) {
 	/* Figure out on what side this point sits on */
 
 	double del_x, del_y;
@@ -243,7 +244,7 @@ GMT_LOCAL unsigned int get_side (double x, double y, double x_left, double y_bot
 	return (side);
 }
 
-GMT_LOCAL void copy_points_fw (double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
+GMT_LOCAL void grdview_copy_points_fw (double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
 	unsigned int k;
 	for (k = 0; k < ncont; k++, (*n)++) {
 		x[*n] = xcont[k];
@@ -253,7 +254,7 @@ GMT_LOCAL void copy_points_fw (double x[], double y[], double z[], double v[], d
 	}
 }
 
-GMT_LOCAL void copy_points_bw (double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
+GMT_LOCAL void grdview_copy_points_bw (double x[], double y[], double z[], double v[], double xcont[], double ycont[], double zcont[], double vcont[], unsigned int ncont, uint64_t *n) {
 	unsigned int k, k2;
 	for (k2 = 0, k = ncont - 1; k2 < ncont; k2++, k--, (*n)++) {
 		x[*n] = xcont[k];
@@ -263,7 +264,7 @@ GMT_LOCAL void copy_points_bw (double x[], double y[], double z[], double v[], d
 	}
 }
 
-GMT_LOCAL double get_z_ave (double v[], double next_up, uint64_t n) {
+GMT_LOCAL double grdview_get_z_ave (double v[], double next_up, uint64_t n) {
 	uint64_t k;
 	double z_ave;
 
@@ -271,7 +272,7 @@ GMT_LOCAL double get_z_ave (double v[], double next_up, uint64_t n) {
 	return (z_ave / n);
 }
 
-GMT_LOCAL void add_node (double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], gmt_grdfloat topo[], gmt_grdfloat zgrd[], uint64_t ij) {
+GMT_LOCAL void grdview_add_node (double x[], double y[], double z[], double v[], uint64_t *k, unsigned int node, double X_vert[], double Y_vert[], gmt_grdfloat topo[], gmt_grdfloat zgrd[], uint64_t ij) {
 	/* Adds a corner node to list of points and increments *k */
 	x[*k] = X_vert[node];
 	y[*k] = Y_vert[node];
@@ -280,7 +281,7 @@ GMT_LOCAL void add_node (double x[], double y[], double z[], double v[], uint64_
 	(*k)++;
 }
 
-GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double *x, double *y, int n, double z, bool intens, bool monochrome, double intensity, int outline) {
+GMT_LOCAL void grdview_paint_it (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double *x, double *y, int n, double z, bool intens, bool monochrome, double intensity, int outline) {
 	int index;
 	double rgb[4];
 	struct GMT_FILL *f = NULL;
@@ -302,7 +303,7 @@ GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-GMT_LOCAL void set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int start[], int stop[], int inc[], unsigned int id[]) {
+GMT_LOCAL void grdview_set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int start[], int stop[], int inc[], unsigned int id[]) {
 	/* We want to loop over the grid from "back" to "front".  What is back and what is front depends on the
 	 * projection (-J) and view angles (-p).  We pick a point in the middle of the grid and the point above it
 	 * (i.e., north of it) and compute their projected coordinates, then calculate the angle from center to north.
@@ -378,7 +379,7 @@ GMT_LOCAL void set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int sta
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Inner loop over %c doing %d:%d:%d\n", kind[id[1]], start[1], inc[1], stop[1]);
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVIEW_CTRL *C = gmt_M_memory (GMT, NULL, 1, struct GRDVIEW_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
@@ -393,7 +394,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallocate control structure */
 	unsigned int i;
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
@@ -405,7 +406,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_PEN P;
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -437,8 +438,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t          2) The -G option requires the -Qi[<dpi>] option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grd_z> instead, append +a<azim> [-45] and +n<method> [t1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -I+ to accept the default values (see grdgradient for details).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grd_z> instead, append +a<azim> [-45], +n<method> [t1], and +m<ambient> [0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>. For rectangular projections, append +g<fill>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to paint the facade between the plane and the data perimeter.\n");
@@ -473,7 +474,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdview and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -493,24 +494,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 			/* Common parameters */
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Cpt file */
 				Ctrl->C.active = true;
-				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
-					Ctrl->C.dz = atof (&c[2]);
-					c[0] = '\0';	/* Temporarily chop off the modifier */
-				}
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if (c) c[0] = '+';	/* Restore */
+				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
@@ -519,25 +515,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					/* Three r,g,b grids for draping */
 					char A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
-					if (gmt_check_filearg (GMT, '<', A, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[0] = strdup (A);
-					else
-						n_errors++;
-					if (gmt_check_filearg (GMT, '<', B, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[1] = strdup (B);
-					else
-						n_errors++;
-					if (gmt_check_filearg (GMT, '<', C, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[2] = strdup (C);
-					else
-						n_errors++;
+					if (A[0]) Ctrl->G.file[0] = strdup (A);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[0]))) n_errors++;
+					if (B[0]) Ctrl->G.file[1] = strdup (B);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[1]))) n_errors++;
+					if (C[0]) Ctrl->G.file[2] = strdup (C);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[2]))) n_errors++;
 					Ctrl->G.n = 3;
 				}
 				else if (n_commas == 0 && Ctrl->G.n < 3) {	/* Just got another drape grid or image */
-					if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
-						Ctrl->G.file[Ctrl->G.n++] = strdup (opt->arg);
-					else
-						n_errors++;
+					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
+					Ctrl->G.n++;
 				}
 				else {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Usage is -G<z.grd|image> | -G<r.grd> -G<g.grd> -G<b.grd>\n");
@@ -546,22 +535,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				Ctrl->I.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
+				if (!strcmp (opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
+					Ctrl->I.derive = true;
+				else if ((c = gmt_first_modifier (GMT, opt->arg, "amn"))) {	/* Want to control how grdgradient is run */
 					unsigned int pos = 0;
 					char p[GMT_BUFSIZ] = {""};
 					Ctrl->I.derive = true;
-					while (gmt_getmodopt (GMT, 'I', c, "an", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'I', c, "amn", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'a': gmt_M_str_free (Ctrl->I.azimuth); Ctrl->I.azimuth = strdup (&p[1]); break;
-							case 'n': gmt_M_str_free (Ctrl->I.method);  Ctrl->I.method  = strdup (&p[1]); break;
+							case 'a': gmt_M_str_free (Ctrl->I.azimuth); Ctrl->I.azimuth  = strdup (&p[1]); break;
+							case 'm': gmt_M_str_free (Ctrl->I.ambient);  Ctrl->I.ambient = strdup (&p[1]); break;
+							case 'n': gmt_M_str_free (Ctrl->I.method);  Ctrl->I.method   = strdup (&p[1]); break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
 					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 				}
 				else if (!opt->arg[0] || strstr (opt->arg, "+"))	/* No argument or just +, so derive intensities from input grid using default settings */
-					Ctrl->I.derive = true;
+					Ctrl->I.derive = true;	/* Need to have -I+ since otherwise, -I in mex would try to attach a grid */
 				else if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
+					Ctrl->I.file = strdup (opt->arg);
+				else if (gmt_M_file_is_remote (opt->arg))	/* Got a remote file */
 					Ctrl->I.file = strdup (opt->arg);
 				else if (opt->arg[0] && gmt_is_float (GMT, opt->arg)) {	/* Looks like a constant value */
 					Ctrl->I.value = atof (opt->arg);
@@ -770,15 +764,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdview (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid, do_G_reading = true;
+
 	unsigned int c, nk, n4, row, col, n_edges, d_reg[3], i_reg = 0, id[2], good;
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
+
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, way, bin_inc[4], ij_inc[4], error = 0;
 	int start[2], stop[2], inc[2];
 
 	uint64_t sw, se, nw, ne, n, pt, ij, bin;
+	int64_t ns;
 
 	size_t max_alloc;
 
@@ -817,6 +814,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdview main code ----------------------------*/
+
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use the intensity grid */
@@ -871,14 +870,21 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid */
-		char int_grd[GMT_LEN16] = {""}, cmd[GMT_LEN256] = {""};
+		char int_grd[GMT_VF_LEN] = {""}, data_file[PATH_MAX] = {""}, cmd[GMT_LEN256] = {""};
 		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid\n");
 		/* Create a virtual file to hold the intensity grid */
-		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, int_grd))
+		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, int_grd))
 			Return (API->error);
+		if (Topo->data) {	/* If not NULL it means we have a tiled and blended grid, use as is */
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, Topo, data_file))
+				Return (API->error);
+		}
+		else
+				strcpy (data_file, Ctrl->In.file);
+
 		/* Prepare the grdgradient arguments using selected -A -N */
-		sprintf (cmd, "%s -G%s -A%s -N%s -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=false",
-			Ctrl->In.file, int_grd, Ctrl->I.azimuth, Ctrl->I.method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+		sprintf (cmd, "%s -G%s -A%s -N%s+a%s -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=false",
+			data_file, int_grd, Ctrl->I.azimuth, Ctrl->I.method, Ctrl->I.ambient, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdgradient with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
@@ -899,14 +905,16 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	t_reg = gmt_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->C.active) {
-		unsigned int zmode = gmt_cpt_default (GMT, Topo->header);
-		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max, Ctrl->C.dz, zmode)) == NULL) {
+		char *dataset_cpt = (Ctrl->G.active && Ctrl->G.n == 1 && !gmt_M_file_is_image (Ctrl->G.file[0])) ? Ctrl->G.file[0] : Ctrl->In.file;
+		char *cpt = gmt_cpt_default (API, Ctrl->C.file, dataset_cpt);
+		if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max, Ctrl->C.dz)) == NULL) {
 			Return (API->error);
 		}
 		if (P->is_bw) Ctrl->Q.monochrome = true;
 		if (P->categorical && Ctrl->W.active) {
 			GMT_Report (API, GMT_MSG_ERROR, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 		}
+		if (cpt) gmt_M_str_free (cpt);
 	}
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P && P->n_colors > 1);
 
@@ -915,7 +923,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			double inc[2];
 			/* Want to drape an image on top of surface.  Do so by converting the image to r, g, b grids */
 			struct GMT_IMAGE *I = NULL;
-			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file[0], NULL)) == NULL) {
+			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, NULL, Ctrl->G.file[0], NULL)) == NULL) {
 				Return (API->error);
 			}
 			/* Compute the x,y increment in the Topo x/y units that the image will have give its dimensions and pixel registration */
@@ -1006,7 +1014,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	grdview_init_setup (GMT, Topo, Ctrl->N.active, Ctrl->N.level);	/* Find projected min/max in y-direction */
 #endif
 
-	set_loop_order (GMT, Z, start, stop, inc, id);
+	grdview_set_loop_order (GMT, Z, start, stop, inc, id);
 
 	gmt_grd_set_ij_inc (GMT, Z->header->n_columns, bin_inc);	/* Offsets for bin (no pad) indices */
 
@@ -1044,8 +1052,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			}
 
 			begin = true;
-			while ((n = gmt_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
-
+			while ((ns = gmt_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
+				n = (uint64_t)ns;
 				i_bin_old = j_bin_old = -1;
 				for (pt = 1; pt < n; pt++) {
 					/* Compute the lower-left bin i,j of the tile cut by the start of the contour (first 2 points) */
@@ -1053,19 +1061,20 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					j_bin = irint (floor (((Z->header->wesn[YHI] - 0.5 * (y[pt-1] + y[pt])) / Z->header->inc[GMT_Y]))) + 1;
 					if (i_bin != i_bin_old || j_bin != j_bin_old) {	/* Entering new bin */
 						bin = j_bin * Z->header->n_columns + i_bin;
-						this_cont = get_cont_struct (GMT, bin, binij, cval);
+						this_cont = grdview_get_cont_struct (GMT, bin, binij, cval);
 						this_cont->value = cval;
-						this_cont->first_point = get_point (GMT, x[pt-1], y[pt-1]);
+						this_cont->first_point = grdview_get_point (GMT, x[pt-1], y[pt-1]);
 						this_point = this_cont->first_point;
 						i_bin_old = i_bin;
 						j_bin_old = j_bin;
 					}
-					this_point->next_point = get_point (GMT, x[pt], y[pt]);
+					this_point->next_point = grdview_get_point (GMT, x[pt], y[pt]);
 					this_point = this_point->next_point;
 				}
 				gmt_M_free (GMT, x);
 				gmt_M_free (GMT, y);
 			}
+			if (ns < 0) Return (-ns);
 		}
 
 		/* Remove temporary variables */
@@ -1398,7 +1407,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					if (jp < 0 || jp >= ny_i) continue;
 					for (ip = min_i; ip <= max_i; ip++) {
 						if (ip < 0 || ip >= nx_i) continue;
-						if (!pixel_inside (GMT, ip, jp, ix, iy, bin, bin_inc)) continue;	/* Checks if actually inside the projected tile polygon */
+						if (!grdview_pixel_inside (GMT, ip, jp, ix, iy, bin, bin_inc)) continue;	/* Checks if actually inside the projected tile polygon */
 						/* These pixels are part of the current tile */
 						if (!Ctrl->Q.mask) {	/* Update clip mask */
 							if (jp > top_jp[ip]) top_jp[ip] = jp;
@@ -1425,7 +1434,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							/* We don't want to blend in the (typically) gray NaN colors with the others. */
 
 							good++;
-							dist = quick_idist (ip, jp, ix[node], iy[node]);
+							dist = grdview_quick_idist (ip, jp, ix[node], iy[node]);
 							if (dist == 0) {	/* Only need this node value */
 								done = true;
 								if (Ctrl->I.active) intval = (use_intensity_grid) ? Intens->data[d_node] : Ctrl->I.value;
@@ -1665,13 +1674,13 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					X_vert[0] = X_vert[3] = x_left;	X_vert[1] = X_vert[2] = x_right;
 					Y_vert[0] = Y_vert[1] = y_bottom;	Y_vert[2] = Y_vert[3] = y_top;
 					for (k = 0; k < 4; k++) gmt_geoz_to_xy (GMT, X_vert[k], Y_vert[k], 0.0, &xmesh[k], &ymesh[k]);
-					paint_it_grdview (GMT, PSL, P, xmesh, ymesh, 4, GMT->session.d_NaN, false, Ctrl->Q.monochrome, 0.0, Ctrl->Q.outline);
+					grdview_paint_it (GMT, PSL, P, xmesh, ymesh, 4, GMT->session.d_NaN, false, Ctrl->Q.monochrome, 0.0, Ctrl->Q.outline);
 					continue;
 				}
 
 				if (Ctrl->I.active) {
 					if (use_intensity_grid) {
-						this_intensity = get_intensity (Intens, ij);
+						this_intensity = grdview_get_intensity (Intens, ij);
 						if (gmt_M_is_dnan (this_intensity)) continue;
 					}
 					else
@@ -1710,9 +1719,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					if (saddle) {	/* Must deal with this separately */
 
 						this_point = this_cont->first_point;
-						entry_side = get_side (this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
+						entry_side = grdview_get_side (this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
 						while (this_point->next_point) this_point = this_point->next_point;	/* Go to end */
-						exit_side  = get_side (this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
+						exit_side  = grdview_get_side (this_point->x, this_point->y, x_left, y_bottom, Z->header->inc, inc2);
 
 
 						if (MIN (Z_vert[1], Z_vert[3]) > MAX (Z_vert[0], Z_vert[2])) {
@@ -1749,7 +1758,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 							low = corner[p];
 							n = 0;
-							add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
+							grdview_add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 							next_side = low;
 							way = 0;
 
@@ -1767,8 +1776,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 								}
 								ncont = k;
 
-								entry_side = get_side (xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
-								exit_side  = get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
+								entry_side = grdview_get_side (xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
+								exit_side  = grdview_get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
 								if (entry_side == bad_side[p][0] || entry_side == bad_side[p][1]) continue;
 								if (exit_side == bad_side[p][0] || exit_side == bad_side[p][1]) continue;
@@ -1777,26 +1786,26 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 								next_up = (this_cont->next_cont) ? this_cont->next_cont->value : DBL_MAX;
 
-								exit_side  = get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
+								exit_side  = grdview_get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
 								if (way == 0 || next_side == entry_side)	/* Just hook up */
-									copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+									grdview_copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								else if (next_side == exit_side)	/* Just hook up but reverse */
-									copy_points_bw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+									grdview_copy_points_bw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 
 								/* Compute the xy from the xyz triplets */
 
 								for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
-								z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : this_cont->value;
+								z_ave = (P->is_continuous) ? grdview_get_z_ave (v, next_up, n) : this_cont->value;
 
 								/* Now paint the polygon piece */
 
-								paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave-saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
+								grdview_paint_it (GMT, PSL, P, xx, yy, (int)n, z_ave-saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 								/* Reset the anchor points to previous contour */
 
 								n = 0;
-								copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+								grdview_copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								next_side = exit_side;
 								way = (Z_vert[low] < (gmt_grdfloat)this_cont->value) ? -1 : 1;
 							}
@@ -1811,18 +1820,18 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 								p1 = (next_side % 3) ? 2 : 0;
 								p2 = (next_side % 3) ? 0 : 2;
 							}
-							add_node (x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p1]);
-							add_node (x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p2]);
+							grdview_add_node (x, y, z, v, &n, p1, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p1]);
+							grdview_add_node (x, y, z, v, &n, p2, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[p2]);
 
 							/* Compute the xy from the xyz triplets */
 
 							for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
 
-							z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : v[0];
+							z_ave = (P->is_continuous) ? grdview_get_z_ave (v, next_up, n) : v[0];
 
 							/* Now paint the polygon piece */
 
-							paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave+saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
+							grdview_paint_it (GMT, PSL, P, xx, yy, (int)n, z_ave+saddle_small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 						} /* End triangular piece */
 
@@ -1837,7 +1846,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 						/* Set this points as the start anchor */
 
 						n = 0;
-						add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
+						grdview_add_node (x, y, z, v, &n, low, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[low]);
 						start_side = next_side = low;
 						way = 1;
 
@@ -1857,43 +1866,43 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							}
 							ncont = k;
 
-							entry_side = get_side (xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
-							exit_side  = get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
+							entry_side = grdview_get_side (xcont[0], ycont[0], x_left, y_bottom, Z->header->inc, inc2);
+							exit_side  = grdview_get_side (xcont[ncont-1], ycont[ncont-1], x_left, y_bottom, Z->header->inc, inc2);
 
 							while (!(next_side == entry_side || next_side == exit_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+								grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 							if (next_side == entry_side) {	/* Just hook up */
-								copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+								grdview_copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								next_side = exit_side;
 							}
 							else if (next_side == exit_side) {	/* Just hook up but reverse */
-								copy_points_bw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+								grdview_copy_points_bw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 								next_side = entry_side;
 							}
 							/* Now we must complete the polygon if necessary */
 
 							while (!(start_side == next_side)) {	/* Must add intervening corner */
 								if (way == 1) next_side = (next_side + 1) % 4;
-								add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+								grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 								if (way == -1) next_side = (next_side - 1 + 4) % 4;
 							}
 
 							/* Compute the xy from the xyz triplets */
 
 							for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
-							z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : this_cont->value;
+							z_ave = (P->is_continuous) ? grdview_get_z_ave (v, next_up, n) : this_cont->value;
 
 							/* Now paint the polygon piece */
 
-							paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave-small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
+							grdview_paint_it (GMT, PSL, P, xx, yy, (int)n, z_ave-small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 							/* Reset the anchor points to previous contour */
 
 							n = 0;
-							copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
+							grdview_copy_points_fw (x, y, z, v, xcont, ycont, zcont, vcont, ncont, &n);
 							next_side = exit_side;
 							start_side = entry_side;
 							way = (Z_vert[start_side] < (gmt_grdfloat)this_cont->value) ? -1 : 1;
@@ -1905,7 +1914,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 						while (!(start_side == next_side)) {	/* Must add intervening corner */
 							if (way == 1) next_side = (next_side +1) % 4;
-							add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
+							grdview_add_node (x, y, z, v, &n, next_side, X_vert, Y_vert, Topo->data, Z_vert, ij+ij_inc[next_side]);
 							if (way == -1) next_side = (next_side - 1 + 4) % 4;
 						}
 
@@ -1913,11 +1922,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 						for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
 
-						z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : v[0];
+						z_ave = (P->is_continuous) ? grdview_get_z_ave (v, next_up, n) : v[0];
 
 						/* Now paint the polygon piece */
 
-						paint_it_grdview (GMT, PSL, P, xx, yy, (int)n, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
+						grdview_paint_it (GMT, PSL, P, xx, yy, (int)n, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, 0);
 
 					} /* End non-saddle case */
 
@@ -1953,7 +1962,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					/* Now paint the polygon piece */
 
 					for (k = 0; k < 4; k++) gmt_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
-					paint_it_grdview (GMT, PSL, P, xmesh, ymesh, 4, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, Ctrl->Q.outline);
+					grdview_paint_it (GMT, PSL, P, xmesh, ymesh, 4, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, Ctrl->Q.outline);
 				}
 			}
 		}

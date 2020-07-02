@@ -23,7 +23,7 @@
 #    settings, then copy 'ConfigUserAdvancedTemplate.cmake' to 'ConfigUserAdvanced.cmake',
 #    explore and make changes to your ConfigUserAdvanced.cmake file
 #    to override variables in 'ConfigDefault.cmake' on a per-user basis.
-# 4. Follow the rest of the installation instructions in BUILDING.md.
+# 3. Follow the rest of the installation instructions in BUILDING.md.
 #
 # 'ConfigUser.cmake' and 'ConfigUserAdvanced.cmake' are not version controlled
 # (currently listed in .gitignore).
@@ -97,20 +97,6 @@
 # Set URL to GMT Data server [auto]:
 #set (GMT_DATA_SERVER "data_server_url")
 
-# Copy GDAL's 'data' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
-#set (GDAL_DATA_PATH C:/programs/compa_libs/gdal_GIT/compileds/VC14_64/data)
-
-# Copy PROJ4's 'share' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
-#set (PROJ_DATA_PATH C:/programs/compa_libs/proj5_GIT/compileds/VC14_64/share/proj)
-
-# FOR WINDOWS ONLY
-# Set path to location of Ghostscript binaries (optional install)
-#set (GHOST_DATA_PATH C:/programs/compa_libs/ghostscript/bin)
-
-# FOR WINDOWS ONLY
-# Set path to location where the gmtmex is located.
-#set (GMTMEX_PATH "C:/progs_cygw/GMTdev/gmtmex/${GMTver}")
-
 # Set location of NetCDF (can be root directory, path to header file or path
 # to nc-config) [auto]:
 #set (NETCDF_ROOT "netcdf_install_prefix")
@@ -164,6 +150,7 @@
 
 # Enable building of shared libraries [TRUE] (disable to use static libraries;
 # not recommended; on non-x86 architectures uncomment the next option as well):
+# NOTE: currently only support shared libraries
 #set (BUILD_SHARED_LIBS FALSE)
 
 # Create position independent code on all targets [auto] (needed for static
@@ -205,16 +192,11 @@
 # Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
 
-# List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes
-# that link against the full gmt libs (not just the API; for building codes
-# that only need the GMT API, see the gmt-custom project).
-#set (EXTRA_BUILD_DIRS apidemo)
-
-# List extra new modules for testing without adding them to the module list
-#set (EXTRA_MODULES newmodule1.c newmodule2.c)
-
-# List extra new supplemental modules for testing without adding them to the module list
-#set (EXTRA_MODULES_SUPPL newsuppl1.c newsuppl2.c)
+# List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules
+# that link against the full gmt libs. (For building codes that only need the GMT API,
+# see the https://github.com/GenericMappingTools/custom-supplements project).
+# These supplemental modules can be built into separate libraries.
+#set (SUPPL_EXTRA_DIRS newsuppl1 newsuppl2 ...)
 
 # Directory in which to install the release sources per default
 # [${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION}]:
@@ -244,6 +226,8 @@
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
 #add_definitions(-DUSE_COMMON_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for common GMT options
 #add_definitions(-DUSE_MODULE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for module options
+#add_definitions(-DEXPORT_GMTLIB)				# Turn on to access normally un-exported or static gmtlib functions from external tools
+
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings
 #set (CMAKE_C_FLAGS_DEBUG -ggdb3)                          # gdb debugging symbols
@@ -287,6 +271,7 @@
 # endif ()
 # set (GMT_DLL_RENAME gmt_w${BITAGE})
 # set (PSL_DLL_RENAME psl_w${BITAGE})
+# set (SUPP_DLL_RENAME supplements_w${BITAGE})
 #endif(WIN32)
 
 # On Windows Visual C 2012 needs _ALLOW_KEYWORD_MACROS to build

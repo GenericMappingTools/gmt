@@ -1,5 +1,4 @@
 #
-# $Id: FindGMT.cmake 375 2016-08-13 20:20:24Z fwobbe $
 #
 # Locate GMT
 #

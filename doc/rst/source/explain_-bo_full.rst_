@@ -9,5 +9,5 @@
     Append **w** to any item to force byte-swapping or **+l**\|\ **b**
     for byte-swapping of the entire record. If *ncols* is not specified
     we assume that *type* applies to all columns and that *ncols* is
-    implied by the default output of the program. Note: NetCDF file output is
+    implied by the default output of the program. **Note**: NetCDF file output is
     not supported.

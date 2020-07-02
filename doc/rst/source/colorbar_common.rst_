@@ -66,8 +66,8 @@ Optional Arguments
 
     For **-Dj** or **-DJ** with codes TC, BC, ML, MR (i.e., centered on one of the map sides) we
     pre-calculate all further settings.  Specifically, the *length* is set to 80% of the map side,
-    horizontal or vertical depends on the side, the offset is MAP_LABEL_OFFSET for **Dj** with an
-    extra offset MAP_FRAME_WIDTH for **DJ**, and annotations are placed on the side of the scale facing
+    horizontal or vertical depends on the side, the offset is :term:`MAP_LABEL_OFFSET` for **Dj** with an
+    extra offset :term:`MAP_FRAME_WIDTH` for **DJ**, and annotations are placed on the side of the scale facing
     away from the map frame.
     However, you can override any of these with these modifiers:
     Append **+w** followed by the *length* and *width* of the color bar.  If *width* is not
@@ -76,7 +76,7 @@ Optional Arguments
     horizontal scale [Default is vertical (**+v**)].
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
     Add sidebar triangles for back- and/or foreground
@@ -98,13 +98,13 @@ Optional Arguments
 
 **-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the scale using
-    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    :term:`MAP_FRAME_PEN`; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the scale panel [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
     x- and y-direction, or individual side spacings between scale and border.
     Append **+i** to draw a secondary, inner border as well. We use a uniform
-    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    *gap* between borders of 2\ **p** and the :term:`MAP_DEFAULT_PEN`
     unless other values are specified. Append **+r** to draw rounded
     rectangular borders instead, with a 6\ **p** corner radius. You can
     override this radius by appending another value. Finally, append

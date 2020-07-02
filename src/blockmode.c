@@ -55,7 +55,7 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
  * is required for external calls to make grids, even if just z is requested.  This differs from the command line where
  * -Az is the default and -G is required to set file name format.  */
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
@@ -72,9 +72,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids. Choose from\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t-A List of fields to be written as individual grids. Choose from\n");
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids (requires -G). Choose from\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t-A List of fields to be written as individual grids (requires -G). Choose from\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z, s, l, h, and w. s|l|h requires -E; w requires -W[o].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Er|s [Default is z only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mode z-value [Default is mode location (but see -Q)].\n");
@@ -106,14 +106,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to blockmode and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos = 0;
+	unsigned int n_errors = 0, pos = 0, k;
 	bool sigma;
 	char arg[GMT_LEN16] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -122,23 +122,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 				case 'A':	/* Requires -G and selects which fields should be written as grids */
 				Ctrl->A.active = true;
-				pos = 0;
-				while ((gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->A.n_selected < BLK_N_FIELDS) {
-					switch (p[0]) {	/* z,s,l,h,w */
+				strip_commas (opt->arg, arg);
+				for (k = 0; arg[k] && Ctrl->A.n_selected < BLK_N_FIELDS; k++) {
+					switch (arg[k]) {	/* z,s,l,h,w */
 						case 'z':	Ctrl->A.selected[0] = true;	break;
 						case 's':	Ctrl->A.selected[1] = true;	break;
 						case 'l':	Ctrl->A.selected[2] = true;	break;
 						case 'h':	Ctrl->A.selected[3] = true;	break;
 						case 'w':	Ctrl->A.selected[4] = true;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", p);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", arg[k]);
 							n_errors++;
 							break;
 					}
@@ -202,14 +202,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 					n_errors++;
 				break;
 			case 'G':	/* Write output grid(s) */
+				Ctrl->G.active = true;
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
-				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file[Ctrl->G.n++] = strdup (opt->arg);
-				else
-					n_errors++;
+				else {
+					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
+					Ctrl->G.n++;
+				}
 				break;
 			case 'I':	/* Get block dimensions */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -219,7 +221,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 				break;
 			case 'W':	/* Use in|out weights */
 				Ctrl->W.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s", GMT_MSG_ERROR)) n_errors++;
 				sigma = (gmt_get_modifier (opt->arg, 's', arg)) ? true : false;
 				switch (arg[0]) {
 					case '\0':
@@ -291,7 +293,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, double width, bool center, int mode_choice, bool is_integer, double z_min, double z_max) {
+GMT_LOCAL struct BIN_MODE_INFO * blockmode_bin_setup (struct GMT_CTRL *GMT, double width, bool center, int mode_choice, bool is_integer, double z_min, double z_max) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the
 	 * data array is already sorted on a[k]. We check if we find more
@@ -332,7 +334,7 @@ GMT_LOCAL struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, double width, b
 	return (B);
 }
 
-GMT_LOCAL double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B) {
+GMT_LOCAL double blockmode_bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the
 	 * data array is already sorted on a[k]. We check if we find more
@@ -383,7 +385,7 @@ GMT_LOCAL double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n,
 	return (value);
 }
 
-GMT_LOCAL uint64_t get_source (struct BLK_DATA *d, uint64_t i, uint64_t j, unsigned int emode) {
+GMT_LOCAL uint64_t blockmode_get_source (struct BLK_DATA *d, uint64_t i, uint64_t j, unsigned int emode) {
 	/* Return the source at the center or the lo/hi of the two in the middle */
 	uint64_t s = j - i + 1, mid = i + s/2, src;
 	if (s%2)	/* A single central point */
@@ -393,7 +395,7 @@ GMT_LOCAL uint64_t get_source (struct BLK_DATA *d, uint64_t i, uint64_t j, unsig
 	return src;
 }
 
-GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index) {
+GMT_LOCAL double blockmode_weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index) {
 	/* Looks for the "shortest 50%". This means that when the cumulative weight
 	   (y) is plotted against the value (x) then the line between (xi,yi) and
 	   (xj,yj) should be the steepest for any combination where (yj-yi) is 50%
@@ -458,12 +460,12 @@ GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int em
 			p_max = p;
 			mode = 0.5 * (d[i].a[k] + d[j].a[k]);
 			n_modes = 1;
-			if (index) src = get_source (d, i, j, emode);	/* Must find corresponding middle or low/high index */
+			if (index) src = blockmode_get_source (d, i, j, emode);	/* Must find corresponding middle or low/high index */
 		}
 		else if (doubleAlmostEqual (p, p_max)) {	/* Same peak as previous best mode, get average of these modes */
 			if (index) {	/* Cannot have multiple modes when we are requesting the source, go with high or low per emode setting */
 				if (emode & BLK_DO_INDEX_HI) {	/* OK, we are interested in the higher mode only */
-					src = get_source (d, i, j, emode);	/* Must find corresponding high index */
+					src = blockmode_get_source (d, i, j, emode);	/* Must find corresponding high index */
 					mode = 0.5 * (d[i].a[k] + d[j].a[k]);
 				}
 			}
@@ -482,13 +484,13 @@ GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int em
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); gmt_M_free (GMT, data); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_blockmode (void *V_API, int mode, void *args) {
-	bool mode_xy, do_extra = false, is_integer, duplicate_col;
+EXTERN_MSC int GMT_blockmode (void *V_API, int mode, void *args) {
+	bool mode_xy, do_extra = false, is_integer, duplicate_col, bail = false;
 
 	int way, error = 0;
 
 	unsigned int row, col, emode = 0, n_input, n_output;
-	unsigned int k, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
+	unsigned int k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id = 0;
@@ -500,6 +502,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	double z_min = DBL_MAX, z_max = -DBL_MAX;
 
 	char format[GMT_LEN512] = {""}, *old_format = NULL, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
+	char file[PATH_MAX] = {""};
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL, *G = NULL, *GridOut[BLK_N_FIELDS];
@@ -597,6 +600,11 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 				break;
 			continue;							/* Go back and read the next record */
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		in = In->data;	/* Only need to process numerical part here */
 
 		if (gmt_M_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
@@ -650,17 +658,23 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (n_read == 0) {	/* Blank/empty input files */
-		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
-		Return (GMT_NOERROR);
-	}
-	if (n_pitched == 0) {	/* No points inside region */
-		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
-		Return (GMT_NOERROR);
-	}
 	if (Ctrl->D.active && Ctrl->D.width == 0.0 && !is_integer) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -D: No bin width specified and data are not integers\n");
 		Return (GMT_PARSE_ERROR);
+	}
+
+	if (n_read == 0) {	/* Blank/empty input files */
+		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
+	}
+	else if (n_pitched == 0) {	/* No points inside region */
+		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
+	}
+	if (bail) {	/* Time to quit */
+		Return (GMT_NOERROR);
 	}
 	if (n_pitched < n_alloc) {
 		n_alloc = n_pitched;
@@ -673,7 +687,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */
 		char *remarks[BLK_N_FIELDS] = {"Median value per bin", "L1 scale per bin", "Lowest value per bin", "Highest value per bin", "Weight per bin"};
-		for (k = 0; k < BLK_N_FIELDS; k++) {
+		for (k = kk = 0; k < BLK_N_FIELDS; k++) {
 			if (!Ctrl->A.selected[k]) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
 			code[NF]  = fcode[k];
@@ -685,7 +699,20 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
 			for (node = 0; node < G->header->size; node++)
 				GridOut[NF]->data[node] = GMT->session.f_NaN;
+			if (API->external && n_read == 0) {	/* Write the empty grids back to the external caller */
+				if (strstr (Ctrl->G.file[kk], "%s"))
+					sprintf (file, Ctrl->G.file[kk], code[k]);
+				else
+					strncpy (file, Ctrl->G.file[kk], PATH_MAX-1);
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, GridOut[k]) != GMT_NOERROR) {
+					Return (API->error);
+				}
+			}
+			if (Ctrl->G.n > 1) kk++;	/* Only true for APIs */
 			NF++;	/* Number of actual field grids */
+		}
+		if (API->external && n_read == 0) {	/* Delayed return */
+			Return (GMT_NOERROR);
 		}
 	}
 	else {	/* Get ready for rec-by-rec output */
@@ -696,6 +723,8 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calculating block modes\n");
 
 	if (emode) {					/* Index column last, with weight col just before */
 		i_col = w_col--;
@@ -708,7 +737,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	qsort (data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
 	if (Ctrl->D.active) {	/* Choose to compute unweighted modes by histogram binning */
-		B = bin_setup (GMT, Ctrl->D.width, Ctrl->D.center, Ctrl->D.mode, is_integer, z_min, z_max);
+		B = blockmode_bin_setup (GMT, Ctrl->D.width, Ctrl->D.center, Ctrl->D.mode, is_integer, z_min, z_max);
 		Ctrl->Q.active = true;	/* Cannot do modal positions */
 	}
 
@@ -753,9 +782,9 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		n_in_cell = first_in_new_cell - first_in_cell;
 		if (n_in_cell > 2) {	/* data are already sorted on z; get z mode  */
 			if (Ctrl->D.active)
-				out[GMT_Z] = bin_mode (GMT, &data[first_in_cell], n_in_cell, GMT_Z, B);
+				out[GMT_Z] = blockmode_bin_mode (GMT, &data[first_in_cell], n_in_cell, GMT_Z, B);
 			else
-				out[GMT_Z] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Z, src_id_ptr);
+				out[GMT_Z] = blockmode_weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Z, src_id_ptr);
 			if (Ctrl->Q.active) {
 				i_n_in_cell = 1.0 / n_in_cell;
 				out[GMT_X] *= i_n_in_cell;
@@ -763,15 +792,15 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			}
 			else if (mode_xy) {
 				qsort (&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
-				out[GMT_X] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_X, NULL);
+				out[GMT_X] = blockmode_weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_X, NULL);
 
 				qsort (&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
-				out[GMT_Y] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Y, NULL);
+				out[GMT_Y] = blockmode_weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Y, NULL);
 			}
 		}
 		else if (n_in_cell == 2) {
 			if (Ctrl->D.active) {
-				out[GMT_Z] = bin_mode (GMT, &data[first_in_cell], n_in_cell, GMT_Z, B);
+				out[GMT_Z] = blockmode_bin_mode (GMT, &data[first_in_cell], n_in_cell, GMT_Z, B);
 				if (Ctrl->Q.active) {
 					out[GMT_X] *= 0.5;
 					out[GMT_Y] *= 0.5;

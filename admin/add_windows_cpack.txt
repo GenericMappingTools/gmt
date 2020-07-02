@@ -1,6 +1,18 @@
 # List of extra files to include in the installer
 # This file is prepared to use JL's installation paths.
 
+# Copy GDAL's 'data' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
+#set (GDAL_DATA_PATH C:/programs/compa_libs/gdal_GIT/compileds/VC14_64/data)
+
+# Copy PROJ's 'share' directory to ${GMT_DATADIR}/GDAL_DATA [FALSE]:
+#set (PROJ_DATA_PATH C:/programs/compa_libs/proj5_GIT/compileds/VC14_64/share/proj)
+
+# Set path to location of Ghostscript binaries (optional install)
+#set (GHOST_DATA_PATH C:/programs/compa_libs/ghostscript/bin)
+
+# Set path to location where the gmtmex is located.
+#set (GMTMEX_PATH "C:/progs_cygw/GMTdev/gmtmex/${GMTver}")
+
 SET (PATO_GDAL_BIN  "C:/programs/compa_libs/gdal_GIT/compileds/${VC}_${BITAGE}/bin")
 SET (PATO_PROJ_BIN  "C:/programs/compa_libs/proj5_GIT/compileds/${VC}_${BITAGE}/bin")
 SET (PATO_FFMPEG_BIN  "C:/programs/ImageMagick")
@@ -66,3 +78,12 @@ if (GHOST_DATA_PATH)
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT GHOSTSCRIPT)
 endif (GHOST_DATA_PATH)
+
+# Install the gmtmex on Windows
+if (GMTMEX_PATH)
+	install (PROGRAMS
+		"${GMTMEX_PATH}/gmtmex.mexw${BITAGE}"
+		"${GMTMEX_PATH}/gmt.m"
+		DESTINATION ${GMT_BINDIR}
+		COMPONENT Runtime)
+endif (GMTMEX_PATH)

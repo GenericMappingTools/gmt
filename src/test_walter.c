@@ -19,7 +19,7 @@ int main (int argc, char **argv) {
 	int *z = NULL;	/* Just do demonstrate mixed types we use an integer user z array */
 	struct GMT_GRID *G_in = NULL;
 	struct GMT_VECTOR *V_in = NULL, *V_out = NULL;
-	char grid[GMT_STR16] = {""}, input[GMT_STR16] = {""}, output[GMT_STR16] = {""};
+	char grid[GMT_VF_LEN] = {""}, input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""};
 	char args[256] = {""};
 	(void)(argc);
 	/* Initialize a normal GMT session with 2 rows/cols for grid BC padding */

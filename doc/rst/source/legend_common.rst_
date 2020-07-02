@@ -6,7 +6,7 @@ Description
 Makes legends that can be overlaid on maps. It reads
 specific legend-related information from an input file [or stdin].
 Unless otherwise noted, annotations will be made using the primary
-annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
+annotation font and size in effect (i.e., :term:`FONT_ANNOT_PRIMARY`)
 
 Required Arguments
 ------------------
@@ -24,7 +24,7 @@ Required Arguments
     vertical extent of the items to be placed.
     By default, the anchor point on the legend is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Use **+l**\ *spacing* to change the line-spacing factor in units of the current
     font size [1.1].
@@ -45,13 +45,13 @@ Optional Arguments
 
 **-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the legend using
-    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    :term:`MAP_FRAME_PEN`; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the legend box [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
     x- and y-direction, or individual side spacings between scale and border.
     Append **+i** to draw a secondary, inner border as well. We use a uniform
-    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    *gap* between borders of 2\ **p** and the :term:`MAP_DEFAULT_PEN`
     unless other values are specified. Append **+r** to draw rounded
     rectangular borders instead, with a 6\ **p** corner radius. You can
     override this radius by appending another value. Finally, append
@@ -138,7 +138,7 @@ Legend Codes
     across the legend with one quarter of the line-spacing left blank
     above and below the line. Two gaps of *offset* units are left blank
     between the horizontal line and the left and right frame sides [0]. If
-    no pen is given we use MAP\_GRID\_PEN\_PRIMARY, and if *pen* is
+    no pen is given we use :term:`MAP_GRID_PEN_PRIMARY`, and if *pen* is
     set to **-** then no visible line is drawn (we just remember the location
     as a possible start/stop point for a vertical line; see **V**).  To *not* add the
     quarter line-spacing before the line, add **-**.  To *not* add the spacing
@@ -157,14 +157,14 @@ Legend Codes
     **l** for lines. A negative *gap* will move the current line upwards (thus closing a gap).
 **H** *font*\|\ **-** *header*
     The **H** record plots a centered text string using the specified
-    font parameters. Use **-** to default to size and fonttype of **FONT\_TITLE**.
+    font parameters. Use **-** to default to size and fonttype of :term:`FONT_TITLE`.
 **I** *imagefile width justification*
     Place an EPS or raster image in the legend justified relative to
     the current point. The image *width* determines the size of the image on the page.
 **L** *font*\|\ **-** *justification label*
     The **L** record plots a (L)eft, (C)entered, or (R)ight-justified
     text string within a column using the specified font parameters. Use
-    **-** to default to the size and font type of **FONT\_LABEL**.
+    **-** to default to the size and font type of :term:`FONT_LABEL`.
 **M** *slon*\|\ **-** *slat* *length*\ [**+a**\ *align*][**+f**][**+l**\ [*label*]][**+u**] [**-F**\ *param*] [ **-R**\ *w/e/s/n* **-J**\ *param* ]
     Place a map scale in the legend. Specify *slon slat*, the point on
     the map where the scale applies (*slon* is only meaningful for
@@ -208,7 +208,7 @@ Legend Codes
     Plots the selected symbol with specified diameter, fill, and outline
     (see :doc:`plot`). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
-    from the margin, printed with **FONT\_ANNOT\_PRIMARY**. If *dx1* is given
+    from the margin, printed with :term:`FONT_ANNOT_PRIMARY`. If *dx1* is given
     as **-** then it is automatically computed from half the largest symbol size.
     If *dx2* is given as **-** then it is automatically computed as 1.5
     times the largest symbol size.  Use **-** if
@@ -233,7 +233,7 @@ Legend Codes
     symbol size (again, see :doc:`plot` for details on the arguments needed).
 **T** *paragraph-text*
     One or more of these **T** records with *paragraph-text* printed
-    with **FONT\_ANNOT\_PRIMARY**. To specify special positioning and
+    with :term:`FONT_ANNOT_PRIMARY`. To specify special positioning and
     typesetting arrangements, or to enter a paragraph break, use the
     optional **P** record.
 **V** [*offset*] *pen*

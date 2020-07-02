@@ -10,6 +10,10 @@
 AWK=${AWK:-awk}
 
 gmt begin ex31
+	# Set FONTPATH used in image conversion
+	# $(dirname 0) is the path to the current bash script
+	gmt set PS_CONVERT="C-sFONTPATH=$(dirname $0)/fonts"
+
 	# create file PSL_custom_fonts.txt in current working directory
 	# and add PostScript font names of Linux Biolinum and Libertine
 	$AWK '{print $1, 0.700, 0}' <<- EOF > PSL_custom_fonts.txt
@@ -23,7 +27,7 @@ gmt begin ex31
 	# common settings
 	gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p \
 		MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-5 \
-		FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
+		FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel,tick_extend
 
 	# map of countries
 	gmt coast -R-7/31/64/66+r -JL15/50/40/60/16c -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 \

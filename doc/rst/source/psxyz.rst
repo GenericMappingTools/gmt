@@ -15,6 +15,7 @@ Synopsis
 **gmt psxyz** [ *table* ] |-J|\ *parameters*
 |-J|\ **z**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
+[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy*\ [/*dz*] ]
@@ -30,7 +31,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ [**l**\|\ **f**]\ *value* ]
+[ |-Z|\ *value* [**+f**\|\ **l**]]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]

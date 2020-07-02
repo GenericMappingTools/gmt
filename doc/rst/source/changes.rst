@@ -1184,10 +1184,10 @@ group parameters into logical groups and to use more consistent naming.
 However, under compatibility mode (see below) the old names are still recognized.
 New capabilities have been implemented by introducing new GMT default settings:
 
-*  :ref:`DIR_DCW <DIR Parameters>` specifies where to look for the optional
+*  :term:`DIR_DCW` specifies where to look for the optional
    Digital Charts of the World database (for country coloring or selections).
 
-*  :ref:`DIR_GSHHG <DIR Parameters>` specifies where to look for the required
+*  :term:`DIR_GSHHG` specifies where to look for the required
    Global Self-consistent Hierarchical High-resolution Geography database.
 
 *  :term:`GMT_COMPATIBILITY` can be set to 4 to allow
@@ -1507,7 +1507,7 @@ Several supplements have new features as well:
    :doc:`rotconverter <supplements/spotter/rotconverter>` can extract plate
    circuit rotations on-the-fly from the GPlates rotation file.
 
-Note: GMT 5 only produces PostScript and no longer has a setting for
+**Note**: GMT 5 only produces PostScript and no longer has a setting for
 Encapsulated PostScript (EPS). We made this decision since (a) our EPS determination
 was always very approximate (no consideration of font metrics, etc.) and quite often wrong,
 and (b) :doc:`psconvert` handles it exactly.  Hence, users who need EPS plots should

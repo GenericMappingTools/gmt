@@ -266,6 +266,7 @@ struct GMT_PROJ {
 	bool inv_coordinates;	/* true if -fp[unit] was given and we must first recover lon,lat during reading */
 	bool N_hemi;		/* true if we only allow northern hemisphere oblique Mercator poles */
 	bool sph_inside;	/* true is we must use the spherical in-on-out machinery [false = Cartesian] */
+	bool obl_flip;	/* true is we want the oblique equator to be the vertical axis [horizontal] */
 	unsigned int n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
 	struct GMT_LATSWAP_CONSTS lat_swap_vals;
 
@@ -377,7 +378,7 @@ struct GMT_PROJ {
 
 	/* All Cylindrical Projections */
 
-	double j_x, j_y, j_ix, j_iy;
+	double j_x, j_y, j_ix, j_iy, j_yc;
 
 	/* Albers Equal-area conic parameters. */
 
@@ -426,6 +427,7 @@ struct GMT_PROJ {
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0, proj4_scl;
 	bool is_proj4;
+	bool proj4_is_cart[2];	/* Fist is for origin ref sys and second (if requested) for destiny */
 };
 
 enum GMT_enum_frame {GMT_IS_PLAIN = 0,	/* Plain baseframe */
@@ -511,10 +513,12 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool primary;			/* true if current axis is primary, false if secondary */
 	bool set_both;			/* true if -B argument applies to both x and y axes */
 	bool obl_grid;			/* true if +o was given to draw oblique gridlines */
+	unsigned int internal_annot;	/* 1 (longitude) or 2 (latitude or radius) if +i was given to draw internal annotations */
 	unsigned int set_frame[2];	/* 1 if a -B<WESNframe> setting was given */
 	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
 	unsigned int side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
 	unsigned int z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
+	double internal_arg;		/* Internal annotation latitude or longitude location set via +i<val> */
 };
 
 #endif /* GMT_PROJECT_H */

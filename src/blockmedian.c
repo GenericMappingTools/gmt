@@ -44,7 +44,7 @@
  * is required for external calls to make grids, even if just z is requested.  This differs from the command line where
  * -Az is the default and -G is required to set file name format.  */
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
@@ -61,9 +61,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids. Choose from\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t-A List of fields to be written as individual grids. Choose from\n");
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids (requires -G). Choose from\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t-A List of fields to be written as individual grids (requires -G). Choose from\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z, s, l, q25, q75, h, and w. s|l|h requires -E; l|q25|q75|h requires -Eb, w requires -W[o].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Er|s [Default is z only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block as location [Default is (median x, median y), but see -Q].\n");
@@ -92,48 +92,50 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to blockmedian and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos = 0;
+	unsigned int n_errors = 0, k;
 	bool sigma;
-	char arg[GMT_LEN16] = {""}, p[GMT_LEN16] = {""};
+	char arg[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Requires -G and selects which fields should be written as grids */
 				Ctrl->A.active = true;
-				while ((gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->A.n_selected < BLK_N_FIELDS) {
-					switch (p[0]) {	/* z,s,l,q25,q75,h,w */
+				strip_commas (opt->arg, arg);
+				for (k = 0; arg[k] && Ctrl->A.n_selected < BLK_N_FIELDS; k++) {
+					switch (arg[k]) {	/* z,s,l,q25,q75,h,w */
 						case 'z':	Ctrl->A.selected[0] = true;	break;
 						case 's':	Ctrl->A.selected[1] = true;	break;
 						case 'l':	Ctrl->A.selected[2] = true;	break;
 						case 'q':
-							if (!strcmp (p, "q25"))
+							if (!strncmp (&arg[k], "q25", 3U))
 								Ctrl->A.selected[3] = true;
-							else if (!strcmp (p, "q75"))
+							else if (!strncmp (&arg[k], "q75", 3U))
 								Ctrl->A.selected[4] = true;
 							else {
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", p);
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", arg[k]);
 								n_errors++;
 							}
+							k += 2;	/* Skip the quartile number */
 							break;
 						case 'h':	Ctrl->A.selected[5] = true;	break;
 						case 'w':	Ctrl->A.selected[6] = true;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", p);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", arg[k]);
 							n_errors++;
 							break;
 					}
@@ -180,14 +182,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 					n_errors++;
 				break;
 			case 'G':	/* Write output grid(s) */
+				Ctrl->G.active = true;
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
-				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file[Ctrl->G.n++] = strdup (opt->arg);
-				else
-					n_errors++;
+				else {
+					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
+					Ctrl->G.n++;
+				}
 				break;
 			case 'I':	/* Get block dimensions */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -201,7 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 				break;
 			case 'W':	/* Use in|out weights */
 				Ctrl->W.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s", GMT_MSG_ERROR)) n_errors++;
 				sigma = (gmt_get_modifier (opt->arg, 's', arg)) ? true : false;
 				switch (arg[0]) {
 					case '\0':
@@ -287,7 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra, unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data) {
+GMT_LOCAL void blockmedian_output_record (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra, unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data) {
 	double weight_half, weight_count;
 	uint64_t node, n_in_cell, node1;
 	unsigned int k, k_for_xy;
@@ -366,16 +370,17 @@ GMT_LOCAL void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, u
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_blockmedian (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_blockmedian (void *V_API, int mode, void *args) {
 	int error = 0;
-	bool do_extra = false, duplicate_col;
+	bool do_extra = false, duplicate_col, bail = false;
 	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
 	uint64_t n_read, nz, n_pitched, n_cells_filled, w_col, i_col = 0, sid_col;
 	size_t n_alloc = 0, nz_alloc = 0;
 	unsigned int row, col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
-	unsigned int k, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
+	unsigned int k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, half_dx, *in = NULL, *z_tmp = NULL;
 	char format[GMT_LEN512] = {""}, *old_format = NULL, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "q25", "q75", "h", "w", ""}, *code[BLK_N_FIELDS];
+	char file[PATH_MAX] = {""};
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL, *G = NULL, *GridOut[BLK_N_FIELDS];
@@ -482,6 +487,11 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 				break;
 			continue;							/* Go back and read the next record */
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		in = In->data;	/* Only need to process numerical part here */
 
 		if (gmt_M_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
@@ -527,10 +537,15 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	if (n_read == 0) {	/* Blank/empty input files */
 		GMT_Report (API, GMT_MSG_WARNING, "No data records found; no output produced\n");
-		Return (GMT_NOERROR);
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
 	}
-	if (n_pitched == 0) {	/* No points inside region */
+	else if (n_pitched == 0) {	/* No points inside region */
 		GMT_Report (API, GMT_MSG_WARNING, "No data points found inside the region; no output produced\n");
+		if (!(API->external && Ctrl->G.active))
+			bail = true;
+	}
+	if (bail) {	/* Time to quit */
 		Return (GMT_NOERROR);
 	}
 
@@ -545,7 +560,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */
 		char *remarks[BLK_N_FIELDS] = {"Median value per bin", "L1 scale per bin", "Lowest value per bin", "25% quartile", "75% quartile", "Highest value per bin", "Weight per bin"};
-		for (k = NF = 0; k < BLK_N_FIELDS; k++) {
+		for (k = kk = 0; k < BLK_N_FIELDS; k++) {
 			if (!Ctrl->A.selected[k]) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
 			code[NF]  = fcode[k];
@@ -557,7 +572,20 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
 			for (node = 0; node < G->header->size; node++)
 				GridOut[NF]->data[node] = GMT->session.f_NaN;
+			if (API->external && n_read == 0) {	/* Write the empty grids back to the external caller */
+				if (strstr (Ctrl->G.file[kk], "%s"))
+					sprintf (file, Ctrl->G.file[kk], code[k]);
+				else
+					strncpy (file, Ctrl->G.file[kk], PATH_MAX-1);
+				if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, GridOut[k]) != GMT_NOERROR) {
+					Return (API->error);
+				}
+			}
+			if (Ctrl->G.n > 1) kk++;	/* Only true for APIs */
 			NF++;	/* Number of actual field grids */
+		}
+		if (API->external && n_read == 0) {	/* Delayed return */
+			Return (GMT_NOERROR);
 		}
 	}
 	else {	/* Get ready for rec-by-rec output */
@@ -570,6 +598,8 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "Calculating block medians\n");
 
 	if (emode) {					/* Index column last, with weight col just before */
 		i_col = w_col--;
@@ -605,7 +635,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 		/* Now we have weight sum [and copy of z in case of -E]; now calculate the quantile(s): */
 
-		median_output (GMT, Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, emode, quantile, n_quantiles, data);
+		blockmedian_output_record (GMT, Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, emode, quantile, n_quantiles, data);
 		/* Here, x,y,z are loaded into out */
 
 		if (Ctrl->E.mode & BLK_DO_EXTEND4) {	/* Need 7 items: x, y, median, min, 25%, 75%, max [,weight] */
@@ -648,8 +678,6 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	if (do_extra) gmt_M_free (GMT, z_tmp);
 
 	if (Ctrl->G.active) {	/* Writes the grid(s) */
-		unsigned int kk;
-		char file[PATH_MAX] = {""};
 		for (k = kk = 0; k < NF; k++) {
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);

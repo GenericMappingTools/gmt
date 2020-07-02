@@ -45,27 +45,27 @@
 
 struct ROTSMOOTHER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A */
+	struct ROTSMOOTHER_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C */
+	struct ROTSMOOTHER_C {	/* -C */
 		bool active;
 	} C;
-	struct N {	/* -N */
+	struct ROTSMOOTHER_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S */
+	struct ROTSMOOTHER_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T<time>, -T<start/stop/inc> or -T<tfile.txt> */
+	struct ROTSMOOTHER_T {	/* -T<time>, -T<start/stop/inc> or -T<tfile.txt> */
 		bool active;
 		unsigned int n_times;	/* Number of reconstruction times */
 		double *value;	/* Array with one or more reconstruction times */
 	} T;
-	struct W {	/* -W */
+	struct ROTSMOOTHER_W {	/* -W */
 		bool active;
 	} W;
-	struct Z {	/* -Z */
+	struct ROTSMOOTHER_Z {	/* -Z */
 		bool active;
 	} Z;
 };
@@ -77,13 +77,13 @@ struct ROTSMOOTHER_CTRL {	/* All control options for this program (except common
 #define K_WEIGHT	4
 #define N_ITEMS		5
 
-struct AGEROT {
+struct ROTSMOOTHER_AGEROT {
 	double wxyasn[N_ITEMS];
 	double P[3];	/* For Cartesian components */
 	double Q[4];	/* For quaternion components */
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct ROTSMOOTHER_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct ROTSMOOTHER_CTRL);
@@ -93,13 +93,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C->T.value);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A] [-C] [-N] [-S] [-T<time(s)>] [%s] [-W] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
@@ -128,7 +128,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to backtracker and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -145,7 +145,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Supplemental parameters */
@@ -235,11 +235,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int compare_ages (const void *point_1v, const void *point_2v) {
-	struct AGEROT *point_1, *point_2;
+GMT_LOCAL int rotsmoother_compare_ages (const void *point_1v, const void *point_2v) {
+	struct ROTSMOOTHER_AGEROT *point_1, *point_2;
 
-	point_1 = (struct AGEROT *)point_1v;
-	point_2 = (struct AGEROT *)point_2v;
+	point_1 = (struct ROTSMOOTHER_AGEROT *)point_1v;
+	point_2 = (struct ROTSMOOTHER_AGEROT *)point_2v;
 	if (point_1->wxyasn[K_AGE] < point_2->wxyasn[K_AGE]) return (-1);
 	if (point_1->wxyasn[K_AGE] > point_2->wxyasn[K_AGE]) return (+1);
 	return (0);
@@ -248,7 +248,7 @@ GMT_LOCAL int compare_ages (const void *point_1v, const void *point_2v) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_rotsmoother (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	bool stop;
 	uint64_t n_read = 0, rot, p, first = 0, last, n_use = 0, n_out = 0, n_total_use = 0, n_minimum, n_alloc = GMT_CHUNK;
 	int error = 0, n_fields;
@@ -262,7 +262,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	double x_in_plane[3], y_in_plane[3], C[9], EigenValue[3], EigenVector[9], work1[3], work2[3];
 	double R[3][3], DR[3][3], Ri[3][3], E[3], this_h[3], xyz_mean_pole[3], xyz_mean_quat[4], z_unit_vector[3];
 	double mean_rot_age, std_rot_age, *H[3], mean_H[3], Ccopy[9], *mangle = NULL, this_lon, this_lat;
-	struct AGEROT *D = NULL;
+	struct ROTSMOOTHER_AGEROT *D = NULL;
 	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct ROTSMOOTHER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -310,7 +310,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	}
 	t_col = (Ctrl->A.active) ? GMT_Z : 3;	/* If no time we use angle as proxy for time */
 	w_col = t_col + 1;
-	D = (struct AGEROT *) gmt_M_memory (GMT, NULL, n_alloc, struct AGEROT);
+	D = (struct ROTSMOOTHER_AGEROT *) gmt_M_memory (GMT, NULL, n_alloc, struct ROTSMOOTHER_AGEROT);
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	do {	/* Keep returning records until we reach EOF */
@@ -330,6 +330,11 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 				continue;
 			}
 		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		in = In->data;	/* Only need to process numerical part here */
 
 		/* Convert to geocentric, load parameters  */
@@ -341,11 +346,11 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		n_read++;
 		if (n_read == n_alloc) {	/* Need larger arrays */
 			n_alloc <<= 1;
-			D = gmt_M_memory (GMT, D, n_alloc, struct AGEROT);
+			D = gmt_M_memory (GMT, D, n_alloc, struct ROTSMOOTHER_AGEROT);
 		}
 	} while (true);
 
-	if (n_read < n_alloc) D = gmt_M_memory (GMT, D, n_read, struct AGEROT);
+	if (n_read < n_alloc) D = gmt_M_memory (GMT, D, n_read, struct ROTSMOOTHER_AGEROT);
 
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		gmt_M_free (GMT, D);
@@ -383,7 +388,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 	/* Sort the entire dataset on increasing ages */
 
-	qsort (D, n_read, sizeof (struct AGEROT), compare_ages);
+	qsort (D, n_read, sizeof (struct ROTSMOOTHER_AGEROT), rotsmoother_compare_ages);
 
 	if (GMT->common.h.add_colnames) {	/* Create meaningful column header */
 		static char *short_header = "lon\tlat\ttime\tangle";

@@ -75,7 +75,7 @@ struct PSTERNARY_CTRL {
 	} W;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSTERNARY_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSTERNARY_CTRL);
@@ -83,7 +83,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->A.string);
 	gmt_M_str_free (C->C.string);
@@ -94,7 +94,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psternary synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -131,7 +131,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psternary and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -147,7 +147,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				n_files++;
 				break;
 
@@ -168,7 +168,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 				gmt_M_str_free (Ctrl->G.string);
 				Ctrl->G.string = strdup (opt->arg);
 				break;
-			case 'L':	/* Get the three labels seaprated by slashes */
+			case 'L':	/* Get the three labels separated by slashes */
 				Ctrl->L.active = true;
 				sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]);
 				break;
@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int prep_options (struct GMTAPI_CTRL *API, struct GMT_OPTION **options, struct GMT_OPTION *boptions[]) {
+GMT_LOCAL unsigned int psternary_prep_options (struct GMTAPI_CTRL *API, struct GMT_OPTION **options, struct GMT_OPTION *boptions[]) {
 	/* Must intercept select common options and change to valid GMT syntax */
 	unsigned int k, n_axis = 0;
 	struct GMT_OPTION *opt = NULL, *bopt = NULL;
@@ -284,7 +284,7 @@ GMT_LOCAL unsigned int prep_options (struct GMTAPI_CTRL *API, struct GMT_OPTION 
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL char * get_gridint (struct GMT_OPTION *B) {
+GMT_LOCAL char * psternary_get_gridint (struct GMT_OPTION *B) {
 	unsigned int k = 1;
 	char *c = NULL, *g = NULL;
 	static char gopt[GMT_LEN32] = {""};
@@ -306,12 +306,12 @@ GMT_LOCAL char * get_gridint (struct GMT_OPTION *B) {
 	return (gopt);
 }
 
-GMT_LOCAL char * get_Bsetting (struct GMT_OPTION *B) {
+GMT_LOCAL char * psternary_get_B_setting (struct GMT_OPTION *B) {
 	size_t len, sofar;
 	char *c = NULL, *g = NULL;
 	static char bopt[GMT_LEN64] = {""};
 	if (B == NULL) return NULL;	/* No option... */
-	if ((g = get_gridint (B)) == NULL) return (&B->arg[1]);	/* No gridlines requested so use the entire thing */
+	if ((g = psternary_get_gridint (B)) == NULL) return (&B->arg[1]);	/* No gridlines requested so use the entire thing */
 
 	c = strstr (B->arg, g);	/* Start of g[<pars>] */
 	if (c) c[0] = '\0';	/* Hide g for now */
@@ -325,7 +325,7 @@ GMT_LOCAL char * get_Bsetting (struct GMT_OPTION *B) {
 
 #define SQRT3 1.73205080756887729352	/* sqrt(3) */
 
-GMT_LOCAL void abc_to_xy (double a, double b, double c, double *x, double *y) {
+GMT_LOCAL void psternary_abc_to_xy (double a, double b, double c, double *x, double *y) {
 	double s = (a + b + c);
 	*x = 0.5 * (2.0 * b + c) / s;
 	*y = 0.5 * SQRT3 * c / s;
@@ -334,20 +334,9 @@ GMT_LOCAL void abc_to_xy (double a, double b, double c, double *x, double *y) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC void gmt_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 #define PSL_IZ(PSL,z) ((int)lrint ((z) * PSL->internal.dpu))
 
-int GMT_ternary (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: ternary\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_psternary (V_API, mode, args);
-}
-
-int GMT_psternary (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int n_sides = 0, side[3];
 	uint64_t tbl, seg, row, col, k;
@@ -375,7 +364,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 
 	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
-	if ((error = prep_options (API, &options, boptions))) bailout (error);	/* Enforce common option syntax temporarily to get passed GMT_Parse_Common */
+	if ((error = psternary_prep_options (API, &options, boptions))) bailout (error);	/* Enforce common option syntax temporarily to get passed GMT_Parse_Common */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
@@ -396,7 +385,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (row = 0; row < S->n_rows; row++) {
-				abc_to_xy (S->data[GMT_X][row], S->data[GMT_Y][row], S->data[GMT_Z][row], &x, &y);
+				psternary_abc_to_xy (S->data[GMT_X][row], S->data[GMT_Y][row], S->data[GMT_Z][row], &x, &y);
 				S->data[GMT_X][row] = x;	S->data[GMT_Y][row] = y;
 				for (col = GMT_Z + 1; col < D->n_columns; col++)	/* Override c column by moving columns inward */
 					S->data[col-1][row] = S->data[col][row];
@@ -434,7 +423,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	 * regular psbasemap calls (one per active axis),  Because gridlines must be clipped to inside
 	 * the triangle we must call psbasemap separately for gridlines and everything else, on a
 	 * per axis case.  We must therefore separate the gridline arguments (if any) from the remaining
-	 * axis arguments.  We also must handle the cancas filling separately.  The three axis are 60 degrees
+	 * axis arguments.  We also must handle the canvas filling separately.  The three axis are 60 degrees
 	 * relative to each other and we do this directly with PSL calls. */
 
 	if (GMT->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
@@ -495,7 +484,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
 		if (side[k] == 0) continue;	/* Did not want this axis drawn */
 		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
-		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, get_Bsetting (boptions[k]));
+		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, psternary_get_B_setting (boptions[k]));
 		gmt_init_B (GMT);
 		PSL_comment (PSL, "Draw axis %c with origin at %g, %g and rotation = %g\n", name[k], x_origin[k], y_origin[k], rot[k]);
 		PSL_setorigin (PSL, x_origin[k], y_origin[k], rot[k], PSL_FWD);
@@ -509,7 +498,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	/* Deal with gridline requests separately */
 	for (k = 0; k <= GMT_Z; k++) {
 		if (side[k] == 0) continue;	/* Did not want this axis drawn */
-		if ((g = get_gridint (boptions[k])) == NULL) continue;	/* No grid interval for this axis */
+		if ((g = psternary_get_gridint (boptions[k])) == NULL) continue;	/* No grid interval for this axis */
 		if (!clip_set) {	/* OK, so we do need to lay down clip path */
 			PSL_comment (PSL, "Activate Map clip path for Ternary diagram\n");
 			PSL_beginclipping (PSL, tri_x, tri_y, 4, GMT->session.no_rgb, 3);
@@ -534,8 +523,8 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->S.active) {	/* Plot symbols */
-		char vfile[GMT_STR16] = {""};
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D, vfile) == GMT_NOTSET) {
+		char vfile[GMT_VF_LEN] = {""};
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, D, vfile) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create a virtual data set\n");
 			Return (API->error);
 		}
@@ -557,4 +546,14 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_ternary (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: ternary\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psternary (V_API, mode, args);
 }

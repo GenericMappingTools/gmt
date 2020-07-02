@@ -35,20 +35,20 @@
 #define THIS_MODULE_OPTIONS "->V"
 
 struct X2SYS_MERGE_CTRL {
-	struct A {	/* -A */
+	struct X2SYS_MERGE_A {	/* -A */
 		bool active;
 		char *file;
 	} A;
-	struct M {	/* -M */
+	struct X2SYS_MERGE_M {	/* -M */
 		bool active;
 		char *file;
 	} M;
 };
 
-GMT_LOCAL void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
+GMT_LOCAL void x2sysmerge_clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
                           uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge);
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_MERGE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_MERGE_CTRL);
@@ -58,14 +58,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->M.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -A<main_COEdbase> -M<new_COEdbase> [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
@@ -82,7 +82,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -128,7 +128,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_merge (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	uint64_t  i, j, k, n_base, n_merge, merge_start, *map_merge_end = NULL;
 	uint64_t *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
 	int error;
@@ -226,13 +226,13 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		fclose (fp_merge);
 		fclose (fp_base);
-		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
+		x2sysmerge_clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 		fclose (fp_merge);
 		fclose (fp_base);
-		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
+		x2sysmerge_clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 	Out = gmt_new_record (GMT, NULL, line);	/* Only text output */
@@ -262,7 +262,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_ERROR, "Read error in merge file line\n");
 						fclose (fp_merge);
 						fclose (fp_base);
-						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
+						x2sysmerge_clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 						Return (GMT_RUNTIME_ERROR);
 					}
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
@@ -272,7 +272,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_ERROR, "Read error in base file\n");
 						fclose (fp_merge);
 						fclose (fp_base);
-						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
+						x2sysmerge_clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
@@ -286,7 +286,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_ERROR, "Read error in base file\n");
 						fclose (fp_merge);
 						fclose (fp_base);
-						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
+						x2sysmerge_clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 						Return (GMT_RUNTIME_ERROR);
 					}
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
@@ -302,7 +302,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		fclose (fp_base);	fclose (fp_merge);
-		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
+		x2sysmerge_clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 		Return (API->error);
 	}
 
@@ -310,12 +310,12 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	fclose (fp_merge);
 
 	gmt_M_free (GMT, Out);
-	clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
+	x2sysmerge_clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 
 	Return (GMT_NOERROR);
 }
 
-GMT_LOCAL void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
+GMT_LOCAL void x2sysmerge_clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
                           uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge) {
 	uint64_t i;
 

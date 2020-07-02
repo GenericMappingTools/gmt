@@ -53,69 +53,69 @@
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A<sector_angle>[+r] */
+	struct PSROSE_A {	/* -A<sector_angle>[+r] */
 		bool active;
 		bool rose;
 		double inc;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct PSROSE_C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D */
+	struct PSROSE_D {	/* -D */
 		bool active;
 	} D;
-	struct E {	/* -Em|[+w]<modefile> */
+	struct PSROSE_E {	/* -Em|[+w]<modefile> */
 		bool active;
 		bool mode;
 		bool mean;
 		char *file;
 	} E;
-	struct F {	/* -F */
+	struct PSROSE_F {	/* -F */
 		bool active;
 	} F;
-	struct G {	/* -G<fill> */
+	struct PSROSE_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct I {	/* -I */
+	struct PSROSE_I {	/* -I */
 		bool active;
 	} I;
-	struct L {	/* -L */
+	struct PSROSE_L {	/* -L */
 		bool active;
 		char *w, *e, *s, *n;
 	} L;
-	struct M {	/* -M[<size>][<modifiers>] */
+	struct PSROSE_M {	/* -M[<size>][<modifiers>] */
 		bool active;
 		struct GMT_SYMBOL S;
 	} M;
-	struct N {	/* -N */
+	struct PSROSE_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q<alpha> */
+	struct PSROSE_Q {	/* -Q<alpha> */
 		bool active;
 		double value;
 	} Q;
-	struct S {	/* -S */
+	struct PSROSE_S {	/* -S */
 		bool active;
 		bool normalize;
 		double scale;	/* Get this via -JX */
 	} S;
-	struct T {	/* -T */
+	struct PSROSE_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W[v]<pen> */
+	struct PSROSE_W {	/* -W[v]<pen> */
 		bool active[2];
 		struct GMT_PEN pen[2];
 	} W;
-	struct Z {	/* -Zu|<scale> */
+	struct PSROSE_Z {	/* -Zu|<scale> */
 		bool active;
 		unsigned int mode;
 		double scale;
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSROSE_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSROSE_CTRL);
@@ -129,7 +129,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->E.file);
 	gmt_M_str_free (C->L.w);
@@ -139,8 +139,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deal
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL double Critical_Resultant (double alpha, int n) {
-	/* Return critial resultant for given alpha and sample size.
+GMT_LOCAL double psrose_critical_resultant (double alpha, int n) {
+	/* Return critical resultant for given alpha and sample size.
 	 * Based on Rayleigh test for uniformity as approximated by Zaar [1999]
 	 * and reported by Berens [2009] in CircStat (MATLAB).  Valid for
 	 * n >= 10 and for first 3 decimals (gets better with n). */
@@ -149,14 +149,14 @@ GMT_LOCAL double Critical_Resultant (double alpha, int n) {
 	return (Rn);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	char *choice[2] = {"OFF", "ON"};
 
 	/* This displays the psrose synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-G<fill>] [-I]\n", name, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-F] [-G<fill>] [-I]\n", name, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<diameter>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S] [-T] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] %s[%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
@@ -211,7 +211,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psrose and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -231,7 +231,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -305,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			case 'I':	/* Compute statistics only - no plot */
 				Ctrl->I.active = true;
 				break;
-			case 'L':	/* Overwride default labeling */
+			case 'L':	/* Override default labeling */
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					unsigned int n_comma = 0;
@@ -434,17 +434,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_rose (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: rose\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_psrose (V_API, mode, args);
-}
-
-int GMT_psrose (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	bool do_fill = false, automatic = false, sector_plot = false, windrose = true;
 	unsigned int n_bins, n_modes = 0, form, n_in, half_only = 0, bin;
 	int error = 0, k, n_annot, n_alpha, sbin, significant, index;
@@ -568,6 +558,11 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			continue;	/* Go back and read the next record */
 		}
 
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
 
@@ -646,7 +641,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (mean_theta < 0.0) mean_theta += 360.0;
 	mean_vector = hypot (xr, yr) / n;
 	mean_resultant = mean_radius = hypot (xr, yr) / total;
-	critical_resultant = Critical_Resultant (Ctrl->Q.value, (int)n);
+	critical_resultant = psrose_critical_resultant (Ctrl->Q.value, (int)n);
 	significant = (mean_resultant > critical_resultant);
 	if (!Ctrl->S.normalize) mean_radius *= max_radius;
 
@@ -1157,4 +1152,14 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_rose (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: rose\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psrose (V_API, mode, args);
 }

@@ -527,7 +527,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* THE FOLLOWING VARIABLES DO NOT VARY FOR EACH CRUISE */
 	bool nautical = false, custom_max_speed = false, simulate = false;
 	bool bad_sections = false, custom_min_speed = false, do_regression = true, dist_to_coast = false;

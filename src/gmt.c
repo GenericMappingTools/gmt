@@ -36,7 +36,7 @@
 #	endif
 #	endif
 #	include <signal.h>
-#	include "common_sighandler.h"
+#	include "gmt_common_sighandler.h"
 #endif
 
 #define PROGRAM_NAME	"gmt"
@@ -147,7 +147,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Print all classic modules and exit */
-			else if (!strncmp (argv[arg_n], "--show-classic", 8U)) {
+			else if (!strncmp (argv[arg_n], "--show-classic", 9U)) {
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_CLASSIC, NULL);
 				status = GMT_NOERROR;
 			}
@@ -215,6 +215,12 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
+			/* Show user's ~/.gmt hidden dir */
+			else if (!strncmp (argv[arg_n], "--show-userdir", 14U)) {
+				fprintf(stdout, "%s\n", api_ctrl->GMT->session.USERDIR);
+				status = GMT_NOERROR;
+			}
+
 			/* print new shell template */
 			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
 				unsigned int type = 0;	/* Default is bash */
@@ -261,6 +267,16 @@ int main (int argc, char *argv[]) {
 				gmt_M_str_free (name);
 				status = GMT_NOERROR;
 			}
+			/* print new glue C code for supplement */
+			else if (!strncmp (argv[arg_n], "--new-glue", 10U)) {
+				char *s = strstr (argv[arg_n], "=");	if (s) s++;	/* Skip the equal */
+				if (s && s[0] == '\0') {
+					fprintf (stderr, "gmt: ERROR: --new-glue library name not given\n");
+					status = GMT_RUNTIME_ERROR;
+				}
+				else
+					status = gmt_write_glue_function (api_ctrl, s);
+			}
 
 		} /* for (arg_n = 1; arg_n < argc; ++arg_n) */
 	} /* status == GMT_NOERROR */
@@ -275,7 +291,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "\nERROR: No module named %s was found.  This could mean one of four cases:\n", module);
 			fprintf (stderr, "  1. There actually is no such module; please check your spelling.\n");
 			fprintf (stderr, "  2. You used a modern mode module name while running in GMT classic mode.\n");
-			if (strlen (GMT_SUPPL_LIB_NAME))
+			if (strlen (GMT_SUPPL_LIBRARY))
 				fprintf (stderr, "  3. Module exists in the GMT supplemental library, but the library could not be found.\n");
 			else
 				fprintf (stderr, "  3. Module exists in the GMT supplemental library, but the library was not installed.\n");
@@ -303,18 +319,19 @@ int main (int argc, char *argv[]) {
 			strcat (libraries, ", ZLIB");
 #endif
 			fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
-			fprintf (stderr, "\t[Linked with %s]\n", libraries);
 			fprintf (stderr, "\t(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
-			fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
-			fprintf (stderr, "and volunteers from around the world.\n\n");
+			fprintf (stderr, "\tSupported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
+			fprintf (stderr, "\tand volunteers from around the world.\n\n");
 
-			fprintf (stderr, "GMT is distributed under the GNU LGPL License (http://www.gnu.org/licenses/lgpl.html).\n\n");
+			fprintf (stderr, "\tGMT is distributed under the GNU LGPL License (http://www.gnu.org/licenses/lgpl.html).\n");
+			fprintf (stderr, "\tDependencies: %s, Ghostscript, GraphicsMagick, FFmpeg.\n\n", libraries);
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
 			fprintf (stderr, "  --new-script[=L]  Write GMT modern mode script template to stdout.\n");
-			fprintf (stderr, "                    Optionally specify bash|csh|batch [Default is current shell]\n");
+			fprintf (stderr, "                    Optionally specify bash|csh|batch [Default is current shell].\n");
+			fprintf (stderr, "  --new-glue=name   Write C code for external supplements to glue them to GMT.\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 			fprintf (stderr, "  --show-citation   Show the most recent citation for GMT.\n");
 			fprintf (stderr, "  --show-classic    Show all classic module names.\n");
@@ -322,10 +339,11 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver Show URL of the remote GMT data server.\n");
 			fprintf (stderr, "  --show-doi        Show the DOI for the current release.\n");
-			fprintf (stderr, "  --show-modules    Show all modern module names.\n");
 			fprintf (stderr, "  --show-library    Show path of the shared GMT library.\n");
+			fprintf (stderr, "  --show-modules    Show all modern module names.\n");
 			fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
 			fprintf (stderr, "  --show-sharedir   Show directory for shared GMT resources.\n");
+			fprintf (stderr, "  --show-userdir    Show full path of user's ~/.gmt dir\n");
 			fprintf (stderr, "  --version         Print GMT version number.\n\n");
 			fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
 		}

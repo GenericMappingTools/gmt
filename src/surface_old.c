@@ -44,52 +44,52 @@
 #define THIS_MODULE_MODERN_NAME	"surface_old"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
-#define THIS_MODULE_KEYS	"<D{,DD(,LG(=1,GG}"
+#define THIS_MODULE_KEYS	"<D{,DD(=,LG(=1,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVabdefhirs" GMT_OPT("FH")
 
 struct SURFACE_CTRL {
-	struct A {	/* -A<aspect_ratio>|m */
+	struct SURFACE_OLD_A {	/* -A<aspect_ratio>|m */
 		bool active;
 		unsigned int mode;	/* 1 if we want cos(mid_latitude) */
 		double value;
 	} A;
-	struct C {	/* -C<converge_limit> */
+	struct SURFACE_OLD_C {	/* -C<converge_limit> */
 		bool active;
 		unsigned int mode;	/* 1 if given as fraction */
 		double value;
 	} C;
-	struct D {	/* -D<line.xyz> */
+	struct SURFACE_OLD_D {	/* -D<line.xyz> */
 		bool active;
 		char *file;	/* Name of file with breaklines */
 	} D;
-	struct G {	/* -G<file> */
+	struct SURFACE_OLD_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -Ll|u<limit> */
+	struct SURFACE_OLD_L {	/* -Ll|u<limit> */
 		bool active;
 		char *low, *high;
 		double min, max;
 		unsigned int lmode, hmode;
 	} L;
-	struct N {	/* -N<max_iterations> */
+	struct SURFACE_OLD_N {	/* -N<max_iterations> */
 		bool active;
 		unsigned int value;
 	} N;
-	struct Q {	/* -Q */
+	struct SURFACE_OLD_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S<radius>[m|s] */
+	struct SURFACE_OLD_S {	/* -S<radius>[m|s] */
 		bool active;
 		double radius;
 		char unit;
 	} S;
-	struct T {	/* -T<tension>[i][b] */
+	struct SURFACE_OLD_T {	/* -T<tension>[i][b] */
 		bool active;
 		double b_tension, i_tension;
 	} T;
-	struct Z {	/* -Z<over_relaxation_parameter> */
+	struct SURFACE_OLD_Z {	/* -Z<over_relaxation_parameter> */
 		bool active;
 		double value;
 	} Z;
@@ -191,8 +191,8 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	struct GMT_GRID *Low, *High;		/* arrays for minmax values, if set */
 };
 
-GMT_LOCAL void set_coefficients (struct SURFACE_INFO *C) {
-	/* These are the coefficients in the finite-difference expressionss */
+GMT_LOCAL void surface_set_coefficients (struct SURFACE_INFO *C) {
+	/* These are the coefficients in the finite-difference expressions */
 	double e_4, loose, a0;
 
 	loose = 1.0 - C->interior_tension;
@@ -233,7 +233,7 @@ GMT_LOCAL void set_coefficients (struct SURFACE_INFO *C) {
 	C->ij_ne_corner = C->ij_se_corner + C->n_rows - 1;
 }
 
-GMT_LOCAL void set_offset (struct SURFACE_INFO *C) {
+GMT_LOCAL void surface_set_offset (struct SURFACE_INFO *C) {
 	/* Because of the multigrid approach the distance from the central node to
 	 * its neighbors needed in the finite difference expressions varies.  E.g.,
 	 * when C->grid is 8 then the next neighbor to the right is 8 columns over.
@@ -356,7 +356,7 @@ GMT_LOCAL void fill_in_forecast (struct SURFACE_INFO *C) {
 	iu[C->ij_ne_corner] = SURFACE_IS_CONSTRAINED;
 }
 
-GMT_LOCAL int compare_points (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int surface_compare_points (const void *point_1v, const void *point_2v) {
 		/*  Routine for qsort to sort data structure for fast access to data by node location.
 		    Sorts on index first, then on radius to node corresponding to index, so that index
 		    goes from low to high, and so does radius.
@@ -382,13 +382,13 @@ GMT_LOCAL int compare_points (const void *point_1v, const void *point_2v) {
 	return (0);
 }
 
-GMT_LOCAL void smart_divide (struct SURFACE_INFO *C) {
+GMT_LOCAL void surface_smart_divide (struct SURFACE_INFO *C) {
 	/* Divide grid by its largest prime factor */
 	C->grid /= C->factors[C->n_fact - 1];
 	C->n_fact--;
 }
 
-GMT_LOCAL void set_index (struct SURFACE_INFO *C) {
+GMT_LOCAL void surface_set_index (struct SURFACE_INFO *C) {
 	/* recomputes data[k].index for new value of grid,
 	   sorts data on index and radii, and throws away
 	   data which are now outside the usable limits. */
@@ -407,7 +407,7 @@ GMT_LOCAL void set_index (struct SURFACE_INFO *C) {
 			C->data[k].index = i * C->block_ny + j;
 	}
 
-	qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+	qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), surface_compare_points);
 
 	C->npoints -= k_skipped;
 
@@ -500,7 +500,7 @@ GMT_LOCAL void find_nearest_point (struct SURFACE_INFO *C) {
 	 }
 }
 
-GMT_LOCAL void set_grid_parameters (struct SURFACE_INFO *C) {
+GMT_LOCAL void surface_set_grid_parameters (struct SURFACE_INFO *C) {
 	/* Updates the grid space parameters given the new C->grid setting */
 	GMT_Surface_Global.block_ny = C->block_ny = (C->n_rows - 1) / C->grid + 1;
 	C->block_nx = (C->n_columns - 1) / C->grid + 1;
@@ -511,7 +511,7 @@ GMT_LOCAL void set_grid_parameters (struct SURFACE_INFO *C) {
 	C->r_grid_yinc = 1.0 / C->grid_yinc;
 }
 
-GMT_LOCAL void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void surface_initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/*
 	 * For the initial gridsize, compute weighted averages of data inside the search radius
 	 * and assign the values to u[i,j] where i,j are multiples of gridsize.
@@ -567,7 +567,7 @@ GMT_LOCAL void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	}
 }
 
-GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options) {
+GMT_LOCAL int surface_read_data (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options) {
 	/* Procdss input data into data structure */
 	int i, j, error;
 	uint64_t k, kmax = 0, kmin = 0, n_dup = 0;
@@ -696,7 +696,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	return (0);
 }
 
-GMT_LOCAL int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transform) {
+GMT_LOCAL int surface_load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transform) {
 	/* Deal with the constants or grids supplied via -L */
 	unsigned int i, j;
 	uint64_t ij;
@@ -761,13 +761,13 @@ GMT_LOCAL int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, in
 	return (0);
 }
 
-GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *grdfile) {
+GMT_LOCAL int surface_write_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *grdfile) {
 	/* Uses v.2.0 netCDF grd format - hence need to transpose original column grid to be GMT compatible.  This will be rewritten, maybe */
 	uint64_t index, k;
 	int i, j, err;
 	gmt_grdfloat *u = C->Grid->data, *v2 = NULL;
 
-	if ((err = load_constraints (GMT, C, false)) != 0) return (err);	/* Reload constraints but this time do not transform data */
+	if ((err = surface_load_constraints (GMT, C, false)) != 0) return (err);	/* Reload constraints but this time do not transform data */
 
 	strcpy (C->Grid->header->title, "Data gridded with continuous surface splines in tension");
 
@@ -809,7 +809,7 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	return (0);
 }
 
-GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode) {
+GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode) {
 	/* Main finite difference solver */
 	uint64_t ij, briggs_index, ij_v2, iteration_count = 0, ij_sw, ij_se;
 	unsigned int current_max_iterations = C->max_iterations * C->grid;
@@ -1036,7 +1036,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	return (iteration_count);
 }
 
-GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void surface_check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Compute misfits at data locations */
 
 	int i, j, move_over[12];
@@ -1183,7 +1183,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 GMT_Report (GMT->parent, GMT_MSG_INFORMATION, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
  }
 
-GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void surface_remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Fit LS plane and remove from data; we restore before output */
 	uint64_t i;
 	double a, b, c, d, xx, yy, zz;
@@ -1234,7 +1234,7 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "LS plane determined: z = %g + (%g * col) + (%g * row)\n", C->plane_c0, C->plane_c1, C->plane_c2);
 }
 
-GMT_LOCAL void replace_planar_trend (struct SURFACE_INFO *C) {
+GMT_LOCAL void surface_restore_planar_trend (struct SURFACE_INFO *C) {
 	/* Restore the LS plan we removed */
 	int i, j;
 	uint64_t ij;
@@ -1248,10 +1248,10 @@ GMT_LOCAL void replace_planar_trend (struct SURFACE_INFO *C) {
 	}
 }
 
-GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* This is a new routine to eliminate data which will become
 		unusable on the final iteration, when grid = 1.
-		It assumes grid = 1 and set_grid_parameters has been
+		It assumes grid = 1 and surface_set_grid_parameters has been
 		called.  We sort, mark redundant data as SURFACE_OUTSIDE, and
 		sort again, chopping off the excess.
 
@@ -1264,7 +1264,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 
 	/* Sort the data  */
 
-	qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+	qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), surface_compare_points);
 
 	/* If more than one datum is indexed to same node, only the first should be kept.
 		Mark the additional ones as SURFACE_OUTSIDE
@@ -1284,7 +1284,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	}
 
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
-		qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
+		qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), surface_compare_points);
 		C->npoints -= n_outside;
 		C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
@@ -1293,7 +1293,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	}
 }
 
-GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL int surface_rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Find and normalize data by its rms */
 	uint64_t i;
 	double ssz = 0.0;
@@ -1324,7 +1324,7 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	return (0);
 }
 
-GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int n_columns, unsigned int n_rows, bool pixel) {
+GMT_LOCAL void surface_suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int n_columns, unsigned int n_rows, bool pixel) {
 	/* Calls gmt_optimal_dim_for_surface to determine if there are
 	 * better choices for n_columns, n_rows that might speed up calculations
 	 * by having many more common factors.
@@ -1375,7 +1375,7 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 	return;
 }
 
-GMT_LOCAL void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl) {
+GMT_LOCAL void surface_init_parameters (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl) {
 	/* Place program options into the surface struct.  This was done this way
 	 * since surface.c relied heavily on global variables which are a no-no
 	 * in GMT5.  The simplest solution was to collect all those variables into
@@ -1402,7 +1402,7 @@ GMT_LOCAL void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_C
 	C->converge_limit_mode = Ctrl->C.mode;
 }
 
-GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline) {
+GMT_LOCAL void surface_interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline) {
 	/* Add constraints from breaklines */
 
 	uint64_t n_tot = 0, this_ini = 0, this_end = 0, n_int = 0;
@@ -1499,7 +1499,7 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	gmt_M_free (GMT, z);
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SURFACE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct SURFACE_CTRL);
@@ -1512,7 +1512,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->D.file);
@@ -1521,7 +1521,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	unsigned int ppm;
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -1578,7 +1578,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to surface and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -1594,7 +1594,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -1797,7 +1797,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	load_parameters_surface (&C, Ctrl);	/* Pass parameters from parsing control to surface INFO structure */
+	surface_init_parameters (&C, Ctrl);	/* Pass parameters from parsing control to surface INFO structure */
 
 	C.relax_old = 1.0 - C.relax_new;
 
@@ -1820,7 +1820,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
 	}
 	if (C.grid == 1) GMT_Report (API, GMT_MSG_WARNING, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
-	if ((C.grid == 1 && gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
+	if ((C.grid == 1 && gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) || Ctrl->Q.active) surface_suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
 	if (Ctrl->Q.active) Return (GMT_NOERROR);
 
 	/* New idea: set grid = 1, read data, setting index.  Then throw
@@ -1828,8 +1828,8 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		size of briggs->b[6] structure.  */
 
 	C.grid = 1;
-	set_grid_parameters (&C);
-	if (read_data_surface (GMT, &C, options)) Return (GMT_RUNTIME_ERROR);
+	surface_set_grid_parameters (&C);
+	if (surface_read_data (GMT, &C, options)) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->D.active) {	/* Consider breakline dataset */
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
@@ -1839,11 +1839,11 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		}
 		xyzline = Lin->table[0];			/* Can only be one table since we read a single file */
 
-		interp_breakline (GMT, &C, xyzline);
+		surface_interpolate_add_breakline (GMT, &C, xyzline);
 	}
-	throw_away_unusables (GMT, &C);
-	remove_planar_trend (GMT, &C);
-	key = rescale_z_values (GMT, &C);
+	surface_throw_away_unusables (GMT, &C);
+	surface_remove_planar_trend (GMT, &C);
+	key = surface_rescale_z_values (GMT, &C);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_NOERROR) Return (API->error);
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
@@ -1851,24 +1851,24 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL,
 			0, 0, C.Grid) == NULL) Return (API->error);	/* Don't bother with padding since no BCs will be applied */
 		C.ij_sw_corner = 2 * C.my + 2;			/*  Corners of array of actual data  */
-		replace_planar_trend (&C);
-		if ((error = write_output_surface (GMT, &C, Ctrl->G.file)) != 0) Return (error);
+		surface_restore_planar_trend (&C);
+		if ((error = surface_write_grid (GMT, &C, Ctrl->G.file)) != 0) Return (error);
 		Return (GMT_NOERROR);
 	}
 
-	load_constraints (GMT, &C, true);
+	surface_load_constraints (GMT, &C, true);
 
 	/* Set up factors and reset grid to first value  */
 
 	C.grid = gmt_gcd_euclid (C.n_columns-1, C.n_rows-1);
 	C.n_fact = gmt_get_prime_factors (GMT, C.grid, C.factors);
-	set_grid_parameters (&C);
+	surface_set_grid_parameters (&C);
 	while (C.block_nx < 4 || C.block_ny < 4) {
-		smart_divide (&C);
-		set_grid_parameters (&C);
+		surface_smart_divide (&C);
+		surface_set_grid_parameters (&C);
 	}
-	set_offset (&C);
-	set_index (&C);
+	surface_set_offset (&C);
+	surface_set_index (&C);
 
 	/* Now the data are ready to go for the first iteration.  */
 
@@ -1878,31 +1878,31 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 	C.iu = gmt_M_memory (GMT, NULL, C.mxmy, char);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
 
-	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
+	if (C.radius > 0) surface_initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Grid\tMode\tIteration\tMax Change\tConv Limit\tTotal Iterations\n");
 
-	set_coefficients (&C);
+	surface_set_coefficients (&C);
 
 	C.old_grid = C.grid;
 	find_nearest_point (&C);
-	iterate (GMT, &C, 1);
+	surface_iterate (GMT, &C, 1);
 
 	while (C.grid > 1) {
-		smart_divide (&C);
-		set_grid_parameters (&C);
-		set_offset (&C);
-		set_index (&C);
+		surface_smart_divide (&C);
+		surface_set_grid_parameters (&C);
+		surface_set_offset (&C);
+		surface_set_index (&C);
 		fill_in_forecast (&C);
-		iterate (GMT, &C, 0);
+		surface_iterate (GMT, &C, 0);
 		C.old_grid = C.grid;
 		find_nearest_point (&C);
-		iterate (GMT, &C, 1);
+		surface_iterate (GMT, &C, 1);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) check_errors (GMT, &C);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) surface_check_errors (GMT, &C);
 
-	replace_planar_trend (&C);
+	surface_restore_planar_trend (&C);
 
 	gmt_M_free (GMT, C.data);
 	gmt_M_free (GMT, C.briggs);
@@ -1914,7 +1914,7 @@ int GMT_surface_old (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to free C.High\n");
 	}
 
-	if ((error = write_output_surface (GMT, &C, Ctrl->G.file)) != 0) Return (error);
+	if ((error = surface_write_grid (GMT, &C, Ctrl->G.file)) != 0) Return (error);
 
 	Return (GMT_NOERROR);
 }

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.3.4_r17937M [64-bit] Document from pscoast
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.1.0_0e44859_2020.03.13 [64-bit] Document from pscoast
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Apr 15 08:51:57 2017
+%%CreationDate: Fri Mar 13 14:40:35 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -13,7 +13,6 @@
 %%EndComments
 
 %%BeginProlog
-% Begin pslib header
 250 dict begin
 /! {bind def} bind def
 /# {load def}!
@@ -44,71 +43,42 @@
 /MS {/SMat matrix currentmatrix def}!
 /MR {SMat setmatrix}!
 /edef {exch def}!
-% Path fill
 /FS {/fc edef /fs {V fc F U} def}!
 /FQ {/fs {} def}!
-% Outline off or on
 /O0 {/os {N} def}!
 /O1 {/os {P S} def}!
-% Set both fill and outline
 /FO {fs os}!
-% Star: radius xc yc
 /Sa {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR FO}!
-% Box: height width xll yll
 /Sb {M dup 0 D exch 0 exch D neg 0 D FO}!
-% Rounded box: height width radius xll yll
 /SB {MS T /BoxR edef /BoxW edef /BoxH edef BoxR 0 M
   BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
-% Circle: radius xc yc
 /Sc {N 3 -1 roll 0 360 arc FO}!
-% Diamond: radius xc yc
 /Sd {M 4 {dup} repeat 0 G neg dup dup D exch D D FO}!
-% Ellipse: major minor angle xc yc
 /Se {N MS T R scale 0 0 1 0 360 arc MR FO}!
-% Octagon: radius xc yc
 /Sg {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR FO}!
-% Hexagon: radius xc yc
 /Sh {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR FO}!
-% Inverted triangle: radius xc yc
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
-% Rotated rectangle: height width angle xc yc
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
-% Pentagon: radius xc yc
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-% Dot: radius xc yc [hardwired as circle with no outline]
 /Sp {N 3 -1 roll 0 360 arc fs N}!
-% Patch fill: x1 y1 ... xn yn n
 /SP {M {D} repeat FO}!
-% Rectangle: height width xc yc
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
-% Rounded rectangle: height width radius xc yc
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
   BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
-% Square: radius xc yc
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
-% Triangle: radius xc yc
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
-% Single-headed vector
 /SV {0 exch M 0 D D D D D 0 D FO}!
-% Double-headed vector
 /Sv {0 0 M D D 0 D D D D D 0 D D FO}!
-% Pie Wedge: radius angle1 angle2 xc yc
 /Sw {2 copy M 5 2 roll arc FO}!
-% Cross: radius xc yc
 /Sx {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
-% Y-dash: radius xc yc
 /Sy {M dup 0 exch G dup -2 mul dup 0 exch D S}!
-% Plus: radius xc yc
 /S+ {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
-% X-dash: radius xc yc
 /S- {M dup 0 G dup -2 mul dup 0 D S}!
-% String width, height, depth and total height (height-depth)
 /sw {stringwidth pop}!
 /sh {V MU 0 0 M FP pathbbox N 4 1 roll pop pop pop U}!
 /sd {V MU 0 0 M FP pathbbox N pop pop exch pop U}!
 /sH {V MU 0 0 M FP pathbbox N exch pop exch sub exch pop U}!
 /sb {E exch sh}!
-% To align text {bottom,middle,top}{left,center,right}
 /bl {}!
 /bc {E -2 div 0 G}!
 /br {E neg 0 G}!
@@ -118,72 +88,69 @@
 /tl {dup 0 exch sh neg G}!
 /tc {dup E -2 div exch sh neg G}!
 /tr {dup E neg exch sh neg G}!
-% Maximum of two numbers
 /mx {2 copy lt {exch} if pop}!
-% Translate and memorize advance
 /PSL_xorig 0 def /PSL_yorig 0 def
 /TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
-% To reencode one font with the provided encoding vector
 /PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding edef currentdict end definefont pop
 }!
-/PSL_eps_begin {					% Marks begin of EPSF inclusion
-  /PSL_eps_state save def				% Save state for cleanup
-  /PSL_dict_count countdictstack def			% Count objects on dict stack
-  /PSL_op_count count 1 sub def				% Count objects on operand stack
-  userdict begin					% Push userdict stack
-  /showpage {} def					% Deactivate showpage command
-  0 setgray 0 setlinecap 1 setlinewidth			% Prepare clean graphics state
+/PSL_eps_begin {
+  /PSL_eps_state save def
+  /PSL_dict_count countdictstack def
+  /PSL_op_count count 1 sub def
+  userdict begin
+  /showpage {} def
+  0 setgray 0 setlinecap 1 setlinewidth
   0 setlinejoin 10 setmiterlimit [] 0 setdash newpath
-  /languagelevel where	% If level != 1, set strokeadjust and overprint to their defaults
+  /languagelevel where
   {pop languagelevel 1 ne {false setstrokeadjust false setoverprint} if} if
 }!
-/PSL_eps_end {						% Marks end of EPSF inclusion
-  count PSL_op_count sub {pop} repeat			% Clean up operand stack
-  countdictstack PSL_dict_count sub {end} repeat	% Clean up dict stack
-  PSL_eps_state restore					% Restore saved state
+/PSL_eps_end {
+  count PSL_op_count sub {pop} repeat
+  countdictstack PSL_dict_count sub {end} repeat
+  PSL_eps_state restore
 }!
-/PSL_transp {						% Set transparency
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{		% Using ghostscript
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}	% Or Adobe
-  {pop pop} ifelse} ifelse				% Or skip if neither are supported
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
-/ISOLatin1+_Encoding [
+/Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
-/.notdef	/bullet		/ellipsis	/trademark	/emdash		/endash		/fi		/zcaron
+/.notdef	/threequarters	/threesuperior	/trademark	/twosuperior	/yacute		/ydieresis	/zcaron
 /space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright
-/parenleft	/parenright	/asterisk	/plus		/comma		/minus		/period		/slash
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash
 /zero		/one		/two		/three		/four		/five		/six		/seven
 /eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question
 /at		/A		/B		/C		/D		/E		/F		/G
 /H		/I		/J		/K		/L		/M		/N		/O
 /P		/Q		/R		/S		/T		/U		/V		/W
 /X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore
-/quoteleft	/a		/b		/c 		/d		/e		/f		/g
+/quoteleft	/a		/b		/c		/d		/e		/f		/g
 /h		/i		/j		/k		/l		/m		/n		/o
 /p		/q		/r		/s		/t		/u		/v		/w
-/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/scaron
-/OE		/dagger		/daggerdbl	/Lslash		/fraction	/guilsinglleft	/Scaron		/guilsinglright
-/oe		/Ydieresis	/Zcaron		/lslash		/perthousand	/quotedblbase	/quotedblleft	/quotedblright
-/dotlessi	/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent
-/dieresis	/quotesinglbase	/ring		/cedilla	/quotesingle	/hungarumlaut	/ogonek		/caron
-/space		/exclamdown	/cent		/sterling	/currency	/yen		/brokenbar	/section
-/dieresis	/copyright	/ordfeminine	/guillemotleft	/logicalnot	/hyphen		/registered	/macron
-/degree		/plusminus	/twosuperior	/threesuperior	/acute		/mu		/paragraph	/periodcentered
-/cedilla	/onesuperior	/ordmasculine	/guillemotright	/onequarter	/onehalf	/threequarters	/questiondown
-/Agrave		/Aacute		/Acircumflex	/Atilde		/Adieresis	/Aring		/AE		/Ccedilla
-/Egrave		/Eacute		/Ecircumflex	/Edieresis	/Igrave		/Iacute		/Icircumflex	/Idieresis
-/Eth		/Ntilde		/Ograve		/Oacute		/Ocircumflex	/Otilde		/Odieresis	/multiply
-/Oslash		/Ugrave		/Uacute		/Ucircumflex	/Udieresis	/Yacute		/Thorn		/germandbls
-/agrave		/aacute		/acircumflex	/atilde		/adieresis	/aring		/ae		/ccedilla
-/egrave		/eacute		/ecircumflex	/edieresis	/igrave		/iacute		/icircumflex	/idieresis
-/eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
-/oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/florin
+/Atilde		/Ccedilla	/Eth		/Lslash		/Ntilde		/Otilde		/Scaron		/Thorn
+/Yacute		/Ydieresis	/Zcaron		/atilde		/brokenbar	/ccedilla	/copyright	/degree
+/divide		/eth		/logicalnot	/lslash		/minus		/mu		/multiply	/ntilde
+/onehalf	/onequarter	/onesuperior	/otilde		/plusminus	/registered	/scaron		/thorn
+/.notdef	/exclamdown	/cent		/sterling	/fraction	/yen		/florin		/section
+/currency	/quotesingle	/quotedblleft	/guillemotleft	/guilsinglleft	/guilsinglright	/fi		/fl
+/Aacute		/endash		/dagger		/daggerdbl	/periodcentered	/Acircumflex	/paragraph	/bullet
+/quotesinglbase	/quotedblbase	/quotedblright	/guillemotright	/ellipsis	/perthousand	/Adieresis	/questiondown
+/Agrave		/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent
+/dieresis	/Eacute		/ring		/cedilla	/Ecircumflex	/hungarumlaut	/ogonek		/caron
+/emdash		/Edieresis	/Egrave		/Iacute		/Icircumflex	/Idieresis	/Igrave		/Oacute
+/Ocircumflex	/Odieresis	/Ograve		/Uacute		/Ucircumflex	/Udieresis	/Ugrave		/aacute
+/acircumflex	/AE		/adieresis	/ordfeminine	/agrave		/eacute		/ecircumflex	/edieresis
+/egrave		/Oslash		/OE		/ordmasculine	/iacute		/icircumflex	/idieresis	/igrave
+/oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
+/udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def	% Initially zero
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -223,308 +190,173 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
-
-/PSL_pathtextdict 26 dict def			% Local storage for the procedure PSL_pathtext.
-
-/PSL_pathtext					% PSL_pathtext'' will place a string
-  {PSL_pathtextdict begin			% of text along any path. It takes
-    /ydepth exch def                            % a string and starting offset
-    /textheight exch def			% distance from the beginning of
-    /just exch def				% the path as its arguments. Note
-    /offset exch def				% that PSL_pathtext assumes that a
-    /str exch def				% path has already been defined
-						% and after it places the text
-						% along the path, it clears the
-						% current path like the ``stroke''
-						% and ``fill'' operators; it also
-						% assumes that a font has been
-						% set. ``pathtext'' begins placing
-						% the characters along the current
-						% path, starting at the offset
-						% distance and continuing until
-						% either the path length is
-						% exhausted or the entire string
-						% has been printed, whichever
-						% occurs first. The results will
-						% be more effective when a small
-						% point size font is used with
-						% sharp curves in the path.
-						
-
-    /pathdist 0 def				% Initialize the distance we have
-						% travelled along the path.
-    /setdist offset def				% Initialize the distance we have
-						% covered by setting characters.
-    /charcount 0 def				% Initialize the character count.
-    /justy just 4 idiv textheight mul 2 div neg ydepth sub def % Compute the y-shift
-    V flattenpath				% Reduce the path to a series of
-						% straight line segments. The
-						% characters will be placed along
-						% the line segments in the
-						% ``linetoproc.''
-	{movetoproc} {linetoproc}		% The basic strategy is to process
-	{curvetoproc} {closepathproc}		% the segments of the path,
-	pathforall				% keeping a running total of the
-						% distance we have travelled so
-						% far (pathdist). We also keep
-						% track of the distance taken up
-						% by the characters that have been
-						% set so far (setdist). When the
-						% distance we have travelled along
-						% the path is greater than the
-						% distance taken up by the set
-						% characters, we are ready to set
-						% the next character (if there are
-						% any left to be set). This
-						% process continues until we have
-						% exhausted the full length of the
-						% path.
-    U N						% Clear the current path.
+/PSL_pathtextdict 26 dict def
+/PSL_pathtext
+  {PSL_pathtextdict begin
+    /ydepth exch def
+    /textheight exch def
+    /just exch def
+    /offset exch def
+    /str exch def
+    /pathdist 0 def
+    /setdist offset def
+    /charcount 0 def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
+    V flattenpath
+	{movetoproc} {linetoproc}
+	{curvetoproc} {closepathproc}
+	pathforall
+    U N
     end
   } def
-
 PSL_pathtextdict begin
-/movetoproc					% ``movetoproc'' is executed when
-  { /newy exch def /newx exch def		% a moveto component has been
-						% encountered in the pathforall
-						% operation.
-    /firstx newx def /firsty newy def		% Remember the ``first point'' in
-						% the path so that when we get a
-						% ``closepath'' component we can
-						% properly handle the text.
+/movetoproc
+  { /newy exch def /newx exch def
+    /firstx newx def /firsty newy def
     /ovr 0 def
     newx newy transform
-    /cpy exch def /cpx exch def			% Explicitly keep track of the
-						% current position in device
-						% space.
+    /cpy exch def /cpx exch def
   } def
-
-/linetoproc					% ``linetoproc'' is executed when
-						% a lineto component has been
-						% encountered in the pathforall
-						% operation.
-  { /oldx newx def /oldy newy def		% Update the old point.
-    /newy exch def /newx exch def		% Get the new point.
+/linetoproc
+  { /oldx newx def /oldy newy def
+    /newy exch def /newx exch def
     /dx newx oldx sub def
     /dy newy oldy sub def
-    /dist dx dup mul dy dup mul add sqrt def	% Calculate the distance between
-						% the old and the new point.
+    /dist dx dup mul dy dup mul add sqrt def
     dist 0 ne
-    { /dsx dx dist div ovr mul def		% dsx and dsy are used to update
-      /dsy dy dist div ovr mul def		% the current position to be just
-						% beyond the width of the previous
-						% character.
+    { /dsx dx dist div ovr mul def
+      /dsy dy dist div ovr mul def
       oldx dsx add oldy dsy add transform
-      /cpy exch def /cpx exch def		% Update the current position.
-      /pathdist pathdist dist add def		% Increment the distance we have
-						% travelled along the path.
-      {setdist pathdist le			% Keep setting characters along
-						% this path segment until we have
-						% exhausted its length.
-	  {charcount str length lt		% As long as there are still
-	      {setchar} {exit} ifelse}		% characters left in the string,
-						% set them.
-	  { /ovr setdist pathdist sub def		% Keep track of how much we have
-	    exit}				% overshot the path segment by
-	  ifelse					% setting the previous character.
-						% This enables us to position the
-						% origin of the following
-						% characters properly on the path.
+      /cpy exch def /cpx exch def
+      /pathdist pathdist dist add def
+      {setdist pathdist le
+	  {charcount str length lt
+	      {setchar} {exit} ifelse}
+	  { /ovr setdist pathdist sub def
+	    exit}
+	  ifelse
       } loop
     } if
   } def
-
-/curvetoproc					% ``curvetoproc'' is executed when
-  { (ERROR: No curveto's after flattenpath!)	% a curveto component has been
-    print					% encountered in the pathforall
-  } def						% operation. It prints an error
-						% message since there shouldn't be
-						% any curveto's in a path after
-						% the flattenpath operator has
-						% been executed.
-
-/closepathproc					% ``closepathproc'' is executed
-  {firstx firsty linetoproc			% when a closepath component has
-    firstx firsty movetoproc			% been encountered in the
-  } def						% pathforall operation. It
-						% simulates the action of the
-						% operator ``closepath'' by
-						% executing ``linetoproc'' with
-						% the coordinates of the most
-						% recent ``moveto'' and then
-						% executing ``movetoproc'' to the
-						% same point.
-
-/setchar					% ``setchar'' sets the next
-  { /char str charcount 1 getinterval def	% character in the string along
-						% the path and then updates the
-						% amount of path we have
-						% exhausted.
-    /charcount charcount 1 add def		% Increment the character count.
-    /charwidth char stringwidth pop def		% Find the width of the character.
-    V cpx cpy itransform T			% Translate to the current
-						% position in user space.
-      dy dx atan R				% Rotate the x-axis to coincide
-						% with the current segment.
+/curvetoproc
+  { (ERROR: No curveto's after flattenpath!)
+    print
+  } def
+/closepathproc
+  {firstx firsty linetoproc
+    firstx firsty movetoproc
+  } def
+/setchar
+  { /char str charcount 1 getinterval def
+    /charcount charcount 1 add def
+    /charwidth char stringwidth pop def
+    V cpx cpy itransform T
+      dy dx atan R
       0 justy M
       char show
       0 justy neg G
       currentpoint transform
-      /cpy exch def /cpx exch def		% Update the current position
-    						% before we restore ourselves to
-						% the untransformed state.
-    U /setdist setdist charwidth add def	% Increment the distance we have
-  } def						% covered by setting characters.
+      /cpy exch def /cpx exch def
+    U /setdist setdist charwidth add def
+  } def
 end
-
-% PSL LABEL CLIP FUNCTIONS
-
-% Two main functions deals with label placement and clipping:
-% PSL_curved_path_labels: 	handles texts that must follow curved baselines
-% PSL_straight_path_labels:	handles texts that have straight baselines
-%
-% Both functions assume that several variables have been predefined:
-%
-% First we have these two constant settings for all text boxes:
-%
-%   PSL_setboxpen  Function that sets the text box pen attributes (width, texture, color)
-%   PSL_setboxrgb  Function that sets the opaque text box color
-%
-% Then several arrays are placed.  Since a set of several lines segments may each
-% have many labels along them, we end up with these variables:
-%
-%   PSL_n_paths		Total number of segments
-%   PSL_path_x		x coordinates of the paths (all concatenated one after another)
-%   PSL_path_y		y coordinates of the paths (all concatenated one after another)
-%   PSL_path_n		Array with number of points per segment
-%   PSL_label_str  	Array with all the labels for all segments
-%   PSL_label_n		Array with number of labels per segment
-%   PSL_angle		The annotation angle for each label
-%
-% PSL_curved_path_labels expects those labels to be placed along several
-% lines and it needs the node numbers where to place text:
-%
-% PSL_node	Array with (x,y) node number of label position
-%
-% PSL_straight_path_labels are simpler and instead expects
-%
-% PSL_txt_x	(x,y) coordinates of the location of the m labels
-% PSL_txt_y
-
 /PSL_set_label_heights
-{	% Create array PSL_heights with full label heights
-  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def	% Upper limit in loop over labels
-  /PSL_heights PSL_n_labels array def		% Create array with text heights
-  0 1 PSL_n_labels_minus_1			% Loop psl_k = 0 < PSL_n_labels
-  { /psl_k exch def				% Current label index psl_k
-    /psl_label PSL_label_str psl_k get def	% Current text label
-    PSL_label_font psl_k get cvx exec		% Get and set this label's font attributes
-    psl_label sH /PSL_height edef		% Compute the height of this string
-    PSL_heights psl_k PSL_height put		% Store it in the array
+{
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  /PSL_heights PSL_n_labels array def
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    /psl_label PSL_label_str psl_k get def
+    PSL_label_font psl_k get cvx exec
+    psl_label sH /PSL_height edef
+    PSL_heights psl_k PSL_height put
   } for
 } def
-
-% Curved Baseline Text Placement Functions
-
 /PSL_curved_path_labels
-{ /psl_bits exch def				% 4 on/of bit settings as indicated below
-  /PSL_placetext psl_bits 2 and 2 eq def		% true to place text, false to just make space
-  /PSL_clippath psl_bits 4 and 4 eq def		% false inactive, true creates clippath for labels
-  /PSL_strokeline false def			% true draws line, false skips
-  /PSL_fillbox psl_bits 128 and 128 eq def		% true to paint box opaque before placing text, false gives transparent box
-  /PSL_drawbox psl_bits 256 and 256 eq def		% true to draw box outline before placing text, false gives no outline
-  /PSL_n_paths1 PSL_n_paths 1 sub def		% one less is the upper limit in for loop over the paths
-  /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
-
-  PSL_clippath {clipsave N clippath} if		% Bracket with clipsave/cliprestore and start clip path
+{ /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_clippath psl_bits 4 and 4 eq def
+  /PSL_strokeline false def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_clippath {clipsave N clippath} if
   /psl_k 0 def
   /psl_p 0 def
   0 1 PSL_n_paths1
-  { /psl_kk exch def						% Index into the PSL_n PSL_m arrays
-    /PSL_n PSL_path_n  psl_kk get def				% Get the number of points in this line segment
-    /PSL_m PSL_label_n psl_kk get def				% Get the number of labels for this line segment
-    /PSL_x PSL_path_x psl_k PSL_n getinterval def		% Get the subset that is the current line segment x-coordinates
-    /PSL_y PSL_path_y psl_k PSL_n getinterval def		% Get the subset that is the current line segment y-coordinates
-    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def	% Get the subset of node values for current line segment
-    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def	% Get the subset of angle values for current line segment
-    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def		% Get the subset of string values for current line segment
-    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def		% Get the subset of font settings for current line segment
-    PSL_curved_path_label					% Operate on this segment only
-    /psl_k psl_k PSL_n add def					% Go to next segment start index for path
-    /psl_p psl_p PSL_m add def					% Go to next segment start index for nodes
-  } for  % The loop over segments
-  			
-  PSL_clippath {PSL_eoclip} if N			% Activate clip path and return
-
+  { /psl_kk exch def
+    /PSL_n PSL_path_n  psl_kk get def
+    /PSL_m PSL_label_n psl_kk get def
+    /PSL_x PSL_path_x psl_k PSL_n getinterval def
+    /PSL_y PSL_path_y psl_k PSL_n getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
+    PSL_curved_path_label
+    /psl_k psl_k PSL_n add def
+    /psl_p psl_p PSL_m add def
+  } for
+  PSL_clippath {PSL_eoclip} if N
 } def
-
 /PSL_curved_path_label
-{	% Deals with a single line segment and its labels
-  /PSL_n1 PSL_n 1 sub def	% one less is the upper limit in for loops
-  /PSL_m1 PSL_m 1 sub def	% same
-
-  PSL_CT_calcstringwidth	% Calculate the width of each label string
-  PSL_CT_calclinedist		% Calculate along-track distances
-  PSL_CT_excludelabels		% Possibly eliminate labels outside of line domain
-  PSL_CT_addcutpoints		% Expand path to include the cut points
-
-% Now we have the final xx/yy array and we are ready to simply lay down the lines
-% and place the text along the line where there are labels.  We will use the
-% new array PSL_xp/yp to store the final points prior to use
-
-  /PSL_nn1 PSL_nn 1 sub def		% End index in for loop
-  /n 0 def				% Toggle: 0 means line, 1 means text
-  /k 0 def				% Index of the current text string
-  /j 0 def				% Output point number counter
-  /PSL_seg 0 def			% Line segment number
+{
+  /PSL_n1 PSL_n 1 sub def
+  /PSL_m1 PSL_m 1 sub def
+  PSL_CT_calcstringwidth
+  PSL_CT_calclinedist
+  PSL_CT_excludelabels
+  PSL_CT_addcutpoints
+  /PSL_nn1 PSL_nn 1 sub def
+  /n 0 def
+  /k 0 def
+  /j 0 def
+  /PSL_seg 0 def
   /PSL_xp PSL_nn array def
   /PSL_yp PSL_nn array def
-  PSL_xp 0 PSL_xx 0 get put		% Place first point in array
+  PSL_xp 0 PSL_xx 0 get put
   PSL_yp 0 PSL_yy 0 get put
-  1 1 PSL_nn1				% Loop over rest of points
-  { /i exch def				% Index into PSL_xx/yy arrays
-    /node_type PSL_kind i get def	% Check what kind of point the current point is
-    /j j 1 add def			% Update point count
-    PSL_xp j PSL_xx i get put		% Add this point to the path
+  1 1 PSL_nn1
+  { /i exch def
+    /node_type PSL_kind i get def
+    /j j 1 add def
+    PSL_xp j PSL_xx i get put
     PSL_yp j PSL_yy i get put
-    node_type 1 eq			% If this is a cut point we either stroke or place text
-    {n 0 eq				% n is 0 so this is the strokable segment
+    node_type 1 eq
+    {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath		% here, n = 1 so this is the segment along which text should be placed
-	PSL_CT_textline} ifelse		% Reverse path if needed to place text correctly
+      {	PSL_CT_reversepath
+	PSL_CT_textline} ifelse
       /j 0 def
-      PSL_xp j PSL_xx i get put		% Place new first point in array
+      PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
     } if
   } for
-  n 0 eq {PSL_CT_drawline} if	% Finish off the last line segment
-
+  n 0 eq {PSL_CT_drawline} if
 } def
-
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec		% Get and set this label's font attributes
-  /PSL_height PSL_heights k get def	% Recall the height of this text
-  PSL_placetext	{PSL_CT_placelabel} if	% If we want to place the text
+{ PSL_fnt k get cvx exec
+  /PSL_height PSL_heights k get def
+  PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
-  /n 0 def /k k 1 add def		% Set n back to 0, goto next label
+  /n 0 def /k k 1 add def
 } def
-
-/PSL_CT_calcstringwidth			% Calculate the width of each label string
-{ /PSL_width_tmp PSL_m array def	% Assign space for distance
+/PSL_CT_calcstringwidth
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt_tmp i get cvx exec					% Get and set this label's font attributes
-    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put	% Compute width and store in the array
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
-
-/PSL_CT_calclinedist			% Calculate the distance along the line
+/PSL_CT_calclinedist
 { /PSL_newx PSL_x 0 get def
   /PSL_newy PSL_y 0 get def
-  /dist 0.0 def			% Cumulative distance at first point is 0
-  /PSL_dist PSL_n array def	% Assign array space for distance
-  PSL_dist 0 0.0 put		% Distances start at 0 and the 'th point
-  1 1 PSL_n1			% Loop over the remaining points
+  /dist 0.0 def
+  /PSL_dist PSL_n array def
+  PSL_dist 0 0.0 put
+  1 1 PSL_n1
   { /i exch def
     /PSL_oldx PSL_newx def
     /PSL_oldy PSL_newy def
@@ -536,100 +368,86 @@ end
     PSL_dist i dist put
   } for
 } def
-
-% Some labels (in particular first and last per segment) may be too long
-% to actually fit inside the length of the line.  We precalculate the
-% start and end distances for each label and those that exceed the length
-% of the line cannot be plotted and are thus skipped.  The surviving labels
-% and their information is copied to the final PSL arrays
-
 /PSL_CT_excludelabels
-{ /k 0 def				% Current cut point
-  /PSL_width PSL_m array def		% New array of distances
-  /PSL_angle PSL_m array def		% New array of angles
-  /PSL_node PSL_m array def		% New array of nodes
-  /PSL_str PSL_m array def		% New array of strings
-  /PSL_fnt PSL_m array def		% New array of fonts
-  /lastdist PSL_dist PSL_n1 get def	% Length of line 
-  0 1 PSL_m1				% For each of the m labels
-  { /i exch def						% Index for label distance
-    /dist PSL_dist PSL_node_tmp i get get def		% Recall the distance to this label center
-    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def	% Set the halfwidth + gap distance
-    /L_dist dist halfwidth sub def			% Distance at beginning of label gap
-    /R_dist dist halfwidth add def			% Distance at the end of label gap
-    L_dist 0 gt R_dist lastdist lt and		% Yes, label is inside line ends
-    { % These are the labels we will use
-      PSL_width k PSL_width_tmp i get put	% Copy over width
-      PSL_node k PSL_node_tmp i get put		% Copy over node
-      PSL_angle k PSL_angle_tmp i get put	% Copy over angle
-      PSL_str k PSL_str_tmp i get put		% Copy over text
-      PSL_fnt k PSL_fnt_tmp i get put		% Copy over font
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
       /k k 1 add def
     } if
   } for
-  /PSL_m k def	% New number of labels
+  /PSL_m k def
   /PSL_m1 PSL_m 1 sub def
 } def
-
-% Initialize an array with all the original line points plus the set of 2*m
-% points at the transition from line to labelspace at each label
-% At the end of this section, the PSL_xx/yy array will be the array to use.
-
 /PSL_CT_addcutpoints
-{ /k 0 def				% Current cut point
-  /PSL_nc PSL_m 2 mul 1 add def		% 2*m points + one last acting as infinity
-  /PSL_cuts PSL_nc array def		% The array of distances to each cut
-  /PSL_nc1 PSL_nc 1 sub def		% One less to use in for loop limits
-  0 1 PSL_m1				% For each of the m labels
-  { /i exch def						% Index for label distance
-    /dist PSL_dist PSL_node i get get def		% Recall the distance to this label center
-    /halfwidth PSL_width i get 2 div PSL_gap_x add def	% Set the halfwidth + gap distance
-    PSL_cuts k dist halfwidth sub put			% Distance at beginning of label gap
-    /k k 1 add def					% Was at start, now go to end distance node
-    PSL_cuts k dist halfwidth add put			% Distance at the end of label gap
-    /k k 1 add def					% Was at end, move to next
+{ /k 0 def
+  /PSL_nc PSL_m 2 mul 1 add def
+  /PSL_cuts PSL_nc array def
+  /PSL_nc1 PSL_nc 1 sub def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node i get get def
+    /halfwidth PSL_width i get 2 div PSL_gap_x add def
+    PSL_cuts k dist halfwidth sub put
+    /k k 1 add def
+    PSL_cuts k dist halfwidth add put
+    /k k 1 add def
   } for
-  PSL_cuts k 100000.0 put				% Last cut has "infinite" distance
-
-  /PSL_nn PSL_n PSL_m 2 mul add def	% The total path will be 2*m points longer
-  /PSL_xx PSL_nn array def		% Assign new space for x and y
+  PSL_cuts k 100000.0 put
+  /PSL_nn PSL_n PSL_m 2 mul add def
+  /PSL_xx PSL_nn array def
   /PSL_yy PSL_nn array def
-  /PSL_kind PSL_nn array def		% 0 = ordinary point, 1 = added point for label gap
-  /j 0 def				% Index for new track array
-  /k 0 def				% Index for current cut distance
-  /dist 0.0 def				% Current distance along track, starting at zero
-  0 1 PSL_n1				% Loop over every original line point
-  { /i exch def				% Index into current point on original line xy array
-    /last_dist dist def			% Update distance to last point (initially zero)
-    /dist PSL_dist i get def		% Distance to current point
-    k 1 PSL_nc1				% Loop over remaining cuts (starting with all)
-    { /kk exch def			% Index into current cut distance
-      /this_cut PSL_cuts kk get def	% Distance to start of this label gap
-      dist this_cut gt			% Oh, oh, we just stepped over a cut point
-      { /ds dist last_dist sub def	% Change in distance
-	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def	% Get fractional change in distance
+  /PSL_kind PSL_nn array def
+  /j 0 def
+  /k 0 def
+  /dist 0.0 def
+  0 1 PSL_n1
+  { /i exch def
+    /last_dist dist def
+    /dist PSL_dist i get def
+    k 1 PSL_nc1
+    { /kk exch def
+      /this_cut PSL_cuts kk get def
+      dist this_cut gt
+      { /ds dist last_dist sub def
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
 	/i1 i 0 eq {0} {i 1 sub} ifelse def
-	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put	% Calc (x,y) at label start (or stop) point
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
 	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
-	PSL_kind j 1 put		% Set PSL_kind to 1 since it is an added cut point
-	/j j 1 add def			% Go to next output point
-	/k k 1 add def			% Done with this cut point
+	PSL_kind j 1 put
+	/j j 1 add def
+	/k k 1 add def
       } if
     } for
-    dist PSL_cuts k get le		% Having dealt with the cut, we may add the regular point
+    dist PSL_cuts k get le
     {PSL_xx j PSL_x i get put PSL_yy j PSL_y i get put
-      PSL_kind j 0 put			% Ordinary (original) coordinates
-      /j j 1 add def			% Go to next output point
+      PSL_kind j 0 put
+      /j j 1 add def
     } if
   } for
 } def
-
 /PSL_CT_reversepath
-{PSL_xp j get PSL_xp 0 get lt	% Path must first be reversed to avoid upside-down text
-  {0 1 j 2 idiv		% Loop over half the path and swap left/right points
-    { /left exch def		% Current left point
-      /right j left sub def	% Matching right point
-      /tmp PSL_xp left get def	% Swap left and right values for x then y
+{PSL_xp j get PSL_xp 0 get lt
+  {0 1 j 2 idiv
+    { /left exch def
+      /right j left sub def
+      /tmp PSL_xp left get def
       PSL_xp left PSL_xp right get put
       PSL_xp right tmp put
       /tmp PSL_yp left get def
@@ -637,276 +455,235 @@ end
       PSL_yp right tmp put
     } for
   } if
-  % Now PSL_xp/yp has the correct order to give proper text angles
 } def
-
 /PSL_CT_placelabel
-{ % Places the curved text label on current segment
-  /PSL_just PSL_label_justify k get def	% Get this labels justification
-  /PSL_height PSL_heights k get def	% Recall the height of this string
-  /psl_label PSL_str k get def		% Get the current label
-  /psl_depth psl_label sd def		% Determine depth beneath baseline
-  PSL_usebox		% Want to lay down box outline or fill
-  {PSL_CT_clippath	% Box path now current path
-    PSL_fillbox		% Want to paint box
+{
+  /PSL_just PSL_label_justify k get def
+  /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
+  PSL_usebox
+  {PSL_CT_clippath
+    PSL_fillbox
     {V PSL_setboxrgb fill U} if
-    PSL_drawbox		% Want to draw outline of box
+    PSL_drawbox
     {V PSL_setboxpen S U} if N
   } if
   PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
-
 /PSL_CT_clippath
-{ % Lays down a curved clipbox for one label
+{
   /H PSL_height 2 div PSL_gap_y add def
   /xoff j 1 add array def
   /yoff j 1 add array def
-  /angle 0 def	% So it is at least a defined variable
-  0 1 j {	% Loop over points along line to calculate angle and offsets
-    /ii exch def	% Index
+  /angle 0 def
+  0 1 j {
+    /ii exch def
     /x PSL_xp ii get def
     /y PSL_yp ii get def
-    ii 0 eq {	% Are we at the first point and hence must calculate angle using 0 and 1?
+    ii 0 eq {
       /x1 PSL_xp 1 get def
       /y1 PSL_yp 1 get def
       /dx x1 x sub def
       /dy y1 y sub def
     }
-    { /i1 ii 1 sub def	% Previous point
+    { /i1 ii 1 sub def
       /x1 PSL_xp i1 get def
       /y1 PSL_yp i1 get def
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
     dx 0.0 eq dy 0.0 eq and not
-    { /angle dy dx atan 90 add def} if	% Only calculate new angle if not duplicates
+    { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
     xoff ii H cosa mul put
     yoff ii H sina mul put
   } for
-
-  % Lay down next clip segment
-
   PSL_xp 0 get xoff 0 get add PSL_yp 0 get yoff 0 get add M
-  1 1 j {	% Loop over the rest of the upper line
+  1 1 j {
     /ii exch def
     PSL_xp ii get xoff ii get add PSL_yp ii get yoff ii get add L
   } for
-  j -1 0 {	% Loop backwards over the rest of the lower line
+  j -1 0 {
     /ii exch def
     PSL_xp ii get xoff ii get sub PSL_yp ii get yoff ii get sub L
   } for P
 } def
-
 /PSL_CT_drawline
 {
   /str 20 string def
-  % PSL_strokeline PSL_seg 0 eq and		% If we asked to draw lines...
-  PSL_strokeline				% If we asked to draw lines...
-  {PSL_CT_placeline S} if			% Lay down the rest of the path and stroke it
-  /PSL_seg PSL_seg 1 add def			% Goto next segment number
-  /n 1 def					% Set n to 1
+  PSL_strokeline
+  {PSL_CT_placeline S} if
+  /PSL_seg PSL_seg 1 add def
+  /n 1 def
 } def
-
 /PSL_CT_placeline
-{PSL_xp 0 get PSL_yp 0 get M			% Set the anchor point of the path
-  1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for	% Lay down the rest of the path
+{PSL_xp 0 get PSL_yp 0 get M
+  1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-
-% Draw Baseline Text Segment Lines
-% PSL_draw_path_lines will draw the lines that have been stored in the concatenated
-% PSL_path_x and PSL_path_y arrays using the pen attributes in the PSL_path_pen array
-
 /PSL_draw_path_lines
-{	% Draws the lines already stored in the PSL_path_x|y arrays
-  /PSL_n_paths1 PSL_n_paths 1 sub def		% One less is the upper limit in for loop over the paths
+{
+  /PSL_n_paths1 PSL_n_paths 1 sub def
   V
-  /psl_start 0 def					% Start index of segment in concatenated path array
-  0 1 PSL_n_paths1					% Loop over all segments
-  { /psl_k exch def					% Index into the PSL arrays
-    /PSL_n PSL_path_n psl_k get def			% Get the number of points in this line segment
-    /PSL_n1 PSL_n 1 sub def				% One less is the upper limit in for loop over points
-    PSL_path_pen psl_k get cvx exec			% Get and set this line's pen
-    N							% Clean path
-    PSL_path_x psl_start get PSL_path_y psl_start get M	% Place anchor point of this segment
-    1 1 PSL_n1						% Loop over points in this segment
-    { /psl_i exch def					% Local index of next point in segment
-      /psl_kk psl_i psl_start add def			% Equivalent index in concatenated array of all segments
-      PSL_path_x psl_kk get PSL_path_y psl_kk get L	% Draw to next point
+  /psl_start 0 def
+  0 1 PSL_n_paths1
+  { /psl_k exch def
+    /PSL_n PSL_path_n psl_k get def
+    /PSL_n1 PSL_n 1 sub def
+    PSL_path_pen psl_k get cvx exec
+    N
+    PSL_path_x psl_start get PSL_path_y psl_start get M
+    1 1 PSL_n1
+    { /psl_i exch def
+      /psl_kk psl_i psl_start add def
+      PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
-    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def	% Difference between first and last x coordinate
-    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def	% Difference between first and last y coordinate
-    psl_xclose 0 eq psl_yclose 0 eq and { P } if	% Explicitly close the path
-    S							% Stroke this path
-    /psl_start psl_start PSL_n add def			% Go to next segment and update start index for path
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
+    S
+    /psl_start psl_start PSL_n add def
   } for
   U
 } def
-
-% Straight Baseline Text Placement Functions
-% PSL_straight_path_labels deals with straight text labels w/wo textboxes (rect or rounded).
-% Only the (x,y) location of each label is needed.
-% Use <flags> PSL_straight_path_labels to paint|draw textboxes and place text
-% Use <flags> PSL_straight_path_clip to use textboxes to define and activate clipping
-% Subroutines of these functions are called PSL_ST_*
-% Local variables are called psl_*, "global" are called PSL_*
-
 /PSL_straight_path_labels
-{	% This function will lay down (a) text box paint, (b) text box outline, and (c) text labels
-	% All of these are optionals specified by the bit flag.
-  /psl_bits exch def				% Single bitflag argument passed
-  /PSL_placetext psl_bits 2 and 2 eq def	% true to place text, false to just make space
-  /PSL_rounded psl_bits 32 and 32 eq def	% true for rounded box shape, false gives rectangular box
-  /PSL_fillbox psl_bits 128 and 128 eq def	% true to paint box opaque before placing text
-  /PSL_drawbox psl_bits 256 and 256 eq def	% true to draw box outline before placing text
-  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def	% Upper limit in loop over labels
-  /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
-  0 1 PSL_n_labels_minus_1			% Loop psl_k = 0 < PSL_n_labels
-  { /psl_k exch def				% Current label index psl_k
-    PSL_ST_prepare_text				% Get all dimensions, coordinates, etc. for this label
-    PSL_usebox					% If a text box is requested we go in here:
-    {  PSL_rounded				% Place text box path, either straight or rounded, on stack
+{
+  /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_usebox
+    {  PSL_rounded
         {PSL_ST_textbox_round}
         {PSL_ST_textbox_rect}
       ifelse
-      PSL_fillbox {V PSL_setboxrgb fill U} if	% Paint it, if requested
-      PSL_drawbox {V PSL_setboxpen S U} if	% Outline it, if requested
-      N						% Done, so remove path
+      PSL_fillbox {V PSL_setboxrgb fill U} if
+      PSL_drawbox {V PSL_setboxpen S U} if
+      N
     } if
-    PSL_placetext {PSL_ST_place_label} if	% Show text, if requested
+    PSL_placetext {PSL_ST_place_label} if
   } for
 } def
-
 /PSL_straight_path_clip
-{	% This function will create a total clip path for all the labels in PSL_txt
-  /psl_bits exch def				% Single bit flag argument passed
-  /PSL_rounded psl_bits 32 and 32 eq def	% true for rounded box shape, false gives rectangular box
-  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def	% Upper limit in loop over labels
-
-  N clipsave clippath				% Start clip path by selecting the entire mappable area
-  0 1 PSL_n_labels_minus_1			% Loop over all labels
-  { /psl_k exch def				% Current label index psl_k
-    PSL_ST_prepare_text				% Get all dimensions, coordinates, etc. for this label
-    PSL_rounded					% Get either straight or rounded text box path
+{
+  /psl_bits exch def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  N clipsave clippath
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_rounded
       {PSL_ST_textbox_round}
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_eoclip N					% Set the new clip path, increment clip counter and clear path
+  PSL_eoclip N
 } def
-
-/PSL_ST_prepare_text		% Compute various dimensions and coordinates for one label
-{ % The current label has index psl_k
-  /psl_xp PSL_txt_x psl_k get def		% Get text placement x coordinate
-  /psl_yp PSL_txt_y psl_k get def		% Get text placement y coordinate
-  /psl_label PSL_label_str psl_k get def	% Current text label
-  PSL_label_font psl_k get cvx exec		% Get and set this label's font attributes
-  /PSL_height PSL_heights psl_k get def		% Recall the height of this string
-  /psl_boxH PSL_height PSL_gap_y 2 mul add def	% Set height of current label including clearance
-  /PSL_just PSL_label_justify psl_k get def	% Get text justification (1-11)
-  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def % This is 0, -0.5, or -1 for relative x-shift 
-  /PSL_justy PSL_just 4 idiv 2 div neg def	% This is 0, -0.5, or -1 for relative y-shift 
-  /psl_SW psl_label stringwidth pop def		% Width of current label space
-  /psl_boxW psl_SW PSL_gap_x 2 mul add def	% Width of current label space including clearance
-  /psl_x0 psl_SW PSL_justx mul def		% (psl_x0,psl_y0) is rotated/adjusted text LL point on inside rectangle relative to psl_xp,psl_yp
-  /psl_y0 PSL_justy PSL_height mul def		%
-  /psl_angle PSL_label_angle psl_k get def	% The angle of text w.r.t. baseline
-} def
-
-/PSL_ST_textbox_rect	% Compute and place rectangular path for current label
+/PSL_ST_prepare_text
 {
-  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T	% Rotate the coordinate system to follow baseline text and make (psl_x0,psl_y0) the new origin
-  PSL_gap_x neg PSL_gap_y neg M			% Set LL anchor point for rectangular box
-  0 psl_boxH D psl_boxW 0 D 0 psl_boxH neg D P	% Draw text box going CW
-  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T	% Unto trans/rot above
+  /psl_xp PSL_txt_x psl_k get def
+  /psl_yp PSL_txt_y psl_k get def
+  /psl_label PSL_label_str psl_k get def
+  PSL_label_font psl_k get cvx exec
+  /PSL_height PSL_heights psl_k get def
+  /psl_boxH PSL_height PSL_gap_y 2 mul add def
+  /PSL_just PSL_label_justify psl_k get def
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
+  /PSL_justy PSL_just 4 idiv 2 div neg def
+  /psl_SW psl_label stringwidth pop def
+  /psl_boxW psl_SW PSL_gap_x 2 mul add def
+  /psl_x0 psl_SW PSL_justx mul def
+  /psl_y0 PSL_justy PSL_height mul def
+  /psl_angle PSL_label_angle psl_k get def
 } def
-
-/PSL_ST_textbox_round	% Compute and place rounded rectangular path for current label
+/PSL_ST_textbox_rect
 {
-  /psl_BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def	% Smallest gap distance is our corner radius
-  /psl_xd PSL_gap_x psl_BoxR sub def 			% When x_gap exceeds y_gap there will be an adjustment in x, else 0
-  /psl_yd PSL_gap_y psl_BoxR sub def 			% When y_gap exceeds x_gap there will be an adjustment in y, else 0
-  /psl_xL PSL_gap_x neg def				% Left-most x coordinate of text box
-  /psl_yB PSL_gap_y neg def				% Bottom y coordinate of text box
-  /psl_yT psl_boxH psl_yB add def			% Top y coordinate of text box
-  /psl_H2 PSL_height psl_yd 2 mul add def		% Inner height when adjusting for any psl_yd offset
-  /psl_W2 psl_SW psl_xd 2 mul add def			% Inner width when adjusting for any psl_xd offset
-  /psl_xR psl_xL psl_boxW add def			% Right-most x coordinate of text box
-  /psl_x0 psl_SW PSL_justx mul def			% (psl_x0,psl_y0) is rotated/adjusted text LL point on inside rectangle relative to psl_xp,psl_yp
-  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T		% Rotate the coordinate system to follow baseline text and make (psl_x0,psl_y0) the new origin
-  psl_xL psl_yd M					% LL anchor point for rounded box is on lower left side just before rounded corner
-  psl_xL psl_yT psl_xR psl_yT psl_BoxR arct psl_W2 0 D	% Draw UL rounded corner and line to start of UR rounded corner
-  psl_xR psl_yT psl_xR psl_yB psl_BoxR arct 0 psl_H2 neg D	% Draw UR rounded corner and line to LR rounded corner
-  psl_xR psl_yB psl_xL psl_yB psl_BoxR arct psl_W2 neg 0 D	% Draw LR rounded corner and line to LL rounded corner
-  psl_xL psl_yB psl_xL psl_yd psl_BoxR arct P			% Draw LL rounded corner and close the clippath segment
-  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T	% Unto trans/rot above
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  PSL_gap_x neg PSL_gap_y neg M
+  0 psl_boxH D psl_boxW 0 D 0 psl_boxH neg D P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
 } def
-
-/PSL_ST_place_label	% Just place the current label
+/PSL_ST_textbox_round
 {
-    V psl_xp psl_yp T psl_angle R	% Set origin at text point and rotate the coordinate system to follow baseline text
-    psl_SW PSL_justx mul psl_y0 M	% Goto LL point on label
-    psl_label dup sd neg 0 exch G show	% Place the text, adjust vertically for any depth below baseline
-    U					% Undo damage to coordinate system
+  /psl_BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
+  /psl_xd PSL_gap_x psl_BoxR sub def
+  /psl_yd PSL_gap_y psl_BoxR sub def
+  /psl_xL PSL_gap_x neg def
+  /psl_yB PSL_gap_y neg def
+  /psl_yT psl_boxH psl_yB add def
+  /psl_H2 PSL_height psl_yd 2 mul add def
+  /psl_W2 psl_SW psl_xd 2 mul add def
+  /psl_xR psl_xL psl_boxW add def
+  /psl_x0 psl_SW PSL_justx mul def
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  psl_xL psl_yd M
+  psl_xL psl_yT psl_xR psl_yT psl_BoxR arct psl_W2 0 D
+  psl_xR psl_yT psl_xR psl_yB psl_BoxR arct 0 psl_H2 neg D
+  psl_xR psl_yB psl_xL psl_yB psl_BoxR arct psl_W2 neg 0 D
+  psl_xL psl_yB psl_xL psl_yd psl_BoxR arct P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
 } def
-
-/PSL_nclip 0 def							% The depth of clipping in effect
-/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def			% Clip and update PSL_nclip
-/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def			% Even-odd clip and update PSL_nclip
-/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def	% Cliprestore and update PSL_nclip
+/PSL_ST_place_label
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G show
+    U
+} def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
 %%Page: 1 1
 
 %%BeginPageSetup
-%
-% Init coordinate system and scales
-%
-%
-% Scale initialized to 0.06, so 1 inch equals 1200 Postscript units
-%
 V 0.06 0.06 scale
 %%EndPageSetup
 
-%
-% End of PSL header
-%
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
--2835 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
+-2835 PSL_xorig sub PSL_page_xsize 2 div add 945 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Wfaint -R17/76.3/16/81r -Slightblue -JS66/90/12c -P -K -Dh -Xc
-%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Wfaint -R17/76.3/16/81r -Slightblue -JS66/90/12c -P -K -Dh -Xc -Y2c
+%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: -170.079 56.6929 340.157 316.083
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 0 W
-%
-% Bin # 722
-%
-%
-% Bin # 723
-%
-%
-% Bin # 724
-%
-%
-% Bin # 725
-%
-%
-% Polygon 0
-%
+clipsave
+0 0 M
+5669 0 D
+0 5268 D
+-5669 0 D
+P
+PSL_clip N
 3711 5112 M
 -75 104 D
 -37 52 D
@@ -914,12 +691,6 @@ O0
 P
 {0.678 0.847 0.902 C} FS
 FO
-%
-% Bin # 726
-%
-%
-% Polygon 0
-%
 4054 4657 M
 -9 11 D
 -17 23 D
@@ -936,12 +707,6 @@ FO
 911 0 D
 P
 FO
-%
-% Bin # 727
-%
-%
-% Polygon 0
-%
 4413 4214 M
 -28 32 D
 -68 83 D
@@ -954,9 +719,6 @@ FO
 782 611 D
 833 0 D
 P
-%
-% Polygon 1
-%
 4153 4567 M
 -6 -14 D
 42 -3 D
@@ -974,12 +736,6 @@ FO
 -6 13 D
 -24 -2 D
 P S
-%
-% Bin # 728
-%
-%
-% Polygon 0
-%
 4519 4089 M
 2 3 D
 42 35 D
@@ -1027,18 +783,12 @@ P S
 -69 79 D
 -46 53 D
 P
-%
-% Polygon 2
-%
 4966 3987 M
 2 -4 D
 3 4 D
 -4 1 D
 P
 FO
-%
-% Polygon 1
-%
 4910 3894 M
 19 32 D
 8 -2 D
@@ -1089,19 +839,14 @@ P S
 8 -2 D
 -3 -8 D
 S
-%
-% Bin # 729
-%
-%
-% Polygon 0
-%
 4915 3643 M
 8 13 D
 -3 4 D
 -10 0 D
 -2 -9 D
 -44 47 D
--13 15 D
+-13 16 D
+0 -1 D
 -31 33 D
 2 3 D
 -5 1 D
@@ -1168,9 +913,6 @@ S
 -35 29 D
 -13 -16 D
 P
-%
-% Polygon 5
-%
 4851 3816 M
 -14 -21 D
 -1 -15 D
@@ -1178,18 +920,12 @@ P
 13 17 D
 -2 22 D
 P
-%
-% Polygon 6
-%
 4831 3744 M
 -2 -7 D
 6 -1 D
 7 11 D
 -3 3 D
 P
-%
-% Polygon 7
-%
 4877 3698 M
 -4 -8 D
 8 -5 D
@@ -1197,56 +933,35 @@ P
 -2 7 D
 -8 -1 D
 P
-%
-% Polygon 10
-%
 4872 3719 M
 -6 -21 D
 10 5 D
 4 19 D
 -5 0 D
 P
-%
-% Polygon 13
-%
 4898 3697 M
 4 -5 D
 10 4 D
 -10 5 D
 P
-%
-% Polygon 17
-%
 4859 3732 M
 0 -7 D
 12 7 D
 -7 5 D
 P
-%
-% Polygon 18
-%
 4953 3649 M
 3 -3 D
 -1 3 D
 P
-%
-% Polygon 21
-%
 4913 3819 M
 4 -1 D
 -2 3 D
 P
-%
-% Polygon 24
-%
 4880 3707 M
 2 -4 D
 -1 5 D
 P
 FO
-%
-% Polygon 1
-%
 5669 3997 M
 -15 -13 D
 -29 -63 D
@@ -1410,9 +1125,6 @@ FO
 3 9 D
 659 594 D
 P
-%
-% Polygon 3
-%
 5149 4074 M
 -8 -13 D
 8 0 D
@@ -1465,9 +1177,6 @@ P
 -34 -23 D
 -17 -5 D
 P
-%
-% Polygon 8
-%
 5223 3883 M
 2 -8 D
 -5 -7 D
@@ -1475,112 +1184,70 @@ P
 5 28 D
 -5 0 D
 P
-%
-% Polygon 9
-%
 5328 3988 M
 0 -9 D
 10 5 D
 -3 5 D
+-6 0 D
 P
-%
-% Polygon 11
-%
 5305 3982 M
 7 -8 D
 9 1 D
 -2 15 D
+-12 -6 D
 P
-%
-% Polygon 12
-%
 5218 3668 M
 0 -9 D
 11 -6 D
 1 12 D
 -10 5 D
 P
-%
-% Polygon 14
-%
 5177 3754 M
 2 -6 D
 5 6 D
 -5 2 D
 P
-%
-% Polygon 15
-%
 5218 4120 M
 0 -5 D
 6 6 D
+-4 -1 D
 P
-%
-% Polygon 16
-%
 5146 3707 M
 4 -6 D
 4 4 D
 -6 4 D
 P
-%
-% Polygon 19
-%
 5050 3948 M
 9 -3 D
 -7 4 D
 P
-%
-% Polygon 20
-%
 5198 3656 M
 4 -5 D
 -3 7 D
 P
-%
-% Polygon 22
-%
 5200 3643 M
 5 -1 D
 -3 3 D
 P
-%
-% Polygon 23
-%
 5205 3688 M
 6 -2 D
 P
-%
-% Polygon 25
-%
 5195 3661 M
 5 -1 D
 -4 2 D
 P
-%
-% Polygon 26
-%
 5293 4002 M
 4 -1 D
 -3 2 D
 P
-%
-% Polygon 27
-%
 5393 4000 M
 4 -2 D
 -2 3 D
 P
-%
-% Polygon 28
-%
 5171 3934 M
 4 -2 D
 -3 3 D
 P
-%
-% Polygon 29
-%
 5338 3979 M
 4 -3 D
 P
@@ -1888,6 +1555,7 @@ P S
 0 -9 D
 10 5 D
 -3 5 D
+-6 0 D
 P S
 4872 3719 M
 -6 -21 D
@@ -1899,6 +1567,7 @@ P S
 7 -8 D
 9 1 D
 -2 15 D
+-12 -6 D
 P S
 5218 3668 M
 0 -9 D
@@ -1925,6 +1594,7 @@ P S
 5218 4120 M
 0 -5 D
 6 6 D
+-4 -1 D
 P S
 5146 3707 M
 4 -6 D
@@ -1946,7 +1616,8 @@ P S
 2 3 D
 S
 4857 3706 M
--6 7 D
+-6 8 D
+0 -1 D
 S
 4820 3746 M
 2 3 D
@@ -1994,12 +1665,6 @@ P S
 5338 3979 M
 4 -3 D
 P S
-%
-% Bin # 730
-%
-%
-% Polygon 0
-%
 5669 3160 M
 -13 -1 D
 -17 -8 D
@@ -2045,24 +1710,15 @@ P S
 13 4 D
 7 22 D
 P
-%
-% Polygon 11
-%
 5624 3417 M
 -3 -9 D
 7 1 D
 -1 6 D
 P
-%
-% Polygon 15
-%
 5623 3574 M
 5 -3 D
 -4 4 D
 P
-%
-% Polygon 19
-%
 5630 3422 M
 -3 -3 D
 5 1 D
@@ -2129,12 +1785,6 @@ P S
 -3 -3 D
 5 1 D
 P S
-%
-% Bin # 731
-%
-%
-% Polygon 0
-%
 5669 2932 M
 -4 -4 D
 -1 -15 D
@@ -2157,38 +1807,17 @@ FO
 1 6 D
 10 5 D
 11 23 D
-S
+0 0 D S
 5669 2932 M
 -4 -4 D
 -1 -15 D
 -11 -21 D
 S
-%
-% Bin # 732
-%
-%
-% Bin # 733
-%
-%
-% Bin # 734
-%
-%
-% Bin # 902
-%
-%
-% Polygon 0
-%
 0 5268 M
 566 0 D
 -566 -327 D
 P
 FO
-%
-% Bin # 903
-%
-%
-% Polygon 0
-%
 285 4315 M
 -95 153 D
 -49 80 D
@@ -2199,12 +1828,6 @@ FO
 1244 0 D
 P
 FO
-%
-% Bin # 904
-%
-%
-% Polygon 0
-%
 658 3740 M
 -43 64 D
 -100 150 D
@@ -2222,12 +1845,6 @@ FO
 1112 0 D
 P
 FO
-%
-% Bin # 905
-%
-%
-% Polygon 0
-%
 3357 4855 M
 -14 12 D
 12 4 D
@@ -2472,7 +2089,8 @@ FO
 6 -10 D
 8 6 D
 19 -5 D
--115 -83 D
+-86 -62 D
+-29 -21 D
 -4 6 D
 -23 5 D
 -15 -2 D
@@ -2499,7 +2117,8 @@ FO
 -11 -8 D
 -4 0 D
 -4 -6 D
--83 -60 D
+-62 -45 D
+-21 -15 D
 -1 1 D
 0 -1 D
 1 0 D
@@ -2558,7 +2177,8 @@ FO
 -17 -11 D
 1 -17 D
 -11 -27 D
--392 -285 D
+-294 -214 D
+-98 -71 D
 12 16 D
 25 21 D
 12 36 D
@@ -2686,8 +2306,8 @@ FO
 -5 -3 D
 -9 4 D
 -6 -10 D
--21 -11 D
--6 -14 D
+-20 -10 D
+-7 -15 D
 -13 -12 D
 -8 -3 D
 3 -3 D
@@ -2738,7 +2358,8 @@ FO
 4 5 D
 11 -1 D
 -11 -21 D
--297 -216 D
+-223 -162 D
+-74 -54 D
 -106 146 D
 -147 210 D
 -88 128 D
@@ -2747,10 +2368,8 @@ FO
 677 0 D
 62 -87 D
 50 -69 D
+-266 -193 D
 P
-%
-% Polygon 2
-%
 3146 5064 M
 8 8 D
 1 7 D
@@ -2799,9 +2418,6 @@ P
 6 1 D
 -1 19 D
 P
-%
-% Polygon 3
-%
 3199 5102 M
 -4 14 D
 7 19 D
@@ -2820,9 +2436,6 @@ P
 0 -16 D
 12 7 D
 P
-%
-% Polygon 4
-%
 1944 4224 M
 11 5 D
 -36 -16 D
@@ -2832,9 +2445,6 @@ P
 -2 19 D
 5 18 D
 P
-%
-% Polygon 5
-%
 3389 5138 M
 -10 -25 D
 8 -13 D
@@ -2845,9 +2455,6 @@ P
 -11 -14 D
 -10 3 D
 P
-%
-% Polygon 6
-%
 3415 5097 M
 -3 -19 D
 14 3 D
@@ -2855,9 +2462,6 @@ P
 1 5 D
 -35 -5 D
 P
-%
-% Polygon 7
-%
 3329 5085 M
 -4 -18 D
 7 -26 D
@@ -2865,18 +2469,13 @@ P
 -10 12 D
 -7 0 D
 P
-%
-% Polygon 8
-%
 3404 5051 M
 19 -9 D
 19 0 D
 -1 13 D
 -13 9 D
+-22 -11 D
 P
-%
-% Polygon 9
-%
 3442 5068 M
 6 -16 D
 15 -1 D
@@ -2884,180 +2483,113 @@ P
 2 9 D
 -9 7 D
 P
-%
-% Polygon 10
-%
 1910 4228 M
 -2 -8 D
 3 -1 D
 5 8 D
 -4 3 D
 P
-%
-% Polygon 11
-%
 1425 3621 M
 -1 -13 D
 13 12 D
 2 7 D
+-12 -5 D
 P
-%
-% Polygon 12
-%
 2601 4683 M
 6 -1 D
 4 5 D
 -3 4 D
 P
-%
-% Polygon 13
-%
 3468 5119 M
 -1 -4 D
 8 0 D
 -5 4 D
 P
-%
-% Polygon 14
-%
 3408 4947 M
 4 -6 D
 2 6 D
+-4 0 D
 P
-%
-% Polygon 15
-%
 1440 3652 M
 5 -6 D
 8 9 D
 -9 0 D
 P
-%
-% Polygon 16
-%
 1410 3596 M
 3 -3 D
 4 4 D
+-6 0 D
 P
-%
-% Polygon 17
-%
 3041 5031 M
 1 -10 D
 10 0 D
 -9 10 D
 P
-%
-% Polygon 18
-%
 1794 4068 M
 1 -4 D
 0 4 D
 P
-%
-% Polygon 19
-%
 3157 5072 M
 9 0 D
 -4 3 D
 P
-%
-% Polygon 20
-%
 3335 5041 M
 6 -3 D
 -5 4 D
 P
-%
-% Polygon 21
-%
 3384 5046 M
 0 -5 D
 2 5 D
 P
-%
-% Polygon 22
-%
 3037 5087 M
 6 0 D
 -5 1 D
 P
-%
-% Polygon 23
-%
 3328 5038 M
 5 -3 D
 P
-%
-% Polygon 24
-%
 1349 3410 M
 1 -5 D
 1 6 D
 P
-%
-% Polygon 25
-%
 3392 5057 M
 5 0 D
+-4 0 D
 P
-%
-% Polygon 26
-%
 3341 5045 M
 3 -4 D
 -2 4 D
 P
-%
-% Polygon 27
-%
 1330 3399 M
 2 -3 D
 0 4 D
 P
-%
-% Polygon 28
-%
 1339 3436 M
 1 -4 D
 0 4 D
 P
-%
-% Polygon 29
-%
 2503 4290 M
 3 -2 D
 -2 3 D
 P
-%
-% Polygon 30
-%
 3005 5023 M
 -1 -5 D
 2 5 D
 P
-%
-% Polygon 31
-%
 3107 5097 M
 0 -3 D
 3 3 D
 P
-%
-% Polygon 32
-%
 1346 3403 M
 0 -3 D
 1 3 D
 P
 FO
-%
-% Polygon 1
-%
 3320 4828 M
 -4 5 D
 4 3 D
 6 -4 D
+-5 -3 D
 P
 FO
 3357 4855 M
@@ -3433,8 +2965,8 @@ S
 -5 -3 D
 -9 4 D
 -6 -10 D
--21 -11 D
--6 -14 D
+-20 -10 D
+-7 -15 D
 -13 -12 D
 -8 -3 D
 3 -3 D
@@ -3671,6 +3203,7 @@ P S
 19 0 D
 -1 13 D
 -13 9 D
+-22 -11 D
 P S
 3442 5068 M
 6 -16 D
@@ -3689,6 +3222,7 @@ P S
 -1 -13 D
 13 12 D
 2 7 D
+-12 -5 D
 P S
 2601 4683 M
 6 -1 D
@@ -3703,6 +3237,7 @@ P S
 3408 4947 M
 4 -6 D
 2 6 D
+-4 0 D
 P S
 1440 3652 M
 5 -6 D
@@ -3712,6 +3247,7 @@ P S
 1410 3596 M
 3 -3 D
 4 4 D
+-6 0 D
 P S
 3041 5031 M
 1 -10 D
@@ -3756,6 +3292,7 @@ P S
 P S
 3392 5057 M
 5 0 D
+-4 0 D
 P S
 3341 5045 M
 3 -4 D
@@ -3789,12 +3326,6 @@ P S
 -4 0 D
 -4 -6 D
 S
-%
-% Bin # 906
-%
-%
-% Polygon 0
-%
 1348 3395 M
 -1 0 D
 15 11 D
@@ -4019,9 +3550,6 @@ S
 -87 116 D
 -135 184 D
 P
-%
-% Polygon 6
-%
 1835 3675 M
 -17 -40 D
 13 6 D
@@ -4029,65 +3557,38 @@ P
 12 14 D
 -1 11 D
 P
-%
-% Polygon 26
-%
 1646 3261 M
 1 -3 D
 0 4 D
 P
-%
-% Polygon 28
-%
 1523 3113 M
 -1 -4 D
 2 4 D
 P
-%
-% Polygon 32
-%
 1753 2963 M
 1 -3 D
 0 3 D
 P
-%
-% Polygon 35
-%
 1658 3283 M
 3 -7 D
 -1 7 D
 P
-%
-% Polygon 40
-%
 1654 3281 M
 0 -3 D
 1 3 D
 P
-%
-% Polygon 41
-%
 1850 3500 M
 0 -6 D
 1 6 D
 P
-%
-% Polygon 43
-%
 1641 3244 M
 1 -4 D
 1 5 D
 P
-%
-% Polygon 46
-%
 1651 3272 M
 3 -2 D
 P
 FO
-%
-% Polygon 1
-%
 2283 4075 M
 6 -6 D
 -6 6 D
@@ -4132,78 +3633,49 @@ FO
 -18 24 D
 2 4 D
 P
-%
-% Polygon 11
-%
 2354 4005 M
 1 -4 D
 7 1 D
 1 5 D
+-8 -1 D
 P
-%
-% Polygon 13
-%
 2423 4064 M
 -6 -11 D
 8 2 D
 5 9 D
 -5 1 D
 P
-%
-% Polygon 15
-%
 2340 4025 M
 -2 -8 D
 14 5 D
 -10 4 D
 P
-%
-% Polygon 19
-%
 2360 4016 M
 3 -7 D
 4 6 D
 P
-%
-% Polygon 21
-%
 2347 3984 M
 3 -5 D
 4 5 D
 -4 2 D
 P
-%
-% Polygon 23
-%
 2361 3998 M
 -3 -9 D
 7 6 D
 P
-%
-% Polygon 27
-%
 2363 4048 M
 2 -2 D
 0 3 D
 P
-%
-% Polygon 42
-%
 2367 4023 M
 1 -2 D
 0 3 D
 P
-%
-% Polygon 45
-%
 2364 4006 M
 4 -8 D
 2 12 D
 P
 FO
-%
-% Polygon 2
-%
 2385 4149 M
 11 -14 D
 11 9 D
@@ -4218,17 +3690,11 @@ FO
 -2 -4 D
 -6 2 D
 P
-%
-% Polygon 30
-%
 2401 4125 M
 5 -2 D
 0 6 D
 P
 FO
-%
-% Polygon 3
-%
 2765 4425 M
 29 -8 D
 2 -6 D
@@ -4254,9 +3720,6 @@ FO
 -8 10 D
 P
 FO
-%
-% Polygon 4
-%
 3326 4832 M
 13 -7 D
 -1 6 D
@@ -4545,9 +4008,6 @@ FO
 0 11 D
 -4 4 D
 P
-%
-% Polygon 5
-%
 3506 4484 M
 3 -7 D
 -4 -12 D
@@ -4567,9 +4027,6 @@ P
 -9 11 D
 3 5 D
 P
-%
-% Polygon 7
-%
 3332 4562 M
 1 -7 D
 2 4 D
@@ -4577,18 +4034,13 @@ P
 2 3 D
 -6 5 D
 P
-%
-% Polygon 8
-%
 3271 4520 M
 2 -9 D
 12 -3 D
 2 6 D
 -5 10 D
+-8 -2 D
 P
-%
-% Polygon 9
-%
 3491 4504 M
 -5 -6 D
 5 -6 D
@@ -4596,160 +4048,98 @@ P
 1 7 D
 -10 1 D
 P
-%
-% Polygon 10
-%
 3443 4381 M
 -5 -10 D
 22 -1 D
 6 17 D
 -16 -1 D
 P
-%
-% Polygon 12
-%
 3277 4494 M
 6 -4 D
 -3 -3 D
 9 -2 D
 -9 11 D
 P
-%
-% Polygon 14
-%
 3564 4413 M
 8 -5 D
 9 5 D
 -16 1 D
 P
-%
-% Polygon 16
-%
 3490 4460 M
 -4 -7 D
 13 2 D
 -8 6 D
 P
-%
-% Polygon 17
-%
 3266 4514 M
 8 -15 D
 4 5 D
 -9 10 D
 P
-%
-% Polygon 18
-%
 3499 4446 M
 6 -9 D
 2 2 D
 -7 8 D
 P
-%
-% Polygon 20
-%
 3577 4405 M
 7 -2 D
 1 7 D
+-7 -4 D
 P
-%
-% Polygon 22
-%
 3265 4526 M
 6 -4 D
 4 2 D
 -8 3 D
 P
-%
-% Polygon 24
-%
 3448 4398 M
 1 -5 D
 4 5 D
 -3 2 D
 P
-%
-% Polygon 25
-%
 3528 4499 M
 -1 -3 D
 5 1 D
 -3 3 D
 P
-%
-% Polygon 29
-%
 3336 4551 M
 3 -4 D
 0 6 D
 P
-%
-% Polygon 31
-%
 3263 4527 M
 9 3 D
 -7 2 D
 P
-%
-% Polygon 33
-%
 3505 4454 M
 0 -3 D
 2 3 D
 P
-%
-% Polygon 34
-%
 3467 4379 M
 4 -9 D
 -1 10 D
 P
-%
-% Polygon 36
-%
 3254 4523 M
 6 -4 D
 -4 4 D
 P
-%
-% Polygon 37
-%
 3250 4535 M
 6 -1 D
 -5 2 D
 P
-%
-% Polygon 38
-%
 3432 4387 M
 -2 -5 D
 3 6 D
 P
-%
-% Polygon 39
-%
 3483 4469 M
 3 -6 D
 -2 7 D
 P
-%
-% Polygon 44
-%
 3242 4537 M
 10 -11 D
 -9 12 D
 P
-%
-% Polygon 47
-%
 3294 4526 M
 4 -2 D
 -3 3 D
 P
-%
-% Polygon 48
-%
 3345 4564 M
 6 -9 D
 -4 9 D
@@ -5355,6 +4745,7 @@ P S
 12 -3 D
 2 6 D
 -5 10 D
+-8 -2 D
 P S
 3491 4504 M
 -5 -6 D
@@ -5373,6 +4764,7 @@ P S
 1 -4 D
 7 1 D
 1 5 D
+-8 -1 D
 P S
 3322 4085 M
 -26 -7 D
@@ -5429,6 +4821,7 @@ P S
 3577 4405 M
 7 -2 D
 1 7 D
+-7 -4 D
 P S
 2347 3984 M
 3 -5 D
@@ -5552,12 +4945,6 @@ P S
 -23 -5 D
 6 -8 D
 S
-%
-% Bin # 907
-%
-%
-% Polygon 0
-%
 1505 2579 M
 20 5 D
 -1 12 D
@@ -5874,9 +5261,6 @@ S
 -1 -10 D
 -29 -10 D
 P
-%
-% Polygon 5
-%
 2494 3153 M
 -15 -14 D
 1 -16 D
@@ -5886,18 +5270,13 @@ P
 -7 8 D
 -15 -10 D
 P
-%
-% Polygon 6
-%
 2417 3143 M
 1 -8 D
 6 -6 D
 14 6 D
 -2 8 D
+-15 0 D
 P
-%
-% Polygon 7
-%
 2807 3136 M
 1 -8 D
 8 4 D
@@ -5905,51 +5284,31 @@ P
 4 14 D
 -7 -1 D
 P
-%
-% Polygon 8
-%
 2802 3143 M
 9 2 D
+-8 -1 D
 P
-%
-% Polygon 10
-%
 2826 3154 M
 -1 -4 D
 2 5 D
 P
-%
-% Polygon 11
-%
 2235 3031 M
 3 -2 D
 -1 4 D
 P
-%
-% Polygon 12
-%
 1958 2903 M
 3 -1 D
 -2 2 D
 P
-%
-% Polygon 13
-%
 2251 3061 M
 3 -2 D
 -2 3 D
 P
-%
-% Polygon 14
-%
 2074 2823 M
 1 -3 D
 0 3 D
 P
 FO
-%
-% Polygon 1
-%
 3264 4040 M
 3 -4 D
 -1 -26 D
@@ -5975,25 +5334,16 @@ FO
 0 12 D
 P
 FO
-%
-% Polygon 2
-%
 3297 4066 M
 -3 -10 D
 -13 -3 D
 P
 FO
-%
-% Polygon 3
-%
 3339 4098 M
 -6 -15 D
 -11 2 D
 P
 FO
-%
-% Polygon 4
-%
 4382 4188 M
 -6 -2 D
 -5 9 D
@@ -6186,9 +5536,6 @@ FO
 18 -22 D
 14 -16 D
 P
-%
-% Polygon 9
-%
 4316 4159 M
 0 -3 D
 1 4 D
@@ -6735,6 +6082,7 @@ P S
 6 -6 D
 14 6 D
 -2 8 D
+-15 0 D
 P S
 2807 3136 M
 1 -8 D
@@ -6745,6 +6093,7 @@ P S
 P S
 2802 3143 M
 9 2 D
+-8 -1 D
 P S
 4316 4159 M
 0 -3 D
@@ -6778,12 +6127,6 @@ P S
 -3 -10 D
 -13 -3 D
 S
-%
-% Bin # 908
-%
-%
-% Polygon 0
-%
 2514 2621 M
 26 2 D
 7 7 D
@@ -6897,40 +6240,25 @@ S
 -10 -2 D
 -8 5 D
 P
-%
-% Polygon 8
-%
 2501 2520 M
 5 -6 D
 4 2 D
 -3 4 D
 P
-%
-% Polygon 11
-%
 2507 2535 M
 -5 -12 D
 12 -3 D
 -6 15 D
 P
-%
-% Polygon 12
-%
 2514 2515 M
 4 -2 D
 -3 3 D
 P
-%
-% Polygon 14
-%
 2504 2245 M
 3 -2 D
 -1 4 D
 P
 FO
-%
-% Polygon 1
-%
 3498 3446 M
 -6 -26 D
 -10 -7 D
@@ -6993,9 +6321,6 @@ FO
 8 6 D
 21 33 D
 P
-%
-% Polygon 6
-%
 3336 3267 M
 2 -4 D
 -9 -6 D
@@ -7004,32 +6329,21 @@ P
 -2 4 D
 -5 -1 D
 P
-%
-% Polygon 9
-%
 3221 3104 M
 -3 -6 D
 8 7 D
+-3 -1 D
 P
-%
-% Polygon 10
-%
 3213 3087 M
 2 10 D
 -12 -11 D
 9 2 D
 P
-%
-% Polygon 13
-%
 3176 2992 M
 1 -3 D
 0 4 D
 P
 FO
-%
-% Polygon 2
-%
 4286 4108 M
 -6 -13 D
 0 -16 D
@@ -7045,17 +6359,11 @@ FO
 23 1 D
 -24 7 D
 P
-%
-% Polygon 16
-%
 4275 4076 M
 4 0 D
 -3 1 D
 P
 FO
-%
-% Polygon 3
-%
 4415 4211 M
 -2 1 D
 -5 -6 D
@@ -7065,9 +6373,6 @@ FO
 31 26 D
 P
 FO
-%
-% Polygon 4
-%
 4473 3501 M
 10 21 D
 2 18 D
@@ -7133,17 +6438,11 @@ FO
 9 -11 D
 19 -21 D
 P
-%
-% Polygon 15
-%
 4739 3747 M
 4 -1 D
 -3 2 D
 P
 FO
-%
-% Polygon 5
-%
 4118 3182 M
 -13 -8 D
 -23 1 D
@@ -7179,9 +6478,6 @@ FO
 42 10 D
 23 -1 D
 P
-%
-% Polygon 7
-%
 4206 3293 M
 0 -11 D
 4 -1 D
@@ -7499,6 +6795,7 @@ P S
 3221 3104 M
 -3 -6 D
 8 7 D
+-3 -1 D
 P S
 3213 3087 M
 2 10 D
@@ -7530,12 +6827,6 @@ P S
 4 0 D
 -3 1 D
 P S
-%
-% Bin # 909
-%
-%
-% Polygon 0
-%
 2440 1477 M
 12 29 D
 13 16 D
@@ -7648,16 +6939,10 @@ P S
 -12 12 D
 -11 13 D
 P
-%
-% Polygon 43
-%
 2508 1510 M
 7 -2 D
 P
 FO
-%
-% Polygon 1
-%
 4406 3441 M
 12 -1 D
 20 11 D
@@ -7970,9 +7255,6 @@ FO
 -100 -84 D
 -33 -17 D
 P
-%
-% Polygon 3
-%
 4736 3696 M
 -1 -13 D
 30 3 D
@@ -7992,9 +7274,6 @@ P
 -25 -3 D
 -8 -6 D
 P
-%
-% Polygon 4
-%
 4111 2611 M
 17 -17 D
 5 0 D
@@ -8009,9 +7288,6 @@ P
 -8 12 D
 -13 -2 D
 P
-%
-% Polygon 5
-%
 4383 2803 M
 7 -4 D
 4 -13 D
@@ -8024,9 +7300,6 @@ P
 -12 0 D
 -15 -16 D
 P
-%
-% Polygon 6
-%
 4727 3055 M
 -1 -4 D
 5 -1 D
@@ -8034,10 +7307,8 @@ P
 0 -8 D
 12 8 D
 -5 9 D
+-4 -1 D
 P
-%
-% Polygon 7
-%
 4365 2810 M
 -2 -5 D
 5 -9 D
@@ -8047,9 +7318,6 @@ P
 -2 11 D
 -6 1 D
 P
-%
-% Polygon 8
-%
 4273 2772 M
 -2 -15 D
 10 -3 D
@@ -8058,19 +7326,14 @@ P
 2 5 D
 -3 7 D
 P
-%
-% Polygon 9
-%
 4516 3037 M
 4 -17 D
 11 -10 D
 7 2 D
 3 6 D
 -18 20 D
+-6 -1 D
 P
-%
-% Polygon 10
-%
 4385 3129 M
 -9 -10 D
 2 -5 D
@@ -8078,9 +7341,6 @@ P
 2 11 D
 -6 1 D
 P
-%
-% Polygon 11
-%
 4738 3066 M
 0 -25 D
 22 -22 D
@@ -8088,9 +7348,6 @@ P
 -5 15 D
 -21 12 D
 P
-%
-% Polygon 12
-%
 4275 2633 M
 -2 -17 D
 15 -15 D
@@ -8098,9 +7355,6 @@ P
 -3 16 D
 -12 8 D
 P
-%
-% Polygon 13
-%
 4736 3733 M
 -4 -12 D
 14 -3 D
@@ -8108,326 +7362,202 @@ P
 -7 3 D
 -9 -3 D
 P
-%
-% Polygon 14
-%
 4772 3761 M
 1 -10 D
 5 -3 D
 8 6 D
 3 11 D
+-14 -4 D
 P
-%
-% Polygon 15
-%
 4268 2687 M
 7 -11 D
 9 -1 D
 -1 11 D
 P
-%
-% Polygon 16
-%
 4190 2776 M
 -2 -13 D
 10 -3 D
 0 12 D
 -6 6 D
 P
-%
-% Polygon 17
-%
 4250 2698 M
 9 -10 D
 5 2 D
 -1 14 D
 -9 -2 D
 P
-%
-% Polygon 18
-%
 4501 3065 M
 3 -24 D
 6 -2 D
 3 8 D
 -11 18 D
 P
-%
-% Polygon 19
-%
 4183 2547 M
 -3 -12 D
 8 -8 D
 2 15 D
 -4 7 D
 P
-%
-% Polygon 20
-%
 4601 3426 M
 1 -10 D
 5 -2 D
 2 9 D
 -6 5 D
 P
-%
-% Polygon 21
-%
 4191 2526 M
 2 -5 D
 7 0 D
 1 8 D
 -7 0 D
 P
-%
-% Polygon 22
-%
 4233 2682 M
 1 -4 D
 8 -1 D
 1 10 D
 -6 -1 D
 P
-%
-% Polygon 23
-%
 4255 2655 M
 10 -13 D
 4 1 D
 -12 14 D
 P
-%
-% Polygon 24
-%
 4707 3253 M
 -6 -14 D
 5 1 D
 5 14 D
 P
-%
-% Polygon 25
-%
 4798 3724 M
 4 -6 D
 3 9 D
 -7 -2 D
 P
-%
-% Polygon 26
-%
 4537 3029 M
 6 -7 D
 2 7 D
 -7 1 D
 P
-%
-% Polygon 27
-%
 4335 2768 M
 9 -6 D
 2 5 D
 -9 2 D
 P
-%
-% Polygon 28
-%
 4003 2257 M
 2 -7 D
 9 6 D
 -10 2 D
 P
-%
-% Polygon 29
-%
 4628 3413 M
 4 -4 D
 4 5 D
 -4 2 D
 P
-%
-% Polygon 30
-%
 4438 3185 M
 3 -9 D
 1 7 D
 -3 3 D
 P
-%
-% Polygon 31
-%
 4805 3639 M
 0 -3 D
 9 1 D
 -7 4 D
 P
-%
-% Polygon 32
-%
 4737 3112 M
 -1 -8 D
 4 5 D
 -2 4 D
 P
-%
-% Polygon 33
-%
 4229 2483 M
 1 -3 D
 9 5 D
 -5 -2 D
 P
-%
-% Polygon 34
-%
 4591 3423 M
 0 -5 D
 6 6 D
+-5 0 D
 P
-%
-% Polygon 35
-%
 4263 2794 M
 -2 -8 D
 5 -14 D
 -2 23 D
 P
-%
-% Polygon 36
-%
 4620 3507 M
 0 -3 D
 1 4 D
 P
-%
-% Polygon 37
-%
 4610 3461 M
 1 -3 D
 0 4 D
 P
-%
-% Polygon 38
-%
 4607 3481 M
 1 -3 D
 0 4 D
 P
-%
-% Polygon 39
-%
 4430 2829 M
 4 -6 D
 -3 7 D
 P
-%
-% Polygon 40
-%
 4306 2748 M
 4 -6 D
 -3 7 D
 P
-%
-% Polygon 41
-%
 4279 2699 M
 3 -4 D
 0 5 D
 P
-%
-% Polygon 42
-%
 4876 3647 M
 6 1 D
 -4 2 D
 P
-%
-% Polygon 44
-%
 4425 3048 M
 1 -3 D
 2 3 D
 P
-%
-% Polygon 45
-%
 4376 2760 M
 0 -3 D
 1 4 D
 P
-%
-% Polygon 46
-%
 4266 2964 M
 -1 -4 D
 2 4 D
 P
-%
-% Polygon 47
-%
 4421 3088 M
 2 -16 D
 -1 17 D
 P
-%
-% Polygon 48
-%
 4618 3385 M
 -6 -20 D
 8 22 D
 P
-%
-% Polygon 49
-%
 4315 2748 M
 2 -3 D
 -1 4 D
 P
-%
-% Polygon 50
-%
 4289 2755 M
 2 -4 D
 -1 4 D
 P
-%
-% Polygon 51
-%
 4280 2693 M
 -1 -5 D
 4 5 D
 P
-%
-% Polygon 52
-%
 4622 3372 M
 4 3 D
 -3 1 D
 P
-%
-% Polygon 53
-%
 4199 2516 M
 3 -2 D
 -2 3 D
 P
-%
-% Polygon 54
-%
 4311 2563 M
 1 -3 D
 0 4 D
 P
-%
-% Polygon 55
-%
 4600 3403 M
 6 1 D
 0 6 D
 P
 FO
-%
-% Polygon 2
-%
 4932 3625 M
 -17 -21 D
 0 -13 D
@@ -8901,6 +8031,7 @@ S
 0 -8 D
 12 8 D
 -5 9 D
+-4 -1 D
 P S
 4365 2810 M
 -2 -5 D
@@ -8925,6 +8056,7 @@ P S
 7 2 D
 3 6 D
 -18 20 D
+-6 -1 D
 P S
 4385 3129 M
 -9 -10 D
@@ -8959,6 +8091,7 @@ P S
 5 -3 D
 8 6 D
 3 11 D
+-14 -4 D
 P S
 4268 2687 M
 7 -11 D
@@ -9078,6 +8211,7 @@ P S
 4591 3423 M
 0 -5 D
 6 6 D
+-5 0 D
 P S
 4263 2794 M
 -2 -8 D
@@ -9173,12 +8307,6 @@ P S
 6 1 D
 0 6 D
 P S
-%
-% Bin # 910
-%
-%
-% Polygon 0
-%
 3522 1769 M
 5 -7 D
 19 1 D
@@ -9546,9 +8674,6 @@ P S
 -6 5 D
 -46 48 D
 P
-%
-% Polygon 4
-%
 4054 2256 M
 5 -18 D
 -5 -27 D
@@ -9600,10 +8725,8 @@ P
 -8 -18 D
 -8 -2 D
 -8 8 D
+-6 0 D
 P
-%
-% Polygon 5
-%
 4246 2034 M
 -6 17 D
 -7 -1 D
@@ -9626,9 +8749,6 @@ P
 -8 14 D
 -20 14 D
 P
-%
-% Polygon 6
-%
 3840 1540 M
 6 -9 D
 -2 -14 D
@@ -9649,9 +8769,6 @@ P
 4 -5 D
 -14 1 D
 P
-%
-% Polygon 7
-%
 4334 1840 M
 0 -21 D
 -3 5 D
@@ -9670,10 +8787,8 @@ P
 0 9 D
 7 7 D
 -3 10 D
+-7 -3 D
 P
-%
-% Polygon 8
-%
 4560 2325 M
 -3 -13 D
 6 -14 D
@@ -9687,9 +8802,6 @@ P
 -4 13 D
 -16 15 D
 P
-%
-% Polygon 9
-%
 3193 1170 M
 11 -17 D
 -1 -7 D
@@ -9699,10 +8811,8 @@ P
 -5 4 D
 -19 -15 D
 -15 25 D
+-8 -7 D
 P
-%
-% Polygon 10
-%
 4189 2017 M
 8 6 D
 4 -23 D
@@ -9713,9 +8823,6 @@ P
 -9 2 D
 -12 -17 D
 P
-%
-% Polygon 11
-%
 4324 2465 M
 -5 -8 D
 12 -2 D
@@ -9724,20 +8831,16 @@ P
 3 11 D
 -18 -15 D
 -19 7 D
+-15 -4 D
 P
-%
-% Polygon 12
-%
 3581 1764 M
 -4 -11 D
 4 -15 D
 8 6 D
 -6 10 D
 6 12 D
+-7 -1 D
 P
-%
-% Polygon 13
-%
 3140 1209 M
 2 -3 D
 14 6 D
@@ -9746,9 +8849,6 @@ P
 -14 0 D
 -12 -7 D
 P
-%
-% Polygon 14
-%
 4597 2333 M
 -4 -11 D
 8 -15 D
@@ -9756,369 +8856,224 @@ P
 5 1 D
 -10 18 D
 P
-%
-% Polygon 15
-%
 4526 2495 M
 1 -38 D
 8 7 D
 -6 6 D
 -1 27 D
 P
-%
-% Polygon 16
-%
 3846 1503 M
 10 -13 D
 4 5 D
 -2 7 D
 -11 2 D
 P
-%
-% Polygon 17
-%
 4298 1846 M
 12 -10 D
 9 1 D
 -10 9 D
 -10 1 D
 P
-%
-% Polygon 18
-%
 3198 1098 M
 6 -7 D
 6 3 D
 -1 9 D
+-10 -4 D
 P
-%
-% Polygon 19
-%
 4312 1768 M
 -3 -8 D
 6 -2 D
 2 8 D
 -4 4 D
 P
-%
-% Polygon 20
-%
 3238 1171 M
 4 -6 D
 4 8 D
+-7 -1 D
 P
-%
-% Polygon 21
-%
 3655 1533 M
 11 -5 D
 8 7 D
+-18 -1 D
 P
-%
-% Polygon 22
-%
 3309 1267 M
 1 -5 D
 4 5 D
 -3 2 D
 P
-%
-% Polygon 23
-%
 4110 1861 M
 5 -5 D
 2 5 D
 -6 1 D
 P
-%
-% Polygon 24
-%
 4301 1884 M
 6 -4 D
 0 6 D
 -4 1 D
 P
-%
-% Polygon 25
-%
 3169 1069 M
 7 -9 D
 2 3 D
 -7 8 D
 P
-%
-% Polygon 26
-%
 4229 1815 M
 6 -8 D
 0 8 D
 -4 2 D
 P
-%
-% Polygon 27
-%
 4528 2411 M
 3 -7 D
 6 0 D
 -8 8 D
 P
-%
-% Polygon 28
-%
 4292 1839 M
 2 -3 D
 2 4 D
+-3 0 D
 P
-%
-% Polygon 29
-%
 4117 1854 M
 15 -14 D
 12 -1 D
 -26 16 D
 P
-%
-% Polygon 30
-%
 3867 1573 M
 2 -6 D
 3 4 D
 -4 3 D
 P
-%
-% Polygon 31
-%
 4374 2504 M
 4 -8 D
 3 6 D
 -6 3 D
 P
-%
-% Polygon 32
-%
 3554 1783 M
 3 -3 D
 -2 3 D
 P
-%
-% Polygon 33
-%
 4315 1929 M
 1 -15 D
 2 18 D
 P
-%
-% Polygon 34
-%
 4321 1862 M
 10 2 D
 -5 3 D
 P
-%
-% Polygon 35
-%
 4199 1841 M
 9 -2 D
 -9 3 D
 P
-%
-% Polygon 36
-%
 4310 1958 M
 3 -9 D
 -2 9 D
 P
-%
-% Polygon 37
-%
 4288 2017 M
 2 -5 D
 0 8 D
 P
-%
-% Polygon 38
-%
 4273 1769 M
 4 -6 D
 -3 7 D
 P
-%
-% Polygon 39
-%
 4235 1799 M
 4 -8 D
 -3 9 D
 P
-%
-% Polygon 40
-%
 4264 1767 M
 2 -4 D
 3 6 D
 P
-%
-% Polygon 41
-%
 4362 2507 M
 8 5 D
 -6 -2 D
 P
-%
-% Polygon 42
-%
 3164 1075 M
 5 -4 D
 -4 5 D
 P
-%
-% Polygon 43
-%
 3176 1058 M
 5 -3 D
 -4 4 D
 P
-%
-% Polygon 44
-%
 4123 1869 M
 5 -1 D
 -3 3 D
 P
-%
-% Polygon 45
-%
 4302 1975 M
 0 -6 D
 1 6 D
 P
-%
-% Polygon 46
-%
 4325 1833 M
 5 -4 D
 -4 5 D
 P
-%
-% Polygon 47
-%
 4357 2531 M
 -1 -6 D
 2 7 D
 P
-%
-% Polygon 48
-%
 4321 1840 M
 4 -4 D
 -3 4 D
 P
-%
-% Polygon 49
-%
 4305 1777 M
 2 -4 D
 -1 4 D
 P
-%
-% Polygon 50
-%
 4316 1950 M
 0 -6 D
 P
-%
-% Polygon 51
-%
 3094 979 M
 1 -6 D
 0 7 D
 P
-%
-% Polygon 52
-%
 4309 1853 M
 5 -5 D
 -4 6 D
 P
-%
-% Polygon 53
-%
 3509 1652 M
 2 -4 D
 -1 5 D
 P
-%
-% Polygon 54
-%
 3134 1206 M
 1 -3 D
 1 5 D
 P
-%
-% Polygon 55
-%
 3185 1082 M
 3 -5 D
 -2 6 D
 P
-%
-% Polygon 56
-%
 3493 1637 M
 4 0 D
 -1 3 D
 P
-%
-% Polygon 57
-%
 3845 1512 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 58
-%
 4301 1982 M
 2 -4 D
 -1 5 D
 P
-%
-% Polygon 59
-%
 4324 1820 M
 1 -4 D
+-1 5 D
 P
-%
-% Polygon 60
-%
 4299 1877 M
 4 -1 D
 -3 2 D
 P
-%
-% Polygon 61
-%
 3500 1654 M
 2 -3 D
 -1 4 D
 P
-%
-% Polygon 62
-%
 4309 2443 M
 2 -2 D
 -1 3 D
 P
 FO
-%
-% Polygon 1
-%
 4277 2499 M
 1 -2 D
 P
 FO
-%
-% Polygon 2
-%
 4304 2524 M
 8 -3 D
 7 10 D
@@ -10134,9 +9089,6 @@ FO
 5 6 D
 P
 FO
-%
-% Polygon 3
-%
 4872 3073 M
 5 -3 D
 47 -12 D
@@ -10725,6 +9677,7 @@ S
 -8 -18 D
 -8 -2 D
 -8 8 D
+-6 0 D
 P S
 4584 2795 M
 -2 -6 D
@@ -10867,6 +9820,7 @@ P S
 0 9 D
 7 7 D
 -3 10 D
+-7 -3 D
 P S
 4396 2614 M
 0 -2 D
@@ -10917,6 +9871,7 @@ P S
 -5 4 D
 -19 -15 D
 -15 25 D
+-8 -7 D
 P S
 4189 2017 M
 8 6 D
@@ -10936,6 +9891,7 @@ P S
 3 11 D
 -18 -15 D
 -19 7 D
+-15 -4 D
 P S
 3581 1764 M
 -4 -11 D
@@ -10943,6 +9899,7 @@ P S
 8 6 D
 -6 10 D
 6 12 D
+-7 -1 D
 P S
 3140 1209 M
 2 -3 D
@@ -10981,6 +9938,7 @@ P S
 6 -7 D
 6 3 D
 -1 9 D
+-10 -4 D
 P S
 4312 1768 M
 -3 -8 D
@@ -10991,10 +9949,12 @@ P S
 3238 1171 M
 4 -6 D
 4 8 D
+-7 -1 D
 P S
 3655 1533 M
 11 -5 D
 8 7 D
+-18 -1 D
 P S
 3309 1267 M
 1 -5 D
@@ -11029,6 +9989,7 @@ P S
 4292 1839 M
 2 -3 D
 2 4 D
+-3 0 D
 P S
 4117 1854 M
 15 -14 D
@@ -11154,6 +10115,7 @@ P S
 P S
 4324 1820 M
 1 -4 D
+-1 5 D
 P S
 4299 1877 M
 4 -1 D
@@ -11170,12 +10132,6 @@ P S
 4277 2499 M
 1 -2 D
 P S
-%
-% Bin # 911
-%
-%
-% Polygon 0
-%
 3614 296 M
 19 46 D
 4 45 D
@@ -11268,27 +10224,18 @@ P S
 -66 61 D
 -19 16 D
 P
-%
-% Polygon 3
-%
 3693 809 M
 3 -3 D
 33 21 D
 8 13 D
 -39 -26 D
 P
-%
-% Polygon 4
-%
 3675 792 M
 -4 -7 D
 15 16 D
 -4 -1 D
 P
 FO
-%
-% Polygon 1
-%
 5653 2892 M
 -16 -7 D
 -10 9 D
@@ -11304,9 +10251,6 @@ FO
 4 8 D
 P
 FO
-%
-% Polygon 2
-%
 5669 2869 M
 -1 2 D
 1 2 D
@@ -11430,13 +10374,7 @@ P S
 5669 2869 M
 -1 2 D
 1 2 D
-S
-%
-% Bin # 912
-%
-%
-% Polygon 0
-%
+0 0 D S
 5113 1594 M
 13 -10 D
 38 -19 D
@@ -11492,21 +10430,12 @@ FO
 41 8 D
 88 -9 D
 23 2 D
-S
-%
-% Bin # 913
-%
-%
-% Polygon 0
-%
+0 0 D S
 5669 305 M
 -238 -305 D
 -851 0 D
 1089 1298 D
 P
-%
-% Polygon 1
-%
 5292 348 M
 8 2 D
 1 8 D
@@ -11538,9 +10467,6 @@ P
 20 8 D
 22 25 D
 P
-%
-% Polygon 2
-%
 5151 384 M
 2 -9 D
 4 8 D
@@ -11587,19 +10513,10 @@ P S
 -1 3 D
 -14 -1 D
 P S
-%
-% Bin # 914
-%
-%
-% Polygon 0
-%
 5669 0 M
 -238 0 D
 238 305 D
 P
-%
-% Polygon 16
-%
 5643 242 M
 6 0 D
 -4 2 D
@@ -11609,15 +10526,6 @@ FO
 6 0 D
 -4 2 D
 P S
-%
-% Bin # 1082
-%
-%
-% Bin # 1083
-%
-%
-% Polygon 0
-%
 0 4785 M
 132 -222 D
 116 -190 D
@@ -11625,12 +10533,6 @@ P S
 -285 -178 D
 P
 FO
-%
-% Bin # 1084
-%
-%
-% Polygon 0
-%
 0 4137 M
 285 178 D
 36 -58 D
@@ -11646,12 +10548,6 @@ FO
 -658 -443 D
 P
 FO
-%
-% Bin # 1085
-%
-%
-% Polygon 0
-%
 0 3297 M
 658 443 D
 52 -77 D
@@ -11661,12 +10557,6 @@ FO
 -1051 -763 D
 P
 FO
-%
-% Bin # 1086
-%
-%
-% Polygon 0
-%
 1387 2730 M
 -7 -4 D
 -11 -17 D
@@ -11857,12 +10747,6 @@ S
 -6 -1 D
 2 -2 D
 S
-%
-% Bin # 1087
-%
-%
-% Polygon 0
-%
 680 2021 M
 5 -4 D
 -5 -10 D
@@ -12019,9 +10903,6 @@ S
 -310 -260 D
 0 979 D
 P
-%
-% Polygon 6
-%
 456 1401 M
 -5 -18 D
 9 -1 D
@@ -12030,9 +10911,6 @@ P
 -10 0 D
 -5 11 D
 P
-%
-% Polygon 7
-%
 453 1419 M
 3 -8 D
 -5 -4 D
@@ -12040,121 +10918,73 @@ P
 1 13 D
 -6 6 D
 P
-%
-% Polygon 10
-%
 478 1394 M
 4 1 D
 -5 8 D
 -7 -3 D
 4 -6 D
 P
-%
-% Polygon 14
-%
 537 1543 M
 -2 -8 D
 6 -4 D
 -1 15 D
 P
-%
-% Polygon 17
-%
 552 1551 M
 1 -5 D
 5 2 D
 -4 4 D
 P
-%
-% Polygon 18
-%
 529 1417 M
 -2 -5 D
 4 1 D
 -1 5 D
 P
-%
-% Polygon 19
-%
 520 1522 M
 1 -4 D
 4 2 D
 -2 2 D
 P
-%
-% Polygon 20
-%
 460 1373 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 21
-%
 507 1578 M
 7 0 D
 -5 1 D
 P
-%
-% Polygon 27
-%
 510 1486 M
 6 0 D
 -2 3 D
 P
-%
-% Polygon 28
-%
 485 1047 M
 1 -3 D
 0 3 D
 P
-%
-% Polygon 29
-%
 525 1780 M
 4 -2 D
 -1 5 D
 P
-%
-% Polygon 30
-%
 569 1856 M
 2 -4 D
 -1 5 D
 P
-%
-% Polygon 31
-%
 455 1375 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 32
-%
 532 1632 M
 1 -4 D
 0 5 D
 P
-%
-% Polygon 33
-%
 508 1641 M
 2 -5 D
 -1 5 D
 P
-%
-% Polygon 35
-%
 511 1505 M
 2 -5 D
 -1 6 D
 P
 FO
-%
-% Polygon 1
-%
 691 2029 M
 0 -3 D
 -7 -2 D
@@ -12162,9 +10992,6 @@ FO
 1 2 D
 P
 FO
-%
-% Polygon 2
-%
 782 2101 M
 0 -2 D
 7 -4 D
@@ -12183,9 +11010,6 @@ FO
 -2 2 D
 P
 FO
-%
-% Polygon 3
-%
 1125 2368 M
 16 -7 D
 3 10 D
@@ -12378,9 +11202,6 @@ FO
 -13 -1 D
 -26 11 D
 P
-%
-% Polygon 5
-%
 1255 2213 M
 -30 -98 D
 -4 -19 D
@@ -12396,116 +11217,73 @@ P
 4 23 D
 -3 13 D
 P
-%
-% Polygon 8
-%
 1637 2084 M
 -7 -15 D
 9 -1 D
 8 8 D
 -2 13 D
+-6 -3 D
 P
-%
-% Polygon 9
-%
 1220 2085 M
 -4 -13 D
 12 4 D
 1 8 D
 P
-%
-% Polygon 11
-%
 1184 2313 M
 3 -12 D
 0 6 D
 5 2 D
 -7 5 D
 P
-%
-% Polygon 12
-%
 1618 2079 M
 7 0 D
 3 4 D
 -3 1 D
 P
-%
-% Polygon 13
-%
 1140 1972 M
 -6 -15 D
 17 16 D
+-10 0 D
 P
-%
-% Polygon 15
-%
 944 1912 M
 16 -4 D
 -3 4 D
 -11 1 D
 P
-%
-% Polygon 16
-%
 923 1962 M
 3 -4 D
 6 1 D
 -8 4 D
 P
-%
-% Polygon 22
-%
 1118 1913 M
 4 1 D
 -3 2 D
 P
-%
-% Polygon 23
-%
 1124 1914 M
 0 -6 D
 3 6 D
 P
-%
-% Polygon 24
-%
 1115 1917 M
 1 -5 D
 2 7 D
 P
-%
-% Polygon 25
-%
 1233 2094 M
 1 -6 D
 0 7 D
 P
-%
-% Polygon 26
-%
 1624 2060 M
 6 -1 D
 -4 2 D
 P
-%
-% Polygon 34
-%
 1619 2061 M
 13 2 D
 -8 3 D
 P
-%
-% Polygon 36
-%
 1307 1648 M
 2 -7 D
 0 7 D
 P
 FO
-%
-% Polygon 4
-%
 1529 2548 M
 -7 -2 D
 -15 -16 D
@@ -12935,6 +11713,7 @@ P S
 9 -1 D
 8 8 D
 -2 13 D
+-6 -3 D
 P S
 1220 2085 M
 -4 -13 D
@@ -12961,6 +11740,7 @@ P S
 1140 1972 M
 -6 -15 D
 17 16 D
+-10 0 D
 P S
 537 1543 M
 -2 -8 D
@@ -13064,12 +11844,6 @@ P S
 0 -3 D
 -7 -2 D
 S
-%
-% Bin # 1088
-%
-%
-% Polygon 0
-%
 310 771 M
 -2 -20 D
 10 -41 D
@@ -13216,9 +11990,6 @@ S
 -585 0 D
 0 511 D
 P
-%
-% Polygon 4
-%
 124 366 M
 -1 -14 D
 10 4 D
@@ -13240,76 +12011,46 @@ P
 11 21 D
 -21 -11 D
 P
-%
-% Polygon 5
-%
 145 482 M
 -4 -16 D
 5 -4 D
 6 15 D
 P
-%
-% Polygon 6
-%
 140 290 M
 -2 -4 D
 6 -2 D
 -3 6 D
 P
-%
-% Polygon 7
-%
 143 429 M
 -1 -8 D
 6 4 D
 -4 5 D
 P
-%
-% Polygon 8
-%
 97 292 M
 3 -3 D
 -2 3 D
 P
-%
-% Polygon 10
-%
 155 233 M
 3 -3 D
 -1 5 D
 P
-%
-% Polygon 11
-%
 89 272 M
 2 -4 D
 -1 4 D
 P
-%
-% Polygon 12
-%
 321 256 M
 0 -6 D
 1 6 D
 P
-%
-% Polygon 13
-%
 136 384 M
 1 -3 D
 0 3 D
 P
-%
-% Polygon 14
-%
 182 525 M
 4 -4 D
 -3 4 D
 P
 FO
-%
-% Polygon 1
-%
 693 1093 M
 3 -3 D
 25 7 D
@@ -13342,17 +12083,11 @@ FO
 -12 6 D
 81 67 D
 P
-%
-% Polygon 9
-%
 609 998 M
 2 -6 D
 -1 7 D
 P
 FO
-%
-% Polygon 2
-%
 1289 1592 M
 -14 -24 D
 6 -14 D
@@ -13369,24 +12104,15 @@ FO
 -6 16 D
 0 4 D
 P
-%
-% Polygon 15
-%
 1275 1555 M
 4 -1 D
 -3 2 D
 P
-%
-% Polygon 16
-%
 1271 1577 M
 7 -1 D
 -2 5 D
 P
 FO
-%
-% Polygon 3
-%
 1690 1929 M
 7 -8 D
 -2 -12 D
@@ -13814,12 +12540,6 @@ P S
 7 -1 D
 -2 5 D
 P S
-%
-% Bin # 1089
-%
-%
-% Polygon 0
-%
 1726 1028 M
 7 -15 D
 -2 -11 D
@@ -13942,12 +12662,6 @@ FO
 11 13 D
 11 27 D
 S
-%
-% Bin # 1090
-%
-%
-% Polygon 0
-%
 3090 798 M
 -2 -6 D
 -14 -25 D
@@ -14038,69 +12752,42 @@ S
 29 -30 D
 12 -11 D
 P
-%
-% Polygon 9
-%
 2522 405 M
 -1 -6 D
 6 0 D
 1 5 D
 -4 2 D
 P
-%
-% Polygon 13
-%
 2532 379 M
 1 -5 D
 5 1 D
 P
-%
-% Polygon 16
-%
 2518 378 M
 1 -4 D
 6 3 D
 -6 2 D
 P
-%
-% Polygon 18
-%
 2527 396 M
 -1 -14 D
 5 4 D
 -3 10 D
 P
-%
-% Polygon 19
-%
 2269 540 M
 2 -2 D
 -1 2 D
 P
-%
-% Polygon 21
-%
 2518 372 M
 6 -3 D
 -5 4 D
 P
-%
-% Polygon 30
-%
 2250 510 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 31
-%
 2249 529 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 33
-%
 2514 381 M
 2 -3 D
 -1 4 D
@@ -14225,12 +12912,6 @@ P S
 2 -3 D
 -1 4 D
 P S
-%
-% Bin # 1091
-%
-%
-% Polygon 0
-%
 2717 0 M
 22 22 D
 12 -2 D
@@ -14246,9 +12927,6 @@ P S
 1 -23 D
 P
 FO
-%
-% Polygon 1
-%
 3559 0 M
 -1 0 D
 -3 43 D
@@ -14281,7 +12959,7 @@ FO
 29 4 D
 7 -5 D
 1 -23 D
-S
+0 0 D S
 3559 0 M
 -1 0 D
 -3 43 D
@@ -14296,24 +12974,13 @@ S
 11 29 D
 29 44 D
 S
-%
-% Bin # 1092
-%
-%
-% Polygon 0
-%
 3678 0 M
 118 131 D
 38 -35 D
 108 -96 D
 P
 FO
-%
-% Bin # 1093
-%
-%
-% Bin # 1094
-%
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -14321,36 +12988,29 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy p -Fr15.65/78.22 -O -R17/76.3/16/81r -JS66/90/12c -Wthick,red,- -SqD40k:+gwhite+f4+LD+an+p+ukm -K
-%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy p -Fr15.65/78.22 -O -R17/76.3/16/81r -JS66/90/12c -Wthick,red,- -SqD40k:+gwhite+f4+LD+an+p+ukm -K
+%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-V
-%
-% Store path and label attributes:
-%
-%
-% Pen and fill for text boxes (if enabled):
-%
+clipsave
+0 0 M
+5669 0 D
+0 5268 D
+-5669 0 D
+P
+PSL_clip N
+PSL_cliprestore
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
-%
-% Store pens used for each line segment:
-%
 /PSL_path_pen [
-	(17 W 1 0 0 C [133 67] 0 B)
-	(17 W 1 0 0 C [133 67] 0 B)
-	(17 W 1 0 0 C [133 67] 0 B)
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+	(17 W 1 0 0 C \[133 67\] 0 B)
+	(17 W 1 0 0 C \[133 67\] 0 B)
+	(17 W 1 0 0 C \[133 67\] 0 B)
 ] def
-%
-% Store text justification for each text label:
-%
 /PSL_label_justify [ 6 6 6 6 6 6 6 6 6 ] def
-%
-% Store font setting for each text label:
-%
 /PSL_label_font [
 	(0 A 67 F0)
 	(0 A 67 F0)
@@ -14362,18 +13022,9 @@ V
 	(0 A 67 F0)
 	(0 A 67 F0)
 ] def
-%
-% Set constants for textbox clearance:
-%
 /PSL_gap_x 10 def
 /PSL_gap_y 10 def
-%
-% Set array with baseline angle for each text label:
-%
 /PSL_label_angle [ -44.08 -44.09 -44.09 -44.10 -44.10 -43.33 -43.33 -43.33 -43.32 ] def
-%
-% Set array with the text labels:
-%
 /PSL_label_str [
 	(40km)
 	(80km)
@@ -14388,19 +13039,10 @@ V
 /PSL_label_n [ 0 5 4 ] def
 /PSL_n_paths 3 def
 /PSL_n_labels 9 def
-%
-% Set coordinate arrays for text label placements:
-%
 /PSL_txt_x [ 2507 2917 3328 3738 4148 1690 1285 878 472 ] def
 /PSL_txt_y [ 2847 3271 3695 4119 4542 1993 1563 1133 702 ] def
 /PSL_txt_n [ 9 ] def
-%
-% Estimate text heights:
-%
 PSL_set_label_heights
-%
-% Draw the text line segments:
-%
 PSL_path_pen 0 get cvx exec
 2096 2423 M
 -315 137 D
@@ -14471,11 +13113,8 @@ PSL_path_pen 2 get cvx exec
 -17 -19 D
 -18 -18 D
 S
-%
-% Display the texts:
-%
 386 PSL_straight_path_labels
-U
+[] 0 B
 %%EndObject
 0 A
 FQ
@@ -14483,56 +13122,526 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy p -Sc0.1c -Gblack -O -R17/76.3/16/81r -JS66/90/12c -Bafg -K
-%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy p -Sc0.1c -Gblack -O -R17/76.3/16/81r -JS66/90/12c -Bafg -K
+%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-%
-% Activate Map clip path
-%
-%
-% Start of polygon clip path
-%
-clipsave
-0 0 M
-5669 0 D
-0 5268 D
--5669 0 D
-PSL_clip N
-%
-% End of polygon clip path.  Polygon clipping is currently ON
-%
-4 W
-V
-{0 A} FS
-24 1595 2642 Sc
-24 4179 4573 Sc
-24 116 325 Sc
-U
-%
-% Deactivate Map clip path
-%
-PSL_cliprestore
-%
-% Clipping reduced by 1 level
-%
 25 W
-%
-% Start of basemap
-%
-%
-% Map gridlines (primary)
-%
 4 W
-%
-% Map tickmarks
-%
+-1 4941 M
+1 0 D
+566 327 D
+3 2 D S
+-1 4543 M
+1 0 D
+1206 725 D
+3 2 D S
+-1 4136 M
+1 1 D
+1810 1131 D
+3 2 D S
+-1 3721 M
+1 1 D
+2381 1546 D
+3 2 D S
+-1 3296 M
+1 1 D
+2922 1971 D
+3 2 D S
+-1 2861 M
+1 1 D
+3436 2406 D
+3 2 D S
+-1 2415 M
+1 1 D
+3925 2852 D
+3 2 D S
+-1 1958 M
+1 1 D
+4391 3309 D
+3 2 D S
+-1 1489 M
+1 1 D
+4836 3778 D
+2 2 D S
+-1 1006 M
+1 1 D
+5262 4261 D
+2 2 D S
+-1 510 M
+1 1 D
+5669 4757 D
+2 1 D S
+-1 -1 M
+1 1 D
+5669 4928 D
+2 1 D S
+583 -2 M
+2 2 D
+5084 4578 D
+2 1 D S
+1146 -2 M
+2 2 D
+4521 4216 D
+2 2 D S
+1688 -1 M
+2 1 D
+3979 3843 D
+2 1 D S
+2211 -1 M
+1 1 D
+3457 3457 D
+2 1 D S
+2716 -1 M
+1 1 D
+2952 3057 D
+2 1 D S
+3204 -1 M
+1 1 D
+2464 2642 D
+2 2 D S
+3677 -1 M
+1 1 D
+1991 2212 D
+2 1 D S
+4135 -1 M
+1 1 D
+1533 1764 D
+2 2 D S
+4579 -1 M
+1 1 D
+1089 1298 D
+2 2 D S
+5010 -1 M
+1 1 D
+658 813 D
+2 2 D S
+5430 -1 M
+1 1 D
+238 305 D
+2 3 D S
+-2 1832 M
+2 -2 D
+62 -81 D
+106 -137 D
+161 -204 D
+79 -97 D
+30 -38 D
+25 -29 D
+43 -53 D
+73 -89 D
+25 -29 D
+43 -52 D
+25 -29 D
+81 -96 D
+183 -211 D
+64 -72 D
+25 -29 D
+39 -43 D
+19 -22 D
+20 -21 D
+25 -29 D
+65 -71 D
+19 -22 D
+118 -127 D
+13 -15 D
+185 -196 D
+36 -38 D
+2 -1 D S
+-2 4788 M
+2 -3 D
+80 -135 D
+143 -236 D
+94 -151 D
+91 -142 D
+14 -23 D
+68 -104 D
+14 -23 D
+29 -44 D
+50 -74 D
+14 -23 D
+220 -323 D
+26 -36 D
+30 -44 D
+26 -36 D
+103 -145 D
+115 -158 D
+48 -64 D
+74 -100 D
+81 -106 D
+21 -29 D
+219 -280 D
+61 -77 D
+17 -20 D
+50 -63 D
+17 -20 D
+90 -110 D
+28 -35 D
+29 -34 D
+91 -109 D
+139 -162 D
+117 -134 D
+65 -73 D
+17 -20 D
+71 -79 D
+192 -210 D
+92 -98 D
+54 -58 D
+7 -6 D
+36 -39 D
+7 -6 D
+36 -39 D
+13 -12 D
+24 -26 D
+7 -6 D
+24 -26 D
+7 -6 D
+24 -26 D
+7 -6 D
+24 -26 D
+13 -12 D
+12 -13 D
+7 -6 D
+24 -26 D
+13 -12 D
+12 -13 D
+7 -6 D
+12 -13 D
+7 -6 D
+18 -19 D
+7 -6 D
+37 -38 D
+7 -6 D
+12 -13 D
+13 -12 D
+6 -7 D
+19 -18 D
+6 -7 D
+45 -43 D
+6 -7 D
+26 -24 D
+12 -13 D
+83 -80 D
+7 -6 D
+6 -7 D
+77 -73 D
+7 -6 D
+6 -7 D
+52 -48 D
+6 -7 D
+85 -79 D
+196 -180 D
+59 -54 D
+27 -23 D
+53 -48 D
+20 -17 D
+31 -28 D
+2 -2 D S
+1629 5269 M
+1 -1 D
+88 -142 D
+26 -42 D
+14 -20 D
+21 -35 D
+14 -20 D
+17 -28 D
+14 -20 D
+17 -27 D
+22 -35 D
+14 -20 D
+53 -82 D
+14 -20 D
+86 -129 D
+14 -20 D
+41 -60 D
+46 -68 D
+56 -80 D
+56 -80 D
+52 -73 D
+38 -53 D
+62 -86 D
+29 -39 D
+14 -20 D
+15 -19 D
+19 -27 D
+58 -78 D
+30 -39 D
+14 -20 D
+45 -58 D
+9 -13 D
+220 -283 D
+21 -25 D
+40 -51 D
+16 -19 D
+46 -57 D
+82 -101 D
+47 -56 D
+152 -181 D
+101 -117 D
+43 -49 D
+21 -25 D
+22 -24 D
+16 -19 D
+49 -55 D
+87 -97 D
+176 -192 D
+6 -5 D
+89 -96 D
+101 -106 D
+6 -5 D
+39 -42 D
+6 -5 D
+28 -30 D
+12 -11 D
+22 -24 D
+12 -11 D
+45 -47 D
+18 -17 D
+11 -12 D
+6 -5 D
+17 -18 D
+6 -5 D
+46 -47 D
+6 -5 D
+11 -12 D
+12 -11 D
+11 -12 D
+18 -17 D
+5 -6 D
+24 -22 D
+17 -18 D
+12 -11 D
+5 -6 D
+30 -28 D
+5 -6 D
+47 -45 D
+30 -28 D
+11 -12 D
+42 -39 D
+5 -6 D
+60 -56 D
+95 -89 D
+113 -105 D
+36 -33 D
+25 -21 D
+90 -82 D
+61 -54 D
+110 -97 D
+25 -21 D
+86 -75 D
+31 -26 D
+206 -173 D
+69 -57 D
+57 -46 D
+25 -21 D
+32 -25 D
+20 -17 D
+2 -1 D S
+3598 5269 M
+1 -1 D
+176 -244 D
+35 -48 D
+14 -17 D
+48 -66 D
+14 -17 D
+71 -94 D
+41 -53 D
+59 -76 D
+18 -24 D
+19 -23 D
+27 -35 D
+14 -17 D
+88 -110 D
+112 -137 D
+100 -120 D
+48 -56 D
+19 -23 D
+29 -33 D
+19 -23 D
+58 -67 D
+88 -100 D
+20 -22 D
+14 -17 D
+65 -71 D
+14 -17 D
+160 -174 D
+51 -54 D
+30 -33 D
+11 -10 D
+45 -49 D
+11 -10 D
+41 -43 D
+25 -27 D
+11 -10 D
+25 -27 D
+11 -10 D
+20 -22 D
+11 -10 D
+15 -16 D
+6 -5 D
+46 -48 D
+16 -15 D
+10 -11 D
+11 -10 D
+10 -11 D
+11 -10 D
+10 -11 D
+16 -15 D
+5 -6 D
+16 -15 D
+5 -6 D
+53 -51 D
+5 -6 D
+27 -25 D
+10 -11 D
+22 -20 D
+10 -11 D
+27 -25 D
+5 -6 D
+38 -35 D
+10 -11 D
+22 -20 D
+2 -3 D
+2 -1 D S
 8 W
-%
-% Map boundaries
-%
+N 566 5268 M 72 42 D S
+N 1206 5268 M 71 43 D S
+N 1810 5268 M 71 44 D S
+N 2381 5268 M 70 45 D S
+N 2922 5268 M 69 47 D S
+N 3436 5268 M 69 48 D S
+N 3925 5268 M 68 49 D S
+N 4391 5268 M 67 50 D S
+N 4836 5268 M 66 51 D S
+N 5262 5268 M 65 53 D S
+N 5669 5268 M 64 54 D S
+N 0 0 M -63 -55 D S
+N 585 0 M -62 -56 D S
+N 1148 0 M -61 -57 D S
+N 1690 0 M -60 -58 D S
+N 2212 0 M -58 -59 D S
+N 2717 0 M -58 -60 D S
+N 3205 0 M -56 -61 D S
+N 3678 0 M -56 -62 D S
+N 4136 0 M -55 -63 D S
+N 4580 0 M -54 -64 D S
+N 5011 0 M -52 -65 D S
+N 5431 0 M -52 -66 D S
+N 0 1830 M -50 66 D S
+N 0 4785 M -42 72 D S
+N 5669 696 M 65 -52 D S
+N 5669 2876 M 61 -57 D S
+N 5669 5267 M -53 64 D S
+N 60 5268 M 36 20 D S
+N 231 5268 M 36 21 D S
+N 400 5268 M 36 21 D S
+N 566 5268 M 36 21 D S
+N 729 5268 M 36 21 D S
+N 891 5268 M 35 21 D S
+N 1049 5268 M 36 21 D S
+N 1206 5268 M 36 22 D S
+N 1360 5268 M 36 22 D S
+N 1512 5268 M 36 22 D S
+N 1662 5268 M 36 22 D S
+N 1810 5268 M 35 22 D S
+N 1956 5268 M 35 22 D S
+N 2099 5268 M 36 22 D S
+N 2241 5268 M 35 23 D S
+N 2381 5268 M 35 23 D S
+N 2519 5268 M 35 23 D S
+N 2655 5268 M 35 23 D S
+N 2790 5268 M 34 23 D S
+N 2922 5268 M 35 23 D S
+N 3053 5268 M 35 24 D S
+N 3183 5268 M 34 24 D S
+N 3310 5268 M 35 24 D S
+N 3436 5268 M 34 24 D S
+N 3561 5268 M 34 24 D S
+N 3684 5268 M 34 24 D S
+N 3805 5268 M 34 24 D S
+N 3925 5268 M 34 25 D S
+N 4044 5268 M 34 25 D S
+N 4161 5268 M 34 25 D S
+N 4277 5268 M 33 25 D S
+N 4391 5268 M 34 25 D S
+N 4505 5268 M 33 25 D S
+N 4616 5268 M 33 25 D S
+N 4727 5268 M 33 26 D S
+N 4836 5268 M 33 26 D S
+N 4944 5268 M 33 26 D S
+N 5051 5268 M 33 26 D S
+N 5157 5268 M 33 26 D S
+N 5262 5268 M 32 26 D S
+N 5365 5268 M 33 26 D S
+N 5468 5268 M 32 27 D S
+N 5569 5268 M 32 27 D S
+N 5669 5268 M 32 27 D S
+N 0 0 M -31 -27 D S
+N 148 0 M -31 -27 D S
+N 295 0 M -31 -28 D S
+N 441 0 M -31 -28 D S
+N 585 0 M -31 -28 D S
+N 728 0 M -31 -28 D S
+N 869 0 M -31 -28 D S
+N 1009 0 M -31 -28 D S
+N 1148 0 M -31 -28 D S
+N 1285 0 M -30 -29 D S
+N 1421 0 M -30 -29 D S
+N 1556 0 M -30 -29 D S
+N 1690 0 M -30 -29 D S
+N 1822 0 M -30 -29 D S
+N 1953 0 M -29 -29 D S
+N 2084 0 M -30 -29 D S
+N 2212 0 M -29 -29 D S
+N 2340 0 M -29 -30 D S
+N 2467 0 M -29 -30 D S
+N 2593 0 M -29 -30 D S
+N 2717 0 M -29 -30 D S
+N 2841 0 M -29 -30 D S
+N 2963 0 M -28 -30 D S
+N 3085 0 M -29 -30 D S
+N 3205 0 M -28 -30 D S
+N 3325 0 M -28 -31 D S
+N 3444 0 M -29 -31 D S
+N 3561 0 M -28 -31 D S
+N 3678 0 M -28 -31 D S
+N 3794 0 M -28 -31 D S
+N 3909 0 M -28 -31 D S
+N 4023 0 M -28 -31 D S
+N 4136 0 M -28 -31 D S
+N 4248 0 M -27 -32 D S
+N 4360 0 M -28 -32 D S
+N 4470 0 M -27 -32 D S
+N 4580 0 M -27 -32 D S
+N 4689 0 M -27 -32 D S
+N 4797 0 M -26 -32 D S
+N 4905 0 M -27 -32 D S
+N 5011 0 M -26 -32 D S
+N 5117 0 M -26 -32 D S
+N 5222 0 M -26 -33 D S
+N 5327 0 M -26 -33 D S
+N 5431 0 M -26 -33 D S
+N 5534 0 M -26 -33 D S
+N 5636 0 M -25 -33 D S
+N 0 509 M -27 32 D S
+N 0 1160 M -26 32 D S
+N 0 1830 M -25 33 D S
+N 0 2523 M -24 34 D S
+N 0 3242 M -23 35 D S
+N 0 3994 M -22 35 D S
+N 0 4785 M -21 36 D S
+N 5669 173 M 33 -26 D S
+N 5669 696 M 33 -26 D S
+N 5669 1227 M 32 -26 D S
+N 5669 1767 M 32 -27 D S
+N 5669 2316 M 31 -28 D S
+N 5669 2876 M 30 -28 D S
+N 5669 3449 M 30 -29 D S
+N 5669 4037 M 29 -30 D S
+N 5669 4642 M 28 -31 D S
+N 5669 5267 M -26 32 D S
 25 W
 2 setlinecap
 N 0 0 M 0 5268 D S
@@ -14540,12 +13649,50 @@ N 5669 0 M 0 5268 D S
 N 0 0 M 5669 0 D S
 N 0 5268 M 5669 0 D S
 0 setlinecap
-%
-% Map annotations
-%
-%
-% End of basemap
-%
+710 5351 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+V 30 R (6è) ml Z U
+1349 5354 M V 31 R (7è) ml Z U
+1951 5356 M V 32 R (8è) ml Z U
+2521 5359 M V 33 R (9è) ml Z U
+3061 5361 M V 34 R (10è) ml Z U
+3573 5364 M V 35 R (11è) ml Z U
+4060 5366 M V 36 R (12è) ml Z U
+4524 5368 M V 37 R (13è) ml Z U
+4968 5371 M V 38 R (14è) ml Z U
+5391 5373 M V 39 R (15è) ml Z U
+5797 5375 M V 40 R (16è) ml Z U
+-126 -109 M V 41 R (17è) mr Z U
+461 -112 M V 42 R (18è) mr Z U
+1026 -114 M V 43 R (19è) mr Z U
+1570 -116 M V 44 R (20è) mr Z U
+2095 -118 M V 45 R (21è) mr Z U
+2602 -120 M V 46 R (22è) mr Z U
+3092 -122 M V 47 R (23è) mr Z U
+3566 -124 M V 48 R (24è) mr Z U
+4026 -126 M V 49 R (25è) mr Z U
+4473 -128 M V 50 R (26è) mr Z U
+4906 -130 M V 51 R (27è) mr Z U
+5328 -131 M V 52 R (28è) mr Z U
+-101 1963 M V -52.7 R (77è) mr Z U
+-84 4929 M V -59.6 R (78è) mr Z U
+5799 592 M V -38.7 R (79è) ml Z U
+5790 2762 M V -43.5 R (80è) ml Z U
+clipsave
+0 0 M
+5669 0 D
+0 5268 D
+-5669 0 D
+P
+PSL_clip N
+4 W
+V
+{0 A} FS
+24 1595 2642 Sc
+24 4179 4573 Sc
+24 116 325 Sc
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -14553,14 +13700,21 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy line -R17/76.3/16/81r -JS66/90/12c -O -K -Wthick,blue
-%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy line -R17/76.3/16/81r -JS66/90/12c -O -K -Wthick,blue
+%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 17 W
 0 0 1 C
+clipsave
+0 0 M
+5669 0 D
+0 5268 D
+-5669 0 D
+P
+PSL_clip N
 575 622 M
 158 467 D
 134 395 D
@@ -14581,35 +13735,28 @@ O0
 97 32 D
 1126 24 D
 S
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
 O0
-0 5669 TM
+0 6142 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Wfaint -R17/76.3/16/81r -Slightblue -JS66/90/12c -K -Dh -O -Y12c
-%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Wfaint -R17/76.3/16/81r -Slightblue -JS66/90/12c -K -Dh -O -Y13c
+%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 0 W
-%
-% Bin # 722
-%
-%
-% Bin # 723
-%
-%
-% Bin # 724
-%
-%
-% Bin # 725
-%
-%
-% Polygon 0
-%
+clipsave
+0 0 M
+5669 0 D
+0 5268 D
+-5669 0 D
+P
+PSL_clip N
 3711 5112 M
 -75 104 D
 -37 52 D
@@ -14617,12 +13764,6 @@ O0
 P
 {0.678 0.847 0.902 C} FS
 FO
-%
-% Bin # 726
-%
-%
-% Polygon 0
-%
 4054 4657 M
 -9 11 D
 -17 23 D
@@ -14639,12 +13780,6 @@ FO
 911 0 D
 P
 FO
-%
-% Bin # 727
-%
-%
-% Polygon 0
-%
 4413 4214 M
 -28 32 D
 -68 83 D
@@ -14657,9 +13792,6 @@ FO
 782 611 D
 833 0 D
 P
-%
-% Polygon 1
-%
 4153 4567 M
 -6 -14 D
 42 -3 D
@@ -14677,12 +13809,6 @@ FO
 -6 13 D
 -24 -2 D
 P S
-%
-% Bin # 728
-%
-%
-% Polygon 0
-%
 4519 4089 M
 2 3 D
 42 35 D
@@ -14730,18 +13856,12 @@ P S
 -69 79 D
 -46 53 D
 P
-%
-% Polygon 2
-%
 4966 3987 M
 2 -4 D
 3 4 D
 -4 1 D
 P
 FO
-%
-% Polygon 1
-%
 4910 3894 M
 19 32 D
 8 -2 D
@@ -14792,19 +13912,14 @@ P S
 8 -2 D
 -3 -8 D
 S
-%
-% Bin # 729
-%
-%
-% Polygon 0
-%
 4915 3643 M
 8 13 D
 -3 4 D
 -10 0 D
 -2 -9 D
 -44 47 D
--13 15 D
+-13 16 D
+0 -1 D
 -31 33 D
 2 3 D
 -5 1 D
@@ -14871,9 +13986,6 @@ S
 -35 29 D
 -13 -16 D
 P
-%
-% Polygon 5
-%
 4851 3816 M
 -14 -21 D
 -1 -15 D
@@ -14881,18 +13993,12 @@ P
 13 17 D
 -2 22 D
 P
-%
-% Polygon 6
-%
 4831 3744 M
 -2 -7 D
 6 -1 D
 7 11 D
 -3 3 D
 P
-%
-% Polygon 7
-%
 4877 3698 M
 -4 -8 D
 8 -5 D
@@ -14900,56 +14006,35 @@ P
 -2 7 D
 -8 -1 D
 P
-%
-% Polygon 10
-%
 4872 3719 M
 -6 -21 D
 10 5 D
 4 19 D
 -5 0 D
 P
-%
-% Polygon 13
-%
 4898 3697 M
 4 -5 D
 10 4 D
 -10 5 D
 P
-%
-% Polygon 17
-%
 4859 3732 M
 0 -7 D
 12 7 D
 -7 5 D
 P
-%
-% Polygon 18
-%
 4953 3649 M
 3 -3 D
 -1 3 D
 P
-%
-% Polygon 21
-%
 4913 3819 M
 4 -1 D
 -2 3 D
 P
-%
-% Polygon 24
-%
 4880 3707 M
 2 -4 D
 -1 5 D
 P
 FO
-%
-% Polygon 1
-%
 5669 3997 M
 -15 -13 D
 -29 -63 D
@@ -15113,9 +14198,6 @@ FO
 3 9 D
 659 594 D
 P
-%
-% Polygon 3
-%
 5149 4074 M
 -8 -13 D
 8 0 D
@@ -15168,9 +14250,6 @@ P
 -34 -23 D
 -17 -5 D
 P
-%
-% Polygon 8
-%
 5223 3883 M
 2 -8 D
 -5 -7 D
@@ -15178,112 +14257,70 @@ P
 5 28 D
 -5 0 D
 P
-%
-% Polygon 9
-%
 5328 3988 M
 0 -9 D
 10 5 D
 -3 5 D
+-6 0 D
 P
-%
-% Polygon 11
-%
 5305 3982 M
 7 -8 D
 9 1 D
 -2 15 D
+-12 -6 D
 P
-%
-% Polygon 12
-%
 5218 3668 M
 0 -9 D
 11 -6 D
 1 12 D
 -10 5 D
 P
-%
-% Polygon 14
-%
 5177 3754 M
 2 -6 D
 5 6 D
 -5 2 D
 P
-%
-% Polygon 15
-%
 5218 4120 M
 0 -5 D
 6 6 D
+-4 -1 D
 P
-%
-% Polygon 16
-%
 5146 3707 M
 4 -6 D
 4 4 D
 -6 4 D
 P
-%
-% Polygon 19
-%
 5050 3948 M
 9 -3 D
 -7 4 D
 P
-%
-% Polygon 20
-%
 5198 3656 M
 4 -5 D
 -3 7 D
 P
-%
-% Polygon 22
-%
 5200 3643 M
 5 -1 D
 -3 3 D
 P
-%
-% Polygon 23
-%
 5205 3688 M
 6 -2 D
 P
-%
-% Polygon 25
-%
 5195 3661 M
 5 -1 D
 -4 2 D
 P
-%
-% Polygon 26
-%
 5293 4002 M
 4 -1 D
 -3 2 D
 P
-%
-% Polygon 27
-%
 5393 4000 M
 4 -2 D
 -2 3 D
 P
-%
-% Polygon 28
-%
 5171 3934 M
 4 -2 D
 -3 3 D
 P
-%
-% Polygon 29
-%
 5338 3979 M
 4 -3 D
 P
@@ -15591,6 +14628,7 @@ P S
 0 -9 D
 10 5 D
 -3 5 D
+-6 0 D
 P S
 4872 3719 M
 -6 -21 D
@@ -15602,6 +14640,7 @@ P S
 7 -8 D
 9 1 D
 -2 15 D
+-12 -6 D
 P S
 5218 3668 M
 0 -9 D
@@ -15628,6 +14667,7 @@ P S
 5218 4120 M
 0 -5 D
 6 6 D
+-4 -1 D
 P S
 5146 3707 M
 4 -6 D
@@ -15649,7 +14689,8 @@ P S
 2 3 D
 S
 4857 3706 M
--6 7 D
+-6 8 D
+0 -1 D
 S
 4820 3746 M
 2 3 D
@@ -15697,12 +14738,6 @@ P S
 5338 3979 M
 4 -3 D
 P S
-%
-% Bin # 730
-%
-%
-% Polygon 0
-%
 5669 3160 M
 -13 -1 D
 -17 -8 D
@@ -15748,24 +14783,15 @@ P S
 13 4 D
 7 22 D
 P
-%
-% Polygon 11
-%
 5624 3417 M
 -3 -9 D
 7 1 D
 -1 6 D
 P
-%
-% Polygon 15
-%
 5623 3574 M
 5 -3 D
 -4 4 D
 P
-%
-% Polygon 19
-%
 5630 3422 M
 -3 -3 D
 5 1 D
@@ -15832,12 +14858,6 @@ P S
 -3 -3 D
 5 1 D
 P S
-%
-% Bin # 731
-%
-%
-% Polygon 0
-%
 5669 2932 M
 -4 -4 D
 -1 -15 D
@@ -15860,38 +14880,17 @@ FO
 1 6 D
 10 5 D
 11 23 D
-S
+0 0 D S
 5669 2932 M
 -4 -4 D
 -1 -15 D
 -11 -21 D
 S
-%
-% Bin # 732
-%
-%
-% Bin # 733
-%
-%
-% Bin # 734
-%
-%
-% Bin # 902
-%
-%
-% Polygon 0
-%
 0 5268 M
 566 0 D
 -566 -327 D
 P
 FO
-%
-% Bin # 903
-%
-%
-% Polygon 0
-%
 285 4315 M
 -95 153 D
 -49 80 D
@@ -15902,12 +14901,6 @@ FO
 1244 0 D
 P
 FO
-%
-% Bin # 904
-%
-%
-% Polygon 0
-%
 658 3740 M
 -43 64 D
 -100 150 D
@@ -15925,12 +14918,6 @@ FO
 1112 0 D
 P
 FO
-%
-% Bin # 905
-%
-%
-% Polygon 0
-%
 3357 4855 M
 -14 12 D
 12 4 D
@@ -16175,7 +15162,8 @@ FO
 6 -10 D
 8 6 D
 19 -5 D
--115 -83 D
+-86 -62 D
+-29 -21 D
 -4 6 D
 -23 5 D
 -15 -2 D
@@ -16202,7 +15190,8 @@ FO
 -11 -8 D
 -4 0 D
 -4 -6 D
--83 -60 D
+-62 -45 D
+-21 -15 D
 -1 1 D
 0 -1 D
 1 0 D
@@ -16261,7 +15250,8 @@ FO
 -17 -11 D
 1 -17 D
 -11 -27 D
--392 -285 D
+-294 -214 D
+-98 -71 D
 12 16 D
 25 21 D
 12 36 D
@@ -16389,8 +15379,8 @@ FO
 -5 -3 D
 -9 4 D
 -6 -10 D
--21 -11 D
--6 -14 D
+-20 -10 D
+-7 -15 D
 -13 -12 D
 -8 -3 D
 3 -3 D
@@ -16441,7 +15431,8 @@ FO
 4 5 D
 11 -1 D
 -11 -21 D
--297 -216 D
+-223 -162 D
+-74 -54 D
 -106 146 D
 -147 210 D
 -88 128 D
@@ -16450,10 +15441,8 @@ FO
 677 0 D
 62 -87 D
 50 -69 D
+-266 -193 D
 P
-%
-% Polygon 2
-%
 3146 5064 M
 8 8 D
 1 7 D
@@ -16502,9 +15491,6 @@ P
 6 1 D
 -1 19 D
 P
-%
-% Polygon 3
-%
 3199 5102 M
 -4 14 D
 7 19 D
@@ -16523,9 +15509,6 @@ P
 0 -16 D
 12 7 D
 P
-%
-% Polygon 4
-%
 1944 4224 M
 11 5 D
 -36 -16 D
@@ -16535,9 +15518,6 @@ P
 -2 19 D
 5 18 D
 P
-%
-% Polygon 5
-%
 3389 5138 M
 -10 -25 D
 8 -13 D
@@ -16548,9 +15528,6 @@ P
 -11 -14 D
 -10 3 D
 P
-%
-% Polygon 6
-%
 3415 5097 M
 -3 -19 D
 14 3 D
@@ -16558,9 +15535,6 @@ P
 1 5 D
 -35 -5 D
 P
-%
-% Polygon 7
-%
 3329 5085 M
 -4 -18 D
 7 -26 D
@@ -16568,18 +15542,13 @@ P
 -10 12 D
 -7 0 D
 P
-%
-% Polygon 8
-%
 3404 5051 M
 19 -9 D
 19 0 D
 -1 13 D
 -13 9 D
+-22 -11 D
 P
-%
-% Polygon 9
-%
 3442 5068 M
 6 -16 D
 15 -1 D
@@ -16587,180 +15556,113 @@ P
 2 9 D
 -9 7 D
 P
-%
-% Polygon 10
-%
 1910 4228 M
 -2 -8 D
 3 -1 D
 5 8 D
 -4 3 D
 P
-%
-% Polygon 11
-%
 1425 3621 M
 -1 -13 D
 13 12 D
 2 7 D
+-12 -5 D
 P
-%
-% Polygon 12
-%
 2601 4683 M
 6 -1 D
 4 5 D
 -3 4 D
 P
-%
-% Polygon 13
-%
 3468 5119 M
 -1 -4 D
 8 0 D
 -5 4 D
 P
-%
-% Polygon 14
-%
 3408 4947 M
 4 -6 D
 2 6 D
+-4 0 D
 P
-%
-% Polygon 15
-%
 1440 3652 M
 5 -6 D
 8 9 D
 -9 0 D
 P
-%
-% Polygon 16
-%
 1410 3596 M
 3 -3 D
 4 4 D
+-6 0 D
 P
-%
-% Polygon 17
-%
 3041 5031 M
 1 -10 D
 10 0 D
 -9 10 D
 P
-%
-% Polygon 18
-%
 1794 4068 M
 1 -4 D
 0 4 D
 P
-%
-% Polygon 19
-%
 3157 5072 M
 9 0 D
 -4 3 D
 P
-%
-% Polygon 20
-%
 3335 5041 M
 6 -3 D
 -5 4 D
 P
-%
-% Polygon 21
-%
 3384 5046 M
 0 -5 D
 2 5 D
 P
-%
-% Polygon 22
-%
 3037 5087 M
 6 0 D
 -5 1 D
 P
-%
-% Polygon 23
-%
 3328 5038 M
 5 -3 D
 P
-%
-% Polygon 24
-%
 1349 3410 M
 1 -5 D
 1 6 D
 P
-%
-% Polygon 25
-%
 3392 5057 M
 5 0 D
+-4 0 D
 P
-%
-% Polygon 26
-%
 3341 5045 M
 3 -4 D
 -2 4 D
 P
-%
-% Polygon 27
-%
 1330 3399 M
 2 -3 D
 0 4 D
 P
-%
-% Polygon 28
-%
 1339 3436 M
 1 -4 D
 0 4 D
 P
-%
-% Polygon 29
-%
 2503 4290 M
 3 -2 D
 -2 3 D
 P
-%
-% Polygon 30
-%
 3005 5023 M
 -1 -5 D
 2 5 D
 P
-%
-% Polygon 31
-%
 3107 5097 M
 0 -3 D
 3 3 D
 P
-%
-% Polygon 32
-%
 1346 3403 M
 0 -3 D
 1 3 D
 P
 FO
-%
-% Polygon 1
-%
 3320 4828 M
 -4 5 D
 4 3 D
 6 -4 D
+-5 -3 D
 P
 FO
 3357 4855 M
@@ -17136,8 +16038,8 @@ S
 -5 -3 D
 -9 4 D
 -6 -10 D
--21 -11 D
--6 -14 D
+-20 -10 D
+-7 -15 D
 -13 -12 D
 -8 -3 D
 3 -3 D
@@ -17374,6 +16276,7 @@ P S
 19 0 D
 -1 13 D
 -13 9 D
+-22 -11 D
 P S
 3442 5068 M
 6 -16 D
@@ -17392,6 +16295,7 @@ P S
 -1 -13 D
 13 12 D
 2 7 D
+-12 -5 D
 P S
 2601 4683 M
 6 -1 D
@@ -17406,6 +16310,7 @@ P S
 3408 4947 M
 4 -6 D
 2 6 D
+-4 0 D
 P S
 1440 3652 M
 5 -6 D
@@ -17415,6 +16320,7 @@ P S
 1410 3596 M
 3 -3 D
 4 4 D
+-6 0 D
 P S
 3041 5031 M
 1 -10 D
@@ -17459,6 +16365,7 @@ P S
 P S
 3392 5057 M
 5 0 D
+-4 0 D
 P S
 3341 5045 M
 3 -4 D
@@ -17492,12 +16399,6 @@ P S
 -4 0 D
 -4 -6 D
 S
-%
-% Bin # 906
-%
-%
-% Polygon 0
-%
 1348 3395 M
 -1 0 D
 15 11 D
@@ -17722,9 +16623,6 @@ S
 -87 116 D
 -135 184 D
 P
-%
-% Polygon 6
-%
 1835 3675 M
 -17 -40 D
 13 6 D
@@ -17732,65 +16630,38 @@ P
 12 14 D
 -1 11 D
 P
-%
-% Polygon 26
-%
 1646 3261 M
 1 -3 D
 0 4 D
 P
-%
-% Polygon 28
-%
 1523 3113 M
 -1 -4 D
 2 4 D
 P
-%
-% Polygon 32
-%
 1753 2963 M
 1 -3 D
 0 3 D
 P
-%
-% Polygon 35
-%
 1658 3283 M
 3 -7 D
 -1 7 D
 P
-%
-% Polygon 40
-%
 1654 3281 M
 0 -3 D
 1 3 D
 P
-%
-% Polygon 41
-%
 1850 3500 M
 0 -6 D
 1 6 D
 P
-%
-% Polygon 43
-%
 1641 3244 M
 1 -4 D
 1 5 D
 P
-%
-% Polygon 46
-%
 1651 3272 M
 3 -2 D
 P
 FO
-%
-% Polygon 1
-%
 2283 4075 M
 6 -6 D
 -6 6 D
@@ -17835,78 +16706,49 @@ FO
 -18 24 D
 2 4 D
 P
-%
-% Polygon 11
-%
 2354 4005 M
 1 -4 D
 7 1 D
 1 5 D
+-8 -1 D
 P
-%
-% Polygon 13
-%
 2423 4064 M
 -6 -11 D
 8 2 D
 5 9 D
 -5 1 D
 P
-%
-% Polygon 15
-%
 2340 4025 M
 -2 -8 D
 14 5 D
 -10 4 D
 P
-%
-% Polygon 19
-%
 2360 4016 M
 3 -7 D
 4 6 D
 P
-%
-% Polygon 21
-%
 2347 3984 M
 3 -5 D
 4 5 D
 -4 2 D
 P
-%
-% Polygon 23
-%
 2361 3998 M
 -3 -9 D
 7 6 D
 P
-%
-% Polygon 27
-%
 2363 4048 M
 2 -2 D
 0 3 D
 P
-%
-% Polygon 42
-%
 2367 4023 M
 1 -2 D
 0 3 D
 P
-%
-% Polygon 45
-%
 2364 4006 M
 4 -8 D
 2 12 D
 P
 FO
-%
-% Polygon 2
-%
 2385 4149 M
 11 -14 D
 11 9 D
@@ -17921,17 +16763,11 @@ FO
 -2 -4 D
 -6 2 D
 P
-%
-% Polygon 30
-%
 2401 4125 M
 5 -2 D
 0 6 D
 P
 FO
-%
-% Polygon 3
-%
 2765 4425 M
 29 -8 D
 2 -6 D
@@ -17957,9 +16793,6 @@ FO
 -8 10 D
 P
 FO
-%
-% Polygon 4
-%
 3326 4832 M
 13 -7 D
 -1 6 D
@@ -18248,9 +17081,6 @@ FO
 0 11 D
 -4 4 D
 P
-%
-% Polygon 5
-%
 3506 4484 M
 3 -7 D
 -4 -12 D
@@ -18270,9 +17100,6 @@ P
 -9 11 D
 3 5 D
 P
-%
-% Polygon 7
-%
 3332 4562 M
 1 -7 D
 2 4 D
@@ -18280,18 +17107,13 @@ P
 2 3 D
 -6 5 D
 P
-%
-% Polygon 8
-%
 3271 4520 M
 2 -9 D
 12 -3 D
 2 6 D
 -5 10 D
+-8 -2 D
 P
-%
-% Polygon 9
-%
 3491 4504 M
 -5 -6 D
 5 -6 D
@@ -18299,160 +17121,98 @@ P
 1 7 D
 -10 1 D
 P
-%
-% Polygon 10
-%
 3443 4381 M
 -5 -10 D
 22 -1 D
 6 17 D
 -16 -1 D
 P
-%
-% Polygon 12
-%
 3277 4494 M
 6 -4 D
 -3 -3 D
 9 -2 D
 -9 11 D
 P
-%
-% Polygon 14
-%
 3564 4413 M
 8 -5 D
 9 5 D
 -16 1 D
 P
-%
-% Polygon 16
-%
 3490 4460 M
 -4 -7 D
 13 2 D
 -8 6 D
 P
-%
-% Polygon 17
-%
 3266 4514 M
 8 -15 D
 4 5 D
 -9 10 D
 P
-%
-% Polygon 18
-%
 3499 4446 M
 6 -9 D
 2 2 D
 -7 8 D
 P
-%
-% Polygon 20
-%
 3577 4405 M
 7 -2 D
 1 7 D
+-7 -4 D
 P
-%
-% Polygon 22
-%
 3265 4526 M
 6 -4 D
 4 2 D
 -8 3 D
 P
-%
-% Polygon 24
-%
 3448 4398 M
 1 -5 D
 4 5 D
 -3 2 D
 P
-%
-% Polygon 25
-%
 3528 4499 M
 -1 -3 D
 5 1 D
 -3 3 D
 P
-%
-% Polygon 29
-%
 3336 4551 M
 3 -4 D
 0 6 D
 P
-%
-% Polygon 31
-%
 3263 4527 M
 9 3 D
 -7 2 D
 P
-%
-% Polygon 33
-%
 3505 4454 M
 0 -3 D
 2 3 D
 P
-%
-% Polygon 34
-%
 3467 4379 M
 4 -9 D
 -1 10 D
 P
-%
-% Polygon 36
-%
 3254 4523 M
 6 -4 D
 -4 4 D
 P
-%
-% Polygon 37
-%
 3250 4535 M
 6 -1 D
 -5 2 D
 P
-%
-% Polygon 38
-%
 3432 4387 M
 -2 -5 D
 3 6 D
 P
-%
-% Polygon 39
-%
 3483 4469 M
 3 -6 D
 -2 7 D
 P
-%
-% Polygon 44
-%
 3242 4537 M
 10 -11 D
 -9 12 D
 P
-%
-% Polygon 47
-%
 3294 4526 M
 4 -2 D
 -3 3 D
 P
-%
-% Polygon 48
-%
 3345 4564 M
 6 -9 D
 -4 9 D
@@ -19058,6 +17818,7 @@ P S
 12 -3 D
 2 6 D
 -5 10 D
+-8 -2 D
 P S
 3491 4504 M
 -5 -6 D
@@ -19076,6 +17837,7 @@ P S
 1 -4 D
 7 1 D
 1 5 D
+-8 -1 D
 P S
 3322 4085 M
 -26 -7 D
@@ -19132,6 +17894,7 @@ P S
 3577 4405 M
 7 -2 D
 1 7 D
+-7 -4 D
 P S
 2347 3984 M
 3 -5 D
@@ -19255,12 +18018,6 @@ P S
 -23 -5 D
 6 -8 D
 S
-%
-% Bin # 907
-%
-%
-% Polygon 0
-%
 1505 2579 M
 20 5 D
 -1 12 D
@@ -19577,9 +18334,6 @@ S
 -1 -10 D
 -29 -10 D
 P
-%
-% Polygon 5
-%
 2494 3153 M
 -15 -14 D
 1 -16 D
@@ -19589,18 +18343,13 @@ P
 -7 8 D
 -15 -10 D
 P
-%
-% Polygon 6
-%
 2417 3143 M
 1 -8 D
 6 -6 D
 14 6 D
 -2 8 D
+-15 0 D
 P
-%
-% Polygon 7
-%
 2807 3136 M
 1 -8 D
 8 4 D
@@ -19608,51 +18357,31 @@ P
 4 14 D
 -7 -1 D
 P
-%
-% Polygon 8
-%
 2802 3143 M
 9 2 D
+-8 -1 D
 P
-%
-% Polygon 10
-%
 2826 3154 M
 -1 -4 D
 2 5 D
 P
-%
-% Polygon 11
-%
 2235 3031 M
 3 -2 D
 -1 4 D
 P
-%
-% Polygon 12
-%
 1958 2903 M
 3 -1 D
 -2 2 D
 P
-%
-% Polygon 13
-%
 2251 3061 M
 3 -2 D
 -2 3 D
 P
-%
-% Polygon 14
-%
 2074 2823 M
 1 -3 D
 0 3 D
 P
 FO
-%
-% Polygon 1
-%
 3264 4040 M
 3 -4 D
 -1 -26 D
@@ -19678,25 +18407,16 @@ FO
 0 12 D
 P
 FO
-%
-% Polygon 2
-%
 3297 4066 M
 -3 -10 D
 -13 -3 D
 P
 FO
-%
-% Polygon 3
-%
 3339 4098 M
 -6 -15 D
 -11 2 D
 P
 FO
-%
-% Polygon 4
-%
 4382 4188 M
 -6 -2 D
 -5 9 D
@@ -19889,9 +18609,6 @@ FO
 18 -22 D
 14 -16 D
 P
-%
-% Polygon 9
-%
 4316 4159 M
 0 -3 D
 1 4 D
@@ -20438,6 +19155,7 @@ P S
 6 -6 D
 14 6 D
 -2 8 D
+-15 0 D
 P S
 2807 3136 M
 1 -8 D
@@ -20448,6 +19166,7 @@ P S
 P S
 2802 3143 M
 9 2 D
+-8 -1 D
 P S
 4316 4159 M
 0 -3 D
@@ -20481,12 +19200,6 @@ P S
 -3 -10 D
 -13 -3 D
 S
-%
-% Bin # 908
-%
-%
-% Polygon 0
-%
 2514 2621 M
 26 2 D
 7 7 D
@@ -20600,40 +19313,25 @@ S
 -10 -2 D
 -8 5 D
 P
-%
-% Polygon 8
-%
 2501 2520 M
 5 -6 D
 4 2 D
 -3 4 D
 P
-%
-% Polygon 11
-%
 2507 2535 M
 -5 -12 D
 12 -3 D
 -6 15 D
 P
-%
-% Polygon 12
-%
 2514 2515 M
 4 -2 D
 -3 3 D
 P
-%
-% Polygon 14
-%
 2504 2245 M
 3 -2 D
 -1 4 D
 P
 FO
-%
-% Polygon 1
-%
 3498 3446 M
 -6 -26 D
 -10 -7 D
@@ -20696,9 +19394,6 @@ FO
 8 6 D
 21 33 D
 P
-%
-% Polygon 6
-%
 3336 3267 M
 2 -4 D
 -9 -6 D
@@ -20707,32 +19402,21 @@ P
 -2 4 D
 -5 -1 D
 P
-%
-% Polygon 9
-%
 3221 3104 M
 -3 -6 D
 8 7 D
+-3 -1 D
 P
-%
-% Polygon 10
-%
 3213 3087 M
 2 10 D
 -12 -11 D
 9 2 D
 P
-%
-% Polygon 13
-%
 3176 2992 M
 1 -3 D
 0 4 D
 P
 FO
-%
-% Polygon 2
-%
 4286 4108 M
 -6 -13 D
 0 -16 D
@@ -20748,17 +19432,11 @@ FO
 23 1 D
 -24 7 D
 P
-%
-% Polygon 16
-%
 4275 4076 M
 4 0 D
 -3 1 D
 P
 FO
-%
-% Polygon 3
-%
 4415 4211 M
 -2 1 D
 -5 -6 D
@@ -20768,9 +19446,6 @@ FO
 31 26 D
 P
 FO
-%
-% Polygon 4
-%
 4473 3501 M
 10 21 D
 2 18 D
@@ -20836,17 +19511,11 @@ FO
 9 -11 D
 19 -21 D
 P
-%
-% Polygon 15
-%
 4739 3747 M
 4 -1 D
 -3 2 D
 P
 FO
-%
-% Polygon 5
-%
 4118 3182 M
 -13 -8 D
 -23 1 D
@@ -20882,9 +19551,6 @@ FO
 42 10 D
 23 -1 D
 P
-%
-% Polygon 7
-%
 4206 3293 M
 0 -11 D
 4 -1 D
@@ -21202,6 +19868,7 @@ P S
 3221 3104 M
 -3 -6 D
 8 7 D
+-3 -1 D
 P S
 3213 3087 M
 2 10 D
@@ -21233,12 +19900,6 @@ P S
 4 0 D
 -3 1 D
 P S
-%
-% Bin # 909
-%
-%
-% Polygon 0
-%
 2440 1477 M
 12 29 D
 13 16 D
@@ -21351,16 +20012,10 @@ P S
 -12 12 D
 -11 13 D
 P
-%
-% Polygon 43
-%
 2508 1510 M
 7 -2 D
 P
 FO
-%
-% Polygon 1
-%
 4406 3441 M
 12 -1 D
 20 11 D
@@ -21673,9 +20328,6 @@ FO
 -100 -84 D
 -33 -17 D
 P
-%
-% Polygon 3
-%
 4736 3696 M
 -1 -13 D
 30 3 D
@@ -21695,9 +20347,6 @@ P
 -25 -3 D
 -8 -6 D
 P
-%
-% Polygon 4
-%
 4111 2611 M
 17 -17 D
 5 0 D
@@ -21712,9 +20361,6 @@ P
 -8 12 D
 -13 -2 D
 P
-%
-% Polygon 5
-%
 4383 2803 M
 7 -4 D
 4 -13 D
@@ -21727,9 +20373,6 @@ P
 -12 0 D
 -15 -16 D
 P
-%
-% Polygon 6
-%
 4727 3055 M
 -1 -4 D
 5 -1 D
@@ -21737,10 +20380,8 @@ P
 0 -8 D
 12 8 D
 -5 9 D
+-4 -1 D
 P
-%
-% Polygon 7
-%
 4365 2810 M
 -2 -5 D
 5 -9 D
@@ -21750,9 +20391,6 @@ P
 -2 11 D
 -6 1 D
 P
-%
-% Polygon 8
-%
 4273 2772 M
 -2 -15 D
 10 -3 D
@@ -21761,19 +20399,14 @@ P
 2 5 D
 -3 7 D
 P
-%
-% Polygon 9
-%
 4516 3037 M
 4 -17 D
 11 -10 D
 7 2 D
 3 6 D
 -18 20 D
+-6 -1 D
 P
-%
-% Polygon 10
-%
 4385 3129 M
 -9 -10 D
 2 -5 D
@@ -21781,9 +20414,6 @@ P
 2 11 D
 -6 1 D
 P
-%
-% Polygon 11
-%
 4738 3066 M
 0 -25 D
 22 -22 D
@@ -21791,9 +20421,6 @@ P
 -5 15 D
 -21 12 D
 P
-%
-% Polygon 12
-%
 4275 2633 M
 -2 -17 D
 15 -15 D
@@ -21801,9 +20428,6 @@ P
 -3 16 D
 -12 8 D
 P
-%
-% Polygon 13
-%
 4736 3733 M
 -4 -12 D
 14 -3 D
@@ -21811,326 +20435,202 @@ P
 -7 3 D
 -9 -3 D
 P
-%
-% Polygon 14
-%
 4772 3761 M
 1 -10 D
 5 -3 D
 8 6 D
 3 11 D
+-14 -4 D
 P
-%
-% Polygon 15
-%
 4268 2687 M
 7 -11 D
 9 -1 D
 -1 11 D
 P
-%
-% Polygon 16
-%
 4190 2776 M
 -2 -13 D
 10 -3 D
 0 12 D
 -6 6 D
 P
-%
-% Polygon 17
-%
 4250 2698 M
 9 -10 D
 5 2 D
 -1 14 D
 -9 -2 D
 P
-%
-% Polygon 18
-%
 4501 3065 M
 3 -24 D
 6 -2 D
 3 8 D
 -11 18 D
 P
-%
-% Polygon 19
-%
 4183 2547 M
 -3 -12 D
 8 -8 D
 2 15 D
 -4 7 D
 P
-%
-% Polygon 20
-%
 4601 3426 M
 1 -10 D
 5 -2 D
 2 9 D
 -6 5 D
 P
-%
-% Polygon 21
-%
 4191 2526 M
 2 -5 D
 7 0 D
 1 8 D
 -7 0 D
 P
-%
-% Polygon 22
-%
 4233 2682 M
 1 -4 D
 8 -1 D
 1 10 D
 -6 -1 D
 P
-%
-% Polygon 23
-%
 4255 2655 M
 10 -13 D
 4 1 D
 -12 14 D
 P
-%
-% Polygon 24
-%
 4707 3253 M
 -6 -14 D
 5 1 D
 5 14 D
 P
-%
-% Polygon 25
-%
 4798 3724 M
 4 -6 D
 3 9 D
 -7 -2 D
 P
-%
-% Polygon 26
-%
 4537 3029 M
 6 -7 D
 2 7 D
 -7 1 D
 P
-%
-% Polygon 27
-%
 4335 2768 M
 9 -6 D
 2 5 D
 -9 2 D
 P
-%
-% Polygon 28
-%
 4003 2257 M
 2 -7 D
 9 6 D
 -10 2 D
 P
-%
-% Polygon 29
-%
 4628 3413 M
 4 -4 D
 4 5 D
 -4 2 D
 P
-%
-% Polygon 30
-%
 4438 3185 M
 3 -9 D
 1 7 D
 -3 3 D
 P
-%
-% Polygon 31
-%
 4805 3639 M
 0 -3 D
 9 1 D
 -7 4 D
 P
-%
-% Polygon 32
-%
 4737 3112 M
 -1 -8 D
 4 5 D
 -2 4 D
 P
-%
-% Polygon 33
-%
 4229 2483 M
 1 -3 D
 9 5 D
 -5 -2 D
 P
-%
-% Polygon 34
-%
 4591 3423 M
 0 -5 D
 6 6 D
+-5 0 D
 P
-%
-% Polygon 35
-%
 4263 2794 M
 -2 -8 D
 5 -14 D
 -2 23 D
 P
-%
-% Polygon 36
-%
 4620 3507 M
 0 -3 D
 1 4 D
 P
-%
-% Polygon 37
-%
 4610 3461 M
 1 -3 D
 0 4 D
 P
-%
-% Polygon 38
-%
 4607 3481 M
 1 -3 D
 0 4 D
 P
-%
-% Polygon 39
-%
 4430 2829 M
 4 -6 D
 -3 7 D
 P
-%
-% Polygon 40
-%
 4306 2748 M
 4 -6 D
 -3 7 D
 P
-%
-% Polygon 41
-%
 4279 2699 M
 3 -4 D
 0 5 D
 P
-%
-% Polygon 42
-%
 4876 3647 M
 6 1 D
 -4 2 D
 P
-%
-% Polygon 44
-%
 4425 3048 M
 1 -3 D
 2 3 D
 P
-%
-% Polygon 45
-%
 4376 2760 M
 0 -3 D
 1 4 D
 P
-%
-% Polygon 46
-%
 4266 2964 M
 -1 -4 D
 2 4 D
 P
-%
-% Polygon 47
-%
 4421 3088 M
 2 -16 D
 -1 17 D
 P
-%
-% Polygon 48
-%
 4618 3385 M
 -6 -20 D
 8 22 D
 P
-%
-% Polygon 49
-%
 4315 2748 M
 2 -3 D
 -1 4 D
 P
-%
-% Polygon 50
-%
 4289 2755 M
 2 -4 D
 -1 4 D
 P
-%
-% Polygon 51
-%
 4280 2693 M
 -1 -5 D
 4 5 D
 P
-%
-% Polygon 52
-%
 4622 3372 M
 4 3 D
 -3 1 D
 P
-%
-% Polygon 53
-%
 4199 2516 M
 3 -2 D
 -2 3 D
 P
-%
-% Polygon 54
-%
 4311 2563 M
 1 -3 D
 0 4 D
 P
-%
-% Polygon 55
-%
 4600 3403 M
 6 1 D
 0 6 D
 P
 FO
-%
-% Polygon 2
-%
 4932 3625 M
 -17 -21 D
 0 -13 D
@@ -22604,6 +21104,7 @@ S
 0 -8 D
 12 8 D
 -5 9 D
+-4 -1 D
 P S
 4365 2810 M
 -2 -5 D
@@ -22628,6 +21129,7 @@ P S
 7 2 D
 3 6 D
 -18 20 D
+-6 -1 D
 P S
 4385 3129 M
 -9 -10 D
@@ -22662,6 +21164,7 @@ P S
 5 -3 D
 8 6 D
 3 11 D
+-14 -4 D
 P S
 4268 2687 M
 7 -11 D
@@ -22781,6 +21284,7 @@ P S
 4591 3423 M
 0 -5 D
 6 6 D
+-5 0 D
 P S
 4263 2794 M
 -2 -8 D
@@ -22876,12 +21380,6 @@ P S
 6 1 D
 0 6 D
 P S
-%
-% Bin # 910
-%
-%
-% Polygon 0
-%
 3522 1769 M
 5 -7 D
 19 1 D
@@ -23249,9 +21747,6 @@ P S
 -6 5 D
 -46 48 D
 P
-%
-% Polygon 4
-%
 4054 2256 M
 5 -18 D
 -5 -27 D
@@ -23303,10 +21798,8 @@ P
 -8 -18 D
 -8 -2 D
 -8 8 D
+-6 0 D
 P
-%
-% Polygon 5
-%
 4246 2034 M
 -6 17 D
 -7 -1 D
@@ -23329,9 +21822,6 @@ P
 -8 14 D
 -20 14 D
 P
-%
-% Polygon 6
-%
 3840 1540 M
 6 -9 D
 -2 -14 D
@@ -23352,9 +21842,6 @@ P
 4 -5 D
 -14 1 D
 P
-%
-% Polygon 7
-%
 4334 1840 M
 0 -21 D
 -3 5 D
@@ -23373,10 +21860,8 @@ P
 0 9 D
 7 7 D
 -3 10 D
+-7 -3 D
 P
-%
-% Polygon 8
-%
 4560 2325 M
 -3 -13 D
 6 -14 D
@@ -23390,9 +21875,6 @@ P
 -4 13 D
 -16 15 D
 P
-%
-% Polygon 9
-%
 3193 1170 M
 11 -17 D
 -1 -7 D
@@ -23402,10 +21884,8 @@ P
 -5 4 D
 -19 -15 D
 -15 25 D
+-8 -7 D
 P
-%
-% Polygon 10
-%
 4189 2017 M
 8 6 D
 4 -23 D
@@ -23416,9 +21896,6 @@ P
 -9 2 D
 -12 -17 D
 P
-%
-% Polygon 11
-%
 4324 2465 M
 -5 -8 D
 12 -2 D
@@ -23427,20 +21904,16 @@ P
 3 11 D
 -18 -15 D
 -19 7 D
+-15 -4 D
 P
-%
-% Polygon 12
-%
 3581 1764 M
 -4 -11 D
 4 -15 D
 8 6 D
 -6 10 D
 6 12 D
+-7 -1 D
 P
-%
-% Polygon 13
-%
 3140 1209 M
 2 -3 D
 14 6 D
@@ -23449,9 +21922,6 @@ P
 -14 0 D
 -12 -7 D
 P
-%
-% Polygon 14
-%
 4597 2333 M
 -4 -11 D
 8 -15 D
@@ -23459,369 +21929,224 @@ P
 5 1 D
 -10 18 D
 P
-%
-% Polygon 15
-%
 4526 2495 M
 1 -38 D
 8 7 D
 -6 6 D
 -1 27 D
 P
-%
-% Polygon 16
-%
 3846 1503 M
 10 -13 D
 4 5 D
 -2 7 D
 -11 2 D
 P
-%
-% Polygon 17
-%
 4298 1846 M
 12 -10 D
 9 1 D
 -10 9 D
 -10 1 D
 P
-%
-% Polygon 18
-%
 3198 1098 M
 6 -7 D
 6 3 D
 -1 9 D
+-10 -4 D
 P
-%
-% Polygon 19
-%
 4312 1768 M
 -3 -8 D
 6 -2 D
 2 8 D
 -4 4 D
 P
-%
-% Polygon 20
-%
 3238 1171 M
 4 -6 D
 4 8 D
+-7 -1 D
 P
-%
-% Polygon 21
-%
 3655 1533 M
 11 -5 D
 8 7 D
+-18 -1 D
 P
-%
-% Polygon 22
-%
 3309 1267 M
 1 -5 D
 4 5 D
 -3 2 D
 P
-%
-% Polygon 23
-%
 4110 1861 M
 5 -5 D
 2 5 D
 -6 1 D
 P
-%
-% Polygon 24
-%
 4301 1884 M
 6 -4 D
 0 6 D
 -4 1 D
 P
-%
-% Polygon 25
-%
 3169 1069 M
 7 -9 D
 2 3 D
 -7 8 D
 P
-%
-% Polygon 26
-%
 4229 1815 M
 6 -8 D
 0 8 D
 -4 2 D
 P
-%
-% Polygon 27
-%
 4528 2411 M
 3 -7 D
 6 0 D
 -8 8 D
 P
-%
-% Polygon 28
-%
 4292 1839 M
 2 -3 D
 2 4 D
+-3 0 D
 P
-%
-% Polygon 29
-%
 4117 1854 M
 15 -14 D
 12 -1 D
 -26 16 D
 P
-%
-% Polygon 30
-%
 3867 1573 M
 2 -6 D
 3 4 D
 -4 3 D
 P
-%
-% Polygon 31
-%
 4374 2504 M
 4 -8 D
 3 6 D
 -6 3 D
 P
-%
-% Polygon 32
-%
 3554 1783 M
 3 -3 D
 -2 3 D
 P
-%
-% Polygon 33
-%
 4315 1929 M
 1 -15 D
 2 18 D
 P
-%
-% Polygon 34
-%
 4321 1862 M
 10 2 D
 -5 3 D
 P
-%
-% Polygon 35
-%
 4199 1841 M
 9 -2 D
 -9 3 D
 P
-%
-% Polygon 36
-%
 4310 1958 M
 3 -9 D
 -2 9 D
 P
-%
-% Polygon 37
-%
 4288 2017 M
 2 -5 D
 0 8 D
 P
-%
-% Polygon 38
-%
 4273 1769 M
 4 -6 D
 -3 7 D
 P
-%
-% Polygon 39
-%
 4235 1799 M
 4 -8 D
 -3 9 D
 P
-%
-% Polygon 40
-%
 4264 1767 M
 2 -4 D
 3 6 D
 P
-%
-% Polygon 41
-%
 4362 2507 M
 8 5 D
 -6 -2 D
 P
-%
-% Polygon 42
-%
 3164 1075 M
 5 -4 D
 -4 5 D
 P
-%
-% Polygon 43
-%
 3176 1058 M
 5 -3 D
 -4 4 D
 P
-%
-% Polygon 44
-%
 4123 1869 M
 5 -1 D
 -3 3 D
 P
-%
-% Polygon 45
-%
 4302 1975 M
 0 -6 D
 1 6 D
 P
-%
-% Polygon 46
-%
 4325 1833 M
 5 -4 D
 -4 5 D
 P
-%
-% Polygon 47
-%
 4357 2531 M
 -1 -6 D
 2 7 D
 P
-%
-% Polygon 48
-%
 4321 1840 M
 4 -4 D
 -3 4 D
 P
-%
-% Polygon 49
-%
 4305 1777 M
 2 -4 D
 -1 4 D
 P
-%
-% Polygon 50
-%
 4316 1950 M
 0 -6 D
 P
-%
-% Polygon 51
-%
 3094 979 M
 1 -6 D
 0 7 D
 P
-%
-% Polygon 52
-%
 4309 1853 M
 5 -5 D
 -4 6 D
 P
-%
-% Polygon 53
-%
 3509 1652 M
 2 -4 D
 -1 5 D
 P
-%
-% Polygon 54
-%
 3134 1206 M
 1 -3 D
 1 5 D
 P
-%
-% Polygon 55
-%
 3185 1082 M
 3 -5 D
 -2 6 D
 P
-%
-% Polygon 56
-%
 3493 1637 M
 4 0 D
 -1 3 D
 P
-%
-% Polygon 57
-%
 3845 1512 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 58
-%
 4301 1982 M
 2 -4 D
 -1 5 D
 P
-%
-% Polygon 59
-%
 4324 1820 M
 1 -4 D
+-1 5 D
 P
-%
-% Polygon 60
-%
 4299 1877 M
 4 -1 D
 -3 2 D
 P
-%
-% Polygon 61
-%
 3500 1654 M
 2 -3 D
 -1 4 D
 P
-%
-% Polygon 62
-%
 4309 2443 M
 2 -2 D
 -1 3 D
 P
 FO
-%
-% Polygon 1
-%
 4277 2499 M
 1 -2 D
 P
 FO
-%
-% Polygon 2
-%
 4304 2524 M
 8 -3 D
 7 10 D
@@ -23837,9 +22162,6 @@ FO
 5 6 D
 P
 FO
-%
-% Polygon 3
-%
 4872 3073 M
 5 -3 D
 47 -12 D
@@ -24428,6 +22750,7 @@ S
 -8 -18 D
 -8 -2 D
 -8 8 D
+-6 0 D
 P S
 4584 2795 M
 -2 -6 D
@@ -24570,6 +22893,7 @@ P S
 0 9 D
 7 7 D
 -3 10 D
+-7 -3 D
 P S
 4396 2614 M
 0 -2 D
@@ -24620,6 +22944,7 @@ P S
 -5 4 D
 -19 -15 D
 -15 25 D
+-8 -7 D
 P S
 4189 2017 M
 8 6 D
@@ -24639,6 +22964,7 @@ P S
 3 11 D
 -18 -15 D
 -19 7 D
+-15 -4 D
 P S
 3581 1764 M
 -4 -11 D
@@ -24646,6 +22972,7 @@ P S
 8 6 D
 -6 10 D
 6 12 D
+-7 -1 D
 P S
 3140 1209 M
 2 -3 D
@@ -24684,6 +23011,7 @@ P S
 6 -7 D
 6 3 D
 -1 9 D
+-10 -4 D
 P S
 4312 1768 M
 -3 -8 D
@@ -24694,10 +23022,12 @@ P S
 3238 1171 M
 4 -6 D
 4 8 D
+-7 -1 D
 P S
 3655 1533 M
 11 -5 D
 8 7 D
+-18 -1 D
 P S
 3309 1267 M
 1 -5 D
@@ -24732,6 +23062,7 @@ P S
 4292 1839 M
 2 -3 D
 2 4 D
+-3 0 D
 P S
 4117 1854 M
 15 -14 D
@@ -24857,6 +23188,7 @@ P S
 P S
 4324 1820 M
 1 -4 D
+-1 5 D
 P S
 4299 1877 M
 4 -1 D
@@ -24873,12 +23205,6 @@ P S
 4277 2499 M
 1 -2 D
 P S
-%
-% Bin # 911
-%
-%
-% Polygon 0
-%
 3614 296 M
 19 46 D
 4 45 D
@@ -24971,27 +23297,18 @@ P S
 -66 61 D
 -19 16 D
 P
-%
-% Polygon 3
-%
 3693 809 M
 3 -3 D
 33 21 D
 8 13 D
 -39 -26 D
 P
-%
-% Polygon 4
-%
 3675 792 M
 -4 -7 D
 15 16 D
 -4 -1 D
 P
 FO
-%
-% Polygon 1
-%
 5653 2892 M
 -16 -7 D
 -10 9 D
@@ -25007,9 +23324,6 @@ FO
 4 8 D
 P
 FO
-%
-% Polygon 2
-%
 5669 2869 M
 -1 2 D
 1 2 D
@@ -25133,13 +23447,7 @@ P S
 5669 2869 M
 -1 2 D
 1 2 D
-S
-%
-% Bin # 912
-%
-%
-% Polygon 0
-%
+0 0 D S
 5113 1594 M
 13 -10 D
 38 -19 D
@@ -25195,21 +23503,12 @@ FO
 41 8 D
 88 -9 D
 23 2 D
-S
-%
-% Bin # 913
-%
-%
-% Polygon 0
-%
+0 0 D S
 5669 305 M
 -238 -305 D
 -851 0 D
 1089 1298 D
 P
-%
-% Polygon 1
-%
 5292 348 M
 8 2 D
 1 8 D
@@ -25241,9 +23540,6 @@ P
 20 8 D
 22 25 D
 P
-%
-% Polygon 2
-%
 5151 384 M
 2 -9 D
 4 8 D
@@ -25290,19 +23586,10 @@ P S
 -1 3 D
 -14 -1 D
 P S
-%
-% Bin # 914
-%
-%
-% Polygon 0
-%
 5669 0 M
 -238 0 D
 238 305 D
 P
-%
-% Polygon 16
-%
 5643 242 M
 6 0 D
 -4 2 D
@@ -25312,15 +23599,6 @@ FO
 6 0 D
 -4 2 D
 P S
-%
-% Bin # 1082
-%
-%
-% Bin # 1083
-%
-%
-% Polygon 0
-%
 0 4785 M
 132 -222 D
 116 -190 D
@@ -25328,12 +23606,6 @@ P S
 -285 -178 D
 P
 FO
-%
-% Bin # 1084
-%
-%
-% Polygon 0
-%
 0 4137 M
 285 178 D
 36 -58 D
@@ -25349,12 +23621,6 @@ FO
 -658 -443 D
 P
 FO
-%
-% Bin # 1085
-%
-%
-% Polygon 0
-%
 0 3297 M
 658 443 D
 52 -77 D
@@ -25364,12 +23630,6 @@ FO
 -1051 -763 D
 P
 FO
-%
-% Bin # 1086
-%
-%
-% Polygon 0
-%
 1387 2730 M
 -7 -4 D
 -11 -17 D
@@ -25560,12 +23820,6 @@ S
 -6 -1 D
 2 -2 D
 S
-%
-% Bin # 1087
-%
-%
-% Polygon 0
-%
 680 2021 M
 5 -4 D
 -5 -10 D
@@ -25722,9 +23976,6 @@ S
 -310 -260 D
 0 979 D
 P
-%
-% Polygon 6
-%
 456 1401 M
 -5 -18 D
 9 -1 D
@@ -25733,9 +23984,6 @@ P
 -10 0 D
 -5 11 D
 P
-%
-% Polygon 7
-%
 453 1419 M
 3 -8 D
 -5 -4 D
@@ -25743,121 +23991,73 @@ P
 1 13 D
 -6 6 D
 P
-%
-% Polygon 10
-%
 478 1394 M
 4 1 D
 -5 8 D
 -7 -3 D
 4 -6 D
 P
-%
-% Polygon 14
-%
 537 1543 M
 -2 -8 D
 6 -4 D
 -1 15 D
 P
-%
-% Polygon 17
-%
 552 1551 M
 1 -5 D
 5 2 D
 -4 4 D
 P
-%
-% Polygon 18
-%
 529 1417 M
 -2 -5 D
 4 1 D
 -1 5 D
 P
-%
-% Polygon 19
-%
 520 1522 M
 1 -4 D
 4 2 D
 -2 2 D
 P
-%
-% Polygon 20
-%
 460 1373 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 21
-%
 507 1578 M
 7 0 D
 -5 1 D
 P
-%
-% Polygon 27
-%
 510 1486 M
 6 0 D
 -2 3 D
 P
-%
-% Polygon 28
-%
 485 1047 M
 1 -3 D
 0 3 D
 P
-%
-% Polygon 29
-%
 525 1780 M
 4 -2 D
 -1 5 D
 P
-%
-% Polygon 30
-%
 569 1856 M
 2 -4 D
 -1 5 D
 P
-%
-% Polygon 31
-%
 455 1375 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 32
-%
 532 1632 M
 1 -4 D
 0 5 D
 P
-%
-% Polygon 33
-%
 508 1641 M
 2 -5 D
 -1 5 D
 P
-%
-% Polygon 35
-%
 511 1505 M
 2 -5 D
 -1 6 D
 P
 FO
-%
-% Polygon 1
-%
 691 2029 M
 0 -3 D
 -7 -2 D
@@ -25865,9 +24065,6 @@ FO
 1 2 D
 P
 FO
-%
-% Polygon 2
-%
 782 2101 M
 0 -2 D
 7 -4 D
@@ -25886,9 +24083,6 @@ FO
 -2 2 D
 P
 FO
-%
-% Polygon 3
-%
 1125 2368 M
 16 -7 D
 3 10 D
@@ -26081,9 +24275,6 @@ FO
 -13 -1 D
 -26 11 D
 P
-%
-% Polygon 5
-%
 1255 2213 M
 -30 -98 D
 -4 -19 D
@@ -26099,116 +24290,73 @@ P
 4 23 D
 -3 13 D
 P
-%
-% Polygon 8
-%
 1637 2084 M
 -7 -15 D
 9 -1 D
 8 8 D
 -2 13 D
+-6 -3 D
 P
-%
-% Polygon 9
-%
 1220 2085 M
 -4 -13 D
 12 4 D
 1 8 D
 P
-%
-% Polygon 11
-%
 1184 2313 M
 3 -12 D
 0 6 D
 5 2 D
 -7 5 D
 P
-%
-% Polygon 12
-%
 1618 2079 M
 7 0 D
 3 4 D
 -3 1 D
 P
-%
-% Polygon 13
-%
 1140 1972 M
 -6 -15 D
 17 16 D
+-10 0 D
 P
-%
-% Polygon 15
-%
 944 1912 M
 16 -4 D
 -3 4 D
 -11 1 D
 P
-%
-% Polygon 16
-%
 923 1962 M
 3 -4 D
 6 1 D
 -8 4 D
 P
-%
-% Polygon 22
-%
 1118 1913 M
 4 1 D
 -3 2 D
 P
-%
-% Polygon 23
-%
 1124 1914 M
 0 -6 D
 3 6 D
 P
-%
-% Polygon 24
-%
 1115 1917 M
 1 -5 D
 2 7 D
 P
-%
-% Polygon 25
-%
 1233 2094 M
 1 -6 D
 0 7 D
 P
-%
-% Polygon 26
-%
 1624 2060 M
 6 -1 D
 -4 2 D
 P
-%
-% Polygon 34
-%
 1619 2061 M
 13 2 D
 -8 3 D
 P
-%
-% Polygon 36
-%
 1307 1648 M
 2 -7 D
 0 7 D
 P
 FO
-%
-% Polygon 4
-%
 1529 2548 M
 -7 -2 D
 -15 -16 D
@@ -26638,6 +24786,7 @@ P S
 9 -1 D
 8 8 D
 -2 13 D
+-6 -3 D
 P S
 1220 2085 M
 -4 -13 D
@@ -26664,6 +24813,7 @@ P S
 1140 1972 M
 -6 -15 D
 17 16 D
+-10 0 D
 P S
 537 1543 M
 -2 -8 D
@@ -26767,12 +24917,6 @@ P S
 0 -3 D
 -7 -2 D
 S
-%
-% Bin # 1088
-%
-%
-% Polygon 0
-%
 310 771 M
 -2 -20 D
 10 -41 D
@@ -26919,9 +25063,6 @@ S
 -585 0 D
 0 511 D
 P
-%
-% Polygon 4
-%
 124 366 M
 -1 -14 D
 10 4 D
@@ -26943,76 +25084,46 @@ P
 11 21 D
 -21 -11 D
 P
-%
-% Polygon 5
-%
 145 482 M
 -4 -16 D
 5 -4 D
 6 15 D
 P
-%
-% Polygon 6
-%
 140 290 M
 -2 -4 D
 6 -2 D
 -3 6 D
 P
-%
-% Polygon 7
-%
 143 429 M
 -1 -8 D
 6 4 D
 -4 5 D
 P
-%
-% Polygon 8
-%
 97 292 M
 3 -3 D
 -2 3 D
 P
-%
-% Polygon 10
-%
 155 233 M
 3 -3 D
 -1 5 D
 P
-%
-% Polygon 11
-%
 89 272 M
 2 -4 D
 -1 4 D
 P
-%
-% Polygon 12
-%
 321 256 M
 0 -6 D
 1 6 D
 P
-%
-% Polygon 13
-%
 136 384 M
 1 -3 D
 0 3 D
 P
-%
-% Polygon 14
-%
 182 525 M
 4 -4 D
 -3 4 D
 P
 FO
-%
-% Polygon 1
-%
 693 1093 M
 3 -3 D
 25 7 D
@@ -27045,17 +25156,11 @@ FO
 -12 6 D
 81 67 D
 P
-%
-% Polygon 9
-%
 609 998 M
 2 -6 D
 -1 7 D
 P
 FO
-%
-% Polygon 2
-%
 1289 1592 M
 -14 -24 D
 6 -14 D
@@ -27072,24 +25177,15 @@ FO
 -6 16 D
 0 4 D
 P
-%
-% Polygon 15
-%
 1275 1555 M
 4 -1 D
 -3 2 D
 P
-%
-% Polygon 16
-%
 1271 1577 M
 7 -1 D
 -2 5 D
 P
 FO
-%
-% Polygon 3
-%
 1690 1929 M
 7 -8 D
 -2 -12 D
@@ -27517,12 +25613,6 @@ P S
 7 -1 D
 -2 5 D
 P S
-%
-% Bin # 1089
-%
-%
-% Polygon 0
-%
 1726 1028 M
 7 -15 D
 -2 -11 D
@@ -27645,12 +25735,6 @@ FO
 11 13 D
 11 27 D
 S
-%
-% Bin # 1090
-%
-%
-% Polygon 0
-%
 3090 798 M
 -2 -6 D
 -14 -25 D
@@ -27741,69 +25825,42 @@ S
 29 -30 D
 12 -11 D
 P
-%
-% Polygon 9
-%
 2522 405 M
 -1 -6 D
 6 0 D
 1 5 D
 -4 2 D
 P
-%
-% Polygon 13
-%
 2532 379 M
 1 -5 D
 5 1 D
 P
-%
-% Polygon 16
-%
 2518 378 M
 1 -4 D
 6 3 D
 -6 2 D
 P
-%
-% Polygon 18
-%
 2527 396 M
 -1 -14 D
 5 4 D
 -3 10 D
 P
-%
-% Polygon 19
-%
 2269 540 M
 2 -2 D
 -1 2 D
 P
-%
-% Polygon 21
-%
 2518 372 M
 6 -3 D
 -5 4 D
 P
-%
-% Polygon 30
-%
 2250 510 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 31
-%
 2249 529 M
 3 -3 D
 -2 4 D
 P
-%
-% Polygon 33
-%
 2514 381 M
 2 -3 D
 -1 4 D
@@ -27928,12 +25985,6 @@ P S
 2 -3 D
 -1 4 D
 P S
-%
-% Bin # 1091
-%
-%
-% Polygon 0
-%
 2717 0 M
 22 22 D
 12 -2 D
@@ -27949,9 +26000,6 @@ P S
 1 -23 D
 P
 FO
-%
-% Polygon 1
-%
 3559 0 M
 -1 0 D
 -3 43 D
@@ -27984,7 +26032,7 @@ FO
 29 4 D
 7 -5 D
 1 -23 D
-S
+0 0 D S
 3559 0 M
 -1 0 D
 -3 43 D
@@ -27999,24 +26047,13 @@ S
 11 29 D
 29 44 D
 S
-%
-% Bin # 1092
-%
-%
-% Polygon 0
-%
 3678 0 M
 118 131 D
 38 -35 D
 108 -96 D
 P
 FO
-%
-% Bin # 1093
-%
-%
-% Bin # 1094
-%
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -28024,36 +26061,29 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy p -Fr15.65/78.22 -O -R17/76.3/16/81r -JS66/90/12c -Wthick,red,- -SqD40k:+f4+LD+an+p+ukm -K
-%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy p -Fr15.65/78.22 -O -R17/76.3/16/81r -JS66/90/12c -Wthick,red,- -SqD40k:+f4+LD+an+p+ukm -K
+%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-V
-%
-% Store path and label attributes:
-%
-%
-% Pen and fill for text boxes (if enabled):
-%
+clipsave
+0 0 M
+5669 0 D
+0 5268 D
+-5669 0 D
+P
+PSL_clip N
+PSL_cliprestore
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
-%
-% Store pens used for each line segment:
-%
 /PSL_path_pen [
-	(17 W 1 0 0 C [133 67] 0 B)
-	(17 W 1 0 0 C [133 67] 0 B)
-	(17 W 1 0 0 C [133 67] 0 B)
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+	(17 W 1 0 0 C \[133 67\] 0 B)
+	(17 W 1 0 0 C \[133 67\] 0 B)
+	(17 W 1 0 0 C \[133 67\] 0 B)
 ] def
-%
-% Store text justification for each text label:
-%
 /PSL_label_justify [ 6 6 6 6 6 6 6 6 6 ] def
-%
-% Store font setting for each text label:
-%
 /PSL_label_font [
 	(0 A 67 F0)
 	(0 A 67 F0)
@@ -28065,18 +26095,9 @@ V
 	(0 A 67 F0)
 	(0 A 67 F0)
 ] def
-%
-% Set constants for textbox clearance:
-%
 /PSL_gap_x 10 def
 /PSL_gap_y 10 def
-%
-% Set array with baseline angle for each text label:
-%
 /PSL_label_angle [ -44.08 -44.09 -44.09 -44.10 -44.10 -43.33 -43.33 -43.33 -43.32 ] def
-%
-% Set array with the text labels:
-%
 /PSL_label_str [
 	(40km)
 	(80km)
@@ -28091,28 +26112,13 @@ V
 /PSL_label_n [ 0 5 4 ] def
 /PSL_n_paths 3 def
 /PSL_n_labels 9 def
-%
-% Set coordinate arrays for text label placements:
-%
 /PSL_txt_x [ 2507 2917 3328 3738 4148 1690 1285 878 472 ] def
 /PSL_txt_y [ 2847 3271 3695 4119 4542 1993 1563 1133 702 ] def
 /PSL_txt_n [ 9 ] def
-%
-% Estimate text heights:
-%
 PSL_set_label_heights
-%
-% Display the texts:
-%
 258 PSL_straight_path_labels
-%
-% Set up text clippath and turn clipping ON:
-%
 V
 260 PSL_straight_path_clip
-%
-% Draw the text line segments:
-%
 PSL_path_pen 0 get cvx exec
 2096 2423 M
 -315 137 D
@@ -28183,15 +26189,9 @@ PSL_path_pen 2 get cvx exec
 -17 -19 D
 -18 -18 D
 S
-%
-% Turn label clipping OFF:
-%
 PSL_cliprestore
-%
-% Clipping reduced by 1 level
-%
 U
-U
+[] 0 B
 %%EndObject
 0 A
 FQ
@@ -28199,56 +26199,526 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy p -Sc0.1c -Gblack -O -R17/76.3/16/81r -JS66/90/12c -Bafg -K
-%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy p -Sc0.1c -Gblack -O -R17/76.3/16/81r -JS66/90/12c -Bafg -K
+%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-%
-% Activate Map clip path
-%
-%
-% Start of polygon clip path
-%
-clipsave
-0 0 M
-5669 0 D
-0 5268 D
--5669 0 D
-PSL_clip N
-%
-% End of polygon clip path.  Polygon clipping is currently ON
-%
-4 W
-V
-{0 A} FS
-24 1595 2642 Sc
-24 4179 4573 Sc
-24 116 325 Sc
-U
-%
-% Deactivate Map clip path
-%
-PSL_cliprestore
-%
-% Clipping reduced by 1 level
-%
 25 W
-%
-% Start of basemap
-%
-%
-% Map gridlines (primary)
-%
 4 W
-%
-% Map tickmarks
-%
+-1 4941 M
+1 0 D
+566 327 D
+3 2 D S
+-1 4543 M
+1 0 D
+1206 725 D
+3 2 D S
+-1 4136 M
+1 1 D
+1810 1131 D
+3 2 D S
+-1 3721 M
+1 1 D
+2381 1546 D
+3 2 D S
+-1 3296 M
+1 1 D
+2922 1971 D
+3 2 D S
+-1 2861 M
+1 1 D
+3436 2406 D
+3 2 D S
+-1 2415 M
+1 1 D
+3925 2852 D
+3 2 D S
+-1 1958 M
+1 1 D
+4391 3309 D
+3 2 D S
+-1 1489 M
+1 1 D
+4836 3778 D
+2 2 D S
+-1 1006 M
+1 1 D
+5262 4261 D
+2 2 D S
+-1 510 M
+1 1 D
+5669 4757 D
+2 1 D S
+-1 -1 M
+1 1 D
+5669 4928 D
+2 1 D S
+583 -2 M
+2 2 D
+5084 4578 D
+2 1 D S
+1146 -2 M
+2 2 D
+4521 4216 D
+2 2 D S
+1688 -1 M
+2 1 D
+3979 3843 D
+2 1 D S
+2211 -1 M
+1 1 D
+3457 3457 D
+2 1 D S
+2716 -1 M
+1 1 D
+2952 3057 D
+2 1 D S
+3204 -1 M
+1 1 D
+2464 2642 D
+2 2 D S
+3677 -1 M
+1 1 D
+1991 2212 D
+2 1 D S
+4135 -1 M
+1 1 D
+1533 1764 D
+2 2 D S
+4579 -1 M
+1 1 D
+1089 1298 D
+2 2 D S
+5010 -1 M
+1 1 D
+658 813 D
+2 2 D S
+5430 -1 M
+1 1 D
+238 305 D
+2 3 D S
+-2 1832 M
+2 -2 D
+62 -81 D
+106 -137 D
+161 -204 D
+79 -97 D
+30 -38 D
+25 -29 D
+43 -53 D
+73 -89 D
+25 -29 D
+43 -52 D
+25 -29 D
+81 -96 D
+183 -211 D
+64 -72 D
+25 -29 D
+39 -43 D
+19 -22 D
+20 -21 D
+25 -29 D
+65 -71 D
+19 -22 D
+118 -127 D
+13 -15 D
+185 -196 D
+36 -38 D
+2 -1 D S
+-2 4788 M
+2 -3 D
+80 -135 D
+143 -236 D
+94 -151 D
+91 -142 D
+14 -23 D
+68 -104 D
+14 -23 D
+29 -44 D
+50 -74 D
+14 -23 D
+220 -323 D
+26 -36 D
+30 -44 D
+26 -36 D
+103 -145 D
+115 -158 D
+48 -64 D
+74 -100 D
+81 -106 D
+21 -29 D
+219 -280 D
+61 -77 D
+17 -20 D
+50 -63 D
+17 -20 D
+90 -110 D
+28 -35 D
+29 -34 D
+91 -109 D
+139 -162 D
+117 -134 D
+65 -73 D
+17 -20 D
+71 -79 D
+192 -210 D
+92 -98 D
+54 -58 D
+7 -6 D
+36 -39 D
+7 -6 D
+36 -39 D
+13 -12 D
+24 -26 D
+7 -6 D
+24 -26 D
+7 -6 D
+24 -26 D
+7 -6 D
+24 -26 D
+13 -12 D
+12 -13 D
+7 -6 D
+24 -26 D
+13 -12 D
+12 -13 D
+7 -6 D
+12 -13 D
+7 -6 D
+18 -19 D
+7 -6 D
+37 -38 D
+7 -6 D
+12 -13 D
+13 -12 D
+6 -7 D
+19 -18 D
+6 -7 D
+45 -43 D
+6 -7 D
+26 -24 D
+12 -13 D
+83 -80 D
+7 -6 D
+6 -7 D
+77 -73 D
+7 -6 D
+6 -7 D
+52 -48 D
+6 -7 D
+85 -79 D
+196 -180 D
+59 -54 D
+27 -23 D
+53 -48 D
+20 -17 D
+31 -28 D
+2 -2 D S
+1629 5269 M
+1 -1 D
+88 -142 D
+26 -42 D
+14 -20 D
+21 -35 D
+14 -20 D
+17 -28 D
+14 -20 D
+17 -27 D
+22 -35 D
+14 -20 D
+53 -82 D
+14 -20 D
+86 -129 D
+14 -20 D
+41 -60 D
+46 -68 D
+56 -80 D
+56 -80 D
+52 -73 D
+38 -53 D
+62 -86 D
+29 -39 D
+14 -20 D
+15 -19 D
+19 -27 D
+58 -78 D
+30 -39 D
+14 -20 D
+45 -58 D
+9 -13 D
+220 -283 D
+21 -25 D
+40 -51 D
+16 -19 D
+46 -57 D
+82 -101 D
+47 -56 D
+152 -181 D
+101 -117 D
+43 -49 D
+21 -25 D
+22 -24 D
+16 -19 D
+49 -55 D
+87 -97 D
+176 -192 D
+6 -5 D
+89 -96 D
+101 -106 D
+6 -5 D
+39 -42 D
+6 -5 D
+28 -30 D
+12 -11 D
+22 -24 D
+12 -11 D
+45 -47 D
+18 -17 D
+11 -12 D
+6 -5 D
+17 -18 D
+6 -5 D
+46 -47 D
+6 -5 D
+11 -12 D
+12 -11 D
+11 -12 D
+18 -17 D
+5 -6 D
+24 -22 D
+17 -18 D
+12 -11 D
+5 -6 D
+30 -28 D
+5 -6 D
+47 -45 D
+30 -28 D
+11 -12 D
+42 -39 D
+5 -6 D
+60 -56 D
+95 -89 D
+113 -105 D
+36 -33 D
+25 -21 D
+90 -82 D
+61 -54 D
+110 -97 D
+25 -21 D
+86 -75 D
+31 -26 D
+206 -173 D
+69 -57 D
+57 -46 D
+25 -21 D
+32 -25 D
+20 -17 D
+2 -1 D S
+3598 5269 M
+1 -1 D
+176 -244 D
+35 -48 D
+14 -17 D
+48 -66 D
+14 -17 D
+71 -94 D
+41 -53 D
+59 -76 D
+18 -24 D
+19 -23 D
+27 -35 D
+14 -17 D
+88 -110 D
+112 -137 D
+100 -120 D
+48 -56 D
+19 -23 D
+29 -33 D
+19 -23 D
+58 -67 D
+88 -100 D
+20 -22 D
+14 -17 D
+65 -71 D
+14 -17 D
+160 -174 D
+51 -54 D
+30 -33 D
+11 -10 D
+45 -49 D
+11 -10 D
+41 -43 D
+25 -27 D
+11 -10 D
+25 -27 D
+11 -10 D
+20 -22 D
+11 -10 D
+15 -16 D
+6 -5 D
+46 -48 D
+16 -15 D
+10 -11 D
+11 -10 D
+10 -11 D
+11 -10 D
+10 -11 D
+16 -15 D
+5 -6 D
+16 -15 D
+5 -6 D
+53 -51 D
+5 -6 D
+27 -25 D
+10 -11 D
+22 -20 D
+10 -11 D
+27 -25 D
+5 -6 D
+38 -35 D
+10 -11 D
+22 -20 D
+2 -3 D
+2 -1 D S
 8 W
-%
-% Map boundaries
-%
+N 566 5268 M 72 42 D S
+N 1206 5268 M 71 43 D S
+N 1810 5268 M 71 44 D S
+N 2381 5268 M 70 45 D S
+N 2922 5268 M 69 47 D S
+N 3436 5268 M 69 48 D S
+N 3925 5268 M 68 49 D S
+N 4391 5268 M 67 50 D S
+N 4836 5268 M 66 51 D S
+N 5262 5268 M 65 53 D S
+N 5669 5268 M 64 54 D S
+N 0 0 M -63 -55 D S
+N 585 0 M -62 -56 D S
+N 1148 0 M -61 -57 D S
+N 1690 0 M -60 -58 D S
+N 2212 0 M -58 -59 D S
+N 2717 0 M -58 -60 D S
+N 3205 0 M -56 -61 D S
+N 3678 0 M -56 -62 D S
+N 4136 0 M -55 -63 D S
+N 4580 0 M -54 -64 D S
+N 5011 0 M -52 -65 D S
+N 5431 0 M -52 -66 D S
+N 0 1830 M -50 66 D S
+N 0 4785 M -42 72 D S
+N 5669 696 M 65 -52 D S
+N 5669 2876 M 61 -57 D S
+N 5669 5267 M -53 64 D S
+N 60 5268 M 36 20 D S
+N 231 5268 M 36 21 D S
+N 400 5268 M 36 21 D S
+N 566 5268 M 36 21 D S
+N 729 5268 M 36 21 D S
+N 891 5268 M 35 21 D S
+N 1049 5268 M 36 21 D S
+N 1206 5268 M 36 22 D S
+N 1360 5268 M 36 22 D S
+N 1512 5268 M 36 22 D S
+N 1662 5268 M 36 22 D S
+N 1810 5268 M 35 22 D S
+N 1956 5268 M 35 22 D S
+N 2099 5268 M 36 22 D S
+N 2241 5268 M 35 23 D S
+N 2381 5268 M 35 23 D S
+N 2519 5268 M 35 23 D S
+N 2655 5268 M 35 23 D S
+N 2790 5268 M 34 23 D S
+N 2922 5268 M 35 23 D S
+N 3053 5268 M 35 24 D S
+N 3183 5268 M 34 24 D S
+N 3310 5268 M 35 24 D S
+N 3436 5268 M 34 24 D S
+N 3561 5268 M 34 24 D S
+N 3684 5268 M 34 24 D S
+N 3805 5268 M 34 24 D S
+N 3925 5268 M 34 25 D S
+N 4044 5268 M 34 25 D S
+N 4161 5268 M 34 25 D S
+N 4277 5268 M 33 25 D S
+N 4391 5268 M 34 25 D S
+N 4505 5268 M 33 25 D S
+N 4616 5268 M 33 25 D S
+N 4727 5268 M 33 26 D S
+N 4836 5268 M 33 26 D S
+N 4944 5268 M 33 26 D S
+N 5051 5268 M 33 26 D S
+N 5157 5268 M 33 26 D S
+N 5262 5268 M 32 26 D S
+N 5365 5268 M 33 26 D S
+N 5468 5268 M 32 27 D S
+N 5569 5268 M 32 27 D S
+N 5669 5268 M 32 27 D S
+N 0 0 M -31 -27 D S
+N 148 0 M -31 -27 D S
+N 295 0 M -31 -28 D S
+N 441 0 M -31 -28 D S
+N 585 0 M -31 -28 D S
+N 728 0 M -31 -28 D S
+N 869 0 M -31 -28 D S
+N 1009 0 M -31 -28 D S
+N 1148 0 M -31 -28 D S
+N 1285 0 M -30 -29 D S
+N 1421 0 M -30 -29 D S
+N 1556 0 M -30 -29 D S
+N 1690 0 M -30 -29 D S
+N 1822 0 M -30 -29 D S
+N 1953 0 M -29 -29 D S
+N 2084 0 M -30 -29 D S
+N 2212 0 M -29 -29 D S
+N 2340 0 M -29 -30 D S
+N 2467 0 M -29 -30 D S
+N 2593 0 M -29 -30 D S
+N 2717 0 M -29 -30 D S
+N 2841 0 M -29 -30 D S
+N 2963 0 M -28 -30 D S
+N 3085 0 M -29 -30 D S
+N 3205 0 M -28 -30 D S
+N 3325 0 M -28 -31 D S
+N 3444 0 M -29 -31 D S
+N 3561 0 M -28 -31 D S
+N 3678 0 M -28 -31 D S
+N 3794 0 M -28 -31 D S
+N 3909 0 M -28 -31 D S
+N 4023 0 M -28 -31 D S
+N 4136 0 M -28 -31 D S
+N 4248 0 M -27 -32 D S
+N 4360 0 M -28 -32 D S
+N 4470 0 M -27 -32 D S
+N 4580 0 M -27 -32 D S
+N 4689 0 M -27 -32 D S
+N 4797 0 M -26 -32 D S
+N 4905 0 M -27 -32 D S
+N 5011 0 M -26 -32 D S
+N 5117 0 M -26 -32 D S
+N 5222 0 M -26 -33 D S
+N 5327 0 M -26 -33 D S
+N 5431 0 M -26 -33 D S
+N 5534 0 M -26 -33 D S
+N 5636 0 M -25 -33 D S
+N 0 509 M -27 32 D S
+N 0 1160 M -26 32 D S
+N 0 1830 M -25 33 D S
+N 0 2523 M -24 34 D S
+N 0 3242 M -23 35 D S
+N 0 3994 M -22 35 D S
+N 0 4785 M -21 36 D S
+N 5669 173 M 33 -26 D S
+N 5669 696 M 33 -26 D S
+N 5669 1227 M 32 -26 D S
+N 5669 1767 M 32 -27 D S
+N 5669 2316 M 31 -28 D S
+N 5669 2876 M 30 -28 D S
+N 5669 3449 M 30 -29 D S
+N 5669 4037 M 29 -30 D S
+N 5669 4642 M 28 -31 D S
+N 5669 5267 M -26 32 D S
 25 W
 2 setlinecap
 N 0 0 M 0 5268 D S
@@ -28256,12 +26726,50 @@ N 5669 0 M 0 5268 D S
 N 0 0 M 5669 0 D S
 N 0 5268 M 5669 0 D S
 0 setlinecap
-%
-% Map annotations
-%
-%
-% End of basemap
-%
+710 5351 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+V 30 R (6è) ml Z U
+1349 5354 M V 31 R (7è) ml Z U
+1951 5356 M V 32 R (8è) ml Z U
+2521 5359 M V 33 R (9è) ml Z U
+3061 5361 M V 34 R (10è) ml Z U
+3573 5364 M V 35 R (11è) ml Z U
+4060 5366 M V 36 R (12è) ml Z U
+4524 5368 M V 37 R (13è) ml Z U
+4968 5371 M V 38 R (14è) ml Z U
+5391 5373 M V 39 R (15è) ml Z U
+5797 5375 M V 40 R (16è) ml Z U
+-126 -109 M V 41 R (17è) mr Z U
+461 -112 M V 42 R (18è) mr Z U
+1026 -114 M V 43 R (19è) mr Z U
+1570 -116 M V 44 R (20è) mr Z U
+2095 -118 M V 45 R (21è) mr Z U
+2602 -120 M V 46 R (22è) mr Z U
+3092 -122 M V 47 R (23è) mr Z U
+3566 -124 M V 48 R (24è) mr Z U
+4026 -126 M V 49 R (25è) mr Z U
+4473 -128 M V 50 R (26è) mr Z U
+4906 -130 M V 51 R (27è) mr Z U
+5328 -131 M V 52 R (28è) mr Z U
+-101 1963 M V -52.7 R (77è) mr Z U
+-84 4929 M V -59.6 R (78è) mr Z U
+5799 592 M V -38.7 R (79è) ml Z U
+5790 2762 M V -43.5 R (80è) ml Z U
+clipsave
+0 0 M
+5669 0 D
+0 5268 D
+-5669 0 D
+P
+PSL_clip N
+4 W
+V
+{0 A} FS
+24 1595 2642 Sc
+24 4179 4573 Sc
+24 116 325 Sc
+U
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -28269,14 +26777,21 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy line -R17/76.3/16/81r -JS66/90/12c -O -Wthick,blue
-%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy line -R17/76.3/16/81r -JS66/90/12c -O -Wthick,blue
+%@PROJ: stere 5.06380544 28.68165952 76.20000000 81.10000000 -1159709.718 -771277.613 -1008120.278 -647178.760 +proj=stere +lat_0=90 +lon_0=66 +k=0.9996 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 17 W
 0 0 1 C
+clipsave
+0 0 M
+5669 0 D
+0 5268 D
+-5669 0 D
+P
+PSL_clip N
 575 622 M
 158 467 D
 134 395 D
@@ -28297,11 +26812,14 @@ O0
 97 32 D
 1126 24 D
 S
+PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
-%
-% Reset transformations and call showpage
-%
 U
 showpage
 

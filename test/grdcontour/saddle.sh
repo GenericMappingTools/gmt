@@ -106,6 +106,6 @@ gmt xyz2grd -Z -R36/45/50/59 -I1 -Gtmp.nc <<EOF
 12617.8066406
 EOF
 gmt makecpt -Cblack,red -T8000/10000 -N > tmp.cpt
-gmt grdcontour -Ctmp.cpt -A- -R -JX4i tmp.nc -W+c -B1g1 -B+t"Direct contour" -K > $ps
-gmt grdcontour -Ctmp.cpt -A- -R -JX4i tmp.nc -D | gmt psxy -O -X5i -J -R -B1g1 -B+t"Via -D then psxy" -Ctmp.cpt >> $ps
+gmt grdcontour -Ctmp.cpt -An -R -JX4i tmp.nc -W+c -B1g1 -B+t"Direct contour" -K > $ps
+gmt grdcontour -Ctmp.cpt -An -R -JX4i tmp.nc -D | gmt psxy -O -X5i -J -R -B1g1 -B+t"Via -D then psxy" -Ctmp.cpt >> $ps
 

@@ -126,7 +126,7 @@ Optional Arguments
     Use **-Is**\ *dx*\ [/*dy*] to report an extended region optimized to
     give grid dimensions for fastest results in programs like surface.
     Use **-Ib** to write the bounding box of the data table or segments (see **-A**)
-    as a closed polygon segment. Note: for oblique projections you should
+    as a closed polygon segment. **Note**: For oblique projections you should
     use the **-Ap** option in :doc:`plot` to draw the box properly.
     If **-Ie** is given then the exact min/max of the input is given in the **-R** string.
     Append **+r** to modify the min/max of the first *n* columns further:

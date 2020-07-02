@@ -3,7 +3,7 @@
 **-B**\ [**p**\|\ **s**]\ *parameters*
     Set map Frame and Axes parameters. The Frame parameters are specified by
 
-    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
+    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
 
     where *axes* selects which axes to plot. By default, all 4 map boundaries
     (or plot axes) are plotted (named **W**, **E**, **S**, **N**). To customize,
@@ -19,6 +19,9 @@
     cube defined by **-R**; this modifier is also needed to display gridlines in
     the x-z, y-z planes. Note that for 3-D views the title, if given, will be
     suppressed. You can paint the interior of the canvas with **+g**\ *fill*.
+    Use **+i** to annotate an internal meridian or parallel when the axis that normally
+    would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
+    has no latitude axis, and a global Hammer map has no longitude axis); optionally append the parallel or meridian [0].
     Append **+n** to have no frame and annotations at all [Default is controlled by the codes].
     Optionally append **+o**\ *plon/plat* to draw oblique gridlines about
     specified pole [regular gridlines]. Ignored if gridlines are not
@@ -36,7 +39,10 @@
 -   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
     The first optional flag following **-B** selects **p** (rimary) [Default] or
-    **s** (econdary) axes information (mostly used for time axes annotations).
+    **s** (econdary) axes information (mostly used for time axes annotations but
+    available for geographic axes as well. **Note**: primary refers to annotations
+    closest to the axis and secondary to annotations further away.  Hence, primary
+    annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts).
     The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
     If none are given then we default to **xy**.  If you wish to give different annotation intervals
     or labels for the various axes then you must repeat the **B** option for

@@ -11,6 +11,9 @@
 # Set LC_ALL to get the same sort order on Linux and macOS
 export LC_ALL=C
 
+# Set temporary directory
+TMPDIR=${TMPDIR:-/tmp}
+
 egrep -v 'struct|union|enum|_GMT|define|char' gmt_resources.h | tr ',' ' ' | awk '{if (substr($1,1,4) == "GMT_") print $1, $3}' > ${TMPDIR}/junk1.txt
 grep -v GMT_OPT_ ${TMPDIR}/junk1.txt > ${TMPDIR}/junk2.txt
 grep GMT_OPT_ ${TMPDIR}/junk1.txt | awk '{print $1, substr($2,1,2)} '> ${TMPDIR}/junk3.txt
@@ -38,7 +41,7 @@ cat << EOF > gmt_enum_dict.h
  *--------------------------------------------------------------------*/
 
 /*
- * Include file for getting GMT API enum codes programmatically via GMT_API_enum ()
+ * Include file for getting GMT API enum codes programmatically via GMT_Get_Enum ()
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
@@ -52,7 +55,7 @@ struct GMT_API_DICT {
 
 #define GMT_N_API_ENUMS $n
 
-GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
+static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 EOF
 
 sort -k 1 ${TMPDIR}/junk2.txt | awk '{printf "\t{\"%s\", %d},\n", $1, $2}' >> gmt_enum_dict.h

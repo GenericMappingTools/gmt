@@ -133,7 +133,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**
+**-F**\ [*unit*]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
     unit (see `Units`_). Without **-F**, the output (or input, see **-I**)
@@ -165,14 +165,15 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *line.xy*\ [**+u**\ *unit*][**+p**]
+**-L**\ *line.xy*\ [**+u**\ *unit* \|\ *c*  \|\ *C*][**+p**]
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *line.xy*. The distance
     and the coordinates of the nearest point will be appended to the
     output as three new columns. Append the distance unit via **+u** (see `Units`_
     for available units and how distances are computed [great circle using authalic radius]),
     including **c** (Cartesian distance using input coordinates) or
-    **C** (Cartesian distance using projected coordinates). The **C**
+    **C** (Cartesian distance using projected coordinates). Note that these **c** and **C** are
+    not listed in  `Units`_ and would be used for example as **+uc**. The **C**
     unit requires **-R** and **-J** to be set. Finally, append **+p** to
     report the line segment id and the fractional point number instead
     of lon/lat of the nearest point.

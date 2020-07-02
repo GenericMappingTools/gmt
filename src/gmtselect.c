@@ -139,7 +139,7 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 	} dbg;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	int i;
 	struct GMTSELECT_CTRL *C;
 
@@ -158,7 +158,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->F.file);
@@ -167,7 +167,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int compare_x (const void *point_1, const void *point_2) {
+GMT_LOCAL int gmtselect_compare_x (const void *point_1, const void *point_2) {
 	const struct GMTSELECT_DATA *p1 = point_1, *p2 = point_2;
 
 	if (p1->x < p2->x) return (-1);
@@ -175,7 +175,7 @@ GMT_LOCAL int compare_x (const void *point_1, const void *point_2) {
 	return (0);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [%s]\n", name, GMT_A_OPT);
@@ -247,7 +247,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
+GMT_LOCAL int gmtselect_old_C_parser (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
 	int j;
 	bool fix = false;
 	/* Parse older versions of the -C syntax */
@@ -281,7 +281,7 @@ GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 	return 0;
 }
 
-GMT_LOCAL int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
+GMT_LOCAL int gmtselect_old_L_parser (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_CTRL *Ctrl) {
 	int j, k = 0;
 	if (!gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
 		GMT_Report (API, GMT_MSG_ERROR, "Option -L: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
@@ -297,9 +297,8 @@ GMT_LOCAL int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 		return 1;
 	}
 	else {
-		if (gmt_check_filearg (API->GMT, 'L', &arg[j+1], GMT_IN, GMT_IS_DATASET))
-			Ctrl->L.file = strdup (&arg[j+1]);
-		else {
+		Ctrl->L.file = strdup (&arg[j+1]);
+		if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -L: No file given\n");
 			return 1;
 		}
@@ -310,7 +309,7 @@ GMT_LOCAL int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 	return 0;
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtselect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -328,19 +327,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Limit GSHHS features */
 				Ctrl->A.active = true;
-				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'C':	/* Near a point test  Syntax -C<pfile>+d<distance>  */
 				Ctrl->C.active = true;
 				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
-					n_errors += old_C_parse (API, opt->arg, Ctrl);
+					n_errors += gmtselect_old_C_parser (API, opt->arg, Ctrl);
 					break;
 				}
 				/* Here we perform new syntax parsing */
@@ -349,7 +348,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					n_errors++;
 				}
 				else
-					Ctrl->C.file = gmt_get_filename (opt->arg);
+					Ctrl->C.file = gmt_get_filename (API, opt->arg, "d");
 				Ctrl->C.mode = gmt_get_distance (GMT, &c[2], &(Ctrl->C.dist), &(Ctrl->C.unit));
 				break;
 			case 'D':	/* Set GSHHS resolution */
@@ -371,16 +370,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'F':	/* Inside/outside polygon test */
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)))
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':	/* In-grid selection */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Invert these tests */
 				Ctrl->I.active = true;
@@ -403,17 +400,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 			case 'L':	/* Near a line test -L<lfile>+d%s[+p]] */
 				Ctrl->L.active = true;
 				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
-					n_errors += old_L_parse (API, opt->arg, Ctrl);
+					n_errors += gmtselect_old_L_parser (API, opt->arg, Ctrl);
 					break;
 				}
 				/* Here we perform new syntax parsing */
-				if (gmt_validate_modifiers (GMT, opt->arg, 'L', "dp")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'L', "dp", GMT_MSG_ERROR)) n_errors++;
 				if (opt->arg[0] == 0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -L: No file given\n");
 					n_errors++;
 				}
 				else
-					Ctrl->L.file = gmt_get_filename (opt->arg);
+					Ctrl->L.file = gmt_get_filename (API, opt->arg, "dp");
 				if (gmt_get_modifier (opt->arg, 'd', buffer)) {
 					Ctrl->L.mode = gmt_get_distance (GMT, buffer, &(Ctrl->L.dist), &(Ctrl->L.unit));
 				}
@@ -533,11 +530,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtselect (void *V_API, int mode, void *args) {
-	int err;	/* Required by gmt_M_err_fail */
+EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 	unsigned int base = 3, np[2] = {0, 0};
 	unsigned int side, col, id;
-	int n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX, error = 0;
+	int error = GMT_NOERROR, err, n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX;
 	bool inside = false, need_header = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;
 
@@ -631,16 +627,18 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	/* Initiate pointer to distance calculation function */
 	if (gmt_M_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */
 		if (Ctrl->C.active)
-			gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
+			error = gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		else if (Ctrl->L.active)
-			gmt_init_distaz (GMT, Ctrl->L.unit, Ctrl->L.mode, GMT_MAP_DIST);
+			error = gmt_init_distaz (GMT, Ctrl->L.unit, Ctrl->L.mode, GMT_MAP_DIST);
 	}
 	else if (do_project)	/* Lon/lat projected via -R -J */
-		gmt_init_distaz (GMT, 'Z', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r after projection to avoid hypot */
+		error = gmt_init_distaz (GMT, 'Z', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r after projection to avoid hypot */
 	else	/* Cartesian data */
-		gmt_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
+		error = gmt_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
 
-	gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -C,-F,-L files */
+	if (error == GMT_NOT_A_VALID_TYPE) Return (error);
+
+	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
 
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
@@ -683,7 +681,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 
 			/* Sort on x to speed up inside testing */
-			qsort (data, point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
+			qsort (data, point->n_records, sizeof (struct GMTSELECT_DATA), gmtselect_compare_x);
 
 			for (seg = k = 0; seg < point->n_segments; seg++) {	/* Put back the new order */
 				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
@@ -749,7 +747,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (error);
@@ -795,6 +793,12 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
+
+		/* We get here once we have read a data record */
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
 
 		if (n_output == 0) {
 			GMT_Set_Columns (API, GMT_OUT, (unsigned int)gmt_get_cols (GMT, GMT_IN), (In->text) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT);

@@ -196,8 +196,8 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	double diff, range[2] = {1.0, NROWS}, inc[2] = {1.0, 1.0};
 	//void *API = NULL;                           /* The API control structure */
 	struct GMT_VECTOR *V[2] = {NULL, NULL};     /* Structure to hold input/output datasets as vectors */
-	char input[GMT_STR16] = {""};               /* String to hold virtual input filename */
-	char output[GMT_STR16] = {""};              /* String to hold virtual output filename */
+	char input[GMT_VF_LEN] = {""};               /* String to hold virtual input filename */
+	char output[GMT_VF_LEN] = {""};              /* String to hold virtual output filename */
 	char args[128] = {""};            			/* String to hold module command arguments */
 	void *in_data[NCOLS] = {NULL, NULL}, *out_data[NCOLS] = {NULL, NULL};
 	struct GMTAPI_CTRL *API = NULL;
@@ -222,7 +222,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	/* Associate our vectors container with a virtual dataset file to "read" from */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V[GMT_IN], input);
 	if (alloc_in_GMT)	/* Request vectors container for output data to be allocated by GMT */
-		GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, out_via, GMT_OUT, NULL, output);
+		GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, out_via, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
 	else {	/* Preallocate array space here in the app */
 		out_data[GMT_X] = get_array (outtype, 0);	/* Make user space for output */
 		out_data[GMT_Y] = get_array (outtype, 0);	/* Make user space for output */

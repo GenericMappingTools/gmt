@@ -222,7 +222,7 @@ Definition of the *grid structure* that holds a grid and its metadata.
   alpha           % A [n_rows x n_columns] alpha array
   layout          % A four character string describing the image memory layout
 
-Definition of the *image structure* that holds a image and its metadata.
+Definition of the *image structure* that holds an image and its metadata.
 
 .. _cpt-struct:
 

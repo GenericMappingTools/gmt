@@ -15,7 +15,7 @@ Synopsis
 **gmt grdinterpolate** *3Dgrid* | *grd1 grd2 ...*
 |-G|\ *outfile*
 |-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
-[ |-E|\ *line* ]
+[ |-E|\ *table*\|\ *line* ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *x/y*\|\ *pointfile*\ [**+h**\ *header*] ]
@@ -77,8 +77,10 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+g**][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+p**][**+r**\ *radius*][**+x**]
-    Specify a crossectinonal profile via coordinates and modifiers. The format of each *line* is
+**-E**\ *table*\|\ *line*\ [,\ *line*,...][**+a**\ *az*][**+g**][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+p**][**+r**\ *radius*][**+x**]
+    Specify a crossectinonal profile via a *file* or from specified *line* coordinates and modifiers.
+    If a *file*, it must be contain a single segment with either *lon lat* or *lon lat dist* records.
+    These must be equidistant.  Alternatively, the format of each *line* is
     *start*/*stop*, where *start* or *stop* are *lon*/*lat* (*x*/*y* for
     Cartesian data). You may append **+i**\ *inc* to set the sampling interval;
     if not given then we default to half the minimum grid interval.  If your *line* starts and

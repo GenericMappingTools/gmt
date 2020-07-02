@@ -76,7 +76,7 @@ Optional Arguments
 
 **-A**\ *fields*
     Select which fields to write to individual grids.  Requires **-G**.
-    Append comma-separated codes for available fields: **z** (the mean
+    Append the codes for available fields: **z** (the mean
     data z, but see **-S**), **s** (standard deviation), **l** (lowest
     value), **h** (highest value) and **w** (the output weight; requires **-W**).
     Note **s**\|\ **l**\|\ **h** requires **-E** [Default is just **z**].
@@ -92,9 +92,9 @@ Optional Arguments
     Provide Extended report which includes **s** (the standard deviation
     about the mean), **l**, the lowest value, and **h**, the high value
     for each block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
-    *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
-    If **-E+p**\|\ **P** are used then input data uncertainties are expected and *s*
+    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
+    *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for enabling *w* output.
+    If **-E+p**\|\ **P** is used then input data uncertainties are expected and *s*
     becomes the propagated error of the weighted (**+p**) or simple (**+P**) *z* mean.
 
 .. _-G:
@@ -159,8 +159,8 @@ Optional Arguments
 
 .. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with
-    **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
-    (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
+    **-R**\ 10/15/10/15 and **-I**\ 1: With **-r** or **-rp**, 10 <=
+    (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
 
@@ -188,7 +188,7 @@ called field_z.nc and field_s.nc, run
 
    ::
 
-    gmt blockmean @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
+    gmt blockmean @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Azs
 
 See Also
 --------

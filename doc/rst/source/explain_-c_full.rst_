@@ -7,4 +7,4 @@
     no **-c** is given and we just entered subplot mode then the first
     panel (top, left) is selected.  Instead of *row, col* you may give
     the one-dimensional *index* which depends on the order you set via **-A**
-    when the subplot was defined. Note: *row*, *col*, and *index* all start at 0.
+    when the subplot was defined. **Note**: *row*, *col*, and *index* all start at 0.

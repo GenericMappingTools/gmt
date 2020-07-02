@@ -97,7 +97,7 @@ Optional Arguments
     recalculated from the number of nodes and the domain. The resulting
     increment value depends on whether you have selected a
     gridline-registered or pixel-registered grid; see :ref:`GMT File Formats` for
-    details. Note: if **-R**\ *grdfile* is used then the grid spacing (and registration) have
+    details. **Note**: If **-R**\ *grdfile* is used then the grid spacing (and registration) have
     already been initialized; use **-D** (and **-r**) to override the values.
 
 .. _-E:

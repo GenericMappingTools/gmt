@@ -360,7 +360,7 @@ GMT Miscellaneous Parameters
         feature append *planner_flag*, which can be one of *measure*,
         *patient*, and *exhaustive*; see FFTW reference for details. The
         default FFTW planner flag is *estimate*, i.e., pick a (probably
-        sub-optimal) plan quickly. Note: if you need a single transform of a
+        sub-optimal) plan quickly. **Note**: If you need a single transform of a
         given size only, the one-time cost of the smart planner becomes
         significant. In that case, stick to the default planner, *estimate*,
         based on heuristics.
@@ -419,8 +419,12 @@ GMT Miscellaneous Parameters
         **$GMT_SHAREDIR**/localization/gmt_us.locale file and make a similar file. Please
         submit it to the GMT Developers for official inclusion. Custom
         language files can be placed in directories **$GMT_SHAREDIR**/localization
-        or ~/.gmt. Note: Some of these languages may require you to also
+        or ~/.gmt. **Note**: Some of these languages may require you to also
         change the :term:`PS_CHAR_ENCODING` setting.
+
+    **GMT_MAX_CORES**
+        Sets the upper limit on the number of cores any multi-threaded module might
+        use (whether **-x** is selected or not) [0, i.e., as many as are available].
 
     **GMT_TRIANGULATE**
         Determines if we use the **Watson** [Default] or **Shewchuk**
@@ -473,10 +477,11 @@ I/O Parameters
         (**-h**) Specifies whether input/output ASCII files have header record(s) or not [false].
 
     **IO_HEADER_MARKER**
-        This holds the character we expect to indicate a header record in
-        an incoming ASCII data or text table [#]. If this marker should be
-        different for output then append another character for the output
-        header record marker. The two characters must be separated by a comma.
+        Give a string from which any character will indicate a header record in
+        an incoming ASCII data table if found in the first position [#%!;"']. If another marker
+        should be used for output than the first character in the list, then append a single
+        character for the output header record marker. The two sets must be separated by a comma.
+        **Note**: A maximum of 7 input markers can be specified.
 
     **IO_LONLAT_TOGGLE**
         (**-:**) Set if the first two columns of input and output files
@@ -487,7 +492,7 @@ I/O Parameters
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [0].
-        Note: This will skip the specified number of records regardless of
+        **Note**: This will skip the specified number of records regardless of
         what they are.  Since any records starting with # is automatically
         considered a header you will only specify a non-zero number in order
         to skip headers that do not conform to that convention.
@@ -567,20 +572,18 @@ MAP Parameters
         occur for certain oblique projections.) [0p]
 
     **MAP_ANNOT_OBLIQUE**
-        This integer is a sum of 6 bit flags (most of which only are
-        relevant for oblique projections): If bit 1 is set (1),
-        annotations will occur wherever a gridline crosses the map
-        boundaries, else longitudes will be annotated on the lower and upper
-        boundaries only, and latitudes will be annotated on the left and
-        right boundaries only. If bit 2 is set (2), then
-        longitude annotations will be plotted horizontally. If bit 3 is set
-        (4), then latitude annotations will be plotted
-        horizontally. If bit 4 is set (8), then oblique
-        tick-marks are extended to give a projection equal to the specified
-        tick length. If bit 5 is set (16), tick-marks will be drawn normal
-        to the border regardless of gridline angle. If bit 6 is set (32),
-        then latitude annotations will be plotted parallel to the border. To
-        set a combination of these, add up the values in parentheses. [1].
+        This argument is a comma-separated list of up to seven keywords:
+        **separate** means longitudes will be annotated on the lower and upper
+        boundaries only, and latitudes will be annotated on the left and right
+        boundaries only;
+        **anywhere** means annotations will occur wherever an imaginary gridline
+        crosses the map boundaries; **lon_horizontal** means longitude annotations
+        will be plotted horizontally; **lat_horizontal** means latitude annotations
+        will be plotted horizontally; **tick_extend** means tick-marks are extended
+        so the distance from the tip of the oblique tick to the map frame equals
+        the specified tick length; **tick_normal** means tick-marks will be drawn
+        normal to the border regardless of gridline angle; **lat_parallel** means
+        latitude annotations will be plotted parallel to the border. [anywhere].
 
     **MAP_ANNOT_OFFSET**
         Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and :term:`MAP_ANNOT_OFFSET_SECONDARY` to the value specified.
@@ -645,7 +648,7 @@ MAP Parameters
         may control its shape via :term:`MAP_VECTOR_SHAPE`.
 
     **MAP_FRAME_WIDTH**
-        Width (> 0) of map borders for fancy map frame [5p]. Note: For fancy
+        Width (> 0) of map borders for fancy map frame [5p]. **Note**: For fancy
         frames, :term:`MAP_FRAME_PEN` is automatically set to 0.1 times the
         :term:`MAP_FRAME_WIDTH` setting.
 
@@ -654,12 +657,24 @@ MAP Parameters
         This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_CROSS_SIZE_PRIMARY**
-        Size (>= 0) of grid cross at lon-lat intersections. 0 means draw
-        continuous gridlines instead [0p].
+        Size of grid cross at lon-lat intersections. 0 means draw
+        continuous gridlines instead.  A nonzero size will draw a symmetric grid
+        cross. Signed sizes have special meaning and imply grid line ticks that
+        embellish an already drawn set of gridlines: A negative size will only
+        draw ticks away from Equator and Greenwich, while a positive size will
+        draw symmetric ticks [0p].
 
     **MAP_GRID_CROSS_SIZE_SECONDARY**
-        Size (>= 0) of grid cross at secondary lon-lat intersections. 0
-        means draw continuous gridlines instead [0p].
+        Size of grid cross at secondary lon-lat intersections. 0 means draw
+        continuous gridlines instead.  A nonzero size will draw a symmetric grid
+        cross.  Signed sizes have special meaning and imply grid line ticks that
+        embellish an already drawn set of gridlines: A negative size will only
+        draw ticks away from Equator and Greenwich, while a positive size will
+        draw symmetric ticks [0p].
+
+    **MAP_GRID_PEN**
+        Sets both :term:`MAP_GRID_PEN_PRIMARY` and :term:`MAP_GRID_PEN_SECONDARY` to
+        the value specified. This setting is not include in the **gmt.conf** file.
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
@@ -905,7 +920,7 @@ PostScript Parameters
         that the PostScript output generates the correct characters on the
         plot. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
         ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
-        Appendix F for details [ISOLatin1+ (or Standard+)].  Note: Normally
+        Appendix F for details [ISOLatin1+ (or Standard+)].  **Note**: Normally
         the character set is written as part of the PostScript header.  If
         you need to switch to another character set for a later overlay then
         you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line and

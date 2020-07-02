@@ -38,28 +38,28 @@
 #define THIS_MODULE_OPTIONS "->RVbd"
 
 struct X2SYS_DATALIST_CTRL {
-	struct A {	/* -A */
+	struct X2SYS_DATALIST_A {	/* -A */
 		bool active;
 	} A;
-	struct E {	/* -E */
+	struct X2SYS_DATALIST_E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* -F */
+	struct X2SYS_DATALIST_F {	/* -F */
 		bool active;
 		char *flags;
 	} F;
-	struct I {	/* -I */
+	struct X2SYS_DATALIST_I {	/* -I */
 		bool active;
 		char *file;
 	} I;
-	struct L {	/* -L */
+	struct X2SYS_DATALIST_L {	/* -L */
 		bool active;
 		char *file;
 	} L;
-	struct S {	/* -S */
+	struct X2SYS_DATALIST_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct X2SYS_DATALIST_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
@@ -70,7 +70,7 @@ struct X2SYS_ADJUST {
 	double *d, *c;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_DATALIST_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_DATALIST_CTRL);
@@ -80,7 +80,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->F.flags);
 	gmt_M_str_free (C->I.file);
@@ -89,7 +89,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n", name);
@@ -115,7 +115,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -151,16 +151,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
-				if ((Ctrl->I.active = gmt_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->I.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->I.active = true;
+				if (opt->arg[0]) Ctrl->I.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
 				break;
 			case 'L':	/* Crossover correction table */
-				if ((Ctrl->L.active = gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
+				Ctrl->L.active = true;
+				if (opt->arg[0]) {
 					Ctrl->L.file = strdup (opt->arg);
-				else
-					n_errors++;
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+				}
 				break;
 			case 'S':
 				Ctrl->S.active = true;
@@ -184,7 +184,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A) {
+GMT_LOCAL bool x2sysdatalist_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A) {
 	uint64_t n = 0;
 	size_t n_alloc = GMT_CHUNK;
 	char file[PATH_MAX] = {""}, *line = file; /* Just reusing the file space */
@@ -218,7 +218,7 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, **ignore = NULL;
 	char fmt_record[GMT_BUFSIZ] = {""};
 
@@ -274,7 +274,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	if (Ctrl->I.active && (k = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
 		x2sys_free_list (GMT, trk_name, n_tracks);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
@@ -322,7 +322,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 				break;
 			}
 			/* Intentionally fall through */
@@ -360,7 +360,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				Return (GMT_RUNTIME_ERROR);
 				break;
 			}
 			/* Intentionally fall through */
@@ -376,7 +376,8 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	}
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
 
-	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
 		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR);
@@ -385,7 +386,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 			x2sys_end (GMT, s);
 			x2sys_free_list (GMT, trk_name, n_tracks);
-			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 	/* Override default GMT->current.io.col_type[GMT_OUT] settings */
@@ -480,7 +481,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 		if (Ctrl->A.active) {	/* Load along-track adjustments */
 			for (k = 0; k < s->n_out_columns; k++)
-				adj_col[k] = x2sys_load_adjustments (GMT, X2SYS_HOME, Ctrl->T.TAG, trk_name[trk_no], s->info[s->out_order[k]].name, &A[k]);
+				adj_col[k] = x2sysdatalist_load_adjustments (GMT, X2SYS_HOME, Ctrl->T.TAG, trk_name[trk_no], s->info[s->out_order[k]].name, &A[k]);
 		}
 
 		if (Ctrl->E.active) {	/* Insert a segment header between files */
@@ -519,7 +520,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			for (ocol = 0; ocol < s->n_out_columns; ocol++) {	/* Load output record one column at the time */
 				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][ocol].term, data, aux_dvalue, row) : 0.0;
 				if (Ctrl->A.active && adj_col[ocol]) {	/* Determine along-track adjustment */
-					if (gmt_intpol (GMT, A[ocol]->d, A[ocol]->c, A[ocol]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, GMT->current.setting.interpolant)) {
+					if (gmt_intpol (GMT, A[ocol]->d, A[ocol]->c, NULL, A[ocol]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, 0.0, GMT->current.setting.interpolant)) {
 						GMT_Report (API, GMT_MSG_ERROR, "Interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[ocol]].name, row);
 						adj_amount = 0.0;
 					}

@@ -23,7 +23,6 @@ foreach (_fig ${_scripts_ps2png})
 	list (APPEND _scripts_png ${RST_BINARY_DIR}/_images/${_png_fig})
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 		COMMAND ${CMAKE_COMMAND} -E env
-		GMT_USERDIR=${GMT_BINARY_DIR}/share
 		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
 		-A -P -E150 -Tg -Qg4 -Qt4
@@ -41,7 +40,6 @@ foreach (_fig ${_scripts_ps2pdf})
 	list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 		COMMAND ${CMAKE_COMMAND} -E env
-		GMT_USERDIR=${GMT_BINARY_DIR}/share
 		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
 		-D${RST_BINARY_DIR}/_images
@@ -57,7 +55,7 @@ foreach (_script ${_scripts_sh2txt})
 	string (REPLACE ".sh" ".txt" _txt ${_script})
 	list (APPEND _scripts_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
-		COMMAND ${GMT_BINARY_DIR}/src/script2verbatim --strip-comments
+		COMMAND ${GMT_BINARY_DIR}/src/script2verbatim --strip-comments --ps2pdf
 		${CMAKE_CURRENT_SOURCE_DIR}/${_script}
 		${RST_BINARY_DIR}/_verbatim/${_txt}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

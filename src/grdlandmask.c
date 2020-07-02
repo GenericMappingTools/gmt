@@ -45,44 +45,44 @@
 
 struct GRDLANDMASK_CTRL {	/* All control options for this program (except common args) */
 	/* ctive is true if the option has been activated */
-	struct GRDLNDM_A {	/* -A<min_area>[/<min_level>/<max_level>] */
+	struct GRDLANDMASK_A {	/* -A<min_area>[/<min_level>/<max_level>] */
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
-	struct GRDLNDM_D {	/* -D<resolution>[+f] */
+	struct GRDLANDMASK_D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c, or a for auto */
 	} D;
-	struct GRDLNDM_E {	/* -E[<border> | <cborder>/<lborder>/<iborder>/<pborder>] */
+	struct GRDLANDMASK_E {	/* -E[<border> | <cborder>/<lborder>/<iborder>/<pborder>] */
 		bool active;
 		bool linetrace;	/* True if -E was given arguments as we must trace the lines through the grid */
 		unsigned int inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
-	struct GRDLNDM_G {	/* -G<maskfile> */
+	struct GRDLANDMASK_G {	/* -G<maskfile> */
 		bool active;
 		char *file;
 	} G;
-	struct GRDLNDM_N {	/* -N<maskvalues> */
+	struct GRDLANDMASK_N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int wetdry;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		gmt_grdfloat mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
 };
 
-struct BINCROSS {
+struct GRDLANDMASK_BINCROSS {
 	double x, y, d;
 };
 
-GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
-	const struct BINCROSS *a = p1, *b = p2;
+GMT_LOCAL int grdlandmask_comp_bincross (const void *p1, const void *p2) {
+	const struct GRDLANDMASK_BINCROSS *a = p1, *b = p2;
 
 	if (a->d < b->d) return (-1);
 	if (a->d > b->d) return (+1);
 	return (0);
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDLANDMASK_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDLANDMASK_CTRL);
@@ -98,13 +98,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<outgrid> %s %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
@@ -139,7 +139,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdlandmask and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -162,7 +162,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 
 			case 'A':	/* Restrict GSHHS features */
 				Ctrl->A.active = true;
-				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
@@ -190,10 +190,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					Ctrl->E.inside = GMT_INSIDE;
 				break;
 			case 'G':	/* Output filename */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -232,7 +231,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool inside (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *C, double x, double y) {
+GMT_LOCAL bool grdlandmask_inside (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *C, double x, double y) {
 	/* Return true if this point is inside the grid */
 	int row, col;
 	gmt_M_unused(GMT);
@@ -243,7 +242,7 @@ GMT_LOCAL bool inside (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *C, double x
 	return true;
 }
 
-GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *C, double x, double y, gmt_grdfloat f_level, int64_t *ij) {
+GMT_LOCAL void grdlandmask_assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID_HEADER *C, double x, double y, gmt_grdfloat f_level, int64_t *ij) {
 	/* Set node value and return node index if this point is inside the grid */
 	int row, col;
 	gmt_M_unused(GMT);
@@ -258,7 +257,7 @@ GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdlandmask (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	bool temp_shift = false, wrap, used_polygons, double_dip;
 	unsigned int base = 3, k, bin, np, side, np_new;
 	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1, error = 0;
@@ -281,7 +280,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	struct GMT_GRID_HEADER *C = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_GSHHS_POL *p = NULL;
-	struct BINCROSS *X = NULL;
+	struct GRDLANDMASK_BINCROSS *X = NULL;
 	struct GRDLANDMASK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -380,7 +379,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	x = gmt_M_memory (GMT, NULL, Grid->header->n_columns, double);
 	y = gmt_M_memory (GMT, NULL, Grid->header->n_rows, double);
 	if (Ctrl->E.linetrace)
-		X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
+		X = gmt_M_memory (GMT, X, nx_alloc, struct GRDLANDMASK_BINCROSS);
 
 	nx1 = Grid->header->n_columns - 1;	ny1 = Grid->header->n_rows - 1;
 
@@ -519,10 +518,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 							/* Add the start and stop coordinates to the xc/yc arrays so we can get mid-points of each interval */
 
 							nx = 0;
-							if (inside (GMT, C, last_row, last_col)) {	/* Previous point is inside, add it to our list with zero distance */
+							if (grdlandmask_inside (GMT, C, last_row, last_col)) {	/* Previous point is inside, add it to our list with zero distance */
 								X[nx].x = p[k].lon[pt-1];	X[nx].y = p[k].lat[pt-1];	X[nx++].d = 0.0;
 							}
-							if (inside (GMT, C, row, col)) {	/* This point is inside, add it to our list with max distance */
+							if (grdlandmask_inside (GMT, C, row, col)) {	/* This point is inside, add it to our list with max distance */
 								X[nx].x = p[k].lon[pt];	X[nx].y = p[k].lat[pt];	X[nx++].d = hypot (dx, p[k].lat[pt] - p[k].lat[pt-1]);
 							}
 
@@ -539,7 +538,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 								nx++;
 								if (nx == nx_alloc) {
 									nx_alloc <<= 1;
-									X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
+									X = gmt_M_memory (GMT, X, nx_alloc, struct GRDLANDMASK_BINCROSS);
 								}
 							}
 							for (bcol = start_col; bcol <= end_col; bcol++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
@@ -553,19 +552,19 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 								nx++;
 								if (nx == nx_alloc) {
 									nx_alloc <<= 1;
-									X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
+									X = gmt_M_memory (GMT, X, nx_alloc, struct GRDLANDMASK_BINCROSS);
 								}
 							}
 
 							if (nx) {	/* Here we have intersections */
-								qsort (X, nx, sizeof (struct BINCROSS), comp_bincross);	/* Sort on distances along the line segment */
-								assign_node (GMT, Grid, C, X[0].x, X[0].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
+								qsort (X, nx, sizeof (struct GRDLANDMASK_BINCROSS), grdlandmask_comp_bincross);	/* Sort on distances along the line segment */
+								grdlandmask_assign_node (GMT, Grid, C, X[0].x, X[0].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
 								for (curr_x_pt = 1, prev_x_pt = 0; curr_x_pt < nx; curr_x_pt++, prev_x_pt++) {	/* Process the intervals, getting mid-points and using that to get bin */
-									assign_node (GMT, Grid, C, X[curr_x_pt].x, X[curr_x_pt].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
+									grdlandmask_assign_node (GMT, Grid, C, X[curr_x_pt].x, X[curr_x_pt].y, f_level, &ij);	/* Possibly assign f_level to nearest node */
 									/* Add mid-point between the cuts */
 									xc = 0.5 * (X[curr_x_pt].x + X[prev_x_pt].x);
 									yc = 0.5 * (X[curr_x_pt].y + X[prev_x_pt].y);
-									assign_node (GMT, Grid, C, xc, yc, f_level, &ij);	/* Possibly assign f_level to nearest node */
+									grdlandmask_assign_node (GMT, Grid, C, xc, yc, f_level, &ij);	/* Possibly assign f_level to nearest node */
 								}
 							}
 						}

@@ -33,8 +33,6 @@
 #ifndef GMT_RESOURCES_H
 #define GMT_RESOURCES_H
 
-#define GMT_BACKWARDS_API	/* Try to be backwards compatible with API naming for now */
-
 #ifdef DOUBLE_PRECISION_GRID
 /* Build GMT using double-precicion for grids.  Untested and caveat emptor */
 typedef double gmt_grdfloat;
@@ -80,7 +78,7 @@ enum GMT_enum_api {
 	GMT_USAGE	= 0,	/* Want to report full program usage message */
 	GMT_SYNOPSIS	= 1,	/* Just want the synopsis of usage */
 	GMT_PAD_DEFAULT = 2,	/* Default is 2 rows and 2 cols for grid padding */
-	GMT_STR16	= 16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
+	GMT_VF_LEN	= 32	/* Bytes needed to hold the @GMTAPI@-* virtual file names */
 };
 
 /*! These data primitive identifiers are as follows: */
@@ -181,14 +179,19 @@ enum GMT_enum_apierr {
 };
 
 enum GMT_enum_module {
-	GMT_MODULE_USAGE	= -7,	/* What GMT_Call_Module returns if told to print usage only */
-	GMT_MODULE_SYNOPSIS	= -6,	/* What GMT_Call_Module returns if told to print synopsis only */
-	GMT_MODULE_CLASSIC	= -5,	/* mode for GMT_Call_Module to print list of all classic modules */
-	GMT_MODULE_LIST		= -4,	/* mode for GMT_Call_Module to print list of all modern modules */
-	GMT_MODULE_EXIST	= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
-	GMT_MODULE_PURPOSE	= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
-	GMT_MODULE_OPT		= -1,	/* Gave linked list of option structures to GMT_Call_Module */
-	GMT_MODULE_CMD		=  0	/* Gave an array of text strings (argv[]) to GMT_Call_Module */
+	GMT_MODULE_USAGE		= -7,	/* What GMT_Call_Module returns if told to print usage only */
+	GMT_MODULE_SYNOPSIS		= -6,	/* What GMT_Call_Module returns if told to print synopsis only */
+	GMT_MODULE_CLASSIC		= -5,	/* mode for GMT_Call_Module to print list of all classic modules */
+	GMT_MODULE_LIST			= -4,	/* mode for GMT_Call_Module to print list of all modern modules */
+	GMT_MODULE_EXIST		= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
+	GMT_MODULE_PURPOSE		= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
+	GMT_MODULE_OPT			= -1,	/* Gave linked list of option structures to GMT_Call_Module */
+	GMT_MODULE_CMD			=  0,	/* Gave an array of text strings (argv[]) to GMT_Call_Module */
+	GMT_MODULE_HELP     	 	=  0,	/* Mode for GMT_Show_ModuleInfo to do gmt --help */
+	GMT_MODULE_SHOW_MODERN   	=  1,	/* Mode for GMT_Show_ModuleInfo to list all modern modules in gmt --show-modules */
+	GMT_MODULE_SHOW_CLASSIC  	=  2,	/* Mode for GMT_Show_ModuleInfo to list all classic modules in gmt --show-classic */
+	GMT_MODULE_KEYS  		=  0,	/* Mode for GMT_Get_ModuleInfo to request the module keys */
+	GMT_MODULE_GROUP   		=  1	/* Mode for GMT_Get_ModuleInfo to request the module group */
 };
 
 /* Array indices for input/output/stderr variables */
@@ -214,6 +217,13 @@ enum GMT_enum_freg {
 	GMT_ADD_STDIO_ALWAYS  =  8,	/* Tell GMT_Init_IO to always register std(in|out) */
 	GMT_ADD_EXISTING      = 16,	/* Tell GMT_Init_IO to only use already registered resources */
 	GMT_ADD_DEFAULT       =  6	/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
+};
+
+/* Three constants for GMT_Get_DataPath modes */
+enum GMT_enum_files {
+	GMT_FILE_LOCAL        =  0,	/* Tell GMT_Get_DataPath to only consider local files and ignore remote files */
+	GMT_FILE_REMOTE       =  1,	/* Tell GMT_Get_DataPath to try to download remote files if given such files (@filename) */
+	GMT_FILE_CHECK        =  2,	/* Tell GMT_Get_DataPath to only return error codes but not update the path */
 };
 
 enum GMT_enum_ioset {
@@ -290,16 +300,17 @@ enum GMT_enum_time {
 /* Verbosity levels */
 enum GMT_enum_verbose {
 	GMT_MSG_QUIET		= 0,   	/* No messages whatsoever */
-	GMT_MSG_ERROR		= 1,	/* Errors only */
-	GMT_MSG_WARNING		= 2,	/* Adds warnings */
-	GMT_MSG_TICTOC		= 3,	/* Add timings */
-	GMT_MSG_INFORMATION	= 4,	/* Adds informational messages */
-	GMT_MSG_COMPAT		= 5,	/* Compatibility warnings */
-	GMT_MSG_DEBUG		= 6,	/* Debug messages for developers mostly */
+	GMT_MSG_NOTICE		= 1,	/* Special notices */
+	GMT_MSG_ERROR		= 2,	/* Errors only */
+	GMT_MSG_WARNING		= 3,	/* Adds warnings */
+	GMT_MSG_TICTOC		= 4,	/* Add timings */
+	GMT_MSG_INFORMATION	= 5,	/* Adds informational messages */
+	GMT_MSG_COMPAT		= 6,	/* Compatibility warnings */
+	GMT_MSG_DEBUG		= 7,	/* Debug messages for developers mostly */
 	/* For API backwards compatibility only */
-	GMT_MSG_NORMAL			= 1,	/* Now GMT_MSG_ERROR */
-	GMT_MSG_VERBOSE			= 4,	/* Now GMT_MSG_WARNING  */
-	GMT_MSG_LONG_VERBOSE	= 5		/* Now GMT_MSG_INFORMATION */
+	GMT_MSG_NORMAL		= 2,	/* Now GMT_MSG_ERROR */
+	GMT_MSG_VERBOSE		= 5,	/* Now GMT_MSG_WARNING  */
+	GMT_MSG_LONG_VERBOSE	= 6		/* Now GMT_MSG_INFORMATION */
 };
 
 /* GMT_RECORD Declaration */
@@ -346,7 +357,9 @@ enum GMT_enum_gridio {
 	GMT_GRID_ROW_BY_ROW_MANUAL = 64U,   /* Read|write the grid array one row at the time in any order */
 	GMT_GRID_XY		   = 128U,  /* Allocate and initialize x,y vectors */
 	GMT_GRID_IS_GEO		   = 256U,  /* Grid is a geographic grid, not Cartesian */
-	GMT_GRID_IS_IMAGE	   = 512U   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
+	GMT_GRID_IS_IMAGE	   = 512U,   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
+	GMT_IMAGE_NO_INDEX	   = 4096,	/* If reading an indexed grid, convert to rgb so we can interpolate */
+	GMT_IMAGE_ALPHA_LAYER  = 8192	/* Place any alpha layer in the image band, not alpha array */
 };
 
 #define GMT_GRID_ALL		0U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_AND_DATA */
@@ -398,7 +411,7 @@ struct GMT_GRID_HEADER {
 
 	/* Items not stored in the data file for grids but explicitly used in macros computing node numbers */
 	size_t nm;                       /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
-	size_t size;                     /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
+	size_t size;                     /* Actual number of items (not bytes) required to hold this grid (= mx * my), per band (for images) */
 	unsigned int bits;               /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
 	unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
 	unsigned int type;               /* Grid format */
@@ -412,10 +425,6 @@ struct GMT_GRID_HEADER {
 	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
 	int ProjRefEPSG;                /* To store a referencing system EPSG code */
 	void *hidden;                    /* Lower-level information for GMT use only */
-#ifdef GMT_BACKWARDS_API
-	uint32_t nx;
-	uint32_t ny;
-#endif
 };
 
 /* grd is stored in rows going from west (xmin) to east (xmax)
@@ -455,6 +464,7 @@ enum GMT_enum_geometry {
 	GMT_IS_POINT	= 1U,
 	GMT_IS_LINE	= 2U,
 	GMT_IS_POLY	= 4U,
+	GMT_IS_LP	= 6U,	/* Could be any one of LINE or POLY */
 	GMT_IS_PLP	= 7U,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8U,
 	GMT_IS_NONE	= 16U,	/* Non-geographical items like color palettes */
@@ -505,9 +515,6 @@ struct GMT_DATASEGMENT {    /* For holding segment lines in memory */
 	char *header;           /* Segment header (if applicable) */
 	char **text;            /* text beyond the data */
 	void *hidden;		/* Book-keeping variables "hidden" from the API */
-#ifdef GMT_BACKWARDS_API
-	double **coord;
-#endif
 };
 
 struct GMT_DATATABLE {	/* To hold an array of line segment structures and header information in one container */
@@ -619,11 +626,6 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	double wrap_length;		/* z-length of active CPT */
 	char **header;			/* Array with all CPT header records, if any) */		/* Content not counted by sizeof (struct) */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
-#ifdef GMT_BACKWARDS_API
-	struct GMT_LUT *range;
-	struct GMT_BFN *patch;
-	unsigned int cpt_flags;
-#endif
 };
 
 /*============================================================ */
@@ -643,10 +645,6 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	const char *color_interp;
 	double *x, *y;                  /* Vector of coordinates */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
-#ifdef GMT_BACKWARDS_API
-	int *ColorMap;
-	int nIndexedColors;
-#endif
 };
 
 /*==================================================================== */
@@ -779,10 +777,23 @@ struct GMT_RESOURCE {	/* Information related to passing resources between GMT an
 	enum GMT_enum_geometry geometry;/* One of the recognized GMT geometries */
 	enum GMT_enum_std direction;	/* Either GMT_IN or GMT_OUT */
 	struct GMT_OPTION *option;	/* Pointer to the corresponding module option */
-	char name[GMT_STR16];		/* Virtual file name for resource */
+	char name[GMT_VF_LEN];		/* Virtual file name for resource */
 	int pos;			/* Corresponding index into external object in|out arrays */
 	int mode;			/* Either primary (0) or secondary (1) resource */
 	void *object;			/* Pointer to the actual GMT object */
+};
+
+/*============================================================ */
+/*  struct GMT_MODULEINFO is for supplement Developers only == */
+/*============================================================ */
+
+/* Shared library structure: name (classic and modern), library, purpose, keys for each module */
+struct GMT_MODULEINFO {
+	const char *mname;            /* Program (modern) name */
+	const char *cname;            /* Program (classic) name */
+	const char *component;        /* Component (core, supplement, custom) */
+	const char *purpose;          /* Program purpose */
+	const char *keys;             /* Program option info for external APIs */
 };
 
 #endif /* GMT_RESOURCES_H */

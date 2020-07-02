@@ -30,6 +30,8 @@ giving the URL where these and similar data can be obtained.
 
    World-wide seismicity the last 7 days.
 
+Footnote
+~~~~~~~~
 
 .. [1]
    You can also use the utility **curl**

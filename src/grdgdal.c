@@ -29,7 +29,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdgdal"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Execute GDAL raster programs from GMT"
-#define THIS_MODULE_KEYS	"<D{,<G(,GG}"
+#define THIS_MODULE_KEYS	"<?{,GG}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVbdeghiqr"
 
@@ -61,7 +61,7 @@ struct GRDGDAL_CTRL {
 	char *fname_in;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDGDAL_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDGDAL_CTRL);
@@ -69,14 +69,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->A.dem_method) gmt_M_str_free (C->A.dem_method);
 	if (C->A.dem_cpt) gmt_M_str_free (C->A.dem_cpt);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <infile> -A<prog>[+m<method>+c<cpt>] [-F<gd opts>] [-G<outgrid>] %s\n", name, GMT_I_OPT);
@@ -98,7 +98,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -113,13 +113,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 			/* Processes program-specific parameters */
 			case '<':	/* Input file(s) */
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID) ||
-				    gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) {
-					Ctrl->fname_in = opt->arg;
-					n_files++;
+				Ctrl->fname_in = opt->arg;
+				n_files++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) {	/* No grid found */
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) 	/* No dataset found */
+						n_errors++;
 				}
-				else
-					n_errors++;
 				break;
 
 			case 'A':	/* GDAL prog name */
@@ -146,10 +145,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT
 				break;
 
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = opt->arg;
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			case 'I':	/* Grid spacings */
@@ -183,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, n_files == 0, "No input files given\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "No output file name given\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active && strcmp(Ctrl->A.prog_name, "info")) && !Ctrl->G.file, "No output file name given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && strcmp(Ctrl->A.prog_name, "grid") && strcmp(Ctrl->A.prog_name, "info") && strcmp(Ctrl->A.prog_name, "dem") && strcmp(Ctrl->A.prog_name, "rasterize") && strcmp(Ctrl->A.prog_name, "translate") && strcmp(Ctrl->A.prog_name, "warp"), "Option -A: Must select dem, grid, rasterize, translate, warp or info\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -192,7 +190,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdgdal (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdgdal (void *V_API, int mode, void *args) {
 	int error = 0;
 	char *ext = NULL;
 	struct GRDGDAL_CTRL *Ctrl = NULL;
@@ -229,7 +227,7 @@ int GMT_grdgdal (void *V_API, int mode, void *args) {
 	st->opts = Ctrl->F.opts;
 	st->M.read_gdal  = Ctrl->M.read_gdal;
 	st->M.write_gdal = Ctrl->M.write_gdal;
-	if ((ext = gmt_get_ext (st->fname_out)) != NULL) {
+	if (st->fname_out && (ext = gmt_get_ext (st->fname_out)) != NULL) {
 		/* For all others than .nc or .grd force writing with GDAL. This makes life much easier. */
 		if (strcasecmp (ext, "nc") && strcasecmp (ext, "grd"))
 			st->M.write_gdal = true;
@@ -237,31 +235,34 @@ int GMT_grdgdal (void *V_API, int mode, void *args) {
 
 	/* Call the selected GDAL program [grid] */
 	if (!Ctrl->A.active || !strcmp (Ctrl->A.prog_name, "grid"))
-		error += gmt_gdal_grid (GMT, st);
+		error = gmt_gdal_grid (GMT, st);
 	else if (!strcmp (Ctrl->A.prog_name, "info"))
-		error += gmt_gdal_info (GMT, st);
+		error = gmt_gdal_info (GMT, st);
 	else if (!strcmp(Ctrl->A.prog_name, "dem")) {
 		if (!GMT->common.R.active[RSET]) 	/* Here, -R should be only needed if grid it to be written by GMT, but easier to do it for all cases */
 			gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
 
 		if (Ctrl->A.dem_method) st->dem_method = Ctrl->A.dem_method;
 		if (Ctrl->A.dem_cpt) st->dem_cpt = Ctrl->A.dem_cpt;
-		error += gmt_gdal_dem (GMT, st);
+		error = gmt_gdal_dem (GMT, st);
 	}
 	else if (!strcmp(Ctrl->A.prog_name, "rasterize"))
-		error += gmt_gdal_rasterize (GMT, st);
+		error = gmt_gdal_rasterize (GMT, st);
 	else if (!strcmp(Ctrl->A.prog_name, "translate")) {
 		if (!GMT->common.R.active[RSET]) gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
-		error += gmt_gdal_translate (GMT, st);
+		error = gmt_gdal_translate (GMT, st);
 	}
 	else if (!strcmp(Ctrl->A.prog_name, "warp")) {
 		if (!GMT->common.R.active[RSET]) gmt_parse_common_options (GMT, "R", 'R', Ctrl->fname_in);
-		error += gmt_gdal_warp (GMT, st);
+		error = gmt_gdal_warp (GMT, st);
 	}
 	else {
 		GMT_Report (API, GMT_MSG_ERROR, "GDAL PROG-> \"%s\" is unknown or not implemented\n", Ctrl->A.prog_name);
 		error++;
 	}
+
+	if (error)
+		GMT_Report (API, GMT_MSG_ERROR, "GDAL PROG-> \"%s\" failed.\n", Ctrl->A.prog_name);
 
 	gmt_M_free (GMT, st);
 

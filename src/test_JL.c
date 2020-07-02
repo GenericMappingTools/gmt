@@ -7,8 +7,8 @@ int main () {
     void *API = NULL;                 /* The API control structure */
     struct GMT_VECTOR *V[2] = {NULL, NULL};     /* Structure to hold input/output dataset as vectors */
     struct GMT_MATRIX *M[2] = {NULL, NULL};     /* Structure to hold input/output dataset as matrix */
-    char input[GMT_STR16] = {""};     			/* String to hold virtual input filename */
-    char output[GMT_STR16] = {""};    			/* String to hold virtual output filename */
+    char input[GMT_VF_LEN] = {""};     			/* String to hold virtual input filename */
+    char output[GMT_VF_LEN] = {""};    			/* String to hold virtual output filename */
     char args[128] = {""};            			/* String to hold module command arguments */
 
     /* Initialize the GMT session */
@@ -19,7 +19,7 @@ int main () {
     /* Associate our data table with a virtual file */
     GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, V[GMT_IN], input);
     /* Create a virtual file to hold the sampled points */
-    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, GMT_OUT, NULL, output);
+    GMT_Open_VirtualFile (API, GMT_IS_VECTOR, GMT_IS_PLP, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
     /* Prepare the module arguments */
     sprintf (args, "-sa %s -Gtopo.nc ->%s", input, output);
     /* Call the grdtrack module */
@@ -37,7 +37,7 @@ int main () {
     /* Associate our data table with a virtual file */
     GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, M[GMT_IN], input);
     /* Create a virtual file to hold the sampled points */
-    GMT_Open_VirtualFile (API, GMT_IS_MATRIX, GMT_IS_PLP, GMT_OUT, NULL, output);
+    GMT_Open_VirtualFile (API, GMT_IS_MATRIX, GMT_IS_PLP, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
     /* Prepare the module arguments */
     sprintf (args, "-sa %s -Gtopo.nc ->%s", input, output);
     /* Call the grdtrack module */

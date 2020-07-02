@@ -33,7 +33,7 @@ struct GMT_SINGULAR_VALUE {	/* Used for sorting of eigenvalues in the SVD functi
 
 /* Local functions */
 
-GMT_LOCAL void vector_switchrows (double *a, double *b, unsigned int n1, unsigned int n2, unsigned int n) {
+GMT_LOCAL void gmtvector_switchrows (double *a, double *b, unsigned int n1, unsigned int n2, unsigned int n) {
 	double *oa = (double *)malloc (sizeof(double)*n);
 
 	memcpy(oa, a+n*n1, sizeof(double)*n);
@@ -59,7 +59,7 @@ GMT_LOCAL void vector_switchrows (double *a, double *b, unsigned int n1, unsigne
 
 #ifndef HAVE_LAPACK
 /* Use version provided by DJ 2015-07-06 [SDSC] */
-GMT_LOCAL int vector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v) {
+GMT_LOCAL int gmtvector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v) {
 	/* void svdcmp(double *a,int m,int n,double *w,double *v) */
 
 	int flag,i,its,j,jj,k,l=0,nm = 0, n = n_in, m = m_in;
@@ -280,7 +280,7 @@ GMT_LOCAL int vector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_
 }
 #endif
 
-GMT_LOCAL int vector_compare_singular_values (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int gmtvector_compare_singular_values (const void *point_1v, const void *point_2v) {
 	/*  Routine for qsort to sort struct GMT_SINGULAR_VALUE on decreasing eigenvalues
 	 * keeping track of the original order before sorting.
 	 */
@@ -297,7 +297,7 @@ GMT_LOCAL int vector_compare_singular_values (const void *point_1v, const void *
 	return (0);
 }
 
-GMT_LOCAL uint64_t vector_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, unsigned int mode) {
+GMT_LOCAL uint64_t gmtvector_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, unsigned int mode) {
 	/* Takes pointers to a list of <n> Cartesian x/y pairs and adds
 	 * auxiliary points to build a staircase curve.
 	 * If mode=1: staircase; first follows y, then x
@@ -338,7 +338,7 @@ GMT_LOCAL uint64_t vector_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a
 	return (n_new);
 }
 
-GMT_LOCAL uint64_t vector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode) {
+GMT_LOCAL uint64_t gmtvector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode) {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds
 	 * <step> units.
@@ -419,7 +419,7 @@ GMT_LOCAL uint64_t vector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **
 	return (n_new);
 }
 
-GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double **lat, uint64_t n_in, double step_out, enum GMT_enum_track mode) {
+GMT_LOCAL uint64_t gmtvector_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double **lat, uint64_t n_in, double step_out, enum GMT_enum_track mode) {
 	/* See gmt_resample_path below for details. */
 
 	bool meridian, new_pair;
@@ -430,11 +430,11 @@ GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double 
 	double *dist_in = NULL, *lon_out = NULL, *lat_out = NULL, *lon_in = *lon, *lat_in = *lat;
 
 	if (step_out < 0.0) {	/* Safety valve */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: vector_resample_path_spherical given negative step-size\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: gmtvector_resample_path_spherical given negative step-size\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: vector_resample_path_spherical given bad mode %d\n", mode);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: gmtvector_resample_path_spherical given bad mode %d\n", mode);
 		return (GMT_RUNTIME_ERROR);
 	}
 
@@ -527,7 +527,7 @@ GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double 
 	return (n_out);
 }
 
-GMT_LOCAL uint64_t vector_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode) {
+GMT_LOCAL uint64_t gmtvector_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode) {
 	/* See gmt_resample_path below for details. */
 
 	uint64_t last_row_in = 0, row_in, row_out, n_out;
@@ -536,15 +536,15 @@ GMT_LOCAL uint64_t vector_resample_path_cartesian (struct GMT_CTRL *GMT, double 
 	double *dist_in = NULL, *x_out = NULL, *y_out = NULL, *x_in = *x, *y_in = *y;
 
 	if (step_out < 0.0) {	/* Safety valve */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: vector_resample_path_cartesian given negative step-size\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: gmtvector_resample_path_cartesian given negative step-size\n");
 		return (GMT_RUNTIME_ERROR);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: vector_resample_path_cartesian given bad mode %d\n", mode);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal error: gmtvector_resample_path_cartesian given bad mode %d\n", mode);
 		return (GMT_RUNTIME_ERROR);
 	}
 
-	if (mode < GMT_TRACK_SAMPLE_FIX) return (vector_fix_up_path_cartesian (GMT, x, y, n_in, step_out, mode));	/* Insert extra points only */
+	if (mode < GMT_TRACK_SAMPLE_FIX) return (gmtvector_fix_up_path_cartesian (GMT, x, y, n_in, step_out, mode));	/* Insert extra points only */
 
 	dist_in = gmt_dist_array (GMT, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
 	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
@@ -955,7 +955,7 @@ int gmt_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 
 	gmt_M_free (GMT, isub);
 	gmt_M_free (GMT, line);
-	return (iet + ieb);   /* Return final error flag*/
+	return (iet + ieb);   /* Return final error flag */
 }
 
 int gmt_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b) {
@@ -972,7 +972,7 @@ int gmt_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gaussjordan given a singular matrix\n");
 			bad++;
 		}
-		vector_switchrows (a, b, j, k, n);	/* Pivot rows */
+		gmtvector_switchrows (a, b, j, k, n);	/* Pivot rows */
 #ifdef _OPENMP
 #pragma omp parallel for private(i,k,c) shared(GMT,a,b,j,n)
 #endif
@@ -1025,7 +1025,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	return (GMT_NOERROR);
 #else
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_svdcmp: Using GMT's NR-based SVD\n");
-	return vector_svdcmp_nr (GMT, a, m_in, n_in, w, v);
+	return gmtvector_svdcmp_nr (GMT, a, m_in, n_in, w, v);
 #endif
 }
 
@@ -1041,7 +1041,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 
 int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double cutoff, unsigned int mode) {
 	/* Mode = 0: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
-	 * mode = 1: Use the first cutoff singular values only.
+	 * mode = 1: Use the first cutoff singular values only. If cutoff is < 1 we assume this is the fraction of eigenvalues we want.
 	 */
 	double w_abs, sing_max;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
@@ -1060,7 +1060,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		sing_max = MAX (sing_max, w_abs);
 	}
 
-	if (cutoff > 0.0 && cutoff <= 1.0) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
+	if (mode == 1 && cutoff > 0.0 && cutoff <= 1.0) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
 		double was = cutoff;
 		cutoff = rint (n*cutoff);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));
@@ -1081,7 +1081,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 			eigen[i].value = fabs (w[i]);
 			eigen[i].order = i;
 		}
-		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), vector_compare_singular_values);
+		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), gmtvector_compare_singular_values);
 
 		n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
@@ -1223,6 +1223,16 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
 
 extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* b, int *ne, double* beta, double* c, int* nf);
 
+void gmt_matrix_vector_mult (struct GMT_CTRL *GMT, double *A, double *b, uint64_t n_rowsA, uint64_t n_colsA, double *c) {
+	uint64_t row, col, ij;
+	gmt_M_unused(GMT);
+	gmt_M_memset (c, n_colsA, double);
+	for (row = ij = 0; row < n_rowsA; row++) {
+		for (col = 0; col < n_colsA; col++, ij++)
+			c[row] += A[ij] * b[col];
+	}
+}
+
 void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C) {
 #ifdef HAVE_LAPACK
 	double one = 1.0, zero = 0.0;
@@ -1232,15 +1242,25 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 	gmt_M_memset (C, n_rowsA * n_colsB, double);
 	na = (int)n_rowsA, nb = (int)n_colsB, nc = (int)n_rowsB, nd = (int)n_rowsB, ne = (int)n_colsB, nf = (int)n_colsB;
 	// cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, (int)n_rowsA, (int)n_colsB, (int)n_rowsB, one, A, (int)n_rowsB, B, (int)n_colsB, zero, C, (int)n_colsB);
+	if (n_colsB == 1) {	/* Do those separately */
+		gmt_matrix_vector_mult (GMT, A, B, n_rowsA, n_rowsB, C);
+		return;
+	}
+#if 0
 	if (n_colsB == 1) {	/* Vector, so no transposing of the matrix */
 		tr[0] = 'n';
 		ne = nf = (int)n_rowsB;
 	}
+#endif
 	dgemm_ ("t", tr, &na, &nb, &nc, &one, A, &nd, B, &ne, &zero, C, &nf);
 #else
 	/* Plain matrix multiplication, no speed up; space must exist */
 	uint64_t row, col, k, a_ij, b_ij, c_ij, n_colsA = n_rowsB;
 	gmt_M_unused(GMT);
+	if (n_colsB == 1) {	/* Do those separately */
+		gmt_matrix_vector_mult (GMT, A, B, n_rowsA, n_rowsB, C);
+		return;
+	}
 	for (row = 0; row < n_rowsA; row++) {
 		for (col = 0; col < n_colsB; col++) {
 			a_ij = row * n_colsA;		/* Start address of row in A */
@@ -1252,6 +1272,15 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 		}
 	}
 #endif
+}
+
+void gmt_matrix_matrix_add (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_colsA, double *C) {
+	uint64_t row, col, ij;
+	for (row = ij = 0; row < n_rowsA; row++) {
+		for (col = 0; col < n_colsA; col++, ij++) {
+			C[ij] = A[ij] + B[ij];
+		}
+	}
 }
 
 void gmt_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3]) {
@@ -1397,7 +1426,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	double c, d, fraction, theta, minlon, maxlon;
 	double dlon, lon_i, boost, f_lat_a, f_lat_b;
 
-	if (gmt_M_is_cartesian (GMT, GMT_IN)) return (vector_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) return (gmtvector_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
@@ -1599,9 +1628,9 @@ uint64_t gmt_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64
 	 */
 	uint64_t n_out;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
-		n_out = vector_resample_path_spherical (GMT, x, y, n_in, step_out, mode);
+		n_out = gmtvector_resample_path_spherical (GMT, x, y, n_in, step_out, mode);
 	else
-		n_out = vector_resample_path_cartesian (GMT, x, y, n_in, step_out, mode);
+		n_out = gmtvector_resample_path_cartesian (GMT, x, y, n_in, step_out, mode);
 	return (n_out);
 }
 

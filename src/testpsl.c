@@ -29,7 +29,7 @@ int main () {
 
 	int status = 0;				/* Status code from GMT API */
 	char cmd[BUFSIZ] = {""};			/* Command string */
-	char string[GMT_STR16] = {""};		/* Encoded ID */
+	char string[GMT_VF_LEN] = {""};		/* Encoded ID */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct GMT_POSTSCRIPT *PS = NULL;	/* Holds our plot */
 
@@ -37,7 +37,7 @@ int main () {
 	if ((API = GMT_Create_Session ("PSLTEST", GMT_NOTSET, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Create a virtual file to be the destination allocated and written to by pscoast */
-	if (GMT_Open_VirtualFile (API, GMT_IS_POSTSCRIPT, GMT_IS_NONE, GMT_OUT, NULL, string) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Open_VirtualFile (API, GMT_IS_POSTSCRIPT, GMT_IS_NONE, GMT_OUT|GMT_IS_REFERENCE, NULL, string) != GMT_NOERROR) exit (EXIT_FAILURE);
 	sprintf (cmd, "-R0/20/0/20 -JM6i -P -Gred -K > %s", string);			/* Create command for pscoast */
 
 	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */

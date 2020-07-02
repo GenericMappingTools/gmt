@@ -78,7 +78,7 @@ Optional Arguments
 
 **-A**\ *fields*
     Select which fields to write to individual grids.  Requires **-G**.
-    Append comma-separated codes for available fields: **z** (the median
+    Append the codes for available fields: **z** (the median
     data z, but see **-T**), **s** (the L1 scale of the median), **l** (lowest
     value), **q25** (the 25% quartile), **q75** (the 75% quartile), **h** (highest value),
     and **w** (the output weight; requires **-W**).  Note **s**\|\ **l**\|\ **h**
@@ -97,7 +97,7 @@ Optional Arguments
     Provide Extended report which includes **s** (the L1 scale of the
     median, i.e., 1.4826 \* median absolute deviation [MAD]), **l**, the lowest
     value, and **h**, the high value for each block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
+    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. For box-and-whisker calculation, use
     **-Eb** which will output
     *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,\ *w*], where *q25* and
@@ -178,8 +178,8 @@ Optional Arguments
 
 .. |Add_nodereg| replace::
     Each block is the locus of points nearest the grid value location. Consider an example with
-    **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
-    (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
+    **-R**\ 10/15/10/15 and **-I**\ 1: With **-r** or **-rp**, 10 <=
+    (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
 
@@ -206,7 +206,7 @@ mars370.txt and send output to an ASCII table, run::
 To determine the median and L1 scale (MAD) on the median per 10 minute bin and save these to two separate grids
 called field_z.nc and field_s.nc, run::
 
-    gmt blockmedian @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
+    gmt blockmedian @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Azs
 
 See Also
 --------

@@ -36,8 +36,6 @@
 #define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
 #define SPLITXYZ_N_OUTPUT_CHOICES	5
 
-EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
-
 struct SPLITXYZ_CTRL {
 	struct SPLITXYZ_Out {	/* -> */
 		bool active;
@@ -73,7 +71,7 @@ struct SPLITXYZ_CTRL {
 	} S;
 };
 
-GMT_LOCAL double *filterxy_setup (struct GMT_CTRL *GMT) {
+GMT_LOCAL double *splitxyz_filterxy_setup (struct GMT_CTRL *GMT) {
 	unsigned int i;
 	double tmp, sum = 0.0, *fwork = NULL;
 
@@ -87,7 +85,7 @@ GMT_LOCAL double *filterxy_setup (struct GMT_CTRL *GMT) {
 	return (fwork);
 }
 
-GMT_LOCAL void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col, unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork) {
+GMT_LOCAL void splitxyz_filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col, unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork) {
 	uint64_t i, j, k, p, istart, istop, ndata;
 	int64_t kk;
 	bool hilow;
@@ -124,7 +122,7 @@ GMT_LOCAL void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin
 	gmt_M_free (GMT, w);
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPLITXYZ_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct SPLITXYZ_CTRL);
@@ -136,14 +134,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->N.name);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the splitxyz synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -185,7 +183,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to splitxyz and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -203,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ == 0) Ctrl->Out.file = strdup (opt->arg);
@@ -304,7 +302,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_splitxyz (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
 	unsigned int i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1}, io_mode = 0;
 	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_in;
 	int error = 0;
@@ -415,7 +413,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	/* if (Ctrl->A.azimuth > 180.0) Ctrl->A.azimuth -= 180.0; */	/* Put in Easterly strikes  */
 	Ctrl->A.azimuth = D2R * (90.0 - Ctrl->A.azimuth);	/* Work in cartesian angle and radians  */
 	Ctrl->C.value *= D2R;
-	if (Ctrl->F.active) fwork = filterxy_setup (GMT);
+	if (Ctrl->F.active) fwork = splitxyz_filterxy_setup (GMT);
 	if (!Ctrl->N.active)
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
@@ -491,7 +489,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 			/* Here a complete segment is ready for further processing */
 			/* Now we have read the data and can filter z, if necessary.  */
 
-			if (Ctrl->F.active) filter_cols (GMT, S->data, 0, S->n_rows, d_col, 1, &z_cols, Ctrl->F.z_filter, fwork);
+			if (Ctrl->F.active) splitxyz_filter_cols (GMT, S->data, 0, S->n_rows, d_col, 1, &z_cols, Ctrl->F.z_filter, fwork);
 
 			/* Now we are ready to search for segments.  */
 
@@ -527,7 +525,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 						mean_azim = d_atan2 (ssum, csum);
 						mean_azim = fabs (mean_azim - Ctrl->A.azimuth);
 						if (mean_azim <= Ctrl->A.tolerance) {	/* List has acceptable strike.  */
-							if (Ctrl->F.active) filter_cols (GMT, S->data, begin, end, d_col, 2, xy_cols, Ctrl->F.xy_filter, fwork);
+							if (Ctrl->F.active) splitxyz_filter_cols (GMT, S->data, begin, end, d_col, 2, xy_cols, Ctrl->F.xy_filter, fwork);
 							nprofiles++;
 
 							n_out = end - begin;

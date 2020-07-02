@@ -69,5 +69,8 @@ database:
 Modify the path to bash, ``/opt/local/bin/bash``, in the example above
 accordingly.
 
+Footnote
+--------
+
 .. [1]
    Version 1.0 was then informally released at the Lamont-Doherty Earth Observatory.

@@ -3,6 +3,7 @@
 # Useful CMake variables.
 #
 # There are five configuration files:
+#
 #   1) "ConfigDefault.cmake" - is version controlled and used to add new default
 #      variables and set defaults for everyone.
 #   2) "ConfigUser.cmake" in the source tree - is not version controlled
@@ -16,9 +17,11 @@
 #   5) "ConfigUserAdvanced.cmake" in the build tree - is used to override
 #      "ConfigUserAdvanced.cmake" in the source tree.
 #
-# NOTE: If you want to change CMake behaviour just for yourself then copy
-#      "ConfigUserTemplate.cmake" to "ConfigUser.cmake" and then edit
-#      "ConfigUser.cmake" (not "ConfigDefault.cmake" or "ConfigUserTemplate.cmake").
+# NOTE: If you want to change CMake behaviour just for yourself,
+#       copy "ConfigUserTemplate.cmake" to "ConfigUser.cmake" and then edit
+#       "ConfigUser.cmake" for basic settings. For advanced settings,
+#       copy "ConfigUserAdvancedTemplate.cmake" to "ConfigUserAdvanced.cmake" and edit it.
+#       DO NOT EDIT "ConfigDefault.cmake" or the CMake template files.
 #
 include ("${CMAKE_SOURCE_DIR}/cmake/ConfigDefault.cmake")
 
@@ -48,7 +51,7 @@ endif (EXISTS "${CMAKE_BINARY_DIR}/cmake/ConfigUserAdvanced.cmake")
 # Do any needed processing of the configuration variables #
 ###########################################################
 
-# Build type
+# Set default build type to 'Release'
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE Release)
 endif (NOT CMAKE_BUILD_TYPE)
@@ -117,8 +120,7 @@ if (NOT GMT_DATADIR)
 	if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 		set (GMT_DATADIR "share")
 	else(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-		set (GMT_DATADIR
-			"share/gmt${GMT_INSTALL_NAME_SUFFIX}")
+		set (GMT_DATADIR "share/gmt${GMT_INSTALL_NAME_SUFFIX}")
 	endif(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 endif (NOT GMT_DATADIR)
 
@@ -128,8 +130,7 @@ if (NOT GMT_DOCDIR)
 	if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 		set (GMT_DOCDIR "${GMT_DATADIR}/doc")
 	else(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-		set (GMT_DOCDIR
-			"share/doc/gmt${GMT_INSTALL_NAME_SUFFIX}")
+		set (GMT_DOCDIR "share/doc/gmt${GMT_INSTALL_NAME_SUFFIX}")
 	endif(GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 endif (NOT GMT_DOCDIR)
 
@@ -158,6 +159,7 @@ if (NOT GMT_INCLUDEDIR)
 endif(NOT GMT_INCLUDEDIR)
 
 if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
+	message (WARNING "CMake variable GMT_DATA_URL is deprecated and will be removed in the futhure releases. Use GMT_DATA_SERVER instead.")
 	set (GMT_DATA_SERVER ${GMT_DATA_URL})
 endif (GMT_DATA_URL)
 
@@ -219,8 +221,8 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT SUPPORT_EXEC_IN_BINARY_DIR)
 	set (SUPPORT_EXEC_IN_BINARY_DIR ON)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT SUPPORT_EXEC_IN_BINARY_DIR)
 
-# Make GNU and Intel C compiler default to C99
-if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel)" AND NOT CMAKE_C_FLAGS MATCHES "-std=")
+# Make GNU, Intel, Clang and AppleClang compilers default to C99
+if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel|Clang)" AND NOT CMAKE_C_FLAGS MATCHES "-std=")
 	set (CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
 endif ()
 

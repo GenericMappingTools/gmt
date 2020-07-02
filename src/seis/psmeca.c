@@ -46,37 +46,37 @@ PostScript code is written to stdout.
 
 /* Control structure for psmeca */
 struct PSMECA_CTRL {
-	struct C {	/* -C[<pen>][+s<size>] */
+	struct PSMECA_C {	/* -C[<pen>][+s<size>] */
 		bool active;
 		double size;
 		struct GMT_PEN pen;
 	} C;
-	struct D {	/* -D<min/max> */
+	struct PSMECA_D {	/* -D<min/max> */
 		bool active;
 		double depmin, depmax;
 	} D;
-	struct E {	/* -E<fill> */
+	struct PSMECA_E {	/* -E<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} E;
-	struct F {	/* Repeatable -F<mode>[<args>] */
+	struct PSMECA_F {	/* Repeatable -F<mode>[<args>] */
 		bool active;
 	} F;
-	struct G {	/* -G<fill> */
+	struct PSMECA_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct L {	/* -L<pen> */
+	struct PSMECA_L {	/* -L<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} L;
-	struct M {	/* -M */
+	struct PSMECA_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct PSMECA_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] */
+	struct PSMECA_S {	/* -S<format><scale>[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		bool no_label;
 		unsigned int readmode;
@@ -88,54 +88,54 @@ struct PSMECA_CTRL {
 		double offset[2];
 		struct GMT_FONT font;
 	} S;
-	struct T {	/* -Tnplane[/<pen>] */
+	struct PSMECA_T {	/* -Tnplane[/<pen>] */
 		bool active;
 		unsigned int n_plane;
 		struct GMT_PEN pen;
 	} T;
-	struct W {	/* -W<pen> */
+	struct PSMECA_W {	/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z<cpt> */
+	struct PSMECA_Z {	/* -Z<cpt> */
 		bool active;
 		char *file;
 	} Z;
-	struct A2 {	/* -Fa[size[/Psymbol[Tsymbol]]] */
+	struct PSMECA_A2 {	/* -Fa[size[/Psymbol[Tsymbol]]] */
 		bool active;
 		char P_symbol, T_symbol;
 		double size;
 	} A2;
-	struct E2 {	/* -Fe<fill> */
+	struct PSMECA_E2 {	/* -Fe<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} E2;
-	struct G2 {	/* -Fg<fill> */
+	struct PSMECA_G2 {	/* -Fg<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G2;
-	struct P2 {	/* -Fp[<pen>] */
+	struct PSMECA_P2 {	/* -Fp[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} P2;
-	struct R2 {	/* -Fr[<fill>] */
+	struct PSMECA_R2 {	/* -Fr[<fill>] */
 		bool active;
 		struct GMT_FILL fill;
 	} R2;
-	struct T2 {	/* -Ft[<pen>] */
+	struct PSMECA_T2 {	/* -Ft[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} T2;
-	struct O2 {	/* -Fo */
+	struct PSMECA_O2 {	/* -Fo */
 		bool active;
 	} O2;
-	struct Z2 {	/* -Fz[<pen>] */
+	struct PSMECA_Z2 {	/* -Fz[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} Z2;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSMECA_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSMECA_CTRL);
@@ -159,13 +159,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Z.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psmeca synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -243,7 +243,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psmeca and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -260,7 +260,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -511,17 +511,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_meca (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: meca\n");
-		return (GMT_NOT_A_VALID_MODULE);
-	}
-	return GMT_psmeca (V_API, mode, args);
-}
-
-int GMT_psmeca (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psmeca task */
 	int i, n, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
@@ -604,6 +594,11 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 			assert (In->text != NULL);						/* Should never get here */
+		}
+
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
 		}
 
 		/* Data record to process */
@@ -890,4 +885,14 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_meca (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: meca\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psmeca (V_API, mode, args);
 }

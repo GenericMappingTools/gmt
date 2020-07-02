@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** **all** \| **cache** \| **data** \| **sessions** \| **settings**
+**gmt clear** **all** \| **cache** \| **data**\ [=\ *planet*] \| **sessions** \| **settings**
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -38,8 +38,10 @@ Optional Arguments
 
 .. _clear-data:
 
-**data**
-    Delete the user's data download directory and all of its contents.
+**data**\ [=\ *planet*]
+    Delete the user's data download server directory and all of its contents.
+    Alternatively, append =\ *planet* for a specific planet and we only delete
+    data for that sub-directory [all planets].
 
 .. _clear-sessions:
 
@@ -68,6 +70,16 @@ To remove the current default settings in a modern mode session, use::
 To completely wipe your GMT cache directory, try::
 
     gmt clear cache
+
+To only wipe your GMT server directory for Earth data, try::
+
+    gmt clear data=earth
+
+To only wipe your entire GMT server and cache directories, (carefully) try::
+
+    gmt clear all
+
+.. include:: data-updating.rst_
 
 See Also
 --------

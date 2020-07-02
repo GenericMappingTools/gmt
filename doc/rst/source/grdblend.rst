@@ -37,7 +37,7 @@ not filled in with data. Such unconstrained nodes are set to a value
 specified by the user [Default is NaN]. Nodes with more than one value
 will be set to the weighted average value. Any input grid that does not
 share the final output grid's node registration and grid spacing will
-automatically be resampled via calls to :doc:`grdsample`. Note: Due to the
+automatically be resampled via calls to :doc:`grdsample`. **Note**: Due to the
 row-by-row i/o nature of operations in **grdblend** we only support the
 netCDF and native binary grid formats for both input and output.
 

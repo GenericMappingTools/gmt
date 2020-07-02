@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Push HTML pages to the gh-pages branch of the current Github repository.
+# Push HTML pages to the gh-pages branch of the current GitHub repository.
 #
 # Keeps pages built from branches in separate folders (named after the branch name).
 # Pages for the master branch are in the 'dev' folder. 'latest' is a link to
@@ -62,15 +62,8 @@ fi
 echo -e "Add and commit changes"
 git add -A .
 git status
-# Reuse the last commit if possible
-if [[ $(git log -1 --format='%s') == *"${VERSION}"* ]]; then
-    echo -e "Amending last commit"
-    git commit --amend --reset-author --no-edit
-else
-    # Make a new commit
-    echo -e "Making a new commit"
-    git commit --allow-empty -m "Deploy $VERSION from Azure Pipelines"
-fi
+# Always overwrite old commits
+git commit --amend --reset-author --no-edit
 
 echo -e "Pushing..."
 git push -fq origin $BRANCH 2>&1 >/dev/null

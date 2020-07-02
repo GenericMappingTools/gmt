@@ -47,38 +47,38 @@
 typedef void (*PFV) ();		/* pointer to a function returning void */
 typedef double (*PFD) ();		/* pointer to a function returning double */
 
-struct GRDOKB_CTRL {
+struct GRDGRAVMAG3D_CTRL {
 
-	struct GRDOKB_In {
+	struct GRDGRAVMAG3D_In {
 		bool active;
 		char *file[3];
 	} In;
 
-	struct GRDOKB_C {	/* -C */
+	struct GRDGRAVMAG3D_C {	/* -C */
 		bool active;
 		double rho;
 	} C;
-	struct GRDOKB_D {	/* -D */
+	struct GRDGRAVMAG3D_D {	/* -D */
 		bool active;
 		gmt_grdfloat z_dir;
 	} D;
-	struct GRDOKB_E {	/* -E */
+	struct GRDGRAVMAG3D_E {	/* -E */
 		bool active;
 		double thickness;
 	} E;
-	struct GRDOKB_I {	/* -Idx[/dy] */
+	struct GRDGRAVMAG3D_I {	/* -Idx[/dy] */
 		bool active;
 		double inc[2];
 	} I;
-	struct GRDOKB_F {	/* -F<xyfile> */
+	struct GRDGRAVMAG3D_F {	/* -F<xyfile> */
 		bool active;
 		char *file;
 	} F;
-	struct GRDOKB_G {	/* -G<grdfile> */
+	struct GRDGRAVMAG3D_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct GRDOKB_H {	/* -H */
+	struct GRDGRAVMAG3D_H {	/* -H */
 		bool active;
 		bool bhatta;
 		bool pirtt;
@@ -87,27 +87,27 @@ struct GRDOKB_CTRL {
 		char *incfile, *decfile, *magfile;
 		double	t_dec, t_dip, m_int, m_dec, m_dip, koningsberg;
 	} H;
-	struct GRDOKB_L {	/* -L */
+	struct GRDGRAVMAG3D_L {	/* -L */
 		double zobs;
 	} L;
-	struct GRDOKB_Q {	/* -Q */
+	struct GRDGRAVMAG3D_Q {	/* -Q */
 		bool active;
 		unsigned int n_pad;
 		char region[GMT_BUFSIZ];	/* gmt_parse_R_option has this!!!! */
 		double pad_dist;
 	} Q;
-	struct GRDOKB_S {	/* -S */
+	struct GRDGRAVMAG3D_S {	/* -S */
 		bool active;
 		double radius;
 	} S;
-	struct GRDOKB_T {	/* -T<grdfile> */
+	struct GRDGRAVMAG3D_T {	/* -T<grdfile> */
 		double	year;
 	} T;
-	struct GRDOKB_Z {	/* -Z */
+	struct GRDGRAVMAG3D_Z {	/* -Z */
 		bool top, bot;
 		double z0;
 	} Z;
-	struct GRDOKB_box {	/* No option, just a container */
+	struct GRDGRAVMAG3D_box {	/* No option, just a container */
 		bool is_geog;
 		double	d_to_m, *mag_int, lon_0, lat_0;
 	} box;
@@ -121,39 +121,39 @@ struct THREAD_STRUCT {
 	struct LOC_OR *loc_or;
 	struct BODY_DESC *body_desc;
 	struct BODY_VERTS *body_verts;
-	struct GRDOKB_CTRL *Ctrl;
+	struct GRDGRAVMAG3D_CTRL *Ctrl;
 	struct GMT_GRID *Grid;
 	struct GMT_GRID *Gout;
 	struct GMT_GRID *Gsource;
 	struct GMT_CTRL *GMT;
 };
 
-GMT_LOCAL int grdgravmag3d_body_set_tri (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
+GMT_LOCAL int grdgravmag3d_body_set_tri (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_GRID *Grid,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
 	double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i);
-GMT_LOCAL int grdgravmag3d_body_set_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
+GMT_LOCAL int grdgravmag3d_body_set_prism(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_GRID *Grid,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
 	double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i);
-GMT_LOCAL int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
+GMT_LOCAL int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct BODY_DESC *body_desc,
 	struct BODY_VERTS **body_verts, unsigned int face);
-GMT_LOCAL int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
+GMT_LOCAL int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct BODY_DESC *body_desc,
 	struct BODY_VERTS **body_verts, unsigned int face);
-GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid, struct GMT_GRID *Gout,
+GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_GRID *Grid, struct GMT_GRID *Gout,
 	struct GMT_GRID *Gsource, double *g, unsigned int n_pts, double *x_grd, double *y_grd, double *x_grd_geo, double *y_grd_geo,
 	double *x_obs, double *y_obs, double *cos_vec, struct MAG_PARAM *okabe_mag_param, struct MAG_VAR *okabe_mag_var, struct LOC_OR *loc_or,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts);
-GMT_LOCAL  double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
+GMT_LOCAL  double grdgravmag3d_mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 	struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or, struct MAG_PARAM *, struct MAG_VAR *);
-GMT_LOCAL  double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
+GMT_LOCAL  double grdgravmag3d_bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 	struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or, struct MAG_PARAM *, struct MAG_VAR *);
 GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t);
-GMT_LOCAL double nucleox(double u, double v, double w, double rl, double rm, double rn);
-GMT_LOCAL double nucleoy(double u, double v, double w, double rl, double rm, double rn);
-GMT_LOCAL double nucleoz(double u, double v, double w, double rl, double rm, double rn);
-GMT_LOCAL void dircos(double incl, double decl, double azim, double *a, double *b, double *c);
+GMT_LOCAL double grdgravmag3d_nucleox(double u, double v, double w, double rl, double rm, double rn);
+GMT_LOCAL double grdgravmag3d_nucleoy(double u, double v, double w, double rl, double rm, double rn);
+GMT_LOCAL double grdgravmag3d_nucleoz(double u, double v, double w, double rl, double rm, double rn);
+GMT_LOCAL void grdgravmag3d_dircos(double incl, double decl, double azim, double *a, double *b, double *c);
 
 #if 0
-GMT_LOCAL double fast_atan(double x) {
+GMT_LOCAL double grdgravmag3d_fast_atan(double x) {
 	/* http://nghiaho.com/?p=997 */
 	/* Efficient approximations for the arctangent function, Rajan, S. Sichun Wang Inkol, R. Joyal, A., May 2006 */
 	return M_PI_4*x - x*(fabs(x) - 1)*(0.2447 + 0.0663*fabs(x));
@@ -162,10 +162,10 @@ GMT_LOCAL double fast_atan(double x) {
 
 #define FATAN(x) (fabs(x) > 1) ? atan(x) : (M_PI_4*x - x*(fabs(x) - 1)*(0.2447 + 0.0663*fabs(x)))
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct GRDOKB_CTRL *C;
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+	struct GRDGRAVMAG3D_CTRL *C;
 
-	C = gmt_M_memory (GMT, NULL, 1, struct GRDOKB_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDGRAVMAG3D_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.thickness = 500;
@@ -176,7 +176,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file[0]);
 	gmt_M_str_free (C->In.file[1]);
@@ -188,7 +188,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *C) {	/* Deal
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s grdfile_top [grdfile_bot] [-C<density>] [-D] [-E<thick>] [-F<xy_file>]\n", name);
@@ -245,7 +245,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdgravmag3d and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -442,7 +442,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	size_t  ij;
 	unsigned int km = 0;		/* index of current body facet (for mag only) */
@@ -459,7 +459,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	struct  LOC_OR *loc_or = NULL;
 	struct  BODY_VERTS *body_verts = NULL;
 	struct  BODY_DESC body_desc;
-	struct  GRDOKB_CTRL *Ctrl = NULL;
+	struct  GRDGRAVMAG3D_CTRL *Ctrl = NULL;
 	struct  GMT_DATASET *Cin = NULL;
 	struct  GMT_DATATABLE *point = NULL;
 	struct  GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -838,8 +838,8 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	loc_or = gmt_M_memory (GMT, NULL, (n_vert_max+1), struct LOC_OR);
 
 	if (Ctrl->H.bhatta) {
-		dircos(Ctrl->H.m_dip, Ctrl->H.m_dec, 0, &loc_or[0].x, &loc_or[0].y, &loc_or[0].z);
-		dircos(Ctrl->H.t_dip, Ctrl->H.t_dec, 0, &loc_or[1].x, &loc_or[1].y, &loc_or[1].z);
+		grdgravmag3d_dircos(Ctrl->H.m_dip, Ctrl->H.m_dec, 0, &loc_or[0].x, &loc_or[0].y, &loc_or[0].z);
+		grdgravmag3d_dircos(Ctrl->H.t_dip, Ctrl->H.t_dec, 0, &loc_or[1].x, &loc_or[1].y, &loc_or[1].z);
 	}
 	else if (Ctrl->H.pirtt) {
 		/* This retains several of the original FORTRAN code variable names (easy to tell) */
@@ -1006,7 +1006,7 @@ L1:
 
 
 /* -----------------------------------------------------------------*/
-GMT_LOCAL int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
+GMT_LOCAL int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct BODY_DESC *body_desc,
                                          struct BODY_VERTS **body_verts, unsigned int face) {
 	gmt_M_unused(Ctrl);
 /*
@@ -1054,7 +1054,7 @@ GMT_LOCAL int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTR
 }
 
 /* -----------------------------------------------------------------------------------*/
-GMT_LOCAL int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
+GMT_LOCAL int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct BODY_DESC *body_desc,
                                            struct BODY_VERTS **body_verts, unsigned int face) {
 	gmt_M_unused(Ctrl);
 	if (face != 0 && face != 5) return(0);
@@ -1073,7 +1073,7 @@ GMT_LOCAL int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_C
 }
 
 /* -----------------------------------------------------------------------------------*/
-GMT_LOCAL int grdgravmag3d_body_set_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
+GMT_LOCAL int grdgravmag3d_body_set_tri(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_GRID *Grid,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
 		double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i) {
 
@@ -1122,7 +1122,7 @@ GMT_LOCAL int grdgravmag3d_body_set_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL
 }
 
 /* -----------------------------------------------------------------------------------*/
-GMT_LOCAL int grdgravmag3d_body_set_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
+GMT_LOCAL int grdgravmag3d_body_set_prism(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_GRID *Grid,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
 		double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i) {
 
@@ -1154,7 +1154,7 @@ GMT_LOCAL int grdgravmag3d_body_set_prism(struct GMT_CTRL *GMT, struct GRDOKB_CT
 
 /* -----------------------------------------------------------------------------------*/
 #ifdef HAVE_GLIB_GTHREAD
-GMT_LOCAL void *thread_function (void *args) {
+GMT_LOCAL void *grdgravmag3d_thread_function (void *args) {
 	grdgravmag3d_calc_surf_ ((struct THREAD_STRUCT *)args);
 	return NULL;
 }
@@ -1170,7 +1170,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 	struct BODY_VERTS *body_verts = NULL;
 
     struct GMT_CTRL *GMT        = t->GMT;
-    struct GRDOKB_CTRL *Ctrl    = t->Ctrl;
+    struct GRDGRAVMAG3D_CTRL *Ctrl    = t->Ctrl;
     struct GMT_GRID *Grid       = t->Grid;
     struct GMT_GRID *Gout       = t->Gout;
     struct GMT_GRID *Gsource    = t->Gsource;
@@ -1188,7 +1188,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
     unsigned int r_start        = t->r_start;
     unsigned int r_stop         = t->r_stop;
 
-	int (*v_func[3])(struct GMT_CTRL *, struct GRDOKB_CTRL *, struct GMT_GRID *, struct BODY_DESC *, struct BODY_VERTS *,
+	int (*v_func[3])(struct GMT_CTRL *, struct GRDGRAVMAG3D_CTRL *, struct GMT_GRID *, struct BODY_DESC *, struct BODY_VERTS *,
 	      double *, double *, double *, unsigned int, unsigned int, unsigned int, unsigned int);
 	double (*d_func[3])(struct GMT_CTRL *, double, double, double, double, bool, struct BODY_DESC, struct BODY_VERTS *,
 	        unsigned int, unsigned int, struct LOC_OR *, struct MAG_PARAM *, struct MAG_VAR *);
@@ -1201,8 +1201,8 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 	v_func[1] = grdgravmag3d_body_set_prism;
 	v_func[2] = grdgravmag3d_body_set_prism;
 	d_func[0] = okabe;
-	d_func[1] = mprism;
-	d_func[2] = bhatta;
+	d_func[1] = grdgravmag3d_mprism;
+	d_func[2] = grdgravmag3d_bhatta;
 
 	indf = (Ctrl->H.pirtt) ? 1 + Ctrl->H.bhatta : 0;
 	rho_or_mag = (Ctrl->C.active) ? Ctrl->C.rho : Ctrl->H.m_int;	/* What are we computing? (But it may be overridden below) */
@@ -1293,7 +1293,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 }
 
 /* -----------------------------------------------------------------------------------*/
-GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid, struct GMT_GRID *Gout,
+GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_GRID *Grid, struct GMT_GRID *Gout,
 		struct GMT_GRID *Gsource, double *g, unsigned int n_pts, double *x_grd, double *y_grd, double *x_grd_geo, double *y_grd_geo,
 		double *x_obs, double *y_obs, double *cos_vec, struct MAG_PARAM *okabe_mag_param, struct MAG_VAR *okabe_mag_var, struct LOC_OR *loc_or,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts) {
@@ -1348,7 +1348,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL 
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Grid->header->n_rows - 1 - indf) / GMT->common.x.n_threads);
    		if (i == GMT->common.x.n_threads - 1) threadArg[i].r_stop = Grid->header->n_rows - 1 + indf;	/* Make sure last row is not left behind */
-		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
+		threads[i] = g_thread_new(NULL, grdgravmag3d_thread_function, (void*)&(threadArg[i]));
 	}
 
 	if (GMT->common.x.n_threads > 1) {		/* Otherwise g_thread_new was never called and so no need to "join" */
@@ -1371,7 +1371,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL 
    consider different dec/dip for magnetization vector and Earth field, but here we do.
 */
 
-GMT_LOCAL double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
+GMT_LOCAL double grdgravmag3d_mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *mag_par, struct MAG_PARAM *dumb1, struct MAG_VAR *dumb2) {
 
 	/* The MAG_PAR struct is used here to transmit the Ctrl->H members (components actually) */
@@ -1540,7 +1540,7 @@ https://wiki.oulu.fi/display/~mpi/Magnetic+field+of+a+prism+model
 !
 !----------------------------------------------------------------------
 
-  subroutine mprism(pri,pmg,dmc,xx,yy,zz,np)
+  subroutine grdgravmag3d_mprism(pri,pmg,dmc,xx,yy,zz,np)
 
     implicit none
     integer :: np
@@ -1675,11 +1675,11 @@ https://wiki.oulu.fi/display/~mpi/Magnetic+field+of+a+prism+model
     end do
 
     return
-  end subroutine mprism
+  end subroutine grdgravmag3d_mprism
 
 */
 
-GMT_LOCAL double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
+GMT_LOCAL double grdgravmag3d_bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or, struct MAG_PARAM *dumb1, struct MAG_VAR *dumb2) {
 
 	/* x_o, y_o, z_o are the coordinates of the observation point
@@ -1697,9 +1697,9 @@ GMT_LOCAL double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_
 	gmt_M_unused(dumb1);
 	gmt_M_unused(dumb2);
 
-	d_func[0] = nucleoy;
-	d_func[1] = nucleox;
-	d_func[2] = nucleoz;
+	d_func[0] = grdgravmag3d_nucleoy;
+	d_func[1] = grdgravmag3d_nucleox;
+	d_func[2] = grdgravmag3d_nucleoz;
 
 	w0 = body_verts[0].z - z_o;
 	w1 = body_verts[1].z - z_o;
@@ -1723,7 +1723,7 @@ GMT_LOCAL double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_
 	return (tx);
 }
 
-GMT_LOCAL double nucleox(double u, double v, double w, double rl, double rm, double rn) {
+GMT_LOCAL double grdgravmag3d_nucleox(double u, double v, double w, double rl, double rm, double rn) {
 	double r, t1, t2, t3, rnum, rden;
 	r = sqrt(u*u + v*v + w*w);
 	t1 = rn / 2.0 * log((r+v)/(r-v));
@@ -1734,7 +1734,7 @@ GMT_LOCAL double nucleox(double u, double v, double w, double rl, double rm, dou
 	return (t1 + t2 + t3);
 }
 
-GMT_LOCAL double nucleoy(double u, double v, double w, double rl, double rm, double rn) {
+GMT_LOCAL double grdgravmag3d_nucleoy(double u, double v, double w, double rl, double rm, double rn) {
 	/* Multiply output by -1 because ... not sure but related to the fact that y vector is up-side down */
 	double r, t1, t2, t3, rnum, rden;
 	r = sqrt(u*u + v*v + w*w);
@@ -1746,7 +1746,7 @@ GMT_LOCAL double nucleoy(double u, double v, double w, double rl, double rm, dou
 	return (-(t1 + t2 + t3));
 }
 
-GMT_LOCAL double nucleoz(double u, double v, double w, double rl, double rm, double rn) {
+GMT_LOCAL double grdgravmag3d_nucleoz(double u, double v, double w, double rl, double rm, double rn) {
 	double r, t1, t2, t3, rnum, rden;
 	r = sqrt(u*u + v*v + w*w);
 	t1 = rm / 2.0 * log((r+u)/(r-u));
@@ -1757,7 +1757,7 @@ GMT_LOCAL double nucleoz(double u, double v, double w, double rl, double rm, dou
 	return (t1 + t2 + t3);
 }
 
-GMT_LOCAL void dircos(double incl, double decl, double azim, double *a, double *b, double *c) {
+GMT_LOCAL void grdgravmag3d_dircos(double incl, double decl, double azim, double *a, double *b, double *c) {
 /*
 c  Subroutine DIRCOS computes direction cosines from inclination
 c  and declination.

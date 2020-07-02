@@ -37,9 +37,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vabdefghioqs" GMT_OPT("HMm")
 
-EXTERN_MSC int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
-EXTERN_MSC int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
-
 #define INV_ROWS	1
 #define INV_SEGS	2
 #define INV_TBLS	4
@@ -47,67 +44,67 @@ EXTERN_MSC int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 /* Control structure for gmtconvert */
 
 struct GMTCONVERT_CTRL {
-	struct Out {	/* -> */
+	struct GMTCONVERT_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A */
+	struct GMTCONVERT_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C[+l<min>+u<max>+i>] */
+	struct GMTCONVERT_C {	/* -C[+l<min>+u<max>+i>] */
 		bool active, invert;
 		uint64_t min, max;
 	} C;
-	struct D {	/* -D[<template>][+o<orig>] */
+	struct GMTCONVERT_D {	/* -D[<template>][+o<orig>] */
 		bool active;
 		bool origin;
 		unsigned int mode;
 		unsigned int t_orig, s_orig;
 		char *name;
 	} D;
-	struct E {	/* -E */
+	struct GMTCONVERT_E {	/* -E */
 		bool active;
 		bool end;
 		int mode;	/* -3, -1, -1, 0, or increment stride */
 	} E;
-	struct F {	/* -F<mode> */
+	struct GMTCONVERT_F {	/* -F<mode> */
 		bool active;
 		struct GMT_SEGMENTIZE S;
 	} F;
-	struct I {	/* -I[ast] */
+	struct GMTCONVERT_I {	/* -I[ast] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct L {	/* -L */
+	struct GMTCONVERT_L {	/* -L */
 		bool active;
 	} L;
-	struct N {	/* -N<col>[+a|d] sorting */
+	struct GMTCONVERT_N {	/* -N<col>[+a|d] sorting */
 		bool active;
 		int dir;	/* +1 ascending [default], -1 descending */
 		uint64_t col;
 	} N;
-	struct Q {	/* -Q<selections> */
+	struct GMTCONVERT_Q {	/* -Q<selections> */
 		bool active;
 		struct GMT_INT_SELECTION *select;
 	} Q;
-	struct S {	/* -S[~]\"search string\" */
+	struct GMTCONVERT_S {	/* -S[~]\"search string\" */
 		bool active;
 		struct GMT_TEXT_SELECTION *select;
 	} S;
-	struct T {	/* -T[sd] */
+	struct GMTCONVERT_T {	/* -T[sd] */
 		bool active[2];
 	} T;
-	struct W {	/* -W[+n] */
+	struct GMTCONVERT_W {	/* -W[+n] */
 		bool active;
 		unsigned int mode;
 	} W;
-	struct Z {	/* -Z[<first>]:[<last>] */
+	struct GMTCONVERT_Z {	/* -Z[<first>]:[<last>] [DEPRECATED - use -q instead]*/
 		bool active;
 		int64_t first, last;
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTCONVERT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GMTCONVERT_CTRL);
@@ -118,7 +115,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->D.name);
@@ -127,11 +124,11 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/* 
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m|M<stride>]] [-F<arg>] [-I[tsr]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [-Z[<first>][/<last>]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -183,13 +180,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   d: Prevent the writing of duplicate data records.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Convert trailing text to numbers, if possible.  Append +n to suppress NaN columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Select range of output records.  If not set, <first> = 0 and <last> = last record [all records].\n");
 	GMT_Option (API, "a,bi,bo,d,e,f,g,h,i,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtconvert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -207,13 +203,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -341,6 +337,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
+				GMT_Report (API, GMT_MSG_COMPAT, "Option -Z is deprecated (but still works); Use common option -q instead\n");
 				if ((c = strchr (opt->arg, ':')) || (c = strchr (opt->arg, '/'))) {	/* Got [<first>]:[<last>] or [<first>]/[<last>] */
 					char div = c[0];	/* Either : or / */
 					if (opt->arg[0] == div) /* No first given, default to 0 */
@@ -410,12 +407,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 	                                 "Only one of -Q and -S can be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->F.active,
 	                                 "The -N option cannot be used with -F\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && GMT->common.q.active[GMT_OUT],
+	                                 "The deprecated -Z option cannot be used with -qo\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
+GMT_LOCAL bool gmtconvert_is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
 	uint64_t col;
 	/* Loop over all columns and compare the two records, if differ then return false.
 	 * If passes all columns then they are the same and we return true. */
@@ -428,7 +427,7 @@ GMT_LOCAL bool is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtconvert (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	bool match = false, prevent_seg_headers = false;
 	int error = 0;
 	uint64_t out_col, col, n_cols_in = 0, n_cols_out, tbl, tlen;
@@ -644,7 +643,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				n_in_rows++;
 				if (Ctrl->Z.active && (n_in_rows < Ctrl->Z.first || n_in_rows > Ctrl->Z.last)) continue;	/* Skip if outside limited record range */
 				if (!Ctrl->E.active) {
-					if (Ctrl->T.active[1] && row && is_duplicate_row (S, row)) continue;	/* Skip duplicate records */
+					if (Ctrl->T.active[1] && row && gmtconvert_is_duplicate_row (S, row)) continue;	/* Skip duplicate records */
 				}
 				else if (Ctrl->E.mode < 0) {	/* Only pass first or last or both of them, skipping all others */
 					if (row > 0 && row < last_row) continue;		/* Always skip the middle of the segment */
@@ -768,7 +767,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			do_it = false;
 		}
 		else
-			GMT_Report (API, GMT_MSG_WARNING, "Sort data based on column %d in %s order\n", (int)Ctrl->N.col, way[Ctrl->N.dir+1]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Sort data based on column %d in %s order\n", (int)Ctrl->N.col, way[Ctrl->N.dir+1]);
 		GMT->current.io.record_type[GMT_OUT] = GMT->current.io.record_type[GMT_IN];
 		for (tbl = 0; do_it && tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 			for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */

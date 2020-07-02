@@ -50,11 +50,11 @@
 /* Control structure for gmtsimplify */
 
 struct GMTSIMPLIFY_CTRL {
-	struct Out {	/* ->[<outfile>] */
+	struct GMTSIMPLIFY_Out {	/* ->[<outfile>] */
 		bool active;
 		char *file;
 	} Out;
-	struct T {	/* 	-T[-|=|+]<tolerance>[d|s|m|e|f|k|M|n] */
+	struct GMTSIMPLIFY_T {	/* 	-T[-|=|+]<tolerance>[d|s|m|e|f|k|M|n] */
 		bool active;
 		int mode;	/* Can be negative */
 		double tolerance;
@@ -62,7 +62,7 @@ struct GMTSIMPLIFY_CTRL {
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSIMPLIFY_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GMTSIMPLIFY_CTRL);
@@ -70,13 +70,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -T<tolerance> [%s] [%s]\n", name, GMT_V_OPT, GMT_b_OPT);
@@ -94,7 +94,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtsimplify and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -108,7 +108,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Write to named output file instead of stdout */
 				Ctrl->Out.active = true;
@@ -153,7 +153,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct
 	spherical operation.
  */
 
-GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], uint64_t n_source, double band, bool geo, uint64_t index[]) {
+GMT_LOCAL uint64_t gmtsimplify_douglas_peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], uint64_t n_source, double band, bool geo, uint64_t index[]) {
 /* x/y_source	Input coordinates, n_source of them.  These are not changed */
 /* band;	tolerance in Cartesian user units or degrees */
 /* geo:		true if data is lon/lat */
@@ -274,7 +274,7 @@ GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[]
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtsimplify (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	int error;
 	unsigned int smode = GMT_NO_STRINGS;
 	bool geo, poly, skip;
@@ -330,10 +330,11 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	geo = gmt_M_is_geographic (GMT, GMT_IN);					/* true for lon/lat coordinates */
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = true;	/* Used units but did not set -fg; implicitly set -fg via geo */
 
-	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance scalings according to unit selected */
+	if (gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize distance scalings according to unit selected */
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	/* Convert tolerance to degrees [or leave as Cartesian] */
-	/* We must do this here since Douglas_Peucker_geog is doing its own thing and cannot use gmt_distance yet */
+	/* We must do this here since gmtsimplify_douglas_peucker_geog is doing its own thing and cannot use gmt_distance yet */
 
 	tolerance = Ctrl->T.tolerance;
 	switch (Ctrl->T.unit) {
@@ -369,9 +370,9 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 		for (seg_in = seg_out = 0; seg_in < D[GMT_IN]->table[tbl]->n_segments; seg_in++) {
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg_in];
 			/* If input segment is a closed polygon then the simplified segment must have at least 4 points, else 3 is enough */
-			poly = (!gmt_polygon_is_open (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows));
+			poly = (S[GMT_IN]->n_rows > 2 && !gmt_polygon_is_open (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows));
 			index = gmt_M_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
-			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
+			np_out = gmtsimplify_douglas_peucker_geog (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
 			skip = ((poly && np_out < 4) || (np_out == 2 && S[GMT_IN]->data[GMT_X][index[0]] == S[GMT_IN]->data[GMT_X][index[1]] && S[GMT_IN]->data[GMT_Y][index[0]] == S[GMT_IN]->data[GMT_Y][index[1]]));
 			if (!skip) {	/* Must allocate one segment for output */
 				smode = (S[GMT_IN]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
@@ -407,4 +408,15 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns_in, ns_out);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_gmtdp (void *V_API, int mode, void *args) {
+	/* This was the GMT4 name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (gmt_M_compat_check (API->GMT, 4)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Module gmtdp is deprecated; use gmtsimplify.\n");
+		return (GMT_Call_Module (API, "gmtsimplify", mode, args));
+	}
+	GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: gmtdp\n");
+	return (GMT_NOT_A_VALID_MODULE);
 }

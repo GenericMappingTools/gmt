@@ -35,35 +35,35 @@
 #define THIS_MODULE_OPTIONS "-:JRVbdefhiqrs" GMT_OPT("FH")
 
 struct XYZ2GRD_CTRL {
-	struct In {
+	struct XYZ2GRD_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A[f|l|n|m|r|s|u|z] */
+	struct XYZ2GRD_A {	/* -A[f|l|n|m|r|s|u|z] */
 		bool active;
 		char mode;
 	} A;
-	struct D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
+	struct XYZ2GRD_D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
 		char *information;
 	} D;
-	struct E {	/* -E[<nodata>] */
+	struct XYZ2GRD_E {	/* -E[<nodata>] */
 		bool active;
 		bool set;
 		double nodata;
 	} E;
-	struct G {	/* -G<output_grdfile> */
+	struct XYZ2GRD_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct S {	/* -S */
+	struct XYZ2GRD_S {	/* -S */
 		bool active;
 		char *file;
 	} S;
 	struct GMT_PARSE_Z_IO Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct XYZ2GRD_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct XYZ2GRD_CTRL);
@@ -74,7 +74,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->D.information);
@@ -83,7 +83,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
@@ -148,9 +148,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-EXTERN_MSC unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg);
-
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
 	/* This parses the options provided to xyz2grd and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -171,10 +169,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
+				else
+					Ctrl->In.active = true;
 				break;
 
 			/* Processes program-specific parameters */
@@ -211,10 +210,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -270,7 +268,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 	}
 
 	if (Ctrl->Z.active) {
-		gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
+		n_errors += gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 		GMT->common.b.type[GMT_IN] = Ctrl->Z.type;
 		if (b_only) {
 			GMT->common.b.active[GMT_IN] = false;
@@ -293,7 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
+GMT_LOCAL void xyz2grd_protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (GMT_Find_Option (API, 'J', options) != NULL) {
 #ifdef HAVE_GDAL
 		struct GMT_OPTION *opt = GMT_Make_Option (API, 'f', "0f,1f");
@@ -305,7 +303,7 @@ GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	}
 }
 
-int GMT_xyz2grd (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
 	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1;
@@ -339,7 +337,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	protect_J(API, options);	/* If -J is used, add a -f0f,1f option to avoid later parsing errors due to -R & -J conflicts */
+	xyz2grd_protect_J(API, options);	/* If -J is used, add a -f0f,1f option to avoid later parsing errors due to -R & -J conflicts */
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -404,6 +402,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 				assert (false);						/* Should never get here */
+			}
+
+			if (In->data == NULL) {
+				gmt_quit_bad_record (API, In);
+				Return (API->error);
 			}
 
 			/* Data record to process */
@@ -474,7 +477,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Grid->header->wesn[XHI] = Grid->header->wesn[XLO] + (Grid->header->n_columns - 1 + Grid->header->registration) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[YHI] = Grid->header->wesn[YLO] + (Grid->header->n_rows - 1 + Grid->header->registration) * Grid->header->inc[GMT_Y];
 		gmt_set_grddim (GMT, Grid->header);
-		gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+		if (gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 		n_left = Grid->header->nm;
@@ -554,7 +557,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "n_columns = %d  n_rows = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->n_columns, Grid->header->n_rows, Grid->header->nm, Grid->header->size);
 
-	gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file);
+	if (gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && gmt_M_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
@@ -607,6 +610,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 			continue;	/* Go back and read the next record */
+		}
+
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
 		}
 
 		/* Data record to process */

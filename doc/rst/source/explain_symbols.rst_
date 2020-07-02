@@ -7,12 +7,21 @@
     Optionally, append **c**, **i**, or
     **p** to indicate that the size information in the input data is in
     units of cm, inch, or point, respectively [Default is
-    :term:`PROJ_LENGTH_UNIT`]. Note: if you provide *both* size and symbol via the
+    :term:`PROJ_LENGTH_UNIT`]. **Note**: If you provide *both* size and symbol via the
     input file you must use :term:`PROJ_LENGTH_UNIT` to indicate the unit
     used for the symbol size or append the units to the sizes in the file.
     If symbol sizes are expected via the third data column then you may convert
-    those values to suitable symbol sizes via the **-i** mechanism.
+    those values to suitable symbol sizes via the **-i** mechanism. The general
+    input expectations are::
 
+    *x y* [ *z* ] [ *size* ] [ *symbol-parameters* ] [ *symbol* ]
+
+    where the optional *z* is required when **-C** is used, the optional
+    *size* is required when no symbol size is specified, and the trailing
+    text with the symbol code is required when symbol code is not specified
+    on the command line.  The *symbol-parameters* may vary in numbers; see
+    specifics below.
+        
     The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
     **S**, **T** are normalized to have the same area as a circle with
     diameter *size*, while the size of the corresponding lowercase symbols
@@ -70,10 +79,12 @@
         the desired diameter to **-SE-** and this fixed diameter is used instead.
 	For allowable geographical units, see `Units`_ [Default is k for km].
 
-    **-Sf**\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
+    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront. Supply distance *gap* between symbols and symbol *size*. If *gap* is
         negative, it is interpreted to mean the number of symbols along the
-        front instead. If *size* is missing it is set to 30% of the *gap*, except
+        front instead. If *gap* has a leading + then we use the value exactly as given
+        [Default will start and end each line with a symbol, hence the *gap* is adjusted to fit].
+        If *size* is missing it is set to 30% of the *gap*, except
         when *gap* is negative and *size* is thus required.  Append **+l** or
         **+r** to plot symbols on the left or
         right side of the front [Default is centered]. Append **+**\ *type* to
@@ -86,9 +97,9 @@
         beginning of the front by that amount [0]. The chosen symbol is drawn
         with the same pen as set for the line (i.e., via **-W**). To use an
         alternate pen, append **+p**\ *pen*. To skip the outline, just use
-        **+p**.  Note: By placing **-Sf**
-        options in the segment header you can change the front types on a
-        segment-by-segment basis.
+        **+p**.  To make the main front line invisible, add **+i**.  **Note**:
+        By placing **-Sf** options in the segment header you can change the front
+        types on a segment-by-segment basis.
 
     **-Sg**
         octa\ **g**\ on. *size* is diameter of circumscribing circle.
@@ -126,7 +137,7 @@
 
     **-Sl**
         **l**\ etter or text string (less than 256 characters). Give size, and
-        append **+t**\ *string* after the size. Note that the size is only approximate;
+        append **+t**\ *string* after the size. **Note**: The size is only approximate;
         no individual scaling is done for different characters. Remember to
         escape special characters like \*. Optionally, you may append **+f**\ *font*
         to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
@@ -153,7 +164,7 @@
     **-Sq**
         **q**\ uoted line, i.e., lines with annotations such as contours. Append
         [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**]\ *info*\ [:*labelinfo*].
-        Note the colon that separates the algorithm settings from the label information.
+        **Note**: The colon that separates the algorithm settings from the label information.
         The required argument controls the placement of labels along the quoted
         lines. Choose among six controlling algorithms:
 
@@ -234,6 +245,9 @@
             **+g**\ [*color*]
                 Selects opaque text boxes [Default is transparent]; optionally
                 specify the color [Default is :term:`PS_PAGE_COLOR`].
+
+           **+i**
+                Make the main quoted line invisible [Draw it per **-W**].
 
             **+j**\ *just*
                 Sets label justification [Default is MC]. Ignored when
@@ -317,7 +331,7 @@
                 leading hyphen (-) then there will be no space between label
                 value and the prefix. [Default is no prefix].
 
-        Note: By placing **-Sq** options in the segment header you can change
+        **Note**: By placing **-Sq** options in the segment header you can change
         the quoted text attributes on a segment-by-segment basis.
 
     **-Sr**
@@ -338,7 +352,8 @@
     **-Sv**
         **v**\ ector. Direction (in degrees counter-clockwise from
         horizontal) and length must be found in columns 3 and 4, and *size*,
-        if not specified on the command-line, should be  present in column 5.
+        if not specified on the command-line, should be present in column 3, pushing
+        the other items to later columns.
         The *size* is the length of the vector head. Vector stem width is set by **-W**,
 	with head outline pen width defaulting to half of stem pen width.
         See `Vector Attributes`_ for specifying this and other attributes. But also be aware
@@ -388,14 +403,14 @@
         geovector. Azimuth (in degrees east from north) and geographical length
         must be found in columns 3 and 4. The *size* is the length of the
         vector head. Vector width is set by **-W**. See `Vector Attributes`_
-        for specifying attributes. Note: Geovector stems are drawn as thin
+        for specifying attributes. **Note**: Geovector stems are drawn as thin
         filled polygons and hence pen attributes like dashed and dotted are
         not available. For allowable geographical units, see `Units`_.
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append
         [**d**\|\ **D**\|\ **f**\|\ **l**\|\ **L**\|\ **n**\|\ **N**\|\ **s**\|\ **S**\|\ **x**\|\ **X**]\ *info*\ [:*symbolinfo*].
-        Note the colon that separates the algorithm settings from the symbol information.
+        **Note**: The colon that separates the algorithm settings from the symbol information.
         The required argument controls the placement of symbols along the decorated
         lines. Choose among six controlling algorithms:
 
@@ -458,6 +473,9 @@
             **+g**\ [*fill*]
                 Sets the symbol fill [no fill].
 
+            **+i**
+                Make the main decorated line invisible [Draw it using pen settings provided by **-W**].
+
             **+n**\ *dx*\ [/*dy*]
                 Nudges the placement of symbols by the specified amount (append
                 **c**\|\ **i**\|\ **p** to specify the units). Increments
@@ -470,12 +488,14 @@
                 optionally specify pen for outline [Default is width = 0.25p,
                 color = black, style = solid].
 
-            **+s**\ <symbol><size>
+            **+s**\ <symbol><size> or **+sk**\ *customsymbol*/*size*
                 Specifies the code and size of the decorative symbol.
+                Custom symbols need to be simple, i.e., not require data columns.
 
             **+w**
                 Specifies how many (*x*,\ *y*) points will be used to estimate
                 symbol angles [Default is 10].
 
-        Note: By placing **-S~** options in the segment header you can change
+        If neither **+g** nor **+p** are set we select the default pen outline (:term:`MAP_DEFAULT_PEN`).
+        **Note**: By placing **-S~** options in the segment header you can change
         the decorated lines on a segment-by-segment basis.

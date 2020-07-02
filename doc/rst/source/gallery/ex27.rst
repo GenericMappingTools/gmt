@@ -41,6 +41,8 @@ painted black. A color scale bar was then added to complete the illustration.
 
    Plotting Sandwell/Smith Mercator img grids.
 
+Footnote
+~~~~~~~~
 
 .. [1]
    You could also use :doc:`img2grd </supplements/img/img2grd>`

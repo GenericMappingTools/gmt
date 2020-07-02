@@ -19,7 +19,7 @@
     mile, or s\ **u**\ rvey foot. For projected data
     (**X**\|\ **Y**\|\ **D**), choose from **i**\ nch,
     **c**\ entimeter, or **p**\ oint [Default unit set by
-    :term:`PROJ_LENGTH_UNIT`]. Note: For **x**\|\ **y**\|\ **z** with
+    :term:`PROJ_LENGTH_UNIT`]. **Note**: For **x**\|\ **y**\|\ **z** with
     time data the unit is instead controlled by :term:`TIME_UNIT`. Repeat
     the option to specify multiple criteria, of which any can be met to
     produce a line break. Issue an additional **-ga** to indicate that

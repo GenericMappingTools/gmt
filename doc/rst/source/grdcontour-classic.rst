@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdcontour** *grid*
 |-J|\ *parameters*
-[ |-A|\ [**-**\ *contours*][*labelinfo*] ]
+[ |-A|\ [**n**\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours* ]
 [ |-D|\ *template* ]

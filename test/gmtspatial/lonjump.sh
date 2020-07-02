@@ -4,7 +4,7 @@
 # know if x is lon otherwise.  If range is 360 it may still fail; we issue a warning if so.
 ps=lonjump.ps
 # L1 has longitude jump across dateline but no -fg was given: No green circle
-gmt psxy L1.txt -Rk-1/1.5/150/152 -JS0/90/6i -P -BWSne -Bafg1m -W0.5p,red -K -Xc > $ps
+gmt psxy L1.txt -R-1/1.5/150/152+uk -JS0/90/6i -P -BWSne -Bafg1m -W0.5p,red -K -Xc > $ps
 gmt psxy L1.txt -R -J -O -K -Sc0.2c -Gred >> $ps
 gmt psxy L2.txt -R -J -O -K -W0.5p,blue >> $ps
 gmt psxy L2.txt -R -J -O -K -Sc0.2c -Gblue >> $ps

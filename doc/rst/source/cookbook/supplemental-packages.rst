@@ -150,6 +150,9 @@ data of any format. This package represents a new generation of tools
 and replaces the old **x_system** package. The package is maintained by
 Paul Wessel.
 
+Footnotes
+---------
+
 .. [23]
    For data bases, see `<http://topex.ucsd.edu/marine_grav/mar_grav.html>`_.
 

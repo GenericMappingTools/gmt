@@ -39,38 +39,38 @@
 #define THIS_MODULE_OPTIONS "->RV"
 
 struct X2SYS_GET_CTRL {
-	struct S2S_GET_C {	/* -C */
+	struct X2SYS_GET_C {	/* -C */
 		bool active;
 	} C;
-	struct S2S_GET_D {	/* -D */
+	struct X2SYS_GET_D {	/* -D */
 		bool active;
 	} D;
-	struct S2S_GET_F {	/* -F */
+	struct X2SYS_GET_F {	/* -F */
 		bool active;
 		char *flags;
 	} F;
-	struct S2S_GET_G {	/* -G */
+	struct X2SYS_GET_G {	/* -G */
 		bool active;
 	} G;
-	struct S2S_GET_L {	/* -L */
+	struct X2SYS_GET_L {	/* -L */
 		bool active;
 		int mode;
 		char *file;
 	} L;
-	struct S2S_GET_N {	/* -N */
+	struct X2SYS_GET_N {	/* -N */
 		bool active;
 		char *flags;
 	} N;
-	struct S2S_GET_S {	/* -S */
+	struct X2SYS_GET_S {	/* -S */
 		bool active;
 	} S;
-	struct S2S_GET_T {	/* -T */
+	struct X2SYS_GET_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_GET_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_GET_CTRL);
@@ -81,7 +81,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->F.flags);
 	gmt_M_str_free (C->L.file);
@@ -90,7 +90,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[<list>][+i]] [-N<nflags>]\n\t[%s] [%s] [%s]\n\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
@@ -114,7 +114,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -186,7 +186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
+GMT_LOCAL int x2sysget_find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
 	/* Return track id # for this leg */
 	unsigned int i;
 
@@ -197,7 +197,7 @@ GMT_LOCAL int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_get (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ] = {""}, *p = NULL;
 
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
@@ -283,7 +283,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 				gmt_chop (line);	/* Get rid of [CR]LF */
 				if (line[0] == '#' || line[0] == '\0') continue;
 				if ((p = strchr (line, '.')) != NULL) line[(size_t)(p-line)] = '\0';	/* Remove extension */
-				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
+				k = x2sysget_find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
 					GMT_Report (API, GMT_MSG_WARNING, "Leg %s not in the data base\n", line);
 					continue;

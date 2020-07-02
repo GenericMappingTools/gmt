@@ -35,6 +35,9 @@ firmware will not know about the euro).
 
    Octal codes and corresponding symbols for Symbol (left) and ZapfDingbats (right) fonts.
 
+Footnote
+--------
+
 .. [29]
    If you chose SI units during the installation then the default
    encoding is ISOLatin1+, otherwise it is Standard+.

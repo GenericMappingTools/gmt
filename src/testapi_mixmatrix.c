@@ -14,7 +14,7 @@ int main () {
 	uint64_t dim[4] = {NCOLS, NROWS, 1, 0};		/* ncols, nrows, nlayers, type */
 	unsigned int mode = GMT_SESSION_EXTERNAL;
 	struct GMT_MATRIX *M = NULL;     /* Structure to hold input datasets as matrix */
-	char input[GMT_STR16] = {""};    /* String to hold virtual input filename */
+	char input[GMT_VF_LEN] = {""};    /* String to hold virtual input filename */
 	char args[128] = {""};           /* String to hold module command arguments */
 	int coord[NM] = {1, 2, 2, 3, 3, 4};	/* 3 points */
 	char *strings[NROWS] = {"First label", "Second label", "Third label"};

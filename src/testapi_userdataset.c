@@ -180,8 +180,8 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	double diff;
 	//void *API = NULL;                           /* The API control structure */
 	struct GMT_MATRIX *M[2] = {NULL, NULL};     /* Structure to hold input/output datasets as matrix */
-	char input[GMT_STR16] = {""};               /* String to hold virtual input filename */
-	char output[GMT_STR16] = {""};              /* String to hold virtual output filename */
+	char input[GMT_VF_LEN] = {""};               /* String to hold virtual input filename */
+	char output[GMT_VF_LEN] = {""};              /* String to hold virtual output filename */
 	char args[128] = {""};            			/* String to hold module command arguments */
 	void *in_data = NULL, *out_data = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -198,7 +198,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	/* Associate our matrix container with a virtual dataset file to "read" from */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, M[GMT_IN], input);
 	if (alloc_in_GMT)	/* Request matrix container for output data to be allocated by GMT */
-	    GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, out_via, GMT_OUT, NULL, output);
+	    GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, out_via, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
 	else {	/* Preallocate array space here in the app */
 		out_data = get_array (outtype, 0);	/* Make user space for output */
  		/* Create a blank matrix container that will hold our user out_data, but pass dimensions so we know */

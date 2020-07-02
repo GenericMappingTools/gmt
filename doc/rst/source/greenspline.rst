@@ -14,7 +14,7 @@ Synopsis
 
 **gmt greenspline** [ *table* ]
 [ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
-[ |-C|\ [**n**]\ *value*\ [**+f**\ *file*] ]
+[ |-C|\ [**n**]\ *value*\ [%][**+f**\ *file*][**+m**\|\ **M**] ]
 [ |-D|\ *mode* ]
 [ |-E|\ [*misfitfile*] ]
 [ |-G|\ *grdfile* ]
@@ -99,7 +99,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**]\ *value*\ [**+f**\ *file*]
+**-C**\ [**n**]\ *value*\ [%][**+f**\ *file*][**+m**\|\ **M**]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
@@ -108,7 +108,14 @@ Optional Arguments
     eigenvalues to the specified file for further analysis.
     If a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cn** to retain only the *value* largest eigenvalues.
+    output is produced.  Specify **-Cn** to retain only the *value* largest
+    eigenvalues; append % if *value* is the percentage of eigenvalues
+    to use instead.  The two last modifiers (**+m**\|\ **M**) are only
+    available for 2-D gridding and can be used to write intermediate grids,
+    one per eigenvalue, and thus require a file name template with a C-format
+    integer specification to be given via **-G**.  The **+m** modifier will
+    write the contributions to the grid for each eigenvalue, while **+M**
+    will instead produce the cumulative sum of these contributions. 
 
 .. _-D:
 
@@ -141,7 +148,7 @@ Optional Arguments
 **-G**\ *grdfile*
     Name of resulting output file. (1) If options **-R**, **-I**, and
     possibly **-r** are set we produce an equidistant output table. This
-    will be written to stdout unless **-G** is specified. Note: for 2-D
+    will be written to stdout unless **-G** is specified. **Note**: For 2-D
     grids the **-G** option is required. (2) If option **-T** is
     selected then **-G** is required and the output file is a 2-D binary
     grid file. Applies to 2-D interpolation only. (3) If **-N** is
@@ -288,9 +295,7 @@ Optional Arguments
 
 To resample the *x*,\ *y* Gaussian random data created by :doc:`gmtmath`
 and stored in 1D.txt, requesting output every 0.1 step from 0 to 10, and
-using a minimum cubic spline, try
-
-   ::
+using a minimum cubic spline, try::
 
     gmt begin 1D
       gmt math -T0/10/1 0 1 NRAND = 1D.txt
@@ -298,9 +303,7 @@ using a minimum cubic spline, try
       gmt greenspline 1D.txt -R0/10 -I0.1 -Sc | gmt plot -Wthin
     gmt end show
 
-To apply a spline in tension instead, using a tension of 0.7, try
-
-   ::
+To apply a spline in tension instead, using a tension of 0.7, try::
 
     gmt begin 1Dt
       gmt plot -R0/10/-5/5 -JX6i/3i -B -Sc0.1 -Gblack 1D.txt
@@ -311,10 +314,8 @@ To apply a spline in tension instead, using a tension of 0.7, try
 ------------
 
 To make a uniform grid using the minimum curvature spline for the same
-Cartesian data set from Davis (1986) that is used in the GMT Technical
-Reference and Cookbook example 16, try
-
-   ::
+Cartesian data set from Table 5.11 in Davis (1986) that is used in the
+GMT Technical Reference and Cookbook example 16, try::
 
     gmt begin 2D
       gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
@@ -323,25 +324,24 @@ Reference and Cookbook example 16, try
     gmt end show
 
 To use Cartesian splines in tension but only evaluate the solution where
-the input mask grid is not NaN, try
+the input mask grid is not NaN, try::
 
-   ::
-
-    gmt greenspline table_5.11 -Tmask.nc -St0.5 -V -D1 -GWB1998.nc
+    gmt greenspline @Table_5_11.txt -Tmask.nc -St0.5 -V -D1 -GWB1998.nc
 
 To use Cartesian generalized splines in tension and return the magnitude
-of the surface slope in the NW direction, try
-
-   ::
+of the surface slope in the NW direction, try::
 
     gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45 -Gslopes.nc
+
+To use Cartesian cubic splines and evaluate the cumulative solution as a function of eigenvalue,
+using the output template with three digits for the eigenvalue, try::
+
+    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Gcontribution_%3.3d.nc -Sc -D1 -C+M
 
 Finally, to use Cartesian minimum curvature splines in recovering a
 surface where the input data is a single surface value (pt.txt) and the
 remaining constraints specify only the surface slope and direction
-(slopes.txt), use
-
-   ::
+(slopes.txt), use::
 
     gmt greenspline pt.txt -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -Aslopes.txt+f1 -Gslopes.nc
 
@@ -349,10 +349,8 @@ remaining constraints specify only the surface slope and direction
 ------------
 
 To create a uniform 3-D Cartesian grid table based on the data in
-table_5.23 in Davis (1986) that contains *x*,\ *y*,\ *z* locations and
-a measure of uranium oxide concentrations (in percent), try
-
-   ::
+Table 5.23 in Davis (1986) that contains *x*,\ *y*,\ *z* locations and
+a measure of uranium oxide concentrations (in percent), try::
 
     gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.txt
 
@@ -360,15 +358,11 @@ a measure of uranium oxide concentrations (in percent), try
 ------------------------------
 
 To recreate Parker's [1994] example on a global 1x1 degree grid,
-assuming the data are in the remote file mag_obs_1990.txt, try
-
-   ::
+assuming the data are in the remote file mag_obs_1990.txt, try::
 
     gmt greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc @mag_obs_1990.txt
 
-To do the same problem but applying tension of 0.85, use
-
-   ::
+To do the same problem but applying tension of 0.85, use::
 
     gmt greenspline -V -Rg -Sq0.85 -D3 -I1 -GWB2008.nc @mag_obs_1990.txt
 
@@ -422,7 +416,7 @@ be determined by experimentation. Generally, very smooth data (such as
 potential fields) do not require much, if any tension, while rougher
 data (such as topography) will typically interpolate better with
 moderate tension. Make sure you try a range of values before choosing
-your final result. Note: the regularized spline in tension is only
+your final result. **Note**: The regularized spline in tension is only
 stable for a finite range of *scale* values; you must experiment to find
 the valid range and a useful setting. For more information on tension
 see the references below.

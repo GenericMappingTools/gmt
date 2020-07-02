@@ -46,17 +46,18 @@ if (${srcdir} STREQUAL ${bindir})
 endif (${srcdir} STREQUAL ${bindir})
 
 # Define minimum CMake version required
-cmake_minimum_required (VERSION 2.8.7)
+cmake_minimum_required (VERSION 2.8.12)
+message ("CMake version: ${CMAKE_VERSION}")
 
 # Use NEW behavior with newer CMake releases
-foreach(p
+foreach (p
 		CMP0025 # CMake 3.0: Compiler id for Apple Clang is now AppleClang
 		CMP0026 # CMake 3.0: Disallow use of the LOCATION target property
 		CMP0058 # CMake 3.3: Ninja requires custom command byproducts to be explicit
 		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
 		)
-	if(POLICY ${p})
-		cmake_policy(SET ${p} NEW)
+	if (POLICY ${p})
+		cmake_policy (SET ${p} NEW)
 	endif()
 endforeach()
 
@@ -115,7 +116,7 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	find_program (XZ NAMES xz)
 	if (GNUTAR AND GZIP AND XZ)
 		# Targets for creating tarballs
-		string (REGEX REPLACE ".*/" "" _release_dirname "${GMT_RELEASE_PREFIX}")
+		get_filename_component (_release_dirname "${GMT_RELEASE_PREFIX}" NAME)
 		add_custom_command (OUTPUT ${_release_dirname}-src.tar
 			COMMAND ${GNUTAR} -c --owner 0 --group 0 --mode a=rX,u=rwX --force-local
 			-f ${GMT_BINARY_DIR}/${_release_dirname}-src.tar ${_release_dirname}
@@ -138,28 +139,25 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	endif (GNUTAR AND GZIP AND XZ)
 endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
-get_target_property (_name gmtlib OUTPUT_NAME)
+# Get suffix for libraries
+set (_lib_suffix ${CMAKE_SHARED_LIBRARY_SUFFIX})
+
+# Get name of GMT core library
+get_target_property (_name gmtlib RUNTIME_OUTPUT_NAME)
 get_target_property (_prefix gmtlib PREFIX)
-if (BUILD_SHARED_LIBS)
-    set (GMT_CORE_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
-else (BUILD_SHARED_LIBS)
-    set (GMT_CORE_LIB_NAME ${_prefix}${_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
-endif (BUILD_SHARED_LIBS)
+set (GMT_CORE_LIB_NAME ${_prefix}${_name}${_lib_suffix})
 
-get_target_property (_name pslib OUTPUT_NAME)
+# Get name of PSL library
+get_target_property (_name pslib RUNTIME_OUTPUT_NAME)
 get_target_property (_prefix pslib PREFIX)
-if (BUILD_SHARED_LIBS)
-    set (PSL_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
-else (BUILD_SHARED_LIBS)
-    set (PSL_LIB_NAME ${_prefix}${_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
-endif (BUILD_SHARED_LIBS)
+set (PSL_LIB_NAME ${_prefix}${_name}${_lib_suffix})
 
+# Get name of shared supplemental library
 if (BUILD_SUPPLEMENTS)
-	# Get name of shared supplemental library
-	get_target_property (_name supplib OUTPUT_NAME)
-	get_target_property (_prefix supplib PREFIX)
-	set (GMT_SUPPL_LIB_NAME ${_prefix}${_name}${CMAKE_SHARED_MODULE_SUFFIX})
-	set (SUPPL "yes [${GMT_SUPPL_LIB_NAME}]")
+	get_target_property (_name ${GMT_SUPPL_LIB_NAME} RUNTIME_OUTPUT_NAME)
+	get_target_property (_prefix ${GMT_SUPPL_LIB_NAME} PREFIX)
+	set (GMT_SUPPL_LIBRARY ${_prefix}${_name}${CMAKE_SHARED_MODULE_SUFFIX})
+	set (SUPPL "yes [${GMT_SUPPL_LIBRARY}]")
 else (BUILD_SUPPLEMENTS)
 	set (SUPPL "no")
 endif (BUILD_SUPPLEMENTS)
@@ -170,17 +168,11 @@ else (BUILD_DEVELOPER)
 	set (DEVEL "no")
 endif (BUILD_DEVELOPER)
 
-if (BUILD_SHARED_LIBS)
-	set (BUILD_MODE "shared")
-else (BUILD_SHARED_LIBS)
-	set (BUILD_MODE "static")
-endif (BUILD_SHARED_LIBS)
-
-if (EXTRA_BUILD_DIRS)
-	set (PROTO ${EXTRA_BUILD_DIRS})
-else (EXTRA_BUILD_DIRS)
+if (SUPPL_EXTRA_DIRS)
+	set (PROTO ${SUPPL_EXTRA_DIRS})
+else (SUPPL_EXTRA_DIRS)
 	set (PROTO "none")
-endif (EXTRA_BUILD_DIRS)
+endif (SUPPL_EXTRA_DIRS)
 
 if (GMT_INSTALL_MODULE_LINKS)
 	set (LINKS "yes")
@@ -198,7 +190,7 @@ message(
 	"*\n"
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
-	"*  Found DCW-GMT database     : ${DCW_PATH}\n"
+	"*  Found DCW-GMT database     : ${DCW_PATH} (${DCW_VERSION})\n"
 	"*  Found GMT data server      : ${GMT_DATA_SERVER}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
@@ -220,7 +212,6 @@ message(
 	"*  OpenMP support             : ${GMT_CONFIG_OPENMP_MESSAGE}\n"
 	"*  GLIB GTHREAD support       : ${GMT_CONFIG_GTHREAD_MESSAGE}\n"
 	"*  Build generator            : ${CMAKE_GENERATOR}\n"
-	"*  Build mode                 : ${BUILD_MODE}\n"
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"

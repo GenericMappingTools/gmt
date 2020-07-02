@@ -60,58 +60,58 @@ struct GMT_MODELTIME {	/* Hold info about modeling time */
 };
 
 struct GRDSEAMOUNT_CTRL {
-	struct A {	/* -A[<out>/<in>] */
+	struct GRDSEAMOUNT_A {	/* -A[<out>/<in>] */
 		bool active;
 		gmt_grdfloat value[2];	/* Inside and outside value for mask */
 	} A;
-	struct C {	/* -C<shape> */
+	struct GRDSEAMOUNT_C {	/* -C<shape> */
 		bool active;
 		unsigned int mode;	/* 0 = Gaussian, 1 = parabola, 2 = cone, 3 = disc */
 	} C;
-	struct D {	/* -De|f|k|M|n|u */
+	struct GRDSEAMOUNT_D {	/* -De|f|k|M|n|u */
 		bool active;
 		char unit;
 	} D;
-	struct E {	/* -E */
+	struct GRDSEAMOUNT_E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* -F[<flattening>] */
+	struct GRDSEAMOUNT_F {	/* -F[<flattening>] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} F;
-	struct G {	/* -G<output_grdfile> */
+	struct GRDSEAMOUNT_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L[<hcut>] */
+	struct GRDSEAMOUNT_L {	/* -L[<hcut>] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} L;
-	struct M {	/* -M<outlist> */
+	struct GRDSEAMOUNT_M {	/* -M<outlist> */
 		bool active;
 		char *file;
 	} M;
-	struct N {	/* -N<norm> */
+	struct GRDSEAMOUNT_N {	/* -N<norm> */
 		bool active;
 		double value;
 	} N;
-	struct Q {	/* -Qc|i/g|l */
+	struct GRDSEAMOUNT_Q {	/* -Qc|i/g|l */
 		bool active;
 		unsigned int bmode;
 		unsigned int fmode;
 	} Q;
-	struct S {	/* -S<r_scale> */
+	struct GRDSEAMOUNT_S {	/* -S<r_scale> */
 		bool active;
 		double value;
 	} S;
-	struct T {	/* -T[l]<t0>/<t1>/<d0>|n  */
+	struct GRDSEAMOUNT_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
 		bool active, log;
 		unsigned int n_times;
 		struct GMT_MODELTIME *time;	/* The current sequence of times */
 	} T;
-	struct Z {	/* -Z<base> */
+	struct GRDSEAMOUNT_Z {	/* -Z<base> */
 		bool active;
 		double value;
 	} Z;
@@ -122,7 +122,7 @@ EXTERN_MSC unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bo
 EXTERN_MSC char *gmt_modeltime_unit (unsigned int u);
 EXTERN_MSC void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct GMT_MODELTIME *T);
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDSEAMOUNT_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDSEAMOUNT_CTRL);
@@ -138,7 +138,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->M.file);
@@ -146,7 +146,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-D%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
@@ -199,7 +199,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdseamount and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -260,10 +260,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 				}
 				break;
 			case 'G':	/* Output file name or name template */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacing */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -328,7 +327,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical disc "seamounts" (more like plateaus).
 	 * Here, f is not used; ignore compiler warning. */
 
@@ -341,7 +340,7 @@ GMT_LOCAL void disc_area_volume_height (double a, double b, double h, double hc,
 	*V = *A * (*z);
 }
 
-GMT_LOCAL void para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical parabolic seamounts. */
 	double e, r2, rc2;
 
@@ -353,7 +352,7 @@ GMT_LOCAL void para_area_volume_height (double a, double b, double h, double hc,
 	*z = (*V) / (*A);
 }
 
-GMT_LOCAL void cone_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_cone_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical conical seamounts */
 
 	double e, r2;
@@ -365,7 +364,7 @@ GMT_LOCAL void cone_area_volume_height (double a, double b, double h, double hc,
 	*z = (*V) / (*A);
 }
 
-GMT_LOCAL void gaussian_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_gaussian_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical Gaussian seamounts */
 
 	bool circular = doubleAlmostEqual (a, b);
@@ -387,7 +386,7 @@ GMT_LOCAL void gaussian_area_volume_height (double a, double b, double h, double
 	*z = (*V) / (*A);
 }
 
-GMT_LOCAL double cone_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_cone_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
@@ -398,7 +397,7 @@ GMT_LOCAL double cone_solver (double in[], double f, double v, bool elliptical) 
 	return (phi);
 }
 
-GMT_LOCAL double para_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_para_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
@@ -409,7 +408,7 @@ GMT_LOCAL double para_solver (double in[], double f, double v, bool elliptical) 
 	return (phi);
 }
 
-GMT_LOCAL double gauss_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_gauss_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	int n = 0;
 	double A, B, V0, phi, phi0, r02, h0;
@@ -427,7 +426,7 @@ GMT_LOCAL double gauss_solver (double in[], double f, double v, bool elliptical)
 	return (phi);
 }
 
-GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in) {
+GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in) {
 	uint64_t col;
 	double s_scale;
 	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], s_unit;
@@ -459,7 +458,7 @@ GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdseamount (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	int error, scol, srow, scol_0, srow_0;
 
 	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0;
@@ -522,18 +521,18 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	switch (Ctrl->C.mode) {
-		case SHAPE_CONE:  shape_func = cone_area_volume_height;
-				  phi_solver = cone_solver; break;
-		case SHAPE_DISC:  shape_func = disc_area_volume_height;
+		case SHAPE_CONE:  shape_func = grdseamount_cone_area_volume_height;
+				  phi_solver = grdseamount_cone_solver; break;
+		case SHAPE_DISC:  shape_func = grdseamount_disc_area_volume_height;
 				  phi_solver = NULL; break;
-		case SHAPE_PARA:  shape_func = para_area_volume_height;
-		  		  phi_solver = para_solver; break;
-		case SHAPE_GAUS:  shape_func = gaussian_area_volume_height;
-		  		  phi_solver = gauss_solver; break;
+		case SHAPE_PARA:  shape_func = grdseamount_para_area_volume_height;
+		  		  phi_solver = grdseamount_para_solver; break;
+		case SHAPE_GAUS:  shape_func = grdseamount_gaussian_area_volume_height;
+		  		  phi_solver = grdseamount_gauss_solver; break;
 		default:
 			GMT_Report (API, GMT_MSG_WARNING, "Shape not set - defaulting to Gaussian\n");
-			shape_func = gaussian_area_volume_height;
-			phi_solver = gauss_solver;
+			shape_func = grdseamount_gaussian_area_volume_height;
+			phi_solver = grdseamount_gauss_solver;
 			break;
 	}
 
@@ -546,12 +545,20 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	else {	/* Cartesian scaling */
 		unsigned int s_unit;
-		s_unit = gmt_check_scalingopt (GMT, 'D', Ctrl->D.unit, unit_name);
+		int is;
+		if ((is = gmt_check_scalingopt (GMT, 'D', Ctrl->D.unit, unit_name)) == -1) {
+			Return (GMT_PARSE_ERROR);
+		}
+		else
+			s_unit = (unsigned int)is;
 		/* We only need inv_scale here which scales input data in these units to m */
-		gmt_init_scales (GMT, s_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+		if ((error = gmt_init_scales (GMT, s_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
+			Return (error);
+		}
 		d_mode = 0, unit = 'X';	/* Select Cartesian distances */
 	}
-	gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 	V = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	V_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	h_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
@@ -606,7 +613,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
-				if (parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
+				if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
 				for (col = 0; col < n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
 				if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 					a = in[3];		/* Semi-major axis */
@@ -683,7 +690,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
-					if (parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
+					if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
 
 					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
 					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */

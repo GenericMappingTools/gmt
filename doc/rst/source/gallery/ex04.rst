@@ -44,5 +44,8 @@ the resulting image compresses. A higher value for dpi in **-Qc** would
 have resulted in a much larger output file. The CPTs were taken
 from Example :ref:`example_02`.
 
+Footnote
+~~~~~~~~
+
 .. [1]
    These data are available from NCEI (www.ncei.noaa.gov).

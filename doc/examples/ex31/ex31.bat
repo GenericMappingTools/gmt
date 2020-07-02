@@ -5,6 +5,9 @@ REM GMT modules:	set, coast, plot, text, legend
 REM
 
 gmt begin ex31
+	REM Set FONTPATH used in image conversion
+	REM %~dp0 is the path to the current batch file
+	gmt set PS_CONVERT="C-sFONTPATH=%~dp0fonts"
 	REM create file PSL_custom_fonts.txt in current working directory
 	REM and add PostScript font names of Linux Biolinum and Libertine
 	echo LinBiolinumO   0.700 0 > PSL_custom_fonts.txt
@@ -17,7 +20,7 @@ gmt begin ex31
 	REM common settings
 	gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p ^
 		MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-5 ^
-		FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
+		FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel,tick_extend
 
 	REM map of countries
 	gmt coast -R-7/31/64/66+r -JL15/50/40/60/16c -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 -Slightblue -Glightgreen -W0.25p -N1/1p,white

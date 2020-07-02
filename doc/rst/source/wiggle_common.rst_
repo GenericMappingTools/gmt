@@ -9,9 +9,9 @@ that two consecutive (*x*,\ *y*) points define the local distance axis,
 and the local *z* axis is then perpendicular to the distance axis,
 forming a right-handed coordinate system. The
 user may set a preferred positive anomaly plot direction, and if the
-positive normal is outside the plus/minus 90 degree window around the
+positive normal is outside the ±90 degree window around the
 preferred direction, then 180 degrees are added to the direction. Either
-the positive or the negative wiggle may be shaded.
+the positive or the negative wiggle (or both) may be shaded.
 
 Required Arguments
 ------------------
@@ -71,24 +71,24 @@ Optional Arguments
     Append **+w** followed by the *length* or the scale bar in data (*z*) units.
     By default, the anchor point on the scale is assumed to be the middle left corner (ML), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
     Move scale label to the left side with **+al** [Default is to the right of the scale].
     Append **+l** to set the *z* unit label that is used in the scale label [no unit].
-    The **FONT\_ANNOT\_PRIMARY** is used for the font setting.
+    The :term:`FONT_ANNOT_PRIMARY` is used for the font setting.
 
 .. _-F:
 
 **-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the vertical scale bar using
-    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    :term:`MAP_FRAME_PEN`; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the scale panel [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
     x- and y-direction, or individual side spacings between scale and border.
     Append **+i** to draw a secondary, inner border as well. We use a uniform
-    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    *gap* between borders of 2\ **p** and the :term:`MAP_DEFAULT_PEN`
     unless other values are specified. Append **+r** to draw rounded
     rectangular borders instead, with a 6\ **p** corner radius. You can
     override this radius by appending another value. Finally, append

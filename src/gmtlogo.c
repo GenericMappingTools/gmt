@@ -165,38 +165,38 @@ static float gmt_letters[GMT_N_LETTERS][2] = {	/* The G, M, T polygons */
 /* Control structure for gmtlogo */
 
 struct GMTLOGO_CTRL {
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[+j<justify>][+o<dx>[/<dy>]] */
+	struct GMTLOGO_D {	/* -D[g|j|n|x]<refpoint>+w<width>[+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
 		double width;
 		int justify;
 	} D;
-	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct GMTLOGO_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
 	} F;
-	struct S {	/* -S means only plot logo and not title below */
+	struct GMTLOGO_S {	/* -S means only plot logo and not title below */
 		bool active;
 		unsigned int mode;	/* 0 = draw label, 1 draw URL, 2 no label */
 	} S;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTLOGO_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GMTLOGO_CTRL);
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free_refpoint (GMT, &C->D.refpoint);
 	gmt_M_free (GMT, C->F.panel);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the gmtlogo synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -223,7 +223,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtlogo and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -247,7 +247,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg, 'D')) == NULL)
 					n_errors++;	/* Failed basic parsing */
 				else {	/* args are [+w<width>][+j<justify>][+o<dx>[/<dy>]] */
-					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jow")) n_errors++;
+					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jow", GMT_MSG_ERROR)) n_errors++;
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else BL */
@@ -294,7 +294,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 	}
 	if (Ctrl->D.width == 0.0) Ctrl->D.width = 2.0;	/* Default width */
 	if (Ctrl->D.refpoint && Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
-		static char *kind = "gjJnx";	/* The five types of refpoint specifications */
+		static char *kind = GMT_REFPOINT_CODES;	/* The five types of refpoint specifications */
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Option -D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
@@ -306,7 +306,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
-int GMT_gmtlogo (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	/* High-level function that implements the gmtlogo task */
 	int error, fmode;
 
@@ -315,7 +315,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	double scale, y, dim[2];
 
-	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_STR16] = {""};
+	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_VF_LEN] = {""};
 
 	struct GMT_FONT F;
 	struct GMT_MATRIX *M = NULL;
@@ -358,14 +358,14 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
-		PSL = gmt_plotinit (GMT, options);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (API->error);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust to BL corner */
-		PSL = gmt_plotinit (GMT, options);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (API->error);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
@@ -420,10 +420,10 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Allocate a matrix container for holding the GMT-matrix coordinates */
 	par[0] = 2;	par[1] = GMT_N_LETTERS;
-	if ((M = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POINT, GMT_CONTAINER_ONLY, par, NULL, NULL, 0, GMT_IS_ROW_FORMAT, NULL)) == NULL)
+	if ((M = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POLY, GMT_CONTAINER_ONLY, par, NULL, NULL, 0, GMT_IS_ROW_FORMAT, NULL)) == NULL)
 		exit (EXIT_FAILURE);
 	GMT_Put_Matrix (API, M, GMT_FLOAT, 0, gmt_letters);	/* Hook in our static float matrix */
-	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POLY, GMT_IN, M, file);	/* Open matrix for reading */
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, M, file);	/* Open matrix for reading */
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40 --GMT_HISTORY=false",
 		file, scale * 1.55, c_gmt_shadow);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", cmd);

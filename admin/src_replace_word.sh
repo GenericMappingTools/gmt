@@ -15,6 +15,10 @@ if [ $# -ne 2 ]; then
 	echo "usage: admin/src_replace_word.sh oldword newword"
 	exit 1
 fi
+
+# Set temporary directory
+TMPDIR=${TMPDIR:-/tmp}
+
 # 1. Find all source files with word $1 in them
 find -E src \
 	-regex '.*\.(c|h|in)' \

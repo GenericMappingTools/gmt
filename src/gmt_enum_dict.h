@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 
 /*
- * Include file for getting GMT API enum codes programmatically via GMT_API_enum ()
+ * Include file for getting GMT API enum codes programmatically via GMT_Get_Enum ()
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
@@ -28,9 +28,9 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 230
+#define GMT_N_API_ENUMS 242
 
-GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
+static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
 	{"GMT_ADD_EXISTING", 16},
 	{"GMT_ADD_FILES_ALWAYS", 2},
@@ -83,6 +83,9 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_FFT_INV", 1},
 	{"GMT_FFT_REAL", 0},
 	{"GMT_FGD", 1},
+	{"GMT_FILE_CHECK", 2},
+	{"GMT_FILE_LOCAL", 0},
+	{"GMT_FILE_REMOTE", 1},
 	{"GMT_FLOAT", 8},
 	{"GMT_GRID_COMMAND_LEN320", 320},
 	{"GMT_GRID_DEFAULT_REG", 1024},
@@ -108,6 +111,8 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_HEADER_OFF", 0},
 	{"GMT_HEADER_ON", 1},
 	{"GMT_HSV", 2},
+	{"GMT_IMAGE_ALPHA_LAYER", 8192},
+	{"GMT_IMAGE_NO_INDEX", 4096},
 	{"GMT_IN", 0},
 	{"GMT_INT", 4},
 	{"GMT_IO", 2},
@@ -135,6 +140,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_GRID", 1},
 	{"GMT_IS_HOLE", 1},
 	{"GMT_IS_LINE", 2},
+	{"GMT_IS_LP", 6},
 	{"GMT_IS_MATRIX", 5},
 	{"GMT_IS_NONE", 16},
 	{"GMT_IS_OUTPUT", 1024},
@@ -157,20 +163,26 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_MODULE_CLASSIC", -5},
 	{"GMT_MODULE_CMD", 0},
 	{"GMT_MODULE_EXIST", -3},
+	{"GMT_MODULE_GROUP", 1},
+	{"GMT_MODULE_HELP", 0},
+	{"GMT_MODULE_KEYS", 0},
 	{"GMT_MODULE_LIST", -4},
 	{"GMT_MODULE_PURPOSE", -2},
+	{"GMT_MODULE_SHOW_CLASSIC", 2},
+	{"GMT_MODULE_SHOW_MODERN", 1},
 	{"GMT_MODULE_SYNOPSIS", -6},
 	{"GMT_MODULE_USAGE", -7},
-	{"GMT_MSG_COMPAT", 5},
-	{"GMT_MSG_DEBUG", 6},
-	{"GMT_MSG_ERROR", 1},
-	{"GMT_MSG_INFORMATION", 4},
-	{"GMT_MSG_LONG_VERBOSE", 5},
-	{"GMT_MSG_NORMAL", 1},
+	{"GMT_MSG_COMPAT", 6},
+	{"GMT_MSG_DEBUG", 7},
+	{"GMT_MSG_ERROR", 2},
+	{"GMT_MSG_INFORMATION", 5},
+	{"GMT_MSG_LONG_VERBOSE", 6},
+	{"GMT_MSG_NORMAL", 2},
+	{"GMT_MSG_NOTICE", 1},
 	{"GMT_MSG_QUIET", 0},
-	{"GMT_MSG_TICTOC", 3},
-	{"GMT_MSG_VERBOSE", 4},
-	{"GMT_MSG_WARNING", 2},
+	{"GMT_MSG_TICTOC", 4},
+	{"GMT_MSG_VERBOSE", 5},
+	{"GMT_MSG_WARNING", 3},
 	{"GMT_NAN", 2},
 	{"GMT_NOERROR", 0},
 	{"GMT_NOTSET", -1},
@@ -208,7 +220,6 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_SESSION_NORMAL", 0},
 	{"GMT_SESSION_RUNMODE", 16},
 	{"GMT_SHORT", 2},
-	{"GMT_STR16", 16},
 	{"GMT_STRICT_CONVERSION", 1024},
 	{"GMT_SYNOPSIS", 1},
 	{"GMT_TBL", 0},
@@ -222,6 +233,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ULONG", 7},
 	{"GMT_USAGE", 0},
 	{"GMT_USHORT", 3},
+	{"GMT_VF_LEN", 32},
 	{"GMT_VIA_CHAR", 100},
 	{"GMT_VIA_DOUBLE", 1000},
 	{"GMT_VIA_FLOAT", 900},

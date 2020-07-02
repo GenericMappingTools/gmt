@@ -528,6 +528,9 @@ with the complete illustration presented as Figure
    in particular New York. Should a catastrophic landslide occur it is possible
    that New York will experience a large tsunami about 8 hours after the event.
 
+Footnotes
+---------
+
 .. [36]
    or whatever planet we are dealing with.
 

@@ -88,7 +88,7 @@ enum GMT_mp_cols {	/* Index into the extra and ecol_type arrays */
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	bool used[8];	/* Used to keep track of which items are used by -A,G,L,Z */
-	struct MAPPRJ_A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
+	struct MAPPROJECT_A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
 		bool active;
 		bool azims;
 		bool orient;	/* true if we want orientations, not azimuths */
@@ -97,63 +97,63 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		unsigned int mode;
 		double lon, lat;	/* Fixed point of reference */
 	} A;
-	struct MAPPRJ_C {	/* -C[<false_easting>/<false_northing>] */
+	struct MAPPROJECT_C {	/* -C[<false_easting>/<false_northing>] */
 		bool active;
 		bool shift;
 		double easting, northing;	/* Shifts */
 	} C;
-	struct MAPPRJ_D {	/* -D<c|i|p> */
+	struct MAPPROJECT_D {	/* -D<c|i|p> */
 		bool active;
 		char unit;
 	} D;
-	struct MAPPRJ_E {	/* -E[<datum>] */
+	struct MAPPROJECT_E {	/* -E[<datum>] */
 		bool active;
 		struct GMT_DATUM datum;	/* Contains a, f, xyz[3] */
 	} E;
-	struct MAPPRJ_F {	/* -F[k|m|n|i|c|p] */
+	struct MAPPROJECT_F {	/* -F[k|m|n|i|c|p] */
 		bool active;
 		char unit;
 	} F;
-	struct MAPPRJ_G {	/* -G<lon0>/<lat0>[+a][+i][+u[+|-]d|e|f|k|m|M|n|s|c|C][+v] */
+	struct MAPPROJECT_G {	/* -G<lon0>/<lat0>[+a][+i][+u[+|-]d|e|f|k|m|M|n|s|c|C][+v] */
 		bool active;
 		unsigned int mode;	/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
 		unsigned int sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		double lon, lat;	/* Fixed point of reference */
 		char unit;
 	} G;
-	struct MAPPRJ_I {	/* -I */
+	struct MAPPROJECT_I {	/* -I */
 		bool active;
 	} I;
-	struct MAPPRJ_L {	/* -L<line.xy>[/<d|e|f|k|m|M|n|s|c|C>] */
+	struct MAPPROJECT_L {	/* -L<line.xy>[/<d|e|f|k|m|M|n|s|c|C>] */
 		bool active;
 		unsigned int mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
 		unsigned int sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		char *file;	/* Name of file with lines */
 		char unit;
 	} L;
-	struct MAPPRJ_N {	/* -N */
+	struct MAPPROJECT_N {	/* -N */
 		bool active;
 		unsigned int mode;
 	} N;
-	struct MAPPRJ_Q {	/* -Q[e|d] */
+	struct MAPPROJECT_Q {	/* -Q[e|d] */
 		bool active;
 		unsigned int mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
 	} Q;
-	struct MAPPRJ_S {	/* -S */
+	struct MAPPROJECT_S {	/* -S */
 		bool active;
 	} S;
-	struct MAPPRJ_T {	/* -T[h]<from>[/<to>] */
+	struct MAPPROJECT_T {	/* -T[h]<from>[/<to>] */
 		bool active;
 		bool heights;	/* True if we have heights */
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
-	struct MAPPRJ_W {	/* -W[w|h|j<code>|n<rx/ry>|g<lon/lat>|x<x/y>] */
+	struct MAPPROJECT_W {	/* -W[w|h|j<code>|n<rx/ry>|g<lon/lat>|x<x/y>] */
 		bool active;
 		unsigned int mode;	/* See GMT_mp_Wcodes above */
 		struct GMT_REFPOINT *refpoint;
 	} W;
-	struct MAPPRJ_Z {	/* -Z[<speed>][+c][+f][+i][+t<epoch>] */
+	struct MAPPROJECT_Z {	/* -Z[<speed>][+c][+f][+i][+t<epoch>] */
 		bool active;
 		bool formatted;		/* Format duration per ISO 8601 specification */
 		unsigned int mode;	/* 1 = incremental time, 2 absolute time since epoch, 3 = both */
@@ -162,7 +162,7 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MAPPROJECT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct MAPPROJECT_CTRL);
@@ -179,13 +179,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->L.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
@@ -265,7 +265,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL char set_unit_and_mode (struct GMTAPI_CTRL *API, char *arg, unsigned int *mode) {
+GMT_LOCAL char mapproject_set_unit_and_mode (struct GMTAPI_CTRL *API, char *arg, unsigned int *mode) {
 	unsigned int k = 0;
 	*mode = GMT_GREATCIRCLE;	/* Default is great circle distances */
 	if (strchr ("-+", arg[0])) {
@@ -288,7 +288,7 @@ GMT_LOCAL char set_unit_and_mode (struct GMTAPI_CTRL *API, char *arg, unsigned i
 	return (arg[k]);
 }
 
-GMT_LOCAL unsigned int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
+GMT_LOCAL unsigned int mapproject_old_L_parser (struct GMTAPI_CTRL *API, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
 	/* [-L<table>[/[+|-]<unit>]][+] Note that [+|-] is now deprecated in GMT 6 (use -j instead) */
 	int k, slash;
 	gmt_M_unused(API);
@@ -323,7 +323,7 @@ GMT_LOCAL unsigned int old_L_parse (struct GMTAPI_CTRL *API, char *arg, struct M
 	return 0;
 }
 
-GMT_LOCAL bool is_old_G (struct GMT_CTRL *GMT, char *arg) {
+GMT_LOCAL bool mapproject_is_old_G_syntax (struct GMT_CTRL *GMT, char *arg) {
 	/* Return true if we find:  -G[<lon0/lat0>/][[+|-]unit][+|-]
 	 * Return false if we find: -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */
 	size_t len = strlen (arg);
@@ -346,7 +346,7 @@ GMT_LOCAL bool is_old_G (struct GMT_CTRL *GMT, char *arg) {
 	return false;
 }
 
-GMT_LOCAL unsigned int old_G_parse (struct GMT_CTRL *GMT, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
+GMT_LOCAL unsigned int mapproject_old_G_parser (struct GMT_CTRL *GMT, char *arg, struct MAPPROJECT_CTRL *Ctrl) {
 	/* The [-|=] way to select spherical distance calculation mode is now deprecated in GMT 6 */
 	int n;
 	unsigned int n_slash, k, n_errors = 0;
@@ -392,22 +392,22 @@ GMT_LOCAL unsigned int old_G_parse (struct GMT_CTRL *GMT, char *arg, struct MAPP
 	}
 	else if (arg[last] == '+') {	/* Got -G[[+|-]units]+ */
 		Ctrl->G.mode = GMT_MP_PAIR_DIST | GMT_MP_INCR_DIST;
-		Ctrl->G.unit = set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
+		Ctrl->G.unit = mapproject_set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
 	}
 	else if (arg[last] == '-') {	/* Got -G[[+|-]units]- */
 		Ctrl->G.mode |= GMT_MP_INCR_DIST;
-		Ctrl->G.unit = set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
+		Ctrl->G.unit = mapproject_set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
 	}
 	else {				/* Got -G[[+|-]units] only */
 		Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
-		Ctrl->G.unit = set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
+		Ctrl->G.unit = mapproject_set_unit_and_mode (GMT->parent, arg, &Ctrl->G.sph);	/* Unit specification */
 	}
 	if (Ctrl->G.unit == 'c') Ctrl->G.unit = 'X';	/* Internally, this is Cartesian data and distances */
 	if (Ctrl->G.mode == GMT_MP_VAR_POINT) Ctrl->G.mode |= GMT_MP_CUMUL_DIST;	/* Default */
 	return (n_errors);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mapproject and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -426,7 +426,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -504,8 +504,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'G':	/* Syntax. Old: -G[<lon0/lat0>][/[+|-]unit][+|-]  New: -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */
 				Ctrl->G.active = true;
-				if (is_old_G (GMT, opt->arg))
-					n_errors += old_G_parse (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
+				if (mapproject_is_old_G_syntax (GMT, opt->arg))
+					n_errors += mapproject_old_G_parser (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
 				else {	/* -G[<lon0/lat0>][+i][+a][+u[+|-]<unit>][+v] */
 					/* Note [+|-] is now deprecated in GMT 6; use -je instead */
 					/* Watch out for +u+<unit> where the + in front of unit indicates ellipsoidal calculations.  This unfortunate syntax
@@ -513,7 +513,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					 * to avoid parsing problems. */
 					n_slash = gmt_count_char (GMT, opt->arg, '/');
 					if ((q = strstr (opt->arg, "+u")) && q[2] == '+') q[2] = '*';
-					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv")) n_errors++;
+					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv", GMT_MSG_ERROR)) n_errors++;
 					if ((p = gmt_first_modifier (GMT, opt->arg, "aiuv")) == NULL) {	/* If just -G given then we get here; default to cumulate distances in meters */
 						Ctrl->G.mode |= GMT_MP_VAR_POINT;
 						Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
@@ -572,12 +572,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] */
 				Ctrl->L.active = true;
 				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
-					n_errors += old_L_parse (API, opt->arg, Ctrl);
+					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
-					if (gmt_validate_modifiers (GMT, opt->arg, 'L', "up")) n_errors++;
-					Ctrl->L.file = gmt_get_filename (opt->arg);
+					if (gmt_validate_modifiers (GMT, opt->arg, 'L', "up", GMT_MSG_ERROR)) n_errors++;
+					Ctrl->L.file = gmt_get_filename (API, opt->arg, "up");
 					if (gmt_get_modifier (opt->arg, 'u', txt_a))
-						Ctrl->L.unit = set_unit_and_mode (API, txt_a, &Ctrl->L.sph);
+						Ctrl->L.unit = mapproject_set_unit_and_mode (API, txt_a, &Ctrl->L.sph);
 					if (gmt_get_modifier (opt->arg, 'p', txt_a))
 						Ctrl->L.mode = GMT_MP_GIVE_FRAC;
 				}
@@ -587,7 +587,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && gmt_M_is_cartesian (GMT, GMT_IN))
 					gmt_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
-				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				Ctrl->used[MP_COL_DS] = Ctrl->used[MP_COL_XN] = Ctrl->used[MP_COL_YN] = true;	/* Output dist, xnear, ynear */
 				if (Ctrl->L.unit == 'C') will_need_RJ = true;	/* Since unit C is projected distances */
 				break;
@@ -764,7 +764,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mapproject (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	int ks, n_fields, two, way, error = 0, fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 
 	bool line_start = true, do_geo_conv = false, double_whammy = false, first = true;
@@ -846,22 +846,35 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
-	if (Ctrl->D.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
+	if (Ctrl->D.active) {
+		if ((error = gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D")))
+			Return (error);
+	}
 	if (Ctrl->T.active) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
 	if (Ctrl->A.active) {
 		way = gmt_M_is_geographic (GMT, GMT_IN) ? 2 + Ctrl->A.geodesic : 0;
-		proj_type = gmt_init_distaz (GMT, (way) ? 'k' : 'X', way, GMT_MAP_DIST);
+		if ((proj_type = gmt_init_distaz (GMT, (way) ? 'k' : 'X', way, GMT_MAP_DIST)) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 	}
 	if (Ctrl->G.active) {
 		way = gmt_M_is_geographic (GMT, GMT_IN) ? Ctrl->G.sph : 0;
-		proj_type = gmt_init_distaz (GMT, Ctrl->G.unit, way, GMT_MAP_DIST);
+		if ((proj_type = gmt_init_distaz (GMT, Ctrl->G.unit, way, GMT_MAP_DIST)) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 	}
 	if (Ctrl->L.active) {
 		way = gmt_M_is_geographic (GMT, GMT_IN) ? Ctrl->L.sph: 0;
-		proj_type = gmt_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST);
+		if ((proj_type = gmt_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST)) == GMT_NOT_A_VALID_TYPE)
+			Return (GMT_NOT_A_VALID_TYPE);
 	}
 	if (Ctrl->E.active) gmt_ECEF_init (GMT, &Ctrl->E.datum);
-	if (Ctrl->F.active) unit = gmt_check_scalingopt (GMT, 'F', Ctrl->F.unit, scale_unit_name);
+	if (Ctrl->F.active) {
+		int is;
+		if ((is = gmt_check_scalingopt (GMT, 'F', Ctrl->F.unit, scale_unit_name)) == -1) {
+			Return (GMT_PARSE_ERROR);
+		}
+		else
+			unit = (unsigned int)is;
+	}
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active || Ctrl->Z.active);
 	gmt_M_memset (extra, MP_COL_N, double);
@@ -895,7 +908,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	else
 		datum_conv_only = Ctrl->T.active;
 
-	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+	if ((error = gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
+		Return (error);
+	}
 
 	if (Ctrl->G.mode) {	/* save output format in case -J changes it */
 		save[GMT_X] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : gmt_M_type (GMT, GMT_OUT, GMT_X);
@@ -1078,7 +1093,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -L files */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -L files */
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1086,7 +1101,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)Lin->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -L file might have turned it on [should be determined below] */
 		xyline = Lin->table[0];			/* Can only be one table since we read a single file */
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
@@ -1114,6 +1129,13 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if ((gmt_M_is_geographic (GMT, GMT_IN) || Ctrl->E.active) && Ctrl->I.active) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
 		gmt_set_cartesian (GMT, GMT_IN);
+	}
+	else if (GMT->current.proj.proj4_is_cart[0]) {	/* Proj4 used and starting ref system is not geog */
+		gmt_set_cartesian(GMT, GMT_IN);
+		if (GMT->current.proj.proj4_is_cart[1])
+			gmt_set_cartesian(GMT, GMT_OUT);
+		else
+			gmt_set_geographic(GMT, GMT_OUT);
 	}
 	else if (datum_conv_only || Ctrl->N.active) {	/* Both in and out are geographic */
 		gmt_set_geographic (GMT, GMT_IN);
@@ -1199,6 +1221,10 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (In == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
 			GMT_Report (API, GMT_MSG_ERROR, "Input pointer is NULL where it should not be, aborting\n");
 			Return (GMT_PTR_IS_NULL);
+		}
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
 		}
 		if (first) {
 			unsigned int n_in_cols = (unsigned int)gmt_get_cols (GMT, GMT_IN);
