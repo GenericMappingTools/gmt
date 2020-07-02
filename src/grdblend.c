@@ -939,6 +939,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	out_case = (Ctrl->W.active) ? 1 + Ctrl->W.mode : 0;
 
 	Grid->header->z_min = DBL_MAX;	Grid->header->z_max = -DBL_MAX;	/* These will be updated in the loop below */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) gmt_set_geographic (GMT, GMT_OUT);	/* Inherit the flavor of the input */
 	wrap_x = (gmt_M_is_geographic (GMT, GMT_OUT));	/* Periodic geographic grid */
 	if (wrap_x) nx_360 = urint (360.0 * HH->r_inc[GMT_X]);
 
