@@ -33,6 +33,8 @@
 #ifndef GMT_RESOURCES_H
 #define GMT_RESOURCES_H
 
+#define GMT_BACKWARDS_API	/* Try to be backwards compatible with API naming for now */
+
 #ifdef DOUBLE_PRECISION_GRID
 /* Build GMT using double-precicion for grids.  Untested and caveat emptor */
 typedef double gmt_grdfloat;
@@ -425,6 +427,10 @@ struct GMT_GRID_HEADER {
 	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
 	int ProjRefEPSG;                /* To store a referencing system EPSG code */
 	void *hidden;                    /* Lower-level information for GMT use only */
+#ifdef GMT_BACKWARDS_API
+	uint32_t nx;
+	uint32_t ny;
+#endif
 };
 
 /* grd is stored in rows going from west (xmin) to east (xmax)

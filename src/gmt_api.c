@@ -5450,6 +5450,11 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 
 	return (G_obj);	/* Pass back out what we have so far */
+
+#ifdef GMT_BACKWARDS_API
+	G_obj->header->nx = G_obj->header->n_columns;
+	G_obj->header->ny = G_obj->header->n_rows;
+#endif
 }
 
 /*! Writes out a single grid to destination */
