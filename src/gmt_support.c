@@ -1507,7 +1507,7 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 			a[kk++] = 0.0;
 		}
 	}
-	else if (deriv == 1) {	/* Take second derivative and update coefficients */
+	else if (deriv == 2) {	/* Take second derivative and update coefficients */
 		for (k = kk = 0; k < n1; k++) {	/* The internal segments */
 			a[kk++] *= 6;
 			a[kk++] *= 6;
@@ -1630,10 +1630,12 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				dx1 = x[j+1] - u[i];
 				dx2 = u[i] - x[j];
 				v[i] = c[4*j] * pow (dx1, 3.0) + c[4*j+1] * pow (dx2, 3.0) + c[4*j+2] * dx1 + c[4*j+3] * dx2;
+				break;
 			case GMT_SPLINE_SMOOTH+10:	/* Derivative of smoothing spline */
 				dx1 = x[j+1] - u[i];
 				dx2 = u[i] - x[j];
 				v[i] = c[4*j] * pow (dx1, 2.0) + c[4*j+1] * pow (dx2, 2.0) + c[4*j+2];
+				break;
 			case GMT_SPLINE_SMOOTH+20:	/* Curvature of smoothing spline */
 				dx1 = x[j+1] - u[i];
 				dx2 = u[i] - x[j];

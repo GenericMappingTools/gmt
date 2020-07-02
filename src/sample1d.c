@@ -224,8 +224,8 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 						n_errors++;
 						break;
 				}
-				if (strstr (opt->arg, "+1")) Ctrl->F.type = 1;	/* Want first derivative */
-				else if (strstr (opt->arg, "+2")) Ctrl->F.type = 2;	/* Want second derivative */
+				if (strstr (&opt->arg[1], "+1")) Ctrl->F.type = 1;	/* Want first derivative */
+				else if (strstr (&opt->arg[1], "+2")) Ctrl->F.type = 2;	/* Want second derivative */
 				break;
 			case 'I':	/* Deprecated, but keep pointer to the arguments so we can build -T argument */
 				i_arg = opt->arg;
