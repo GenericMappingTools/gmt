@@ -198,6 +198,8 @@ message(
 	"*  Curl include dir           : ${CURL_INCLUDE_DIR}\n"
 	"*  GDAL library               : ${GDAL_LIBRARY}\n"
 	"*  GDAL include dir           : ${GDAL_INCLUDE_DIR}\n"
+	"*  GEOS library               : ${GEOS_LIBRARY}\n"
+	"*  GEOS include dir           : ${GEOS_INCLUDE_DIR}\n"
 	"*  FFTW library               : ${FFTW3F_LIBRARY}\n"
 	"*  FFTW threads library       : ${FFTW3F_THREADS_LIBRARY}\n"
 	"*  FFTW include dir           : ${FFTW3_INCLUDE_DIR}\n"

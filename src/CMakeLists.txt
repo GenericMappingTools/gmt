@@ -152,6 +152,15 @@ if (GDAL_FOUND)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${GDAL_LIBRARIES})
 endif (GDAL_FOUND)
 
+if (NOT DEFINED GMT_EXCLUDE_GEOS)
+	find_package (GEOS)
+endif (NOT DEFINED GMT_EXCLUDE_GEOS)
+if (GEOS_FOUND OR GEOS_LIBRARY)			# Because it fails to find GEOS on Win so I rely on ConfigUser.cmake settings
+	set (HAVE_GEOS TRUE CACHE INTERNAL "System has GEOS")
+	include_directories (${GEOS_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${GEOS_LIBRARY})
+endif (GEOS_FOUND OR GEOS_LIBRARY)
+
 if (NOT DEFINED GMT_EXCLUDE_PCRE)
 	find_package (PCRE)
 endif (NOT DEFINED GMT_EXCLUDE_PCRE)
