@@ -153,6 +153,25 @@ Notes
 
 The smoothing spline requires a fit parameter *p* that allows for the trade off between an
 exact interpolation (fitting the data exactly; *p* = 0) to minimizing curvature (very large *p*).
+Specifically, we seek to minimize
+
+.. math::
+
+    F_p (S)= K (S) + p E (S), \quad p > 0,
+
+where the misfit is evaluated as
+
+.. math::
+
+    E (S)= \sum^n_{i=1} \left [ \frac{S(t_i) - y_i}{\sigma_i} \right ]^2
+
+and the curvature is given by the integral over the domain of the curve
+
+.. math::
+
+    K (S) = \int ^b _a [S''(t) ]^2 dt + p \sum^n_{i=1}.
+
+
 Trial and error may be needed to select a suitable *p*.
 
 Examples
