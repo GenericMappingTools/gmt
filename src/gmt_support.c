@@ -1456,10 +1456,10 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 		kkt = k * n2 + k;	/* Diagonal index in transpose */
 		D[kk] = Dt[kkt] = inv_dtau[k];
 		D[kk+1] = Dt[kkt+n2] = -(inv_dtau[k] + inv_dtau[k+1]);
-		D[kk+2] = Dt[kk+2*n2] = inv_dtau[k+1];
+		D[kk+2] = Dt[kkt+2*n2] = inv_dtau[k+1];
 		K[kkt] = Dt[kkt] * lambda[k];
 		K[kkt+n2] = Dt[kkt+n2] * lambda[k+1];
-		K[kk+2*n2] = Dt[kk+2*n2] * lambda[k+2];
+		K[kkt+2*n2] = Dt[kkt+2*n2] * lambda[k+2];
 	}
 	/* Need to compute Q = D * K */
 	Q = gmt_M_memory (GMT, NULL, n2*n2, double);
@@ -1494,6 +1494,7 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 END_IT:
 	gmt_M_free (GMT, c);
 	gmt_M_free (GMT, s);
+	gmt_M_free (GMT, lambda);
 	gmt_M_free (GMT, dtau);
 	gmt_M_free (GMT, inv_dtau);
 	gmt_M_free (GMT, Q);

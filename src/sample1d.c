@@ -50,10 +50,11 @@ struct SAMPLE1D_CTRL {
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct SAMPLE1D_F {	/* -Fl|a|c[1|2] */
+	struct SAMPLE1D_F {	/* -Fl|a|c[1|2]|n|s<p> */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
+		double fit;
 	} F;
 	struct SAMPLE1D_N {	/* -N<time_col> */
 		bool active;

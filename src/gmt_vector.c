@@ -1224,7 +1224,7 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
 extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* b, int *ne, double* beta, double* c, int* nf);
 
 void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C) {
-#ifdef HAVE_LAPACK
+#ifdef HAVE_LAPACKX
 	double one = 1.0, zero = 0.0;
 	int na, nb, nc, nd, ne, nf;
 	char tr[2] = {'t', '\0'};	/* If B is a vector we must switch to n */
