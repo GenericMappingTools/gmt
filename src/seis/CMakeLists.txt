@@ -27,6 +27,6 @@
 
 set (SUPPL_NAME seis)
 set (SUPPL_HEADERS meca.h utilmeca.h sacio.h)
-set (SUPPL_PROGS_SRCS psmeca.c pspolar.c pscoupe.c pssac.c)
+set (SUPPL_PROGS_SRCS psmeca.c pspolar.c pscoupe.c pssac.c shake.c vs30.c)
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} utilmeca.c sacio.c)
 set (SUPPL_EXAMPLE_FILES README.seis)
