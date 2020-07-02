@@ -385,6 +385,11 @@ enum GMT_enum_spline {
 	GMT_SPLINE_NN,         /* Nearest neighbor */
 	GMT_SPLINE_NONE};      /* No spline set */
 
+/*! Various 1-D interpolation derivatives */
+enum GMT_enum_derivative {
+	GMT_SPLINE_SLOPE = 10,		 /* Spline 1st derivative*/
+	GMT_SPLINE_CURVATURE = 20};   /* Spline 2nd derivative */
+
 enum GMT_enum_extrap {
 	GMT_EXTRAPOLATE_NONE = 0,   /* No extrapolation; set to NaN outside bounds */
 	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */

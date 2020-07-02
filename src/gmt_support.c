@@ -1363,9 +1363,9 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 }
 
 unsigned int gmt_set_interpolate_mode (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type) {
-	/* Convenience function that hides away the embedding of mode and type via the 10 factor */
+	/* Convenience function that hides away the embedding of mode and type via the GMT_SPLINE_SLOPE factor */
 	gmt_M_unused (GMT);
-	return (mode + 10 * type);
+	return (mode + GMT_SPLINE_SLOPE * type);
 }
 
 /*! . */
@@ -1600,30 +1600,30 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 			case GMT_SPLINE_NN:	/* Nearest neighbor value */
 				v[i] = ((u[i] - x[j]) < (x[j+1] - u[i])) ? y[j] : y[j+1];
 				break;
-			case GMT_SPLINE_LINEAR+10:	/* Linear spline v'(u) */
+			case GMT_SPLINE_LINEAR+GMT_SPLINE_SLOPE:	/* Linear spline v'(u) */
 				v[i] = (y[j+1]-y[j])/(x[j+1]-x[j]);
 				break;
-			case GMT_SPLINE_AKIMA+10:	/* Akime's spline u'(v) */
+			case GMT_SPLINE_AKIMA+GMT_SPLINE_SLOPE:	/* Akime's spline u'(v) */
 				dx = u[i] - x[j];
 				v[i] = (3.0*c[3*j+2]*dx + 2.0*c[3*j+1])*dx + c[3*j];
 				break;
-			case GMT_SPLINE_CUBIC+10:	/* Natural cubic spline u'(v) */
+			case GMT_SPLINE_CUBIC+GMT_SPLINE_SLOPE:	/* Natural cubic spline u'(v) */
 				v[i] = gmtsupport_csplintslp (GMT, x, y, c, u[i], j);
 				break;
-			case GMT_SPLINE_NN+10:	/* Nearest neighbor slopes are zero */
+			case GMT_SPLINE_NN+GMT_SPLINE_SLOPE:	/* Nearest neighbor slopes are zero */
 				v[i] = 0.0;
 				break;
-			case GMT_SPLINE_LINEAR+20:	/* Linear spline v"(u) */
+			case GMT_SPLINE_LINEAR+GMT_SPLINE_CURVATURE:	/* Linear spline v"(u) */
 				v[i] = 0.0;
 				break;
-			case GMT_SPLINE_AKIMA+20:	/* Akime's spline u"(v) */
+			case GMT_SPLINE_AKIMA+GMT_SPLINE_CURVATURE:	/* Akime's spline u"(v) */
 				dx = u[i] - x[j];
 				v[i] = 6.0*c[3*j+2]*dx + 2.0*c[3*j+1];
 				break;
-			case GMT_SPLINE_CUBIC+20:	/* Natural cubic spline u"(v) */
+			case GMT_SPLINE_CUBIC+GMT_SPLINE_CURVATURE:	/* Natural cubic spline u"(v) */
 				v[i] = gmtsupport_csplintcurv (GMT, x, c, u[i], j);
 				break;
-			case GMT_SPLINE_NN+20:	/* Nearest neighbor curvatures are zero  */
+			case GMT_SPLINE_NN+GMT_SPLINE_CURVATURE:	/* Nearest neighbor curvatures are zero  */
 				v[i] = 0.0;
 				break;
 			case GMT_SPLINE_SMOOTH:	/* Smoothing spline */
@@ -1631,12 +1631,12 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				dx2 = u[i] - x[j];
 				v[i] = c[4*j] * pow (dx1, 3.0) + c[4*j+1] * pow (dx2, 3.0) + c[4*j+2] * dx1 + c[4*j+3] * dx2;
 				break;
-			case GMT_SPLINE_SMOOTH+10:	/* Derivative of smoothing spline */
+			case GMT_SPLINE_SMOOTH+GMT_SPLINE_SLOPE:	/* Derivative of smoothing spline */
 				dx1 = x[j+1] - u[i];
 				dx2 = u[i] - x[j];
 				v[i] = c[4*j] * pow (dx1, 2.0) + c[4*j+1] * pow (dx2, 2.0) + c[4*j+2];
 				break;
-			case GMT_SPLINE_SMOOTH+20:	/* Curvature of smoothing spline */
+			case GMT_SPLINE_SMOOTH+GMT_SPLINE_CURVATURE:	/* Curvature of smoothing spline */
 				dx1 = x[j+1] - u[i];
 				dx2 = u[i] - x[j];
 				v[i] = c[4*j] * dx1 + c[4*j+1] * dx2;
@@ -9140,15 +9140,15 @@ int gmt_intpol (struct GMT_CTRL *GMT, double *x, double *y, double *w, uint64_t 
 		check = false;
 		mode = -mode;
 	}
-	smode = mode % 10;	/* Get spline method first */
-	deriv = mode / 10;	/* Get spline derivative order [0-2] */
+	smode = mode % GMT_SPLINE_SLOPE;	/* Get spline method first */
+	deriv = mode / GMT_SPLINE_SLOPE;	/* Get spline derivative order [0-2] */
 	if (smode > GMT_SPLINE_NN) smode = GMT_SPLINE_LINEAR;	/* Default to linear */
 	if (smode != GMT_SPLINE_NN && n < 4) smode = GMT_SPLINE_LINEAR;	/* Default to linear if 3 or fewer points, unless when nearest neighbor */
 	if (n < 2) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Need at least 2 x-values\n");
 		return (GMT_DIM_TOO_SMALL);
 	}
-	mode = smode + 10 * deriv;	/* Reassemble the possibly new mode */
+	mode = smode + GMT_SPLINE_SLOPE * deriv;	/* Reassemble the possibly new mode */
 	if (check) {
 		/* Check to see if x-values are monotonically increasing/decreasing */
 

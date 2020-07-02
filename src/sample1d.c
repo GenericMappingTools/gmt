@@ -50,7 +50,7 @@ struct SAMPLE1D_CTRL {
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct SAMPLE1D_F {	/* -Fl|a|c|n|s<p>[+1|2] */
+	struct SAMPLE1D_F {	/* -Fl|a|c|n|s<p>[+d1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
@@ -98,7 +98,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n|s<p>][+1|2] [-N<time_col>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n|s<p>][+d1|2] [-N<time_col>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T[<min>/<max>/]<inc>[+n|a] [%s] [-W<w_col>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 	             GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_PAR_OPT);
 
@@ -120,7 +120,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   c Cubic spline interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n No interpolation (nearest point).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   s Smooth spline interpolation (append fit parameter p).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +1 for 1st derivative or +2 for 2nd derivative.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +d1 for 1st derivative or +d2 for 2nd derivative.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -F%c].\n", type[API->GMT->current.setting.interpolant]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Give column number of the independent variable (time) [Default is 0 (first)].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
@@ -224,8 +224,10 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 						n_errors++;
 						break;
 				}
-				if (strstr (&opt->arg[1], "+1")) Ctrl->F.type = 1;	/* Want first derivative */
-				else if (strstr (&opt->arg[1], "+2")) Ctrl->F.type = 2;	/* Want second derivative */
+				if (strstr (&opt->arg[1], "+d1")) Ctrl->F.type = 1;	/* Want first derivative */
+				else if (strstr (&opt->arg[1], "+d2")) Ctrl->F.type = 2;	/* Want second derivative */
+				else if (strstr (&opt->arg[1], "+1")) Ctrl->F.type = 1;	/* Want first derivative (backwards compatibility) */
+				else if (strstr (&opt->arg[1], "+2")) Ctrl->F.type = 2;	/* Want second derivative (backwards compatibility) */
 				break;
 			case 'I':	/* Deprecated, but keep pointer to the arguments so we can build -T argument */
 				i_arg = opt->arg;
