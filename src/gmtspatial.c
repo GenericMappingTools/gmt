@@ -817,7 +817,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Spatial manipulation of polygons; choose among:\n");
 #ifdef HAVE_GEOS
-	GMT_Message (API, GMT_TIME_NONE, "\t     b<width> for computing buffer polygon arround line/polygon. Append width of buffer zone\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     b<width> for computing buffer polygon around line/polygon. Append width of buffer zone\n");
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t     h for detecting holes and reversing them relative to perimeters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     i for intersection [Not implemented yet].\n");
@@ -2236,7 +2236,7 @@ int geos_methods(struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *fname, doubl
 		return (GMT->parent->error);
 	}
 	if (GMT_Destroy_Data (GMT->parent, &Dout) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to detroy dataset container.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to destroy dataset container.\n");
 		return (GMT->parent->error);
 	}
 
