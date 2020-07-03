@@ -10,8 +10,8 @@ New Features in GMT 6.1
 GMT 6.1 may be a minor revision to 6.0 but packs quite a punch. For general
 changes, we mention
 
- #. Updated remote global data sets: Earth relief, land/ocean masks, and day/night imagery. The larger
-    grid files (5x5 arc minutes and smaller resolutions) are now tiled and faster to download.
+ #. Updated remote global data sets: Earth relief, Earth crustal ages, land/ocean masks, and day/night imagery.
+    The larger grid files (5x5 arc minutes and smaller resolutions) are now tiled and faster to download.
  #. Let *gmt.history*, *gmt.conf*, and *gmt.cpt* be hierarchical and maintained
     separately for figures, subplot panels, and insets in moderm mode.
  #. Use a list of keywords (*separate,anywhere,lon_horizontal,lat_horizontal,
@@ -49,6 +49,7 @@ New Core Module Features:
 -------------------------
 
 #. :doc:`begin`: Ignore the user's *gmt.conf* files normally included by using **-C**.
+#. :doc:`colorbar`: Option **-S** has been enhanced to handle bar appearance when **-B** is not used.
 #. :doc:`gmtget`: Options **-D**, **-I**, **-N**, and **-Q** handle download and query of remote data sets.
 #. :doc:`gmtmath`: New operators **RGB2HSV** and **HSV2RGB** for color manipulation.
 #. :doc:`gmtregress`: Let **-A** also be used to limit angles considered for LMS regressions.
