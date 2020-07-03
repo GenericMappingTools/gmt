@@ -720,7 +720,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							x = gmt_M_to_inch (GMT, txt_b);
 							if (x > def_dx2) def_dx2 = x;
 						}
-						if (do_width && n_scan == 3 && strlen (text)) {
+						if (do_width && n_scan == 4 && strlen (text)) {
 							gmt_M_memcpy (&legend_item[n_item].font, &(GMT->current.setting.font_annot[GMT_PRIMARY]), 1, struct GMT_FONT);
 							legend_item[n_item++].text = strdup (text);
 						}
