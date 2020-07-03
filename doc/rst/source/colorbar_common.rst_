@@ -175,8 +175,11 @@ Optional Arguments
 
 .. _-S:
 
-**-S**
-    Do not separate different color intervals with black grid lines.
+**-S**\ [**+c**\|\ **n**\ ][**+s**]
+    Control various aspects of color bar appearance when **-B** is *not* used.
+    Append **+c** to use custom labels if given in the CPT as annotations.
+    Append **+n** to use numerical labels [Default].
+    Append **+s** to skip drawing gridlines separating different color intervals [Default draws gridlines].
 
 .. _-U:
 
