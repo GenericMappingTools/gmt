@@ -7,9 +7,10 @@ Global Earth Seafloor Crustal Age Grids
    :align: center
    :scale: 40 %
 
-Numerous geodynamic and geophysical studies considers both the seafloor depth and
-the seafloor crustal age.  EarthByte has pioneer the creation of crustal age grids
-since 1997 and we offer the latest version for use in GMT.
+Numerous geodynamic and geophysical studies consider both the seafloor depth and
+the seafloor crustal age. `EarthByte <https://www.earthbyte.org/>`_ has pioneered
+the creation of crustal age grids since 1997 and we offer their latest version for
+remote use in GMT.
 
 Usage
 -----
@@ -55,10 +56,10 @@ Technical Information
 We scale and reformat the original data to take up very little space so that downloads
 from the servers are as fast as possible.  For the seafloor crustal age grid this means
 we chose 0.01 My as the smallest data unit, which is well below the uncertainties in the
-model.  Data are scaled an offset to fit in a short integer highly compressed by netCDF
-lossless compression and chunking.
+model.  Data are scaled and shifted to fit in a short integer grid that is highly compressed
+by netCDF lossless compression and chunking.
 
 Data References
 ---------------
 
-#. Seton et al [2020, in review] [https://www.earthbyte.org/category/resources/data-models/seafloor-age/].
+#. Seton et al. [2020, in review] [https://www.earthbyte.org/category/resources/data-models/seafloor-age/].
