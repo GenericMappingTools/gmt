@@ -1,7 +1,7 @@
 Global Earth Seafloor Crustal Age Grids
 =======================================
 
-.. figure:: /_images/ages.jpg
+.. figure:: /_images/agemap.jpg
    :height: 888 px
    :width: 1774 px
    :align: center
