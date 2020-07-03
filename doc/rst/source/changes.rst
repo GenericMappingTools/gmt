@@ -12,7 +12,6 @@ changes, we mention
 
  #. Updated remote global data sets: Earth relief, land/ocean masks, and day/night imagery. The larger
     grid files (5x5 arc minutes and smaller resolutions) are now tiled and faster to download.
- #. Add MVT (Mapbox Vector Tile) as another GDAL URL dataset.
  #. Let *gmt.history*, *gmt.conf*, and *gmt.cpt* be hierarchical and maintained
     separately for figures, subplot panels, and insets in moderm mode.
  #. Use a list of keywords (*separate,anywhere,lon_horizontal,lat_horizontal,
@@ -30,7 +29,7 @@ changes, we mention
  #. Add Web-Mercator as new sphere that can be selected.
  #. Explore adding long-format GMT options (e.g., **--region**\ =\ *w/e/s/n*).
  #. Allow both **-i** and **-o** to specify an open-ended list of columns to end of record.
- #. API improvements to support the GMT/MEX, pyGMT, and GMT.jl environments.
+ #. API improvements to support the GMT/MEX, PyGMT, and GMT.jl environments.
 
 New Common Options:
 -------------------
@@ -64,7 +63,8 @@ New Core Module Features:
 #. :doc:`grdfilter`: Let filter width optionally be a grid with variable widths.
 #. :doc:`grdgradient`: Add support for ambient light in **-N**, as in **-E**, and therefore via **-I**
    in :doc:`grdimage` and :doc:`grdview`.
-#. :doc:`grdinfo`: Now **-C** also appends registration as last output column (0 = gridline, 1 = pixel registration).
+#. :doc:`grdinfo`: Now **-C** also appends registration and grid type as last two output columns
+   (0 = gridline, 1 = pixel registration; 0 = Cartesian, 1 = geographic).
 #. :doc:`grdmath`: New operators **DAYNIGHT** (for day/night terminator), **BLEND** (blend two grids using the weights
    from a third), **DOT** (dot product), and **RGB2HSV**, and **HSV2RGB** for color manipulations.
 #. :doc:`grdtrack`: Determine central peak in all crossections with **-F** (requires **-C**); let **-E+c** continue
@@ -73,6 +73,7 @@ New Core Module Features:
 #. :doc:`movie`: Add **-E** for an optional title sequence (with or without fading in/out), **-K** for fade in and
    fade out for main animation sequence, **-Sb** and **-Sf** can now take a PostScript layer instead of a script,
    and **-P** for adding one of six progress indicators.
+#. :doc:`nearneighbor`: Let **-Nn** call GDAL's nearest neighbor algorithm.
 #. :doc:`sample1d`: Adds a smoothing cubic spline via **-Fs**\ *p* (for a fit parameter *p*), with optional weights (**-W**).
 #. :doc:`surface`: Let **-D** take a modifier **+z**\ *value* to set a constant breakline level.
 
