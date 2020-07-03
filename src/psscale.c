@@ -107,8 +107,10 @@ struct PSSCALE_CTRL {
 	struct PSSCALE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct PSSCALE_S {	/* -S */
+	struct PSSCALE_S {	/* -S[+c|n][+s] */
 		bool active;
+		bool skip;
+		unsigned int mode;
 	} S;
 	struct PSSCALE_W {	/* -W<scale> */
 		bool active;
@@ -155,7 +157,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s]\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S[+c|n][+s]] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>]\n\t%s[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -202,7 +204,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Skip drawing color boundary lines on color scale [Default draws lines].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Controls annotation and gridlines when -B is not used:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to use any custom labels in the CPT for annotations, if available.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to use numerical values for annotations [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to skip drawing gridlines between different color sections [Default draws lines].\n");
 	GMT_Option (API, "U,V,X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give file with colorbar-width (in %s) per color entry.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -350,6 +355,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':
 				Ctrl->S.active = true;
+				if (opt->arg[0]) {	/* Modern syntax with modifiers */
+					if (strstr (opt->arg, "+c"))
+						Ctrl->S.mode = 1;
+					if (strstr (opt->arg, "+n"))	/* Default, but just in case */
+						Ctrl->S.mode = 0;
+					if (strstr (opt->arg, "+s"))
+						Ctrl->S.skip = true;
+				}
+				else /* Backwards compatible -S means -S+s */
+					Ctrl->S.skip = true;
 				break;
 			case 'T':
 				if (gmt_M_compat_check (GMT, 5)) { /* Warn but process old -T */
@@ -633,10 +648,10 @@ GMT_LOCAL bool psscale_letter_hangs_down (char *text) {
 
 GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0;
-	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify;
+	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify, no_B_mode = Ctrl->S.mode;
 	int this_just, p_val, center = 0;
 	bool reverse, all = true, use_image, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
-	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.active, need_image;
+	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.skip, need_image;
 	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""}, endash;
 	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
@@ -725,6 +740,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	}
 	if (Ctrl->L.active && n_use_labels == P->n_colors)
 		all = use_labels = true;	/* Only use optional text labels for equal length scales */
+	else if (n_use_labels && no_B_mode == 1)
+		use_labels = true;
 	else
 		use_labels = false;
 
@@ -1139,7 +1156,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (all || (P->data[i].annot & 1)) {	/* Annotate this */
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && P->data[i].label) {
+					if (use_labels && no_B_mode && P->data[i].label) {
 						strncpy (text, P->data[i].label, GMT_LEN256-1);
 						this_just = l_justify;
 					}
@@ -1409,7 +1426,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (all || (P->data[i].annot & 1)) {
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && P->data[i].label) {
+					if (use_labels && no_B_mode && P->data[i].label) {
 						strncpy (text, P->data[i].label, GMT_LEN256-1);
 						this_just = l_justify;
 					}
