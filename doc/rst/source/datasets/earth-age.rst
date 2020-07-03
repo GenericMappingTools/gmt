@@ -27,25 +27,26 @@ Optionally, you can append _\ **g** or _\ **p** to specifically get the gridline
 pixel-registered version (if they both exist).  If *reg* is not specified we will return
 the pixel-registered version unless only the gridline-registered file is available.
 The following codes for *rr*\ *u* and the optional *reg* are supported (dimensions are listed
-for pixel-registered grids; gridline-registered grids increment dimensions by one):
+for pixel-registered grids; gridline-registered grids increment dimensions by one).
+The full (6 sigma) filter-widths used to downsample the 1 min resolution are indicated in parenthesis.
 
 .. _tbl-earth_age:
 
-==== ================= === =======  ======================================================
+==== ================= === =======  ==================================================
 Code Dimensions        Reg Size     Description
-==== ================= === =======  ======================================================
-01d       360 x    180 g,p  128 KB  1 arc degree global seafloor ages (EarthByte @ 111 km)
-30m       720 x    360 g,p  435 KB  30 arc minute global relief (EarthByte @ 55 km)
-20m      1080 x    540 g,p  918 KB  20 arc minute global relief (EarthByte @ 37 km)
-15m      1440 x    720 g,p  1.6 MB  15 arc minute global relief (EarthByte @ 28 km)
-10m      2160 x   1080 g,p  3.4 MB  10 arc minute global relief (EarthByte @ 18 km)
-06m      3600 x   1800 g,p  8.8 MB  6 arc minute global relief (EarthByte @ 10 km)
-05m      4320 x   2160 g,p   13 MB  5 arc minute global relief (EarthByte @ 9 km)
-04m      5400 x   2700 g,p   19 MB  4 arc minute global relief (EarthByte @ 7.5 km)
-03m      7200 x   3600 g,p   33 MB  3 arc minute global relief (EarthByte @ 5.6 km)
-02m     10800 x   5400 g,p   71 MB  2 arc minute global relief (EarthByte @ 3.7 km)
-01m     21600 x  10800 g,p  258 MB  1 arc minute global relief (EarthByte original)
-==== ================= === =======  ======================================================
+==== ================= === =======  ==================================================
+01d       360 x    180 g,p  128 KB  1 arc degree global seafloor ages (1 min @ 111 km)
+30m       720 x    360 g,p  435 KB  30 arc minute global relief (1 min @ 55 km)
+20m      1080 x    540 g,p  918 KB  20 arc minute global relief (1 min @ 37 km)
+15m      1440 x    720 g,p  1.6 MB  15 arc minute global relief (1 min @ 28 km)
+10m      2160 x   1080 g,p  3.4 MB  10 arc minute global relief (1 min @ 18 km)
+06m      3600 x   1800 g,p  8.8 MB  6 arc minute global relief (1 min @ 10 km)
+05m      4320 x   2160 g,p   13 MB  5 arc minute global relief (1 min @ 9 km)
+04m      5400 x   2700 g,p   19 MB  4 arc minute global relief (1 min @ 7.5 km)
+03m      7200 x   3600 g,p   33 MB  3 arc minute global relief (1 min @ 5.6 km)
+02m     10800 x   5400 g,p   71 MB  2 arc minute global relief (1 min @ 3.7 km)
+01m     21600 x  10800 g,p  258 MB  1 arc minute global relief (1 min original)
+==== ================= === =======  ==================================================
 
 All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
 the earth_age files being placed in an ``earth/earth_age`` sub-directory.
