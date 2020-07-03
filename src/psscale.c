@@ -674,6 +674,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	cap  = PSL->internal.line_cap;
 	join = PSL->internal.line_join;
 
+	if (Ctrl->L.active) no_B_mode = 1;
+
 	/* Temporarily change to miter join so boxes and end triangles have near corners */
 	PSL_setlinejoin (PSL, PSL_MITER_JOIN);
 
