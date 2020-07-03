@@ -21,7 +21,7 @@ Synopsis
 [ |-N|\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**] ]
 [ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
+[ |-S|\ **b**\ *width*\|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
 [ |-T|\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -178,13 +178,13 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **h**\|\ **i**\|\ **j**\|\ **s**\|\ **u**
-    Spatial processing of polygons. Choose from **-Sh** which identifies
-    perimeter and hole polygons (and flags/reverses them), **-Si** which returns
+**-S**\ **b**\ *width*\|\ **h**\|\ **i**\|\ **j**\|\ **s**\|\ **u**
+    Spatial processing of polygons. Choose from **-Sb**\ *width* which computes a buffer polygon around lines,
+    **-Sh** which identifies perimeter and hole polygons (and flags/reverses them), **-Si** which returns
     the intersection of polygons (closed), **-Su** which returns the
     union of polygons (closed), **-Ss** which will split polygons that
     straddle the Dateline, and **-Sj** which will join polygons that
-    were split by the Dateline.  **Note**: Only **-Ss** has been implemented.
+    were split by the Dateline.  **Note**: Only **-Sb**, **-Sh** and **-Ss** have been implemented.
 
 .. _-T:
 
