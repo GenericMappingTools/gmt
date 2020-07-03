@@ -13,7 +13,7 @@ gmt begin WL_example_3 ps
   gmt grd2xyz ${file}${args}://geophysical_data/sst -ZTLf > sst.b
   gmt grd2xyz ${file}${args}://navigation_data/longitude -ZTLf > lon.b
   gmt grd2xyz ${file}${args}://navigation_data/latitude -ZTLf > lat.b
-  # Merge columns and skip record whuse sst_qual > 0
+  # Merge columns and skip record whose sst_qual > 0
   gmt convert -A lon.b lat.b sst.b qual_sst.b -bi1f -bo4d | gmt select -Z-/0+c3 -bi4d -bo3d -o0-2 > input.b
   # Perform nearest neighbor gridding
   gmt nearneighbor -R-12/-1/33/43 -I0.01 -S0.05 -bi3d input.b -GG.grd
