@@ -10,10 +10,10 @@ New Features in GMT 6.1
 GMT 6.1 may be a minor revision to 6.0 but packs quite a punch. For general
 changes, we mention
 
- #. Updated remote global data sets: Earth relief, Earth crustal ages, land/ocean masks, and day/night imagery.
+ #. Updated remote global data sets: Earth reliefs, crustal ages, land/ocean masks, and day/night imagery.
     The larger grid files (5x5 arc minutes and smaller resolutions) are now tiled and faster to download.
  #. Let *gmt.history*, *gmt.conf*, and *gmt.cpt* be hierarchical and maintained
-    separately for figures, subplot panels, and insets in moderm mode.
+    separately for figures, subplot panels, and insets in modern mode.
  #. Use a list of keywords (*separate,anywhere,lon_horizontal,lat_horizontal,
     tick_extend,tick_normal,lat_parallel*) instead of bit-sum for **MAP_ANNOT_OBLIQUE**.
  #. Let the macOS bundle be built with OpenMP support to accelerate some computational modules.
@@ -64,12 +64,14 @@ New Core Module Features:
 #. :doc:`grdfilter`: Let filter width optionally be a grid with variable widths.
 #. :doc:`grdgradient`: Add support for ambient light in **-N**, as in **-E**, and therefore via **-I**
    in :doc:`grdimage` and :doc:`grdview`.
+#. :doc:`grdimage`: Now **-I** may take a filename in addition to requests to derive intensities from it.
 #. :doc:`grdinfo`: Now **-C** also appends registration and grid type as last two output columns
    (0 = gridline, 1 = pixel registration; 0 = Cartesian, 1 = geographic).
 #. :doc:`grdmath`: New operators **DAYNIGHT** (for day/night terminator), **BLEND** (blend two grids using the weights
    from a third), **DOT** (dot product), and **RGB2HSV**, and **HSV2RGB** for color manipulations.
 #. :doc:`grdtrack`: Determine central peak in all crossections with **-F** (requires **-C**); let **-E+c** continue
    a track if next line is a direct continuation of previous line.
+#. :doc:`grdview`: Now **-I** may take a filename in addition to requests to derive intensities from it.
 #. :doc:`pscontour`: Better handling of contour file that can now have unique angles and pens per contour.
 #. :doc:`movie`: Add **-E** for an optional title sequence (with or without fading in/out), **-K** for fade in and
    fade out for main animation sequence, **-Sb** and **-Sf** can now take a PostScript layer instead of a script,
