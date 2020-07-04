@@ -47,7 +47,7 @@ Code Dimensions        Reg Size     Description
 04m      5400 x   2700 g,p   15 MB  4 arc minute global relief (1 min @ 7.5 km)
 03m      7200 x   3600 g,p   26 MB  3 arc minute global relief (1 min @ 5.6 km)
 02m     10800 x   5400 g,p   56 MB  2 arc minute global relief (1 min @ 3.7 km)
-01m     21600 x  10800 g,p  187 MB  1 arc minute global relief (1 min original)
+01m     21600 x  10800 g,p  188 MB  1 arc minute global relief (1 min original)
 ==== ================= === =======  ==================================================
 
 All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
@@ -60,7 +60,8 @@ We scale and reformat the original data to take up very little space so that dow
 from the servers are as fast as possible.  For the seafloor crustal age grid this means
 we chose 0.01 My as the smallest data unit, which is well below the uncertainties in the
 model.  Data are scaled and shifted to fit in a short integer grid that is highly compressed
-by netCDF lossless compression and chunking.
+by netCDF lossless compression and chunking.  The data are reported in Myr relative
+to the 2012 Geological Time Scale.
 
 Data References
 ---------------
