@@ -704,7 +704,7 @@ GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file) {
 }
 
 GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localfile) {
-	static char *args = "=ns -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
+	static char *args = " -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
 	char cmd[GMT_LEN512] = {""},  *ncfile = NULL;
 	int k_data;
 
@@ -713,15 +713,18 @@ GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localf
 
 	/* Convert JP2 file to NC for local cache storage */
 	ncfile = gmt_strrep (localfile, GMT_TILE_EXTENSION_REMOTE, GMT_TILE_EXTENSION_LOCAL);
-	sprintf (cmd, "%s -G%s%s", localfile, ncfile, args);
+	sprintf (cmd, "%s -G%s=ns", localfile, ncfile);	/* We know we are writing a netCDF short int grid */
 	if (!doubleAlmostEqual (API->remote_info[k_data].scale, 1.0) || !gmt_M_is_zero (API->remote_info[k_data].offset)) {
 		/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first.
 		 * Because we are inverting the scaling and because grdconvert applies z' = z * scale + offset, we must
-		 * pre-scale the offset here to survive that translation */
+		 * pre-scale and change the sign of the offset here to get the translation we want */
 		char extra[GMT_LEN64] = {""};
+		sprintf (extra, "+s%g+o%g", API->remote_info[k_data].scale, API->remote_info[k_data].offset);
+		strcat (cmd, extra);	/* This will embed the scale and offset in the netCDF file so we can use the full range */
 		sprintf (extra, " -Z+s%g+o%g", API->remote_info[k_data].scale, -API->remote_info[k_data].offset / API->remote_info[k_data].scale);
-		strcat (cmd, extra);
+		strcat (cmd, extra);	/* This converts the integers we got back to Myr before we let netCDF do the offset/scaling above */
 	}
+	strcat (cmd, args);	/* Append the common arguments */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
 	if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", localfile);
