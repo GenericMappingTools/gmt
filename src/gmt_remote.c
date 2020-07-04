@@ -704,7 +704,7 @@ GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file) {
 }
 
 GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localfile) {
-	static char *args = "=ns -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
+	static char *args = " -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
 	char cmd[GMT_LEN512] = {""},  *ncfile = NULL;
 	int k_data;
 
@@ -713,14 +713,20 @@ GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localf
 
 	/* Convert JP2 file to NC for local cache storage */
 	ncfile = gmt_strrep (localfile, GMT_TILE_EXTENSION_REMOTE, GMT_TILE_EXTENSION_LOCAL);
-	sprintf (cmd, "%s -G%s%s", localfile, ncfile, args);
+	sprintf (cmd, "%s -G%s=ns", localfile, ncfile);	/* We know we are writing a netCDF short int grid */
 	if (!doubleAlmostEqual (API->remote_info[k_data].scale, 1.0) || !gmt_M_is_zero (API->remote_info[k_data].offset)) {
-		/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first */
+		/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first.
+		 * Because we are inverting the scaling and because grdconvert applies z' = z * scale + offset, we must
+		 * pre-scale and change the sign of the offset here to get the translation we want */
 		char extra[GMT_LEN64] = {""};
-		sprintf (extra, " -Z+s%g+o%g", API->remote_info[k_data].scale, API->remote_info[k_data].offset);
-		strcat (cmd, extra);
+		sprintf (extra, "+s%g+o%g", API->remote_info[k_data].scale, API->remote_info[k_data].offset);
+		strcat (cmd, extra);	/* This will embed the scale and offset in the netCDF file so we can use the full range */
+		sprintf (extra, " -Z+s%g+o%g", API->remote_info[k_data].scale, -API->remote_info[k_data].offset / API->remote_info[k_data].scale);
+		strcat (cmd, extra);	/* This converts the integers we got back to Myr before we let netCDF do the offset/scaling above */
 	}
+	strcat (cmd, args);	/* Append the common arguments */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
+	GMT_Report (API, GMT_MSG_DEBUG, "Running: grdconvert %sn", cmd);
 	if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", localfile);
 		gmt_M_free (API->GMT, ncfile);
@@ -954,8 +960,10 @@ int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 	/* Detect if a file matches the name <path>/[N|S]yy[E|W]xxx.tag.jp2 (e.g., N22W160.earth_relief_01m_p.jp2) */
 	char *c, tmp[GMT_LEN64] = {""};
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* Bad argument */
-	if ((c = strrchr (file, '/')) == NULL) return GMT_NOTSET;	/* Get place of the last slash */
-	sprintf (tmp, "@%s", &c[1]);	/* Now should have something like @N22W160.earth_relief_01m_p.jp2 */
+	if ((c = strrchr (file, '/')) == NULL)	/* Get place of the last slash */
+		sprintf (tmp, "@%s", file);	/* Now should have something like @N22W160.earth_relief_01m_p.jp2 */
+	else
+		sprintf (tmp, "@%s", &c[1]);	/* Now should have something like @N22W160.earth_relief_01m_p.jp2 */
 	return (gmt_file_is_a_tile (API, tmp, GMT_REMOTE_DIR));
 }
 
@@ -1372,8 +1380,10 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 	int k_data;
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->tile_wesn;	/* Default to -R */
-	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
+	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""}, code = 0;;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
+
+	(void) gmt_file_is_tiled_list (API, file, NULL, &code, NULL);	/* Just get the code*/
 
 	if ((k_data = gmt_get_tile_id (API, file)) == GMT_NOTSET) {
 		GMT_Report (API, GMT_MSG_ERROR, "Internal error: Non-recognized tiled ID embedded in file %s\n", file);
@@ -1382,7 +1392,8 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co+n to override using negative earth_relief_15s values */
-	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%s -r%c -G%s -N0 -Co+n", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], API->remote_info[k_data].inc, API->remote_info[k_data].reg, grid);
+	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%s -r%c -G%s -Co+n", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], API->remote_info[k_data].inc, API->remote_info[k_data].reg, grid);
+	if (code != 'X') strcat (cmd, " -N0");	/* If ocean/land, set empty nodes to 0, else NaN */
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;

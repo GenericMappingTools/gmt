@@ -1215,16 +1215,33 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					break;
 				case GDT_Int16:
 					if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
-					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-						for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
-							if (prhs->f_ptr.active) {
-								int16_t tmpI16;
-								memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
-								Ctrl->Float.data[nn++] = tmpI16;
-							}
-							else
-								memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+					if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET) {
+						/* PW: Special case of jp2 tile with possible NaNs that are not recognized without the .aux.xml file */
+						float f_NaN = GMT->session.f_NaN;	/* Shorthand */
+						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+							nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+							for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+								if (prhs->f_ptr.active) {
+									int16_t tmpI16;
+									memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+									Ctrl->Float.data[nn++] = (tmpI16 == -32768) ? f_NaN : tmpI16;
+								}
+								else
+									memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+						}
+					}
+					else {	/* All other short int cases */
+						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+							nn = (pad_w+m)*(nXSize_withPad) + startColPos;
+							for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+								if (prhs->f_ptr.active) {
+									int16_t tmpI16;
+									memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+									Ctrl->Float.data[nn++] = tmpI16;
+								}
+								else
+									memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+						}
 					}
 					break;
 				case GDT_UInt16:
