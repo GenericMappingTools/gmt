@@ -715,9 +715,11 @@ GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localf
 	ncfile = gmt_strrep (localfile, GMT_TILE_EXTENSION_REMOTE, GMT_TILE_EXTENSION_LOCAL);
 	sprintf (cmd, "%s -G%s%s", localfile, ncfile, args);
 	if (!doubleAlmostEqual (API->remote_info[k_data].scale, 1.0) || !gmt_M_is_zero (API->remote_info[k_data].offset)) {
-		/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first */
+		/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first.
+		 * Because we are inverting the scaling and because grdconvert applies z' = z * scale + offset, we must
+		 * pre-scale the offset here to survive that translation */
 		char extra[GMT_LEN64] = {""};
-		sprintf (extra, " -Z+s%g+o%g", API->remote_info[k_data].scale, API->remote_info[k_data].offset);
+		sprintf (extra, " -Z+s%g+o%g", API->remote_info[k_data].scale, -API->remote_info[k_data].offset / API->remote_info[k_data].scale);
 		strcat (cmd, extra);
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
