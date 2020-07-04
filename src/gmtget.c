@@ -162,6 +162,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 	                                 "Option -Q: Requires -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->N.active,
 	                                 "Option -Q: -N will be ignored\n");
+	if (Ctrl->D.active && Ctrl->D.dir && !(!strcmp (Ctrl->D.dir, "all") || !strcmp (Ctrl->D.dir, "cache") || !strncmp (Ctrl->D.dir, "data", 4U))) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: Requires arguments all, cache, data[=<planet>] or data=<datasetlist>\n");
+		n_errors++;
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
