@@ -274,11 +274,13 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	 * There are a few different scenarios where this can happen:
 	 * 1. Users of GMT <= 6.0.0 are used to say earth_relief_01m. These will now get p.
 	 * 2. Users who do not care about registration.  If so, they get p if available. */
-	char newfile[GMT_LEN256] = {""}, reg[2] = {'p', 'g'}, *file = NULL, *infile = NULL, *ext = NULL;
+	char newfile[GMT_LEN256] = {""}, reg[2] = {'p', 'g'}, *file = NULL, *infile = NULL, *ext = NULL, *c = NULL;
 	int k_data, k;
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
 	if (file[0] != '@') return;
 	infile = strdup (file);
+	if ((c = strchr (infile, '+')))	/* Got modifiers, probably from grdimage or similar, chop off for now */
+		c[0] = '\0';
 	/* Deal with any extension the user may have added */
 	ext = gmt_chop_ext (infile);
 	/* If the remote file is found then there is nothing to do */
@@ -289,6 +291,10 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 		sprintf (newfile, "%s_%c", infile, reg[k]);
 		if ((k_data = gmt_remote_dataset_id (API, newfile)) != GMT_NOTSET) {
 			/* Found, replace given file name with this */
+			if (c) {	/* Restore the modifiers */
+				c[0] = '+';
+				strcat (newfile, c);
+			}
 			gmt_M_str_free (*file_ptr);
 			*file_ptr = strdup (newfile);
 			goto clean_up;
