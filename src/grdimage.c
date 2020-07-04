@@ -859,13 +859,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, int_grd))
 			Return (API->error);
 		if (Ctrl->I.file) {	/* Gave a file to derive from */
-			//if (gmt_file_is_tiled_list (API, Ctrl->I.file, NULL, NULL, NULL)) {	/* Must read and stitch the tiles first */
-				if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->I.file, NULL)) == NULL)	/* Get srtm grid data */
-					Return (API->error);
-				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, I_data, int4_grd))
-					Return (API->error);
-				got_int4_grid = true;
-			//}
+			if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->I.file, NULL)) == NULL)	/* Get srtm grid data */
+				Return (API->error);
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, I_data, int4_grd))
+				Return (API->error);
+			got_int4_grid = true;
 		}
 		/* Prepare the grdgradient arguments using selected -A -N and the data region in effect */
 		sprintf (cmd, "-G%s -A%s -N%s+a%s -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=false ",
