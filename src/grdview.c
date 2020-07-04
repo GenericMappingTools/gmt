@@ -895,7 +895,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 		if (Ctrl->I.file) {	/* Gave a file to derive from */
 			if (gmt_file_is_tiled_list (API, Ctrl->I.file, NULL, NULL, NULL)) {	/* Must read and stitch the tiles first */
-				if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->I.file, NULL)) == NULL)	/* Get srtm grid data */
+				if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->I.file, NULL)) == NULL)	/* Get srtm grid data */
 					Return (API->error);
 				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, I_data, data_file))
 					Return (API->error);
