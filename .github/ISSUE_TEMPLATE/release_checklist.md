@@ -50,7 +50,6 @@ assignees: ''
 - [ ] make a GitHub release.
   Go to the [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) page,
   check the draft release (automatically created by github-actions after pushing the tag).
-
   - [ ] 6 files are attached as release assets (2 source tarballs, 3 installers and 1 checksum file).
   - [ ] download the checksum file and check if the checksums are correct
   - [ ] edit the draft release, set the target to the correct tag, and publish the release
