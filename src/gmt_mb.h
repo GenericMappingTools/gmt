@@ -20,7 +20,7 @@
  * the MB-system programs mbcontour.c, mbgrdtiff.c, and mbswath.c.
  *
  * Author:      Paul Wessel
- * Date:        11-Mar-2018
+ * Date:        4-Jul-2020
  * Version:     6 API
  */
 
@@ -28,10 +28,8 @@
 #ifndef GMT_MB_H
 #define GMT_MB_H
 
-#if GMT_MAJOR_VERSION == 6
-#define gmt_get_cpt(GMT,file,flag,min,max) gmt_get_palette(GMT,file,flag,min,max,0.0,0)
+#define gmt_get_cpt(GMT,file,flag,min,max) gmt_get_palette(GMT,file,flag,min,max,0.0)
 #define gmt_M_grd_is_global gmt_grd_is_global
 #define GMT_c_OPT	"-c<ncopies>"	/* OBSOLETE */
-#endif
 
 #endif /* GMT_MB_H */
