@@ -8,3 +8,4 @@ Datasets
    datasets/earth-relief
    datasets/earth-daynight
    datasets/earth-masks
+   datasets/earth-age
