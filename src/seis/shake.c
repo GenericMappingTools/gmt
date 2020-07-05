@@ -24,7 +24,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_NAME	"shake"
+#define THIS_MODULE_CLASSIC_NAME	"shake"
+#define THIS_MODULE_MODERN_NAME	"shake"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Compute Peak Ground Acceleration/Velocity and Intensity."
 #define THIS_MODULE_KEYS	"<G{,LD(=,>GG)"
@@ -96,7 +97,7 @@ GMT_LOCAL char set_unit_and_mode (char *arg, unsigned int *mode) {
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmt %s <grid> -G<outgrid> -L<fault.xy> -M<mag> [-F<mecatype>] [%s] [%s]\n",
@@ -198,7 +199,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>] */
 				Ctrl->L.active = true;
-				Ctrl->L.file = gmt_get_filename (opt->arg);
+				Ctrl->L.file = gmt_get_filename (API, opt->arg, "u");
 				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-L<fault> error. Must provide an existing file name.\n");
 					n_errors++;
@@ -260,7 +261,7 @@ int GMT_shake (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &io, options)) != 0) Return (error);
@@ -298,7 +299,7 @@ int GMT_shake (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)
 		Return (API->error);
 
-	gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -L files */
+	//gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -L files */
 	if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL)
 		Return (API->error);
 
@@ -306,7 +307,7 @@ int GMT_shake (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)Lin->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
-	gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+	//gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 	gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -L file might have turned it on [should be determined below] */
 	xyline = Lin->table[0];			/* Can only be one table since we read a single file */
 	if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
