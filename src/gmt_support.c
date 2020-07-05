@@ -7646,7 +7646,9 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			X->data[n].label = gmt_M_memory (GMT, NULL, strlen (line) - k, char);
 			strcpy (X->data[n].label, &line[k+1]);
 			gmt_chop (X->data[n].label);	/* Strip off trailing return */
-			line[k] = '\0';				/* Chop label off from line */
+			k--;	/* Position before ; */
+			while (k && (line[k] == '\t' || line[k] == ' ')) k--;
+			line[k+1] = '\0';	/* Chop label and trailing white space off from line */
 		}
 
 		/* Determine if psscale need to label these steps by looking for the optional L|U|B character at the end */

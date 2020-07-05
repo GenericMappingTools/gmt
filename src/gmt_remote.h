@@ -44,7 +44,7 @@ struct GMT_DATA_INFO {
 	char coverage[GMT_LEN64];	/* File with tile coverage. E.g., srtm_tiles.nc or - for none */
 	char filler[GMT_LEN64];		/* File with background filler. E.g., earth_relief_tiles_15s.grd or - for none */
 	char CPT[GMT_LEN64];		/* Name of default master CPT. E.g., geo or - for none */
-	char remark[GMT_LEN128];	/* Attribution and information about this data set */
+	char remark[GMT_LEN256];	/* Attribution and information about this data set */
 };
 
 struct GMT_DATA_HASH {			/* Holds file hashes (probably SHA256) */

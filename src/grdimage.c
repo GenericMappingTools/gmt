@@ -200,6 +200,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grd_z> instead, append +a<azim> [-45], +n<method> [t1], and +m<ambient> [0]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To derive from another grid than <grd_z>, give a filename as well.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome image.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not clip image at the map boundary.\n");
@@ -352,8 +353,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				Ctrl->I.active = true;
-				if (!strcmp (opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
+				if ((c = strstr (opt->arg, "+d"))) {	/* Gave +d, so derive intensities from the input grid using default settings */
 					Ctrl->I.derive = true;
+					c[0] = '\0';	/* Chop off modifier */
+				}
 				else if ((c = gmt_first_modifier (GMT, opt->arg, "amn"))) {	/* Want to control how grdgradient is run */
 					unsigned int pos = 0;
 					char p[GMT_BUFSIZ] = {""};
@@ -368,20 +371,25 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 					}
 					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 				}
-				else if (!opt->arg[0] || strstr (opt->arg, "+"))	/* No argument or just +, so derive intensities from input grid using default settings */
-					Ctrl->I.derive = true;	/* Need to have -I+ since otherwise, -I in mex would try to attach a grid */
-				else if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
-					Ctrl->I.file = strdup (opt->arg);
-				else if (gmt_M_file_is_remote (opt->arg))	/* Got a remote file */
-					Ctrl->I.file = strdup (opt->arg);
-				else if (opt->arg[0] && gmt_is_float (GMT, opt->arg)) {	/* Looks like a constant value */
-					Ctrl->I.value = atof (opt->arg);
-					Ctrl->I.constant = true;
+				else if (!opt->arg[0] || !strcmp (opt->arg, "+")) {	/* Gave deprecated option to derive intensities from the input grid using default settings */
+					Ctrl->I.derive = true;
+					if (opt->arg[0]) opt->arg[0] = '\0';	/* Remove the single + */
 				}
-				else {
+				if (opt->arg[0]) {	/* Gave an argument in addition to or instead of a modifier */
+					if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
+						Ctrl->I.file = strdup (opt->arg);
+					else if (gmt_M_file_is_remote (opt->arg))	/* Got a remote file */
+						Ctrl->I.file = strdup (opt->arg);
+					else if (opt->arg[0] && gmt_is_float (GMT, opt->arg)) {	/* Looks like a constant value */
+						Ctrl->I.value = atof (opt->arg);
+						Ctrl->I.constant = true;
+					}
+				}
+				else if (!Ctrl->I.active) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
 					n_errors++;
 				}
+				if (c) c[0] = '+';	/* Restore the plus */
 				break;
 			case 'M':	/* Monochrome image */
 				Ctrl->M.active = true;
@@ -668,8 +676,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			 * force all tiles to be downloaded, converted, and stitched into a single grid per -R. This must
 			 * happen _before_ we auto-derive intensities via grdgradient so that there is an input data grid */
 
-			if (gmt_file_is_tiled_list (API, Ctrl->In.file[0], NULL, NULL, NULL)) {	/* Must read and stitch the tiles first */
-				//if ((Grid_orig[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, GMT->common.R.wesn, Ctrl->In.file[0], NULL)) == NULL)	/* Get srtm grid data */
+			if (Ctrl->I.file == NULL && gmt_file_is_tiled_list (API, Ctrl->In.file[0], NULL, NULL, NULL)) {	/* Must read and stitch the tiles first */
 				if ((Grid_orig[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, API->tile_wesn, Ctrl->In.file[0], NULL)) == NULL)	/* Get srtm grid data */
 					Return (API->error);
 				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, Grid_orig[0], data_grd))
@@ -843,16 +850,30 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	 * auto-derived intensities we may create below */
 
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid using the now determined data region */
-		char int_grd[GMT_VF_LEN] = {""};
+		bool got_int4_grid = false;
+		char int_grd[GMT_VF_LEN] = {""}, int4_grd[GMT_VF_LEN] = {""};
+		struct GMT_GRID *I_data = NULL;
+
 		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid\n");
 		/* Create a virtual file to hold the intensity grid */
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, int_grd))
 			Return (API->error);
+		if (Ctrl->I.file) {	/* Gave a file to derive from */
+			if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->I.file, NULL)) == NULL)	/* Get srtm grid data */
+				Return (API->error);
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, I_data, int4_grd))
+				Return (API->error);
+			got_int4_grid = true;
+		}
 		/* Prepare the grdgradient arguments using selected -A -N and the data region in effect */
 		sprintf (cmd, "-G%s -A%s -N%s+a%s -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=false ",
 			int_grd, Ctrl->I.azimuth, Ctrl->I.method, Ctrl->I.ambient, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 		if (got_data_grid)	/* Use the virtual file we made earlier */
 			strcat (cmd, data_grd);
+		else if (got_int4_grid)	/* Use the virtual file we made earlier */
+			strcat (cmd, int4_grd);
+		else if (Ctrl->I.file)
+			strcat (cmd, Ctrl->I.file);
 		else
 			strcat (cmd, Ctrl->In.file[0]);
 		/* Call the grdgradient module */
@@ -864,6 +885,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		if (got_data_grid)
 			GMT_Close_VirtualFile (API, data_grd);
+		else if (got_int4_grid)	/* Use the virtual file we made earlier */
+			GMT_Close_VirtualFile (API, int4_grd);
 	}
 
 	if (n_grids) {	/* Get grid dimensions */
