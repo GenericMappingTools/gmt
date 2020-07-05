@@ -835,7 +835,15 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 		else {	/* Must be cache file */
 			if (GMT->session.CACHEDIR == NULL) goto not_local;	/* Cannot have cache data if no cache directory created yet */
 			snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &file[1]);	/* This is where all cache files live */
-			if (access (local_path, R_OK)) goto not_local;	/* No such file yet */
+			if ((c = strchr (local_path, '=')) || (c = strchr (local_path, '?'))) {
+				was = c[0];	c[0] = '\0';
+			}
+			GMT->parent->cache = true;
+			if (access (local_path, R_OK)) {
+				if (c) c[0] = was;
+				goto not_local;	/* No such file yet */
+			}
+			if (c) c[0] = was;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Remote file %s exists locally as %s\n", file, local_path);
 		remote_path[0] = '\0';	/* No need to get from elsewhere */
