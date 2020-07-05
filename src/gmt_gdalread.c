@@ -32,11 +32,18 @@
 /* Local functions */
 
 GMT_LOCAL GDALDatasetH gdal_open (struct GMT_CTRL *GMT, char *gdal_filename) {
-	char *file = NULL, path[PATH_MAX] = {""};
+	char *file = NULL, path[PATH_MAX] = {""}, *c = NULL;
 	if (gmtlib_found_url_for_gdal (gdal_filename))	/* A vis*** URL, pass to GDAL as is */
 		strncpy (path, gdal_filename, PATH_MAX-1);
-	else if (strchr(gdal_filename, ':'))		/* Assume it is a SUBDATASET */
-		strncpy (path, gdal_filename, PATH_MAX-1);
+	else if ((c = strchr(gdal_filename, ':'))) {		/* Assume it is a SUBDATASET */
+		if (GMT->parent->cache) {
+			c[0] = '\0';
+			sprintf (path, "%s:%s/%s", gdal_filename, GMT->session.CACHEDIR, &c[1]);
+			c[0] = ':';
+		}
+		else
+			strncpy (path, gdal_filename, PATH_MAX-1);
+	}
 	else if ((file = gmt_getdatapath (GMT, gdal_filename, path, R_OK)) == NULL) {	/* Local file not found */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to find %s.\n", gdal_filename);
 		return (NULL);
