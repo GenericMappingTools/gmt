@@ -13560,6 +13560,19 @@ void gmtinit_complete_RJ (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *
 	}
 }
 
+GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
+	bool quote = false;	/* We are outside any quoted text */
+	size_t k;
+	if (strchr (file, '@') == NULL) return false;	/* No @ anywhere */
+	if (file[0] == '@') return true;	/* Definitively a remote file */
+	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
+	for (k = 0; k < strlen (file); k++) {
+		if (file[k] == '\"' || file[k] == '\'') quote = !quote;
+		if (file[k] == '@' && !quote) return true;	/* Found an unquoted at-symbol */
+	}
+	return false;	/* Nothing */
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmtinit_begin_module_sub.
@@ -13602,12 +13615,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
 
 	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		if (opt->arg[0] != '@') continue;	/* No remote file argument given */
-		if (remote_first) {
+		if (remote_first && gmtinit_might_be_remotefile (opt->arg)) {
 			gmt_refresh_server (GMT);	/* Refresh hash and info tables as needed */
 			remote_first = false;
 		}
-		gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then tis handles any missing registration _p|_g */
+		if (opt->arg[0] != '@') continue;	/* No remote file argument given */
+		gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 	}
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
