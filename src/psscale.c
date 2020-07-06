@@ -1137,10 +1137,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 			if (!center) {
 				for (i = 0; i < P->n_colors; i++) {		/* For all z_low coordinates */
-					t_len = (all || (P->data[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
+					t_len = (all || ((P->data[i].annot & 1) || (i && P->data[i-1].annot & 2))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels) {	/* Finally do last slice z_high boundary */
+				if (!use_labels || P->data[P->n_colors-1].annot & 2) {	/* Finally do last slice z_high boundary */
 					t_len = (all || (P->data[P->n_colors-1].annot & 2)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
 				}
@@ -1155,12 +1155,20 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 			for (i = 0; i < P->n_colors; i++) {
 				xx = (reverse) ? xright - x1 : x1;
-				if (all || (P->data[i].annot & 1)) {	/* Annotate this */
+				if (all || P->data[i].annot) {	/* Annotate this */
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && no_B_mode && P->data[i].label) {
-						strncpy (text, P->data[i].label, GMT_LEN256-1);
-						this_just = l_justify;
+					if (use_labels && no_B_mode) {
+						if ((P->data[i].annot & 1) && P->data[i].label) {
+							strncpy (text, P->data[i].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else if (i && (P->data[i-1].annot & 2) && P->data[i-1].label) {
+							strncpy (text, P->data[i-1].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else
+							text[0] = '\0';
 					}
 					else if (center && Ctrl->L.interval)
 						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
@@ -1177,12 +1185,20 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				}
 				x1 += z_width[i];
 			}
-			if (!center && !use_labels) {
+			if (!center) {
 				i = P->n_colors-1;
 				if (all || (P->data[i].annot & 2)) {
 					this_just = justify;
 					do_annot = true;
-					if (Ctrl->Q.active) {
+					if (use_labels && no_B_mode) {
+						if (P->data[i].label) {
+							strncpy (text, P->data[i].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else
+							text[0] = '\0';
+					}
+					else if (Ctrl->Q.active) {
 						p_val = irint (P->data[i].z_high);
 						if (doubleAlmostEqualZero (P->data[i].z_high, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
@@ -1407,10 +1423,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (!center) {
 				gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 				for (i = 0; i < P->n_colors; i++) {
-					t_len = (all || (P->data[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
+					t_len = (all || ((P->data[i].annot & 1) || (i && P->data[i-1].annot & 2))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels) {
+				if (!use_labels || P->data[P->n_colors-1].annot & 2) {
 					t_len = (all || (P->data[P->n_colors-1].annot & 2)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
 				}
@@ -1425,12 +1441,20 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 			for (i = 0; i < P->n_colors; i++) {
 				xx = (reverse) ? xright - x1 : x1;
-				if (all || (P->data[i].annot & 1)) {
+				if (all || P->data[i].annot) {
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && no_B_mode && P->data[i].label) {
-						strncpy (text, P->data[i].label, GMT_LEN256-1);
-						this_just = l_justify;
+					if (use_labels && no_B_mode) {
+						if ((P->data[i].annot & 1) && P->data[i].label) {
+							strncpy (text, P->data[i].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else if (i && P->data[i-1].annot & 2 && P->data[i-1].label) {
+							strncpy (text, P->data[i-1].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else
+							text[0] = '\0';
 					}
 					else if (center && Ctrl->L.interval)
 						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);

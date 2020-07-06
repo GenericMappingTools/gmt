@@ -55,7 +55,8 @@ Code Dimensions        Reg Size     Description
 ==== ================= === =======  ==================================================
 
 All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
-the earth_relief files being placed in an ``earth/earth_relief`` sub-directory.
+the earth_relief files being placed in an ``earth/earth_relief`` sub-directory.  If you
+do not specify a CPT then this dataset default to the GMT master *geo*.
 
 Technical Information
 ---------------------

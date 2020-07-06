@@ -1,11 +1,9 @@
 Global Earth Seafloor Crustal Age Grids
 =======================================
 
-.. figure:: /_images/agemap.jpg
-   :height: 888 px
-   :width: 1774 px
+.. figure:: /_images/GMT_agefig.*
+   :width: 710 px
    :align: center
-   :scale: 40 %
 
 Numerous geodynamic and geophysical studies consider both the seafloor depth and
 the seafloor crustal age. `EarthByte <https://www.earthbyte.org/>`_ has pioneered
@@ -51,7 +49,8 @@ Code Dimensions        Reg Size     Description
 ==== ================= === =======  ==================================================
 
 All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
-the earth_age files being placed in an ``earth/earth_age`` sub-directory.
+the earth_age files being placed in an ``earth/earth_age`` sub-directory. If you do not
+specify a CPT, the default CPT for this data set will be used (*@age_chrons_GTS2012_2020.cpt*)
 
 Technical Information
 ---------------------
