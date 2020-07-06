@@ -8327,6 +8327,9 @@ GMT_LOCAL struct GMT_RECORD * gmtapi_get_record_dataset (struct GMTAPI_CTRL *API
 			}
 			if (D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text && D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]])
 				strncpy (GMT->current.io.curr_trailing_text, D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]], GMT_BUFSIZ-1);
+			if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && API->current_get_n_columns >= 2) {
+				gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+			}
 			record = &GMT->current.io.record;
 			GMT->common.b.ncol[GMT_IN] = API->current_get_n_columns;
 			*n_fields = (int)API->current_get_n_columns;
@@ -8554,6 +8557,10 @@ GMT_LOCAL int gmtapi_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int m
 				if (GMT->current.io.col_type[GMT_OUT][col] & GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &value);
 				GMT->hidden.mem_coord[col][count[GMT_ROW]] = value;
 			}
+			if (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && T->n_columns >= 2) {
+				gmt_M_double_swap (GMT->hidden.mem_coord[GMT_X][count[GMT_ROW]], GMT->hidden.mem_coord[GMT_Y][count[GMT_ROW]]);	/* Got lat/lon instead of lon/lat */
+			}
+
 			if (record->text && record->text[0])	/* Also write trailing text */
 				GMT->hidden.mem_txt[count[GMT_ROW]] = strdup (record->text);
 			count[GMT_ROW]++;	/* Increment rows in this segment */
@@ -8573,7 +8580,7 @@ GMT_LOCAL int gmtapi_put_record_matrix (struct GMTAPI_CTRL *API, unsigned int mo
 	int error = GMT_NOERROR;
 	struct GMT_MATRIX *M = API->current_put_M;
 	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
-	uint64_t col, ij;
+	uint64_t col, kol, ij;
 	char *s = NULL;
 
 	switch (mode) {
@@ -8604,8 +8611,14 @@ GMT_LOCAL int gmtapi_put_record_matrix (struct GMTAPI_CTRL *API, unsigned int mo
 					error = GMT_NOTSET;
 				else {
 					double value;
+					bool toggle = (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && M->n_columns >= 2);
+
 					for (col = 0; col < M->n_columns; col++) {	/* Place the output items */
-						ij = API->current_put_M_index (API->current_put_obj->rec, col, M->dim);
+						if (col < 2 && toggle)	/* Deal with -: since we are writing to matrix memory and not file */
+							kol = 1 - col;
+						else
+							kol = col;
+						ij = API->current_put_M_index (API->current_put_obj->rec, kol, M->dim);
 						value = gmtapi_select_record_value (GMT, record->data, (unsigned int)col, (unsigned int)GMT->common.b.ncol[GMT_OUT]);
 						API->current_put_M_val (&(M->data), ij, value);
 					}
@@ -8641,7 +8654,7 @@ GMT_LOCAL int gmtapi_put_record_vector (struct GMTAPI_CTRL *API, unsigned int mo
 	int error = GMT_NOERROR;
 	struct GMT_VECTOR *V = API->current_put_V;
 	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
-	uint64_t col;
+	uint64_t col, kol;
 	char *s = NULL;
 
 	switch (mode) {
@@ -8670,9 +8683,14 @@ GMT_LOCAL int gmtapi_put_record_vector (struct GMTAPI_CTRL *API, unsigned int mo
 				if (gmt_skip_output (GMT, record->data, V->n_columns))	/* Record was skipped via -s[a|r] */
 					error = GMT_NOTSET;
 				else {
+					bool toggle = (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && V->n_columns >= 2);
 					for (col = 0; col < V->n_columns; col++) {	/* Place the output items */
+						if (col < 2 && toggle)	/* Deal with -: since we are writing to matrix memory and not file */
+							kol = 1 - col;
+						else
+							kol = col;
 						value = gmtapi_select_record_value (GMT, record->data, (unsigned int)col, (unsigned int)GMT->common.b.ncol[GMT_OUT]);
-						API->current_put_V_val[col] (&(V->data[col]), API->current_put_obj->rec, value);
+						API->current_put_V_val[kol] (&(V->data[kol]), API->current_put_obj->rec, value);
 					}
 					if (record->text)
 						V->text[API->current_put_obj->rec] = strdup (record->text);
