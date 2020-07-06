@@ -3980,6 +3980,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table from GMT_DATASET memory location\n");
 				if ((D_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				check_col_switch = true;
 				DH = gmt_get_DD_hidden (D_obj);
 				break;
 
@@ -4049,7 +4050,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				DH = gmt_get_DD_hidden (D_obj);
 				DH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 				D_obj->geometry = S_obj->geometry;	/* Since provided when registered */
-				update = via = check_col_switch = true;
+				update = via = true;
 				break;
 
 	 		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:
@@ -4117,7 +4118,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				DH = gmt_get_DD_hidden (D_obj);
 				DH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 				D_obj->geometry = S_obj->geometry;	/* Since provided when registered */
-				update = via = check_col_switch = true;
+				update = via = true;
 				break;
 
 		 	case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
