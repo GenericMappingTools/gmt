@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Compute Peak Ground Acceleration/Velocity and Intensity."
 #define THIS_MODULE_KEYS	"<G{,LD(=,>GG)"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:RV"
+#define THIS_MODULE_OPTIONS "-:RVbi"
 
 /* Control structure */
 
@@ -100,7 +100,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmt %s <grid> -G<outgrid> -L<fault.xy> -M<mag> [-F<mecatype>] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -G<outgrid> -L<fault.xy> -M<mag> [-F<mecatype>] [%s] [%s]\n",
 	             name, GMT_Rgeoz_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -120,7 +120,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   1 unknown [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2 strike-slip.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3 normal.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   4 thrust.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   4 thrust.\n\n");
+	GMT_Option (API, "R,V");
+	GMT_Option (API, "bi,i,:");
 
 	return (GMT_MODULE_USAGE);
 }

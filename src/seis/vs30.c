@@ -25,7 +25,7 @@
 #define THIS_MODULE_PURPOSE	"Compute VS30"
 #define THIS_MODULE_KEYS	"<G{,CD(=,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"-:RVbr"
+#define THIS_MODULE_OPTIONS	"-:RVbir"
 
 const float vs30_min = 180;
 const float vs30_max = 900;
@@ -97,7 +97,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmt %s <grid> -G<outgrid> [-C<val>|fname[+g]] [-W<water_vel>] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -G<outgrid> [-C<val>|fname[+g]] [-W<water_vel>] [%s] [%s]\n",
 	             name, GMT_Rgeoz_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -105,13 +105,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> The input grid name of the topography.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G File name for output grid with the Vs30 velocities.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Argument can be one of three:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   - A value between 0 and 1, where 0 means a stable Craton and 0 an Active region.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   - A value between 0 and 1, where 0 means a stable Craton and 1 an Active region.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   - The name of a multi-segment file with the 'cratons' polygons. In this case the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     polygons will be feed to grdmask to compute a cratons/active tectonic mask.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   - The name of a grid with the cratons/active tectonic regions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W water_vel sets the Vs30 value used in areas designated as water in the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   landmask [default=600]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   landmask [default=600]\n\n");
+	GMT_Option (API, "R,V");
+	GMT_Option (API, "bi,i,r,:");
 	
 	return (GMT_MODULE_USAGE);
 }
