@@ -13585,7 +13585,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
 	 */
 
-	bool is_PS, is_psrose = false, is_D_module = false;
+	bool is_PS, is_psrose = false, is_D_module = false, remote_first = true;
 	char *required = (char *)in_required;
 	unsigned int k;
 	static char *D_module[4] = {"gmtlogo", "psimage", "pslegend", "psscale"};	/* These all may take -Dx etc */
@@ -13603,6 +13603,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 		if (opt->arg[0] != '@') continue;	/* No remote file argument given */
+		if (remote_first) {
+			gmt_refresh_server (GMT);	/* Refresh hash and info tables as needed */
+			remote_first = false;
+		}
 		gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then tis handles any missing registration _p|_g */
 	}
 
@@ -16485,8 +16489,6 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	gmtlib_fft_initialization (GMT);	/* Determine which FFT algos are available and set pointers */
 
 	gmtinit_set_today (GMT);	/* Determine today's rata die value */
-
-	gmtlib_refresh_server (GMT);	/* Refresh hash and info tables if needed */
 
 	return (GMT);
 }
