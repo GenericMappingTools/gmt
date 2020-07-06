@@ -217,7 +217,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 		/* this is when errors have been encountered */
 		regerror(status, &re, err_msg, MAX_ERR_LENGTH);
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_regexp_match: POSIX ERE matching error: %s\n", err_msg); /* Report error. */
-		return (-GMT_RUNTIME_ERROR;)
+		return (-GMT_RUNTIME_ERROR);
 	}
 	return (0); /* No match */
 
