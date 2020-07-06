@@ -247,7 +247,7 @@ FORMAT Parameters
         - **+D**: Output longitude in the range [0,360]
         - **-D**: Output longitude in the range [-360,0]
         - **ddd**: Fixed format integer degrees
-        - **:**: delimiter used
+        - **:**: Delimiter used
         - **mm**: Fixed format integer arc minutes
         - **ss**: Fixed format integer arc seconds
         - **.xxx**: Floating fraction of previous integer field, fixed width.
