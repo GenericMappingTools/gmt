@@ -21,7 +21,7 @@
 
 #define THIS_MODULE_CLASSIC_NAME	"vs30"
 #define THIS_MODULE_MODERN_NAME		"vs30"
-#define THIS_MODULE_LIB		"meca"
+#define THIS_MODULE_LIB		"seis"
 #define THIS_MODULE_PURPOSE	"Compute VS30"
 #define THIS_MODULE_KEYS	"<G{,CD(=,GG}"
 #define THIS_MODULE_NEEDS	""
