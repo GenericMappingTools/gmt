@@ -1,11 +1,9 @@
 Global Earth Seafloor Crustal Age Grids
 =======================================
 
-.. figure:: /_images/agemap.jpg
-   :height: 888 px
-   :width: 1774 px
+.. figure:: /_images/GMT_agefig.*
+   :width: 500 px
    :align: center
-   :scale: 40 %
 
 Numerous geodynamic and geophysical studies consider both the seafloor depth and
 the seafloor crustal age. `EarthByte <https://www.earthbyte.org/>`_ has pioneered
