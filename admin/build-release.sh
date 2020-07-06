@@ -66,8 +66,14 @@ fi
 
 G_ver=$(gs --version)
 echo "build-release.sh: You will be including Ghostscript version $G_ver"
-echo "build-release.sh: Remember to run admin/gs-check.sh to ensure it passes our test" >&2
-
+echo "build-release.sh: Running admin/gs-check.sh to ensure it passes our transparency test" >&2
+err=$(admin/gs_check.sh | grep Total | awk '{print $3}')
+if [ "X${err}" = "X0.0" ]; then
+	echo "build-release.sh: Ghostscript version $G_ver passed the test - will be included" >&2
+else
+	echo "build-release.sh: Ghostscript version $G_ver failed the test - install another gs" >&2
+	exit 1
+fi
 # 1. Set basic ConfigUser.cmake file for a release build
 if [ -f cmake/ConfigUser.cmake ]; then
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig
