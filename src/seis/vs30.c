@@ -13,6 +13,24 @@
  * The optional numerical argument "water" is the value
  * that water-covered areas will be set to; the default is 600.
  * The output file name is specified with "output_file" (required).
+ * 
+ * LICENSE
+ * (https://github.com/usgs/earthquake-global_vs30/blob/master/LICENSE.md)
+ * 
+ * Unless otherwise noted, This project is in the public domain in the United States because it
+ * contains materials that originally came from the United States Geological Survey, an agency
+ * of the United States Department of Interior. For more information, see the official USGS
+ * copyright policy at https://www2.usgs.gov/visual-id/credit_usgs.html#copyright
+ *
+ * Additionally, we waive copyright and related rights in the work worldwide through the CC0 1.0
+ * Universal public domain dedication.
+ *
+ * The getpar package (src/getpar.c, src/libget.h, src/getpar.3) is included with the express
+ * permission of the author, Robert W. Clayton.
+ * 
+ * J. Luis
+ * re-writen after https://github.com/usgs/earthquake-global_vs30/blob/master/src/grad2vs30.c
+ * Version:	6 API
  */
 
 //shake vs30.grd -Glixo.grd -Lline.dat+uk -Ci -Vl -Rvs30.grd
@@ -353,9 +371,7 @@ EXTERN_MSC int GMT_vs30 (void *V_API, int mode, void *args) {
 	                             GMT->common.R.registration, 2, NULL)) == NULL)
 		Return (API->error);
 
-	/*
-	 * We're doing log-log interpolation, so log() everything in the tables first, for efficiency
-	 */
+	/* * We're doing log-log interpolation, so log() everything in the tables first, for efficiency */
 	for (row = 0; row < rows_active; row++)
 		for (col = 0; col < 4; col++)
 			active_table[row][col] = log(active_table[row][col]);
