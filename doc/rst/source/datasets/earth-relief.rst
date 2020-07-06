@@ -132,5 +132,5 @@ Data References
 ---------------
 
 #. SRTM15+V2.1 [http://dx.doi.org/10.1029/2019EA000658].
-#. SRTMGL3 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3_v003].
-#. SRTMGL1 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl1_v003].
+#. SRTMGL3 tiles: [https://lpdaac.usgs.gov/products/srtmgl3v003].
+#. SRTMGL1 tiles: [https://lpdaac.usgs.gov/products/srtmgl1v003].
