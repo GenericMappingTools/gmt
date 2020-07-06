@@ -53,7 +53,7 @@ struct VS30_CTRL {
 	} W;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct VS30_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct VS30_CTRL);
@@ -63,7 +63,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct VS30_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct VS30_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free(GMT, C);
 }
@@ -93,7 +93,7 @@ double craton_table[6][4] =
 		 {620, 760, 0.018,   0.025}};
 
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -116,7 +116,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct VS30_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct VS30_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
 	/* This parses the options provided to shake and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct VS30_CTRL *Ctrl, struct GMT_Z_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int check_grid_compat (struct GMTAPI_CTRL *API, struct GMT_GRID *A, struct GMT_GRID *B) {
+static int check_grid_compat (struct GMTAPI_CTRL *API, struct GMT_GRID *A, struct GMT_GRID *B) {
 	/* Check that grids A & B are compatible. If they are, return 0. Otherwise:
 	   return 1		if increments differ more than 0.2 %
 	   return 1		if any of the corners differ more than 1/5 of the grid spacing
@@ -218,7 +218,7 @@ inline double interpVs30(double *tt, double lg) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* --------------------------------------------------------------------------------- */
-int GMT_vs30 (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_vs30 (void *V_API, int mode, void *args) {
 	unsigned int row, col, j, nr, k;
 	uint64_t ij;
 	int error = 0;
