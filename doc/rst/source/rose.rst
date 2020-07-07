@@ -23,7 +23,7 @@ Synopsis
 [ |-L|\ [*wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*] ]
 [ |-M|\ *parameters* ]
 [ |-Q|\ *alpha* ]
-[ |-R|\ *r0*/*r1*/*az_0*/*az_1* ]
+[ |-R|\ *r0*/*r1*/*az0*/*az1* ]
 [ |-S| ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
