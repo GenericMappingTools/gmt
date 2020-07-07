@@ -243,16 +243,27 @@ FORMAT Parameters
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
-        - **D**: Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default].
-        - **+D**: Output longitude in the range [0,360]
-        - **-D**: Output longitude in the range [-360,0]
-        - **ddd**: Fixed format integer degrees
-        - **:**: Delimiter used
-        - **mm**: Fixed format integer arc minutes
-        - **ss**: Fixed format integer arc seconds
-        - **.xxx**: Floating fraction of previous integer field, fixed width.
-        - **F**: Encode sign using WESN suffix
-        - **G**: Same as **F** but with a leading space before suffix
+        +------+-------------------------------------------------------------------+
+        |    D | Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default] |
+        +------+-------------------------------------------------------------------+
+        |   +D | Output longitude in the range [0,360]                             |
+        +------+-------------------------------------------------------------------+
+        |   -D | Output longitude in the range [-360,0]                            |
+        +------+-------------------------------------------------------------------+
+        |  ddd | Fixed format integer degrees                                      |
+        +------+-------------------------------------------------------------------+
+        |    : | Delimiter used                                                    |
+        +------+-------------------------------------------------------------------+
+        |   mm | Fixed format integer arc minutes                                  |
+        +------+-------------------------------------------------------------------+
+        |   ss | Fixed format integer arc seconds                                  |
+        +------+-------------------------------------------------------------------+
+        | .xxx | Floating fraction of previous integer field, fixed width          |
+        +------+-------------------------------------------------------------------+
+        |    F | Encode sign using WESN suffix                                     |
+        +------+-------------------------------------------------------------------+
+        |    G | Same as **F** but with a leading space before suffix              |
+        +------+-------------------------------------------------------------------+
 
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax) to be used when plotting double
