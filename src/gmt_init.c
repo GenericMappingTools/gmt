@@ -14283,6 +14283,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmt_M_memset (&GMT->current.gdal_read_out, 1, struct GMT_GDALREAD_OUT_CTRL);
 	gmt_M_memset (&GMT->current.gdal_write,    1, struct GMT_GDALWRITE_CTRL);
 
+	GMT->parent->cache = false;		/* Otherwise gdalread from externals on Windows would mingle CACHEDIR in fnames */
+
 	gmt_M_str_free (Ccopy);	/* Good riddance */
 }
 
