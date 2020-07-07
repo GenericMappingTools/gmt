@@ -34,14 +34,12 @@ Optional Arguments
 
 .. include:: explain_-B.rst_
 |
-|   Remember that "x" here is
-|   radial distance and "y" is azimuth. The ylabel may be used to plot a figure caption.
-|   The scale bar length is determined by the radial gridline spacing.
+|   Remember that "x" here is radial distance and "y" is azimuth. The ylabel may be used to plot a figure caption. The scale bar length is determined by the radial gridline spacing.
 
 .. _-C:
 
 **-C**\ *cpt*
-    Give a CPT. The r-value for each sector is used to
+    Give a CPT. The *r*-value for each sector is used to
     look-up the sector color.  Cannot be used with a rose diagram.
     If modern mode and no argument is given then we select the current CPT.
 
@@ -66,7 +64,7 @@ Optional Arguments
 .. _-F:
 
 **-F**
-    Do not draw the scale length bar [Default plots scale in lower right corner]
+    Do not draw the scale length bar [Default plots scale in lower right corner provided **-B** is used]
 
 .. _-G:
 
@@ -94,7 +92,7 @@ Optional Arguments
     full-circle plot the default is WEST,EAST,SOUTH,NORTH and for
     half-circle the default is 90W,90E,-,0. A - in any entry disables
     that label. Use **-L** with no argument to disable all four labels.
-    Note that the GMT_LANGUAGE setting will affect the words used.
+    Note that the :term:`GMT_LANGUAGE` setting will affect the words used.
 
 .. _-M:
 
@@ -118,8 +116,8 @@ Optional Arguments
 
 .. _-R:
 
-**-R**\ *r0*/*r1*/*az\_0*/*az\_1*
-    Specifies the 'region' of interest in (r,azimuth) space. r0 is 0, r1
+**-R**\ *r0*/*r1*/*az0*/*az1*
+    Specifies the 'region' of interest in (*r*\ ,\ *azimuth*) space. Here, *r0* is 0, *r1*
     is max length in units. For azimuth, specify either -90/90 or 0/180
     for half circle plot or 0/360 for full circle.
 
@@ -166,8 +164,8 @@ Optional Arguments
     scaling].
 
 **-:**
-    Input file has (azimuth,radius) pairs rather than the expected
-    (radius,azimuth).
+    Input file has (*azimuth,radius*) pairs rather than the expected
+    (*radius,azimuth*).
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
