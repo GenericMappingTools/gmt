@@ -400,7 +400,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 
 	/* Check that the options selected are mutually consistent */
 
-	GMT->common.R.wesn[XLO] = 0.0;
 	range = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
 	if (doubleAlmostEqual (range, 180.0) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_WARNING, "-T only needed for 0-360 range data (ignored)");
@@ -425,6 +424,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 180.0)
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 360.0)),
 				"Option -R: theta0/theta1 must be either -90/90, 0/180 or 0/360\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.wesn[XLO] != 0.0, "Option -R: r0/r1 must have r0 == 0 and r1 must be positive\n");
 	}
 	n_errors += gmt_check_binary_io (GMT, 2);
 
