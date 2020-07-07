@@ -665,7 +665,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 	return GMT_NOERROR;
 }
 
-void gmtlib_refresh_server (struct GMT_CTRL *GMT) {
+void gmt_refresh_server (struct GMT_CTRL *GMT) {
 	/* Called once in gmt_begin from GMT_Create_Session,  The following actions take place:
 	 *
 	 * The data info table is refreshed if missing or older than 24 hours.
