@@ -6350,7 +6350,7 @@ void gmt_check_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *
 }
 
 /*! . */
-void gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode) {
+int gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode) {
 	/* Determine the order of H, M, S in input and output clock strings,
 	 * as well as the number of decimals in output seconds (if any), and
 	 * if a 12- or 24-hour clock is used.
@@ -6360,12 +6360,12 @@ void gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_I
 	S->skip = false;
 	if (mode && strlen (form) == 1 && form[0] == '-') {	/* Do not want clock output or plotted */
 		S->skip = true;
-		return;
+		return GMT_NOERROR;
 	}
 
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
-	gmtio_get_hms_order (GMT, form, S);
+	if (gmtio_get_hms_order (GMT, form, S)) return GMT_PARSE_ERROR;
 
 	/* Craft the actual C-format to use for input/output clock strings */
 
@@ -6400,10 +6400,11 @@ void gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_I
 			strcat (S->format, fmt);
 		}
 	}
+	return (GMT_NOERROR);
 }
 
 /*! . */
-void gmtlib_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S, unsigned int mode) {
+int gmtlib_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S, unsigned int mode) {
 	/* Determine the order of Y, M, D, J in input and output date strings.
 	 * mode is 0 for input, 1 for output, and 2 for plot output.
 	 */
@@ -6415,12 +6416,15 @@ void gmtlib_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO 
 	S->skip = false;
 	if (mode && strlen (form) == 1 && form[0] == '-') {	/* Do not want date output or plotted */
 		S->skip = true;
-		return;
+		return GMT_NOERROR;
 	}
 
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
+	GMT->parent->error = GMT_NOERROR;
 	watch = gmtio_get_ymdj_order (GMT, form, S);
+	if (GMT->parent->error) return (GMT->parent->error);
+
 	S->watch = (watch && mode == 0);
 
 	/* Craft the actual C-format to use for i/o date strings */
@@ -6503,6 +6507,7 @@ void gmtlib_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO 
 			}
 		}
 	}
+	return GMT_NOERROR;
 }
 
 /*! . */
@@ -6511,7 +6516,9 @@ int gmtlib_geo_C_format (struct GMT_CTRL *GMT) {
 
 	struct GMT_GEO_IO *S = &GMT->current.io.geo;
 
-	gmtio_get_dms_order (GMT, GMT->current.setting.format_geo_out, S);	/* Get the order of degree, min, sec in output formats */
+	if (GMT->current.setting.format_geo_out[0] == '\0') return GMT_RUNTIME_ERROR;	/* Gave nothing */
+
+	if (gmtio_get_dms_order (GMT, GMT->current.setting.format_geo_out, S)) return GMT_PARSE_ERROR;	/* Get the order of degree, min, sec in output formats */
 
 	if (S->no_sign) return (GMT_IO_BAD_PLOT_DEGREE_FORMAT);
 
@@ -6554,7 +6561,7 @@ int gmtlib_geo_C_format (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-void gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
+int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 	unsigned int i, j, length;
 	struct GMT_GEO_IO *S = &GMT->current.plot.calclock.geo;
 
@@ -6562,13 +6569,13 @@ void gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) gmt_M_memset (GMT->current.plot.format[i][j], GMT_LEN256, char);
 
-	gmtio_get_dms_order (GMT, GMT->current.setting.format_geo_map, S);	/* Get the order of degree, min, sec in output formats */
+	if (gmtio_get_dms_order (GMT, GMT->current.setting.format_geo_map, S)) return GMT_PARSE_ERROR;	/* Get the order of degree, min, sec in output formats */
 
 	if (S->decimal) {	/* Plain decimal degrees */
 		int len;
 		 /* Here we depend on FORMAT_FLOAT_OUT being set.  This will not be true when FORMAT_GEO_MAP is parsed but will be
 		  * handled at the end of gmt_begin.  For gmtset and --PAR later we will be OK as well. */
-		if (!GMT->current.setting.format_float_out[0]) return; /* Quietly return and deal with this later in gmt_begin */
+		if (!GMT->current.setting.format_float_out[0]) return GMT_NOERROR; /* Quietly return and deal with this later in gmt_begin */
 
 		len = sprintf (S->x_format, "%s", GMT->current.setting.format_float_out);
 		      sprintf (S->y_format, "%s", GMT->current.setting.format_float_out);
@@ -6669,6 +6676,7 @@ void gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 			strcat (GMT->current.plot.format[i][j], "%s");
 		}
 	}
+	return GMT_NOERROR;
 }
 
 /*! . */
