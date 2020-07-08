@@ -10561,7 +10561,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				switch (lower_value[k]) {
 					case 'd':	f = 1;	break;
 					case 'w':	f = 7;	break;
-					case 'm':	f = 30;	break;
+					case 'o':	f = 30;	break;
 					default:	f = 1;	break;
 				}
 				GMT->current.setting.refresh_time = atoi (lower_value) * f;
@@ -11845,8 +11845,8 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 
 		case GMTCASE_GMT_DATA_SERVER_UPDATE:
 			if ((GMT->current.setting.refresh_time % 30) == 0)	/* Whole "months" = 30 days */
-				snprintf (value, GMT_BUFSIZ, "%dm", GMT->current.setting.refresh_time / 30);
-			if ((GMT->current.setting.refresh_time % 7) == 0)	/* Whole weeks */
+				snprintf (value, GMT_BUFSIZ, "%do", GMT->current.setting.refresh_time / 30);
+			else if ((GMT->current.setting.refresh_time % 7) == 0)	/* Whole weeks */
 				snprintf (value, GMT_BUFSIZ, "%dw", GMT->current.setting.refresh_time / 7);
 			else /* Number of days */
 				snprintf (value, GMT_BUFSIZ, "%dd", GMT->current.setting.refresh_time);

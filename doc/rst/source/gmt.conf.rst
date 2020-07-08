@@ -323,7 +323,7 @@ GMT Miscellaneous Parameters
     **GMT_DATA_SERVER_UPDATE**
         Specifies how often we update the local catalog of data available on
         the remote server and pruning expired data sets [1d].  Allowable time
-        units are **d** (days), **w** (week), **m** (month, here ~30 days).
+        units are **d** (days), **w** (week), **o** (month, here 30 days).
 
     **GMT_EXPORT_TYPE**
         This setting is only used by external interfaces and controls the
