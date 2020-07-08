@@ -156,6 +156,30 @@ GMT_LOCAL int gmtremote_parse_version (char *line) {
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL int gmtremote_remove_item (struct GMTAPI_CTRL *API, char *path, bool directory) {
+	int error = GMT_NOERROR;
+	fprintf (stderr, "Would delete: %s\n", path);	/* STOP HERE FOR NOW AS TESTING */
+	return GMT_NOERROR;
+	if (directory) {	/* Delete populated directories via the operating system */
+		char del_cmd[PATH_MAX] = {""};
+#ifdef _WIN32
+		char *t = gmt_strrep (path, "/", "\\");	/* rmdir needs paths with back-slashes */
+		strcpy (del_cmd, "rmdir /s /q ");
+		strcat (del_cmd, t);
+		gmt_M_str_free(t);
+#else
+		sprintf (del_cmd, "rm -rf %s", path);
+#endif
+		if ((error = system (del_cmd))) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to remove %s [error = %d]\n", path, error);
+			error = GMT_RUNTIME_ERROR;
+		}
+	}
+	else	/* Just delete a file programmatically */
+		gmt_remove_file (API->GMT, path);
+	return error;
+}
+
 GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *n) {
 	/* Read contents of the info file into an array of structs */
 	int k = 0, nr;
@@ -230,6 +254,55 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 	/* Soft alphabetically on file names */
 	qsort (I, *n, sizeof (struct GMT_DATA_INFO), gmtremote_compare_names);
 	for (k = 0; k < *n; k++) I[k].id = k;	/* Give running number as ID in the sorted array */
+
+	if (GMT->current.io.new_data_list) {	/* Take this opportunity to delete datasets past their expiration date */
+		time_t mod_time;
+		struct tm *UTC = NULL;
+		struct stat buf;
+		int year, month, day, kyear, kmonth, kday;
+		size_t L;
+		char path[PATH_MAX] = {""};
+
+		GMT->current.io.new_data_list = false;	/* Only do this once after a listing update */
+		if (GMT->session.USERDIR == NULL) goto out_of_here;	/* Cannot have server data if no user directory created yet */
+		if (access (GMT->session.USERDIR, R_OK)) goto out_of_here;	/* Have not made a user directory yet, so cannot have any remote data yet either */
+
+		for (k = 0; k < *n; k++) {	/* Check the release date of each data set that has been downloaded against the file date */
+			if (sscanf (I[k].date, "%d-%d-%d", &kyear, &kmonth, &kday) != 3) continue;	/* Maybe malformed datestring */
+			snprintf (file, PATH_MAX, "%s/%s%s", GMT->session.USERDIR, GMT->parent->remote_info[k].dir, GMT->parent->remote_info[k].file);
+			if ((L = strlen (file)) && file[L-1] == '/') file[L-1] = '\0';	/* Chop off trailing / that indicates directory of tiles */
+			if (access (file, R_OK)) continue;	/* No such file yet */
+			/* Here we have a local copy of this remote file or directory - get its creation date */
+			if (stat (file, &buf)) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to get information about %s - skip\n", file);
+				continue;
+			}
+			/*  Get its modification (creation) time */
+#ifdef __APPLE__
+			mod_time = buf.st_mtimespec.tv_sec;	/* Apple even has tv_nsec for nano-seconds... */
+#else
+			mod_time = buf.st_mtime;
+#endif
+			/* Get the year, month, day integers */
+			UTC   = gmtime (&mod_time);
+			year  = UTC->tm_year + 1900;
+			month = UTC->tm_mon + 1;
+			day   = UTC->tm_mday;
+			if (kyear < year) continue;	/* The origin year is older than our copy so no need to check further */
+			if (kyear == year) {	/* Our file and the server file is both from the same year */
+				if (kmonth < month) continue;	/* The origin month is older than our copy so no need to check further */
+				if (kmonth == month) {	/* Same year, same month */
+					if (kday < day) continue; 	/* The origin day is older than our copy so no need to check further */
+				}
+			}
+			/* If we get here we need to remote the outdated file */
+			if (gmtremote_remove_item (GMT->parent, path, I[k].tile_size > 0.0)) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to remove %s \n", path);
+			}
+		}
+	}
+
+out_of_here:
 	return (I);
 };
 
@@ -659,6 +732,8 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 			if (!access (old_indexpath, F_OK))
 				remove (old_indexpath);	/* Remove old index file if it exists */
 		}
+		else 
+			GMT->current.io.new_data_list = true;	/* Flag that we wish to delete datasets older than entries in this file */
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", indexpath);

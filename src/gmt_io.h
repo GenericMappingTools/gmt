@@ -256,6 +256,7 @@ struct GMT_IO {				/* Used to process input data records */
 	bool first_rec;			/* true when reading very first data record in a dataset */
 	bool trailing_text[2];	/* Default is to process training text unless turned off via -i, -o */
 	bool refreshed[2];		/* true after calling the hash_refresh function the first time, for hash and info, respectively */
+	bool new_data_list;		/* true after when a server refresh yields an updated gmt_data_server.txt */
 	bool internet_error;		/* true after failing to get hash table due to time-out */
 	bool grid_padding;		/* If true we try to read two extra rows/cols from grids for BC purposes */
 	bool leave_as_jp2;		/* If true we do not convert downloaded JP2 grids to NC right away, but as needed */
