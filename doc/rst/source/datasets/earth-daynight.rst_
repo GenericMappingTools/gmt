@@ -1,5 +1,5 @@
 Global Earth Day/Night Images
-=============================
+-----------------------------
 
 .. figure:: /_images/daynight.jpg
    :height: 888 px
@@ -14,12 +14,7 @@ These images may be plotted with :doc:`/grdimage` or :doc:`/grdview` and manipul
 by :doc:`/grdmix`.  The above example mixes both images according to a day-night
 mask and adds illumination from a corresponding Earth DEM.
 
-Usage
------
-
-We have processed and reformatted this publicly available global imagery
-and standardized their file names.  In GMT, you may access a global daytime image
-by specifying the special names
+You access a global daytime image by specifying the special names
 
    @earth_day_\ *rr*\ *u*
 
@@ -27,10 +22,8 @@ Similarly for the nighttime view:
 
    @earth_night_\ *rr*\ *u*
 
-Here, *rr* is a 2-digit integer specifying the image resolution in the unit *u*, where
-*u* is either **d**, **m** or **s** for arc degree, arc minute or arc second, respectively.
-Note there is no file extension specified.
-The following codes for *rr*\ *u* are supported:
+The following codes for *rr*\ *u* and the optional *reg* are supported (dimensions are listed
+for pixel-registered grids; gridline-registered grids increment dimensions by one):
 
 .. _tbl-earth_relief:
 
@@ -55,7 +48,7 @@ All of these images will, when downloaded, be placed in your ~/.gmt/server direc
 the ``earth/earth_day`` and ``earth/earth_night`` sub-directories.
 
 Technical Information
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 The 01m and lower resolution images are derivatives of NASA's Blue and Black marble image mosaics.
 We have downsampled them via Cartesian Gaussian filtering to prevent aliasing while preserving
@@ -66,10 +59,8 @@ to the geotiff files on the remote server. **Note**: This data set is experiment
 format and delivery is likely to change in the future (e.g., via image tiles).  To make the
 files as small as possible we have also downgraded them from 24-bit to 8-bit indexed images.
 
-.. include:: ../data-updating.rst_
-
 Data References
----------------
+~~~~~~~~~~~~~~~
 
 #. Blue Marble [https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography].
 #. Black Marble: [https://earthobservatory.nasa.gov/features/NightLights/page3.php].
