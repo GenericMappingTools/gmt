@@ -8721,7 +8721,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 			fprintf (fp, format, hi, gmt_putcolor (GMT, P->data[i].rgb_high), '\t');
 		}
 		if (P->data[i].annot) fprintf (fp, "%c\t", kind[P->data[i].annot-1]);
-		if (P->data[i].label[0]) fprintf (fp, ";%s", P->data[i].label);
+		if (P->data[i].label) fprintf (fp, ";%s", P->data[i].label);
 		fputc ('\n', fp);
 	}
 
