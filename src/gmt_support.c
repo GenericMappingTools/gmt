@@ -7665,10 +7665,11 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		/* First determine if a label is given */
 
 		if ((k = strcspn(line, ";")) && line[k] != '\0') {
+			char string[GMT_LEN64] = {""};
 			/* OK, find the label and chop it off */
-			X->data[n].label = gmt_M_memory (GMT, NULL, strlen (line) - k, char);
-			strcpy (X->data[n].label, &line[k+1]);
-			gmt_chop (X->data[n].label);	/* Strip off trailing return */
+			strcpy (string, &line[k+1]);
+			gmt_chop (string);	/* Strip off trailing return */
+			X->data[n].label = strdup (string);
 			k--;	/* Position before ; */
 			while (k && (line[k] == '\t' || line[k] == ' ')) k--;
 			line[k+1] = '\0';	/* Chop label and trailing white space off from line */
@@ -7897,7 +7898,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Must abort due to above errors in %s\n", cpt_file);
 		for (i = 0; i < X->n_colors; i++) {
 			gmt_M_free (GMT, X->data[i].fill);
-			gmt_M_free (GMT, X->data[i].label);
+			gmt_M_str_free (X->data[i].label);
 		}
 		gmtlib_free_palette (GMT, &X);
 		gmt_M_free (GMT, Z);
