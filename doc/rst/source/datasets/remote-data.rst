@@ -115,6 +115,16 @@ man pages, and test suite.  There is no system nor catalog and files come and go
 files are subject to similar rules as the remote data set when it comes to refreshing or deleting them.
 If any of these files is precious to you we suggest you make a copy somewhere.
 
+Getting a single grid
+~~~~~~~~~~~~~~~~~~~~~
+
+Should you need a single grid from any of our tiled dataset, e.g., to feed into other programs that do
+not depend on GMT, you can create that via :doc:`/grdcut.  For instance, to make a global grid from the
+eight tiles that make up the 2m x 2m gridline-registered data, try::
+
+    gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd
+
+
 .. include:: earth-relief.rst_
 
 .. include:: earth-age.rst_
