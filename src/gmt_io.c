@@ -6567,6 +6567,8 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 	/* Determine the plot geographic location formats. */
 
+	if (GMT->current.setting.format_geo_map[0] == '\0') return GMT_RUNTIME_ERROR;	/* Gave nothing */
+
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) gmt_M_memset (GMT->current.plot.format[i][j], GMT_LEN256, char);
 
 	if (gmtio_get_dms_order (GMT, GMT->current.setting.format_geo_map, S)) return GMT_PARSE_ERROR;	/* Get the order of degree, min, sec in output formats */
