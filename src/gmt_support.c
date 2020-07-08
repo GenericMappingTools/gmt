@@ -8592,7 +8592,6 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 	unsigned int i, append = 0, hinge_mode = 0;
 	bool close_file = false;
-	bool was = GMT->current.setting.io_header[GMT_OUT];	/* Current setting */
 	double cmyk[5], z_hinge;
 	char format[GMT_BUFSIZ] = {""}, cpt_file[PATH_MAX] = {""}, code[3] = {'B', 'F', 'N'};
 	char lo[GMT_LEN64] = {""}, hi[GMT_LEN64] = {""}, kind[3] = {'L', 'U', 'B'};
@@ -8659,7 +8658,6 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 	/* Start writing CPT info to fp */
 
-	GMT->current.setting.io_header[GMT_OUT] = true;
 	for (i = 0; i < P->n_headers; i++) {	/* First write the old headers */
 		gmtlib_write_tableheader (GMT, fp, P->header[i]);
 	}
@@ -8747,7 +8745,6 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 			fprintf (fp, "%c\t%s\n", code[i], gmt_putcolor (GMT, P->bfn[i].rgb));
 	}
 	if (close_file) fclose (fp);
-	GMT->current.setting.io_header[GMT_OUT] = was;	/* Restore default */
 
 	return (GMT_NOERROR);
 }

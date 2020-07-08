@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -212,6 +213,8 @@ Optional Arguments
 
 **-Z**
     Force a continuous CPT [Default is discontinuous].
+
+.. include:: explain_-h.rst_
 
 .. include:: explain_help.rst_
 
