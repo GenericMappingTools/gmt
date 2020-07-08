@@ -599,7 +599,8 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 	 * First we check that we have the GMT_HASH_SERVER_FILE in the server directory.
 	 * If we don't then we download it and return since no old file to compare to.
 	 * If we do find the hash file then we get its creation time [st_mtime] as
-	 * well as the current system time.  If the file is < 1 day old we are done.
+	 * well as the current system time.  If the file is < GMT->current.setting.refresh_time
+	 * days old we are done.
 	 * If the file is older we rename it to *.old and download the latest hash file.
 	 * This is the same for both values of index (hash and info).  For hash, we do more:
 	 * Next, we load the contents of both files and do a double loop to find the
@@ -656,7 +657,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 	mod_time = buf.st_mtime;
 #endif
 
-	if ((right_now - mod_time) > GMT_DAY2SEC_I) {	/* Older than 1 day; Time to get a new index file */
+	if ((right_now - mod_time) > (GMT_DAY2SEC_I * GMT->current.setting.refresh_time)) {	/* Older than selected number of days; Time to get a new index file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s older than 24 hours, get latest from server.\n", indexpath);
 		strcpy (new_indexpath, indexpath);	/* Duplicate path name */
 		strcat (new_indexpath, ".new");		/* Append .new to the copied path */
