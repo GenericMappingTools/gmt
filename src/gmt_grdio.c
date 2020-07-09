@@ -1306,10 +1306,12 @@ GMT_LOCAL void gmtgrdio_doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_
 		if (slop > 0 && slop < GMT_CONV4_LIMIT) n_fix++;
 	}
 	if (n_fix == 2) {
-		inc = header->inc[side];
-		header->inc[side] = round_inc[side] / scale[side];
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Round-off patrol changed geographic grid increment for %s from %.18g to %.18g\n",
-			type[side], inc, header->inc[side]);
+		for (side = GMT_X; side <= GMT_Y; side++) {	/* Check both increments */
+			inc = header->inc[side];
+			header->inc[side] = round_inc[side] / scale[side];
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Round-off patrol changed geographic grid increment for %s from %.18g to %.18g\n",
+				type[side], inc, header->inc[side]);
+		}
 	}
 }
 
