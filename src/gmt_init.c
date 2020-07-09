@@ -13647,7 +13647,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	if (options) {
 	  for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 		  if (remote_first && gmtinit_might_be_remotefile (opt->arg)) {
-			  gmt_refresh_server (GMT);	/* Refresh hash and info tables as needed */
+			  gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
 			  remote_first = false;
 		  }
 		  if (opt->arg[0] != '@') continue;	/* No remote file argument given */
