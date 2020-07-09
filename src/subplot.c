@@ -782,9 +782,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		if (xymode == 'a') gmt_M_memcpy (off, GMT->current.setting.map_origin, 2, double);
 		sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 		if (!access (file, F_OK))	{	/* Subplot information file already exists, two begin subplot commands? */
-			GMT_Report (API, GMT_MSG_ERROR, "Subplot information file already exists: %s\n", file);
-			GMT_Report (API, GMT_MSG_ERROR, "Please run 'gmt clear sessions' (or equivalent if from Julia, Matlab, Python, etc...) to solve this issue.\n");
-			Return (GMT_RUNTIME_ERROR);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Subplot information file exists from incomplete command and will be deleted: %s\n", file);
+			gmt_remove_file (API->GMT, file);
 		}
 		/* COmpute dimensions such as ticks and distance from tick to top of annotation etc */
 		tick_height   = MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Allow for axis ticks */

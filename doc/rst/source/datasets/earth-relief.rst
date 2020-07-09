@@ -55,7 +55,8 @@ Code Dimensions        Reg Size     Description
 ==== ================= === =======  ==================================================
 
 All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
-the earth_relief files being placed in an ``earth/earth_relief`` sub-directory.
+the earth_relief files being placed in an ``earth/earth_relief`` sub-directory.  If you
+do not specify a CPT then this dataset default to the GMT master *geo*.
 
 Technical Information
 ---------------------
@@ -132,5 +133,5 @@ Data References
 ---------------
 
 #. SRTM15+V2.1 [http://dx.doi.org/10.1029/2019EA000658].
-#. SRTMGL3 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3_v003].
-#. SRTMGL1 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl1_v003].
+#. SRTMGL3 tiles: [https://lpdaac.usgs.gov/products/srtmgl3v003].
+#. SRTMGL1 tiles: [https://lpdaac.usgs.gov/products/srtmgl1v003].

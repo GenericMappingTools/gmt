@@ -162,6 +162,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 	                                 "Option -Q: Requires -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->N.active,
 	                                 "Option -Q: -N will be ignored\n");
+	if (Ctrl->D.active && Ctrl->D.dir && !(!strcmp (Ctrl->D.dir, "all") || !strcmp (Ctrl->D.dir, "cache") || !strncmp (Ctrl->D.dir, "data", 4U))) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: Requires arguments all, cache, data[=<planet>] or data=<datasetlist>\n");
+		n_errors++;
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -207,6 +211,8 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			char planet[GMT_LEN32] = {""}, group[GMT_LEN32] = {""}, dataset[GMT_LEN64] = {""}, size[GMT_LEN32] = {""}, message[GMT_LEN256] = {""};
 			double world[4] = {-180.0, +180.0, -90.0, +90.0};
 			struct GMT_RECORD *Out = NULL;
+
+			gmt_refresh_server (GMT);	/* Refresh hash and info tables as needed since we need to know what is there */
 
 			if (Ctrl->Q.active) {	/* Must activate data output machinery for a DATASET with no numerical columns */
 				Out = gmt_new_record (GMT, NULL, message);

@@ -2589,7 +2589,7 @@ double gmtproj_left_robinson (struct GMT_CTRL *GMT, double y) {
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * GMT->current.proj.n_i_cy);
-	if (gmt_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, GMT->current.setting.interpolant)) {
+	if (gmt_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, NULL, GMT_N_ROBINSON, 1, &Y, &X, 0.0, GMT->current.setting.interpolant)) {
 		gmt_message (GMT, "GMT Internal error in gmtproj_left_robinson!\n");
 		return GMT->session.d_NaN;
 	}
@@ -2604,7 +2604,7 @@ double gmtproj_right_robinson (struct GMT_CTRL *GMT, double y) {
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * GMT->current.proj.n_i_cy);
-	if (gmt_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, GMT->current.setting.interpolant)) {
+	if (gmt_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, NULL, GMT_N_ROBINSON, 1, &Y, &X, 0.0, GMT->current.setting.interpolant)) {
 		gmt_message (GMT, "GMT Internal error in gmtproj_right_robinson!\n");
 		return GMT->session.d_NaN;
 	}
