@@ -30,6 +30,7 @@ Synopsis
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT--| ]
 
@@ -213,6 +214,8 @@ Optional Arguments
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_
+
+.. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
 

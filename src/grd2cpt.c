@@ -144,7 +144,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A<transparency>[+a]] [-C<cpt>] [-D[i]] [-E[<nlevels>]] [-F[R|r|h|c][+c]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n", H_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<start>/<stop>/<inc> or -T<n>]\n\t[-Sh|l|m|u] [%s] [-W[w]] [-Z] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<start>/<stop>/<inc> or -T<n>]\n\t[-Sh|l|m|u] [%s] [-W[w]] [-Z] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 

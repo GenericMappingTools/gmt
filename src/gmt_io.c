@@ -4277,10 +4277,11 @@ void gmtlib_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
 	else if (txt[0] == GMT->current.setting.io_seg_marker[GMT_OUT])
 		fprintf (fp, "%s\n", txt);
 	else {
+		size_t L = strlen (txt), k = 0;
 		fputc (GMT->current.setting.io_head_marker_out, fp);	/* Make sure we have # at start */
-		while (strchr ("#\t ", *txt)) txt++;	/* Skip header record indicator and leading whitespace */
-		fprintf (fp, " %s", txt);
-		if (txt[strlen(txt)-1] != '\n') fputc ('\n', fp);	/* Make sure we have \n at end */
+		while (k < L && strchr ("#\t ", txt[k])) k++;	/* Skip header record indicator and leading whitespace */
+		if (k < L) fprintf (fp, " %s", &txt[k]);
+		if (txt[L-1] != '\n') fputc ('\n', fp);	/* Make sure we have \n at end */
 	}
 }
 
