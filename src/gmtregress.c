@@ -743,13 +743,15 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *
 GMT_LOCAL double gmtregress_LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
 	/* Basic LS RMA orthogonal regression with no weights [Reference?] */
 	uint64_t k;
-	double sx, sy, scale;
+	double sx, sy, scale, r;
 	double *U = gmt_M_memory (GMT, NULL, n, double), *V = gmt_M_memory (GMT, NULL, n, double), *W = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_memset (par, GMTREGRESS_NPAR, double);
 	(void)gmtregress_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
+	r = gmt_corrcoeff (GMT, U, V, n, 1);
 	sx = gmt_std_weighted (GMT, U, w[GMT_X], 0.0, n);
 	sy = gmt_std_weighted (GMT, V, w[GMT_Y], 0.0, n);
 	par[GMTREGRESS_SLOPE] = sy / sx;
+	if (r < 0.0) par[GMTREGRESS_SLOPE] = -par[GMTREGRESS_SLOPE];	/* Negative correlation means negative slope */
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
 	for (k = 0; k < n; k++)	/* Here we recycle U as y-residual e */
