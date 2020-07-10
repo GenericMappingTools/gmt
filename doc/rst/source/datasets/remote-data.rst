@@ -20,7 +20,7 @@ GMT will do the following when you request a remote file in a GMT command:
    is up-to-date or if it needs to be refreshed.  If the file is older that the :term:`GMT_DATA_SERVER_UPDATE`
    limit then we refresh the catalog.
 #. When the catalog is refreshed, we determine the publication date for each dataset on the server,
-   and if any local copies you may have are now obsolete will will remove them to force a re-download from the server.
+   and if any local copies you may have are now obsolete we will remove them to force a re-download from the server.
 
 Usage
 ~~~~~
@@ -132,4 +132,3 @@ eight tiles that make up the 2m x 2m gridline-registered data, try::
 .. include:: earth-masks.rst_
 
 .. include:: earth-daynight.rst_
-
