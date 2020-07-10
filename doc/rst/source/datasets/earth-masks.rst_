@@ -15,6 +15,9 @@ via :doc:`/grdlandmask` but they can take a long time to compute for large regio
 the full GSHHG resolution, and small grid spacings. For these reasons we offer
 precalculated mask grids via the remote server mechanism.
 
+Usage
+~~~~~
+
 You access a global mask grid by specifying the special name
 
    @earth_mask_\ *rr*\ *u*\ [_\ *reg*\ ]

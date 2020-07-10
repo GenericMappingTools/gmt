@@ -11,7 +11,7 @@ the creation of crustal age grids since 1997 and we offer their latest version f
 remote use in GMT.
 
 Usage
------
+~~~~~
 
 You access a global crustal age grid by specifying the special name
 

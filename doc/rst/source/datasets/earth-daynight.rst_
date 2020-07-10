@@ -14,6 +14,9 @@ These images may be plotted with :doc:`/grdimage` or :doc:`/grdview` and manipul
 by :doc:`/grdmix`.  The above example mixes both images according to a day-night
 mask and adds illumination from a corresponding Earth DEM.
 
+Usage
+~~~~~
+
 You access a global daytime image by specifying the special names
 
    @earth_day_\ *rr*\ *u*

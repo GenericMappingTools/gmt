@@ -23,7 +23,7 @@ GMT will do the following when you request a remote file in a GMT command:
    and if any local copies you may have are now obsolete we will remove them to force a re-download from the server.
 
 Usage
-~~~~~
+-----
 
 We have processed and reformatted publicly available global data sets (grids and images)
 and standardized their file names.  In GMT, you may access such data
@@ -45,7 +45,7 @@ Many of the remote datasets have a preferred, default color table that will be u
 override that default by giving your desired CPT information.
 
 Controlling the Process
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 There are several ways you can control the remote data process and the amount of space taken up by your
 own server directory:
@@ -58,7 +58,7 @@ own server directory:
 #. You can clear the *server* directory, or perhaps just some subsets, any time via gmt :doc:`/clear`.
 
 Offline Usage
-~~~~~~~~~~~~~
+-------------
 
 If you anticipate to be without an Internet connection (or have a very slow one), you can download
 all (or some) of the remote files prior to losing connection with the module :doc:`/gmtget`. You
@@ -77,7 +77,7 @@ As shown in the tables below, the largest datasets may take some time to downloa
 server, so be patient!
 
 File Compression
-~~~~~~~~~~~~~~~~
+----------------
 
 Typically, a dataset is released by the data provider in a single, high-resolution format.
 To optimize use of these data in GMT and to prevent download bottlenecks we have downsampled
@@ -108,7 +108,7 @@ GDAL support *and* that your GDAL distribution was built with *openjpeg* support
    have chosen the JP2 format for tiles on the server.
 
 Cache File Updates
-~~~~~~~~~~~~~~~~~~
+------------------
 
 Remote cache files are our collection of miscellaneous files that are used throughout the GMT examples,
 man pages, and test suite.  There is no system nor catalog and files come and go as we need them. The cache
@@ -116,7 +116,7 @@ files are subject to similar rules as the remote data set when it comes to refre
 If any of these files is precious to you we suggest you make a copy somewhere.
 
 Getting a single grid
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 Should you need a single grid from any of our tiled dataset, e.g., to feed into other programs that do
 not depend on GMT, you can create that via :doc:`/grdcut`.  For instance, to make a global grid from the

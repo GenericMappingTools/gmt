@@ -7,6 +7,9 @@ Global Earth Relief Grids
    :align: center
    :scale: 40 %
 
+Usage
+~~~~~
+
 You access a global relief grid by specifying the special name
 
    @earth_relief_\ *rr*\ *u*\ [_\ *reg*\ ]
