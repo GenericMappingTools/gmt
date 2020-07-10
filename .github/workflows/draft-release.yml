@@ -1,4 +1,9 @@
-# GitHub action to make a draft release
+#
+# Make a draft release when tagging
+#
+# The release assets are automatically downloaded from the GMT FTP server
+# and uploaded to GitHub.
+#
 
 on:
   push:
@@ -19,9 +24,9 @@ jobs:
       #- name: Set DEBUG_GITHUB_REF for debugging
       #  run: echo "::set-env name=DEBUG_GITHUB_REF::refs/tags/6.0.0"
 
-      - name: Set GMT Version from tag name
+      - name: Set GMT version from tag name
         # ${GITHUB_REF} is "refs/tags/6.0.0" for tags
-        # after this step, the GMT Version can be used by ${{ env.GMT_VERSION }}
+        # after this step, the GMT version can be used as ${{ env.GMT_VERSION }}
         run: echo "::set-env name=GMT_VERSION::${GITHUB_REF##*/}"
         # Uncomment the following line for debugging only
         # run: echo "::set-env name=GMT_VERSION::${DEBUG_GITHUB_REF##*/}"
