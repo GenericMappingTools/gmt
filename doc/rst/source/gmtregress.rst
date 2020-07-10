@@ -91,7 +91,7 @@ Optional Arguments
     Axis regression; i.e., the misfit is the product of both vertical and horizontal misfits) [**y**].
 
 .. figure:: /_images/GMT_misfit.*
-   :width: 500 px
+   :width: 600 px
    :align: center
 
    The four types of misfit.  The sum of the squared lengths of :math:`e_k` is minimized, for k = e, y, or o.
