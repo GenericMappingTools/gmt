@@ -68,10 +68,10 @@
 #define PSL_LIB_NAME "@PSL_LIB_NAME@"
 
 /* Name of DCW path */
-#define DCW_INSTALL_PATH "@DCW_PATH@"
+#define DCW_INSTALL_PATH "@DCW_INSTALL_PATH@"
 
 /* Name of GSHHG path */
-#define GSHHG_INSTALL_PATH "@GSHHG_PATH@"
+#define GSHHG_INSTALL_PATH "@GSHHG_INSTALL_PATH@"
 
 /* Default units (SI vs US) */
 #define GMT_DEF_UNITS "@UNITS@"

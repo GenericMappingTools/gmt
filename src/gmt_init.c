@@ -6028,11 +6028,13 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* DIR_DCW */
 	if (GMT->session.DCWDIR)
 		gmt_M_str_free (GMT->session.DCWDIR);
-	GMT->session.DCWDIR = strdup (DCW_INSTALL_PATH);
+	if (strlen(DCW_INSTALL_PATH))
+		GMT->session.DCWDIR = strdup (DCW_INSTALL_PATH);
 	/* DIR_GSHHG */
 	if (GMT->session.GSHHGDIR)
 		gmt_M_str_free (GMT->session.GSHHGDIR);
-	GMT->session.GSHHGDIR = strdup (GSHHG_INSTALL_PATH);
+	if (strlen(GSHHG_INSTALL_PATH))
+		GMT->session.GSHHGDIR = strdup (GSHHG_INSTALL_PATH);
 
 		/* TIME group */
 

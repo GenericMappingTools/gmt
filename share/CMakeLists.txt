@@ -34,12 +34,12 @@ if (GSHHG_PATH AND COPY_GSHHG)
 		DESTINATION ${GMT_DATADIR}/coast
 		COMPONENT GSHHG)
 	# location must be blank in gmt.conf
-	set (GSHHG_INSTALL_PATH)
+	set (GSHHG_INSTALL_PATH CACHE INTERNAL "Location of GSHHG Data")
 	# create coastline.conf which is needed for in-build-dir ctest
 	configure_file (coastline.conf.in coastline.conf @ONLY)
 else (GSHHG_PATH AND COPY_GSHHG)
 	# set installed location
-	set (GSHHG_INSTALL_PATH ${GSHHG_PATH})
+	set (GSHHG_INSTALL_PATH ${GSHHG_PATH} CACHE INTERNAL "Location of GSHHG Data")
 endif (GSHHG_PATH AND COPY_GSHHG)
 
 # only attempt to install DCW file when requested and path is known
@@ -48,10 +48,10 @@ if (DCW_PATH AND COPY_DCW)
 		DESTINATION ${GMT_DATADIR}/dcw
 		COMPONENT DCW)
 	# location must be blank in gmt.conf
-	set (DCW_INSTALL_PATH)
+    set (DCW_INSTALL_PATH CACHE INTERNAL "Location of DCW Data")
 else (DCW_PATH AND COPY_DCW)
 	# set installed location
-	set (DCW_INSTALL_PATH ${DCW_PATH})
+	set (DCW_INSTALL_PATH ${DCW_PATH} CACHE INTERNAL "Location of GSHHG Data")
 endif (DCW_PATH AND COPY_DCW)
 
 # add subtrees
