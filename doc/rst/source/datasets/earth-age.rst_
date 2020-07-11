@@ -1,5 +1,8 @@
 Global Earth Seafloor Crustal Age Grids
 ---------------------------------------
+.. figure:: /_images/EarthByte_logo_small.png
+   :align: right
+   :scale: 20 %
 
 .. figure:: /_images/GMT_agefig.*
    :width: 710 px
@@ -54,10 +57,5 @@ to the 2012 Geological Time Scale.
 
 Data References
 ~~~~~~~~~~~~~~~
-
-
-.. figure:: /_images/EarthByte_logo_small.png
-   :align: right
-   :scale: 40 %
 
 #. Seton et al. [2020, in review] [https://www.earthbyte.org/category/resources/data-models/seafloor-age/].

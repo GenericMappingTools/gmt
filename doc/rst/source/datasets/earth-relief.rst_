@@ -1,6 +1,10 @@
 Global Earth Relief Grids
 -------------------------
 
+.. figure:: /_images/igpp.png
+   :align: right
+   :scale: 20 %
+
 .. figure:: /_images/dem.jpg
    :height: 888 px
    :width: 1774 px
@@ -58,13 +62,8 @@ you may use the special names @srtm_relief_03s or @srtm_relief_01s instead. Almo
 are available in both gridline- and pixel-registered formats except the original pixel-registered
 SRTM15+V2.1 (here called @earth_relief_15s) and the gridline-registered SRTM tiles.
 
-
 Data References
 ~~~~~~~~~~~~~~~
-
-.. figure:: /_images/igpp.png
-   :align: right
-   :scale: 40 %
 
 #. SRTM15+V2.1 [http://dx.doi.org/10.1029/2019EA000658].
 #. SRTMGL3 tiles: [https://lpdaac.usgs.gov/products/srtmgl3v003].

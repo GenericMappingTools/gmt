@@ -46,8 +46,8 @@ Currently, GMT provides the following datasets (with their special names in pare
 
 - `Global Earth Relief Grids`_ (``earth_relief``)
 - `Global Earth Seafloor Crustal Age Grids`_ (``earth_age``)
-- `Global Earth Mask Grids`_ (``earth_mask``)
 - `Global Earth Day/Night Images`_ (``earth_day`` and ``earth_night``)
+- `Global Earth Mask Grids`_ (``earth_mask``)
 
 Many of the remote datasets have a preferred, default color table that will be used unless you
 override that default by giving your desired CPT information.
@@ -142,8 +142,10 @@ eight tiles that make up the 2m x 2m gridline-registered data, try::
 
 ----
 
-.. include:: earth-masks.rst_
+.. include:: earth-daynight.rst_
 
 ----
 
-.. include:: earth-daynight.rst_
+.. include:: earth-masks.rst_
+
+

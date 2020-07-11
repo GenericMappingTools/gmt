@@ -1,5 +1,8 @@
 Global Earth Day/Night Images
 -----------------------------
+.. figure:: /_images/nasa-logo-web-rgb.png
+   :align: right
+   :scale: 20 %
 
 .. figure:: /_images/daynight.jpg
    :height: 888 px
@@ -28,7 +31,7 @@ Similarly for the nighttime view:
 The following codes for *rr*\ *u* and the optional *reg* are supported (dimensions are listed
 for pixel-registered grids; gridline-registered grids increment dimensions by one):
 
-.. _tbl-earth_relief:
+.. _tbl-earth_daynight:
 
 ==== ================= =======  ===========================================================
 Code Dimensions        Size     Description
