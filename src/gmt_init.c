@@ -175,7 +175,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "GMT_AUTO_DOWNLOAD"},
 	{ 0, "GMT_DATA_SERVER"},
 	{ 0, "GMT_DATA_SERVER_LIMIT"},
-	{ 0, "GMT_DATA_SERVER_UPDATE"},
+	{ 0, "GMT_DATA_UPDATE_INTERVAL"},
 	{ 0, "GMT_COMPATIBILITY"},
 	{ 0, "GMT_CUSTOM_LIBS"},
 	{ 0, "GMT_EXPORT_TYPE"},
@@ -5995,7 +5995,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 	/* GMTCASE_GMT_DATA_SERVER_LIMIT */
 	GMT->current.setting.url_size_limit = 0;
-	/* GMTCASE_GMT_DATA_SERVER_UPDATE */
+	/* GMTCASE_GMT_DATA_UPDATE_INTERVAL */
 	GMT->current.setting.refresh_time = 1;
 	/* GMT_CUSTOM_LIBS (default to none) */
 	/* GMT_EXPORT_TYPE */
@@ -10555,7 +10555,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 
-		case GMTCASE_GMT_DATA_SERVER_UPDATE:
+		case GMTCASE_GMT_DATA_UPDATE_INTERVAL:
 			if (lower_value[0]) {
 				size_t f, k = len - 1;
 				switch (lower_value[k]) {
@@ -11843,7 +11843,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				snprintf (value, GMT_BUFSIZ, "%" PRIu64 "Gb", (uint64_t)GMT->current.setting.url_size_limit/(1024*1024*1024));
 			break;
 
-		case GMTCASE_GMT_DATA_SERVER_UPDATE:
+		case GMTCASE_GMT_DATA_UPDATE_INTERVAL:
 			if ((GMT->current.setting.refresh_time % 30) == 0)	/* Whole "months" = 30 days */
 				snprintf (value, GMT_BUFSIZ, "%do", GMT->current.setting.refresh_time / 30);
 			else if ((GMT->current.setting.refresh_time % 7) == 0)	/* Whole weeks */

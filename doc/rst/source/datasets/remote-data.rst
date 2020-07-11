@@ -17,7 +17,7 @@ will need to get those data from the data provider separately.  Unless you deact
 GMT will do the following when you request a remote file in a GMT command:
 
 #. We check if the locally cached catalog with information about the data available from the server
-   is up-to-date or if it needs to be refreshed.  If the file is older that the :term:`GMT_DATA_SERVER_UPDATE`
+   is up-to-date or if it needs to be refreshed.  If the file is older that the :term:`GMT_DATA_UPDATE_INTERVAL`
    limit then we refresh the catalog.
 #. When the catalog is refreshed, we determine the publication date for each dataset on the server,
    and if any local copies you may have are now obsolete we will remove them to force a re-download from the server.
@@ -54,7 +54,7 @@ own server directory:
 #. You can set an upper limit on the file sizes that may be downloaded [:term:`GMT_DATA_SERVER_LIMIT`].
 #. You can turn of the automatic download temporarily [:term:`GMT_AUTO_DOWNLOAD`].
 #. You can control how often GMT will refresh the catalog of information on your computer
-   [:term:`GMT_DATA_SERVER_UPDATE`]
+   [:term:`GMT_DATA_UPDATE_INTERVAL`]
 #. You can clear the *server* directory, or perhaps just some subsets, any time via gmt :doc:`/clear`.
 
 Offline Usage
