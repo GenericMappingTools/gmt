@@ -132,11 +132,18 @@ eight tiles that make up the 2m x 2m gridline-registered data, try::
 
     gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd
 
+----
 
 .. include:: earth-relief.rst_
 
+----
+
 .. include:: earth-age.rst_
 
+----
+
 .. include:: earth-masks.rst_
+
+----
 
 .. include:: earth-daynight.rst_
