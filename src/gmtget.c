@@ -212,7 +212,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			double world[4] = {-180.0, +180.0, -90.0, +90.0};
 			struct GMT_RECORD *Out = NULL;
 
-			gmt_refresh_server (GMT);	/* Refresh hash and info tables as needed since we need to know what is there */
+			gmt_refresh_server (API);	/* Refresh hash and info tables as needed since we need to know what is there */
 
 			if (Ctrl->Q.active) {	/* Must activate data output machinery for a DATASET with no numerical columns */
 				Out = gmt_new_record (GMT, NULL, message);
