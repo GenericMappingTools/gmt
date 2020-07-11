@@ -51,8 +51,8 @@ There are several ways you can control the remote data process and the amount of
 own server directory:
 
 #. You can select the GMT data server closest to you to minimize download time [:term:`GMT_DATA_SERVER`].
-#. You can set an upper limit on the file sizes that may be downloaded, or select 0 to turn off this
-   feature altogether [:term:`GMT_DATA_SERVER_LIMIT`].
+#. You can set an upper limit on the file sizes that may be downloaded [:term:`GMT_DATA_SERVER_LIMIT`].
+#. You can turn of the automatic download temporarily [:term:`GMT_AUTO_DOWNLOAD`].
 #. You can control how often GMT will refresh the catalog of information on your computer
    [:term:`GMT_DATA_SERVER_UPDATE`]
 #. You can clear the *server* directory, or perhaps just some subsets, any time via gmt :doc:`/clear`.
