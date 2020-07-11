@@ -62,6 +62,10 @@ SRTM15+V2.1 (here called @earth_relief_15s) and the gridline-registered SRTM til
 Data References
 ~~~~~~~~~~~~~~~
 
+.. figure:: /_images/igpp.png
+   :align: right
+   :scale: 40 %
+
 #. SRTM15+V2.1 [http://dx.doi.org/10.1029/2019EA000658].
 #. SRTMGL3 tiles: [https://lpdaac.usgs.gov/products/srtmgl3v003].
 #. SRTMGL1 tiles: [https://lpdaac.usgs.gov/products/srtmgl1v003].
