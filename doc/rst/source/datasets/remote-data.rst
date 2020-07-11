@@ -41,6 +41,14 @@ do specify a specific registration and that version is not available you will ge
 The codes for *rr*\ *u* and the optional *reg* that are supported will be listed in the sections
 below describing each of the available data sets.
 
+
+Currently, GMT provides the following datasets (with their special names in parentheses)
+
+- `Global Earth Relief Grids`_ (``earth_relief``)
+- `Global Earth Seafloor Crustal Age Grids`_ (``earth_age``)
+- `Global Earth Mask Grids`_ (``earth_mask``)
+- `Global Earth Day/Night Images`_ (``earth_day`` and ``earth_night``)
+
 Many of the remote datasets have a preferred, default color table that will be used unless you
 override that default by giving your desired CPT information.
 
