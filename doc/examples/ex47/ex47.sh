@@ -32,7 +32,7 @@ gmt begin ex47
 	plot_one -Ey -N2 -c0,1 +tL@-2@-
 	plot_one -Ex -N2 -c1,1
 	plot_one -Eo -N2 -c2,1
-	plot_one -Er-N2 -c3,1
+	plot_one -Er -N2 -c3,1
 	#LMS regressions - also add labels on right side
 	plot_one -Ey -Nr -c0,2 +tLMS
 	gmt text -F+cRM+jTC+a90+t"Y ON X" -N -Dj15p
