@@ -17,9 +17,9 @@
 
 if [ $# -eq 0 ]; then
 	cat <<- EOF  >&2
-	Usage: make_scientific_colors_cpt.sh
+	Usage: build_scientific_colors_cpt.sh
 	
-	make_scientific_colors_cpt.sh must be run from top-level gmt directory.
+	build_scientific_colors_cpt.sh must be run from top-level gmt directory.
 	Will create the GMT CPT version of Crameri's scientific colour maps.
 	Give the full path to the expanded zip file top directory, such as
 	~/Download/ScientificColourMaps6
