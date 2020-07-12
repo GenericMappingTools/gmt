@@ -42,7 +42,7 @@ respectively.
    :width: 500 px
    :align: center
 
-   The 24 scientific color maps by Fabio Crameri supported by GMT.
+   The 24 (plus 4 cyclic) scientific color maps by Fabio Crameri supported by GMT.
 
 For additional color tables, visit
 `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
