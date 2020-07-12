@@ -29,7 +29,7 @@ if [ $# -eq 0 ]; then
 	  3. Manually set the current version number (see the PDF docs)
 	Afterwards you must:
 	  1. Update gmt_cpt_masters.h with any new entries
-	  2. Adding the CPTS to share (overwriting the previous versions)
+	  2. Adding the CPTs to share (overwriting the previous versions)
 	EOF
 	exit 1
 fi
@@ -120,5 +120,4 @@ done < /tmp/cpt.info
 rm -f tmp
 cd $here
 echo "Folder with new cpts is $DIR/gmt_cpts"
-
 
