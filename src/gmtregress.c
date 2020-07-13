@@ -55,7 +55,8 @@ enum GMT_enum_regress {
 	GMTREGRESS_YMEAN	= 7,
 	GMTREGRESS_R		= 8,
 	GMTREGRESS_CORR		= 9,
-	GMTREGRESS_NPAR		= 10,
+	GMTREGRESS_MISFTY	= 10,
+	GMTREGRESS_NPAR		= 11,
 	GMTREGRESS_NPAR_MAIN	= 4,
 	GMTREGRESS_OUTPUT_GOOD  = 1,
 	GMTREGRESS_OUTPUT_BAD   = 2};
@@ -683,7 +684,7 @@ GMT_LOCAL double gmtregress_LSy_regress1D (struct GMT_CTRL *GMT, double *x, doub
  	par[GMTREGRESS_SIGIC] = sqrt (S_xx * D);
 	for (k = 0; k < n; k++)	/* Here we recycle Q to hold y-residual e */
 		Q[k] = y[k] - gmtregress_model (x[k], par);
-	par[GMTREGRESS_MISFT] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0);
+	par[GMTREGRESS_MISFT] = par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0);
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
 	scale = gmtregress_L2_scale (GMT, NULL, W, n, par);
 	gmt_M_free (GMT, Q);
@@ -694,7 +695,8 @@ GMT_LOCAL double gmtregress_LSy_regress1D (struct GMT_CTRL *GMT, double *x, doub
 }
 
 GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *par) {
-	/* Basic LS xy orthogonal regression, with no data errors. See York [1966] */
+	/* Basic LS xy orthogonal regression, with no data errors. See York [1966], with uncertainties in slope and intercept
+	 * given by Borradaile, G., 2003, "Statistics of Earth Science Data, Springer */
 	uint64_t k;
 	unsigned int p;
 	double *u = gmt_M_memory (GMT, NULL, n, double), *v = gmt_M_memory (GMT, NULL, n, double);
@@ -727,9 +729,12 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *
 	p = (E[0] < E[1]) ? 0 : 1;	/* Determine the solution with the smallest misfit and copy to par array: */
 	par[GMTREGRESS_SLOPE] = b[p];
 	par[GMTREGRESS_ICEPT] = a[p];
-	par[GMTREGRESS_SIGSL] = par[GMTREGRESS_SLOPE] * sqrt ((1.0 - r * r) / n) / r;
-	par[GMTREGRESS_SIGIC] = sqrt (pow (sig_y - sig_x * par[GMTREGRESS_SLOPE], 2.0) / n + (1.0 - r) * par[GMTREGRESS_SLOPE] * (2.0 * sig_x * sig_y + (mean_x * par[GMTREGRESS_SLOPE] * (1.0 + r) / (r * r))));
+	par[GMTREGRESS_SIGSL] = par[GMTREGRESS_SLOPE] * sqrt ((1.0 - r * r) / n);
+	par[GMTREGRESS_SIGIC] = sqrt ((1 - r * r) * (1.0 + par[GMTREGRESS_XMEAN] * par[GMTREGRESS_XMEAN] / (sig_x * sig_x)) / n);
 	par[GMTREGRESS_MISFT] = E[p];
+	/* Compute regular y LS misfit to use with confidence band */
+	for (k = 0; k < n; k++) Q[k] = y[k] - b[p] * x[k] - a[p];
+	par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0);
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
 	par[GMTREGRESS_XMEAN] = mean_x;
 	par[GMTREGRESS_YMEAN] = mean_y;
@@ -741,25 +746,32 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *
 }
 
 GMT_LOCAL double gmtregress_LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
-	/* Basic LS RMA orthogonal regression with no weights [Reference?] */
+	/* Basic LS RMA orthogonal regression with no weights [Draper and Smith, 1998] */
 	uint64_t k;
-	double sx, sy, scale, r;
-	double *U = gmt_M_memory (GMT, NULL, n, double), *V = gmt_M_memory (GMT, NULL, n, double), *W = gmt_M_memory (GMT, NULL, n, double);
+	double sx, sy, scale, r, sum_u2;
+	double *U = gmt_M_memory (GMT, NULL, n, double), *V = gmt_M_memory (GMT, NULL, n, double), *Q = gmt_M_memory (GMT, NULL, n, double), *W = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_memset (par, GMTREGRESS_NPAR, double);
 	(void)gmtregress_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
 	r = gmt_corrcoeff (GMT, U, V, n, 1);
 	sx = gmt_std_weighted (GMT, U, w[GMT_X], 0.0, n);
 	sy = gmt_std_weighted (GMT, V, w[GMT_Y], 0.0, n);
+	gmtregress_eval_product (U, U, Q, n);	/* Compute Q[i] = u[i] * u[i] */
+	sum_u2 = gmtregress_gmt_sum (Q, n);	/* Get sum of u*u */
 	par[GMTREGRESS_SLOPE] = sy / sx;
 	if (r < 0.0) par[GMTREGRESS_SLOPE] = -par[GMTREGRESS_SLOPE];	/* Negative correlation means negative slope */
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
 	for (k = 0; k < n; k++)	/* Here we recycle U as y-residual e */
 		U[k] = y[k] - gmtregress_model (x[k], par);
+	/* Report RMA misfit but use L2 y-misfit in calculations for confidence band */
 	par[GMTREGRESS_MISFT] = gmtregress_L2_misfit (GMT, U, W, n, GMTREGRESS_RMA, par[GMTREGRESS_SLOPE]);
+	par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, U, W, n, GMTREGRESS_Y, par[GMTREGRESS_SLOPE]);
+	par[GMTREGRESS_SIGIC] = sqrt (1.0 / n);
+	par[GMTREGRESS_SIGSL] = 1.0 / sqrt (sum_u2);
 	scale = gmtregress_L2_scale (GMT, NULL, W, n, par);
 	gmt_M_free (GMT, U);
 	gmt_M_free (GMT, V);
+	gmt_M_free (GMT, Q);
 	gmt_M_free (GMT, W);
 	return (scale);
 }
@@ -1336,7 +1348,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 									out[col] = S->data[GMT_Y][row] - gmtregress_model (x[row], par);
 									break;
 								case 'c':	/* Model confidence limit (add slope and intercept uncertainties in quadrature since uncorrelated) */
-									out[col] = t_scale * sqrt (par[GMTREGRESS_MISFT]) * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));
+									out[col] = t_scale * sqrt (par[GMTREGRESS_MISFTY]) * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));
 									break;
 								case 'z':	/* Standardized residuals (z-scores) */
 									out[col] = z_score[row];
