@@ -1335,8 +1335,8 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 								case 'r':	/* Residual */
 									out[col] = S->data[GMT_Y][row] - gmtregress_model (x[row], par);
 									break;
-								case 'c':	/* Model confidence limit (add x and y uncertainties in quadrature since uncorrelated) */
-									out[col] = t_scale * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));
+								case 'c':	/* Model confidence limit (add slope and intercept uncertainties in quadrature since uncorrelated) */
+									out[col] = t_scale * sqrt (par[GMTREGRESS_MISFT]) * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));
 									break;
 								case 'z':	/* Standardized residuals (z-scores) */
 									out[col] = z_score[row];
