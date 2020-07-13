@@ -8,7 +8,7 @@ robust regression line using *reweighted least squares* and from
 this fit we are able to identify outliers with respect to the
 main trend.  The result shows dinosaurs were large and dumb,
 humans and some monkeys pretty smart, and the rest of the
-mammals doing alright.
+mammals doing alright. Band shows 99% confidence internal on regression.
 
 .. literalinclude:: /_verbatim/ex43.txt
    :language: bash
