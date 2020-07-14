@@ -35,7 +35,7 @@ GMT_LOCAL GDALDatasetH gdal_open (struct GMT_CTRL *GMT, char *gdal_filename) {
 	char *file = NULL, path[PATH_MAX] = {""}, *c = NULL;
 	if (gmtlib_found_url_for_gdal (gdal_filename))	/* A vis*** URL, pass to GDAL as is */
 		strncpy (path, gdal_filename, PATH_MAX-1);
-	else if ((c = strchr(gdal_filename, ':'))) {		/* Assume it is a SUBDATASET */
+	else if ((strlen(gdal_filename) > 2) && (c = strchr(&gdal_filename[2], ':'))) {		/* Assume it is a SUBDATASET */
 		if (GMT->parent->cache) {
 			c[0] = '\0';
 			sprintf (path, "%s:%s/%s", gdal_filename, GMT->session.CACHEDIR, &c[1]);
