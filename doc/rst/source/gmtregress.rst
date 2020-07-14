@@ -19,8 +19,9 @@ Synopsis
 [ |-N|\ **1**\|\ **2**\|\ **r**\|\ **w** ]
 [ |-S|\ [**r**] ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list* ]
-[ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
+[ |-Z|\ [±]\ *limit* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -134,6 +135,11 @@ Optional Arguments
     To skip the model evaluation entirely, simply provide **-T**\ 0.
     For details on array creation, see `Generate 1D Array`_.
 
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
+
 .. _-W:
 
 **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**]
@@ -148,10 +154,11 @@ Optional Arguments
     with respect to the regression line will be scaled by the given weights.  Most norms will then square this weighted
     residual (**-N1** is the only exception).
 
-.. _-V:
+.. _-Z:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-V.rst_
+**-Z**\ [±]\ *limit*
+    Change the threshold for outlier detection: When **-Nw** is used, residual *z-scores* that exceed this *limit* [±2.5] will
+    be flagged as outliers.  To only consider negative or positive *z-scores* as possible outliers, specify a signed *limit*.
 
 .. include:: explain_-aspatial.rst_
 
