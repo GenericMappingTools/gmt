@@ -158,7 +158,7 @@ Optional Arguments
 
 **-Z**\ [±]\ *limit*
     Change the threshold for outlier detection: When **-Nw** is used, residual *z-scores* that exceed this *limit* [±2.5] will
-    be flagged as outliers.  To only consider negative or positive *z-scores* as possibly outliers, specify a signed *limit*.
+    be flagged as outliers.  To only consider negative or positive *z-scores* as possible outliers, specify a signed *limit*.
 
 .. include:: explain_-aspatial.rst_
 
