@@ -614,7 +614,7 @@ GMT_LOCAL void psscale_fix_format (char *unit, char *format) {
 
 GMT_LOCAL void psscale_plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	/* Use the color of MAP_FRAME_PEN to draw the symbol stem and head fill.
-	 * Use the symbol width to estimate pen width as 0.5p times (width/0.1) [in inches]  */
+	 * Use the symbol width to estimate pen width as 0.5p times (width/0.05) [in inches]  */
 	double vdim[PSL_MAX_DIMS], s = width / 0.05, p_width, circum;
 	struct GMT_SYMBOL S;
 	struct GMT_FILL head;
