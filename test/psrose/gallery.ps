@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_47d22d6_2019.09.01 [64-bit] Document from psxy
+%%Title: GMT v6.1.1_69c7fc6-dirty_2020.07.06 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Sep  1 18:14:00 2019
+%%CreationDate: Mon Jul  6 20:42:12 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -658,7 +659,8 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_plot_completion {} def
-/PSL_movie_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -669,11 +671,11 @@ O0
 % PostScript produced by:
 %@GMT: gmt psxy -R0/5/0/5 -Jx1c -P -K -T
 %@PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy
-%GMTBoundingBox: 72 72 141.732 141.732
+%GMTBoundingBox: 72 72 141.732283465 141.732283465
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 %%EndObject
 0 A
 FQ
@@ -686,7 +688,7 @@ O0
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 -236 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (Sector Diagrams) tc Z
@@ -702,7 +704,7 @@ O0
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 -236 1181 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 V 90 R (-R0/360/...) bc Z U
@@ -713,12 +715,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K -A5
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K -A5
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 1181 T
 25 W
 O1
@@ -799,17 +801,9 @@ O0
 824 -265 -260 0 0 Sw
 880 -270 -265 0 0 Sw
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
-N 0 0 M -1023 -591 D S
-N 0 0 M -591 -1023 D S
 N 0 0 M 0 -1181 D S
-N 0 0 M 591 -1023 D S
-N 0 0 M 1023 -591 D S
 N 0 0 M 1181 0 D S
 N 0 0 197 0 360 arc S
 N 0 0 394 0 360 arc S
@@ -838,7 +832,7 @@ O0
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 -236 1181 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 V 90 R (-R0/360/... -T) bc Z U
@@ -849,12 +843,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K -A5 -T
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K -A5 -T
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 1181 T
 25 W
 O1
@@ -935,17 +929,9 @@ O0
 824 -265 -260 0 0 Sw
 880 -270 -265 0 0 Sw
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
-N 0 0 M -1023 -591 D S
-N 0 0 M -591 -1023 D S
 N 0 0 M 0 -1181 D S
-N 0 0 M 591 -1023 D S
-N 0 0 M 1023 -591 D S
 N 0 0 M 1181 0 D S
 N 0 0 197 0 360 arc S
 N 0 0 394 0 360 arc S
@@ -974,7 +960,7 @@ O0
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 -236 1181 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 V 90 R (-R0/360/... -Zu -T) bc Z U
@@ -985,12 +971,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/1200/0/360 -Bxg200 -Byg90 -BWESN -O -K -A5 -Zu -T
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/1200/0/360 -Bxg200 -Byg90 -BWESN -O -K -A5 -Zu -T
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 1181 T
 25 W
 O1
@@ -1071,17 +1057,9 @@ O0
 155 -265 -260 0 0 Sw
 144 -270 -265 0 0 Sw
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
-N 0 0 M -1023 -591 D S
-N 0 0 M -591 -1023 D S
 N 0 0 M 0 -1181 D S
-N 0 0 M 591 -1023 D S
-N 0 0 M 1023 -591 D S
 N 0 0 M 1181 0 D S
 N 0 0 197 0 360 arc S
 N 0 0 394 0 360 arc S
@@ -1110,7 +1088,7 @@ O0
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 -236 0 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 V 90 R (-R-90/90/...) bl Z U
@@ -1121,12 +1099,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/-90/90 -Bxg25 -Byg90 -BWESN -O -K -A5
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/-90/90 -Bxg25 -Byg90 -BWESN -O -K -A5
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 0 T
 25 W
 O1
@@ -1171,11 +1149,7 @@ O0
 391 5 10 0 0 Sw
 382 0 5 0 0 Sw
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
 N 0 0 197 0 180 arc S
 N 0 0 394 0 180 arc S
@@ -1186,8 +1160,6 @@ N 0 0 1181 0 180 arc S
 0 1881 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
 () bc Z
-0 -83 M 200 F0
-(0) tc Z
 1348 0 M 267 F0
 () ml Z
 -1348 0 M () mr Z
@@ -1205,7 +1177,7 @@ O0
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 -236 0 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 V 90 R (-R0/180/...) bl Z U
@@ -1216,12 +1188,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/180 -Bxg25 -Byg90 -BWESN -O -K -A5
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/180 -Bxg25 -Byg90 -BWESN -O -K -A5
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 0 T
 25 W
 O1
@@ -1266,11 +1238,7 @@ O0
 824 5 10 0 0 Sw
 880 0 5 0 0 Sw
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
 N 0 0 197 0 180 arc S
 N 0 0 394 0 180 arc S
@@ -1281,8 +1249,6 @@ N 0 0 1181 0 180 arc S
 0 1881 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
 () bc Z
-0 -83 M 200 F0
-(0) tc Z
 1348 0 M 267 F0
 () ml Z
 -1348 0 M () mr Z
@@ -1300,7 +1266,7 @@ O0
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 -236 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (Rose Diagrams) tc Z
@@ -1311,12 +1277,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K -A5r
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K -A5r
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 1181 T
 25 W
 O1
@@ -1375,17 +1341,9 @@ O0
 70 62 D
 FO
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
-N 0 0 M -1023 -591 D S
-N 0 0 M -591 -1023 D S
 N 0 0 M 0 -1181 D S
-N 0 0 M 591 -1023 D S
-N 0 0 M 1023 -591 D S
 N 0 0 M 1181 0 D S
 N 0 0 197 0 360 arc S
 N 0 0 394 0 360 arc S
@@ -1409,12 +1367,12 @@ O0
 0 2598 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K -A5r -T -Y5.5c
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K -A5r -T -Y5.5c
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 1181 T
 25 W
 O1
@@ -1494,17 +1452,9 @@ O0
 70 62 D
 FO
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
-N 0 0 M -1023 -591 D S
-N 0 0 M -591 -1023 D S
 N 0 0 M 0 -1181 D S
-N 0 0 M 591 -1023 D S
-N 0 0 M 1023 -591 D S
 N 0 0 M 1181 0 D S
 N 0 0 197 0 360 arc S
 N 0 0 394 0 360 arc S
@@ -1528,12 +1478,12 @@ O0
 0 2598 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/1200/0/360 -Bxg200 -Byg90 -BWESN -O -K -A5r -Zu -T -Y5.5c
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/1200/0/360 -Bxg200 -Byg90 -BWESN -O -K -A5r -Zu -T -Y5.5c
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 1181 T
 25 W
 O1
@@ -1613,17 +1563,9 @@ O0
 14 -9 D
 FO
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
-N 0 0 M -1023 -591 D S
-N 0 0 M -591 -1023 D S
 N 0 0 M 0 -1181 D S
-N 0 0 M 591 -1023 D S
-N 0 0 M 1023 -591 D S
 N 0 0 M 1181 0 D S
 N 0 0 197 0 360 arc S
 N 0 0 394 0 360 arc S
@@ -1647,12 +1589,12 @@ O0
 0 2835 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/-90/90 -Bxg25 -Byg90 -BWESN -O -K -A5r -Y6c
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/-90/90 -Bxg25 -Byg90 -BWESN -O -K -A5r -Y6c
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 0 T
 25 W
 O1
@@ -1699,11 +1641,7 @@ O0
 -876 0 D
 FO
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
 N 0 0 197 0 180 arc S
 N 0 0 394 0 180 arc S
@@ -1714,8 +1652,6 @@ N 0 0 1181 0 180 arc S
 0 1881 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
 () bc Z
-0 -83 M 200 F0
-(0) tc Z
 1348 0 M 267 F0
 () ml Z
 -1348 0 M () mr Z
@@ -1728,12 +1664,12 @@ O0
 0 1654 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/180 -Bxg25 -Byg90 -BWESN -O -K -A5r -Y3.5c
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/150/0/180 -Bxg25 -Byg90 -BWESN -O -K -A5r -Y3.5c
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 0 T
 25 W
 O1
@@ -1780,11 +1716,7 @@ O0
 -1924 0 D
 FO
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
 N 0 0 197 0 180 arc S
 N 0 0 394 0 180 arc S
@@ -1795,8 +1727,6 @@ N 0 0 1181 0 180 arc S
 0 1881 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
 () bc Z
-0 -83 M 200 F0
-(0) tc Z
 1348 0 M 267 F0
 () ml Z
 -1348 0 M () mr Z
@@ -1814,7 +1744,7 @@ O0
 %%BeginObject PSL_Layer_19
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 -236 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (Windrose Diagrams) tc Z
@@ -1825,12 +1755,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -R0/5/0/360 -Bxg1 -Byg190 -BWESN -O -K
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -R0/5/0/360 -Bxg1 -Byg90 -BWESN -O -K
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_20
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 1181 T
 25 W
 O1
@@ -9815,17 +9745,9 @@ N 0 0 M -10 33 D S
 N 0 0 M 5 5 D S
 N 0 0 M -183 5 D S
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
-N 0 0 M -1023 -591 D S
-N 0 0 M -591 -1023 D S
 N 0 0 M 0 -1181 D S
-N 0 0 M 591 -1023 D S
-N 0 0 M 1023 -591 D S
 N 0 0 M 1181 0 D S
 N 0 0 236 0 360 arc S
 N 0 0 472 0 360 arc S
@@ -9848,12 +9770,12 @@ O0
 0 2598 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -R0/5/0/360 -Bxg1 -Byg190 -BWESN -O -K -T -Y5.5c
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -R0/5/0/360 -Bxg1 -Byg90 -BWESN -O -K -T -Y5.5c
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_21
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 1181 T
 25 W
 O1
@@ -17838,17 +17760,9 @@ N -10 33 M 20 -66 D S
 N -5 -5 M 10 10 D S
 N -183 5 M 366 -10 D S
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
-N 0 0 M -1023 -591 D S
-N 0 0 M -591 -1023 D S
 N 0 0 M 0 -1181 D S
-N 0 0 M 591 -1023 D S
-N 0 0 M 1023 -591 D S
 N 0 0 M 1181 0 D S
 N 0 0 236 0 360 arc S
 N 0 0 472 0 360 arc S
@@ -17871,12 +17785,12 @@ O0
 0 2598 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -R0/1/0/360 -Bxg0.2 -Byg190 -BWESN -O -K -Zu -T -Y5.5c
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -R0/1/0/360 -Bxg0.2 -Byg90 -BWESN -O -K -Zu -T -Y5.5c
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_22
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 1181 T
 25 W
 O1
@@ -25861,17 +25775,9 @@ N -332 1133 M 664 -2266 D S
 N -846 -824 M 1692 1648 D S
 N -1181 30 M 2362 -60 D S
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
-N 0 0 M -1023 -591 D S
-N 0 0 M -591 -1023 D S
 N 0 0 M 0 -1181 D S
-N 0 0 M 591 -1023 D S
-N 0 0 M 1023 -591 D S
 N 0 0 M 1181 0 D S
 N 0 0 236 0 360 arc S
 N 0 0 472 0 360 arc S
@@ -25894,12 +25800,12 @@ O0
 0 2835 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/5/-90/90 -Bxg1 -Byg90 -BWESN -O -K -Y6c
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/5/-90/90 -Bxg1 -Byg90 -BWESN -O -K -Y6c
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_23
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 0 T
 25 W
 O1
@@ -33884,11 +33790,7 @@ N 0 0 M -10 33 D S
 N 0 0 M 5 5 D S
 N 0 0 M -183 5 D S
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
 N 0 0 236 0 180 arc S
 N 0 0 472 0 180 arc S
@@ -33898,8 +33800,6 @@ N 0 0 1181 0 180 arc S
 0 1881 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
 () bc Z
-0 -83 M 200 F0
-(0) tc Z
 1348 0 M 267 F0
 () ml Z
 -1348 0 M () mr Z
@@ -33912,12 +33812,12 @@ O0
 0 1654 TM
 
 % PostScript produced by:
-%@GMT: gmt psrose @azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/5/0/180 -Bxg1 -Byg90 -BWESN -O -K -Y3.5c
+%@GMT: gmt psrose /Users/pwessel/.gmt/cache/azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/5/0/180 -Bxg1 -Byg90 -BWESN -O -K -Y3.5c
 %@PROJ: xy -0.98425197 0.98425197 -0.98425197 0.98425197 -0.984 0.984 -0.984 0.984 +xy
 %%BeginObject PSL_Layer_24
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 1181 0 T
 25 W
 O1
@@ -41902,11 +41802,7 @@ N 0 0 M 33 10 D S
 N 0 0 M -5 5 D S
 N 0 0 M 5 183 D S
 N 0 0 M 1181 0 D S
-N 0 0 M 1023 591 D S
-N 0 0 M 591 1023 D S
 N 0 0 M 0 1181 D S
-N 0 0 M -591 1023 D S
-N 0 0 M -1023 591 D S
 N 0 0 M -1181 0 D S
 N 0 0 236 0 180 arc S
 N 0 0 472 0 180 arc S
@@ -41916,8 +41812,6 @@ N 0 0 1181 0 180 arc S
 0 1881 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
 () bc Z
-0 -83 M 200 F0
-(0) tc Z
 1348 0 M 267 F0
 () ml Z
 -1348 0 M () mr Z
@@ -41935,11 +41829,12 @@ O0
 %%BeginObject PSL_Layer_25
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

@@ -170,6 +170,7 @@ EXTERN_MSC double gmt_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FF
 
 /* gmt_remote.c: */
 
+EXTERN_MSC void gmt_refresh_server (struct GMTAPI_CTRL *API);
 EXTERN_MSC int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *localfile, bool mode);
 EXTERN_MSC int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char* file, char *local_path, char *remote_path, unsigned int mode);
 EXTERN_MSC int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file);
@@ -526,6 +527,7 @@ EXTERN_MSC double gmt_azim_to_angle (struct GMT_CTRL *GMT, double lon, double la
 EXTERN_MSC uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t np, double **x, double **y);
 EXTERN_MSC uint64_t gmt_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, int pen_flag, int *pen);
 EXTERN_MSC uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n);
+EXTERN_MSC uint64_t gmt_cart_to_xy_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n);
 EXTERN_MSC uint64_t gmt_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int dir, bool check, double w, double e, double s, double n);
 EXTERN_MSC int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *O, bool inverse);
 EXTERN_MSC int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE *O, bool inverse);

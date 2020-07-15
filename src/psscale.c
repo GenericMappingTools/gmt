@@ -613,27 +613,34 @@ GMT_LOCAL void psscale_fix_format (char *unit, char *format) {
 }
 
 GMT_LOCAL void psscale_plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
-	double vdim[PSL_MAX_DIMS], s = width / 0.1, p_width;
+	/* Use the color of MAP_FRAME_PEN to draw the symbol stem and head fill.
+	 * Use the symbol width to estimate pen width as 0.5p times (width/0.05) [in inches]  */
+	double vdim[PSL_MAX_DIMS], s = width / 0.05, p_width, circum;
 	struct GMT_SYMBOL S;
-	struct GMT_FILL black;
+	struct GMT_FILL head;
 	struct GMT_PEN pen;
-	gmt_init_pen (GMT, &pen, 0.5);
-	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
+	gmt_init_pen (GMT, &pen, 0.5);	/* Sets pen to 0.5p */
+	gmt_M_memcpy (pen.rgb, GMT->current.setting.map_frame_pen.rgb, 4U, double);
+	gmt_init_fill (GMT, &head, pen.rgb[0], pen.rgb[1], pen.rgb[2]);	/* Default fill for points, if needed */
 	gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
 	gmt_M_memset (vdim, PSL_MAX_DIMS, double);
+	circum = 2.0 * M_PI * width;		/* Circumference of symbol in inches */
 	p_width = (float)(s * pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 	pen.width = p_width * GMT->session.u2u[GMT_INCH][GMT_PT];
-	vdim[0] = 0.9 * width;
-	vdim[1] = 50.0;	vdim[2] = 210.0;
-	vdim[3] = s * width, vdim[4] = s * width * tand (20.0), vdim[5] = p_width;
-	vdim[6] = 0.75;
+	vdim[0] = width;					/* Circular symbol radius is 0.45 of bar width */
+	vdim[1] = 50.0;	vdim[2] = 210.0;	/* Angular start and stop for one arrow */
+	vdim[3] = circum / 6.0;				/* Head-length is 1/6 of circumference */
+	vdim[4] = vdim[3] * tand (25.0);	/* Head width assumes 25 degree apex */
+	vdim[5] = p_width;					/* Passing in pen width */
+	vdim[6] = 0.75;						/* Vector shape */
 	vdim[7] = (double)(PSL_VEC_END|PSL_VEC_FILL);
 	vdim[9] = (double)PSL_VEC_ARROW;
-	gmt_setfill (GMT, &black, 0);
+	gmt_setfill (GMT, &head, 0);
 	gmt_setpen (GMT, &pen);
-	PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.0, "", 0, black.rgb);
+	PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.0, "", 0, head.rgb);
+	x += 0.15 * vdim[3];	/* Shift center to account for the width of the circular arrow */
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
-	vdim[1] = 230.0;	vdim[2] = 390.0;
+	vdim[1] = 230.0;	vdim[2] = 390.0;	/* Angular start and stop for the other circular arrow */
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
 }
 
@@ -710,14 +717,14 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		bool const_interval = true, exp_notation = false;
 		for (i = 0; i < P->n_colors; i++) {
 			if (P->data[i].label) n_use_labels++;
-			if (P->data[i].annot & 1) {
+			if (P->data[i].annot & GMT_CPT_L_ANNOT) {
 				z = P->data[i].z_low;
 				if ((dec = gmt_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strncpy (format, text, GMT_LEN256-1);
 					ndec = dec;
 				}
 			}
-			if (P->data[i].annot & 2) {
+			if (P->data[i].annot & GMT_CPT_U_ANNOT) {
 				z = P->data[i].z_high;
 				if ((dec = gmt_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strncpy (format, text, GMT_LEN256-1);
@@ -1137,11 +1144,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 			if (!center) {
 				for (i = 0; i < P->n_colors; i++) {		/* For all z_low coordinates */
-					t_len = (all || (P->data[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
+					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels) {	/* Finally do last slice z_high boundary */
-					t_len = (all || (P->data[P->n_colors-1].annot & 2)) ? dir * len : dir * len2;	/* Annot or frame length */
+				if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {	/* Finally do last slice z_high boundary */
+					t_len = (all || (P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
 				}
 			}
@@ -1155,12 +1162,20 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 			for (i = 0; i < P->n_colors; i++) {
 				xx = (reverse) ? xright - x1 : x1;
-				if (all || (P->data[i].annot & 1)) {	/* Annotate this */
+				if (all || P->data[i].annot) {	/* Annotate this */
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && no_B_mode && P->data[i].label) {
-						strncpy (text, P->data[i].label, GMT_LEN256-1);
-						this_just = l_justify;
+					if (use_labels && no_B_mode) {
+						if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
+							strncpy (text, P->data[i].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else if (i && (P->data[i-1].annot & GMT_CPT_U_ANNOT) && P->data[i-1].label) {
+							strncpy (text, P->data[i-1].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else
+							text[0] = '\0';
 					}
 					else if (center && Ctrl->L.interval)
 						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
@@ -1177,12 +1192,20 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				}
 				x1 += z_width[i];
 			}
-			if (!center && !use_labels) {
+			if (!center) {
 				i = P->n_colors-1;
-				if (all || (P->data[i].annot & 2)) {
+				if (all || (P->data[i].annot & GMT_CPT_U_ANNOT)) {
 					this_just = justify;
 					do_annot = true;
-					if (Ctrl->Q.active) {
+					if (use_labels && no_B_mode) {
+						if (P->data[i].label) {
+							strncpy (text, P->data[i].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else
+							text[0] = '\0';
+					}
+					else if (Ctrl->Q.active) {
 						p_val = irint (P->data[i].z_high);
 						if (doubleAlmostEqualZero (P->data[i].z_high, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
@@ -1407,11 +1430,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (!center) {
 				gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 				for (i = 0; i < P->n_colors; i++) {
-					t_len = (all || (P->data[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
+					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels) {
-					t_len = (all || (P->data[P->n_colors-1].annot & 2)) ? dir * len : dir * len2;	/* Annot or frame length */
+				if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {
+					t_len = (all || (P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
 				}
 			}
@@ -1425,12 +1448,20 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 			for (i = 0; i < P->n_colors; i++) {
 				xx = (reverse) ? xright - x1 : x1;
-				if (all || (P->data[i].annot & 1)) {
+				if (all || P->data[i].annot) {
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && no_B_mode && P->data[i].label) {
-						strncpy (text, P->data[i].label, GMT_LEN256-1);
-						this_just = l_justify;
+					if (use_labels && no_B_mode) {
+						if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
+							strncpy (text, P->data[i].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else if (i && P->data[i-1].annot & GMT_CPT_U_ANNOT && P->data[i-1].label) {
+							strncpy (text, P->data[i-1].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else
+							text[0] = '\0';
 					}
 					else if (center && Ctrl->L.interval)
 						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
@@ -1451,7 +1482,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			}
 			if (!center && !use_labels) {
 				i = P->n_colors-1;
-				if (all || (P->data[i].annot & 2)) {
+				if (all || (P->data[i].annot & GMT_CPT_U_ANNOT)) {
 					this_just = justify;
 					do_annot = true;
 					if (Ctrl->Q.active) {

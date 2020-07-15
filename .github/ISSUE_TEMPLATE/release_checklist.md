@@ -73,8 +73,7 @@ assignees: ''
 
 - [ ] update [conda-forge feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
 - [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@claudiodsf, @seisman)
-- [ ] update [fink package](https://github.com/fink/fink-distributions/blob/master/10.9-libcxx/stable/main/finkinfo/sci/) (@remkos)
-- [ ] update [macports ports](https://github.com/macports/macports-ports/blob/master/science/gmt5/Portfile) (@seisman)
+- [ ] update [macports ports](https://github.com/macports/macports-ports/blob/master/science/gmt5/Portfile) (@remkos, @seisman)
 - [ ] update [the RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/) (@seisman)
 - [ ] update the [try-gmt](https://github.com/GenericMappingTools/try-gmt) Jupyter lab (@seisman)
 - [ ] update [the AUR repository](https://aur.archlinux.org/packages/gmt6/) (@holishing)

@@ -62,6 +62,7 @@ GMT_COMPATIBILITY		# Oldest GMT version syntax to parse without error [4 and up]
 GMT_CUSTOM_LIBS			# List of custom GMT-compliant shared libraries
 GMT_DATA_SERVER			# Where to download from [SOEST]
 GMT_DATA_SERVER_LIMIT		# Max file size to download remotely
+GMT_DATA_UPDATE_INTERVAL	# Frequency for refreshing local data catalog
 GMT_EXPORT_TYPE			# Default type when GMT exports data to external interfaces
 GMT_EXTRAPOLATE_VAL		# How to deal with 1D extrapolated values
 GMT_FFT				# Which FFT algorithm to use

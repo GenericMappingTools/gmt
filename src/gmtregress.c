@@ -55,7 +55,8 @@ enum GMT_enum_regress {
 	GMTREGRESS_YMEAN	= 7,
 	GMTREGRESS_R		= 8,
 	GMTREGRESS_CORR		= 9,
-	GMTREGRESS_NPAR		= 10,
+	GMTREGRESS_MISFTY	= 10,
+	GMTREGRESS_NPAR		= 11,
 	GMTREGRESS_NPAR_MAIN	= 4,
 	GMTREGRESS_OUTPUT_GOOD  = 1,
 	GMTREGRESS_OUTPUT_BAD   = 2};
@@ -109,6 +110,11 @@ struct GMTREGRESS_CTRL {
 		unsigned int n_weights;	/* 1-3 if any weights are selected */
 		unsigned int col[3];	/* Column numbers >=2 if weights are present */
 	} W;
+	struct GMTREGRESS_Z {	/* 	-Z<limit> */
+		bool active;
+		int mode;	/* if leading sign we only look for negative or positive outliers [both] */
+		double limit;
+	} Z;
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -119,6 +125,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.value = 0.95;
 	C->E.mode = GMTREGRESS_Y;
 	C->N.mode = GMTREGRESS_NORM_L2;
+	C->Z.limit = GMTREGRESS_ZSCORE_LIMIT;
 
 	return ((void *)C);
 }
@@ -134,7 +141,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[<min>/<max>/<inc>]+f[n|p]] [-C<level>] [-Ex|y|o|r] [-F<flags>] [-N1|2|r|w]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T[<min>/<max>/]<inc>[+n] [%s] [-W[w][x][y][r]] [%s]\n", GMT_V_OPT, GMT_a_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T[<min>/<max>/]<inc>[+n] [%s] [-W[w][x][y][r]] [-Z<limit>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -179,13 +186,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -T0 to bypass model evaluation entirely.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses locations of input data to evaluate the model].\n");
+	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Supply individual 1-sigma uncertainties for data points [no weights].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append x for sigma_x, y for sigma_y, and r for x-y correlation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We then expect 1-3 extra columns with these data in the given order.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Given a sigma, the weight will be computed via weight = 1/sigma.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ww if weights are precomputed and not given as 1-sigma values.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Except for -N1 we square the weights when computing misfits.\n");
-	GMT_Option (API, "V,a,bi,bo,d,e,g,h,i,o,q,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set z-score absolute value cutoff for outlier detection [%g].\n", GMTREGRESS_ZSCORE_LIMIT);
+	GMT_Message (API, GMT_TIME_NONE, "\t   To only flag negative or positive outliers, specify a leading sign.\n");
+	GMT_Option (API, "a,bi,bo,d,e,g,h,i,o,q,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -312,6 +322,15 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				break;
+			case 'Z':	/* Set new zscore limit */
+				Ctrl->Z.active = true;
+				Ctrl->Z.limit = fabs (atof (opt->arg));
+				switch (opt->arg[0]) {	/* Look for one-sided outliers */
+					case '-': Ctrl->Z.mode = -1;	break;
+					case '+': Ctrl->Z.mode = +1;	break;
+					default: Ctrl->Z.mode = 0;		break;
+				}
+				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -334,6 +353,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, scan_slopes && Ctrl->C.active, "Option -A: Cannot simultaneously specify -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->F.param, "Option -Fp: Cannot simultaneously specify -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->F.param, "Option -Fp: Cannot simultaneously specify -T.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.limit == 0.0, "Option -Z: Give a non-zero limit.\n");
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2,
 	                                   "Binary input data (-bi) must have at least 2 columns.\n");
@@ -683,7 +703,7 @@ GMT_LOCAL double gmtregress_LSy_regress1D (struct GMT_CTRL *GMT, double *x, doub
  	par[GMTREGRESS_SIGIC] = sqrt (S_xx * D);
 	for (k = 0; k < n; k++)	/* Here we recycle Q to hold y-residual e */
 		Q[k] = y[k] - gmtregress_model (x[k], par);
-	par[GMTREGRESS_MISFT] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0);
+	par[GMTREGRESS_MISFT] = par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0);
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
 	scale = gmtregress_L2_scale (GMT, NULL, W, n, par);
 	gmt_M_free (GMT, Q);
@@ -693,8 +713,32 @@ GMT_LOCAL double gmtregress_LSy_regress1D (struct GMT_CTRL *GMT, double *x, doub
 	return (scale);
 }
 
+GMT_LOCAL void gmtregress_yorkRMA_error (struct GMT_CTRL *GMT, double *U, double *V, uint64_t n, double sx, double sy, double *par) {
+	uint64_t k;
+	double *u = gmt_M_memory (GMT, NULL, n, double), *x = gmt_M_memory (GMT, NULL, n, double);
+	double v, sum_u2, mean_x;
+	gmt_M_unused (GMT);
+
+	/* From York et al [2004] for RMA case when w(Xi) = 1/sx^2 and w(Yi) = 1/sy2 */
+	sx *= sx;	sy *= sy;	/* Get variances */
+	v = sy + par[GMTREGRESS_SLOPE] * par[GMTREGRESS_SLOPE] * sx;
+	for (k = 0; k < n; k++)
+		x[k] = par[GMTREGRESS_XMEAN] + (U[k] * sy + par[GMTREGRESS_SLOPE] * V[k] * sx) / v;
+	mean_x = gmtregress_gmt_sum (x, n) / n;	/* Get sum of x divided by n */
+	for (k = 0; k < n; k++)	/* compute u */
+		u[k] = x[k] - mean_x;
+	gmtregress_eval_product (u, u, x, n);	/* Compute x[i] = u[i] * u[i] */
+	sum_u2 = gmtregress_gmt_sum (x, n);	/* Get sum of u^2 */
+	par[GMTREGRESS_SIGSL] = 1 / sum_u2;
+	par[GMTREGRESS_SIGIC] = (1 / n + mean_x * mean_x / sum_u2);
+	par[GMTREGRESS_SIGSL] = sqrt (par[GMTREGRESS_SIGSL]);
+	par[GMTREGRESS_SIGIC] = sqrt (par[GMTREGRESS_SIGIC]);
+	gmt_M_free (GMT, x);
+	gmt_M_free (GMT, u);
+}
+
 GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *par) {
-	/* Basic LS xy orthogonal regression, with no data errors. See York [1966] */
+	/* Basic LS xy orthogonal regression, with no data errors. See York [1966] and York et al [2004] */
 	uint64_t k;
 	unsigned int p;
 	double *u = gmt_M_memory (GMT, NULL, n, double), *v = gmt_M_memory (GMT, NULL, n, double);
@@ -712,7 +756,6 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *
 	sum_v2 = gmtregress_gmt_sum (Q, n);	/* Get sum of v*v */
 	gmtregress_eval_product (u, v, Q, n);	/* Compute Q[i] = u[i] * v[i] */
 	sum_uv = gmtregress_gmt_sum (Q, n);	/* Get sum of u*v */
-	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);	/* Done with these arrays */
 	part1 = sum_v2 - sum_u2;
 	part2 = sqrt (pow (sum_u2 - sum_v2, 2.0) + 4.0 * sum_uv * sum_uv);
 	b[0] = (part1 + part2) / (2.0 * sum_uv);
@@ -727,37 +770,49 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *
 	p = (E[0] < E[1]) ? 0 : 1;	/* Determine the solution with the smallest misfit and copy to par array: */
 	par[GMTREGRESS_SLOPE] = b[p];
 	par[GMTREGRESS_ICEPT] = a[p];
-	par[GMTREGRESS_SIGSL] = par[GMTREGRESS_SLOPE] * sqrt ((1.0 - r * r) / n) / r;
-	par[GMTREGRESS_SIGIC] = sqrt (pow (sig_y - sig_x * par[GMTREGRESS_SLOPE], 2.0) / n + (1.0 - r) * par[GMTREGRESS_SLOPE] * (2.0 * sig_x * sig_y + (mean_x * par[GMTREGRESS_SLOPE] * (1.0 + r) / (r * r))));
+	gmtregress_yorkRMA_error (GMT, u, v, n, sig_x, sig_y, par);
 	par[GMTREGRESS_MISFT] = E[p];
+	/* Compute regular y LS misfit to use with confidence band */
+	for (k = 0; k < n; k++) Q[k] = y[k] - b[p] * x[k] - a[p];
+	par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0);
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
 	par[GMTREGRESS_XMEAN] = mean_x;
 	par[GMTREGRESS_YMEAN] = mean_y;
 	scale = gmtregress_L2_scale (GMT, NULL, W, n, par);
 	gmt_M_free (GMT, Q);
 	gmt_M_free (GMT, W);
+	gmt_M_free (GMT, u);
+	gmt_M_free (GMT, v);
 
 	return (scale);
 }
 
 GMT_LOCAL double gmtregress_LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
-	/* Basic LS RMA orthogonal regression with no weights [Reference?] */
+	/* Basic LS RMA orthogonal regression with no weights [York et al, 2004] */
 	uint64_t k;
-	double sx, sy, scale;
-	double *U = gmt_M_memory (GMT, NULL, n, double), *V = gmt_M_memory (GMT, NULL, n, double), *W = gmt_M_memory (GMT, NULL, n, double);
+	double sx, sy, scale, r, sum_u2;
+	double *U = gmt_M_memory (GMT, NULL, n, double), *V = gmt_M_memory (GMT, NULL, n, double), *Q = gmt_M_memory (GMT, NULL, n, double), *W = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_memset (par, GMTREGRESS_NPAR, double);
 	(void)gmtregress_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
+	r = gmt_corrcoeff (GMT, U, V, n, 1);
 	sx = gmt_std_weighted (GMT, U, w[GMT_X], 0.0, n);
 	sy = gmt_std_weighted (GMT, V, w[GMT_Y], 0.0, n);
+	gmtregress_eval_product (U, U, Q, n);	/* Compute Q[i] = u[i] * u[i] */
+	sum_u2 = gmtregress_gmt_sum (Q, n);	/* Get sum of u*u */
 	par[GMTREGRESS_SLOPE] = sy / sx;
+	if (r < 0.0) par[GMTREGRESS_SLOPE] = -par[GMTREGRESS_SLOPE];	/* Negative correlation means negative slope */
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
+	gmtregress_yorkRMA_error (GMT, U, V, n, sx, sy, par);
 	for (k = 0; k < n; k++)	/* Here we recycle U as y-residual e */
 		U[k] = y[k] - gmtregress_model (x[k], par);
+	/* Report RMA misfit but use L2 y-misfit in calculations for confidence band */
 	par[GMTREGRESS_MISFT] = gmtregress_L2_misfit (GMT, U, W, n, GMTREGRESS_RMA, par[GMTREGRESS_SLOPE]);
+	par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, U, W, n, GMTREGRESS_Y, par[GMTREGRESS_SLOPE]);
 	scale = gmtregress_L2_scale (GMT, NULL, W, n, par);
 	gmt_M_free (GMT, U);
 	gmt_M_free (GMT, V);
+	gmt_M_free (GMT, Q);
 	gmt_M_free (GMT, W);
 	return (scale);
 }
@@ -955,7 +1010,20 @@ GMT_LOCAL double gmtregress_LSxy_regress1D (struct GMT_CTRL *GMT, double *x, dou
 	return (scale);
 }
 
-GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int in_norm, double *range, double *par, unsigned int mode) {
+GMT_LOCAL bool gmtregress_is_outlier (struct GMTREGRESS_Z *Z, double z) {
+	bool outlier = false;
+	switch (Z->mode) {
+		case -1:	/* Only z-values exceeding a negative limit is an outlier */
+			if (z <= -Z->limit) outlier = true;	break;
+		case +1:	/* Only z-values exceeding a positive limit is an outlier */
+			if (z >= +Z->limit) outlier = true;	break;
+		default:	/* Exceeding the limit on either side is an outlier */
+			if (fabs (z) >= Z->limit) outlier = true;
+	}
+	return (outlier);
+}
+
+GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int in_norm, double *range, double *par, unsigned int mode, struct GMTREGRESS_Z *Z) {
 	/* Solves for the best regression of (x_in, y_in) given the current settings.
 	 * mode is only 1 when called to do RLS after the initial LMS regression returns. */
 
@@ -1048,12 +1116,12 @@ GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in,
 			xclean = gmt_M_memory (GMT, NULL, n, double);
 			yclean = gmt_M_memory (GMT, NULL, n, double);
 			for (k = 0; k < n; k++) {	/* Modify weights based on z-score threshold (correlations are not modified) */
-				if (fabs (z[k]) >= GMTREGRESS_ZSCORE_LIMIT) continue;
+				if (gmtregress_is_outlier (Z, z[k])) continue;
 				xclean[m] = x_in[k];
 				yclean[m] = y_in[k];
 				m++;
 			}
-			(void) gmtregress_do_regression (GMT, xclean, yclean, www, m, regression, GMTREGRESS_NORM_L2, range, par, 1);
+			(void) gmtregress_do_regression (GMT, xclean, yclean, www, m, regression, GMTREGRESS_NORM_L2, range, par, 1, Z);
 			gmtregress_get_correlation (GMT, xclean, yclean, www, m, par);	/* Evaluate r */
 			if (regression == GMTREGRESS_Y)	/* Can only do this for standard regression */
 				gmtregress_get_coeffR (GMT, xclean, yclean, www, m, regression, par);	/* Evaluate R */
@@ -1074,11 +1142,11 @@ GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in,
 			}
 		}
 		for (k = 0; k < n; k++) {	/* Modify weights based on z-score threshold (correlations are not modified) */
-			w_k = (mode == 0 && fabs (z[k]) < GMTREGRESS_ZSCORE_LIMIT) ? 1.0 : 0.0;
+			w_k = (mode == 0 && gmtregress_is_outlier (Z, z[k])) ? 1.0 : 0.0;
 			if (www[GMT_X]) www[GMT_X][k] *= w_k;
 			if (www[GMT_Y]) www[GMT_Y][k] *= w_k;
 		}
-		(void) gmtregress_do_regression (GMT, x_in, y_in, www, n, regression, GMTREGRESS_NORM_L2, range, par, 1);
+		(void) gmtregress_do_regression (GMT, x_in, y_in, www, n, regression, GMTREGRESS_NORM_L2, range, par, 1, Z);
 	}
 	gmtregress_get_correlation (GMT, x_in, y_in, w, n, par);	/* Evaluate r */
 	if (regression == GMTREGRESS_Y)	/* Can only do this for standard regression */
@@ -1265,7 +1333,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 			}
 			else {	/* Here we are solving for the best regression */
 				bool outlier = false;
-				double *z_score = gmtregress_do_regression (GMT, S->data[GMT_X], S->data[GMT_Y], w, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, range, par, 0);	/* The heavy work happens here */
+				double *z_score = gmtregress_do_regression (GMT, S->data[GMT_X], S->data[GMT_Y], w, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, range, par, 0, &Ctrl->Z);	/* The heavy work happens here */
 				if (Ctrl->F.param) {	/* Just print the model parameters */
 					out[0] = (double)S->n_rows;
 					out[1] = par[GMTREGRESS_XMEAN];
@@ -1314,7 +1382,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 					/* 3. Evaluate the chosen output columns and write records */
 
 					for (row = 0; row < n_t; row++) {
-						if (!Ctrl->T.active) outlier = (fabs (z_score[row]) > GMTREGRESS_ZSCORE_LIMIT);	/* Gotta exceed this threshold to be a bad boy */
+						if (!Ctrl->T.active) outlier = gmtregress_is_outlier (&Ctrl->Z, z_score[row]);	/* Gotta exceed this threshold to be a bad boy */
 						if (Ctrl->S.active) {	/* Restrict the output records */
 							if (Ctrl->S.mode == GMTREGRESS_OUTPUT_GOOD && outlier) continue;	/* Don't want the outliers */
 							if (Ctrl->S.mode == GMTREGRESS_OUTPUT_BAD && !outlier) continue;	/* Only want the outliers */
@@ -1333,8 +1401,8 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 								case 'r':	/* Residual */
 									out[col] = S->data[GMT_Y][row] - gmtregress_model (x[row], par);
 									break;
-								case 'c':	/* Model confidence limit (add x and y uncertainties in quadrature since uncorrelated) */
-									out[col] = t_scale * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));
+								case 'c':	/* Model confidence limit (add slope and intercept uncertainties in quadrature since uncorrelated) */
+									out[col] = t_scale * sqrt (par[GMTREGRESS_MISFTY]) * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));
 									break;
 								case 'z':	/* Standardized residuals (z-scores) */
 									out[col] = z_score[row];
