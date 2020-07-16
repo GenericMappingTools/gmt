@@ -76,6 +76,14 @@ Optional Arguments
     only consider the given restricted range of angles [all angles].  As shortcuts for negative
     or positive slopes, just use **+fn** or **+fp**, respectively.
 
+.. figure:: /_images/GMT_slopes.*
+   :width: 500 px
+   :align: center
+
+   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (-Nr) criterion
+   varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
+   but there is another local minimum for an angle of 78.6 degrees that is almost as good.
+
 .. _-C:
 
 **-C**\ *level*
@@ -192,22 +200,28 @@ Optional Arguments
 
 .. include:: explain_array.rst_
 
-Note:
------
+Notes:
+------
 
 The output segment header will contain all the various statistics we compute for each segment.
 These are in order: *N* (number of points), *x0* (weighted mean x), *y0* (weighted mean y),
-*angle* (of line), *E* (misfit), *slope*, *intercept*, *sigma_slope*, and *sigma_intercept*.  More the
+*angle* (of line), *E* (misfit), *slope*, *intercept*, *sigma_slope*, and *sigma_intercept*.  For the
 standard regression (**-Ey**) we also report the Pearsonian correlation (*r*) and
-coefficient of determination (*R*).
+coefficient of determination (*R*). We end with the effective number of measurements, :math:`n_{eff}`.
 
-.. figure:: /_images/GMT_slopes.*
-   :width: 500 px
-   :align: center
+For weighted data and the calculation of squared regression misfits, we use
 
-   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (-Nr) criterion
-   varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
-   but there is another local minimum for an angle of 78.6 degrees that is almost as good.
+.. math::
+
+    E_2(\nu) = \frac{\sum_{i=1}^n w_i e_i^2}{\sum_{i=1}^n w_i} \frac{n_{eff}}{n_{eff}-2},
+
+where the effective number of measurements is given by
+
+.. math::
+
+    n_{eff} = \frac{\left (\sum_{i=1}^n w_i\right )^2}{\sum_{i=1}^n w_i^2}.
+
+and hence :math:`\nu = n_{eff} - 2` are the effective degrees of freedom.
 
 Examples
 --------
