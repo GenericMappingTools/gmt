@@ -469,7 +469,7 @@ GMT_LOCAL double gmtregress_get_scale_factor (unsigned int regression, double sl
 }
 
 GMT_LOCAL double gmtregress_n_effective (double *W, uint64_t n) {
-	/* Determine the effective number of measurements from W */
+	/* Determine the effective number of measurements from W [Bevington, 1969] */
 	uint64_t k;
 	double W_sum1 = 0.0, W_sum2 = 0.0;
 	for (k = 0; k < n; k++) {
