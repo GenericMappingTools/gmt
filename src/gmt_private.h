@@ -144,6 +144,7 @@ struct GMTAPI_CTRL {
 	bool allow_reuse;				/* Flag when get_region_from_data can read a file and not flag it as "used" */
 	bool is_file;					/* True if current rec-by-rec i/o is from a physical file */
 	bool cache;					/* true if we want to read a cache file via GDAL */
+	bool no_history;					/* true if we want to disable the gmt.history mechanism */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
