@@ -18,7 +18,6 @@ for compiling GMT source package (either stable release or development version).
   * [Application Bundle](#application-bundle)
   * [Install via Homebrew](#install-via-homebrew)
   * [Install via Macports](#install-via-macports)
-  * [Install via fink](#install-via-fink)
 - [Linux](#linux)
   * [Fedora](#fedora)
   * [RHEL/CentOS](#rhelcentos)
@@ -108,29 +107,6 @@ For the legacy GMT 4 or GMT 5 versions, use:
 or:
 
     sudo port install gmt5
-
-### Install via fink
-
-Installation of GMT through [Fink](http://www.finkproject.org/) is quite easy.
-All required packages will also be installed.
-
-For the latest GMT 6 version, use:
-
-    sudo fink install gmt6
-
-You also need to install other GMT run-time dependencies separately:
-
-    sudo fink install graphicsmagick ffmpeg
-
-For legacy GMT 5 version, use:
-
-    sudo fink install gmt5
-
-For legacy GMT 4 version, use:
-
-    sudo fink install gmt
-
-These three GMT versions cannot live side by side.
 
 ## Linux
 

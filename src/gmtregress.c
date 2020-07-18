@@ -56,7 +56,8 @@ enum GMT_enum_regress {
 	GMTREGRESS_R		= 8,
 	GMTREGRESS_CORR		= 9,
 	GMTREGRESS_MISFTY	= 10,
-	GMTREGRESS_NPAR		= 11,
+	GMTREGRESS_N_EFF	= 11,
+	GMTREGRESS_NPAR		= 12,
 	GMTREGRESS_NPAR_MAIN	= 4,
 	GMTREGRESS_OUTPUT_GOOD  = 1,
 	GMTREGRESS_OUTPUT_BAD   = 2};
@@ -467,31 +468,49 @@ GMT_LOCAL double gmtregress_get_scale_factor (unsigned int regression, double sl
 	return (f);
 }
 
-GMT_LOCAL double gmtregress_L1_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope) {
+GMT_LOCAL double gmtregress_n_effective (double *W, uint64_t n) {
+	/* Determine the effective number of measurements from W [Bevington, 1969] */
+	uint64_t k;
+	double W_sum1 = 0.0, W_sum2 = 0.0;
+	for (k = 0; k < n; k++) {
+		W_sum1 += W[k];
+		W_sum2 += W[k] * W[k];
+	}
+	return (W_sum1 * W_sum2 / W_sum2);
+}
+
+GMT_LOCAL double gmtregress_L1_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope, double n_eff) {
 	/* Compute L1 misfit from y-residuals ey and weights W for regression x|y|o|r.
 	 * Since W contains squared weights and we use a linear sum we take sqrt(W) below */
 	uint64_t k;
-	double f, E = 0.0;
+	double f, wi, E = 0.0, W_sum = 0.0;
 	gmt_M_unused(GMT);
 	f = gmtregress_get_scale_factor (regression, slope);
-	for (k = 0; k < n; k++) E += fabs (sqrt (W[k]) * ey[k]);
-	return (f * E / (n-2));
+	for (k = 0; k < n; k++) {
+		wi = sqrt (W[k]);
+		E += fabs (wi * ey[k]);
+		W_sum += wi;
+	}
+	return (f * E / (W_sum * (n_eff - 2) / n_eff));
 }
 
-GMT_LOCAL double gmtregress_L2_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope) {
+GMT_LOCAL double gmtregress_L2_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope, double n_eff) {
 	/* Compute L2 misfit from y-residuals ey and weights W for regression x|y|o|r */
 	uint64_t k;
-	double f, E = 0.0;
+	double f, E = 0.0, W_sum;
 	gmt_M_unused(GMT);
 	f = gmtregress_get_scale_factor (regression, slope);
-	for (k = 0; k < n; k++) E += W[k] * ey[k] * ey[k];	/* Basically a chi-squared sum */
-	return (f * f * E / (n-2));	/* f^2 since E was computed from squared misfits */
+	W_sum = gmtregress_gmt_sum (W, n);
+	for (k = 0; k < n; k++)
+		E += W[k] * ey[k] * ey[k];	/* Basically a chi-squared sum */
+	return (f * f * E / (W_sum * (n_eff - 2) / n_eff));	/* f^2 since E was computed from squared misfits */
 }
 
-GMT_LOCAL double gmtregress_LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope) {
+GMT_LOCAL double gmtregress_LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope, double n_eff) {
 	/* Compute LMS misfit from y-residuals ey and weights W for regression x|y|o|r */
 	uint64_t k;
 	double f, E, *ee = gmt_M_memory (GMT, NULL, n, double);
+	gmt_M_unused(n_eff);
 	f = gmtregress_get_scale_factor (regression, slope);
 	for (k = 0; k < n; k++) ee[k] = W[k] * ey[k] * ey[k];
  	gmt_sort_array (GMT, ee, n, GMT_DOUBLE);
@@ -522,7 +541,7 @@ GMT_LOCAL double gmtregress_L2_scale (struct GMT_CTRL *GMT, double *ey, double *
 	double W_sum, scale;
 	gmt_M_unused(GMT); gmt_M_unused(ey);
 	W_sum = gmtregress_gmt_sum (W, n);
-	scale = sqrt ((n-2)*par[GMTREGRESS_MISFT] / W_sum);	/* Undo the previous (n-2) division */
+	scale = sqrt ((par[GMTREGRESS_N_EFF] - 2)*par[GMTREGRESS_MISFT] / par[GMTREGRESS_N_EFF]);	/* Undo the previous (n_eff-2)/n_eff division */
 	return (scale);
 }
 
@@ -632,6 +651,8 @@ GMT_LOCAL double gmtregress_demeaning (struct GMT_CTRL *GMT, double *X, double *
 			W[i] = (w_xy > 0.0) ? w_xy / (w[GMT_X][i] + par[GMTREGRESS_SLOPE] * par[GMTREGRESS_SLOPE] * w[GMT_Y][i] - 2 * par[GMTREGRESS_SLOPE] * corr_i * alpha_i) : 0.0;
 			if (alpha) alpha[i] = alpha_i;
 		}
+		par[GMTREGRESS_N_EFF] = gmtregress_n_effective (W, n);	/* Effective number of measurements */
+
 		/*  Step 4: Compute weighted X_mean, Y_mean, then U, V, and beta */
 		S = gmtregress_gmt_sum (W, n);					/* Get sum of weights */
 		par[GMTREGRESS_XMEAN] = gmtregress_eval_sumprod2 (W, X, n) / S;	/* Compute weighted X_mean */
@@ -656,6 +677,7 @@ GMT_LOCAL double gmtregress_demeaning (struct GMT_CTRL *GMT, double *X, double *
 		par[GMTREGRESS_YMEAN] = gmtregress_eval_sumprod2 (W, Y, n) / S;	/* Compute weighted Y_mean */
 		gmtregress_eval_add (X, -par[GMTREGRESS_XMEAN], U, n);		/* Compute U */
 		gmtregress_eval_add (Y, -par[GMTREGRESS_YMEAN], V, n);		/* Compute V */
+		par[GMTREGRESS_N_EFF] = gmtregress_n_effective (W, n);	/* Effective number of measurements */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Computed weights from given %c-weights\n", (w[GMT_X]) ? 'x' : 'y');
 	}
 	else {	/* No weights, create unit array */
@@ -665,6 +687,7 @@ GMT_LOCAL double gmtregress_demeaning (struct GMT_CTRL *GMT, double *X, double *
 		gmtregress_eval_add (X, -par[GMTREGRESS_XMEAN], U, n);	/* Compute U */
 		gmtregress_eval_add (Y, -par[GMTREGRESS_YMEAN], V, n);	/* Compute V */
 		S = (double)n;					/* Trivial sum of weights */
+		par[GMTREGRESS_N_EFF] = n;	/* Effective = actual number of measurements */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Computed unit weights in the absence of actual weights\n");
 	}
 	return (S);	/* Returning the weight sum */
@@ -703,7 +726,7 @@ GMT_LOCAL double gmtregress_LSy_regress1D (struct GMT_CTRL *GMT, double *x, doub
  	par[GMTREGRESS_SIGIC] = sqrt (S_xx * D);
 	for (k = 0; k < n; k++)	/* Here we recycle Q to hold y-residual e */
 		Q[k] = y[k] - gmtregress_model (x[k], par);
-	par[GMTREGRESS_MISFT] = par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0);
+	par[GMTREGRESS_MISFT] = par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0, par[GMTREGRESS_N_EFF]);
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
 	scale = gmtregress_L2_scale (GMT, NULL, W, n, par);
 	gmt_M_free (GMT, Q);
@@ -765,7 +788,7 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *
 	for (p = 0; p < 2; p++) {	/* Compute E from vertical y-residuals for both solutions to the slope */
 		a[p] = mean_y - b[p] * mean_x;	/* Trial intercept */
 		for (k = 0; k < n; k++) Q[k] = y[k] - b[p] * x[k] - a[p];
-		E[p] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_XY, b[p]);
+		E[p] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_XY, b[p], par[GMTREGRESS_N_EFF]);
 	}
 	p = (E[0] < E[1]) ? 0 : 1;	/* Determine the solution with the smallest misfit and copy to par array: */
 	par[GMTREGRESS_SLOPE] = b[p];
@@ -774,7 +797,7 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *
 	par[GMTREGRESS_MISFT] = E[p];
 	/* Compute regular y LS misfit to use with confidence band */
 	for (k = 0; k < n; k++) Q[k] = y[k] - b[p] * x[k] - a[p];
-	par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0);
+	par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, Q, W, n, GMTREGRESS_Y, 0.0, par[GMTREGRESS_N_EFF]);
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
 	par[GMTREGRESS_XMEAN] = mean_x;
 	par[GMTREGRESS_YMEAN] = mean_y;
@@ -807,8 +830,8 @@ GMT_LOCAL double gmtregress_LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, do
 	for (k = 0; k < n; k++)	/* Here we recycle U as y-residual e */
 		U[k] = y[k] - gmtregress_model (x[k], par);
 	/* Report RMA misfit but use L2 y-misfit in calculations for confidence band */
-	par[GMTREGRESS_MISFT] = gmtregress_L2_misfit (GMT, U, W, n, GMTREGRESS_RMA, par[GMTREGRESS_SLOPE]);
-	par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, U, W, n, GMTREGRESS_Y, par[GMTREGRESS_SLOPE]);
+	par[GMTREGRESS_MISFT] = gmtregress_L2_misfit (GMT, U, W, n, GMTREGRESS_RMA, par[GMTREGRESS_SLOPE], par[GMTREGRESS_N_EFF]);
+	par[GMTREGRESS_MISFTY] = gmtregress_L2_misfit (GMT, U, W, n, GMTREGRESS_Y, par[GMTREGRESS_SLOPE], par[GMTREGRESS_N_EFF]);
 	scale = gmtregress_L2_scale (GMT, NULL, W, n, par);
 	gmt_M_free (GMT, U);
 	gmt_M_free (GMT, V);
@@ -822,7 +845,7 @@ GMT_LOCAL void gmtregress_gmtregress_regress1D_sub (struct GMT_CTRL *GMT, double
 	/* x, y here are actually the reduced coordinates U, V */
 	uint64_t k;
 	double a, b, E;
-	double (*misfit) (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope);
+	double (*misfit) (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope, double n_eff);
 	switch (norm) {	/* Set misfit function pointer */
 		case GMTREGRESS_NORM_L1:  misfit = gmtregress_L1_misfit;  break;
 		case GMTREGRESS_NORM_L2:  misfit = gmtregress_L2_misfit;  break;
@@ -838,7 +861,7 @@ GMT_LOCAL void gmtregress_gmtregress_regress1D_sub (struct GMT_CTRL *GMT, double
 		for (k = 0; k < n; k++) e[k] = x[k] - a;	/* Final x-residuals */
 		/* For GMTREGRESS_Y|GMTREGRESS_RMA a vertical line gives Inf misfit; the others are measured horizontally so always finite.
 		 * We obtain E by passing e as ex but giving the mode Gas MTREGRESS_Y instead and pass 0 as slope. */
-		E = (regression == GMTREGRESS_Y || regression == GMTREGRESS_RMA) ? DBL_MAX : misfit (GMT, e, W, n, GMTREGRESS_Y, 0.0);
+		E = (regression == GMTREGRESS_Y || regression == GMTREGRESS_RMA) ? DBL_MAX : misfit (GMT, e, W, n, GMTREGRESS_Y, 0.0, par[GMTREGRESS_N_EFF]);
 	}
 	else if (gmt_M_is_zero (angle)) {	/* Horizontal line is also a special case since X and RMA regressions give infinite misfits */
 		b = 0.0;	/* Slope is straightforward */
@@ -846,14 +869,14 @@ GMT_LOCAL void gmtregress_gmtregress_regress1D_sub (struct GMT_CTRL *GMT, double
 		/* For GMTREGRESS_X|GMTREGRESS_RMA a horizontal line gives Inf misfit; the others are measured vertically so always finite.
 		 * We obtain E by passing e as ey but giving mode GMTREGRESS_Y instead and pass 0 as slope. */
 		for (k = 0; k < n; k++) e[k] = y[k] - a;	/* Final y-residuals */
-		E = (regression == GMTREGRESS_X || regression == GMTREGRESS_RMA) ? DBL_MAX : misfit (GMT, e, W, n, GMTREGRESS_Y, 0.0);
+		E = (regression == GMTREGRESS_X || regression == GMTREGRESS_RMA) ? DBL_MAX : misfit (GMT, e, W, n, GMTREGRESS_Y, 0.0, par[GMTREGRESS_N_EFF]);
 	}
 	else {	/* Neither vertical|horizontal, we can measure any misfit and need to pass the slope b */
 		b = tand (angle);				/* Regression slope */
 		for (k = 0; k < n; k++) e[k] = y[k] - b * x[k];	/* The y-residuals after removing sloping trend */
 		a = gmtregress_intercept (GMT, e, W, n, weighted, norm);	/* Determine best y-intercept */
 		for (k = 0; k < n; k++) e[k] -= a;		/* Final y-residuals */
-		E = misfit (GMT, e, W, n, regression, b);	/* The representative misfit */
+		E = misfit (GMT, e, W, n, regression, b, par[GMTREGRESS_N_EFF]);	/* The representative misfit */
 	}
 	if (gmt_M_is_dnan (E)) E = DBL_MAX;	/* If anything goes crazy, set E to huge, but this should not happen */
 	/* Update the new best solution; we do not change entries for U and W as well as the sigmas for slope and intercept */
@@ -972,7 +995,7 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X
 		sigma_b = sqrt (sigma_b);			/* Now it is sigma_b */
 		/* Estimate weighted residuals (recycling V for holding the y-residuals) */
 		for (i = 0; i < n; i++) V[i] = Y[i] - (a + b * X[i]);
-		misfit = gmtregress_L2_misfit (GMT, V, W, n, GMTREGRESS_XY, 0.0);	/* Get misfit from residuals */
+		misfit = gmtregress_L2_misfit (GMT, V, W, n, GMTREGRESS_XY, 0.0, par[GMTREGRESS_N_EFF]);	/* Get misfit from residuals */
 		n_iter++;
 		snprintf (buffer, GMT_LEN256, "York iteration %u: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g",
 			n_iter, n, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], atand (b), misfit, b, a, sigma_b, sigma_a);
@@ -1052,6 +1075,7 @@ GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in,
 		ww[GMT_X] = w[GMT_X];
 		ww[GMT_Y] = w[GMT_Y];
 	}
+	par[GMTREGRESS_N_EFF] = n;	/* This may be updated for the cases with individual weights below */
 
 	switch (regression) {	/* Different actions depending on what kind of regression we seek */
 		case GMTREGRESS_Y:	/* Vertical misfit measure */
@@ -1348,12 +1372,12 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 				}
 				else {
 					/* Make segment header with the findings for best regression */
-					if (Ctrl->E.mode == GMTREGRESS_Y)	/* Can include Pearsonian orrelation and R */
-						snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g R: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
-							par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_R]);
+					if (Ctrl->E.mode == GMTREGRESS_Y)	/* Can include Pearsonian correlation and R */
+						snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g R: %g N_eff: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
+							par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_R], par[GMTREGRESS_N_EFF]);
 					else
-							snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
-						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR]);
+							snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g N_eff: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
+						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_N_EFF]);
 					GMT_Report (API, GMT_MSG_INFORMATION, "%s\n", buffer);	/* Report results if verbose */
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
 
