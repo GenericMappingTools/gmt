@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 242
+#define GMT_N_API_ENUMS 239
 
 static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -209,14 +209,11 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_RGB", 0},
 	{"GMT_ROW", 2},
 	{"GMT_SEG", 1},
-	{"GMT_SESSION_BEGIN", 32},
-	{"GMT_SESSION_CLEAR", 128},
 	{"GMT_SESSION_COLMAJOR", 4},
-	{"GMT_SESSION_END", 64},
 	{"GMT_SESSION_EXTERNAL", 2},
-	{"GMT_SESSION_FIGURE", 256},
 	{"GMT_SESSION_LOGERRORS", 8},
 	{"GMT_SESSION_NOEXIT", 1},
+	{"GMT_SESSION_NOHISTORY", 32},
 	{"GMT_SESSION_NORMAL", 0},
 	{"GMT_SESSION_RUNMODE", 16},
 	{"GMT_SHORT", 2},
