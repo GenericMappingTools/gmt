@@ -52,6 +52,12 @@ Synopsis
 
 .. include:: common_classic.rst_
 
+.. _-T:
+
+**-T**
+    Ignore all input files.  If **-B** is not used then **-R -J** are not required.
+    Typically used to move plot origin via **-X** and **-Y**.
+
 Examples
 --------
 
