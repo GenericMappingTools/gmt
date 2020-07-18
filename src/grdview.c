@@ -688,6 +688,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
 						n_errors++;
 					}
+					else
+						Ctrl->T.outline = true;
 				}
 				else {	/* Old-style syntax -T[s][o<pen>] */
 					k = 0;
