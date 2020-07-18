@@ -2838,6 +2838,9 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	FILE *fp = NULL; /* For gmt.history file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
 
+	if (GMT->parent->no_history)
+		return (GMT_NOERROR); /* gmt.history mechanism was disabled by GMT_Create_Session */
+
 	if (!(GMT->current.setting.history & GMT_HISTORY_READ))
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 
@@ -2928,6 +2931,9 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	bool empty;
 	char hfile[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	FILE *fp = NULL; /* For gmt.history file */
+
+	if (GMT->parent->no_history)
+		return (GMT_NOERROR); /* gmt.history mechanism was disabled by GMT_Create_Session */
 
 	if (!(GMT->current.setting.history & GMT_HISTORY_WRITE)) {
 		if (GMT->current.setting.run_mode == GMT_MODERN && GMT->current.setting.history == GMT_HISTORY_OFF)
