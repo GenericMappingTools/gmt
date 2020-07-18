@@ -27,11 +27,11 @@ $view -O -K -R-0.5/1.5/0/2 -X4c -Qs
 $contour -K
 $view -O -K -R-1/3/-1/3 -X4c -Qs
 $contour -K
-$view -O -K -Towhite -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c
+$view -O -K -T+owhite -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c
 label -T $3
-$view -O -K -Towhite -R0/2/0/2 -X4c
-$view -O -K -Towhite -R-0.5/1.5/0/2 -X4c
-$view -O -K -Towhite -R-1/3/-1/3 -X4c
+$view -O -K -T+owhite -R0/2/0/2 -X4c
+$view -O -K -T+owhite -R-0.5/1.5/0/2 -X4c
+$view -O -K -T+owhite -R-1/3/-1/3 -X4c
 $view -Qi100 -O -K -R-0.5/2.5/-0.5/2.5 -X-12c -Y-4c
 $contour -K
 label -Qi100 $3

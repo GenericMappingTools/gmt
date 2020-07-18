@@ -681,8 +681,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				Ctrl->S.value = sval;
 				break;
 			case 'T':	/* Tile plot -T[+s][+o<pen>] */
-				Ctrl->T.active = true;
-				if (strchr (opt->arg, '+') || gmt_M_compat_check (GMT, 6)) {	/* New syntax */
+				Ctrl->T.active = true;	/* Plot as tiles */
+				if (opt->arg[0] && (strchr (opt->arg, '+') || gmt_M_compat_check (GMT, 6))) {	/* New syntax */
 					if (strstr (opt->arg, "+s")) Ctrl->T.skip = true;
 					if ((c = strstr (opt->arg, "+o")) && gmt_getpen (GMT, &c[2], &Ctrl->T.pen)) {
 						gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
@@ -691,7 +691,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					else
 						Ctrl->T.outline = true;
 				}
-				else {	/* Old-style syntax -T[s][o<pen>] */
+				else if (opt->arg[0]) {	/* Old-style syntax -T[s][o<pen>] */
 					k = 0;
 					if (opt->arg[0] == 's') Ctrl->T.skip = true, k = 1;
 					if (opt->arg[k] == 'o') {	/* Want tile outline also */
