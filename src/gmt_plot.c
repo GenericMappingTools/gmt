@@ -7508,7 +7508,7 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P1, &pen);	/* Pen for the time axis */
-	dy = pen.width / PSL_POINTS_PER_INCH;	/* Need to get pen width t odetermine triangle size */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Need to get pen width to determine triangle size */
 	dy2 = dy / 2.0;	/* Half pen width */
 	x += fx * w;	y += fy * dy;	/* Adjust the (x,y) to be mid-point of axis */
 	xt = w * t;	/* Relative fraction of w along the axis from left point */
@@ -7538,10 +7538,10 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 		GMT->common.R.active[RSET] = GMT->common.J.active = false;
 	if (fsize == 0.0)
 			F->size = 3.0 * dy * PSL_POINTS_PER_INCH;	/* Set a scaled font size */
-	if (kind == 'F')	/* Want annotations so add a */
+	if (kind == 'F')	/* Want annotations so add -Baf and set annotation font */
 		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
-	else	/* Only axis with ticks */
-		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
+	else	/* Only axis with ticks so only -Bf is used */
+		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c --MAP_FRAME_PEN=%s", region, width, unit, axis, P1);
 	GMT->current.map.frame.init = false;	/* To enable more -B parsing */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call basemap from gmtplot_prog_indicator_F with args %s\n", cmd);
 	if (GMT_Call_Module (GMT->parent, "basemap", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
