@@ -225,6 +225,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 	 * If no -R is given then wesn_i == wesn_o and (presumably) there is only differences in inc and registration.
 	 * If there is a -R, then we adjust wesn_i and wesn_o thus:
 	 *   wesn_i: We move the boundaries inwards by the grid's own increments until the bounds are equal to or inside the -R.
+	 *			 Then, if we are inside and we are able to move one step back we do so to ensure we cover the output range.
 	 *   wesn_o: We move the boundaries inwards by the -Iinc spacing until the bounds are equal to or inside the input grid.
 	 */
 
@@ -242,10 +243,15 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	if (GMT->common.R.active[RSET]) {		/* Gave -R */
 		bool geo = gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]);
+		unsigned int k;
 		/* Adjust wesn used to READ subset */
-		while (wesn_i[YLO] < wesn_o[YLO]) wesn_i[YLO] += Gin->header->inc[GMT_Y];	/* Now on or inside boundary */
-		while (wesn_i[YHI] > Gin->header->wesn[YHI]) wesn_i[YHI] -= Gin->header->inc[GMT_Y];	/* Now on or inside boundary */
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
+		k = 0;
+		while (wesn_i[YLO] < wesn_o[YLO]) wesn_i[YLO] += Gin->header->inc[GMT_Y], k++;	/* Now on or inside grid boundary */
+		if (wesn_i[YLO] > Gin->header->wesn[YLO] && k) wesn_i[YLO] -= Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
+		k = 0;
+		while (wesn_i[YHI] > wesn_o[YHI]) wesn_i[YHI] -= Gin->header->inc[GMT_Y], k++;	/* Now on or inside boundary */
+		if (wesn_i[YHI] < Gin->header->wesn[YHI] && k) wesn_i[YHI] += Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid north boundary */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between grid and -R */
 			int shift = 0;
 			if (Gin->header->wesn[XHI] < wesn_i[XLO]) shift += 360;
 			else if (Gin->header->wesn[XLO] > wesn_i[XHI]) shift -= 360;
@@ -253,13 +259,20 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			else if (geo && wesn_i[XLO] < Gin->header->wesn[XLO]) shift -= 360;
 			if (shift) {	/* Must modify header to match -R */
 				Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
-				GMT_Report (API, GMT_MSG_INFORMATION, "File %s region needed a %g longitude adjustment to fit final grid region\n", Ctrl->In.file, shift);
+				wesn_o[XLO] += shift, wesn_o[XHI] += shift;
+				GMT_Report (API, GMT_MSG_INFORMATION, "File %s region needed a %d longitude adjustment to fit final grid region\n", Ctrl->In.file, shift);
 			}
 		}
-		while (wesn_i[XLO] < Gin->header->wesn[XLO]) wesn_i[XLO] += Gin->header->inc[GMT_X];	/* Now on or inside boundary */
-		while (wesn_i[XHI] > Gin->header->wesn[XHI]) wesn_i[XHI] -= Gin->header->inc[GMT_X];	/* Now on or inside boundary */
+		if (!gmt_M_360_range (wesn_o[XLO], wesn_o[XHI])) {
+			k = 0;
+			while (wesn_i[XLO] < wesn_o[XLO]) wesn_i[XLO] += Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
+			if (wesn_i[XLO] > Gin->header->wesn[XLO] && k) wesn_i[XLO] -= Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
+			k = 0;
+			while (wesn_i[XHI] > wesn_o[XHI]) wesn_i[XHI] -= Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
+			if (wesn_i[XHI] < Gin->header->wesn[XHI] && k) wesn_i[XHI] += Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
+		}
 
-		/* Adjust wesn_o used to CREATE the output grid */
+		/* Adjust wesn_o used to CREATE the output grid: It cannot exceed the input grid bounds */
 		while (wesn_o[YLO] < Gin->header->wesn[YLO]) wesn_o[YLO] += inc[GMT_Y];	/* Now on or inside boundary */
 		while (wesn_o[YHI] > Gin->header->wesn[YHI]) wesn_o[YHI] -= inc[GMT_Y];	/* Now on or inside boundary */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
@@ -270,11 +283,13 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			else if (geo && wesn_o[XLO] < Gin->header->wesn[XLO]) shift -= 360;
 			if (shift) {	/* Must modify header */
 				Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
-				GMT_Report (API, GMT_MSG_INFORMATION, "File %s region needed a %g longitude adjustment to fit final grid region\n", Ctrl->In.file, shift);
+				GMT_Report (API, GMT_MSG_INFORMATION, "File %s region needed a %d longitude adjustment to fit final grid region\n", Ctrl->In.file, shift);
 			}
 		}
-		while (wesn_o[XLO] < Gin->header->wesn[XLO]) wesn_o[XLO] += inc[GMT_X];	/* Now on or inside boundary */
-		while (wesn_o[XHI] > Gin->header->wesn[XHI]) wesn_o[XHI] -= inc[GMT_X];	/* Now on or inside boundary */
+		if (!gmt_M_360_range (wesn_o[XLO], wesn_o[XHI])) {
+			while (wesn_o[XLO] < Gin->header->wesn[XLO]) wesn_o[XLO] += inc[GMT_X];	/* Now on or inside boundary */
+			while (wesn_o[XHI] > Gin->header->wesn[XHI]) wesn_o[XHI] -= inc[GMT_X];	/* Now on or inside boundary */
+		}
 	}
 
 	/* Here, wesn_i is compatible with the INPUT grid so we can read the subset from which we will resample.
