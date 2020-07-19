@@ -20,7 +20,7 @@
  *
  *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * GMT_plot.c contains code related to plotting maps.  These functions requires
- * we pass both the GMT and PSL control strucure pointers.
+ * we pass both the GMT and PSL control structure pointers.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -7499,7 +7499,7 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width, double fsize, struct GMT_FONT *F) {
 	/* Place time axis indicator via call to basemap plus adding triangle here */
 	int symbol = PSL_INVTRIANGLE;	/* Time marker when labels are below the line */
-	char cmd[GMT_LEN128] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis = 0;
+	char cmd[GMT_LEN256] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis = 0;
 	bool was = GMT->current.map.frame.init;
 	double fx, fy, dy, dy2, xt, s = 1.0, angle = 0.0, h;
 	struct GMT_PEN pen;
@@ -7539,9 +7539,9 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 	if (fsize == 0.0)
 			F->size = 3.0 * dy * PSL_POINTS_PER_INCH;	/* Set a scaled font size */
 	if (kind == 'F')	/* Want annotations so add -Baf and set annotation font */
-		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
+		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c -X0 -Y0 --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s --GMT_HISTORY=false", region, width, unit, axis, P1, gmt_putfont (GMT, F));
 	else	/* Only axis with ticks so only -Bf is used */
-		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c --MAP_FRAME_PEN=%s", region, width, unit, axis, P1);
+		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c -X0 -Y0 --MAP_FRAME_PEN=%s --GMT_HISTORY=false", region, width, unit, axis, P1);
 	GMT->current.map.frame.init = false;	/* To enable more -B parsing */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call basemap from gmtplot_prog_indicator_F with args %s\n", cmd);
 	if (GMT_Call_Module (GMT->parent, "basemap", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
