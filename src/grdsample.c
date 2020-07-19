@@ -225,8 +225,8 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 	 * If no -R is given then wesn_i == wesn_o and (presumably) there is only differences in inc and registration.
 	 * If there is a -R, then we adjust wesn_i and wesn_o thus:
 	 *   wesn_i: We move the boundaries inwards by the grid's own increments until the bounds are equal to or inside the -R.
-	 *			 Then, if we are inside and we are able to move one step back we do so to ensure we cover the output range.
-	 *   wesn_o: We move the boundaries inwards by the -Iinc spacing until the bounds are equal to or inside the input grid.
+	 *			 Then, if we are inside and we are able to move one step outwards we do so to ensure we cover the output range.
+	 *   wesn_o: We move the boundaries inwards by the -Iinc spacing as long as we are outside the input grid.
 	 */
 
 	gmt_M_memcpy (wesn_i, Gin->header->wesn, 4, double);	/* wesn_i is eventually the subset we will read from this grid */
