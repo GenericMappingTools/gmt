@@ -432,7 +432,7 @@ EXTERN_MSC int gmtlib_compare_observation (const void *a, const void *b);
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
-	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood, nxy = 0;
+	uint64_t ij, k, ngrd = 0, nxyg, nfound, nxy = 0;
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
@@ -636,8 +636,6 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 		Return (GMT_NOERROR);
 	}
-
-	ngood = nxyg - nfound;	/* This is the number of non-NaN points for the cdf function  */
 
 	/* Decide how to make steps in z.  */
 	if (Ctrl->T.active && Ctrl->T.mode == 0) {	/* Use predefined levels and interval */
