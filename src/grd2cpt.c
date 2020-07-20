@@ -436,12 +436,13 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	size_t n_alloc = GMT_TINY_CHUNK;
 	bool write = false, interpolate = true;
 
-	char format[GMT_BUFSIZ] = {""}, *l = NULL, **grdfile = NULL;
+	char format[GMT_BUFSIZ] = {""}, ptxt[GMT_LEN32] = {""}, *l = NULL, **grdfile = NULL;
 
 	double *z = NULL, wesn[4], mean, sd;
 
 	struct CDF_CPT {
 		double	z;	/* Data value  */
+		double	p;	/* normalized z value  */
 		double	f;	/* Cumulative distribution function f(z)  */
 	} *cdf_cpt = NULL;
 
@@ -688,22 +689,34 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, cdf_cpt);
 				Return (GMT_RUNTIME_ERROR);
 			}
+			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
+				sprintf (format, "Revised Mean and S.D. of data are %s %s\n",
+				         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+				GMT_Report (API, GMT_MSG_INFORMATION, format, mean, sd);
+			}
 		}	/* End of stupid bug fix  */
 
 		/* So we go in steps of z_inc in the Gaussian CDF except we start and stop at actual min/max */
 		cdf_cpt[0].z = G[0]->header->z_min;
-		for (j = 1; j < (Ctrl->E.levels - 1); j++) cdf_cpt[j].z = mean + gmt_zcrit (GMT, j *z_inc) * sd;
+		for (j = 1; j < (Ctrl->E.levels - 1); j++) {
+			cdf_cpt[j].p = gmt_zcrit (GMT, j * z_inc);
+			cdf_cpt[j].z = mean + cdf_cpt[j].p * sd;
+		}
 		cdf_cpt[Ctrl->E.levels-1].z = G[0]->header->z_max;
 	}
 
 	/* Get here when we are ready to go.  cdf_cpt[].z contains the sample points.  */
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) sprintf (format, "p = %%s z = %%12g and CDF(p) = CDF(z) = %%12g\n");
 	for (j = 0; j < Ctrl->E.levels; j++) {
-		if (cdf_cpt[j].z <= G[0]->header->z_min)
+		if (cdf_cpt[j].z <= G[0]->header->z_min) {
 			cdf_cpt[j].f = 0.0;
-		else if (cdf_cpt[j].z >= G[0]->header->z_max)
+			strcpy (ptxt, "   -infinity");
+		}
+		else if (cdf_cpt[j].z >= G[0]->header->z_max) {
 			cdf_cpt[j].f = 1.0;
+			strcpy (ptxt, "   +infinity");
+		}
 		else {
 			nfound = 0;
 			for (k = 0; k < ngrd; k++) {	/* For each grid */
@@ -712,8 +725,9 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 				}
 			}
 			cdf_cpt[j].f = (double)(nfound-1)/(double)(ngood-1);
+			sprintf (ptxt, "%12g", cdf_cpt[j].p);
 		}
-		GMT_Report (API, GMT_MSG_INFORMATION, format, cdf_cpt[j].z, cdf_cpt[j].f);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, ptxt, cdf_cpt[j].z, cdf_cpt[j].f);
 	}
 
 	/* Now the cdf function has been found.  We now resample the chosen CPT  */
