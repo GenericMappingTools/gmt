@@ -426,29 +426,26 @@ GMT_LOCAL int grd2cpt_free_the_grids (struct GMTAPI_CTRL *API, struct GMT_GRID *
 	return (GMT_NOERROR);
 }
 
+EXTERN_MSC int gmtlib_compare_observation (const void *a, const void *b);
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
-	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
+	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood, nxy = 0;
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
-	bool write = false, interpolate = true;
+	bool write = false, interpolate = true, equalize = false;
 
-	char format[GMT_BUFSIZ] = {""}, ptxt[GMT_LEN32] = {""}, *l = NULL, **grdfile = NULL;
+	char *l = NULL, **grdfile = NULL;
 
-	double *z = NULL, wesn[4], mean, sd;
-
-	struct CDF_CPT {
-		double	z;	/* Data value  */
-		double	p;	/* normalized z value  */
-		double	f;	/* Cumulative distribution function f(z)  */
-	} *cdf_cpt = NULL;
+	double *z = NULL, *cdf_cpt = NULL, wesn[4], wsum;
 
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;
-	struct GMT_GRID **G;
+	struct GMT_GRID **G = NULL, *W = NULL;
+	struct GMT_OBSERVATION *pair = NULL;
 	struct GRD2CPT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -505,6 +502,9 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid(s)\n");
 
+	if (!((Ctrl->E.active && Ctrl->E.levels == 0) || (Ctrl->T.active && Ctrl->T.mode == 0) || (Ctrl->S.active || Ctrl->E.active)))
+		equalize = true;
+
 	gmt_M_memset (wesn, 4, double);
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
 
@@ -548,11 +548,17 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	nxyg = G[0]->header->nm * ngrd;
 
+	if (equalize) {
+		pair = gmt_M_memory (GMT, NULL, nxyg, struct GMT_OBSERVATION);
+		W = gmt_duplicate_grid (GMT, G[0], GMT_DUPLICATE_ALLOC);
+		/* Determine the area weights */
+		gmt_get_cellarea (GMT, W);
+	}
 	/* Loop over the files and find NaNs.  If set limits, may create more NaNs  */
 	/* We use the G[0]->header to keep limits representing all the grids */
 
-	nfound = 0;
-	mean = sd = 0.0;
+	nfound = nxy = 0;
+	wsum = 0.0;
 	if (Ctrl->L.active) {	/* Loop over the grdfiles, and set anything outside the limiting values to NaN.  */
 		G[0]->header->z_min = Ctrl->L.min;
 		G[0]->header->z_max = Ctrl->L.max;
@@ -565,9 +571,10 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 						nfound++;
 						G[k]->data[ij] = GMT->session.f_NaN;
 					}
-					else {
-						mean += G[k]->data[ij];
-						sd += G[k]->data[ij] * G[k]->data[ij];
+					else if (equalize) {
+						pair[nxy].value    = G[k]->data[ij];
+						pair[nxy++].weight = W->data[ij];
+						wsum += W->data[ij];
 					}
 				}
 			}
@@ -583,13 +590,29 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 				else {
 					if (G[k]->data[ij] < Ctrl->L.min) Ctrl->L.min = G[k]->data[ij];
 					if (G[k]->data[ij] > Ctrl->L.max) Ctrl->L.max = G[k]->data[ij];
-					mean += G[k]->data[ij];
-					sd += G[k]->data[ij] * G[k]->data[ij];
+					if (equalize) {
+						pair[nxy].value    = G[k]->data[ij];
+						pair[nxy++].weight = W->data[ij];
+						wsum += W->data[ij];
+					}
 				}
 			}
 		}
 		G[0]->header->z_min = Ctrl->L.min;
 		G[0]->header->z_max = Ctrl->L.max;
+	}
+
+	if (equalize) {
+		gmt_free_grid (GMT, &W, true);	/* Done with the area weights grid */
+		/* Sort observations on z */
+		qsort (pair, nxy, sizeof (struct GMT_OBSERVATION), gmtlib_compare_observation);
+		/* Compute normalized cumulative weights */
+		wsum = 1.0 / wsum;	/* Do avoid division later */
+		pair[0].weight *= (gmt_grdfloat)wsum;
+		for (k = 1; k < nxy; k++) {
+			pair[k].weight *= (gmt_grdfloat)wsum;
+			pair[k].weight += pair[k-1].weight;
+		}
 	}
 
 	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
@@ -615,14 +638,6 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	}
 
 	ngood = nxyg - nfound;	/* This is the number of non-NaN points for the cdf function  */
-	mean /= ngood;
-	sd /= ngood;
-	sd = sqrt (sd - mean * mean);
-	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
-		sprintf (format, "Mean and S.D. of data are %s %s\n",
-		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_INFORMATION, format, mean, sd);
-	}
 
 	/* Decide how to make steps in z.  */
 	if (Ctrl->T.active && Ctrl->T.mode == 0) {	/* Use predefined levels and interval */
@@ -631,24 +646,24 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->T.low) ? 1 : 0;
 		Ctrl->E.levels += urint (floor((Ctrl->T.high - Ctrl->T.low)/Ctrl->T.inc)) + 1;
 		if (G[0]->header->z_max > Ctrl->T.high) Ctrl->E.levels++;
-		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
+		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, double);
 		if (G[0]->header->z_min < Ctrl->T.low) {
-			cdf_cpt[0].z = G[0]->header->z_min;
-			cdf_cpt[1].z = Ctrl->T.low;
+			cdf_cpt[0] = G[0]->header->z_min;
+			cdf_cpt[1] = Ctrl->T.low;
 			i = 2;
 		}
 		else {
-			cdf_cpt[0].z = Ctrl->T.low;
+			cdf_cpt[0] = Ctrl->T.low;
 			i = 1;
 		}
 		j = (G[0]->header->z_max > Ctrl->T.high) ? Ctrl->E.levels - 1 : Ctrl->E.levels;
 		while (i < j) {
-			cdf_cpt[i].z = cdf_cpt[i-1].z + Ctrl->T.inc;
+			cdf_cpt[i] = cdf_cpt[i-1] + Ctrl->T.inc;
 			i++;
 		}
-		if (j == Ctrl->E.levels-1) cdf_cpt[j].z = G[0]->header->z_max;
+		if (j == Ctrl->E.levels-1) cdf_cpt[j] = G[0]->header->z_max;
 	}
-	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make an equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
+	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make an equidistant color map from G[k]->header->z_min to G[k]->header->z_max */
 		double start, range;
 
 		switch (Ctrl->S.kind) {
@@ -672,68 +687,34 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		range *= (1.0 + GMT_CONV8_LIMIT);	/* To ensure the max grid values do not exceed the CPT limit due to round-off issues */
 		start -= fabs (start) * GMT_CONV8_LIMIT;	/* To ensure the start of cpt is less than min value due to roundoff  */
 		Ctrl->T.inc = range / (double)(Ctrl->E.levels - 1);
-		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
-		for (j = 0; j < Ctrl->E.levels; j++) cdf_cpt[j].z = start + j * Ctrl->T.inc;
+		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, double);
+		for (j = 0; j < Ctrl->E.levels; j++) cdf_cpt[j] = start + j * Ctrl->T.inc;
 	}
 
-	else {	/* This is completely ad-hoc.  It chooses z based on equidistant steps [of 0.1 unless -Sn set] for a Gaussian CDF:  */
-		double z_inc = 1.0 / (Ctrl->E.levels - 1);		/* Increment between selected points [0.1] */
-		double zcrit_tail = gmt_zcrit (GMT, 1.0 - z_inc);	/* Get the +/- z-value containing bulk of distribution, with z_inc in each tail */
-		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
-		if ((mean - zcrit_tail*sd) <= G[0]->header->z_min || (mean + zcrit_tail*sd) >= G[0]->header->z_max) {
-			/* Adjust mean/std so that our critical locations are still inside the min/max of the data */
-			mean = 0.5 * (G[0]->header->z_min + G[0]->header->z_max);
-			sd = (G[0]->header->z_max - mean) / 1.5;	/* This factor of 1.5 probably needs to change since z_inc is no longer fixed at 0.1 */
-			if (sd <= 0.0) {
-				GMT_Report (API, GMT_MSG_ERROR, "Min and Max data values are equal.\n");
-				gmt_M_free (GMT, cdf_cpt);
-				Return (GMT_RUNTIME_ERROR);
-			}
-			if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
-				sprintf (format, "Revised Mean and S.D. of data are %s %s\n",
-				         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-				GMT_Report (API, GMT_MSG_INFORMATION, format, mean, sd);
-			}
-		}	/* End of stupid bug fix  */
+	else {	/* Use the cumulative weighted distribution to issue the desired equal-area level boundaries */
+		double dw = pair[nxy-1].weight / (Ctrl->E.levels - 1), p = 0.0, dp = 1.0 / (Ctrl->E.levels - 1);
 
-		/* So we go in steps of z_inc in the Gaussian CDF except we start and stop at actual min/max */
-		cdf_cpt[0].z = G[0]->header->z_min;
-		for (j = 1; j < (Ctrl->E.levels - 1); j++) {
-			cdf_cpt[j].p = gmt_zcrit (GMT, j * z_inc);
-			cdf_cpt[j].z = mean + cdf_cpt[j].p * sd;
+		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, double);
+		cdf_cpt[0] = pair[0].value;
+		wsum = dw;	p = dp;
+		GMT_Report (API, GMT_MSG_INFORMATION, "Evaluated %d equidistant points on the cumulative density function:\n", Ctrl->E.levels);
+		GMT_Report (API, GMT_MSG_INFORMATION, "z = %16g cdf(z) = %6.4f\n", cdf_cpt[0], 0.0);
+		for (j = 1, k = 0; j < (Ctrl->E.levels - 1); j++) {
+			while (k < nxy && pair[k].weight < wsum) k++;	/* k is the point with weight >= wsum; so a linear interpolation */
+			cdf_cpt[j] = pair[k-1].value + (wsum - pair[k-1].weight) * (pair[k].value - pair[k-1].value) / (pair[k].weight - pair[k-1].weight);
+			GMT_Report (API, GMT_MSG_INFORMATION, "z = %16g cdf(z) = %6.4f\n", cdf_cpt[j], p);
+			wsum += dw;	/* Next area boundary */
+			p += dp;	/* Next CDF value */
 		}
-		cdf_cpt[Ctrl->E.levels-1].z = G[0]->header->z_max;
-	}
-
-	/* Get here when we are ready to go.  cdf_cpt[].z contains the sample points.  */
-
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) sprintf (format, "p = %%s z = %%12g and CDF(p) = CDF(z) = %%12g\n");
-	for (j = 0; j < Ctrl->E.levels; j++) {
-		if (cdf_cpt[j].z <= G[0]->header->z_min) {
-			cdf_cpt[j].f = 0.0;
-			strcpy (ptxt, "   -infinity");
-		}
-		else if (cdf_cpt[j].z >= G[0]->header->z_max) {
-			cdf_cpt[j].f = 1.0;
-			strcpy (ptxt, "   +infinity");
-		}
-		else {
-			nfound = 0;
-			for (k = 0; k < ngrd; k++) {	/* For each grid */
-				gmt_M_grd_loop (GMT, G[k], row, col, ij) {
-					if (!gmt_M_is_fnan (G[k]->data[ij]) && G[k]->data[ij] <= cdf_cpt[j].z) nfound++;
-				}
-			}
-			cdf_cpt[j].f = (double)(nfound-1)/(double)(ngood-1);
-			sprintf (ptxt, "%12g", cdf_cpt[j].p);
-		}
-		GMT_Report (API, GMT_MSG_INFORMATION, format, ptxt, cdf_cpt[j].z, cdf_cpt[j].f);
+		cdf_cpt[Ctrl->E.levels-1] = pair[nxy-1].value;
+		GMT_Report (API, GMT_MSG_INFORMATION, "z = %16g cdf(z) = %6.4f\n", cdf_cpt[Ctrl->E.levels-1], 1.0);
+		gmt_M_free (GMT, pair);
 	}
 
 	/* Now the cdf function has been found.  We now resample the chosen CPT  */
 
 	z = gmt_M_memory (GMT, NULL, Ctrl->E.levels, double);
-	for (j = 0; j < Ctrl->E.levels; j++) z[j] = cdf_cpt[j].z;
+	for (j = 0; j < Ctrl->E.levels; j++) z[j] = cdf_cpt[j];
 	if (Ctrl->Q.mode == 2) for (j = 0; j < Ctrl->E.levels; j++) z[j] = d_log10 (GMT, z[j]);	/* Make log10(z) values for interpolation step */
 
 	signed_levels = Ctrl->E.levels;
