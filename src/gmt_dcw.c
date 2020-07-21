@@ -231,17 +231,21 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	unsigned int n_items = 0, r_item = 0, pos = 0, kk, tbl = 0, j = 0, *order = NULL;
 	unsigned short int *dx = NULL, *dy = NULL;
 	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
-	bool done, new_set, want_state, outline, fill = false, is_Antarctica = false;
+	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, special = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
 	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
+	char label[GMT_LEN256] = {""}, header[GMT_LEN256] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_RANGE *Z = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
+	struct GMT_FILL *sfill = NULL;
+	struct GMT_PEN *spen = NULL;
 
 	for (j = ks = 0; j < F->n_items; j++) {
 		if (!F->item[j]->codes || F->item[j]->codes[0] == '\0') continue;
@@ -293,6 +297,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			}
 		}
 	}
+
 	if (n_items)
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Requested %d DCW items: %s\n", n_items, list);
 	else {
@@ -301,6 +306,12 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		gmt_M_free (GMT, GMT_DCW_country);
 		gmt_M_free (GMT, GMT_DCW_state);
 		return NULL;
+	}
+
+	if (mode & GMT_DCW_PLOT) {	/* Plot via psxy instead */
+		mode -= GMT_DCW_PLOT;
+		mode += GMT_DCW_EXTRACT;
+		special = true;
 	}
 
 	if (!gmtdcw_get_path (GMT, "dcw-gmt", ".nc", path)) {
@@ -356,6 +367,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Source : %s\n", source);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Version: %s\n", version);
 	}
+
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
 		gmt_set_geographic (GMT, GMT_OUT);
 	}
@@ -424,7 +436,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			}
 		}
 
-	        /* Get the varid of the lon and lat variables, based on their names, and get the data */
+		/* Get the varid of the lon and lat variables, based on their names, and get the data */
 
 		snprintf (xname, GMT_LEN16, "%s_lon", TAG);	snprintf (yname, GMT_LEN16, "%s_lat", TAG);
 
@@ -449,33 +461,42 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		xscl = 1.0 / xscl;	yscl = 1.0 / yscl;
 		for (k = n_segments = 0; k < np; k++) {	/* Unpack */
 			if (dx[k] == 65535U) n_segments++;	/* Count how many segments */
-			lon[k] = (dx[k] == 65535U) ? 0.0 : dx[k] * xscl + west;
-			lat[k] = (dy[k] == 65535U) ? 0.0 : dy[k] * yscl + south;
+			if (dx[k] == 65535U) {	/* Start of new segment */
+				lon[k] = GMT->session.d_NaN;	/* Flag a segment with lon = NaN */
+				lat[k] = (dy[k] == 1) ? 1.0 : 0.0;	/* This is always 0.0 for 1.1.4 and older, which had no holes anyway */
+			}
+			else {
+				lon[k] = dx[k] * xscl + west;
+				lat[k] = dy[k] * yscl + south;
+			}
 		}
 		if (mode & GMT_DCW_EXTRACT) {	/* Allocate a table with the right number of segments */
+			gmt_free_table (GMT, D->table[tbl]);
 			D->table[tbl] = gmt_create_table (GMT, n_segments, 0, 2, 0, false);
 		}
-		if (mode & GMT_DCW_PLOT) {	/* Time to consider fill/pen change */
-			new_set = (tbl == 0 || order[tbl] != order[tbl-1]);	/* When item group change it is likely pen/fill changes too */
+		if (special) {	/* Time to consider fill/pen change */
 			outline = (F->item[order[tbl]]->mode & DCW_DO_OUTLINE);
 			fill = (F->item[order[tbl]]->mode & DCW_DO_FILL);
-			if (outline && new_set) gmt_setpen (GMT, &(F->item[order[tbl]]->pen));
-			if (fill && new_set) gmt_setfill (GMT, &(F->item[order[tbl]]->fill), outline);
+			spen = (outline) ? &(F->item[order[tbl]]->pen) : NULL;
+			sfill = (fill) ? &(F->item[order[tbl]]->fill) : NULL;
 		}
 
-	        /* Extract the pieces into separate segments */
+		/* Extract the pieces into separate segments */
 		k = seg = 0;
 		done = false;
 	        while (!done) {
 			first = -1;
 			while (first == -1 && k < np) {	/* Look for next start of segment marker */
-				if (lon[k] == 0.0 && lat[k] == 0.0) first = k + 1;	/* Start of segment */
+				if (gmt_M_is_dnan (lon[k])) {
+					hole = (lat[k] > 0.0);
+					first = k + 1;	/* Start of segment */
+				}
 				k++;
 			}
 			if (first == -1) { done = true; continue;}	/* No more segments */
 			last = -1;
 			while (last == -1 && k < np) {/* Look for next end of segment marker (or end of line) */
-				if (lon[k] == 0.0 && lat[k] == 0.0) last = k - 1;	/* End of segment */
+				if (gmt_M_is_dnan (lon[k])) last = k - 1;	/* End of segment */
 				k++;
 			}
 			if (last == -1) last = np - 1;	/* End of last segment */
@@ -483,8 +504,14 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			P->n_rows = last - first + 1;	/* Number of points in this segment */
 			P->data[GMT_X] = &lon[first];
 			P->data[GMT_Y] = &lat[first];
+			sprintf (label, " %s Segment %" PRIu64, msg, seg);
+			header[0] = '\0';
+			if (hole)
+				strcat (header, "-Ph");
+
 			if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
-				snprintf (GMT->current.io.segment_header, GMT_BUFSIZ-1, "%s Segment %" PRIu64, msg, seg);
+				strcat (header, label);
+				strcpy (GMT->current.io.segment_header, header);
 				GMT_Put_Record (GMT->parent, GMT_WRITE_SEGMENT_HEADER, NULL);
 				for (kk = 0; kk < P->n_rows; kk++) {
 					out[GMT_X] = P->data[GMT_X][kk];
@@ -495,12 +522,31 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			}
 			else if (mode & GMT_DCW_EXTRACT) {	/* Attach to dataset */
 				S = D->table[tbl]->segment[seg];
+				if (special) {
+					if (sfill) {
+						strcat (header, " -G"); strcat (header, gmtlib_putfill (GMT, sfill));
+					}
+					else
+						strcat (header, " -G-");
+					if (spen) {
+						strcat (header, " -W"); strcat (header, gmt_putpen (GMT, spen));
+					}
+					else
+						strcat (header, " -W-");
+				}
+				strcat (header, label);
+				S->header = strdup (header);
+				if (hole) {
+					SH = gmt_get_DS_hidden (S);
+					SH->pol_mode = GMT_IS_HOLE;
+				}
 				S->n_rows = P->n_rows;
 				gmt_M_malloc2 (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, NULL, double);
-				gmt_M_memcpy (S->data[GMT_X], lon, S->n_rows, double);
-				gmt_M_memcpy (S->data[GMT_Y], lat, S->n_rows, double);
+				gmt_M_memcpy (S->data[GMT_X], P->data[GMT_X], S->n_rows, double);
+				gmt_M_memcpy (S->data[GMT_Y], P->data[GMT_Y], S->n_rows, double);
 				seg++;
 			}
+#if 0
 			else {	/* mode & GMT_DCW_PLOT: Plot this piece */
 				if (fill) {	/* Plot filled polygon, w/ or w/o outline */
 					if (!strncmp (TAG, "AQ", 2U)) gmt_set_seg_polar (GMT, P);
@@ -511,6 +557,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
+#endif
 		}
 		tbl++;
 	}
@@ -547,6 +594,23 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		P->data[GMT_X] = P->data[GMT_Y] = NULL;
 		gmt_free_segment (GMT, &P);
 	}
+
+	if (D) gmt_set_dataset_minmax (GMT, D);		/* Update stats */
+
+	if (special) {	/* Wanted to plot but ran into ZA or IT */
+		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""};
+		if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, in_string) == GMT_NOTSET) {
+			return (NULL);
+		}
+		snprintf (cmd, GMT_BUFSIZ, "-R -J -O -K %s --GMT_HISTORY=readonly", in_string);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", cmd);
+		if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, cmd) != GMT_OK) {
+			return (NULL);
+		}
+		GMT_Close_VirtualFile (GMT->parent, in_string);
+		GMT_Destroy_Data (GMT->parent, &D);
+	}
+
 	return (D);
 }
 
