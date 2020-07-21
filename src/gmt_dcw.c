@@ -220,7 +220,7 @@ GMT_LOCAL bool gmtdcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STA
 struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode) {
 	/* Given comma-separated names, read the corresponding netCDF variables.
  	 * mode = GMT_DCW_REGION	: Return the joint w/e/s/n limits
-	 * mode = GMT_DCW_PLOT		: Plot the polygons
+	 * mode = GMT_DCW_PLOT		: Plot the polygons [This is actually same as GMT_DCW_EXTRACT internally but plots instead of returning]
 	 * mode = GMT_DCW_DUMP		: Dump the polygons
 	 * mode = GMT_DCW_EXTRACT	: Return a dataset structure
 	 */
@@ -309,6 +309,10 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	}
 
 	if (mode & GMT_DCW_PLOT) {	/* Plot via psxy instead */
+		/* Because holes in polygons comes last we cannot just plot as we go. Instead, we must assemble
+		 * the entire list of polygons for one item, then pass that dataset to psxy for plotting.
+		 * SO here, that means switch to GMT_DCW_EXTRACT but set a special flag so that we call psxy
+		 * and then delete the dataset instead of returning it */
 		mode -= GMT_DCW_PLOT;
 		mode += GMT_DCW_EXTRACT;
 		special = true;
@@ -522,6 +526,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			}
 			else if (mode & GMT_DCW_EXTRACT) {	/* Attach to dataset */
 				S = D->table[tbl]->segment[seg];
+				SH = gmt_get_DS_hidden (S);
 				if (special) {
 					if (sfill) {
 						strcat (header, " -G"); strcat (header, gmtlib_putfill (GMT, sfill));
@@ -536,31 +541,19 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				}
 				strcat (header, label);
 				S->header = strdup (header);
-				if (hole) {
-					SH = gmt_get_DS_hidden (S);
+				if (hole)
 					SH->pol_mode = GMT_IS_HOLE;
-				}
 				S->n_rows = P->n_rows;
 				gmt_M_malloc2 (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, NULL, double);
 				gmt_M_memcpy (S->data[GMT_X], P->data[GMT_X], S->n_rows, double);
 				gmt_M_memcpy (S->data[GMT_Y], P->data[GMT_Y], S->n_rows, double);
+				SH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* Allocated in GMT */
 				seg++;
 			}
-#if 0
-			else {	/* mode & GMT_DCW_PLOT: Plot this piece */
-				if (fill) {	/* Plot filled polygon, w/ or w/o outline */
-					if (!strncmp (TAG, "AQ", 2U)) gmt_set_seg_polar (GMT, P);
-					gmt_geo_polygons (GMT, P);
-				}
-				else {	/* Plot outline only */
-					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, P->data[GMT_X], P->data[GMT_Y], P->n_rows)) == 0) continue;
-					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
-				}
-			}
-#endif
 		}
 		tbl++;
 	}
+
 	nc_close (ncid);
 	gmt_M_free (GMT, GMT_DCW_country);
 	gmt_M_free (GMT, GMT_DCW_state);
@@ -597,11 +590,12 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (D) gmt_set_dataset_minmax (GMT, D);		/* Update stats */
 
-	if (special) {	/* Wanted to plot but ran into ZA or IT */
+	if (special) {	/* Plot via psxy */
 		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""};
 		if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, in_string) == GMT_NOTSET) {
 			return (NULL);
 		}
+		/* All pen and fill settings are passed via segment headers */
 		snprintf (cmd, GMT_BUFSIZ, "-R -J -O -K %s --GMT_HISTORY=readonly", in_string);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", cmd);
 		if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, cmd) != GMT_OK) {
