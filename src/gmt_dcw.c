@@ -235,6 +235,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
 	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
+	char version[GMT_LEN32] = {""}, gmtversion[GMT_LEN32] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_RANGE *Z = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -331,31 +332,51 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	}
 
 	/* Get global attributes */
-	if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING)) {
-		char version[GMT_LEN16] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
-		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version))) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain attribute version\n");
-			gmt_free_segment (GMT, &P);
-			gmt_M_free (GMT, order);
-			return NULL;
-		}
-		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title))) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain attribute title\n");
-			gmt_free_segment (GMT, &P);
-			gmt_M_free (GMT, order);
-			return NULL;
-		}
-		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source))) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain attribute source\n");
-			gmt_free_segment (GMT, &P);
-			gmt_M_free (GMT, order);
-			return NULL;
-		}
+	if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version))) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain DCW attribute version\n");
+		gmt_free_segment (GMT, &P);
+		gmt_M_free (GMT, order);
+		return NULL;
+	}
+	if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title))) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain DCW attribute title\n");
+		gmt_free_segment (GMT, &P);
+		gmt_M_free (GMT, order);
+		return NULL;
+	}
+	if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source))) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain DCW attribute source\n");
+		gmt_free_segment (GMT, &P);
+		gmt_M_free (GMT, order);
+		return NULL;
+	}
+	if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "gmtversion", gmtversion)) == NC_NOERR)
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found gmtversion string in DCW file: %s\n", gmtversion);
+
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using country and state data from dcw-gmt\n");
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Title  : %s\n", title);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Source : %s\n", source);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Version: %s\n", version);
+		if (gmtversion[0]) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "DCW version %s requires GMT version %s or later.\n", version, gmtversion);
 	}
+
+	if (gmtversion[0]) {	/* The gmtversion attribute was available [starting with DCW 1.2.0] */
+		int maj, min, rel;
+		if (sscanf (gmtversion, "%d.%d.%d", &maj, &min, &rel) != 3) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse minimum GMT version information\n");
+			gmt_free_segment (GMT, &P);
+			gmt_M_free (GMT, order);
+			return NULL;
+		}
+		if (maj > GMT_MAJOR_VERSION || (maj == GMT_MAJOR_VERSION && min > GMT_MINOR_VERSION) || (maj == GMT_MAJOR_VERSION && min == GMT_MINOR_VERSION && rel > GMT_RELEASE_VERSION)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "This DCW version (%s) requires at least GMT %s; you have %d.%d.%d\n", version, gmtversion, GMT_MAJOR_VERSION, GMT_MINOR_VERSION, GMT_RELEASE_VERSION);
+			gmt_free_segment (GMT, &P);
+			gmt_M_free (GMT, order);
+			return NULL;
+		}
+	}
+
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
 		gmt_set_geographic (GMT, GMT_OUT);
 	}
