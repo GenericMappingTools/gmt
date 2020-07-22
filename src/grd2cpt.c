@@ -440,7 +440,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	char *l = NULL, **grdfile = NULL;
 
-	double *z = NULL, *cdf_cpt = NULL, wesn[4], wsum;
+	double *z = NULL, *cdf_cpt = NULL, wesn[4], wsum, scale;
 
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;
@@ -607,12 +607,21 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		/* Sort observations on z */
 		qsort (pair, nxy, sizeof (struct GMT_OBSERVATION), gmtlib_compare_observation);
 		/* Compute normalized cumulative weights */
-		wsum = 1.0 / wsum;	/* Do avoid division later */
-		pair[0].weight *= (gmt_grdfloat)wsum;
-		for (k = 1; k < nxy; k++) {
-			pair[k].weight *= (gmt_grdfloat)wsum;
-			pair[k].weight += pair[k-1].weight;
+		scale = 1.0 / wsum;	/* Do avoid division later */
+		wsum = 0.0;	/* Do this in double precision since GMT_OBSERVATION is just float */
+		for (k = 0; k < nxy; k++) {	/* Build CDF from tiny to 1 */
+			pair[k].weight *= scale;
+			wsum += pair[k].weight;
+			pair[k].weight = (gmt_grdfloat)wsum;
 		}
+#if DEBUG
+		{
+			FILE *fp = fopen ("grd2cpt.dump", "w");
+			for (k = 0; k < nxy; k++)
+				fprintf (fp, "%16g\t%16g\n", pair[k].value, pair[k].weight);
+			fclose (fp);
+		}
+#endif
 	}
 
 	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
