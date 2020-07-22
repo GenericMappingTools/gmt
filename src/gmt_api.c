@@ -811,6 +811,12 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	if ((opt = GMT_Find_Option (API, 'V', head)))	/* Remove -V here so that we can run gmt plot -? -Vd and still get modern mode usage plus debug info */
 		GMT_Delete_Option (API, opt, &head);
 
+	if (!strcmp (module, "grdcontour") && GMT_Find_Option (API, 'N', head)) {	/* Special case of two module calls cannot be oneliner here */
+		if (GMT_Destroy_Options (API, &head))	/* Done with these here */
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
+		return;
+	}
+
 	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, module);
 
 	if (API->GMT->current.setting.use_modern_name) {	/* Make some checks needed to handle synopsis and usage messages in classic vs modern mode */
