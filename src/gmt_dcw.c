@@ -464,8 +464,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if (mode == GMT_DCW_REGION) continue;
 		xscl = 1.0 / xscl;	yscl = 1.0 / yscl;
 		for (k = n_segments = 0; k < np; k++) {	/* Unpack */
-			if (dx[k] == 65535U) n_segments++;	/* Count how many segments */
 			if (dx[k] == 65535U) {	/* Start of new segment */
+				n_segments++;	/* Count how many segments */
 				lon[k] = GMT->session.d_NaN;	/* Flag a segment with lon = NaN */
 				lat[k] = (dy[k] == 1) ? 1.0 : 0.0;	/* This is always 0.0 for 1.1.4 and older, which had no holes anyway */
 			}
