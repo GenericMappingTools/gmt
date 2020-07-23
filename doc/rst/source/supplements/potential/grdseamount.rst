@@ -80,7 +80,8 @@ Optional Arguments
 
 **-C**
     Select shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
-    and **p** (parabolic) shape [Default is Gaussian].
+    and **p** (parabolic) shape [Default is Gaussian].  All but the disc can furthermore
+    be truncated via a flattening parameter *f* set by **-F**.
 
 .. figure:: /_images/GMT_seamount_types.*
    :width: 500 px
@@ -89,7 +90,7 @@ Optional Arguments
    The four types of seamounts selectable via option **-C**.  In all cases, :math:`h_0` is the maximum
    *height*, :math:`r_0` is the basal *radius*, :math:`h_c` is the noise floor set via **-L** [0], and
    *f* is the *flattening* set via **-F** [0]. The top radius :math:`r_t` is only nonzero if there is
-   flattening and it does not aply the the disc model.
+   flattening and hence does not apply to the disc model.
 
 .. _-D:
 
