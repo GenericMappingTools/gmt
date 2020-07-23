@@ -150,8 +150,8 @@ Optional Arguments
 **-Q**\ *bmode*/*qmode*
     Only to be used in conjunction with **-T**.  Append two different modes settings:
     The *bmode* determines how we construct the surface.  Specify **c** for cumulative
-    volume through time, or **i** for incremental volume added for each time slice.
-    The *qmode* determines the volume flux curve.  Give **g** for a Gaussian volume flux history
+    volume through time [Default], or **i** for incremental volume added for each time slice.
+    The *qmode* determines the volume flux curve.  Give **g** for a Gaussian volume flux history [Default]
     or **l** for a linear volume flux history between the start and stop times of each feature.
 
 .. figure:: /_images/GMT_seamount_flux.*
