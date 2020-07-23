@@ -48,7 +48,7 @@ a background depth (more complicated backgrounds may be added via :doc:`grdmath 
 The input must contain *lon*, *lat*, *radius*, *height* for each seamount.
 For elliptical features (**-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*,
 *height* instead. If flattening is specified (**-F**) with no value appended
-then a final column with flattening is expected (cannot be used for plateaus).
+then a final column with *flattening* is expected (cannot be used for plateaus).
 For temporal evolution of topography the **-T** option may be used, in which case the
 data file must have two final columns with the start and stop time of seamount construction.
 In this case you may choose to write out a cumulative shape or just the increments produced
@@ -81,6 +81,14 @@ Optional Arguments
     Select shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
     and **p** (parabolic) shape [Default is Gaussian].
 
+.. figure:: /_images/GMT_seamount_types.*
+   :width: 400 px
+   :align: center
+
+   The four types of seamounts selectable via option **-C**.  In all cases, :math:`h_0` is the maximum
+   *height*, :math:`r_0` is the basal *radius*, :math:`h_c` is the noise floor set via **-L** [0], and
+   *f* is the *flattening* set via **-F** [0].
+
 .. _-D:
 
 **-D**\ *unit*
@@ -94,6 +102,14 @@ Optional Arguments
     *lon, lat, azimuth, major, minor, height* (with  the latter in m)
     for each seamount.  [Default is Circular data format, expecting
     *lon, lat, radius, height*].
+
+.. figure:: /_images/GMT_seamount_map.*
+   :width: 400 px
+   :align: center
+
+   Use **-E** to select elliptical rather than circular shape in map view.  Both shapes expect
+   *lon, lat*. Circular only requires a radius :math:`r_p` while elliptical requires the azimuth
+   :math:`\alpha` and the two semi-axes *major* and *minor*.
 
 .. _-F:
 
@@ -136,6 +152,12 @@ Optional Arguments
     volume through time, or **i** for incremental volume added for each time slice.
     The *qmode* determines the volume flux curve.  Give **g** for a Gaussian volume flux history
     or **l** for a linear volume flux history between the start and stop times of each feature.
+
+.. figure:: /_images/GMT_seamount_flux.*
+   :width: 400 px
+   :align: center
+
+   Use *qmode* in **-QQ** to choose between a linear (**l**) or Gaussian (**g**) cumulative volume flux model.
 
 .. _-S:
 
