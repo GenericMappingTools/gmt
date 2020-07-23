@@ -22,7 +22,8 @@ Synopsis
 [ |-F|\ [*flattening*] ]
 [ |-G|\ *grdfile* ]
 [ |-L|\ [*cut*] ]
-[ |-M|\ *list* ] [ |-N|\ *norm* ]
+[ |-M|\ [*list*] ]
+[ |-N|\ *norm* ]
 [ |-Q|\ *bmode*/*qmode* ]
 [ |-S|\ *scale* ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
@@ -136,9 +137,9 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ *list*
+**-M**\ [*list*]
     Write the times and names of all grids that were created to the text file *list*.
-    Requires **-T**.
+    Requires **-T**.  If not *list* file is given then we write to standard output.
 
 .. _-N:
 
