@@ -861,9 +861,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			prev_user_time = this_user_time;	/* Make this the previous time */
 		}
 		if (empty) {
-			GMT_Report (API, GMT_MSG_INFORMATION, "No contribution made for time %g %s\n",
+			GMT_Report (API, GMT_MSG_WARNING, "No contribution made for time %g %s\n",
 			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
-			continue;
 		}
 
 		/* Time to write the grid */
