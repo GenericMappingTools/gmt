@@ -506,7 +506,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdseamount main code ----------------------------*/
 
-	/* Specify inputexpected columns */
+	/* Specify expected columns */
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
 	if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_expected_fields, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
@@ -570,16 +570,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
 		n_out = (unsigned int)n_expected_fields + 3;
-		if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
-			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
-			Return (error);
-		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
-			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
-			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
-			Return (API->error);
-		}
+		if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+			goto wrap_up;
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Registers default output destination, unless already set */
+			goto wrap_up;
 	}
 
 	/* 0. DETERMINE THE NUMBER OF TIME STEPS */
@@ -590,13 +584,12 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->M.active) {	/* Must create dataset to hold names of all output grids */
-		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 0};
+		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 1};
 		unsigned int k, j;
-		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Failure while creating text set for file %s\n", Ctrl->M.file);
-			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
-			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
-			Return (GMT_RUNTIME_ERROR);
+			API->error = GMT_RUNTIME_ERROR;
+			goto wrap_up;
 		}
 		L->table[0]->segment[0]->n_rows = Ctrl->T.n_times;
 		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
@@ -649,14 +642,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, Out);
 	if (Ctrl->L.active) {	/* OK, that was all we wanted */
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
-			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
-			Return (API->error);
-		}
-		gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
-		gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
-		Return (GMT_NOERROR);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
+			goto wrap_up;
+		goto wrap_up;
 	}
 
 	/* Set up and allocate output grid */
@@ -892,6 +880,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			}
 			else
 				strcpy (record, file);
+			L->table[0]->segment[0]->data[GMT_X][t_use] = Ctrl->T.time[t].value;
 			L->table[0]->segment[0]->text[t_use++] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}
@@ -902,29 +891,23 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= (gmt_grdfloat)n_scl;
 		}
 
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
-			gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
-			gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
-			Return (API->error);
-		}
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
+			goto wrap_up;
 		gmt_M_memcpy (data, Grid->data, Grid->header->size, gmt_grdfloat);	/* This will go away once gmt_nc.c is fixed to leave array alone */
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Grid) != GMT_NOERROR) {
-			gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
-			gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
-			Return (API->error);
-		}
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Grid) != GMT_NOERROR)
+			goto wrap_up;
 		gmt_M_memcpy (Grid->data, data, Grid->header->size, gmt_grdfloat);
 	}
-	if (Ctrl->M.active) L->table[0]->n_records = t_use;
+	if (Ctrl->M.active) L->table[0]->n_records = L->table[0]->segment[0]->n_rows = t_use;
 	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid files to %s\n", Ctrl->M.file);
-		gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
-		gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
-		Return (API->error);
+		goto wrap_up;
 	}
+
+wrap_up:
 
 	gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 	gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 
-	Return (GMT_NOERROR);
+	Return (API->error);
 }
