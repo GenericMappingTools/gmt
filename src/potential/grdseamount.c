@@ -34,7 +34,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdseamount"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)"
-#define THIS_MODULE_KEYS	"<T{,GG},MD),TD("
+#define THIS_MODULE_KEYS	"<T{,GG},LD),MD),TD("
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVbdefhir" GMT_OPT("H")
 
