@@ -73,7 +73,7 @@ Optional Arguments
 
 **-A**\ [*out/in*]
     Build a mask grid, append outside/inside values [1/NaN].
-    Here, height is ignored and **-L**, **-N** and **-Z** are disallowed.
+    Here, height and flattening are ignored and **-L**, **-N** and **-Z** are disallowed.
 
 .. _-C:
 
@@ -82,12 +82,13 @@ Optional Arguments
     and **p** (parabolic) shape [Default is Gaussian].
 
 .. figure:: /_images/GMT_seamount_types.*
-   :width: 400 px
+   :width: 500 px
    :align: center
 
    The four types of seamounts selectable via option **-C**.  In all cases, :math:`h_0` is the maximum
    *height*, :math:`r_0` is the basal *radius*, :math:`h_c` is the noise floor set via **-L** [0], and
-   *f* is the *flattening* set via **-F** [0].
+   *f* is the *flattening* set via **-F** [0]. The top radius :math:`r_t` is only nonzero if there is
+   flattening and it does not aply the the disc model.
 
 .. _-D:
 
@@ -104,17 +105,17 @@ Optional Arguments
     *lon, lat, radius, height*].
 
 .. figure:: /_images/GMT_seamount_map.*
-   :width: 400 px
+   :width: 500 px
    :align: center
 
-   Use **-E** to select elliptical rather than circular shape in map view.  Both shapes expect
-   *lon, lat*. Circular only requires a radius :math:`r_p` while elliptical requires the azimuth
-   :math:`\alpha` and the two semi-axes *major* and *minor*.
+   Use **-E** to select elliptical rather than circular shape in map view.  Both shapes require
+   lon, lat. Circular only requires the radius :math:`r_0` while elliptical requires the azimuth
+   :math:`\alpha` and the major and minor semi-axes .
 
 .. _-F:
 
 **-F**\ [*flattening*]
-    Seamounts are to be truncated to guyots.  Append *flattening*, otherwise we expect
+    Seamounts are to be truncated to guyots.  Append *flattening* from 0 (no flattening to 1 (no feature!), otherwise we expect
     to find it in last input column [no truncation].  Ignored if used with **-Cd**.
 
 .. _-G:
@@ -136,13 +137,13 @@ Optional Arguments
 .. _-M:
 
 **-M**\ *list*
-    Write the names of all grids that were created to the text file *list*.
+    Write the times and names of all grids that were created to the text file *list*.
     Requires **-T**.
 
 .. _-N:
 
 **-N**\ *norm*
-    Normalize grid so maximum grid height equals *norm*.
+    Normalize grid so maximum grid height equals *norm* [no normalization]
 
 .. _-Q:
 
@@ -154,10 +155,10 @@ Optional Arguments
     or **l** for a linear volume flux history between the start and stop times of each feature.
 
 .. figure:: /_images/GMT_seamount_flux.*
-   :width: 400 px
+   :width: 500 px
    :align: center
 
-   Use *qmode* in **-QQ** to choose between a linear (**l**) or Gaussian (**g**) cumulative volume flux model.
+   Use *qmode* in **-Q** to choose between a linear (**l**) or Gaussian (**g**) cumulative volume flux model.
 
 .. _-S:
 
