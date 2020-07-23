@@ -175,9 +175,8 @@ Optional Arguments
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a file with the desired times in the first column (these times
-    may have individual units appended, otherwise we assume year).  Note that the grid
-    for *t0* (if a range is given) is not written as it is zero and marks the start of
-    the building history.
+    may have individual units appended, otherwise we assume year).  Note that a grid
+    will be written for all time-steps even if there are no loads or no changes.
 
 .. _-Z:
 
