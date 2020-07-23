@@ -151,7 +151,7 @@ Optional Arguments
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a file with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).  Note that a grid
-    will be written for all time-steps even if there is no loads or no changes.
+    will be written for all time-steps even if there are no loads or no changes.
 
 .. _-Z:
 
