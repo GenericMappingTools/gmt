@@ -98,7 +98,7 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		double value;
 	} N;
-	struct GRDSEAMOUNT_Q {	/* -Qc|i/g|l */
+	struct GRDSEAMOUNT_Q {	/* -Qc|i/g|c  Note: c was l */
 		bool active;
 		bool disc;	/* True if incremental volumes should be served as disks [Default is exact] */
 		unsigned int bmode;
@@ -182,8 +182,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename is given then we write the list to stdout.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grid so maximum grid height equals <norm>. Not allowed with -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only used in conjunction with -T.  Append the two modes:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <bmode> to compute either (c)umulative or (i)ncremental volume through time.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <fmode> to assume a (g)aussian or (l)inear volume flux distribution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <bmode> to build either (c)umulative [Default] or (i)ncremental volume through time.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <fmode> to assume a (g)aussian [Default] or (c)onstant volume flux distribution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to serve increments as uniform discs [exact shapes].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets ad hoc scale factor for radii [1].\n");
@@ -291,11 +291,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					Ctrl->Q.disc = true;
 					c[0] = '\0';
 				}
-				for (k = 0; opt->arg[k]; k++) {
-					if (opt->arg[k] == 'i') Ctrl->Q.bmode = SMT_INCREMENTAL;
-					if (opt->arg[k] == 'c') Ctrl->Q.bmode = SMT_CUMULATIVE;
-					if (opt->arg[k] == 'g') Ctrl->Q.fmode = FLUX_GAUSSIAN;
-					if (opt->arg[k] == 'l') Ctrl->Q.fmode = FLUX_LINEAR;
+				if (opt->arg[0]) {	/* Gave mbode/fmode */
+					char b, f;
+					if (sscanf (opt->arg, "%c/%c", &b, &f) == 2) {
+						Ctrl->Q.bmode = (b == 'i' || b == 'l') ? SMT_INCREMENTAL : SMT_CUMULATIVE;	/* Allow l for backwards compatibility */
+						Ctrl->Q.fmode = (f == 'c') ? FLUX_LINEAR : FLUX_GAUSSIAN;
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -Q: Unable to parse the two modes\n");
+						n_errors++;
+					}
 				}
 				if (c) c[0] = '+';
 				break;
@@ -479,7 +484,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	char unit, unit_name[8], file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	gmt_grdfloat *data = NULL, *current = NULL, *previous = NULL;
-	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, scale;
+	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, scale = 1.0;
 	double add, f, max, r_km, amplitude, h_scale = 0.0, z_assign, h_scl = 0.0, noise = 0.0, this_user_time = 0.0, life_span, t_mid, v_curr, v_prev;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM = 0.0, *V = NULL;
 	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, phi_prev, phi_curr;
@@ -885,8 +890,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			}
 			prev_user_time = this_user_time;	/* Make this the previous time */
 		}
-		if (empty) {
-			GMT_Report (API, GMT_MSG_WARNING, "No contribution made for time %g %s\n",
+		if (empty && Ctrl->T.active) {
+			GMT_Report (API, GMT_MSG_INFORMATION, "No contribution made for time %g %s\n",
 			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 		}
 
