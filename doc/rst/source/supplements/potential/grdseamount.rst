@@ -24,7 +24,7 @@ Synopsis
 [ |-L|\ [*cut*] ]
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
-[ |-Q|\ *bmode*/*qmode* ]
+[ |-Q|\ *bmode*/*qmode*\ [**+d**] ]
 [ |-S|\ *scale* ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
@@ -149,10 +149,18 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *bmode*/*qmode*
+**-Q**\ *bmode*/*qmode*\ [**+d**]
     Only to be used in conjunction with **-T**.  Append two different modes settings:
     The *bmode* determines how we construct the surface.  Specify **c** for cumulative
     volume through time [Default], or **i** for incremental volume added for each time slice.
+
+.. figure:: /_images/GMT_seamount_cum_inc.*
+   :width: 500 px
+   :align: center
+
+   Use *bmode* in **-Q** to choose between cumulative output (**c**; actual topography as function of time) or
+   incremental output (**i**; the difference in actual topography from time-step to time-step.
+
     The *qmode* determines the volume flux curve.  Give **g** for a Gaussian volume flux history [Default]
     or **l** for a linear volume flux history between the start and stop times of each feature.
 
@@ -162,6 +170,9 @@ Optional Arguments
 
    Use *qmode* in **-Q** to choose between a linear (**l**) or Gaussian (**g**) cumulative volume flux model.
 
+   By default we compute the exact cumulative and incremental values the seamounts specified.  Append
+   **+d** to instead approximate each incremental layer by a constant thickness disc.
+   
 .. _-S:
 
 **-S**\ *scale*
