@@ -210,7 +210,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 	 */
 
 	unsigned int n_errors = 0;
-	uint64_t n_expected_fields, k;
+	uint64_t n_expected_fields;
 	int n;
 	char T1[GMT_LEN32] = {""}, T2[GMT_LEN32] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
