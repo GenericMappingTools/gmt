@@ -24,7 +24,7 @@ Synopsis
 [ |-L|\ [*cut*] ]
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
-[ |-Q|\ *bmode*/*qmode* ]
+[ |-Q|\ *bmode*/*fmode*\ [**+d**] ]
 [ |-S|\ *scale* ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
@@ -149,18 +149,30 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *bmode*/*qmode*
+**-Q**\ *bmode*/*fmode*\ [**+d**]
     Only to be used in conjunction with **-T**.  Append two different modes settings:
     The *bmode* determines how we construct the surface.  Specify **c** for cumulative
     volume through time [Default], or **i** for incremental volume added for each time slice.
-    The *qmode* determines the volume flux curve.  Give **g** for a Gaussian volume flux history [Default]
-    or **l** for a linear volume flux history between the start and stop times of each feature.
+    The *fmode* determines the volume flux curve we use.  Give **c** for a constant volume flux or
+    **g** for a Gaussian volume flux [Default] between the start and stop times of each feature. These fluxes
+    integrate to a linear or error-function volume fraction over time, respectively, as shown below.
+    By default we compute the exact cumulative and incremental values for the seamounts specified.  Append
+    **+d** to instead approximate each incremental layer by a disc of constant thickness.
+
+.. figure:: /_images/GMT_seamount_cum_inc.*
+   :width: 500 px
+   :align: center
+
+   Use *bmode* in **-Q** to choose between cumulative output (**c**; actual topography as function
+   of time [left]) or incremental output (**i**; the difference in actual topography over five
+   time-steps [right]).  Here we used **-Cg** for a Gaussian model with no flattening and a linear volume flux.
 
 .. figure:: /_images/GMT_seamount_flux.*
    :width: 500 px
    :align: center
 
-   Use *qmode* in **-Q** to choose between a linear (**l**) or Gaussian (**g**) cumulative volume flux model.
+   Use *fmode* in **-Q** to choose between a constant (**c**; dashed line) or Gaussian (**g**; heavy line)
+   volume flux model.
 
 .. _-S:
 
