@@ -9,14 +9,14 @@ gmt begin GMT_seamount_cum_inc ps
 	gmt set FONT_TAG 16p,Times-Italic,black
 	row=4
 	while read t file rest; do
-		gmt subplot set $row,0 -A"t = $row"
-		gmt grdtrack -G${file} -E40000/75000/160000/75000 -o0,2 | gmt plot  -W1p -i0+s0.001,1+s0.001 -L+y0 -Gblack
+		gmt subplot set ${row},0 -A"t = $row"
+		gmt grdtrack -G${file} -E40000/75000/160000/75000 -o0,2 | gmt plot -W1p -i0+s0.001,1+s0.001 -L+y0 -Gblack
 		let row--
 	done < c.lis
 	row=4
 	while read t file rest; do
-		gmt subplot set $row,1 -A"t = $row"
-		gmt grdtrack -G${file} -E40000/75000/160000/75000 -o0,2 | gmt plot  -W1p -i0+s0.001,1+s0.001 -L+y0 -Gblack
+		gmt subplot set ${row},1 -A"t = $row"
+		gmt grdtrack -G${file} -E40000/75000/160000/75000 -o0,2 | gmt plot -W1p -i0+s0.001,1+s0.001 -L+y0 -Gblack
 		let row--
 	done < i.lis
 	gmt subplot end
