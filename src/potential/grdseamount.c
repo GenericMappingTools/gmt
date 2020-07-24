@@ -755,11 +755,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							}
 							scale = 1.0;
 						}
-						else {	/* Here we want the updated r,h or a,b,h for the exact volume of given shape */
-							/* If incremental we need to subtract two evaluations for amplitude at this time and previous time.
-							 * for cumulative we just evaluate amplitude at this time */
+						else	/* Here we want the exact surface at the reduced radius and height given by the scale related to the volume fraction */
 							scale = pow (v_curr, ONETHIRD);
-						}
 					}
 
 					scol_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
