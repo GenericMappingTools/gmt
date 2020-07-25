@@ -24,7 +24,8 @@
  * tops (not for dics, obviously, as already truncated). If time information
  * is provided we can also produce grids for each time step that shows either
  * the cumulative relief up until this time or just the incremental relief
- * for each time step, such as needed for time-dependent flexure.
+ * for each time step, such as needed for time-dependent flexure. These estimates
+ * can be either exact or approximated via constant-thickness discs.
  *
  * */
 
@@ -98,7 +99,7 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		double value;
 	} N;
-	struct GRDSEAMOUNT_Q {	/* -Qc|i/g|c  Note: c was l */
+	struct GRDSEAMOUNT_Q {	/* -Qc|i/g|c  Note: c was l previously */
 		bool active;
 		bool disc;	/* True if incremental volumes should be served as disks [Default is exact] */
 		unsigned int bmode;
@@ -113,7 +114,7 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int n_times;
 		struct GMT_MODELTIME *time;	/* The current sequence of times */
 	} T;
-	struct GRDSEAMOUNT_Z {	/* -Z<base> */
+	struct GRDSEAMOUNT_Z {	/* -Z<base> [0] */
 		bool active;
 		double value;
 	} Z;
@@ -676,10 +677,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	exact = (Ctrl->T.active && !Ctrl->Q.disc);
 	exact_increments = (exact && Ctrl->Q.bmode == SMT_INCREMENTAL);
 	data = gmt_M_memory (GMT, NULL, Grid->header->size, gmt_grdfloat);	/* tmp */
-	if (exact_increments) {
-		previous = gmt_M_memory (GMT, NULL, Grid->header->size, gmt_grdfloat);	/* previous time solution */
-		current  = gmt_M_memory (GMT, NULL, Grid->header->size, gmt_grdfloat);	/* current time solution */
-	}
+	if (exact) current  = gmt_M_memory (GMT, NULL, Grid->header->size, gmt_grdfloat);	/* current time solution */
+	if (exact_increments) previous = gmt_M_memory (GMT, NULL, Grid->header->size, gmt_grdfloat);	/* previous time solution */
 
 	for (t = t_use = 0; t < Ctrl->T.n_times; t++) {	/* For each time step (or just once) */
 
@@ -699,7 +698,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
 					if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
 
-					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
+					if (Ctrl->T.active) {	/* Check if outside time-range */
+						if (this_user_time >= in[t0_col]) continue;	/* Not started growing yet */
+						if (this_user_time < in[t1_col] && !exact) continue;	/* Completed so making no contribution to incremental discs */
+					}
 					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 					if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
@@ -721,6 +723,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							v_curr = (in[t0_col] - this_user_time) / life_span;	/* Normalized volume fraction at end of this time step */
 							v_prev = (in[t0_col] - prev_user_time) / life_span;	/* Normalized volume fraction at start of this time step */
 						}
+						/* Since we dont skip seamounts after they have completed when we want cumulative heights, we add a few further checnks */
+						if (v_curr > 1.0) v_curr = 1.0;	/* When we pass the end-life of the volcano we stop at 1 since the volcano is now fully grown */
+						if (v_prev > 1.0) v_prev = 1.0;	/* When we pass the end-life of the volcano we stop at 1 since the volcano is now fully grown */
+						/* When v_curr == v_prev after a volcano has stopped growing the incremental change will be zero */
 						dV = V[n_smts] * (v_curr - v_prev);	/* Incremental volume produced */
 						V_sum[n_smts] += dV;			/* Keep track of volume sum so we can compare with truth later */
 						if (Ctrl->F.mode == TRUNC_FILE)
@@ -799,13 +805,13 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						amplitude = scale * in[3];		/* Seamount max height from base */
 						if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[4];	/* Flattening given by input file */
 					}
-					switch (build_mode) {
+					switch (build_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
 						case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
 						case SHAPE_DISC:  h_scale = 1.0; break;
 						case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->F.value * Ctrl->F.value); break;
 						case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
 					}
-					if (build_mode == SHAPE_GAUS) h_scale *= h_scl;
+					if (build_mode == SHAPE_GAUS) h_scale *= h_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
 					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
@@ -830,7 +836,12 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							x = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 							this_r = gmt_distance (GMT, in[GMT_X], in[GMT_Y], x, y);	/* In Cartesian units or km (if map is true) */
 							if (this_r > r_km) continue;	/* Beyond the base of the seamount */
-							if (Ctrl->E.active) {	/* For Gaussian we must deal with direction etc */
+#if 0
+							if (t == (Ctrl->T.n_times-1) && doubleAlmostEqualZero (this_r, 0.0)) {
+								dx = 0.0;	/* Break point here if debugging */
+							}
+#endif
+							if (Ctrl->E.active) {	/* For elliptical bases we must deal with direction etc */
 								dx = (map) ? (x - in[GMT_X]) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - in[GMT_X]);
 								dy = (map) ? (y - in[GMT_Y]) * GMT->current.proj.DIST_KM_PR_DEG : (y - in[GMT_Y]);
 								this_r = A * dx * dx + 2.0 * B * dx * dy + C * dy * dy;
@@ -850,7 +861,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								else	/* Elliptical Gaussian case */
 									add = (rr < Ctrl->F.value) ? 1.0 : exp (this_r) * h_scale - noise;
 							}
-							else {	/* Circular features */
+							else {	/* Circular features are simpler */
 								rr = this_r / r_km;	/* Now in 0-1 range */
 								if (build_mode == SHAPE_CONE)	/* Circular cone case */
 									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
@@ -863,8 +874,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							}
 							if (add <= 0.0) continue;	/* No amplitude, so skip */
 							ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
-							z_assign = amplitude * add;		/* height to be added */
-							if (Ctrl->A.active)	/* Just set inside value for mask */
+							z_assign = amplitude * add;		/* height to be added to grid */
+							if (Ctrl->A.active)	/* No amplitude, just set inside value for mask */
 								Grid->data[ij] = Ctrl->A.value[GMT_IN];
 							else {	/* Add in contribution and keep track of max height */
 								Grid->data[ij] += (gmt_grdfloat)z_assign;
@@ -880,16 +891,17 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 									first = false;
 								}
 							}
-							empty = false;	/* We have made a mark on this grid */
+							empty = false;	/* We have made a change to this grid */
 						}
 					}
 				}
 			}
 			prev_user_time = this_user_time;	/* Make this the previous time */
 		}
-		if (empty && Ctrl->T.active) {
+		if (empty && Ctrl->T.active) {	/* No contribution made */
 			GMT_Report (API, GMT_MSG_INFORMATION, "No contribution made for time %g %s\n",
 			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
+			if (exact && !exact_increments) gmt_M_memcpy (Grid->data, current, Grid->header->size, float);	/* Nothing new added so same cumulative surface as last step */
 		}
 
 		/* Time to write the grid */
@@ -897,7 +909,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			gmt_modeltime_name (GMT, file, Ctrl->G.file, &(Ctrl->T.time[t]));
 		else
 			strcpy (file, Ctrl->G.file);
-		if (Ctrl->M.active) {
+		if (Ctrl->M.active) {	/* Write list of grids to file */
 			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
 			if (Ctrl->T.active) {
 				sprintf (record, "%s\t", file);
@@ -916,8 +928,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
 			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= (gmt_grdfloat)n_scl;
 		}
+		if (exact) gmt_M_memcpy (current, Grid->data, Grid->header->size, float);	/* Store solution for the current time */
+
 		if (exact_increments) {	/* Need to subtract current solution from the previous solution */
-			gmt_M_memcpy (current, Grid->data, Grid->header->size, float);	/* Store solution for the current time */
 			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] -= previous[ij];	/* Get increments relative to previous time */
 			if (t < (Ctrl->T.n_times-1)) gmt_M_memcpy (previous, current, Grid->header->size, float);	/* Now update previous */
 		}
