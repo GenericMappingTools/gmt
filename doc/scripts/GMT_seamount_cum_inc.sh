@@ -30,3 +30,4 @@ gmt begin GMT_seamount_cum_inc ps
 		gmt grdtrack -Gsmti_00.80.nc -E40000/75000/160000/75000 -o0,2 | gmt plot -W1p -i0+s0.001,1+s0.001 -L+y0 -Gblack
 	gmt subplot end
 gmt end show
+rm -f smt[ci]*.nc ?.lis t.txt
