@@ -21,11 +21,12 @@
  *
  * grdseamount.c will create a grid made up from elliptical or circular
  * seamounts that can be Gaussian, Conical, Parabolic or Disc, with or without truncated
- * tops (not for dics, obviously, as already truncated). If time information
+ * tops (not for discs, obviously, as already truncated). If time information
  * is provided we can also produce grids for each time step that shows either
  * the cumulative relief up until this time or just the incremental relief
  * for each time step, such as needed for time-dependent flexure. These estimates
- * can be either exact or approximated via constant-thickness discs.
+ * can be either exact or approximated via constant-thickness discs. Seamounts
+ * can use different models so you can mix and match cones and Gaussians, for example.
  *
  * */
 
@@ -43,6 +44,7 @@
 #define SHAPE_PARA	1
 #define SHAPE_CONE	2
 #define SHAPE_DISC	3
+#define N_SHAPES	4
 
 #define TRUNC_FILE	1
 #define TRUNC_ARG	2
@@ -66,8 +68,10 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		gmt_grdfloat value[2];	/* Inside and outside value for mask */
 	} A;
-	struct GRDSEAMOUNT_C {	/* -C<shape> */
+	struct GRDSEAMOUNT_C {	/* -C[<shape>] */
 		bool active;
+		bool input;
+		char code;
 		unsigned int mode;	/* 0 = Gaussian, 1 = parabola, 2 = cone, 3 = disc */
 	} C;
 	struct GRDSEAMOUNT_D {	/* -De|f|k|M|n|u */
@@ -133,6 +137,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.value[GMT_IN] = GMT->session.f_NaN;
 	C->A.value[GMT_OUT] = 1.0f;
+	C->C.mode = SHAPE_GAUS;
+	C->C.code = 'g';
 	C->Q.bmode = SMT_CUMULATIVE;
 	C->Q.fmode = FLUX_GAUSSIAN;
 	C->S.value = 1.0;
@@ -152,7 +158,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-D%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-C[c|d|g|p]] [-D%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flattening>]] [-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [-Z<base>] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
@@ -167,13 +173,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Build a mAsk grid, append outside/inside values [1/NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Here, height is ignored and -L, -N, -Q, -T and -Z are disallowed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Choose between c(one), d(isc), p(arabola) or g(aussian) model [cone].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is not given the we default to Gaussian features.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is not given the we default to a Gaussian seamount model.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is given without argument then we expect to find c,d,p, or d in the last input column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Specify horizontal distance unit used by input file if -fg is not used.  Choose among\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e (meter), f (foot) k (km), M (mile), n (nautical mile), or u (survey foot) [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Elliptical data format [Default is Circular].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Read lon, lat, azimuth, major, minor, height (m) for each seamount.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Seamounts are truncated.  Append flattening or expect it in an extra input column [no truncation].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grdfile with constructed surface.  If -T is set then <outgrid>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Filename for output grdfile with constructed surface.  If -T is set then <outgrid>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   must be a filename template that contains a floating point format (C syntax) and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file names.\n");
 	GMT_Option (API, "I");
@@ -185,7 +192,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only used in conjunction with -T.  Append the two modes:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <bmode> to build either (c)umulative [Default] or (i)ncremental volume through time.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <fmode> to assume a (g)aussian [Default] or (c)onstant volume flux distribution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to serve increments as uniform discs [exact shapes].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to build grids with increments as uniform discs [exact shapes].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets ad hoc scale factor for radii [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
@@ -193,7 +200,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, append +l and specify n steps instead of time increment.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To read a list of times from the first column in a file instead, use -T<tfile>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies two extra input columns with start and stop time for each seamount's life span.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Q to select cumulative versus incremental loads.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Q to select cumulative versus incremental construction.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set the reference depth [0].  Not allowed for -Qi.\n");
 	GMT_Option (API, "V,bi,di,e");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
@@ -240,12 +247,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'C':	/* Shape option */
 				Ctrl->C.active = true;
+				Ctrl->C.code = opt->arg[0];
 				switch (opt->arg[0]) {
 					case 'c': Ctrl->C.mode = SHAPE_CONE; break;
 					case 'd': Ctrl->C.mode = SHAPE_DISC; break;
 					case 'p': Ctrl->C.mode = SHAPE_PARA; break;
 					case 'g': Ctrl->C.mode = SHAPE_GAUS; break;
-					default:  Ctrl->C.mode = SHAPE_CONE; break;
+					default:  Ctrl->C.input = true; break;	/* Read from trailing text instead */
 				}
 				break;
 			case 'D':	/* Cartesian unit option */
@@ -411,6 +419,12 @@ GMT_LOCAL double grdseamount_cone_solver (double in[], double f, double v, bool 
 	return (phi);
 }
 
+GMT_LOCAL double grdseamount_disc_solver (double in[], double f, double v, bool elliptical) {
+	/* Return effective phi given volume fraction fro a disc is trivial */
+	gmt_M_unused (in), gmt_M_unused (f), gmt_M_unused (elliptical);
+	return (v);
+}
+
 GMT_LOCAL double grdseamount_para_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
@@ -440,17 +454,27 @@ GMT_LOCAL double grdseamount_gauss_solver (double in[], double f, double v, bool
 	return (phi);
 }
 
-GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in) {
+GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in, char *code) {
 	uint64_t col;
+	int n;
 	double s_scale;
-	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], s_unit;
+	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], m[GMT_LEN16], s_unit;
 	gmt_M_unused (GMT);
+
+	/* There are two scenarios under which there is trailing text (and text is not NULL):
+	 * 1. User gave times with units, e.g., 50M or 10k, so there are two words with time info
+	 * 2. User gave -C so the model code g,c,p,d is the last input word. */
 
 	for (col = 0; col < n_expected; col++) in[col] = data[col][rec];	/* Just copy over this numerical part of the record */
 	if (Ctrl->T.active && text) {	/* Force start and stop times to be multiples of the increment */
-		sscanf (text[rec], "%s %s", txt_x, txt_y);
-		in[n_expected-2] = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
-		in[n_expected-1] = gmt_get_modeltime (txt_y, &s_unit, &s_scale);
+		n = sscanf (text[rec], "%s %s %s", txt_x, txt_y, m);
+		if (n == 1)	/* Only shape code given as trailing text */
+			*code = txt_x[0];
+		else if (n >= 2) {	/* Model time given, and possibly shape code */
+			in[n_expected-2] = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
+			in[n_expected-1] = gmt_get_modeltime (txt_y, &s_unit, &s_scale);
+			if (n == 3) *code = m[0];	/* Also gave shape code */
+		}
 	}
 
 	if (!map) {	/* Scale horizontal units to meters */
@@ -475,23 +499,24 @@ GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAM
 EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	int error, scol, srow, scol_0, srow_0;
 
-	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0;
+	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0, rmode, inc_mode;
 	unsigned int max_d_col, d_row, *d_col = NULL, t, t_use, build_mode, t0_col = 0, t1_col = 0;
 
 	uint64_t n_expected_fields, n_smts = 0, tbl, seg, rec, ij;
 
-	bool map = false, periodic = false, replicate, first, empty, exact, exact_increments;
+	bool map = false, periodic = false, replicate, first, empty, exact, exact_increments, cone_increments;
 
-	char unit, unit_name[8], file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
+	char unit, code, unit_name[8], file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	gmt_grdfloat *data = NULL, *current = NULL, *previous = NULL;
+
 	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, scale = 1.0;
-	double add, f, max, r_km, amplitude, h_scale = 0.0, z_assign, h_scl = 0.0, noise = 0.0, this_user_time = 0.0, life_span, t_mid, v_curr, v_prev;
+	double add, f, max, r_km, amplitude, h_scale = 0.0, z_assign, noise = 0.0, this_user_time = 0.0, life_span, t_mid, v_curr, v_prev;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM = 0.0, *V = NULL;
 	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, phi_prev, phi_curr;
-	double *V_sum = NULL, *h_sum = NULL, *h = NULL;
-	void (*shape_func) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
-	double (*phi_solver) (double in[], double f, double v, bool elliptical);
+	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise);
+	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
+	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment text table(s) */
@@ -520,10 +545,12 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdseamount main code ----------------------------*/
 
+	code = Ctrl->C.code;
 	/* Specify expected columns */
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
-	if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_expected_fields, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+	rmode = (Ctrl->C.input) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT;
+	if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_expected_fields, rmode)) != GMT_NOERROR) {
 		Return (error);
 	}
 
@@ -534,23 +561,20 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	switch (Ctrl->C.mode) {	/* Select the model for seamount shape */
-		case SHAPE_CONE:  shape_func = grdseamount_cone_area_volume_height;
-				  phi_solver = grdseamount_cone_solver; break;
-		case SHAPE_DISC:  shape_func = grdseamount_disc_area_volume_height;
-				  phi_solver = NULL; break;
-		case SHAPE_PARA:  shape_func = grdseamount_para_area_volume_height;
-		  		  phi_solver = grdseamount_para_solver; break;
-		case SHAPE_GAUS:  shape_func = grdseamount_gaussian_area_volume_height;
-		  		  phi_solver = grdseamount_gauss_solver; break;
-		default:
-			GMT_Report (API, GMT_MSG_WARNING, "Shape not set - defaulting to Gaussian\n");
-			shape_func = grdseamount_gaussian_area_volume_height;
-			phi_solver = grdseamount_gauss_solver;
-			break;
-	}
+	
+	/* Assign functions to shape_func and phi_solver array of functions */
+	shape_func[SHAPE_CONE] = grdseamount_cone_area_volume_height;
+	phi_solver[SHAPE_CONE] = grdseamount_cone_solver;
+	shape_func[SHAPE_DISC] = grdseamount_disc_area_volume_height;
+	phi_solver[SHAPE_DISC] = grdseamount_disc_solver;
+	shape_func[SHAPE_PARA] = grdseamount_para_area_volume_height;
+	phi_solver[SHAPE_PARA] = grdseamount_para_solver;
+	shape_func[SHAPE_GAUS] = grdseamount_gaussian_area_volume_height;
+	phi_solver[SHAPE_GAUS] = grdseamount_gauss_solver;
 
-	build_mode = (Ctrl->T.active && Ctrl->Q.disc) ? SHAPE_DISC : Ctrl->C.mode;	/* For incremental building with +d we use disc increments regardless of shape */
+	build_mode = inc_mode = Ctrl->C.mode;
+	cone_increments = (Ctrl->T.active && Ctrl->Q.disc);
+	if (cone_increments) inc_mode = SHAPE_DISC;
 
 	map = gmt_M_is_geographic (GMT, GMT_IN);
 	if (map) {	/* Geographic data */
@@ -577,10 +601,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	V_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	h_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	h = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
-	if (build_mode == SHAPE_GAUS) {
-		noise = exp (-4.5);		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
-		h_scl = 1.0 / (1.0 - noise);	/* Compensation scale to make the peak amplitude = 1 given our adjustment for noise above */
-	}
+	if (inc_mode == SHAPE_GAUS)
+		noise = g_noise;		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
 
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
 		n_out = (unsigned int)n_expected_fields + 3;
@@ -620,8 +642,23 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
-				if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
+				if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in, &code)) continue;
 				for (col = 0; col < n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
+				if (Ctrl->C.input) {
+					noise = 0.0;
+					switch (code) {
+						case 'c': build_mode = SHAPE_CONE; break;
+						case 'd': build_mode = SHAPE_DISC; break;
+						case 'p': build_mode = SHAPE_PARA; break;
+						case 'g': build_mode = SHAPE_GAUS;
+							noise = g_noise;	/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
+							break;
+						default:
+							GMT_Report (API, GMT_MSG_ERROR, "Unrecognized shape code %c\n", code);
+							API->error = GMT_RUNTIME_ERROR;
+							goto wrap_up;
+					}
+				}
 				if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 					a = in[3];		/* Semi-major axis */
 					b = in[4];		/* Semi-minor axis */
@@ -635,7 +672,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 				}
 				c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth scaling factor */
 				/* Compute area, volume, mean amplitude */
-				shape_func (a, b, amplitude, Ctrl->L.value, Ctrl->F.value, &area, &volume, &height);
+				shape_func[build_mode] (a, b, amplitude, Ctrl->L.value, Ctrl->F.value, &area, &volume, &height);
 				V[n_smts] = volume;
 				h[n_smts] = amplitude;
 				if (map) {	/* Report values in km^2, km^3, and m */
@@ -650,7 +687,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					out[col++] = height;
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
-				GMT_Report (API, GMT_MSG_INFORMATION, "Seamount %" PRIu64 " area, volume, mean height: %g %g %g\n", n_smts, area, volume, height);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Seamount %" PRIu64 " [%c] area, volume, mean height: %g %g %g\n", n_smts, code, area, volume, height);
 			}
 		}
 	}
@@ -696,7 +733,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
-					if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
+					if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in, &code)) continue;
 
 					if (Ctrl->T.active) {	/* Check if outside time-range */
 						if (this_user_time >= in[t0_col]) continue;	/* Not started growing yet */
@@ -705,8 +742,25 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 					if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
-					GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate seamount # %6d\n", n_smts);
+					if (Ctrl->C.input) {
+						noise = 0.0;
+						switch (code) {
+							case 'c': build_mode = SHAPE_CONE; break;
+							case 'd': build_mode = SHAPE_DISC; break;
+							case 'p': build_mode = SHAPE_PARA; break;
+							case 'g': build_mode = SHAPE_GAUS;
+								noise = g_noise;	/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
+								break;
+							default:
+								GMT_Report (API, GMT_MSG_ERROR, "Unrecognized shape code %c\n", code);
+								API->error = GMT_RUNTIME_ERROR;
+								goto wrap_up;
+						}
+						if (!cone_increments) inc_mode = build_mode;
+					}
+
 					/* Ok, we are inside the region - process data */
+					GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate seamount # %6d [%c]\n", n_smts, code);
 
 					if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
 						life_span = in[t0_col] - in[t1_col];	/* Total life span of this seamount */
@@ -734,10 +788,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						else
 							f = Ctrl->F.value;
 						if (Ctrl->Q.disc) {	/* Obtain the equivalent disc parameters given the volumes found */
-							phi_curr = phi_solver (in, f, v_curr, Ctrl->E.active);
-							phi_prev = phi_solver (in, f, v_prev, Ctrl->E.active);
+							phi_curr = phi_solver[build_mode] (in, f, v_curr, Ctrl->E.active);
+							phi_prev = phi_solver[build_mode] (in, f, v_prev, Ctrl->E.active);
 							h0 = (Ctrl->E.active) ? in[5] : in[3];
-							switch (Ctrl->C.mode) {	/* Given the phi values, evaluate the corresponding heights */
+							switch (build_mode) {	/* Given the phi values, evaluate the corresponding heights */
 								case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
 								case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
 								case SHAPE_GAUS:  h_curr = h0 * exp (4.5 * (f*f - phi_curr * phi_curr)); h_prev = h0 * exp (4.5 * (f*f - phi_prev * phi_prev)); break;
@@ -801,17 +855,17 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						r_km = r_in * Ctrl->S.value;	/* Scaled up by user scale */
 						r = r_km;			/* Copy of r_km */
 						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
-						f = (build_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
+						f = (inc_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
 						amplitude = scale * in[3];		/* Seamount max height from base */
 						if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[4];	/* Flattening given by input file */
 					}
-					switch (build_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
+					switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
 						case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
 						case SHAPE_DISC:  h_scale = 1.0; break;
 						case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->F.value * Ctrl->F.value); break;
 						case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
 					}
-					if (build_mode == SHAPE_GAUS) h_scale *= h_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
+					if (inc_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
 					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
@@ -848,26 +902,26 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								/* this_r is now r^2 in the 0 to -4.5 range expected for the Gaussian case */
 								rr = sqrt (-this_r/4.5);	/* Convert this r^2 to a normalized radius 0-1 inside cone */
 								if (Ctrl->A.active && rr > 1.0) continue;	/* Beyond the seamount base so nothing to do for a mask */
-								if (build_mode == SHAPE_CONE) {	/* Elliptical cone case */
+								if (inc_mode == SHAPE_CONE) {	/* Elliptical cone case */
 									if (rr < 1.0)	/* Since in minor direction rr may exceed 1 and be outside the ellipse */
 										add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
 									else
 										add = 0.0;
 								}
-								else if (build_mode == SHAPE_DISC)	/* Elliptical disc/plateau case */
+								else if (inc_mode == SHAPE_DISC)	/* Elliptical disc/plateau case */
 									add = (rr <= 1.0) ? 1.0 : 0.0;
-								else if (build_mode == SHAPE_PARA)	/* Elliptical parabolic case */
+								else if (inc_mode == SHAPE_PARA)	/* Elliptical parabolic case */
 									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
 								else	/* Elliptical Gaussian case */
 									add = (rr < Ctrl->F.value) ? 1.0 : exp (this_r) * h_scale - noise;
 							}
 							else {	/* Circular features are simpler */
 								rr = this_r / r_km;	/* Now in 0-1 range */
-								if (build_mode == SHAPE_CONE)	/* Circular cone case */
+								if (inc_mode == SHAPE_CONE)	/* Circular cone case */
 									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
-								else if (build_mode == SHAPE_DISC)	/* Circular disc/plateau case */
+								else if (inc_mode == SHAPE_DISC)	/* Circular disc/plateau case */
 									add = (rr <= 1.0) ? 1.0 : 0.0;
-								else if (build_mode == SHAPE_PARA)	/* Circular parabolic case */
+								else if (inc_mode == SHAPE_PARA)	/* Circular parabolic case */
 									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
 								else	/* Circular Gaussian case */
 									add = (rr < Ctrl->F.value) ? 1.0 : exp (f * this_r * this_r) * h_scale - noise;
