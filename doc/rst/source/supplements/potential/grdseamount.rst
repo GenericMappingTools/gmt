@@ -16,7 +16,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*] ]
-[ |-C|\ **c**\|\ **d**\|\ **g**\|\ **p** ]
+[ |-C|\ [**c**\|\ **d**\|\ **g**\|\ **p**] ]
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
@@ -24,7 +24,7 @@ Synopsis
 [ |-L|\ [*cut*] ]
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
-[ |-Q|\ *bmode*/*qmode* ]
+[ |-Q|\ *bmode*/*fmode*\ [**+d**] ]
 [ |-S|\ *scale* ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
@@ -78,10 +78,12 @@ Optional Arguments
 
 .. _-C:
 
-**-C**
-    Select shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
+**-C**\ [**c**\|\ **d**\|\ **g**\|\ **p**]
+    Select seamount shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
     and **p** (parabolic) shape [Default is Gaussian].  All but the disc can furthermore
-    be truncated via a flattening parameter *f* set by **-F**.
+    be truncated via a flattening parameter *f* set by **-F**.  If **-C** is not given any
+    argument then we will read the shape code from the last input column.  If **-C** is not given
+    at all then we default to Gaussian shapes [**g**].
 
 .. figure:: /_images/GMT_seamount_types.*
    :width: 500 px
@@ -149,18 +151,30 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *bmode*/*qmode*
+**-Q**\ *bmode*/*fmode*\ [**+d**]
     Only to be used in conjunction with **-T**.  Append two different modes settings:
     The *bmode* determines how we construct the surface.  Specify **c** for cumulative
     volume through time [Default], or **i** for incremental volume added for each time slice.
-    The *qmode* determines the volume flux curve.  Give **g** for a Gaussian volume flux history [Default]
-    or **l** for a linear volume flux history between the start and stop times of each feature.
+    The *fmode* determines the volume flux curve we use.  Give **c** for a constant volume flux or
+    **g** for a Gaussian volume flux [Default] between the start and stop times of each feature. These fluxes
+    integrate to a linear or error-function volume fraction over time, respectively, as shown below.
+    By default we compute the exact cumulative and incremental values for the seamounts specified.  Append
+    **+d** to instead approximate each incremental layer by a disc of constant thickness.
+
+.. figure:: /_images/GMT_seamount_cum_inc.*
+   :width: 500 px
+   :align: center
+
+   Use *bmode* in **-Q** to choose between cumulative output (**c**; actual topography as function
+   of time [left]) or incremental output (**i**; the difference in actual topography over five
+   time-steps [right]).  Here we used **-Cg** for a Gaussian model with no flattening and a linear volume flux.
 
 .. figure:: /_images/GMT_seamount_flux.*
    :width: 500 px
    :align: center
 
-   Use *qmode* in **-Q** to choose between a linear (**l**) or Gaussian (**g**) cumulative volume flux model.
+   Use *fmode* in **-Q** to choose between a constant (**c**; dashed line) or Gaussian (**g**; heavy line)
+   volume flux model.
 
 .. _-S:
 
@@ -215,7 +229,7 @@ Examples
 --------
 
 To compute the incremental loads from two elliptical, truncated Gaussian seamounts being constructed
-from 3 Ma to 2 Ma and 2.8 M to 1.9 Ma using a linear volumetric production rate,
+from 3 Ma to 2 Ma and 2.8 M to 1.9 Ma using a constant volumetric production rate,
 and output an incremental grid every 0.1 Myr from 3 Ma to 1.9 Ma, we can try:
 
 ::
@@ -225,7 +239,9 @@ and output an incremental grid every 0.1 Myr from 3 Ma to 1.9 Ma, we can try:
     0	0	-20	120	60	5000	3.0M	2M
     50	80	-40	110	50	4000	2.8M	21.9M
     EOF
-    gmt grdseamount -Rk-1024/1022/-1122/924 -I2000 -Gsmt_%3.1f_%s.nc t.txt -T3M/1.9M/0.1M -Qi/l -Dk -E -F0.2 -Cg -Ml.lis
+    gmt grdseamount -Rk-1024/1022/-1122/924 -I2000 -Gsmt_%3.1f_%s.nc t.txt -T3M/1.9M/0.1M -Qi/c -Dk -E -F0.2 -Cg -Ml.lis
+
+The file l.lis will contain records with numerical time, gridfile, and unit time.
 
 See Also
 --------
