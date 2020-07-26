@@ -499,12 +499,12 @@ GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAM
 EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	int error, scol, srow, scol_0, srow_0;
 
-	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0, rmode;
+	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0, rmode, inc_mode;
 	unsigned int max_d_col, d_row, *d_col = NULL, t, t_use, build_mode, t0_col = 0, t1_col = 0;
 
 	uint64_t n_expected_fields, n_smts = 0, tbl, seg, rec, ij;
 
-	bool map = false, periodic = false, replicate, first, empty, exact, exact_increments;
+	bool map = false, periodic = false, replicate, first, empty, exact, exact_increments, cone_increments;
 
 	char unit, code, unit_name[8], file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
@@ -572,7 +572,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	shape_func[SHAPE_GAUS] = grdseamount_gaussian_area_volume_height;
 	phi_solver[SHAPE_GAUS] = grdseamount_gauss_solver;
 
-	build_mode = Ctrl->C.mode;
+	build_mode = inc_mode = Ctrl->C.mode;
+	cone_increments = (Ctrl->T.active && Ctrl->Q.disc);
+	if (cone_increments) inc_mode = SHAPE_DISC;
 
 	map = gmt_M_is_geographic (GMT, GMT_IN);
 	if (map) {	/* Geographic data */
@@ -599,7 +601,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	V_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	h_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	h = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
-	if (build_mode == SHAPE_GAUS)
+	if (inc_mode == SHAPE_GAUS)
 		noise = g_noise;		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
 
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
@@ -754,6 +756,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								API->error = GMT_RUNTIME_ERROR;
 								goto wrap_up;
 						}
+						if (!cone_increments) inc_mode = build_mode;
 					}
 
 					/* Ok, we are inside the region - process data */
@@ -788,7 +791,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							phi_curr = phi_solver[build_mode] (in, f, v_curr, Ctrl->E.active);
 							phi_prev = phi_solver[build_mode] (in, f, v_prev, Ctrl->E.active);
 							h0 = (Ctrl->E.active) ? in[5] : in[3];
-							switch (Ctrl->C.mode) {	/* Given the phi values, evaluate the corresponding heights */
+							switch (build_mode) {	/* Given the phi values, evaluate the corresponding heights */
 								case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
 								case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
 								case SHAPE_GAUS:  h_curr = h0 * exp (4.5 * (f*f - phi_curr * phi_curr)); h_prev = h0 * exp (4.5 * (f*f - phi_prev * phi_prev)); break;
@@ -852,17 +855,17 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						r_km = r_in * Ctrl->S.value;	/* Scaled up by user scale */
 						r = r_km;			/* Copy of r_km */
 						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
-						f = (build_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
+						f = (inc_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
 						amplitude = scale * in[3];		/* Seamount max height from base */
 						if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[4];	/* Flattening given by input file */
 					}
-					switch (build_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
+					switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
 						case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
 						case SHAPE_DISC:  h_scale = 1.0; break;
 						case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->F.value * Ctrl->F.value); break;
 						case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
 					}
-					if (build_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
+					if (inc_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
 					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
@@ -899,26 +902,26 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								/* this_r is now r^2 in the 0 to -4.5 range expected for the Gaussian case */
 								rr = sqrt (-this_r/4.5);	/* Convert this r^2 to a normalized radius 0-1 inside cone */
 								if (Ctrl->A.active && rr > 1.0) continue;	/* Beyond the seamount base so nothing to do for a mask */
-								if (build_mode == SHAPE_CONE) {	/* Elliptical cone case */
+								if (inc_mode == SHAPE_CONE) {	/* Elliptical cone case */
 									if (rr < 1.0)	/* Since in minor direction rr may exceed 1 and be outside the ellipse */
 										add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
 									else
 										add = 0.0;
 								}
-								else if (build_mode == SHAPE_DISC)	/* Elliptical disc/plateau case */
+								else if (inc_mode == SHAPE_DISC)	/* Elliptical disc/plateau case */
 									add = (rr <= 1.0) ? 1.0 : 0.0;
-								else if (build_mode == SHAPE_PARA)	/* Elliptical parabolic case */
+								else if (inc_mode == SHAPE_PARA)	/* Elliptical parabolic case */
 									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
 								else	/* Elliptical Gaussian case */
 									add = (rr < Ctrl->F.value) ? 1.0 : exp (this_r) * h_scale - noise;
 							}
 							else {	/* Circular features are simpler */
 								rr = this_r / r_km;	/* Now in 0-1 range */
-								if (build_mode == SHAPE_CONE)	/* Circular cone case */
+								if (inc_mode == SHAPE_CONE)	/* Circular cone case */
 									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
-								else if (build_mode == SHAPE_DISC)	/* Circular disc/plateau case */
+								else if (inc_mode == SHAPE_DISC)	/* Circular disc/plateau case */
 									add = (rr <= 1.0) ? 1.0 : 0.0;
-								else if (build_mode == SHAPE_PARA)	/* Circular parabolic case */
+								else if (inc_mode == SHAPE_PARA)	/* Circular parabolic case */
 									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
 								else	/* Circular Gaussian case */
 									add = (rr < Ctrl->F.value) ? 1.0 : exp (f * this_r * this_r) * h_scale - noise;
