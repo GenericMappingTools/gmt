@@ -419,6 +419,12 @@ GMT_LOCAL double grdseamount_cone_solver (double in[], double f, double v, bool 
 	return (phi);
 }
 
+GMT_LOCAL double grdseamount_disc_solver (double in[], double f, double v, bool elliptical) {
+	/* Return effective phi given volume fraction fro a disc is trivial */
+	gmt_M_unused (in), gmt_M_unused (f), gmt_M_unused (elliptical);
+	return (v);
+}
+
 GMT_LOCAL double grdseamount_para_solver (double in[], double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
@@ -455,7 +461,7 @@ GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAM
 	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], m[GMT_LEN16], s_unit;
 	gmt_M_unused (GMT);
 
-	/* There are two scenarious uner which there is trailing text (and text is not NULL):
+	/* There are two scenarios under which there is trailing text (and text is not NULL):
 	 * 1. User gave times with units, e.g., 50M or 10k, so there are two words with time info
 	 * 2. User gave -C so the model code g,c,p,d is the last input word. */
 
@@ -560,13 +566,13 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	shape_func[SHAPE_CONE] = grdseamount_cone_area_volume_height;
 	phi_solver[SHAPE_CONE] = grdseamount_cone_solver;
 	shape_func[SHAPE_DISC] = grdseamount_disc_area_volume_height;
-	phi_solver[SHAPE_DISC] = NULL;
+	phi_solver[SHAPE_DISC] = grdseamount_disc_solver;
 	shape_func[SHAPE_PARA] = grdseamount_para_area_volume_height;
 	phi_solver[SHAPE_PARA] = grdseamount_para_solver;
 	shape_func[SHAPE_GAUS] = grdseamount_gaussian_area_volume_height;
 	phi_solver[SHAPE_GAUS] = grdseamount_gauss_solver;
 
-	build_mode = (Ctrl->T.active && Ctrl->Q.disc) ? SHAPE_DISC : Ctrl->C.mode;	/* For incremental building with +d we use disc increments regardless of shape */
+	build_mode = Ctrl->C.mode;
 
 	map = gmt_M_is_geographic (GMT, GMT_IN);
 	if (map) {	/* Geographic data */
