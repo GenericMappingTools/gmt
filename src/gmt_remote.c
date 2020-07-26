@@ -437,7 +437,20 @@ GMT_LOCAL int gmtremote_find_and_give_data_attribution (struct GMTAPI_CTRL *API,
 	return (match);
 }
 
-GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit) {
+GMT_LOCAL char *gmtremote_lockfile (struct GMTAPI_CTRL *API, char *file) {
+	/* Create a dummy file in temp with extension .download and use as a lock file */
+	char *c = strrchr (file, '/');
+	char Lfile[PATH_MAX] = {""};
+	if (c)	/* Found the last slash, skip it */
+		c++;
+	else	/* No path, just point to file */
+		c = file;
+	if (c[0] == '@') c++;	/* Skip any leading @ sign */
+	sprintf (Lfile, "%s/%s.download", API->tmp_dir, c);
+	return (strdup (Lfile));
+}
+
+GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, size_t limit) {
 	/* Get the remote file's size and if too large we refuse to download */
 	CURL *curl = NULL;
 	CURLcode res;
@@ -489,9 +502,19 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char* URL, si
 GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index) {
 	int curl_err = 0;
 	long time_spent;
+	char *Lfile = NULL;
+	FILE *fp = NULL;
 	CURL *Curl = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
+	struct GMTAPI_CTRL *API = GMT->parent;
 	time_t begin, end;
+
+	Lfile = gmtremote_lockfile (API, file);
+	if ((fp = fopen (Lfile, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", Lfile);
+		return 1;
+	}
+	gmtlib_file_lock (GMT, fileno(fp));	/* Attempt exclusive lock */
 
 	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", url);
@@ -557,6 +580,10 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
+	gmtlib_file_unlock (GMT, fileno(fp));
+	gmt_remove_file (GMT, Lfile);
+	gmt_M_str_free (Lfile);
+
 	gmtremote_turn_off_ctrl_C_check ();
 	return 0;
 }
@@ -1059,7 +1086,7 @@ int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *localfile, bool be_fussy) {
 	int curl_err, error;
 	size_t fsize;
-	char Lfile[PATH_MAX] = {""};
+	char *Lfile = NULL;
 	CURL *Curl = NULL;
 	FILE *fp = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
@@ -1082,7 +1109,7 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 
 	/* Here we will try to download a file */
 
-	sprintf (Lfile, "%s/%s.download", API->tmp_dir, name);
+	Lfile = gmtremote_lockfile (API, (char *)name);
 	if ((fp = fopen (Lfile, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", Lfile);
 		return 1;
@@ -1142,10 +1169,12 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
-	gmtremote_turn_off_ctrl_C_check ();
 
 	gmtlib_file_unlock (GMT, fileno(fp));
 	gmt_remove_file (GMT, Lfile);
+	gmt_M_str_free (Lfile);
+
+	gmtremote_turn_off_ctrl_C_check ();
 
 	error = gmtremote_convert_jp2_to_nc (API, localfile);
 
