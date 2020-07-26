@@ -81,9 +81,9 @@ Optional Arguments
 **-C**\ [**c**\|\ **d**\|\ **g**\|\ **p**]
     Select seamount shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
     and **p** (parabolic) shape [Default is Gaussian].  All but the disc can furthermore
-    be truncated via a flattening parameter *f* set by **-F**.  If **-C** is given no
-    argument then we will read the code from the last input column.  If **-C** is not given
-    at all then we default to Gaussian shapes [g].
+    be truncated via a flattening parameter *f* set by **-F**.  If **-C** is not given any
+    argument then we will read the shape code from the last input column.  If **-C** is not given
+    at all then we default to Gaussian shapes [**g**].
 
 .. figure:: /_images/GMT_seamount_types.*
    :width: 500 px
