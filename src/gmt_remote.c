@@ -1059,7 +1059,9 @@ int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *localfile, bool be_fussy) {
 	int curl_err, error;
 	size_t fsize;
+	char Lfile[PATH_MAX] = {""};
 	CURL *Curl = NULL;
+	FILE *fp = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -1079,6 +1081,13 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	}
 
 	/* Here we will try to download a file */
+
+	sprintf (Lfile, "%s/%s.download", API->tmp_dir, name);
+	if ((fp = fopen (Lfile, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", Lfile);
+		return 1;
+	}
+	gmtlib_file_lock (GMT, fileno(fp));	/* Attempt exclusive lock */
 
   	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to initiate curl\n");
@@ -1134,6 +1143,9 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
 	gmtremote_turn_off_ctrl_C_check ();
+
+	gmtlib_file_unlock (GMT, fileno(fp));
+	gmt_remove_file (GMT, Lfile);
 
 	error = gmtremote_convert_jp2_to_nc (API, localfile);
 
