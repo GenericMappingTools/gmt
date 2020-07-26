@@ -197,12 +197,16 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get first record */
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_ERROR, "Read error first record in file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Deleting %s so it can get regenerated - please try again\n", file);
+		gmt_remove_file (GMT, file);
 		return NULL;
 	}
 	*n = atoi (line);		/* Number of non-commented records to follow */
 	if (*n <= 0 || *n > GMT_BIG_CHUNK) {	/* Probably not a good value */
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_ERROR, "Bad record counter in file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Deleting %s so it can get regenerated - please try again\n", file);
+		gmt_remove_file (GMT, file);
 		return NULL;
 	}
 	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get second record */
