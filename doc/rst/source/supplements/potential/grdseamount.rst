@@ -119,7 +119,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [*flattening*]
-    Seamounts are to be truncated to guyots.  Append *flattening* from 0 (no flattening to 1 (no feature!), otherwise we expect
+    Seamounts are to be truncated to guyots.  Append *flattening* from 0 (no flattening) to 1 (no feature!), otherwise we expect
     to find it in last input column [no truncation].  Ignored if used with **-Cd**.
 
 .. _-G:
