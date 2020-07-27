@@ -13655,11 +13655,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if (options) {
 	  for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		  if (remote_first && gmtinit_might_be_remotefile (opt->arg)) {
+		  if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+		  if (remote_first) {
 			  gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
 			  remote_first = false;
 		  }
-		  if (opt->arg[0] != '@') continue;	/* No remote file argument given */
 		  gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 		}
 	}
