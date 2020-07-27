@@ -89,7 +89,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. |Add_intable| unicode:: 0x20 .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 .. _-D:
@@ -219,4 +219,3 @@ References
 ----------
 
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
-
