@@ -1255,6 +1255,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	if (Ctrl->L.active) {	/* Draw triangular mesh */
 
+		PSL_command (GMT->PSL, "V\n");
 		gmt_setpen (GMT, &Ctrl->L.pen);
 
 		for (k = i = 0; i < np; i++) {	/* For all triangles */
@@ -1265,6 +1266,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 
 			PSL_plotline (PSL, xx, yy, 3, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 		}
+		PSL_command (GMT->PSL, "U\n");
 	}
 
 	/* Get PSCONTOUR structs */
