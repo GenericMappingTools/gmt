@@ -247,7 +247,7 @@ FORMAT Parameters
         - **+D**: Output longitude in the range [0,360]
         - **-D**: Output longitude in the range [-360,0]
         - **ddd**: Fixed format integer degrees
-        - **:**: delimiter used
+        - **:**: Delimiter used
         - **mm**: Fixed format integer arc minutes
         - **ss**: Fixed format integer arc seconds
         - **.xxx**: Floating fraction of previous integer field, fixed width.
@@ -319,6 +319,11 @@ GMT Miscellaneous Parameters
         Upper limit on the size of remote file to download [unlimited].  Give
         the maximum file size in bytes, or append k, m, or g for kilo-, mega-,
         or giga-bytes.
+
+    **GMT_DATA_UPDATE_INTERVAL**
+        Specifies how often we update the local catalog of data available on
+        the remote server and pruning expired data sets [1d].  Allowable time
+        units are **d** (days), **w** (week), **o** (month, here 30 days).
 
     **GMT_EXPORT_TYPE**
         This setting is only used by external interfaces and controls the

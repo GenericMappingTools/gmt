@@ -30,7 +30,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdcontour"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make contour map using a grid"
-#define THIS_MODULE_KEYS	"<G{,AD)=t,CC(,DDD,>X},G?(=1@<G{,AD)=t,CC(,DD),G?(=1"
+#define THIS_MODULE_KEYS	"<G{,AD)=t,CC(,DDD,NC(,>X},G?(=1@<G{,AD)=t,CC(,DD),NC(,G?(=1"
 #define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "-BJKOPRUVXYbdfhlptxy" GMT_OPT("EMmc")
 
@@ -374,7 +374,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				c = NULL;
 				if (opt->arg[0] != '+') c = strchr (opt->arg, '+');	/* Find start of modifiers */
 				if (c) c[0] = '\0';	/* Chop off modifiers since parsed by gmt_contlabel_specs */
-				if (opt->arg[0] == 'n' || opt->arg[0] == '-')	/* -A- is deprecated */
+				if (opt->arg[0] == 'n' && opt->arg[1] == '\0')	/* -An turns off all labels */
 					Ctrl->A.mode = 1;	/* Turn off all labels */
 				else if (opt->arg[0] == '+' && (isdigit(opt->arg[1]) || strchr ("-+.", opt->arg[1]))) {
 					Ctrl->A.single_cont = atof (&opt->arg[1]);
@@ -384,6 +384,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 					gmt_M_str_free (Ctrl->A.file);
 					Ctrl->A.file = strdup (opt->arg);
 				}
+				else if (opt->arg[0] == '-' && opt->arg[1] == '\0')	/* -A- is deprecated */
+					Ctrl->A.mode = 1;	/* Turn off all labels */
 				else {
 					Ctrl->A.interval = atof (opt->arg);
 					Ctrl->contour.annot = true;
@@ -1030,9 +1032,9 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* If -N[<cpt>] is given then we split the call into a grdview + grdcontour sequence.
 	 	 * We DO NOT parse any options here or initialize GMT, and just bail after running the two modules */
 
-		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""}, *ptr = NULL;
+		char cmd0[GMT_LEN512] = {""}, cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""}, *ptr = NULL;
 		struct GMT_OPTION *opt = NULL;
-		bool got_cpt = (optN->arg[0]), is_continuous, got_C_cpt = false;
+		bool got_cpt = (optN->arg[0]), is_continuous, got_C_cpt = false, oneliner = false;
 		size_t L;
 
 		/* Make sure we don't pass options not compatible with -N */
@@ -1095,7 +1097,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 						bailout (GMT_PARSE_ERROR);
 					}
 					strcat (cmd1, string);	break;
-				case 'O': case 'P':	/* This would only apply to the first grdcontour call */
+				case 'O': /* This would only apply to the first grdcontour call */
 					strcat (cmd1, string);	break;
 				case 'N':	/* Just skip since it is what got us in here */
 					break;
@@ -1108,7 +1110,24 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 					sprintf (string, " -%c%c%s", opt->option, opt->option, opt->arg);	/* Must explicitly append */
 					strcat (cmd2, string);
 					break;
-
+				case 'b':
+				case 'e':
+				case 'j':
+				case 'p':
+				case 'P':
+					if (strcmp (opt->arg, "df") == 0 || strcmp (opt->arg, "ng") == 0 || strcmp (opt->arg, "pm") == 0 || strcmp (opt->arg, "s") == 0 ||
+						strcmp (opt->arg, "gp") == 0 || strcmp (opt->arg, "peg") == 0 || strcmp (opt->arg, "if") == 0 || strcmp (opt->arg, "iff") == 0 ||
+						strcmp (opt->arg, "mp") == 0 || strcmp (opt->arg, "ps") == 0) {
+						sprintf (cmd0, "%s %c%s", opt->next->arg, opt->option, opt->arg);
+						oneliner = true;
+						opt = opt->next;	/* Skip the file name */
+					}
+					else if (opt->option == 'P')
+						strcat (cmd1, string);
+					else {
+						strcat (cmd1, string);	strcat (cmd2, string);
+					}
+					break;
 				default:	/* These arguments go into both commands (may be -p -n etc) */
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;
@@ -1134,9 +1153,15 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			bailout (GMT_PARSE_ERROR);
 		}
 
+		if (oneliner) {
+			if ((API->error = GMT_Call_Module (API, "begin", GMT_MODULE_CMD, cmd0))) {
+				GMT_Report (API, GMT_MSG_ERROR, "The call to begin failed\n");
+				bailout (API->error);
+			}
+		}
 		/* Required options for grdview to fill the grid */
 		strcat (cmd1, " -Qs");
-		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd1, " -K");	/* If classic mode then we need to say we will append more PostScript later */
+		if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !oneliner) strcat (cmd1, " -K");	/* If classic mode then we need to say we will append more PostScript later */
 		if (!got_C_cpt) {	/* Must pass -N<cpt> via -C to grdview since no -C was given */
 			strcat (cmd1, " -C");
 			strcat (cmd1, optN->arg);
@@ -1147,11 +1172,18 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			bailout (API->error);
 		}
 		/* Required options for grdcontour */
-		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd2, " -O");	/* If classic mode then we need to say we this is an overlay */
+		if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !oneliner) strcat (cmd2, " -O");	/* If classic mode then we need to say we this is an overlay */
 		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdcontour %s\n", cmd2);
 		if ((API->error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd2))) {
 			GMT_Report (API, GMT_MSG_ERROR, "The call to grdcontour failed\n");
 			bailout (API->error);
+		}
+		if (oneliner) {
+			sprintf (cmd0, "show");
+			if ((API->error = GMT_Call_Module (API, "end", GMT_MODULE_CMD, cmd0))) {
+				GMT_Report (API, GMT_MSG_ERROR, "The call to end failed\n");
+				bailout (API->error);
+			}
 		}
 		bailout (GMT_NOERROR);	/* And we made it to the end, so get out of here */
 	}

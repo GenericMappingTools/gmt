@@ -811,6 +811,12 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	if ((opt = GMT_Find_Option (API, 'V', head)))	/* Remove -V here so that we can run gmt plot -? -Vd and still get modern mode usage plus debug info */
 		GMT_Delete_Option (API, opt, &head);
 
+	if (!strcmp (module, "grdcontour") && GMT_Find_Option (API, 'N', head)) {	/* Special case of two module calls cannot be oneliner here */
+		if (GMT_Destroy_Options (API, &head))	/* Done with these here */
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
+		return;
+	}
+
 	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, module);
 
 	if (API->GMT->current.setting.use_modern_name) {	/* Make some checks needed to handle synopsis and usage messages in classic vs modern mode */
@@ -3829,6 +3835,21 @@ GMT_LOCAL void gmtapi_increment_d (struct GMT_DATASET *D_obj, uint64_t n_rows, u
 	D_obj->n_tables++;	/* Since we just read one table */
 }
 
+GMT_LOCAL void gmtapi_switch_cols (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned int direction) {
+	uint64_t tbl, seg;
+	struct GMT_DATASEGMENT *S = NULL;
+
+	/* Implements the effect of -: when we are not writing to file */
+
+	if (D->n_columns < 2 || !GMT->current.setting.io_lonlat_toggle[direction]) return;	/* Nothing to do */
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+			S = D->table[tbl]->segment[seg];
+			gmt_M_doublep_swap (S->data[GMT_X], S->data[GMT_Y]);
+		}
+	}
+}
+
 /*! . */
 GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
 	/* Does the actual work of loading in the entire virtual data set (possibly via many sources)
@@ -3839,7 +3860,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
 	unsigned int geometry = GMT_IS_PLP, n_used = 0, method, smode, type = GMT_READ_DATA;
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
-	bool via = false, got_data = false;
+	bool via = false, got_data = false, check_col_switch = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
 	uint64_t row, seg, col, ij, n_records = 0, n_columns = 0, col_pos, n_use;
 	p_func_uint64_t GMT_2D_to_index = NULL;
@@ -3952,6 +3973,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_DUPLICATE GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table from GMT_DATASET memory location\n");
+				check_col_switch = true;
 				D_obj = gmt_duplicate_dataset (GMT, Din_obj, GMT_ALLOC_NORMAL, NULL);
 				break;
 
@@ -3964,6 +3986,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table from GMT_DATASET memory location\n");
 				if ((D_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				check_col_switch = true;
 				DH = gmt_get_DD_hidden (D_obj);
 				break;
 
@@ -4143,7 +4166,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				DH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 				D_obj->geometry = S_obj->geometry;	/* Since provided when registered */
 				S_obj->family = GMT_IS_VECTOR;	/* Done with the via business now */
-				update = via = true;
+				update = via = check_col_switch = true;
 				break;
 
 			default:	/* Barking up the wrong tree here... */
@@ -4193,6 +4216,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	}
 	D_obj->geometry = geometry;		/* Since gmtlib_read_table may have changed it */
 	D_obj->type = type;			/* Since gmtlib_read_table may have changed it */
+	if (check_col_switch) gmtapi_switch_cols (GMT, D_obj, GMT_IN);	/* Deals with -:, if it was selected */
 	gmt_set_dataset_minmax (GMT, D_obj);	/* Set the min/max values for the entire dataset */
 	if (!via) API->object[this_item]->resource = D_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 	return (D_obj);
@@ -4248,6 +4272,18 @@ GMT_LOCAL int gmtapi_destroy_data_ptr (struct GMTAPI_CTRL *API, enum GMT_enum_fa
 	return (GMT_NOERROR);	/* Null pointer */
 }
 
+void gmtapi_flip_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, unsigned int direction) {
+	enum GMT_enum_type etmp;
+	union GMT_UNIVECTOR utmp;
+
+	/* Implements the effect of -: on output via vectors */
+
+	if (V->n_columns < 2 || !GMT->current.setting.io_lonlat_toggle[direction]) return;	/* Nothing to do */
+	/* Flip first two vector pointers */
+	etmp = V->type[GMT_X];	V->type[GMT_X] = V->type[GMT_Y];	V->type[GMT_Y] = etmp;
+	utmp = V->data[GMT_X];	V->data[GMT_X] = V->data[GMT_Y];	V->data[GMT_Y] = utmp;
+}
+
 /*! . */
 GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_DATASET *D_obj) {
  	/* Does the actual work of writing out the specified data set to a single destination.
@@ -4256,8 +4292,8 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 	 */
 	int item, error, default_method;
 	unsigned int method, hdr;
-	uint64_t tbl, col, row_out, row, seg, ij, n_columns, n_rows;
-	bool save, diff_types = false;
+	uint64_t tbl, col, kol, row_out, row, seg, ij, n_columns, n_rows;
+	bool save, diff_types = false, toggle;
 	double value;
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -4296,7 +4332,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 	gmt_set_dataset_minmax (GMT, D_obj);	/* Update all counters and min/max arrays */
 	if (API->GMT->common.o.end || GMT->common.o.text)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
 		gmtlib_reparse_o_option (GMT, (GMT->common.o.text) ? 0 : D_obj->n_columns);
-
+	toggle = (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && D_obj->n_columns >= 2);
 	GMT->current.io.data_record_number_in_tbl[GMT_OUT] = GMT->current.io.data_record_number_in_seg[GMT_OUT] = 0;
 	DH = gmt_get_DD_hidden (D_obj);
 	DH->io_mode = mode;	/* Handles if tables or segments should be written to separate files, according to mode */
@@ -4318,6 +4354,8 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qo is not implemented for GMT_IS_DUPLICATE GMT_IS_DATASET external memory objects\n");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table to GMT_DATASET memory location\n");
 			D_copy = gmt_duplicate_dataset (GMT, D_obj, GMT_ALLOC_NORMAL, NULL);
+			gmtlib_change_dataset (GMT, D_copy);	/* Deal with any -o settings */
+			gmtapi_switch_cols (GMT, D_copy, GMT_OUT);	/* Deals with -:, if it was selected */
 			S_obj->resource = D_copy;	/* Set resource pointer from object to this dataset */
 			break;
 
@@ -4327,6 +4365,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qo is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table to GMT_DATASET memory location\n");
 			gmtlib_change_dataset (GMT, D_obj);	/* Deal with any -o settings */
+			gmtapi_switch_cols (GMT, D_obj, GMT_OUT);	/* Deals with -:, if it was selected */
 			S_obj->resource = D_obj;		/* Set resource pointer from object to this dataset */
 			DH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
@@ -4385,7 +4424,11 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 					}
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Write this segment's data records to the matrix */
 						for (col = 0; col < M_obj->n_columns; col++) {
-							ij = GMT_2D_to_index (row_out, col, M_obj->dim);
+							if (col < 2 && toggle)	/* Deal with -: since we are writing to matrix memory and not file */
+								kol = 1 - col;
+							else
+								kol = col;
+							ij = GMT_2D_to_index (row_out, kol, M_obj->dim);
 							value = gmtapi_select_dataset_value (GMT, S, (unsigned int)row, (unsigned int)col);
 							api_put_val (&(M_obj->data), ij, value);
 						}
@@ -4454,6 +4497,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				}
 			}
 			assert (V_obj->n_rows == row_out);	/* Sanity check */
+			if (toggle) gmtapi_flip_vectors (GMT, V_obj, GMT_OUT);
 			VH = gmt_get_V_hidden (V_obj);
 			VH->alloc_level = S_obj->alloc_level;
 			S_obj->resource = V_obj;
@@ -4503,6 +4547,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				for (hdr = V_obj->n_headers = 0; hdr < D_obj->table[0]->n_headers; hdr++)
 					V_obj->header[V_obj->n_headers++] = D_obj->table[0]->header[hdr];
 			}
+			if (toggle) gmtapi_flip_vectors (GMT, V_obj, GMT_OUT);
 			S_obj->resource = V_obj;
 			break;
 
@@ -6552,7 +6597,7 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	 *   bit 1 (GMT_SESSION_NOEXIT)   means call return and not exit when returning from an error.
 	 *   bit 2 (GMT_SESSION_EXTERNAL) means we are called by an external API (e.g., MATLAB, Python).
 	 *   bit 3 (GMT_SESSION_COLMAJOR) means the external API uses column-major format (e.g., MATLAB, Fortran) [Default is row-major, i.e., C/C++, Python]
-	 *   bit 4 (GMT_SESSION_LOGERRORS) means we redirect stderr to a log file whose hame is the session string + log.
+	 *   bit 4 (GMT_SESSION_LOGERRORS) means we redirect stderr to a log file whose name is the session string + log.
 	 *   We reserve the right to add future flags.
 	 * We return the pointer to the allocated API structure.
 	 * If any error occurs we report the error, set the error code via API->error, and return NULL.
@@ -6572,6 +6617,7 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	API->external = mode & GMT_SESSION_EXTERNAL;	/* if false|0 then we don't list read and write as modules */
 	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
 	API->runmode = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
+	API->no_history = mode & GMT_SESSION_NOHISTORY;		/* If nonzero we disable the gmt.history mechanism (shorthands) entirely */
 	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we save some CPU */
 	if (session) {	/* Pick up a tag for this session */
 		char *tmptag = strdup (session);
@@ -8288,6 +8334,9 @@ GMT_LOCAL struct GMT_RECORD * gmtapi_get_record_dataset (struct GMTAPI_CTRL *API
 			}
 			if (D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text && D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]])
 				strncpy (GMT->current.io.curr_trailing_text, D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]], GMT_BUFSIZ-1);
+			if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && API->current_get_n_columns >= 2) {
+				gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+			}
 			record = &GMT->current.io.record;
 			GMT->common.b.ncol[GMT_IN] = API->current_get_n_columns;
 			*n_fields = (int)API->current_get_n_columns;
@@ -8515,6 +8564,10 @@ GMT_LOCAL int gmtapi_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int m
 				if (GMT->current.io.col_type[GMT_OUT][col] & GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &value);
 				GMT->hidden.mem_coord[col][count[GMT_ROW]] = value;
 			}
+			if (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && T->n_columns >= 2) {
+				gmt_M_double_swap (GMT->hidden.mem_coord[GMT_X][count[GMT_ROW]], GMT->hidden.mem_coord[GMT_Y][count[GMT_ROW]]);	/* Got lat/lon instead of lon/lat */
+			}
+
 			if (record->text && record->text[0])	/* Also write trailing text */
 				GMT->hidden.mem_txt[count[GMT_ROW]] = strdup (record->text);
 			count[GMT_ROW]++;	/* Increment rows in this segment */
@@ -8534,7 +8587,7 @@ GMT_LOCAL int gmtapi_put_record_matrix (struct GMTAPI_CTRL *API, unsigned int mo
 	int error = GMT_NOERROR;
 	struct GMT_MATRIX *M = API->current_put_M;
 	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
-	uint64_t col, ij;
+	uint64_t col, kol, ij;
 	char *s = NULL;
 
 	switch (mode) {
@@ -8565,8 +8618,14 @@ GMT_LOCAL int gmtapi_put_record_matrix (struct GMTAPI_CTRL *API, unsigned int mo
 					error = GMT_NOTSET;
 				else {
 					double value;
+					bool toggle = (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && M->n_columns >= 2);
+
 					for (col = 0; col < M->n_columns; col++) {	/* Place the output items */
-						ij = API->current_put_M_index (API->current_put_obj->rec, col, M->dim);
+						if (col < 2 && toggle)	/* Deal with -: since we are writing to matrix memory and not file */
+							kol = 1 - col;
+						else
+							kol = col;
+						ij = API->current_put_M_index (API->current_put_obj->rec, kol, M->dim);
 						value = gmtapi_select_record_value (GMT, record->data, (unsigned int)col, (unsigned int)GMT->common.b.ncol[GMT_OUT]);
 						API->current_put_M_val (&(M->data), ij, value);
 					}
@@ -8602,7 +8661,7 @@ GMT_LOCAL int gmtapi_put_record_vector (struct GMTAPI_CTRL *API, unsigned int mo
 	int error = GMT_NOERROR;
 	struct GMT_VECTOR *V = API->current_put_V;
 	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
-	uint64_t col;
+	uint64_t col, kol;
 	char *s = NULL;
 
 	switch (mode) {
@@ -8631,9 +8690,14 @@ GMT_LOCAL int gmtapi_put_record_vector (struct GMTAPI_CTRL *API, unsigned int mo
 				if (gmt_skip_output (GMT, record->data, V->n_columns))	/* Record was skipped via -s[a|r] */
 					error = GMT_NOTSET;
 				else {
+					bool toggle = (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && V->n_columns >= 2);
 					for (col = 0; col < V->n_columns; col++) {	/* Place the output items */
+						if (col < 2 && toggle)	/* Deal with -: since we are writing to matrix memory and not file */
+							kol = 1 - col;
+						else
+							kol = col;
 						value = gmtapi_select_record_value (GMT, record->data, (unsigned int)col, (unsigned int)GMT->common.b.ncol[GMT_OUT]);
-						API->current_put_V_val[col] (&(V->data[col]), API->current_put_obj->rec, value);
+						API->current_put_V_val[kol] (&(V->data[kol]), API->current_put_obj->rec, value);
 					}
 					if (record->text)
 						V->text[API->current_put_obj->rec] = strdup (record->text);

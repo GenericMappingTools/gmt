@@ -1139,13 +1139,14 @@ GMT_LOCAL bool gmtsupport_is_penstyle (char *word) {
 
 /*! . */
 GMT_LOCAL void gmtsupport_free_range  (struct GMT_CTRL *GMT, struct GMT_LUT *S) {
-	gmt_M_free (GMT, S->label);
+	gmt_M_str_free (S->label);
 	gmt_M_free (GMT, S->fill);
 }
 
 /*! . */
 GMT_LOCAL void gmtsupport_copy_palette_hdrs (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct GMT_PALETTE *P_from) {
 	unsigned int hdr;
+	P_to->header = NULL;
 	if (P_from->n_headers == 0) return;	/* Nothing to do */
 	/* Must duplicate the header records */
 	P_to->n_headers = P_from->n_headers;
@@ -7293,7 +7294,7 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 
 /*! . */
 struct GMT_PALETTE * gmtlib_create_palette (struct GMT_CTRL *GMT, uint64_t n_colors) {
-	/* Makes an empty palette table */
+	/* Makes an empty palette table with a blank hidden struct */
 	struct GMT_PALETTE *P = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
 	struct GMT_PALETTE_HIDDEN *PH = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE_HIDDEN);
 	P->hidden = PH;
@@ -7328,23 +7329,45 @@ void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 /*! . */
 void gmtlib_copy_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct GMT_PALETTE *P_from) {
 	unsigned int i;
-	/* Makes the specified palette the current palette */
-	gmtlib_free_cpt_ptr (GMT, P_to);	/* Frees everything inside P_to */
-	gmt_M_memcpy (P_to, P_from, 1, struct GMT_PALETTE);
-	P_to->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE_HIDDEN);
+	/* Copies the information from P_from to P_to */
+	P_to->n_headers = P_from->n_headers;		/* Number of CPT header records (0 if no header) */
+	P_to->n_colors = P_from->n_colors;			/* Number of colors in CPT lookup table */
+	P_to->mode = P_from->mode;					/* Flags controlling use of BFN colors */
+	P_to->model = P_from->model;				/* RGB, HSV, CMYK */
+	P_to->is_wrapping = P_from->is_wrapping;	/* If 1 then we must wrap around to find color - can never be F or B */
+	P_to->is_gray = P_from->is_gray;			/* 1 if only grayshades are needed */
+	P_to->is_bw = P_from->is_bw;				/* 1 if only black and white are needed */
+	P_to->is_continuous = P_from->is_continuous;	/* 1 if continuous color tables have been given */
+	P_to->has_pattern = P_from->has_pattern;	/* 1 if CPT contains any patterns */
+	P_to->has_hinge = P_from->has_hinge;		/* 1 if CPT is hinged at hinge (below) */
+	P_to->has_range = P_from->has_range;		/* 1 if CPT has a natural range (minmax below) */
+	P_to->categorical = P_from->categorical;	/* 1 if CPT applies to categorical data */
+	P_to->hinge = P_from->hinge;				/* z-value for hinged CPTs */
+	P_to->wrap_length = P_from->wrap_length;	/* z-length of active CPT */
+	gmt_M_memcpy (P_to->minmax, P_from->minmax, 2, double);	/* Min/max z-value for a default range, if given */
+
 	gmt_M_memcpy (P_to->hidden, P_from->hidden, 1, struct GMT_PALETTE_HIDDEN);
-	P_to->data = gmt_M_memory (GMT, NULL, P_to->n_colors, struct GMT_LUT);
 	gmt_M_memcpy (P_to->data, P_from->data, P_to->n_colors, struct GMT_LUT);
-	for (i = 0; i < 3; i++) if (P_from->bfn[i].fill) {
-		P_to->bfn[i].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
-		gmt_M_memcpy (P_to->bfn[i].fill, P_from->bfn[i].fill, 1, struct GMT_FILL);
+	gmt_M_memcpy (P_to->bfn, P_from->bfn, 3, struct GMT_BFN);
+	for (i = 0; i < 3; i++) {
+		P_to->bfn[i].fill = NULL;	/* Reset junk pointer from the memcopy */
+		if (P_from->bfn[i].fill) {
+			P_to->bfn[i].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
+			gmt_M_memcpy (P_to->bfn[i].fill, P_from->bfn[i].fill, 1, struct GMT_FILL);
+		}
 	}
-	for (i = 0; i < P_from->n_colors; i++) if (P_from->data[i].fill) {
-		P_to->data[i].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
-		gmt_M_memcpy (P_to->data[i].fill, P_from->data[i].fill, 1, struct GMT_FILL);
+	for (i = 0; i < P_from->n_colors; i++) {
+		P_to->data[i].fill = NULL;	/* Reset junk pointer from the memcopy */
+		if (P_from->data[i].fill) {
+			P_to->data[i].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
+			gmt_M_memcpy (P_to->data[i].fill, P_from->data[i].fill, 1, struct GMT_FILL);
+		}
+		P_to->data[i].key = NULL;
+		P_to->data[i].label = NULL;
 		if (P_from->data[i].label) P_to->data[i].label = strdup (P_from->data[i].label);
+		if (P_from->data[i].key) P_to->data[i].key = strdup (P_from->data[i].key);
 	}
-	GMT->current.setting.color_model = P_to->model = P_from->model;
+	GMT->current.setting.color_model = P_to->model;
 	gmtsupport_copy_palette_hdrs (GMT, P_to, P_from);
 }
 
@@ -7658,11 +7681,14 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		/* First determine if a label is given */
 
 		if ((k = strcspn(line, ";")) && line[k] != '\0') {
+			char string[GMT_LEN64] = {""};
 			/* OK, find the label and chop it off */
-			X->data[n].label = gmt_M_memory (GMT, NULL, strlen (line) - k, char);
-			strcpy (X->data[n].label, &line[k+1]);
-			gmt_chop (X->data[n].label);	/* Strip off trailing return */
-			line[k] = '\0';				/* Chop label off from line */
+			strcpy (string, &line[k+1]);
+			gmt_chop (string);	/* Strip off trailing return */
+			X->data[n].label = strdup (string);
+			k--;	/* Position before ; */
+			while (k && (line[k] == '\t' || line[k] == ' ')) k--;
+			line[k+1] = '\0';	/* Chop label and trailing white space off from line */
 		}
 
 		/* Determine if psscale need to label these steps by looking for the optional L|U|B character at the end */
@@ -7888,7 +7914,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Must abort due to above errors in %s\n", cpt_file);
 		for (i = 0; i < X->n_colors; i++) {
 			gmt_M_free (GMT, X->data[i].fill);
-			gmt_M_free (GMT, X->data[i].label);
+			gmt_M_str_free (X->data[i].label);
 		}
 		gmtlib_free_palette (GMT, &X);
 		gmt_M_free (GMT, Z);
@@ -8567,6 +8593,10 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		gmt_M_rgb_copy (P->bfn[GMT_FGD].hsv, hsv_low);
 	}
 
+	/* Must set default annotation flags */
+	for (i = 0; i < P->n_colors; i++) P->data[i].annot = 1;
+	P->data[i-1].annot = 3;
+
 	gmtsupport_copy_palette_hdrs (GMT, P, Pin);
 	return (P);
 }
@@ -8584,7 +8614,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	bool close_file = false;
 	double cmyk[5], z_hinge;
 	char format[GMT_BUFSIZ] = {""}, cpt_file[PATH_MAX] = {""}, code[3] = {'B', 'F', 'N'};
-	char lo[GMT_LEN64] = {""}, hi[GMT_LEN64] = {""};
+	char lo[GMT_LEN64] = {""}, hi[GMT_LEN64] = {""}, kind[3] = {'L', 'U', 'B'};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
@@ -8680,34 +8710,37 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		if (P->categorical) {
 			if (P->categorical == 2) strncpy (lo, P->data[i].key, GMT_LEN64-1);
 			if (P->model & GMT_HSV)
-				fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\n');
+				fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
 			else if (P->model & GMT_CMYK) {
 				gmtsupport_rgb_to_cmyk (P->data[i].rgb_low, cmyk);
-				fprintf (fp, format, lo, gmtlib_putcmyk (GMT, cmyk), '\n');
+				fprintf (fp, format, lo, gmtlib_putcmyk (GMT, cmyk), '\t');
 			}
 			else if (P->model & GMT_NO_COLORNAMES)
-				fprintf (fp, format, lo, gmt_putrgb (GMT, P->data[i].rgb_low), '\n');
+				fprintf (fp, format, lo, gmt_putrgb (GMT, P->data[i].rgb_low), '\t');
 			else
-				fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\n');
+				fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
 		}
 		else if (P->model & GMT_HSV) {
 			fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
-			fprintf (fp, format, hi, gmtlib_puthsv (GMT, P->data[i].hsv_high), '\n');
+			fprintf (fp, format, hi, gmtlib_puthsv (GMT, P->data[i].hsv_high), '\t');
 		}
 		else if (P->model & GMT_CMYK) {
 			gmtsupport_rgb_to_cmyk (P->data[i].rgb_low, cmyk);
 			fprintf (fp, format, lo, gmtlib_putcmyk (GMT, cmyk), '\t');
 			gmtsupport_rgb_to_cmyk (P->data[i].rgb_high, cmyk);
-			fprintf (fp, format, hi, gmtlib_putcmyk (GMT, cmyk), '\n');
+			fprintf (fp, format, hi, gmtlib_putcmyk (GMT, cmyk), '\t');
 		}
 		else if (P->model & GMT_NO_COLORNAMES) {
 			fprintf (fp, format, lo, gmt_putrgb (GMT, P->data[i].rgb_low), '\t');
-			fprintf (fp, format, hi, gmt_putrgb (GMT, P->data[i].rgb_high), '\n');
+			fprintf (fp, format, hi, gmt_putrgb (GMT, P->data[i].rgb_high), '\t');
 		}
 		else {
 			fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
-			fprintf (fp, format, hi, gmt_putcolor (GMT, P->data[i].rgb_high), '\n');
+			fprintf (fp, format, hi, gmt_putcolor (GMT, P->data[i].rgb_high), '\t');
 		}
+		if (P->data[i].annot) fprintf (fp, "%c\t", kind[P->data[i].annot-1]);
+		if (P->data[i].label) fprintf (fp, ";%s", P->data[i].label);
+		fputc ('\n', fp);
 	}
 
 	/* Background, foreground, and nan colors */
@@ -8732,6 +8765,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 			fprintf (fp, "%c\t%s\n", code[i], gmt_putcolor (GMT, P->bfn[i].rgb));
 	}
 	if (close_file) fclose (fp);
+
 	return (GMT_NOERROR);
 }
 

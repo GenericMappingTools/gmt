@@ -258,7 +258,7 @@ GMT_LOCAL int grdfill_do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G
 		sprintf (method, "c");
 	sprintf (args, "%s -G%s -S%s -R%.16g/%.16g/%.16g/%.16g -I%.16g/%.16g -D%d", input, output, method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], mode);
 	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r");
-	strcat (args, " --GMT_HISTORY=false");
+	strcat (args, " --GMT_HISTORY=readonly");
    	/* Run the greenspline module */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling greenspline with args %s\n", args);
   	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) {

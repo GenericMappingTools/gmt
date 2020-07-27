@@ -156,54 +156,77 @@ GMT_LOCAL int gmtremote_parse_version (char *line) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *n) {
+GMT_LOCAL int gmtremote_remove_item (struct GMTAPI_CTRL *API, char *path, bool directory) {
+	int error = GMT_NOERROR;
+	if (directory) {	/* Delete populated directories via an operating system remove call */
+		char del_cmd[PATH_MAX] = {""};
+#ifdef _WIN32
+		char *t = gmt_strrep (path, "/", "\\");	/* DOS rmdir needs paths with back-slashes */
+		strcpy (del_cmd, "rmdir /s /q ");
+		strcat (del_cmd, t);
+		gmt_M_str_free (t);
+#else
+		sprintf (del_cmd, "rm -rf %s", path);
+#endif
+		if ((error = system (del_cmd))) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to remove %s [error = %d]\n", path, error);
+			error = GMT_RUNTIME_ERROR;
+		}
+	}
+	else	/* Just delete a single file  */
+		gmt_remove_file (API->GMT, path);
+	return error;
+}
+
+GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, int *n) {
 	/* Read contents of the info file into an array of structs */
 	int k = 0, nr;
 	FILE *fp = NULL;
 	struct GMT_DATA_INFO *I = NULL;
 	char unit, line[GMT_LEN512] = {""}, file[PATH_MAX] = {""}, *c = NULL;
+	struct GMT_CTRL *GMT = API->GMT;
 
 	snprintf (file, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, GMT_INFO_SERVER_FILE);
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Load contents from %s\n", file);
+	GMT_Report (API, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
 	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to open file %s\n", file);
 		return NULL;
 	}
 	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get first record */
 		fclose (fp);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error first record in file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Read error first record in file %s\n", file);
 		return NULL;
 	}
 	*n = atoi (line);		/* Number of non-commented records to follow */
 	if (*n <= 0 || *n > GMT_BIG_CHUNK) {	/* Probably not a good value */
 		fclose (fp);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad record counter in file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Bad record counter in file %s\n", file);
 		return NULL;
 	}
 	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get second record */
 		fclose (fp);
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error second record in file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Read error second record in file %s\n", file);
 		return NULL;
 	}
 	if ((k = gmtremote_parse_version (line))) {
 		fclose (fp);
 		if (k == 2)
-			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Your GMT version too old to use the remote data mechanism - please upgrade to %s or later\n", line);
+			GMT_Report (API, GMT_MSG_NOTICE, "Your GMT version too old to use the remote data mechanism - please upgrade to %s or later\n", line);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse \"%s\" to extract GMT version\n", line);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to parse \"%s\" to extract GMT version\n", line);
 		return NULL;
 	}	
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to allocated %d GMT_DATA_INFO structures!\n", *n);
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to allocated %d GMT_DATA_INFO structures!\n", *n);
 		return NULL;
 	}
 
 	while (fgets (line, GMT_LEN512, fp) != NULL) {
 		if (line[0] == '#') continue;	/* Skip any comments */
 		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile_size, I[k].date, I[k].coverage, I[k].filler, I[k].CPT, I[k].remark)) != 13) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s should have 13 fields but only %d read for record %d - download error???\n", file, nr, k);
+			GMT_Report (API, GMT_MSG_WARNING, "File %s should have 13 fields but only %d read for record %d - download error???\n", file, nr, k);
 			gmt_M_free (GMT, I);
 			fclose (fp);
 			return NULL;
@@ -223,13 +246,61 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMT_CTRL *GMT, int *
 	fclose (fp);
 
 	if (k != *n) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s said it has %d records but only found %d - download error???\n", file, *n, k);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s should be deleted.  Please try again\n", file);
+		GMT_Report (API, GMT_MSG_WARNING, "File %s said it has %d records but only found %d - download error???\n", file, *n, k);
+		GMT_Report (API, GMT_MSG_WARNING, "File %s should be deleted.  Please try again\n", file);
 		*n = 0;	/* Flag that excrement hit the fan */
 	}
 	/* Soft alphabetically on file names */
 	qsort (I, *n, sizeof (struct GMT_DATA_INFO), gmtremote_compare_names);
 	for (k = 0; k < *n; k++) I[k].id = k;	/* Give running number as ID in the sorted array */
+
+	if (GMT->current.io.new_data_list) {	/* Take this opportunity to delete datasets that are past their expiration date */
+		time_t mod_time;
+		struct tm *UTC = NULL;
+		struct stat buf;
+		int year, month, day, kyear, kmonth, kday;
+		size_t L;
+
+		GMT->current.io.new_data_list = false;	/* We only do this once after a gmt_data_server.txt update */
+		if (GMT->session.USERDIR == NULL) goto out_of_here;	/* Cannot have server data if no user directory is set */
+		if (access (GMT->session.USERDIR, R_OK)) goto out_of_here;	/* Set, but have not made a user directory yet, so cannot have any remote data yet either */
+
+		for (k = 0; k < *n; k++) {	/* Check the release date of each data set that has been downloaded against the local file date */
+			if (sscanf (I[k].date, "%d-%d-%d", &kyear, &kmonth, &kday) != 3) continue;	/* Maybe malformed datestring or on purpose to never check */
+			snprintf (file, PATH_MAX, "%s/%s%s", GMT->session.USERDIR, I[k].dir, I[k].file);	/* Local path, may end in slash if a tile directory*/
+			if ((L = strlen (file) - 1) && file[L] == '/') file[L] = '\0';	/* Chop off trailing / that indicates directory of tiles */
+			if (access (file, R_OK)) continue;	/* No such file or directory yet */
+			/* Here we have a local copy of this remote file or directory - we examine its creation date */
+			if (stat (file, &buf)) {
+				GMT_Report (API, GMT_MSG_WARNING, "Unable to get information about %s - skip\n", file);
+				continue;
+			}
+			/*  Get its modification (creation) time */
+#ifdef __APPLE__
+			mod_time = buf.st_mtimespec.tv_sec;	/* Apple even has tv_nsec for nano-seconds... */
+#else
+			mod_time = buf.st_mtime;
+#endif
+			/* Extract the year, month, day integers */
+			UTC   = gmtime (&mod_time);
+			year  = UTC->tm_year + 1900;	/* Yep, how stupid is that, Y2K lovers. I guess 2030 might overflow a 32-bit int... */
+			month = UTC->tm_mon + 1;		/* Make it 1-12 since it is 0-11 */
+			day   = UTC->tm_mday;			/* Yep, lets start at 1 for days and 0 for months, makes sense */
+			if (kyear < year) continue;	/* The origin year is older than our file so no need to check further */
+			if (kyear == year) {	/* Our file and the server file is both from the same year */
+				if (kmonth < month) continue;	/* The origin month is older than our copy so no need to check further */
+				if (kmonth == month) {	/* Same year, same month, we are so close! */
+					if (kday < day) continue; 	/* The origin day is older than our copy so no need to check further */
+				}
+			}
+			/* If we get here we need to remove the outdated file or directory so we may download the latest on next try */
+			if (gmtremote_remove_item (API, file, I[k].tile_size > 0.0)) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to remove %s \n", file);
+			}
+		}
+	}
+
+out_of_here:
 	return (I);
 };
 
@@ -274,11 +345,13 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	 * There are a few different scenarios where this can happen:
 	 * 1. Users of GMT <= 6.0.0 are used to say earth_relief_01m. These will now get p.
 	 * 2. Users who do not care about registration.  If so, they get p if available. */
-	char newfile[GMT_LEN256] = {""}, reg[2] = {'p', 'g'}, *file = NULL, *infile = NULL, *ext = NULL;
+	char newfile[GMT_LEN256] = {""}, reg[2] = {'p', 'g'}, *file = NULL, *infile = NULL, *ext = NULL, *c = NULL;
 	int k_data, k;
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
 	if (file[0] != '@') return;
 	infile = strdup (file);
+	if ((c = strchr (infile, '+')))	/* Got modifiers, probably from grdimage or similar, chop off for now */
+		c[0] = '\0';
 	/* Deal with any extension the user may have added */
 	ext = gmt_chop_ext (infile);
 	/* If the remote file is found then there is nothing to do */
@@ -289,6 +362,10 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 		sprintf (newfile, "%s_%c", infile, reg[k]);
 		if ((k_data = gmt_remote_dataset_id (API, newfile)) != GMT_NOTSET) {
 			/* Found, replace given file name with this */
+			if (c) {	/* Restore the modifiers */
+				c[0] = '+';
+				strcat (newfile, c);
+			}
 			gmt_M_str_free (*file_ptr);
 			*file_ptr = strdup (newfile);
 			goto clean_up;
@@ -517,13 +594,14 @@ GMT_LOCAL struct GMT_DATA_HASH *gmtremote_hash_load (struct GMT_CTRL *GMT, char 
 	return (L);
 };
 
-GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
+GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 	/* This function is called every time we are about to access a @remotefile.
 	 * It is called twice: Once for the hash table and once for the info table.
 	 * First we check that we have the GMT_HASH_SERVER_FILE in the server directory.
 	 * If we don't then we download it and return since no old file to compare to.
 	 * If we do find the hash file then we get its creation time [st_mtime] as
-	 * well as the current system time.  If the file is < 1 day old we are done.
+	 * well as the current system time.  If the file is < GMT->current.setting.refresh_time
+	 * days old we are done.
 	 * If the file is older we rename it to *.old and download the latest hash file.
 	 * This is the same for both values of index (hash and info).  For hash, we do more:
 	 * Next, we load the contents of both files and do a double loop to find the
@@ -538,6 +616,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
 	char indexpath[PATH_MAX] = {""}, old_indexpath[PATH_MAX] = {""}, new_indexpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	const char *index_file = (index == GMT_HASH_INDEX) ? GMT_HASH_SERVER_FILE : GMT_INFO_SERVER_FILE;
+	struct GMT_CTRL *GMT = API->GMT;	/* Short hand */
 
 	if (GMT->current.io.refreshed[index]) return GMT_NOERROR;	/* Already been here */
 
@@ -547,13 +626,13 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 		char serverdir[PATH_MAX] = {""};
 		snprintf (serverdir, PATH_MAX, "%s/server", GMT->session.USERDIR);
 		if (access (serverdir, R_OK) && gmt_mkdir (serverdir)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT server directory : %s\n", serverdir);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT server directory : %s\n", serverdir);
 			return 1;
 		}
 		snprintf (url, PATH_MAX, "%s/%s", GMT->session.DATASERVER, index_file);
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
+		GMT_Report (API, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmtremote_get_url (GMT, url, indexpath, NULL, index)) {
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
 			if (!access (indexpath, F_OK)) gmt_remove_file (GMT, indexpath);	/* Remove index file just in case it got corrupted or zero size */
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
 			GMT->current.io.internet_error = true;		/* No point trying again */
@@ -563,14 +642,14 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 		return GMT_NOERROR;
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Local file %s found\n", indexpath);
+		GMT_Report (API, GMT_MSG_DEBUG, "Local file %s found\n", indexpath);
 
 	GMT->current.io.refreshed[index] = true;	/* Done our job */
 
 	/* Here we have the existing index file and its path is in indexpath. Check how old it is */
 
 	if (stat (indexpath, &buf)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to get information about %s - abort\n", indexpath);
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to get information about %s - abort\n", indexpath);
 		return 1;
 	}
 	/*  Get its modification (creation) time */
@@ -580,28 +659,28 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 	mod_time = buf.st_mtime;
 #endif
 
-	if ((right_now - mod_time) > GMT_DAY2SEC_I) {	/* Older than 1 day; Time to get a new index file */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s older than 24 hours, get latest from server.\n", indexpath);
+	if ((right_now - mod_time) > (GMT_DAY2SEC_I * GMT->current.setting.refresh_time)) {	/* Older than selected number of days; Time to get a new index file */
+		GMT_Report (API, GMT_MSG_DEBUG, "File %s older than 24 hours, get latest from server.\n", indexpath);
 		strcpy (new_indexpath, indexpath);	/* Duplicate path name */
 		strcat (new_indexpath, ".new");		/* Append .new to the copied path */
 		strcpy (old_indexpath, indexpath);	/* Duplicate path name */
 		strcat (old_indexpath, ".old");		/* Append .old to the copied path */
 		snprintf (url, PATH_MAX, "%s/%s", GMT->session.DATASERVER, index_file);	/* Set remote path to new index file */
 		if (gmtremote_get_url (GMT, url, new_indexpath, indexpath, index)) {	/* Get the new index file from server */
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", url);
+			GMT_Report (API, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", url);
 			if (!access (new_indexpath, F_OK)) gmt_remove_file (GMT, new_indexpath);	/* Remove index file just in case it got corrupted or zero size */
 			return 1;	/* Unable to update the file (no Internet?) - skip the tests */
 		}
 		if (!access (old_indexpath, F_OK))
 			remove (old_indexpath);	/* Remove old index file if it exists */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", indexpath, old_indexpath);
+		GMT_Report (API, GMT_MSG_DEBUG, "Rename %s to %s\n", indexpath, old_indexpath);
 		if (gmt_rename_file (GMT, indexpath, old_indexpath, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", indexpath, old_indexpath);
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", indexpath, old_indexpath);
 			return 1;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", new_indexpath, indexpath);
+		GMT_Report (API, GMT_MSG_DEBUG, "Rename %s to %s\n", new_indexpath, indexpath);
 		if (gmt_rename_file (GMT, new_indexpath, indexpath, GMT_RENAME_FILE)) {	/* Rename newly copied file to existing file */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", new_indexpath, indexpath);
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", new_indexpath, indexpath);
 			return 1;
 		}
 
@@ -624,26 +703,26 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 					if (!strcmp (N[n].name, O[o].name)) {	/* File is in the current hash table */
 						found = true;	/* We will exit this loop regardless of what happens next below */
 						if (strcmp (N[n].hash, O[o].hash)) {	/* New hash differs from entry in hash old file */
-							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cache versions of %s have different hash codes - must download new copy.\n", N[n].name);
+							GMT_Report (API, GMT_MSG_DEBUG, "Server and cache versions of %s have different hash codes - must download new copy.\n", N[n].name);
 							gmt_remove_file (GMT, url);	/* Need to re-download so be gone with it */
 						}
 						else {	/* Do size check */
 							struct stat buf;
 							if (stat (url, &buf)) {
-								GMT_Report (GMT->parent, GMT_MSG_WARNING, "Could not determine size of file %s.\n", url);
+								GMT_Report (API, GMT_MSG_WARNING, "Could not determine size of file %s.\n", url);
 								continue;
 							}
 							if (N[n].size != (size_t)buf.st_size) {	/* Downloaded file size differ - need to re-download */
-								GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cache versions of %s have different byte sizes (%" PRIuS " versus %" PRIuS ") - must download new copy.\n", N[n].name, N[n].size, (size_t)buf.st_size);
+								GMT_Report (API, GMT_MSG_DEBUG, "Server and cache versions of %s have different byte sizes (%" PRIuS " versus %" PRIuS ") - must download new copy.\n", N[n].name, N[n].size, (size_t)buf.st_size);
 								gmt_remove_file (GMT, url);	/* Need to re-download so be gone with it */
 							}
 							else
-								GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cache versions of %s are identical - no need to download new file.\n", N[n].name);
+								GMT_Report (API, GMT_MSG_DEBUG, "Server and cache versions of %s are identical - no need to download new file.\n", N[n].name);
 						}
 					}
 				}
 				if (!found) {	/* This file was present locally but is no longer part of files on the server and should be removed */
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s no longer supported on server - deleting local copy.\n", O[o].name);
+					GMT_Report (API, GMT_MSG_DEBUG, "File %s no longer supported on server - deleting local copy.\n", O[o].name);
 					gmt_remove_file (GMT, url);
 				}
 			}
@@ -653,13 +732,15 @@ GMT_LOCAL int gmtremote_refresh (struct GMT_CTRL *GMT, unsigned int index) {
 			if (!access (old_indexpath, F_OK))
 				remove (old_indexpath);	/* Remove old index file if it exists */
 		}
+		else 
+			GMT->current.io.new_data_list = true;	/* Flag that we wish to delete datasets older than entries in this file */
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", indexpath);
+		GMT_Report (API, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", indexpath);
 	return GMT_NOERROR;
 }
 
-void gmtlib_refresh_server (struct GMT_CTRL *GMT) {
+void gmt_refresh_server (struct GMTAPI_CTRL *API) {
 	/* Called once in gmt_begin from GMT_Create_Session,  The following actions take place:
 	 *
 	 * The data info table is refreshed if missing or older than 24 hours.
@@ -670,16 +751,16 @@ void gmtlib_refresh_server (struct GMT_CTRL *GMT) {
 	 *   user requests it, it forces a download of the updated file.
 	 */
 
-	if (gmtremote_refresh (GMT, GMT_INFO_INDEX))	/* Watch out for changes on the server info once a day */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to obtain remote information file %s\n", GMT_INFO_SERVER_FILE);
-	else {	/* Get server file attribution info */
-		if ((GMT->parent->remote_info = gmtremote_data_load (GMT, &GMT->parent->n_remote_info)) == NULL) {	/* Failed to load the info file */
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to read server information file\n");
+	if (gmtremote_refresh (API, GMT_INFO_INDEX))	/* Watch out for changes on the server info once a day */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote information file %s\n", GMT_INFO_SERVER_FILE);
+	else if (API->remote_info == NULL) {	/* Get server file attribution info if not yet loaded */
+		if ((API->remote_info = gmtremote_data_load (API, &API->n_remote_info)) == NULL) {	/* Failed to load the info file */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Unable to read server information file\n");
 		}
 	}
 
-	if (gmtremote_refresh (GMT, GMT_HASH_INDEX)) {	/* Watch out for changes on the server hash once a day */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to obtain remote hash table %s\n", GMT_HASH_SERVER_FILE);
+	if (gmtremote_refresh (API, GMT_HASH_INDEX)) {	/* Watch out for changes on the server hash once a day */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote hash table %s\n", GMT_HASH_SERVER_FILE);
 	}
 }
 
@@ -704,7 +785,7 @@ GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file) {
 }
 
 GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localfile) {
-	static char *args = "=ns -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
+	static char *args = " -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=readonly";
 	char cmd[GMT_LEN512] = {""},  *ncfile = NULL;
 	int k_data;
 
@@ -713,14 +794,20 @@ GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localf
 
 	/* Convert JP2 file to NC for local cache storage */
 	ncfile = gmt_strrep (localfile, GMT_TILE_EXTENSION_REMOTE, GMT_TILE_EXTENSION_LOCAL);
-	sprintf (cmd, "%s -G%s%s", localfile, ncfile, args);
+	sprintf (cmd, "%s -G%s=ns", localfile, ncfile);	/* We know we are writing a netCDF short int grid */
 	if (!doubleAlmostEqual (API->remote_info[k_data].scale, 1.0) || !gmt_M_is_zero (API->remote_info[k_data].offset)) {
-		/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first */
+		/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first.
+		 * Because we are inverting the scaling and because grdconvert applies z' = z * scale + offset, we must
+		 * pre-scale and change the sign of the offset here to get the translation we want */
 		char extra[GMT_LEN64] = {""};
-		sprintf (extra, " -Z+s%g+o%g", API->remote_info[k_data].scale, API->remote_info[k_data].offset);
-		strcat (cmd, extra);
+		sprintf (extra, "+s%g+o%g", API->remote_info[k_data].scale, API->remote_info[k_data].offset);
+		strcat (cmd, extra);	/* This will embed the scale and offset in the netCDF file so we can use the full range */
+		sprintf (extra, " -Z+s%g+o%g", API->remote_info[k_data].scale, -API->remote_info[k_data].offset / API->remote_info[k_data].scale);
+		strcat (cmd, extra);	/* This converts the integers we got back to Myr before we let netCDF do the offset/scaling above */
 	}
+	strcat (cmd, args);	/* Append the common arguments */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
+	GMT_Report (API, GMT_MSG_DEBUG, "Running: grdconvert %sn", cmd);
 	if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", localfile);
 		gmt_M_free (API->GMT, ncfile);
@@ -823,7 +910,15 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 		else {	/* Must be cache file */
 			if (GMT->session.CACHEDIR == NULL) goto not_local;	/* Cannot have cache data if no cache directory created yet */
 			snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &file[1]);	/* This is where all cache files live */
-			if (access (local_path, R_OK)) goto not_local;	/* No such file yet */
+			if ((c = strchr (local_path, '=')) || (c = strchr (local_path, '?'))) {
+				was = c[0];	c[0] = '\0';
+			}
+			GMT->parent->cache = true;
+			if (access (local_path, R_OK)) {
+				if (c) c[0] = was;
+				goto not_local;	/* No such file yet */
+			}
+			if (c) c[0] = was;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Remote file %s exists locally as %s\n", file, local_path);
 		remote_path[0] = '\0';	/* No need to get from elsewhere */
@@ -954,8 +1049,10 @@ int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 	/* Detect if a file matches the name <path>/[N|S]yy[E|W]xxx.tag.jp2 (e.g., N22W160.earth_relief_01m_p.jp2) */
 	char *c, tmp[GMT_LEN64] = {""};
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* Bad argument */
-	if ((c = strrchr (file, '/')) == NULL) return GMT_NOTSET;	/* Get place of the last slash */
-	sprintf (tmp, "@%s", &c[1]);	/* Now should have something like @N22W160.earth_relief_01m_p.jp2 */
+	if ((c = strrchr (file, '/')) == NULL)	/* Get place of the last slash */
+		sprintf (tmp, "@%s", file);	/* Now should have something like @N22W160.earth_relief_01m_p.jp2 */
+	else
+		sprintf (tmp, "@%s", &c[1]);	/* Now should have something like @N22W160.earth_relief_01m_p.jp2 */
 	return (gmt_file_is_a_tile (API, tmp, GMT_REMOTE_DIR));
 }
 
@@ -1372,8 +1469,10 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 	int k_data;
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->tile_wesn;	/* Default to -R */
-	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
+	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""}, code = 0;;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
+
+	(void) gmt_file_is_tiled_list (API, file, NULL, &code, NULL);	/* Just get the code*/
 
 	if ((k_data = gmt_get_tile_id (API, file)) == GMT_NOTSET) {
 		GMT_Report (API, GMT_MSG_ERROR, "Internal error: Non-recognized tiled ID embedded in file %s\n", file);
@@ -1382,7 +1481,8 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co+n to override using negative earth_relief_15s values */
-	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%s -r%c -G%s -N0 -Co+n", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], API->remote_info[k_data].inc, API->remote_info[k_data].reg, grid);
+	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%s -r%c -G%s -Co+n", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], API->remote_info[k_data].inc, API->remote_info[k_data].reg, grid);
+	if (code != 'X') strcat (cmd, " -N0");	/* If ocean/land, set empty nodes to 0, else NaN */
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;

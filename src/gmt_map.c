@@ -7664,6 +7664,21 @@ GMT_LOCAL bool gmtmap_accept_the_jump (struct GMT_CTRL *GMT, double lon1, double
 }
 
 /*! . */
+uint64_t gmt_cart_to_xy_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n) {
+	/* Cartesian data has no wrapping but may go outside in a benign way  */
+	uint64_t k;
+
+	while (n > GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
+
+	for (k = 0; k < n; k++) {
+		gmt_geo_to_xy (GMT, x[k], y[k], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);
+		GMT->current.plot.pen[k] = PSL_DRAW;
+	}
+	GMT->current.plot.pen[0] = PSL_MOVE;
+	return (n);
+}
+
+/*! . */
 uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {
 	/* Traces the lon/lat array and returns x,y plus appropriate pen moves
 	 * Pen moves are caused by breakthroughs of the map boundary or when

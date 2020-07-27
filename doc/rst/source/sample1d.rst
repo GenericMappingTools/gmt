@@ -105,7 +105,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-. _-W:
+.. _-W:
 
 **-W**\ *col*
     Sets the column number of the weights to be used with a smoothing cubic

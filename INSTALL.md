@@ -18,7 +18,6 @@ for compiling GMT source package (either stable release or development version).
   * [Application Bundle](#application-bundle)
   * [Install via Homebrew](#install-via-homebrew)
   * [Install via Macports](#install-via-macports)
-  * [Install via fink](#install-via-fink)
 - [Linux](#linux)
   * [Fedora](#fedora)
   * [RHEL/CentOS](#rhelcentos)
@@ -36,6 +35,18 @@ The installers come with GDAL, FFmpeg, and Ghostscript pre-installed.
 In addition to the GMT installer, you also need to download and install
 [GraphicsMagick](http://www.graphicsmagick.org/) if you want to create
 animated GIFs.
+
+**NOTE:**
+At the installation step, you may get the warning message:
+
+> Warning! Failed to add GMT to PATH. Please add the GMT bin path to PATH manually.
+
+Usually it means your system variable **PATH** is already too long and the GMT
+installer can't add its path to the variable. As it says, you need to ignore
+the warning message, and then manually add the GMT bin path
+(e.g., `C:\programs\gmt6`) to **PATH** after finishing the installation.
+If you don't know how to manually modify **PATH**, just search Google for
+"How to change windows path variable".
 
 ## macOS
 
@@ -108,29 +119,6 @@ For the legacy GMT 4 or GMT 5 versions, use:
 or:
 
     sudo port install gmt5
-
-### Install via fink
-
-Installation of GMT through [Fink](http://www.finkproject.org/) is quite easy.
-All required packages will also be installed.
-
-For the latest GMT 6 version, use:
-
-    sudo fink install gmt6
-
-You also need to install other GMT run-time dependencies separately:
-
-    sudo fink install graphicsmagick ffmpeg
-
-For legacy GMT 5 version, use:
-
-    sudo fink install gmt5
-
-For legacy GMT 4 version, use:
-
-    sudo fink install gmt
-
-These three GMT versions cannot live side by side.
 
 ## Linux
 

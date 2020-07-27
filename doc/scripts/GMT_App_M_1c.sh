@@ -4,7 +4,7 @@
 #	[skip srtm which is just a special version of dem2]
 #
 # Use the knowledge that we need 3 pages.
-# 44 original GMT 5 CPTs and the last page has 24 scientific colormaps
+# 44 original GMT 5 CPTs and the last page has 28 scientific colormaps
 # from Fabio [www.fabiocrameri.ch/visualisation]
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
@@ -16,8 +16,10 @@ batlow
 berlin
 bilbao
 broc
+brocO
 buda
 cork
+corkO
 davos
 devon
 grayC
@@ -30,10 +32,12 @@ nuuk
 oleron
 oslo
 roma
+romaO
 tofino
 tokyo
 turku
 vik
+vikO
 EOF
 
 n=$(cat tt.lis | wc -l)

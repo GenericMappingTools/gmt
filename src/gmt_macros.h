@@ -116,6 +116,7 @@
 #define gmt_M_int_swap(x, y) {int int_tmp; int_tmp = x, x = y, y = int_tmp;}
 #define gmt_M_uint_swap(x, y) {unsigned int uint_tmp; uint_tmp = x, x = y, y = uint_tmp;}
 #define gmt_M_double_swap(x, y) {double double_tmp; double_tmp = x, x = y, y = double_tmp;}
+#define gmt_M_doublep_swap(x, y) {double *double_tmp; double_tmp = x, x = y, y = double_tmp;}
 #define gmt_M_float_swap(x, y) {float float_tmp; float_tmp = x, x = y, y = float_tmp;}
 
 /*! Macro to ensure proper value and sign of a change in longitude from lon1 to lon2 */

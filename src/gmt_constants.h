@@ -221,6 +221,8 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 #define GMT_CPT_TEMPORARY	1024	/* CPT was built from list of colors, e.g., red,green,255,blue,... */
 #define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
+#define GMT_CPT_L_ANNOT		1	/* Annotate lower slice boundary */
+#define GMT_CPT_U_ANNOT		2	/* Annotate upper slice boundary */
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"

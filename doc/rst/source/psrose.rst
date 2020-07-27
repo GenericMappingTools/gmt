@@ -24,7 +24,7 @@ Synopsis
 [ |-M|\ *parameters* ]
 [ |-O| ] [ |-P| ]
 [ |-Q|\ *alpha* ]
-[ |-R|\ *r0*/*r1*/*az_0*/*az_1* ]
+[ |-R|\ *r0*/*r1*/*az0*/*az1* ]
 [ |-S| ]
 [ |-T| ]
 [ |SYN_OPT-U| ]

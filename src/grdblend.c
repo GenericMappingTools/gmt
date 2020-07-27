@@ -446,7 +446,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 				snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, res,
 				         Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
-				strcat (cmd, " --GMT_HISTORY=false");
+				strcat (cmd, " --GMT_HISTORY=readonly");
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Resample %s via grdsample %s\n", B[n].file, cmd);
 				if ((status = GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to resample file %s - exiting\n", B[n].file);
@@ -463,7 +463,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 					sprintf (buffer, "grdblend_reformatted_%d_%d.nc", (int)getpid(), n);
 				snprintf (cmd, GMT_LEN256, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
-				strcat (cmd, " --GMT_HISTORY=false");
+				strcat (cmd, " --GMT_HISTORY=readonly");
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Reformat %s via grdconvert %s\n", B[n].file, cmd);
 				if ((status = GMT_Call_Module (GMT->parent, "grdconvert", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to resample file %s - exiting\n", B[n].file);
@@ -768,16 +768,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL bool grdblend_got_plot_domain (struct GMTAPI_CTRL *API, const char *file, bool *ocean) {
+GMT_LOCAL bool grdblend_got_plot_domain (struct GMTAPI_CTRL *API, const char *file, char *code) {
 	/* If given an =tiled_<ID>_[P|G][L|O|X].xxxxxx list then we return true if the region given when the list was assembled
 	 * was a plot domain (give to a PS producer) or a grid domain (given to a grid producer). */
-	char wet, region;
-	*ocean = false;
-	if (!gmt_file_is_tiled_list (API, file, NULL, &wet, &region)) return false;	/* Not a valid tiled list file */
+	char region;
+	*code = 0;
+	if (!gmt_file_is_tiled_list (API, file, NULL, code, &region)) return false;	/* Not a valid tiled list file */
 
 	if (region == 'P') {
 		GMT_Report (API, GMT_MSG_DEBUG, "Got tiled list determined from a plot region\n");
-		if (wet == 'O') *ocean = true;
 		return true;
 	}
 	return false;
@@ -789,13 +788,13 @@ GMT_LOCAL bool grdblend_got_plot_domain (struct GMTAPI_CTRL *API, const char *fi
 EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final, out_case;
 	int status, pcol, err, error;
-	bool reformat, wrap_x, write_all_at_once = false, first_grid, delayed = true, ocean = false;
+	bool reformat, wrap_x, write_all_at_once = false, first_grid, delayed = true, not_nan;
 
 	uint64_t ij, n_fill, n_tot;
 	double wt_x, w, wt;
 	gmt_grdfloat *z = NULL, no_data_f;
 
-	char type;
+	char type, zcase;
 	char *outfile = NULL, outtemp[PATH_MAX];
 
 	struct GRDBLEND_INFO *blend = NULL;
@@ -837,9 +836,9 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	if (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) {	/* Set output grid via -R -I [-r] */
 		double *region = NULL, wesn[4];
-		if (Ctrl->In.n == 1 && grdblend_got_plot_domain (API, Ctrl->In.file[0], &ocean)) {	/* Must adjust -R to be exact multiple of desired grid inc */
+		if (Ctrl->In.n == 1 && grdblend_got_plot_domain (API, Ctrl->In.file[0], &zcase)) {	/* Must adjust -R to be exact multiple of desired grid inc */
 			double inc15[2] = {15.0 / 3600.0, 15.0/ 3600.0};
-			double *inc = (ocean) ? inc15 : GMT->common.R.inc;	/* Pointer to the grid increment */
+			double *inc = (zcase == 'O') ? inc15 : GMT->common.R.inc;	/* Pointer to the grid increment */
 			wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / inc[GMT_X]) + GMT_CONV8_LIMIT) * inc[GMT_X];
 			wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / inc[GMT_X]) - GMT_CONV8_LIMIT) * inc[GMT_X];
 			wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / inc[GMT_Y]) + GMT_CONV8_LIMIT) * inc[GMT_Y];
@@ -954,6 +953,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 
 			w = 0.0;	/* Reset weight */
 			first_grid = true;	/* Since some grids do not contain this (row,col) we want to know when we are processing the first grid inside */
+			not_nan = false;	/* Will be true once the first grid that has a non-NaN node is encountered for this (row,col); */
 			for (k = m = 0; k < n_blend; k++) {	/* Loop over every input grid; m will be the number of contributing grids to this node  */
 				if (blend[k].ignore) continue;					/* This grid is entirely outside the s/n range */
 				if (blend[k].outside) continue;					/* This grid is currently outside the s/n range */
@@ -968,6 +968,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 				}
 				kk = pcol - blend[k].out_i0;					/* kk is the local column variable for this grid */
 				if (gmt_M_is_fnan (blend[k].z[kk])) continue;			/* NaNs do not contribute */
+				not_nan = true;	/* At least one non-NaN grid contributing */
 				if (Ctrl->C.active) {	/* Clobber; update z[col] according to selected mode */
 					switch (Ctrl->C.mode) {
 						case BLEND_FIRST: if (m) continue; break;	/* Already set */
@@ -1004,7 +1005,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (Ctrl->C.sign && m == 0) m = 1, w = 1.0;	/* Since we started off with the first grid and never set m,w at that time */
+			if (Ctrl->C.sign && m == 0 && not_nan) m = 1, w = 1.0;	/* Since we started off with the first grid and never set m,w at that time */
 
 			if (m) {	/* OK, at least one grid contributed to an output value */
 				switch (out_case) {
@@ -1090,7 +1091,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	if (reformat) {	/* Must reformat the output grid to the non-supported format */
 		int status;
 		char cmd[GMT_LEN256] = {""}, *V_level = GMT_VERBOSE_CODES;
-		sprintf (cmd, "%s %s -V%c --GMT_HISTORY=false", outfile, Ctrl->G.file, V_level[GMT->current.setting.verbose]);
+		sprintf (cmd, "%s %s -V%c --GMT_HISTORY=readonly", outfile, Ctrl->G.file, V_level[GMT->current.setting.verbose]);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Reformat %s via grdconvert %s\n", outfile, cmd);
 		if ((status = GMT_Call_Module (GMT->parent, "grdconvert", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to resample file %s.\n", outfile);
