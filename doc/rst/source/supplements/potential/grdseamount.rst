@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdseamount** [ *intable* ]
+**gmt grdseamount** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*] ]
@@ -42,7 +42,7 @@ Description
 -----------
 
 **grdseamount** will compute the combined shape of multiple synthetic seamounts given their individual shape
-parameters.  We read a list with seamount locations and sizes and can evaluate either
+parameters.  We read from *table* (or stdin) a list of seamount locations and sizes and can evaluate either
 Gaussian, parabolic, conical, or disc shapes, which may be circular or elliptical, and optionally truncated.
 Various scaling options are available to modify the result, including an option to add in
 a background depth (more complicated backgrounds may be added via :doc:`grdmath </grdmath>`).

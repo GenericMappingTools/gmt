@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt hotspotter** [*tables*] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt hotspotter** [*table*] |-E|\ *rotfile* |-G|\ *CVAgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-N|\ *upper_age* ]
@@ -34,7 +34,7 @@ Description
 -----------
 
 **hotspotter** reads (longitude, latitude, amplitude, radius, age)
-records from *tables* [or standard input] and calculates flowlines
+records from *table* [or standard input] and calculates flowlines
 using the specified stage or total reconstruction rotations. These
 flowlines are convolved with the shape of the seamount (using a Gaussian
 shape given amplitude and radius = 6 sigma) and added up to give a
@@ -44,8 +44,8 @@ read (latitude,longitude,...) files.
 Required Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_intables.rst_
+.. |Add_intable| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_intable.rst_
 
 .. include:: explain_rots.rst_
 
