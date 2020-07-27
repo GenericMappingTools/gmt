@@ -39,7 +39,7 @@ int main () {
 	GMT_Put_Vector(API, V, 1, GMT_DOUBLE, y);
 	GMT_Put_Vector(API, V, 2, GMT_DOUBLE, angle);
 	/* Hook the user text array up to this container */
-	GMT_Put_Strings(API, GMT_IS_VECTOR, V, strings);
+	GMT_Put_Strings(API, GMT_IS_VECTOR|GMT_IS_DUPLICATE, V, strings);
 
 	for (i=0; i<NROWS; i++) {
 		free(strings[i]);
