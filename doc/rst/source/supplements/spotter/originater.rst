@@ -90,7 +90,7 @@ Optional Arguments
 ------------------
 
 .. |Add_intable| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_intable.rst_
+.. include:: ../../explain_intables.rst_
 
 .. _-D:
 
