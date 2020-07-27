@@ -36,6 +36,16 @@
  * GMT TYPE DEFINITIONS
  *--------------------------------------------------------------------*/
 
+/*! Definition of CONTOUR_ARGS used by grdcontour and pscontour */
+struct CONTOUR_ARGS {
+	bool cpt;		/* true of we were given a CPT file */
+	bool check;		/* true if in modern mode and no CPT was given */
+	unsigned int mode;	/* Module specific action, usually to indicate no annotations desired */
+	char *file;		/* File with cpt or contours, or list of contours */
+	double interval;	/* Constant interval */
+	double single_cont;	/* Single specified contour */
+};
+
 /*! Definition of GMT_MATH_MACRO used by grdmath and gmtmath */
 struct GMT_MATH_MACRO {
 	unsigned int n_arg;	/* How many commands this macro represents */
