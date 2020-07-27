@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 239
+#define GMT_N_API_ENUMS 246
 
 static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -58,6 +58,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_COMMENT_IS_NAME_X", 16},
 	{"GMT_COMMENT_IS_NAME_Y", 32},
 	{"GMT_COMMENT_IS_NAME_Z", 64},
+	{"GMT_COMMENT_IS_OPTION", 1},
 	{"GMT_COMMENT_IS_REMARK", 4},
 	{"GMT_COMMENT_IS_RESET", 256},
 	{"GMT_COMMENT_IS_TEXT", 0},
@@ -76,6 +77,9 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_DATA_ONLY", 2},
 	{"GMT_DATETIME", 11},
 	{"GMT_DOUBLE", 9},
+	{"GMT_DUPLICATE_ALLOC", 1},
+	{"GMT_DUPLICATE_DATA", 2},
+	{"GMT_DUPLICATE_NONE", 0},
 	{"GMT_DUPLICATE_RESET", 4},
 	{"GMT_ERR", 2},
 	{"GMT_FFT_COMPLEX", 1},
@@ -139,6 +143,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_FILE", 0},
 	{"GMT_IS_GRID", 1},
 	{"GMT_IS_HOLE", 1},
+	{"GMT_IS_IMAGE", 2},
 	{"GMT_IS_LINE", 2},
 	{"GMT_IS_LP", 6},
 	{"GMT_IS_MATRIX", 5},
@@ -149,6 +154,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_PLP", 7},
 	{"GMT_IS_POINT", 1},
 	{"GMT_IS_POLY", 4},
+	{"GMT_IS_POSTSCRIPT", 4},
 	{"GMT_IS_REFERENCE", 4},
 	{"GMT_IS_ROW_FORMAT", 1},
 	{"GMT_IS_STREAM", 1},
@@ -167,6 +173,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_MODULE_HELP", 0},
 	{"GMT_MODULE_KEYS", 0},
 	{"GMT_MODULE_LIST", -4},
+	{"GMT_MODULE_OPT", -1},
 	{"GMT_MODULE_PURPOSE", -2},
 	{"GMT_MODULE_SHOW_CLASSIC", 2},
 	{"GMT_MODULE_SHOW_MODERN", 1},
