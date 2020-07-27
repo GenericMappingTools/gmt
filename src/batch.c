@@ -626,9 +626,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (GMT->common.f.active[GMT_IN])
-				sprintf (cmd, "-T%s -o1 -f%s --GMT_HISTORY=false T = %s", Ctrl->T.file, GMT->common.f.string, output);
+				sprintf (cmd, "-T%s -o1 -f%s --GMT_HISTORY=readonly T = %s", Ctrl->T.file, GMT->common.f.string, output);
 			else
-				sprintf (cmd, "-T%s -o1 --GMT_HISTORY=false T = %s", Ctrl->T.file, output);
+				sprintf (cmd, "-T%s -o1 --GMT_HISTORY=readonly T = %s", Ctrl->T.file, output);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Calling gmtmath with args %s\n", cmd);
 			GMT->current.setting.verbose = GMT_MSG_ERROR;	/* So we don't get unwanted verbosity from gmtmath */
   			if (GMT_Call_Module (API, "gmtmath", GMT_MODULE_CMD, cmd)) {
