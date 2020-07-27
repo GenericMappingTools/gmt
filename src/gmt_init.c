@@ -13602,6 +13602,7 @@ GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
 	bool quote = false;	/* We are outside any quoted text */
 	size_t k;
 	if (strchr (file, '@') == NULL) return false;	/* No @ anywhere */
+	if (gmt_M_file_is_memory (file)) return false;	/* Not a remote file but a memory reference */
 	if (file[0] == '@') return true;	/* Definitively a remote file */
 	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
 	for (k = 0; k < strlen (file); k++) {
