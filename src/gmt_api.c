@@ -6972,7 +6972,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			if (strlen (resource))	/* Strip off any beginning of the name */
 				S_obj->filename = strdup (&file[first]);
 			gmt_M_str_free (file);
-			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[method], S_obj->filename, GMT_direction[direction], GMT_geometry[gmtapi_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], gmtapi_method (method), S_obj->filename, GMT_direction[direction], GMT_geometry[gmtapi_gmtry(geometry)]);
 			break;
 
 		case GMT_IS_STREAM:	/* Methods that indirectly involve a file */
@@ -6984,7 +6984,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			S_obj->fp = resource;	/* Pass the stream of fdesc onward */
-			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[method], (size_t)resource, GMT_direction[direction], GMT_geometry[gmtapi_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], gmtapi_method (method), (size_t)resource, GMT_direction[direction], GMT_geometry[gmtapi_gmtry(geometry)]);
 			break;
 
 		case GMT_IS_DUPLICATE:
@@ -6995,7 +6995,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			if ((S_obj = gmtapi_make_dataobject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
-			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[method], (size_t)resource, GMT_direction[direction], GMT_geometry[gmtapi_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], gmtapi_method (method), (size_t)resource, GMT_direction[direction], GMT_geometry[gmtapi_gmtry(geometry)]);
 			break;
 
 		case GMT_IS_COORD:	/* Internal registration of coordinate arrays so that GMT_Destroy_Data can free them */
