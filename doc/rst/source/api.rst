@@ -1354,9 +1354,11 @@ array of text strings, one per row.  This is done via
 
 where ``family`` is either GMT_IS_VECTOR or GMT_IS_MATRIX, ``X`` is either a
 :ref:`GMT_VECTOR <struct-vector>` or :ref:`GMT_MATRIX <struct-matrix>`, and
-``array`` is the a pointer to your string array.
+``array`` is the a pointer to your string array.  You may add ``GMT_IS_DUPLICATE`` to
+``family`` to indicate you want the array of strings to be duplicated; the default
+is to just set a pointer to ``array``.
 
-To extract the string array from an output vector or matrix container you will use
+To access the string array from an output vector or matrix container you will use
 
 .. _GMT_Get_Strings:
 
