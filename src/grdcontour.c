@@ -374,7 +374,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				c = NULL;
 				if (opt->arg[0] != '+') c = strchr (opt->arg, '+');	/* Find start of modifiers */
 				if (c) c[0] = '\0';	/* Chop off modifiers since parsed by gmt_contlabel_specs */
-				if (opt->arg[0] == 'n' || opt->arg[0] == '-')	/* -A- is deprecated */
+				if (opt->arg[0] == 'n' && opt->arg[1] == '\0')	/* -An turns off all labels */
 					Ctrl->A.mode = 1;	/* Turn off all labels */
 				else if (opt->arg[0] == '+' && (isdigit(opt->arg[1]) || strchr ("-+.", opt->arg[1]))) {
 					Ctrl->A.single_cont = atof (&opt->arg[1]);
@@ -384,6 +384,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 					gmt_M_str_free (Ctrl->A.file);
 					Ctrl->A.file = strdup (opt->arg);
 				}
+				else if (opt->arg[0] == '-' && opt->arg[1] == '\0')	/* -A- is deprecated */
+					Ctrl->A.mode = 1;	/* Turn off all labels */
 				else {
 					Ctrl->A.interval = atof (opt->arg);
 					Ctrl->contour.annot = true;
