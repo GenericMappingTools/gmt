@@ -51,13 +51,13 @@ additional data fields after the first 3 columns which must have
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_intables.rst_
+
 .. include:: explain_rots.rst_
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_intables.rst_
 
 .. _-A:
 
