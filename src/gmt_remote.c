@@ -320,7 +320,13 @@ int gmtremote_wind_to_file (const char *file) {
 }
 
 int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
-	/* Return the entry in the remote file table of file is found, else -1 */
+	/* Return the entry in the remote file table of file is found, else -1.
+	 * Complications to consider before finding a match:
+	 * Input file may or may not have leading @
+	 * Input file may or may not have _g or _p for registration
+	 * Input file may or many not have an extension
+	 * Key file may be a tiled data set and thus ends with '/'
+	 */
 	int pos = 0;
 	struct GMT_DATA_INFO *key = NULL;
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
