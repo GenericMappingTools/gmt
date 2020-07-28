@@ -4106,7 +4106,10 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 
 /*! . */
 GMT_LOCAL bool gmtio_file_is_readable (struct GMT_CTRL *GMT, char *path) {
-	/* Returns true if readable, otherwise give error and return false */
+	/* Returns true if readable file, otherwise give error and return false */
+	struct stat S;
+	int err = stat (path, &S);	/* Stat the path (which may not exist) */
+	if (err == 0 && S_ISDIR (S.st_mode)) return (false);	/* A directory is not a file */
 	if (!access (path, R_OK)) return (true);	/* Readable */
 	/* Get here when found, but not readable */
 	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to read %s (permissions?)\n", path);
