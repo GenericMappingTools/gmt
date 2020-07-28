@@ -13602,6 +13602,7 @@ GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
 	bool quote = false;	/* We are outside any quoted text */
 	size_t k;
 	if (strchr (file, '@') == NULL) return false;	/* No @ anywhere */
+	if (gmt_M_file_is_memory (file)) return false;	/* Not a remote file but a memory reference */
 	if (file[0] == '@') return true;	/* Definitively a remote file */
 	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
 	for (k = 0; k < strlen (file); k++) {
@@ -13654,11 +13655,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if (options) {
 	  for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		  if (remote_first && gmtinit_might_be_remotefile (opt->arg)) {
+		  if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+		  if (remote_first) {
 			  gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
 			  remote_first = false;
 		  }
-		  if (opt->arg[0] != '@') continue;	/* No remote file argument given */
 		  gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 		}
 	}

@@ -3,7 +3,7 @@
 Description
 -----------
 
-Reads data values from *files* [or standard input] and
+Reads data values from *table* [or standard input] and
 will plot a cross-section of focal mechanisms.
 The name "coupe" comes from the French
 verb “to cut”.  The best translation is a (vertical) cross section.

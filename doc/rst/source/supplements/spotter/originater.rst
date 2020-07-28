@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt originater** [ *tables* ] |-E|\ *rotfile*\ [**+i**]
+**gmt originater** [ *table* ] |-E|\ *rotfile*\ [**+i**]
 |-F|\ *hs_file*\ [**+d**]
 [ |-D|\ *d_km* ]
 [ |-L|\ [*flag*] ]
@@ -38,7 +38,7 @@ Description
 -----------
 
 **originater** reads (longitude, latitude, height, radius, crustal_age)
-records from *tables* [or standard input] and uses the given Absolute
+records from *table* [or standard input] and uses the given Absolute
 Plate Motion (APM) stage or total reconstruction rotation file and the
 list of hotspot locations to determine the most likely origin (hotspot)
 for each seamount. It does so by calculating flowlines back in time and
@@ -52,6 +52,9 @@ radius, crustal_age) files.
 
 Required Arguments
 ------------------
+
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_intables.rst_
 
 .. include:: explain_rots.rst_
 
@@ -80,7 +83,7 @@ Required Arguments
     rotations, and if the hotspot should be included in various plots.
     The name is a 32-character maximum text string with the full hotspot
     name. Blank lines and records whose first column contains # will be
-    ignored. Append **+d** if we should look for hotspot drift tables
+    ignored. Append **+d** if we should look for hotspot drift table
     whose name must be *hs_abbrev*\ \_drift.txt. Such files may be
     located in the current directory, the same directory as *hs_file*,
     or in the directories pointed to by GMT_DATADIR. If found then we
@@ -88,9 +91,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_intables.rst_
 
 .. _-D:
 
@@ -219,4 +219,3 @@ References
 ----------
 
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
-
