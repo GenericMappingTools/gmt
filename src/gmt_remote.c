@@ -329,11 +329,12 @@ int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	if (pos == 0) pos = gmtremote_wind_to_file (file);	/* Skip any leading directories */
 	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	if (key) {	/* Make sure we actually got a real hit since file = "earth" will find a key starting with "earth****" */
-		char *c = strrchr (key->file, '.');	/* Find location of the start of the file extension (or NULL if no extension) */
-		size_t L = strlen (&file[pos]);	/* Length of input file without leading @ */
-		size_t Lkey = (c) ? (size_t)(c - key->file) : strlen (key->file);	/* Length of key file name without extension */
-		if (Lkey > L && Lkey > 2 && key->file[Lkey-2] == '_' && strchr ("gp", key->file[Lkey-1])) Lkey -= 2;	/* Remove the length of _g or _p from Lkey */
-		if (L != Lkey)	/* Not an exact match (apart from trailing _p|g) */
+		char *ckey = strrchr (key->file, '.');		/* Find location of the start of the key file extension (or NULL if no extension) */
+		char *cfile = strrchr (&file[pos], '.');	/* Find location of the start of the input file extension (or NULL if no extension) */
+		size_t Lfile = (cfile) ? (size_t)(cfile - &file[pos]) : strlen (&file[pos]);	/* Length of key file name without extension */
+		size_t Lkey  = (ckey)  ? (size_t)(ckey  - key->file)  : strlen (key->file);		/* Length of key file name without extension */
+		if (Lkey > Lfile && Lkey > 2 && key->file[Lkey-2] == '_' && strchr ("gp", key->file[Lkey-1])) Lkey -= 2;	/* Remove the length of _g or _p from Lkey */
+		if (Lfile != Lkey)	/* Not an exact match (apart from trailing _p|g) */
 			key = NULL;
 	}
 	return ((key == NULL) ? GMT_NOTSET : key->id);
