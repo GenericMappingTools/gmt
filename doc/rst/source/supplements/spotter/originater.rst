@@ -53,6 +53,9 @@ radius, crustal_age) files.
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_intables.rst_
+
 .. include:: explain_rots.rst_
 
 .. _-F:
@@ -88,9 +91,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_intables.rst_
 
 .. _-D:
 

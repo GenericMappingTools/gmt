@@ -52,7 +52,7 @@ typedef float gmt_grdfloat;
  * is no guarantee that the "private" members cannot change over time.
  */
 
-/*! Session modes for GMT_Create_Session */
+/*! Session modes for GMT_Create_Session. Do NOT change first 4 as affects GMT.jl */
 enum GMT_enum_session {
 	GMT_SESSION_NORMAL    = 0,	/* Typical mode to GMT_Create_Session */
 	GMT_SESSION_NOEXIT    = 1,	/* Call return and not exit when error */
