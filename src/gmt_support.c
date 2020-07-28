@@ -9423,6 +9423,106 @@ unsigned int gmt_contour_A_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 	return n_errors;
 }
 
+GMT_LOCAL unsigned int gmtsupport_contour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_CLOSED *I) {
+	/* The backwards compatible parser for old-style -T option: */
+	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] but also accept new -Th|l<...> */
+	int n, j;
+	unsigned int n_errors = 0;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	if (strchr (arg, '/')) {	/* Gave gap/length */
+		n = sscanf (arg, "%[^/]/%[^:]", txt_a, txt_b);
+		if (n == 2) {
+			I->dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+			I->dim[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
+		}
+	}
+	for (j = 0; arg[j] && arg[j] != ':'; j++);
+	if (arg[j] == ':') I->label = true, j++;
+	if (arg[j]) {	/* Override high/low markers */
+		if (strlen (&(arg[j])) == 2) {	/* Standard :LH syntax */
+			txt_a[0] = arg[j++];	txt_a[1] = '\0';
+			txt_b[0] = arg[j++];	txt_b[1] = '\0';
+		}
+		else if (strchr (&(arg[j]), ',')) {	/* Found :<labellow>,<labelhigh> */
+			sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR,
+			            "Option -T: Give low and high labels either as :LH or :<low>,<high>.\n");
+			I->label = false;
+			n_errors++;
+		}
+		if (I->label) {	/* Replace defaults */
+			I->txt[0] = strdup (txt_a);
+			I->txt[1] = strdup (txt_b);
+		}
+	}
+	return (n_errors);
+}
+
+unsigned int gmt_contour_T_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_CLOSED *I) {
+	unsigned int j = 0, n_errors = 0;
+	int n;
+	char string[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	/* Parse the -T<arg> options for grdcontour and pscontour */
+
+	I->high = I->low = true;	/* Default if just -T is given */
+	if (arg[0]) {	/* But here we gave more options */
+		if (arg[0] == 'h' || (arg[0] == '+' && !strchr ("adl", arg[1])))			/* Only tick local highs */
+			I->low = false, j = 1;
+		else if (arg[0] == 'l' || arg[0] == '-')	/* Only tick local lows */
+			I->high = false, j = 1;
+		else
+			j = 0;
+		if (strstr (arg, "+a") || strstr (arg, "+d") || strstr (arg, "+l")) {	/* New parser */
+			if (gmt_validate_modifiers (GMT, arg, 'T', "adl", GMT_MSG_ERROR)) n_errors++;
+			if (gmt_get_modifier (arg, 'a', string))
+				I->all = true;
+			if (gmt_get_modifier (arg, 'd', string))
+				if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, I->dim)) < 1) n_errors++;
+			if (gmt_get_modifier (arg, 'l', string)) {	/* Want to label innermost contours */
+				I->label = true;
+				if (string[0] == 0)
+					;	/* Use default labels */
+				else if (strlen (string) == 2) {	/* Standard +lLH syntax */
+					char A[2] = {0, 0};
+					A[0] = string[0];	I->txt[0] = strdup (A);
+					A[0] = string[1];	I->txt[1] = strdup (A);
+				}
+				else if (strchr (string, ',') && (n = sscanf (string, "%[^,],%s", txt_a, txt_b)) == 2) {	/* Found :<labellow>,<labelhigh> */
+					I->txt[0] = strdup (txt_a);
+					I->txt[1] = strdup (txt_b);
+				}
+				else {
+					GMT_Report (API, GMT_MSG_ERROR,
+					            "Option -T: Give low and high labels either as +lLH or +l<low>,<high>.\n");
+					n_errors++;
+				}
+			}
+		}
+		else {
+			if (gmt_M_compat_check (API->GMT, 4))  {
+				GMT_Report (API, GMT_MSG_COMPAT, "Your format for -T is deprecated (but accepted); use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+					GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+				n_errors += gmtsupport_contour_old_T_parser (GMT, &arg[j], I);
+			}
+			else {
+				GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Your format for -T is deprecated; use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+					GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+				n_errors++;
+			}
+		}
+		n_errors += gmt_M_check_condition (GMT, I->dim[GMT_X] <= 0.0 || I->dim[GMT_Y] == 0.0,
+		                "Option -T: Expected\n\t-T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
+		                	GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	}
+
+	return (n_errors);
+}
+
 /*! . */
 int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G) {
 	unsigned int k = 0, bad = 0, pos = 0;

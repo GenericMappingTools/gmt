@@ -71,11 +71,7 @@ struct PSCONTOUR_CTRL {
 	} S;
 	struct PSCONTOUR_T {	/* -T[h|l][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
 		bool active;
-		bool label;
-		bool all;
-		bool low, high;	/* true to tick low and high locals */
-		double dim[2];	/* spacing, length */
-		char *txt[2];	/* Low and high label */
+		struct CONTOUR_CLOSED info;
 	} T;
 	struct PSCONTOUR_Q {	/* -Q[<cut>][+z] */
 		bool active;
@@ -145,8 +141,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->A.info.single_cont = GMT->session.d_NaN;
 	C->C.info.single_cont = GMT->session.d_NaN;
 	C->L.pen = GMT->current.setting.map_default_pen;
-	C->T.dim[GMT_X] = TICKED_SPACING * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 14p */
-	C->T.dim[GMT_Y] = TICKED_LENGTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 3p */
+	C->T.info.dim[GMT_X] = TICKED_SPACING * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 14p */
+	C->T.info.dim[GMT_Y] = TICKED_LENGTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 3p */
 	C->W.pen[PEN_CONT] = C->W.pen[PEN_ANNOT] = GMT->current.setting.map_default_pen;
 	C->W.pen[PEN_ANNOT].width *= 3.0;
 
@@ -158,8 +154,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* Deal
 	gmt_M_str_free (C->C.info.file);
 	gmt_M_str_free (C->D.file);
 	gmt_M_str_free (C->E.file);
-	gmt_M_str_free (C->T.txt[0]);
-	gmt_M_str_free (C->T.txt[1]);
+	gmt_M_str_free (C->T.info.txt[0]);
+	gmt_M_str_free (C->T.info.txt[1]);
 	gmt_M_free (GMT, C);
 }
 
@@ -400,6 +396,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotation label information. [Default is no annotated contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give annotation interval or comma-separated list of contours.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     (for single contour append comma to be seen as list).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give -An to disable all contour annotations\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     implied by the information provided in -C.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
@@ -469,42 +466,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL unsigned int pscontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct PSCONTOUR_CTRL *Ctrl) {
-	/* The backwards compatible parser for old-style -T option: */
-	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] (also handle -Th|l<...> )*/
-	int n, j;
-	unsigned int n_errors = 0;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
-	if (strchr (arg, '/')) {	/* Gave gap/length */
-		n = sscanf (arg, "%[^/]/%[^:]", txt_a, txt_b);
-		if (n == 2) {
-			Ctrl->T.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
-			Ctrl->T.dim[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
-		}
-	}
-	for (j = 0; arg[j] && arg[j] != ':'; j++);
-	if (arg[j] == ':') Ctrl->T.label = true, j++;
-	if (arg[j]) {	/* Override high/low markers */
-		if (strlen (&(arg[j])) == 2) {	/* Standard :LH syntax */
-			txt_a[0] = arg[j++];	txt_a[1] = '\0';
-			txt_b[0] = arg[j++];	txt_b[1] = '\0';
-		}
-		else if (strchr (&(arg[j]), ',')) {	/* Found :<labellow>,<labelhigh> */
-			(void)sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
-		}
-		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T: Give low and high labels either as +lLH or +l<low>,<high>.\n");
-			Ctrl->T.label = false;
-			n_errors++;
-		}
-		if (Ctrl->T.label) {	/* Replace defaults */
-			Ctrl->T.txt[0] = strdup (txt_a);
-			Ctrl->T.txt[1] = strdup (txt_b);
-		}
-	}
-	return (n_errors);
-}
-
 static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pscontour and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -515,7 +476,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 
 	unsigned int n_errors = 0, id, reset = 0;
 	int k, j, n;
-	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, string[GMT_LEN64] = {""}, *c = NULL;
+	char txt_a[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -622,52 +583,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 					Ctrl->E.active = true;
 					break;
 				}
-				Ctrl->T.active = Ctrl->T.high = Ctrl->T.low = true;	/* Default if just -T is given */
-				if (opt->arg[0]) {	/* But here we gave more options */
-					if (opt->arg[0] == 'h'  || (opt->arg[0] == '+' && !strchr ("adl", opt->arg[1])))	/* Only tick local highs */
-						Ctrl->T.low = false, j = 1;
-					else if (opt->arg[0] == 'l' || opt->arg[0] == '-')		/* Only tick local lows */
-						Ctrl->T.high = false, j = 1;
-					else
-						j = 0;
-					if (strstr (opt->arg, "+a") || strstr (opt->arg, "+d") || strstr (opt->arg, "+l")) {	/* New parser */
-						if (gmt_get_modifier (opt->arg, 'a', string))
-							Ctrl->T.all = true;
-						if (gmt_get_modifier (opt->arg, 'd', string))
-							if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->T.dim)) < 1) n_errors++;
-						if (gmt_get_modifier (opt->arg, 'l', string)) {	/* Want to label innermost contours */
-							Ctrl->T.label = true;
-							if (string[0] == 0)
-								;	/* Use default labels */
-							else if (strlen (string) == 2) {	/* Standard +lLH syntax */
-								char A[2] = {0, 0};
-								A[0] = string[0];	Ctrl->T.txt[0] = strdup (A);
-								A[0] = string[1];	Ctrl->T.txt[1] = strdup (A);
-							}
-							else if (strchr (string, ',') && (n = sscanf (string, "%[^,],%s", txt_a, txt_b)) == 2) {	/* Found :<labellow>,<labelhigh> */
-								Ctrl->T.txt[0] = strdup (txt_a);
-								Ctrl->T.txt[1] = strdup (txt_b);
-							}
-							else {
-								GMT_Report (API, GMT_MSG_ERROR, "Option -T: Give low and high labels either as +lLH or +l<low>,<high>.\n");
-								n_errors++;
-							}
-						}
-					}
-					else {
-						if (gmt_M_compat_check (API->GMT, 4))  {
-							GMT_Report (API, GMT_MSG_COMPAT, "Your format for -T is deprecated (but accepted); use -T[h|l][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
-								GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
-							n_errors += pscontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
-						}
-						else {
-							GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Your format for -T is deprecated; use -T[h|l][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
-								GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
-							n_errors++;
-						}
-					}
-					n_errors += gmt_M_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0, "Option -T: Expected\n\t-T[h|l][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
-				}
+				Ctrl->T.active = true;
+				n_errors += gmt_contour_T_arg_parsing (GMT, opt->arg, &Ctrl->T.info);
 				break;
 			case 'W':	/* Sets pen attributes */
 				Ctrl->W.active = true;
@@ -1615,7 +1532,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 			size_t kk;
 			save = gmt_M_malloc (GMT, save, 0, &n_save, struct PSCONTOUR_SAVE);
 
-			pscontour_sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.all, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
+			pscontour_sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.info.dim[GMT_X], Ctrl->T.info.dim[GMT_Y], Ctrl->T.info.low, Ctrl->T.info.high, Ctrl->T.info.label, Ctrl->T.info.all, Ctrl->T.info.txt, label_mode, Ctrl->contour.Out);
 			for (kk = 0; kk < n_save; kk++) {
 				gmt_M_free (GMT, save[kk].x);
 				gmt_M_free (GMT, save[kk].y);

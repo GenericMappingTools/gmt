@@ -46,6 +46,15 @@ struct CONTOUR_ARGS {
 	double single_cont;	/* Single specified contour */
 };
 
+/*! Definition of CONTOUR_CLOSED used by grdcontour and pscontour */
+struct CONTOUR_CLOSED {
+	bool label;
+	bool all;
+	bool low, high;	/* true to tick low and high locals */
+	double dim[2];	/* spacing, length */
+	char *txt[2];	/* Low and high label [-+] */
+};
+
 /*! Definition of GMT_MATH_MACRO used by grdmath and gmtmath */
 struct GMT_MATH_MACRO {
 	unsigned int n_arg;	/* How many commands this macro represents */
