@@ -500,7 +500,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 
 /* Three sub functions used by GMT_grdcontour */
 
-GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GRDCONTOUR_SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
+GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GRDCONTOUR_SAVE *save, size_t n, struct GMT_GRID *G, struct CONTOUR_CLOSED *I, unsigned int mode, struct GMT_DATASET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
 	   We need to do several types of testing here:
@@ -510,6 +510,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 
 	   Note on mode bitflags: mode = 1 (plot only), 2 (save labels only), 3 (both)
 	*/
+
 	int np, j, k, inside, col, row, stop, n_ticks, way, form;
 	uint64_t ij;
 	size_t pol, pol2;
@@ -520,8 +521,11 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 	double *s = NULL, *xp = NULL, *yp = NULL;
 	double da, db, dc, dd;
 
-	lbl[0] = (in_lbl[0]) ? in_lbl[0] : def[0];
-	lbl[1] = (in_lbl[1]) ? in_lbl[1] : def[1];
+	double tick_gap = I->dim[GMT_X];
+	double tick_length = I->dim[GMT_Y];
+
+	lbl[0] = (I->txt[0]) ? I->txt[0] : def[0];
+	lbl[1] = (I->txt[1]) ? I->txt[1] : def[1];
 	/* The x/y coordinates in SAVE in original cooordinates */
 
 	for (pol = 0; pol < n; pol++) {	/* Set y min/max for polar caps */
@@ -545,7 +549,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 			if (abs (save[pol].kind) != 3) {	/* Not a polar cap so we can call gmt_non_zero_winding */
 				col = save[pol2].n / 2;	/* Pick the half-point for testing */
 				inside = gmt_non_zero_winding (GMT, save[pol2].x[col], save[pol2].y[col], save[pol].x, save[pol].y, np);
-				if (inside == 2 && !all) save[pol].do_it = false;	/* Not innermost so mark it for exclusion */
+				if (inside == 2 && !I->all) save[pol].do_it = false;	/* Not innermost so mark it for exclusion */
 			}
 			if (abs (save[pol2].kind) == 3) {	/* Polar caps needs a different test */
 				if (abs (save[pol].kind) == 3) {	/* Both are caps */
@@ -636,8 +640,8 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 		ij = gmt_M_ijp (G->header, row, col);
 		save[pol].high = (G->data[ij] > save[pol].cval);
 
-		if (save[pol].high && !tick_high) continue;	/* Do not tick highs */
-		if (!save[pol].high && !tick_low) continue;	/* Do not tick lows */
+		if (save[pol].high && !I->high) continue;	/* Do not tick highs */
+		if (!save[pol].high && !I->low) continue;	/* Do not tick lows */
 
 		np = (int)gmt_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
 		if (np == 0) continue;
@@ -690,7 +694,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 
 	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 
-	for (pol = 0; tick_label && pol < n; pol++) {	/* Finally, do labels */
+	for (pol = 0; I->label && pol < n; pol++) {	/* Finally, do labels */
 		if (!save[pol].do_it) continue;
 		if (abs (save[pol].kind) == 2 && gmt_M_is_azimuthal (GMT)) {	/* Only plot once at mean location */
 			for (pol2 = 0, k = -1; pol2 < n && k == -1; pol2++) {	/* Finally, do labels */
@@ -1587,7 +1591,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
 		save = gmt_M_memory (GMT, save, n_save, struct GRDCONTOUR_SAVE);
 
-		grdcontour_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.info.dim[GMT_X], Ctrl->T.info.dim[GMT_Y], Ctrl->T.info.low, Ctrl->T.info.high, Ctrl->T.info.label, Ctrl->T.info.all, Ctrl->T.info.txt, label_mode, Ctrl->contour.Out);
+		grdcontour_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, &Ctrl->T.info, label_mode, Ctrl->contour.Out);
 		for (i = 0; i < n_save; i++) {
 			gmt_M_free (GMT, save[i].x);
 			gmt_M_free (GMT, save[i].y);

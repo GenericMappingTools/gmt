@@ -274,7 +274,7 @@ GMT_LOCAL void pscontour_paint_it (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct PSCONTOUR_SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
+GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct PSCONTOUR_SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, struct CONTOUR_CLOSED *I, unsigned int mode, struct GMT_DATASET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones.
 
@@ -286,8 +286,11 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 	double add, dx, dy, x_back, y_back, x_end, y_end, sa, ca, s;
 	double x_mean, y_mean, a, xmin, xmax, ymin, ymax, length;
 
-	lbl[0] = (in_lbl[0]) ? in_lbl[0] : def[0];
-	lbl[1] = (in_lbl[1]) ? in_lbl[1] : def[1];
+	double tick_gap = I->dim[GMT_X];
+	double tick_length = I->dim[GMT_Y];
+
+	lbl[0] = (I->txt[0]) ? I->txt[0] : def[0];
+	lbl[1] = (I->txt[1]) ? I->txt[1] : def[1];
 
 	/* The x/y coordinates in SAVE are now all projected to map inches */
 
@@ -295,7 +298,7 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 		np = save[pol].n;
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
 			inside = gmt_non_zero_winding (GMT, save[pol2].x[0], save[pol2].y[0], save[pol].x, save[pol].y, np);
-			if (inside == 2 && !all) save[pol].do_it = false;
+			if (inside == 2 && !I->all) save[pol].do_it = false;
 		}
 	}
 
@@ -332,8 +335,8 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 		if (k < 0) continue;	/* Unable to determine */
 		save[pol].high = (z[k] > save[pol].cval);
 
-		if (save[pol].high && !tick_high) continue;	/* Do not tick highs */
-		if (!save[pol].high && !tick_low) continue;	/* Do not tick lows */
+		if (save[pol].high && !I->high) continue;	/* Do not tick highs */
+		if (!save[pol].high && !I->low) continue;	/* Do not tick lows */
 
 		for (j = 1, s = 0.0; j < np; j++) {	/* Compute distance along the contour */
 			s += hypot (save[pol].x[j]-save[pol].x[j-1], save[pol].y[j]-save[pol].y[j-1]);
@@ -345,7 +348,7 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 
 		gmt_setpen (GMT, &save[pol].pen);
 		way = gmt_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
-		if (tick_label) {	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
+		if (I->label) {	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 			if (mode & 1) {
 				form = gmt_setfont (GMT, &save[pol].font);
 				PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, PSL_MC, form);
@@ -1532,7 +1535,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 			size_t kk;
 			save = gmt_M_malloc (GMT, save, 0, &n_save, struct PSCONTOUR_SAVE);
 
-			pscontour_sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.info.dim[GMT_X], Ctrl->T.info.dim[GMT_Y], Ctrl->T.info.low, Ctrl->T.info.high, Ctrl->T.info.label, Ctrl->T.info.all, Ctrl->T.info.txt, label_mode, Ctrl->contour.Out);
+			pscontour_sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, &Ctrl->T.info, label_mode, Ctrl->contour.Out);
 			for (kk = 0; kk < n_save; kk++) {
 				gmt_M_free (GMT, save[kk].x);
 				gmt_M_free (GMT, save[kk].y);
