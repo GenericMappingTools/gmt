@@ -520,6 +520,7 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 #define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
 
 GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index) {
+	bool query = gmt_M_file_is_query (file);
 	int curl_err = 0;
 	long time_spent;
 	char *Lfile = NULL;
@@ -529,12 +530,14 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	struct GMTAPI_CTRL *API = GMT->parent;
 	time_t begin, end;
 
-	Lfile = gmtremote_lockfile (API, file);
-	if ((fp = fopen (Lfile, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", Lfile);
-		return 1;
+	if (!query) {	/* Only make a filename if not a query */
+		Lfile = gmtremote_lockfile (API, file);
+		if ((fp = fopen (Lfile, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", Lfile);
+			return 1;
+		}
+		gmtlib_file_lock (GMT, fileno(fp));	/* Attempt exclusive lock */
 	}
-	gmtlib_file_lock (GMT, fileno(fp));	/* Attempt exclusive lock */
 
 	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", url);
@@ -600,9 +603,12 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
-	gmtlib_file_unlock (GMT, fileno(fp));
-	gmt_remove_file (GMT, Lfile);
-	gmt_M_str_free (Lfile);
+
+	if (!query) {	/* Remove lock file after successful download */
+		gmtlib_file_unlock (GMT, fileno(fp));
+		gmt_remove_file (GMT, Lfile);
+		gmt_M_str_free (Lfile);
+	}
 
 	gmtremote_turn_off_ctrl_C_check ();
 	return 0;
