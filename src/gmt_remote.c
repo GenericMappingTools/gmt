@@ -320,7 +320,13 @@ int gmtremote_wind_to_file (const char *file) {
 }
 
 int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
-	/* Return the entry in the remote file table of file is found, else -1 */
+	/* Return the entry in the remote file table of file is found, else -1.
+	 * Complications to consider before finding a match:
+	 * Input file may or may not have leading @
+	 * Input file may or may not have _g or _p for registration
+	 * Input file may or many not have an extension
+	 * Key file may be a tiled data set and thus ends with '/'
+	 */
 	int pos = 0;
 	struct GMT_DATA_INFO *key = NULL;
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
@@ -328,6 +334,16 @@ int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	/* Exclude leading directory for local saved versions of the file */
 	if (pos == 0) pos = gmtremote_wind_to_file (file);	/* Skip any leading directories */
 	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
+	if (key) {	/* Make sure we actually got a real hit since file = "earth" will find a key starting with "earth****" */
+		char *ckey = strrchr (key->file, '.');		/* Find location of the start of the key file extension (or NULL if no extension) */
+		char *cfile = strrchr (&file[pos], '.');	/* Find location of the start of the input file extension (or NULL if no extension) */
+		size_t Lfile = (cfile) ? (size_t)(cfile - &file[pos]) : strlen (&file[pos]);	/* Length of key file name without extension */
+		size_t Lkey  = (ckey)  ? (size_t)(ckey  - key->file)  : strlen (key->file);		/* Length of key file name without extension */
+		if (ckey == NULL && Lkey > 1 && key->file[Lkey-1] == '/') Lkey--;	/* Skip trailing dir flag */
+		if (Lkey > Lfile && Lkey > 2 && key->file[Lkey-2] == '_' && strchr ("gp", key->file[Lkey-1])) Lkey -= 2;	/* Remove the length of _g or _p from Lkey */
+		if (Lfile != Lkey)	/* Not an exact match (apart from trailing _p|g) */
+			key = NULL;
+	}
 	return ((key == NULL) ? GMT_NOTSET : key->id);
 }
 
