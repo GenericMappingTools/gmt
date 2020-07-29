@@ -195,10 +195,11 @@ export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 export GMT_END_SHOW=off
 # Start with proper GMT defaults
 gmt set -Ds FORMAT_TIME_STAMP "Version 6" GMT_GRAPHICS_FORMAT ps
-# Modern mode needs a stable PPID but ctest messes that up when pipes are used
+export GMT_SESSION_NAME=\$\$
+echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
+# Modern mode needs a stable PPID but ctest messes that up when pipes are used.
+# Because classic scripts also look to see what mode they are we set this for all.
 if [ ${modern} -gt 0 ]; then
-	export GMT_SESSION_NAME=\$\$
-	echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
 	script_mode=M
 fi
 # Now run the script
