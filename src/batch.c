@@ -570,7 +570,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_PREFLIGHT].fp)) {	/* Read the preflight script and copy to the temporary preflight script with some exceptions */
 			if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert the DIR_DATA statement */
 				fprintf (fp, "%s", line);
-				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
+				fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	 {	/* Skip any leading shell incantation since already placed by gmt_set_script */
 				if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script since we are running these in batch */
@@ -705,7 +705,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_POSTFLIGHT].fp)) {	/* Read the postflight script and copy to the temporary postflight script with some exceptions */
 			if (gmt_is_gmtmodule (line, "begin")) {
 				fprintf (fp, "%s", line);	/* Allow args since the script may make a plot */
-				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
+				fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 			}
 			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
 				if (gmt_is_gmt_end_show (line)) sprintf (line, "%s", line);		/* Allow show in gmt end here */
@@ -794,7 +794,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
 		if (gmt_is_gmtmodule (line, "begin")) {	/* Must insert DIR_DATA setting */
 			fprintf (fp, "%s", line);
-			fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
+			fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
 			if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
