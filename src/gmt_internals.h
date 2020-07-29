@@ -53,6 +53,8 @@ EXTERN_MSC char *dlerror (void);
 #endif
 
 EXTERN_MSC int gmtlib_delete_virtualfile  (void *API, const char *string);
+EXTERN_MSC bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd);
+EXTERN_MSC bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd);
 EXTERN_MSC int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file);
 EXTERN_MSC int gmtlib_download_remote_file (struct GMT_CTRL *GMT, const char* file_name, char *path, int k_data, unsigned int mode);
 EXTERN_MSC int gmtlib_get_serverfile_index (struct GMTAPI_CTRL *API, const char *file);
