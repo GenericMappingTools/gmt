@@ -217,7 +217,7 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 		else
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to parse \"%s\" to extract GMT version\n", line);
 		return NULL;
-	}	
+	}
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to allocated %d GMT_DATA_INFO structures!\n", *n);
 		return NULL;
@@ -748,7 +748,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 			if (!access (old_indexpath, F_OK))
 				remove (old_indexpath);	/* Remove old index file if it exists */
 		}
-		else 
+		else
 			GMT->current.io.new_data_list = true;	/* Flag that we wish to delete datasets older than entries in this file */
 	}
 	else
@@ -1351,7 +1351,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 			XS = (lon < 0) ? 'W' : 'E';
 			/* Write remote tile name to list */
 			if (n >= n_alloc) {
-				n_alloc <<= 1; 
+				n_alloc <<= 1;
 				if ((list = gmt_M_memory (API->GMT, list, n_alloc, char *)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "gmt_get_dataset_tiles: Unable to reallocate memory.\n");
 					API->error = GMT_RUNTIME_ERROR;
@@ -1394,7 +1394,7 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 	if (strcmp (Ip->filler, "-") && srtm_flag == 0) {	/* Want background filler, except special case when srtm_relief is the given dataset name (srtm_flag == 1) */
 		if ((k_filler = gmt_remote_dataset_id (API, Ip->filler)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Internal error - Filler grid %s is not a recognized remote data set.\n", Ip->filler);
-			return NULL;			
+			return NULL;
 		}
 		Is = &API->remote_info[k_filler];	/* Pointer to secondary tiled dataset */
 		ocean = (strcmp (Is->inc, "15s") == 0);
@@ -1507,6 +1507,11 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to receive blended grid from grdblend\n");
 		return NULL;
 	}
+	if (gmtlib_delete_virtualfile (API, grid)) {	/* Remove trace since passed upwards anyway */
+		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to destroy temporary object for assembled grid\n");
+		return NULL;
+	}
+
 	HH = gmt_get_H_hidden (G->header);
 	HH->orig_datatype = GMT_SHORT;	/* Since we know this */
 	return (G);
