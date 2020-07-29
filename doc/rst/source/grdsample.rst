@@ -72,6 +72,19 @@ Optional Arguments
     Translate between grid and pixel registration; if the input is
     grid-registered, the output will be pixel-registered and vice-versa.
 
+.. figure:: /_images/GMT_grid2pix.*
+   :width: 500 px
+   :align: center
+
+   a) Cross-section of a grid along the *x*-axis for a constant value of *y*, showing just the Nyquist
+   *x*-component (heavy line) at its grid nodes (red circles).  Resampling this component half-way
+   between nodes (vertical lines) will always give zero (red triangles), hence this signal is lost,
+   unlike long wavelength components (thin line), which can be interpolated (blue triangles).
+   Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
+   resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
+   of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
+   function of wavenumber :math:`k_j` [Marks and Smith, 2007].
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -147,3 +160,11 @@ See Also
 :doc:`grdfilter`,
 :doc:`greenspline`,
 :doc:`surface`
+
+
+References
+----------
+
+Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity,
+*Geophys. Res. Lett., 34 (L03307)*, http://doi.org/10.1029/2006GL028857.
+
