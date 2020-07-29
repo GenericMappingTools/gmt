@@ -7564,6 +7564,27 @@ int GMT_Close_VirtualFile_ (unsigned int *family, char *string, int len) {
 }
 #endif
 
+int gmtlib_delete_virtualfile (void *V_API, const char *string) {
+	/* Given a VirtualFile name, delete its record bu NULLing it */
+	int object_ID, item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	if ((object_ID = gmtapi_decode_id (string)) == GMT_NOTSET)
+		return_error (V_API, GMT_OBJECT_NOT_FOUND);
+	API = gmtapi_get_api_ptr (V_API);
+	if ((item = gmtlib_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		return_error (API, GMT_OBJECT_NOT_FOUND);
+	S_obj = API->object[item];	/* Short-hand */
+	if (S_obj->family != S_obj->actual_family)	/* Reset the un-masquerading that GMT_Open_VirtualFile did */
+		S_obj->family = S_obj->actual_family;
+	S_obj->no_longer_owner = true;
+	S_obj->resource = NULL;
+
+	return GMT_NOERROR;
+}
+
 void * GMT_Read_VirtualFile (void *V_API, const char *string) {
 	/* Given a VirtualFile name, retrieve the resulting object */
 	int object_ID;

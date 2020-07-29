@@ -52,6 +52,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC int gmtlib_delete_virtualfile  (void *API, const char *string);
 EXTERN_MSC bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd);
 EXTERN_MSC bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd);
 EXTERN_MSC int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file);
