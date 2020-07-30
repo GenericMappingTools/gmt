@@ -6761,7 +6761,7 @@ GMT_LOCAL char gmtapi_debug_geometry_code (unsigned int geometry) {
 /*! . */
 GMT_LOCAL int gmtapi_encode_id (struct GMTAPI_CTRL *API, unsigned int module_input, unsigned int direction, unsigned int family, unsigned int actual_family, unsigned int geometry, unsigned int messenger, int object_ID, char *filename) {
 	/* Creates a virtual filename with the embedded object information .  Space for up to GMT_VF_LEN characters in filename must exist.
-	 * Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.
+	 * Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.  Total length is 27 chars (GMTAPI_MEMFILE_LEN)
 	 * S stands for P(rimary) or S(econdary) input or output object (command line is primary, files via options are secondary).
 	 * D stands for Direction and is either I(n) or O(ut).
 	 * F stands for Family and is one of D(ataset), G(rid), I(mage), C(PT), X(PostScript), M(atrix), V(ector), U(ndefined).
@@ -7563,6 +7563,27 @@ int GMT_Close_VirtualFile_ (unsigned int *family, char *string, int len) {
 	return (GMT_Close_VirtualFile (GMT_FORTRAN, string));
 }
 #endif
+
+int gmtlib_delete_virtualfile (void *V_API, const char *string) {
+	/* Given a VirtualFile name, delete its record bu NULLing it */
+	int object_ID, item;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+	struct GMTAPI_CTRL *API = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (string == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	if ((object_ID = gmtapi_decode_id (string)) == GMT_NOTSET)
+		return_error (V_API, GMT_OBJECT_NOT_FOUND);
+	API = gmtapi_get_api_ptr (V_API);
+	if ((item = gmtlib_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
+		return_error (API, GMT_OBJECT_NOT_FOUND);
+	S_obj = API->object[item];	/* Short-hand */
+	if (S_obj->family != S_obj->actual_family)	/* Reset the un-masquerading that GMT_Open_VirtualFile did */
+		S_obj->family = S_obj->actual_family;
+	S_obj->no_longer_owner = true;
+	S_obj->resource = NULL;
+
+	return GMT_NOERROR;
+}
 
 void * GMT_Read_VirtualFile (void *V_API, const char *string) {
 	/* Given a VirtualFile name, retrieve the resulting object */
@@ -13095,7 +13116,7 @@ void * GMT_Get_Vector_ (struct GMT_VECTOR *V, unsigned int *col) {
 
 int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, int pad, void *matrix) {
 	/* Hooks a user's custom matrix onto M's data array and sets the type.
-	 * It is the user's respondibility to pass correct type for the given matrix.
+	 * It is the user's responsibility to pass correct type for the given matrix.
 	 * We check that dimensions have been set earlier */
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);

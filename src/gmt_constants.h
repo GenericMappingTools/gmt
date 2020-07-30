@@ -244,6 +244,9 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 /* Allowable refpoint codes */
 #define GMT_REFPOINT_CODES "gjJnx"
 
+/* Modifiers for contour -A option */
+#define GMT_CONTSPEC_MODS "acdefghijklLnNoprstuvwxX="
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,

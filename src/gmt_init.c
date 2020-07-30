@@ -425,7 +425,7 @@ static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 #include <Windows.h>
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
 	OVERLAPPED over = { 0 };
 	HANDLE hand = (HANDLE)_get_osfhandle(fd);
 	if (!LockFileEx(hand, LOCKFILE_EXCLUSIVE_LOCK, 0, 1, 0, &over)) /* Will block until exclusive lock is acquired */
@@ -437,7 +437,7 @@ GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	HANDLE hand = (HANDLE)_get_osfhandle(fd);
 	if (!UnlockFile(hand, 0, 0, 0, 1))
 	{
@@ -449,7 +449,7 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 
 #elif defined (HAVE_FCNTL_H_) /* Use POSIX fcntl */
 /*! . */
-GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
 	int status;
 	struct flock lock;
 	lock.l_type = F_WRLCK;		/* Lock for exclusive reading/writing */
@@ -466,7 +466,7 @@ GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	int status;
 	struct flock lock;
 	lock.l_type = F_UNLCK;		/* Release lock and close file */
@@ -484,13 +484,13 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 
 #else /* Not Windows and fcntl not available */
 /*! . */
-GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File locking not supported.\n");
 	return false;
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	return false;
 }
 #endif
@@ -2880,7 +2880,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	}
 
 	/* When we get here the file exists */
-	gmtinit_file_lock (GMT, fileno(fp));
+	gmtlib_file_lock (GMT, fileno(fp));
 	/* Format of GMT gmt.history is as follow:
 	 * BEGIN GMT <version>		This is the start of parsable section
 	 * OPT ARG
@@ -2919,7 +2919,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	}
 
 	/* Close the file */
-	gmtinit_file_unlock (GMT, fileno(fp));
+	gmtlib_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmtinit_get_history\n");
@@ -2975,7 +2975,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if ((fp = fopen (hfile, "w")) == NULL) return (-1);	/* Not OK to be unsuccessful in creating this file */
 
 	/* When we get here the file is open */
-	if (!gmtinit_file_lock (GMT, fileno(fp)))
+	if (!gmtlib_file_lock (GMT, fileno(fp)))
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Directory %s is not locked for exclusive access. Multiple gmt processes running at once could corrupt history file.\n", hfile);
 
 	fprintf (fp, "# GMT %d Session common arguments shelf\n", GMT_MAJOR_VERSION);
@@ -2991,7 +2991,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	fprintf (fp, "END\n");
 
 	/* Close the file */
-	gmtinit_file_unlock (GMT, fileno(fp));
+	gmtlib_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
 	return (GMT_NOERROR);
@@ -13602,6 +13602,7 @@ GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
 	bool quote = false;	/* We are outside any quoted text */
 	size_t k;
 	if (strchr (file, '@') == NULL) return false;	/* No @ anywhere */
+	if (gmt_M_file_is_memory (file)) return false;	/* Not a remote file but a memory reference */
 	if (file[0] == '@') return true;	/* Definitively a remote file */
 	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
 	for (k = 0; k < strlen (file); k++) {
@@ -13654,11 +13655,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if (options) {
 	  for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		  if (remote_first && gmtinit_might_be_remotefile (opt->arg)) {
+		  if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+		  if (remote_first) {
 			  gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
 			  remote_first = false;
 		  }
-		  if (opt->arg[0] != '@') continue;	/* No remote file argument given */
 		  gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 		}
 	}
