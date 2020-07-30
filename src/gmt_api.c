@@ -3454,12 +3454,14 @@ GMT_LOCAL int gmtapi_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned in
 		}
 		if (gmtapi_bin_input_memory (GMT, M->n_columns, M->n_columns) < 0)	/* Segment header found, finish the segment we worked on and goto next */
 			gmt_write_segmentheader (GMT, fp, M->n_columns);
-		else {	/* Format an ascii output record */
+		else {	/* Format an ASCII output record */
 			fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[0]);
 			for (col = 1; col < M->n_columns; col++) {
 				fprintf (fp, "%s", GMT->current.setting.io_col_separator);
 				fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[col]);
 			}
+			if (M->text && M->text[row])
+				fprintf (fp, "%s%s", GMT->current.setting.io_col_separator, M->text[row]);
 			fprintf (fp, "\n");
 		}
 	}
@@ -3545,7 +3547,7 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 		strncpy (V_file, dest, PATH_MAX-1);
 		append = (V_file[0] == '>');	/* Want to append to existing file */
 		if ((fp = fopen (&V_file[append], (append) ? "a" : "w")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot %s Matrix file %s\n", msg2[append], &V_file[append]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot %s Vector file %s\n", msg2[append], &V_file[append]);
 			return (GMT_ERROR_ON_FOPEN);
 		}
 		close_file = true;	/* We only close files we have opened here */
@@ -3561,7 +3563,7 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 	else if (dest_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
 		int *fd = dest;
 		if (fd && (fp = fdopen (*fd, "a")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot convert Matrix file descriptor %d to stream in gmtapi_write_matrix\n", *fd);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot convert Vector file descriptor %d to stream in gmtapi_write_vector\n", *fd);
 			return (GMT_ERROR_ON_FDOPEN);
 		}
 		if (fd == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
@@ -3572,10 +3574,10 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 		close_file = true;	/* since fdopen allocates space */
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized source type %d in gmtapi_write_matrix\n", dest_type);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized source type %d in gmtapi_write_vector\n", dest_type);
 		return (GMT_NOT_A_VALID_METHOD);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s Matrix to %s\n", msg1[append], &V_file[append]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s Vector to %s\n", msg1[append], &V_file[append]);
 
 	/* Set get function per vector column */
 	api_get_val = gmt_M_memory (GMT, NULL, V->n_columns, GMT_getfunction);
@@ -3594,12 +3596,14 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 			api_get_val[col] (&(V->data[col]), row, &(GMT->current.io.curr_rec[col]));
 		if (gmtapi_bin_input_memory (GMT, V->n_columns, V->n_columns) < 0)	/* Segment header found, finish the segment we worked on and goto next */
 			gmt_write_segmentheader (GMT, fp, V->n_columns);
-		else {/* Format an ascii record for output */
+		else {	/* Format an ASCII record for output */
 			fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[0]);
 			for (col = 1; col < V->n_columns; col++) {
 				fprintf (fp, "%s", GMT->current.setting.io_col_separator);
 				fprintf (fp, GMT->current.setting.format_float_out, GMT->current.io.curr_rec[col]);
 			}
+			if (V->text && V->text[row])
+				fprintf (fp, "%s%s", GMT->current.setting.io_col_separator, V->text[row]);
 			fprintf (fp, "\n");
 		}
 	}
