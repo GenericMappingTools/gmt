@@ -1,6 +1,7 @@
 #include "gmt.h"
 /*
  * Testing the reading and writing of GMT_VECTOR from/to ASCII files.
+ * The test script api/apivec_io.sh will run this and make a plot.
  */
 int main () {
 	void *API = NULL;                 /* The API control structure */

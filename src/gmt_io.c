@@ -8347,6 +8347,10 @@ void gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool fr
 		gmtio_free_text_array (V->n_rows, V->text);
 		gmt_M_free (GMT, V->text);
 	}
+	if (V->n_headers) {
+		for (unsigned int k = 0; k < V->n_headers; k++) gmt_M_str_free (V->header[k]);
+		gmt_M_free (GMT, V->header);
+	}
 	gmt_M_free (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
 	gmt_M_free (GMT, V->type);
 	gmt_M_free (GMT, VH->alloc_mode);
@@ -8424,6 +8428,10 @@ void gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool fr
 	if (M->text && free_matrix && MH->alloc_mode_text == GMT_ALLOC_INTERNALLY) {
 		gmtio_free_text_array (M->n_rows, M->text);
 		gmt_M_free (GMT, M->text);
+	}
+	if (M->n_headers) {
+		for (unsigned int k = 0; k < M->n_headers; k++) gmt_M_str_free (M->header[k]);
+		gmt_M_free (GMT, M->header);
 	}
 	alloc_mode = MH->alloc_mode;
 	gmt_M_free (GMT, M->hidden);

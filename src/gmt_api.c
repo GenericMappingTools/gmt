@@ -3528,7 +3528,7 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 	 * mode is not used yet.
 	 */
 
-	bool close_file = false, append = false;
+	bool close_file = false, append = false, was;
 	uint64_t row, col;
 	unsigned int hdr;
 	char V_file[PATH_MAX] = {""};
@@ -3589,6 +3589,10 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 
 	/* Start writing Vector to fp */
 
+	if (V->n_headers) {	/* Make sure we enable header records to be written */
+		was = GMT->current.setting.io_header[GMT_OUT];
+		GMT->current.setting.io_header[GMT_OUT] = true;
+	}
 	for (hdr = 0; hdr < V->n_headers; hdr++)
 		gmtlib_write_tableheader (GMT, fp, V->header[hdr]);
 
@@ -3611,6 +3615,8 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 	gmt_M_free (GMT, api_get_val);
 
 	if (close_file) fclose (fp);
+	GMT->current.setting.io_header[GMT_OUT] = was;
+
 	return (GMT_NOERROR);
 }
 
@@ -3671,12 +3677,12 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 	 * mode is not used yet.  We only do ascii file for now - later need to deal with -b
 	 */
 
-	bool close_file = false, first = true, add_first_segheader = false;
+	bool close_file = false, first = true, add_first_segheader = false, in_header_section = true;
 	unsigned int pos;
-	uint64_t nt_alloc = 0, row = 0, col, dim[GMT_DIM_SIZE] = {0, 0, GMT->current.setting.export_type, 0};
+	uint64_t nt_alloc = 0, nh_alloc = 0, n_headers = 0, row = 0, n_col, col, dim[GMT_DIM_SIZE] = {0, 0, GMT->current.setting.export_type, 0};
 	char V_file[PATH_MAX] = {""};
 	char line[GMT_BUFSIZ] = {""};
-	char **text = NULL;
+	char **text = NULL, **header = NULL;
 	FILE *fp = NULL;
 	struct GMT_VECTOR *V = NULL;
 	GMT_putfunction api_put_val = NULL;
@@ -3686,7 +3692,7 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 
 	if (src_type == GMT_IS_FILE) {	/* dest is a file name */
 		strncpy (V_file, source, PATH_MAX-1);
-		if ((fp = fopen (V_file, "r")) == NULL) {
+		if ((fp = gmt_fopen (GMT, V_file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open Vector file %s\n", V_file);
 			return_null (GMT->parent, GMT_ERROR_ON_FOPEN);
 		}
@@ -3720,7 +3726,15 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read Vector from %s\n", V_file);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		if (strchr (GMT->current.setting.io_head_marker_in, line[0])) continue;	/* Just skip headers */
+		gmt_chop (line);	/* Remove linefeeds */
+		if (strchr (GMT->current.setting.io_head_marker_in, line[0])) {
+			if (in_header_section) {
+				if (nh_alloc <= n_headers) header = gmt_M_memory (GMT, NULL, nh_alloc += GMT_TINY_CHUNK, char *);
+				header[n_headers++] = strdup (line);
+			}
+			continue;
+		}
+		in_header_section = false;
 		if (line[0] == '>') {
 			if (first) {	/* Have not allocated yet so just skip that row for now */
 				first = false;
@@ -3732,8 +3746,12 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 			}
 		}
 		else {	/* Regular data record */
-			gmt_chop (line);	/* Remove linefeeds */
-			dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec, &pos);
+			if (dim[0] == 0)	/* First time we must extablish how many columns */
+				dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec, &pos);
+			if ((n_col = gmtlib_conv_text2datarec (GMT, line, dim[0], GMT->current.io.curr_rec, &pos)) != dim[0]) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Record %" PRIu64 " only had %" PRIu64 " columns but %" PRIu64 " was expected.  Record skipped\n", row, n_col, dim[0]);
+				continue;
+			}
 			gmt_prep_tmp_arrays (GMT, GMT_IN, row, dim[0]);	/* Init or reallocate tmp vectors */
 			for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->current.io.curr_rec[col];
 			if (line[pos]) {	/* Deal with trailing text */
@@ -3746,7 +3764,7 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 	if (add_first_segheader) for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][0] = GMT->session.d_NaN;
 	dim[1] = row;	/* Allocate all vectors using current type setting in the defaults [GMT_DOUBLE] */
 	if ((V = GMT_Create_Data (GMT->parent, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-		if (close_file) fclose (fp);
+		if (close_file) gmt_fclose (GMT, fp);
 		return_null (GMT->parent, GMT_MEMORY_ERROR);
 	}
 	for (col = 0; col < V->n_columns; col++) {
@@ -3757,11 +3775,18 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 	}
 
 	if (text) {	/* Attach the trailing text to the vector */
+		struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
 		if (nt_alloc > row) text = gmt_M_memory (GMT, text, row, char **);
 		GMT_Put_Strings (GMT->parent, GMT_IS_VECTOR, V, text);
+		VH->alloc_mode_text = GMT_ALLOC_INTERNALLY;	/* Override since it is allocated internally in GMT */
+	}
+	if (n_headers) {	/* Pass out the header records as well */
+		if (nh_alloc > n_headers) header = gmt_M_memory (GMT, header, n_headers, char *);
+		V->header = header;
+		V->n_headers = n_headers;
 	}
 
-	if (close_file) fclose (fp);
+	if (close_file) gmt_fclose (GMT, fp);
 	return (V);
 }
 
@@ -4425,7 +4450,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			}
 			/* Consider header records from first table only */
 			if (D_obj->table[0]->n_headers) {
-				M_obj->header = gmt_M_memory (GMT, D_obj->table[0]->header, D_obj->table[0]->n_headers, char *);
+				M_obj->header = gmt_M_memory (GMT, NULL, D_obj->table[0]->n_headers, char *);
 				for (hdr = M_obj->n_headers = 0; hdr < D_obj->table[0]->n_headers; hdr++)
 					M_obj->header[M_obj->n_headers++] = strdup (D_obj->table[0]->header[hdr]);
 			}
@@ -4492,7 +4517,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			}
 			/* Consider header records from first table only */
 			if (D_obj->table[0]->n_headers) {
-				V_obj->header = gmt_M_memory (GMT, D_obj->table[0]->header, D_obj->table[0]->n_headers, char *);
+				V_obj->header = gmt_M_memory (GMT, NULL, D_obj->table[0]->n_headers, char *);
 				for (hdr = V_obj->n_headers = 0; hdr < D_obj->table[0]->n_headers; hdr++)
 					V_obj->header[V_obj->n_headers++] = strdup (D_obj->table[0]->header[hdr]);
 			}
@@ -4566,9 +4591,9 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			}
 			/* Consider header records from first table only and will set pointers only */
 			if (D_obj->table[0]->n_headers) {
-				V_obj->header = gmt_M_memory (GMT, D_obj->table[0]->header, D_obj->table[0]->n_headers, char *);
+				V_obj->header = gmt_M_memory (GMT, NULL, D_obj->table[0]->n_headers, char *);
 				for (hdr = V_obj->n_headers = 0; hdr < D_obj->table[0]->n_headers; hdr++)
-					V_obj->header[V_obj->n_headers++] = D_obj->table[0]->header[hdr];
+					V_obj->header[V_obj->n_headers++] = strdup (D_obj->table[0]->header[hdr]);
 			}
 			if (toggle) gmtapi_flip_vectors (GMT, V_obj, GMT_OUT);
 			S_obj->resource = V_obj;
