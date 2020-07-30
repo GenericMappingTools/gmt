@@ -716,6 +716,13 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		cdf_cpt[Ctrl->E.levels-1] = pair[nxy-1].value;
 		GMT_Report (API, GMT_MSG_INFORMATION, "z = %16g cdf(z) = %6.4f\n", cdf_cpt[Ctrl->E.levels-1], 1.0);
 		gmt_M_free (GMT, pair);
+		/* Make sure we do not have slices with no z-range */
+		for (j = 1; j < (Ctrl->E.levels - 1); j++) {
+			if (doubleAlmostEqualZero (cdf_cpt[j-1], cdf_cpt[j])) {
+				GMT_Report (API, GMT_MSG_WARNING, "CDF is vertical, adding %g to have monotonic increasing z-values:\n", GMT_CONV8_LIMIT);
+				cdf_cpt[j] += GMT_CONV8_LIMIT;
+			}
+		}
 	}
 
 	/* Now the cdf function has been found.  We now resample the chosen CPT  */
