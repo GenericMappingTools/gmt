@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# Test the C API for reading and writing native vectors
+
+ps=apivec_io.ps
+testapi_vector_io
+gmt pscoast -Rg -JQ0/15c -Glightpink -Baf -K > $ps
+gmt psxy -R -J -O -K test_hotspots.txt -Sc2c -Gred >> $ps
+gmt convert test_hotspots.txt -o0,1,t | gmt pstext -R -J -O -F+f8p+jBL -Dj4p >> $ps
