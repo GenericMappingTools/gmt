@@ -3669,9 +3669,10 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 
 	bool close_file = false, first = true, add_first_segheader = false;
 	unsigned int pos;
-	uint64_t row = 0, col, dim[GMT_DIM_SIZE] = {0, 0, GMT->current.setting.export_type, 0};
+	uint64_t nt_alloc = 0, row = 0, col, dim[GMT_DIM_SIZE] = {0, 0, GMT->current.setting.export_type, 0};
 	char V_file[PATH_MAX] = {""};
 	char line[GMT_BUFSIZ] = {""};
+	char **text = NULL;
 	FILE *fp = NULL;
 	struct GMT_VECTOR *V = NULL;
 	GMT_putfunction api_put_val = NULL;
@@ -3731,6 +3732,10 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 			dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec, &pos);
 			gmt_prep_tmp_arrays (GMT, GMT_IN, row, dim[0]);	/* Init or reallocate tmp vectors */
 			for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->current.io.curr_rec[col];
+			if (line[pos]) {	/* Deal with trailing text */
+				if (nt_alloc <= row) text = gmt_M_memory (GMT, NULL, nt_alloc += GMT_INITIAL_MEM_ROW_ALLOC, char **);
+				text[row] = strdup (&line[pos]);
+			}
 		}
 		row++;
 	}
@@ -3745,6 +3750,11 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 			return_null (GMT->parent, GMT_NOT_A_VALID_TYPE);
 		for (row = 0; row < V->n_rows; row++)
 			api_put_val (&(V->data[col]), row, GMT->hidden.mem_coord[col][row]);
+	}
+
+	if (text) {	/* Attach the trailing text to the vector */
+		if (nt_alloc > row) text = gmt_M_memory (GMT, text, row, char **);
+		GMT_Put_Strings (GMT->parent, GMT_IS_VECTOR, V, text);
 	}
 
 	if (close_file) fclose (fp);
