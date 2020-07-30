@@ -120,8 +120,8 @@ enum GMT_enum_method {
 	GMT_IS_FILE	 =    0,	/* Entity is a filename */
 	GMT_IS_STREAM	 =    1,	/* Entity is an open stream */
 	GMT_IS_FDESC	 =    2,	/* Entity is an open file descriptor */
-	GMT_IS_DUPLICATE =    3,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE =    4,	/* Entity is a memory location that should be referenced */
+	GMT_IS_DUPLICATE =   16,	/* Entity is a memory location that should be duplicated */
+	GMT_IS_REFERENCE =   32,	/* Entity is a memory location that should be referenced */
 	GMT_IS_OUTPUT	 = 1024		/* When creating a resource as a container for output */
 };
 
