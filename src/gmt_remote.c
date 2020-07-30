@@ -520,7 +520,7 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 #define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
 
 GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index) {
-	bool query = gmt_M_file_is_query (file);
+	bool query = gmt_M_file_is_query (url);
 	int curl_err = 0;
 	long time_spent;
 	char *Lfile = NULL;
