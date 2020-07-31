@@ -11,7 +11,7 @@ int main () {
 	API = GMT_Create_Session ("test", 2U, GMT_SESSION_EXTERNAL, NULL);
 	/* Read in our data table to memory */
 	V = GMT_Read_Data (API, GMT_IS_VECTOR, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, "@hotspots.txt", NULL);
-	/* Associate our data table with a virtual file */
+	/* Write the vector out to a table */
 	GMT_Write_Data (API, GMT_IS_VECTOR, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, "test_hotspots.txt", V);
 	/* Destroy the GMT session */
 	if (GMT_Destroy_Session (API)) return EXIT_FAILURE;
