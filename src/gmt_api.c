@@ -4718,6 +4718,7 @@ GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 	return GMT_NOERROR;
 }
 
+#ifdef HAVE_GDAL
 GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT_IMAGE **I_out) {
 	/* In most situations we can use an input image given to a module as the dataset to
 	 * plot.  However, if the image is indexed then we must expand it to rgb since we may
@@ -4789,6 +4790,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	(*I_out) = I;
 	return (new);
 }
+#endif
 
 /*! . */
 GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
@@ -4809,7 +4811,7 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 	double dx, dy, d;
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_getfunction api_get_val = NULL;
-	struct GMT_IMAGE *I_obj = NULL, *I_orig = NULL, *Irgb = NULL;
+	struct GMT_IMAGE *I_obj = NULL, *I_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_MATRIX_HIDDEN  *MH = NULL;
 	struct GMT_IMAGE_HIDDEN *IH = NULL;
@@ -4819,6 +4821,7 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 #ifdef HAVE_GDAL
 	bool new = false;
 	size_t size;
+	struct GMT_IMAGE *Irgb = NULL;
 #endif
 
 	GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_import_image: Passed ID = %d and mode = %d\n", object_ID, mode);
@@ -5064,12 +5067,14 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 
+#ifdef HAVE_GDAL
 	if (no_index && gmtapi_expand_index_image (API->GMT, I_obj, &Irgb)) {	/* true if we have a read-only indexed image and we had to allocate a new one */
 		if (GMT_Destroy_Data (API, &I_obj) != GMT_NOERROR) {
 			return_null (API, API->error);
 		}
 		I_obj = Irgb;
 	}
+#endif
 
 	if (!via) S_obj->resource = I_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 
