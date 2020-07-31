@@ -3223,7 +3223,7 @@ GMT_LOCAL struct GMT_MATRIX * gmtapi_read_matrix (struct GMT_CTRL *GMT, void *so
 	bool close_file = false, first = true, add_first_segheader = false, in_header_section = true;
 	unsigned int pos;
 	int error = 0;
-	uint64_t row = 0, col, ij, nt_alloc = 0, nh_alloc = 0, n_headers = 0, dim[4] = {0, 0, 0, GMT->current.setting.export_type};
+	uint64_t row = 0, col, ij, n_col, nt_alloc = 0, nh_alloc = 0, n_headers = 0, dim[4] = {0, 0, 0, GMT->current.setting.export_type};
 	char M_file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""};
 	char **text = NULL, **header = NULL;
 	FILE *fp = NULL;
@@ -3290,7 +3290,12 @@ GMT_LOCAL struct GMT_MATRIX * gmtapi_read_matrix (struct GMT_CTRL *GMT, void *so
 			}
 		}
 		else {	/* Regular data record */
-			dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec, &pos);
+			if (dim[0] == 0)	/* First time we must establish how many columns */
+				dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec, &pos);
+			if ((n_col = gmtlib_conv_text2datarec (GMT, line, dim[0], GMT->current.io.curr_rec, &pos)) != dim[0]) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Matrix record %" PRIu64 " only had %" PRIu64 " columns but %" PRIu64 " was expected.  Record skipped\n", row, n_col, dim[0]);
+				continue;
+			}
 			gmt_prep_tmp_arrays (GMT, GMT_IN, row, dim[0]);	/* Init or reallocate tmp vectors */
 			for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->current.io.curr_rec[col];
 			if (line[pos]) {	/* Deal with trailing text */
@@ -3777,7 +3782,7 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_read_vector (struct GMT_CTRL *GMT, void *so
 			if (dim[0] == 0)	/* First time we must extablish how many columns */
 				dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec, &pos);
 			if ((n_col = gmtlib_conv_text2datarec (GMT, line, dim[0], GMT->current.io.curr_rec, &pos)) != dim[0]) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Record %" PRIu64 " only had %" PRIu64 " columns but %" PRIu64 " was expected.  Record skipped\n", row, n_col, dim[0]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector record %" PRIu64 " only had %" PRIu64 " columns but %" PRIu64 " was expected.  Record skipped\n", row, n_col, dim[0]);
 				continue;
 			}
 			gmt_prep_tmp_arrays (GMT, GMT_IN, row, dim[0]);	/* Init or reallocate tmp vectors */
