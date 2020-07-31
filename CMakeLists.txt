@@ -183,7 +183,6 @@ endif (GMT_INSTALL_MODULE_LINKS)
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
 
-string (TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)
 # Configuration done
 message(
 	"*\n"
@@ -195,7 +194,7 @@ message(
 	"*  Found GMT data server      : ${GMT_DATA_SERVER}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
-	"*  Curl library               : ${CURL_LIBRARY_${CMAKE_BUILD_TYPE_UPPER}}\n"
+	"*  Curl library               : ${CURL_LIBRARY}\n"
 	"*  Curl include dir           : ${CURL_INCLUDE_DIR}\n"
 	"*  GDAL library               : ${GDAL_LIBRARY}\n"
 	"*  GDAL include dir           : ${GDAL_INCLUDE_DIR}\n"
@@ -206,7 +205,7 @@ message(
 	"*  FFTW include dir           : ${FFTW3_INCLUDE_DIR}\n"
 	"*  Accelerate Framework       : ${ACCELERATE_FRAMEWORK}\n"
 	"*  Regex support              : ${GMT_CONFIG_REGEX_MESSAGE}\n"
-	"*  ZLIB library               : ${ZLIB_LIBRARY_${CMAKE_BUILD_TYPE_UPPER}}\n"
+	"*  ZLIB library               : ${ZLIB_LIBRARY}\n"
 	"*  ZLIB include dir           : ${ZLIB_INCLUDE_DIR}\n"
 	"*  LAPACK library             : ${GMT_CONFIG_LAPACK_MESSAGE}\n"
 	"*  BLAS library               : ${GMT_CONFIG_BLAS_MESSAGE}\n"
