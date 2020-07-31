@@ -1,6 +1,5 @@
 Copy of the original Sphinx Read The Docs theme from
-https://github.com/readthedocs/sphinx_rtd_theme version 0.4.3.
-
+https://github.com/readthedocs/sphinx_rtd_theme version 0.5.0.
 
 **************************
 Read the Docs Sphinx Theme
@@ -35,7 +34,7 @@ This theme is distributed on PyPI_ and can be installed with ``pip``:
 
 .. code:: console
 
-   pip install sphinx-rtd-theme
+   $ pip install sphinx-rtd-theme
 
 To use the theme in your Sphinx project, you will need to add the following to
 your ``conf.py`` file:
