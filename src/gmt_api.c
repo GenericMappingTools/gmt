@@ -3323,7 +3323,7 @@ GMT_LOCAL struct GMT_MATRIX * gmtapi_read_matrix (struct GMT_CTRL *GMT, void *so
 	M->inc[GMT_X] = M->inc[GMT_Y] = 1.0;
 
 	if (text) {	/* Attach the trailing text to the vector */
-		struct GMT_MATRIX_HIDDEN *MH = gmt_get_V_hidden (M);
+		struct GMT_MATRIX_HIDDEN *MH = gmt_get_M_hidden (M);
 		if (nt_alloc > row) text = gmt_M_memory (GMT, text, row, char **);
 		GMT_Put_Strings (GMT->parent, GMT_IS_MATRIX, M, text);
 		MH->alloc_mode_text = GMT_ALLOC_INTERNALLY;	/* Override since it is allocated internally in GMT */
