@@ -77,7 +77,7 @@ jobs:
 - job:
   displayName: 'Linux | Build docs + Deploy docs + Package'
   # Deploy documentation in master and 6.x branches
-  condition: in(variables['Build.SourceBranchName'], 'master', '6.1', '6.2', '6.3', '6.4', '6.5')
+  # condition: in(variables['Build.SourceBranchName'], 'master', '6.1', '6.2', '6.3', '6.4', '6.5')
 
   pool:
     vmImage: 'ubuntu-18.04'
@@ -131,7 +131,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Mac | Build docs + Package'
-  condition: eq(variables['Build.Reason'], 'Schedule')
+  # condition: eq(variables['Build.Reason'], 'Schedule')
 
   pool:
     vmImage: 'macOS-10.15'
@@ -186,7 +186,7 @@ jobs:
 ########################################################################################
 - job:
   displayName: 'Windows | Build Docs + Package'
-  condition: eq(variables['Build.Reason'], 'Schedule')
+  # condition: eq(variables['Build.Reason'], 'Schedule')
   timeoutInMinutes: 120
 
   pool:
