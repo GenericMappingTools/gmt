@@ -29,7 +29,7 @@ foreach (_fig ${_scripts_ps2png})
 		-D${RST_BINARY_DIR}/_images
 		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${_fig})
+		DEPENDS gmt_for_img_convert ${_fig})
 endforeach (_fig ${_scripts_ps2png})
 
 # Convert PS to PDF
@@ -45,7 +45,7 @@ foreach (_fig ${_scripts_ps2pdf})
 		-D${RST_BINARY_DIR}/_images
 		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${_fig})
+		DEPENDS gmt_for_img_convert ${_fig})
 endforeach (_fig ${_scripts_ps})
 
 # Convert script to verbatim txt
@@ -59,7 +59,7 @@ foreach (_script ${_scripts_sh2txt})
 		${CMAKE_CURRENT_SOURCE_DIR}/${_script}
 		${RST_BINARY_DIR}/_verbatim/${_txt}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS script2verbatim _docs_rst_mkdir_verbatim ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
+		DEPENDS script2verbatim ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
 endforeach (_script)
 
 # Add build target
