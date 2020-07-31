@@ -1147,7 +1147,7 @@ the label string that goes with the current symbol or line, you can select
 from a series of modifiers that mirror the effect of control codes normally
 added to the *specfile* by hand.  For instance, a simple plot with two
 symbols can obtain a legend by using this option and modifiers and is shown
-in Figure :ref:`Auto Legend <auto_legend>`::
+in Figure :ref:`Auto Legend <auto_legend>`:
 
 .. literalinclude:: /_verbatim/GMT_autolegend.txt
 
