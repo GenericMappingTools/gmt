@@ -12,10 +12,10 @@ int main () {
 
 	API = GMT_Create_Session ("test", 2U, mode, NULL);
 
-	M = GMT_Read_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, "@earth_relief_01d", NULL);
+	M = GMT_Read_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "earth_relief_01d_p.grd", NULL);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, M, input);
 	/* call grdimage with central longitude 0 */
-	sprintf (args, "%s -Rg -JH0/6i -g30 -K -Cgeo", input);
+	sprintf (args, "%s -Rg -JH0/6i -Bg30 -K -Cgeo", input);
 	GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, args);
 	GMT_Init_VirtualFile (API, 0, input);
 	/* call grdimage with central longitude 180 */
