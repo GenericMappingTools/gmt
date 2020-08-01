@@ -598,7 +598,7 @@ EXTERN_MSC int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GM
 
 EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
-	bool nothing_inside = false, use_intensity_grid = false, got_data_grid = false, set_gray, rgb_from_z, rgb_cube_scan;
+	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, set_gray, rgb_from_z, rgb_cube_scan;
 	bool has_content = false, mem_G[3] = {false, false, false}, mem_I = false, mem_D = false;
 	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids, intensity_mode;
 	unsigned int colormask_offset = 0, try, row, col, mixed = 0, *actual_row = NULL, *actual_col = NULL;
@@ -681,7 +681,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					Return (API->error);
 				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, Grid_orig[0], data_grd))
 					Return (API->error);
-				got_data_grid = true;
+				got_data_tiles = true;
 			}
 		}
 		else {	/* Illumination grid present and can be read */
@@ -772,7 +772,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (!Ctrl->D.active) {	/* Read the headers of 1 or 3 grids */
 		for (k = 0; k < n_grids; k++) {
 			mem_G[k] = gmt_M_file_is_memory (Ctrl->In.file[k]);
-			if (got_data_grid && k == 0) continue;	/* Only true if we already read a SRTM tile bunch earlier under I.derive = true */
+			if (got_data_tiles && k == 0) continue;	/* Only true if we already read a SRTM tile bunch earlier under I.derive = true */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read header from file %s\n", Ctrl->In.file[k]);
 			if ((Grid_orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
@@ -795,7 +795,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			Ctrl->C.active = true;	/* Use default CPT (GMT_DEFAULT_CPT_NAME) and autostretch or under modern reuse current CPT */
 	}
 
-	if (n_grids) header_work = Grid_orig[0]->header;	/* OK, we are in GRID mode and this was not set previuosly. Do it now */
+	if (n_grids) header_work = Grid_orig[0]->header;	/* OK, we are in GRID mode and this was not set previously. Do it now */
 
 	if (n_grids && Ctrl->In.do_rgb) {	/* Must ensure all three grids are coregistered */
 		if (!gmt_M_grd_same_region (GMT, Grid_orig[0], Grid_orig[1])) error++;
@@ -852,6 +852,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (Ctrl->I.derive) {	/* Auto-create intensity grid from data grid using the now determined data region */
 		bool got_int4_grid = false;
 		char int_grd[GMT_VF_LEN] = {""}, int4_grd[GMT_VF_LEN] = {""};
+		double *region = (got_data_tiles) ? header_work->wesn : wesn;	/* Region to pass to grdgradient */
 		struct GMT_GRID *I_data = NULL;
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid\n");
@@ -865,10 +866,13 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				Return (API->error);
 			got_int4_grid = true;
 		}
-		/* Prepare the grdgradient arguments using selected -A -N and the data region in effect */
+		/* Prepare the grdgradient arguments using selected -A -N and the data region in effect.  If we read in a tiled grid
+		 * then it was made with 0/360 so we must use that region in grdgradient.  For non-tiles, we read the actual grid
+		 * AFTER calling gmt_mapsetup which changes the region.  The tiled region remains unchanged because it is read in
+		 * all at once as it is being assembled.  This fixes https://github.com/GenericMappingTools/gmt/issues/3694 */
 		sprintf (cmd, "-G%s -A%s -N%s+a%s -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=readonly ",
-			int_grd, Ctrl->I.azimuth, Ctrl->I.method, Ctrl->I.ambient, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-		if (got_data_grid)	/* Use the virtual file we made earlier */
+			int_grd, Ctrl->I.azimuth, Ctrl->I.method, Ctrl->I.ambient, region[XLO], region[XHI], region[YLO], region[YHI]);
+		if (got_data_tiles)	/* Use the virtual file we made earlier */
 			strcat (cmd, data_grd);
 		else if (got_int4_grid)	/* Use the virtual file we made earlier */
 			strcat (cmd, int4_grd);
@@ -883,7 +887,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		/* Obtain the data from the virtual file */
 		if ((Intens_orig = GMT_Read_VirtualFile (API, int_grd)) == NULL)
 			Return (API->error);
-		if (got_data_grid)
+		if (got_data_tiles)
 			GMT_Close_VirtualFile (API, data_grd);
 		else if (got_int4_grid)	/* Use the virtual file we made earlier */
 			GMT_Close_VirtualFile (API, int4_grd);
@@ -910,7 +914,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	for (k = 0; k < n_grids; k++) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate and read data from file %s\n", Ctrl->In.file[k]);
-		if (got_data_grid && k == 0) continue;	/* Only true if we already read a SRTM tile bunch earlier under I.derive = true */
+		if (got_data_tiles && k == 0) continue;	/* Only true if we already read a SRTM tile bunch earlier under I.derive = true */
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
 			Return (API->error);
 		}
