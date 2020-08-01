@@ -3,6 +3,11 @@
     max-width: 1000px;
 }
 
+/* See https://github.com/GenericMappingTools/gmt/pull/1605 */
+.rst-content dl dt {
+    font-weight: normal;
+}
+
 /* style for example gallery */
 .gmtgallary li {
     list-style: none;
