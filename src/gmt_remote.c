@@ -606,6 +606,7 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 
 	if (!query) {	/* Remove lock file after successful download */
 		gmtlib_file_unlock (GMT, fileno(fp));
+		fclose(fp);
 		gmt_remove_file (GMT, Lfile);
 		gmt_M_str_free (Lfile);
 	}
@@ -1201,6 +1202,7 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 
 	if (!query) {	/* Remove lock file after successful download */
 		gmtlib_file_unlock (GMT, fileno(fp));
+		fclose(fp);
 		gmt_remove_file (GMT, Lfile);
 		gmt_M_str_free (Lfile);
 	}
