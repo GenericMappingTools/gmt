@@ -7526,6 +7526,8 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 		direction -= GMT_IS_REFERENCE;
 		the_mode = GMT_IS_REFERENCE;
 	}
+	else if (direction & GMT_IS_DUPLICATE)	/* This is the default - just remove the mode flag */
+		direction -= GMT_IS_DUPLICATE;
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return GMT_NOT_A_VALID_DIRECTION;
 	if (direction == GMT_IN && data == NULL) return GMT_PTR_IS_NULL;
 	if (name == NULL) return_error (V_API, GMT_PTR_IS_NULL);
