@@ -5482,6 +5482,10 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 					}
 				}
 			}
+			if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (M_obj->range[XLO], M_obj->range[XHI])) {
+				double shift_amount = M_obj->range[XLO] - G_obj->header->wesn[XLO];
+				if (!gmt_M_is_zero (shift_amount)) gmt_grd_shift (GMT, G_obj, shift_amount);
+			}
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
 				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
