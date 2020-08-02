@@ -28,7 +28,7 @@
 #define THIS_MODULE_MODERN_NAME	"histogram"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
-#define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI@<D{,ID)"
+#define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipqstxy" GMT_OPT("Ec")
 
