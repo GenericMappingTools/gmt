@@ -38,7 +38,7 @@ jobs:
           if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
           cd ..
 
-      - name: Check GMT_VERSION_YEAR in cmake/ConfigDefault.cmake is up-to-date
+      - name: Check GMT version year
         run: |
           current_year=$(date +%Y)
           gmt_version_year=$(grep GMT_VERSION_YEAR cmake/ConfigDefault.cmake | awk -F'"' '{print $2}')
