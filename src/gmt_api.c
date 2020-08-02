@@ -5497,7 +5497,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			//if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			/* This method requires the input data to be a GMT_GRD_FORMAT matrix - otherwise we should be DUPLICATING */
 			MH = gmt_get_M_hidden (M_obj);
-			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_GRDFLOAT && MH->alloc_mode == GMT_ALLOC_EXTERNALLY && (mode & GMT_GRID_IS_COMPLEX_MASK) == 0))
+			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_GRDFLOAT && (mode & GMT_GRID_IS_COMPLEX_MASK) == 0))
 				 return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			if (grid == NULL) {	/* Only allocate when not already allocated.  Note cannot have pad since input matrix wont have one */
 				uint64_t dim[3] = {M_obj->n_rows, M_obj->n_columns, 1};
