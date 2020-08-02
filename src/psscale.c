@@ -1615,7 +1615,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		if (Ptrunc == NULL)
 			Return (EXIT_FAILURE);
 		P = Ptrunc;
-		//GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "chop.cpt", P);
+		//GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, "chop.cpt", P);
 	}
 	if (Ctrl->W.active)	/* Scale all z values */
 		gmt_scale_cpt (GMT, P, Ctrl->W.scale);

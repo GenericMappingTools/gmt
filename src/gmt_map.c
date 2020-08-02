@@ -8029,8 +8029,9 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 			if (!GMT->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				O->data[ij_out] = (gmt_grdfloat)z_int;
-			else if (gmt_M_is_dnan (z_int))		/* Take the average of what we accumulated */
-				O->data[ij_out] /= nz[ij_out];	/* Plain average */
+			else if (gmt_M_is_dnan (z_int)) {		/* Take the average of what we accumulated */
+				if (nz[ij_out]) O->data[ij_out] /= nz[ij_out];	/* Plain average */
+			}
 			else {					/* Weighted average between blockmean'ed and interpolated values */
 				inv_nz = 1.0 / nz[ij_out];
 				O->data[ij_out] = (gmt_grdfloat) ((O->data[ij_out] + z_int * inv_nz) / (nz[ij_out] + inv_nz));
