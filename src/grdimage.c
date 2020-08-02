@@ -567,6 +567,13 @@ GMT_LOCAL void grdimage_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_H
 			r->wesn[YLO] = GMT->current.proj.rect[YLO];	r->wesn[YHI] = GMT->current.proj.rect[YHI];
 		}
 	}
+	else if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Extra check for non-projected longitudes that wrap */
+		double x1;
+		gmt_geo_to_xy (GMT, g->wesn[XHI]-g->inc[GMT_X], g->wesn[YHI], &x1, &y);
+		gmt_geo_to_xy (GMT, g->wesn[XHI], g->wesn[YHI], &x, &y);
+		if (x < x1) /* Wrapped around because end of pixel is outside east; use plot width instead */
+			r->wesn[XHI] = r->wesn[XLO] + GMT->current.proj.rect[XHI];
+	}
 }
 
 GMT_LOCAL int grdimage_set_rgb_three_grids (struct GMT_GRID *Grid_proj[], uint64_t node, double *NaN_rgb, double *rgb) {

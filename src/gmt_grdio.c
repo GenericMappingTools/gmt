@@ -2170,7 +2170,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	/* Periodic grid with 360 degree range is easy */
 
 	if (grid_global) {
-		bool true_global_region = (h->registration == GMT_GRID_NODE_REG && gmt_M_360_range (h->wesn[XLO], h->wesn[XHI]) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
+		bool true_global_region = (gmt_M_360_range (h->wesn[XLO], h->wesn[XHI]) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
 		wesn[XLO] = h->wesn[XLO] + floor ((wesn[XLO] - h->wesn[XLO]) * HH->r_inc[GMT_X] + GMT_CONV4_LIMIT) * h->inc[GMT_X];
 		wesn[XHI] = h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) * HH->r_inc[GMT_X] - GMT_CONV4_LIMIT) * h->inc[GMT_X];
 		/* For the odd chance that xmin or xmax are outside the region: bring them in */
