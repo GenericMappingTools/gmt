@@ -2031,7 +2031,7 @@ GMT_LOCAL int gmtapi_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 		M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], registration);
 		M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], registration);
 	}
-	M->type = (dim == NULL) ? GMT_DOUBLE : dim[3];	/* Use selected data type for export or default to double */
+	M->type = (dim == NULL) ? GMT->current.setting.export_type : dim[3];	/* Use selected data type for export or default to GMT setting */
 	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;
 	M->registration = registration;
 	size = M->n_rows * M->n_columns * ((size_t)M->n_layers);	/* Size of the initial matrix allocation (number of elements) */
@@ -2099,7 +2099,7 @@ GMT_LOCAL int gmtapi_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 		gmt_M_memcpy (V->range, range, 2, double);
 	}
 	for (col = 0; col < V->n_columns; col++)	/* Set the same export data type for all vectors (or default to double) */
-		V->type[col] = (dim == NULL) ? GMT_DOUBLE : dim[GMT_Z];
+		V->type[col] = (dim == NULL) ? GMT->current.setting.export_type : dim[GMT_Z];
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate space */
 		struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
 		if (V->n_rows) {	/* Must allocate vector space and possibly strings */
