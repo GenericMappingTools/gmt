@@ -31,7 +31,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdimage"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Project and plot grids or images"
-#define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID@<G{+,CC(,IG(,AI),<ID"
+#define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID"
 #define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
 
@@ -566,6 +566,13 @@ GMT_LOCAL void grdimage_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_H
 		if (all_lats) {	/* Full -90/+90, use min/max for y */
 			r->wesn[YLO] = GMT->current.proj.rect[YLO];	r->wesn[YHI] = GMT->current.proj.rect[YHI];
 		}
+	}
+	else if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Extra check for non-projected longitudes that wrap */
+		double x1;
+		gmt_geo_to_xy (GMT, g->wesn[XHI]-g->inc[GMT_X], g->wesn[YHI], &x1, &y);
+		gmt_geo_to_xy (GMT, g->wesn[XHI], g->wesn[YHI], &x, &y);
+		if (x < x1) /* Wrapped around because end of pixel is outside east; use plot width instead */
+			r->wesn[XHI] = r->wesn[XLO] + GMT->current.proj.rect[XHI];
 	}
 }
 
