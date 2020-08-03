@@ -5545,17 +5545,25 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 #endif
 			GH = gmt_get_G_hidden (G_obj);
 			S_obj->alloc_mode = MH->alloc_mode;	/* Pass on alloc_mode of matrix */
-			GH->alloc_mode = MH->alloc_mode;
+			//GH->alloc_mode = MH->alloc_mode;
+			GH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since we cannot have both M and G try to free */
 			API->object[new_item]->resource = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			GH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
-			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+			if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (M_obj->range[XLO], M_obj->range[XHI]) && gmt_M_360_range (G_obj->header->wesn[XLO], G_obj->header->wesn[XHI])) {
+				/* Global grids passed via matrix are not rotated to fit the desired global region, so we need to correct the wesn for this grid to match the matrix */
+				gmt_M_memcpy (G_obj->header->wesn, M_obj->range, 4U, double);
+			}
+			else if (S_obj->region && S_obj->orig_wesn[XLO] >= M_obj->range[XLO] && S_obj->orig_wesn[XHI] <= M_obj->range[XHI] && S_obj->orig_wesn[YLO] >= M_obj->range[YLO] && S_obj->orig_wesn[YHI] <= M_obj->range[YHI]) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
 					S_obj->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
 					S_obj->reset_pad = 1;
+			}
+			else {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to select a subset from this GMT_IS_REFERENCE matrix\n");
 			}
 			break;
 
