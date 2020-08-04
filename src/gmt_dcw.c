@@ -753,8 +753,8 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				t++;	/* Now t is at first char afterwards */
 				while (t[0] && isdigit (t[0])) t++;	/* Wind pass all integers */
 				if (t[0] == '\0' || t[0] == '+') { /* The modifier could be +r<dpi> or +r<inc>, assume dpi */
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -%c: Ambiguous modifier +r<val>; could be dpi of the pattern or (a deprecated) region increment - choosing dpi.\n", option);
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "If you meant the region modifier then place it before the +g pattern specification.\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -%c: Ambiguous modifier +r<val>; could be dpi of the pattern or (a deprecated) region increment - choosing dpi.\n", option);
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "If you meant the region modifier then place it before the +g pattern specification.\n", option);
 					r[0] = GMT_ASCII_US;	/* Change +r<dpi> to ASCII31<dpi> to pass strtok splitting */
 				}
 				/* Else it is taken to be a deprecated region increment */
