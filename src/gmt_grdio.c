@@ -2713,10 +2713,10 @@ unsigned int gmtlib_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, boo
 		G->data = NULL;	/* This will remove reference to external memory since gmt_M_free_aligned would not have been called */
 	}
 	if (G->x && G->y && free_grid) {
-		if (GH->alloc_mode == GMT_ALLOC_INTERNALLY) {
+		if (GH->xy_alloc_mode[GMT_X] == GMT_ALLOC_INTERNALLY)
 			gmt_M_free (GMT, G->x);
+		if (GH->xy_alloc_mode[GMT_Y] == GMT_ALLOC_INTERNALLY)
 			gmt_M_free (GMT, G->y);
-		}
 		G->x = G->y = NULL;	/* This will remove reference to external memory since gmt_M_free would not have been called */
 	}
 	if (GH->extra) gmtlib_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
