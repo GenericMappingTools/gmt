@@ -5193,12 +5193,13 @@ GMT_LOCAL int gmtapi_export_image (struct GMTAPI_CTRL *API, int object_ID, unsig
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL bool gmtapi_whole_earth (struct GMT_CTRL *GMT, double we_in[], double we_out[]) {
+unsigned int gmt_whole_earth (struct GMT_CTRL *GMT, double we_in[], double we_out[]) {
 	/* Determines if this is a global geographic grid and we want the whole world, regardless of central longitude */
-	if (!gmt_M_is_geographic (GMT, GMT_IN)) return false;
-	if (!gmt_M_360_range (we_in[XLO],  we_in[XHI])) return false;
-	if (!gmt_M_360_range (we_out[XLO], we_out[XHI])) return false;
-	return true;
+	if (!gmt_M_is_geographic (GMT, GMT_IN)) return 0;
+	if (!gmt_M_360_range (we_in[XLO],  we_in[XHI])) return 0;
+	if (!gmt_M_360_range (we_out[XLO], we_out[XHI])) return 0;
+	if (doubleAlmostEqualZero (we_in[XLO], we_out[XLO])) return 2;	/* Both regions are the same */
+	return 1;	/* Different central meridians */
 }
 
 /*! . */
@@ -5462,7 +5463,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
-			if (!S_obj->region || gmtapi_whole_earth (GMT, M_obj->range, S_obj->wesn)) {	/* Easy, get the whole enchilada */
+			if (!S_obj->region || gmt_whole_earth (GMT, M_obj->range, S_obj->wesn)) {	/* Easy, get the whole enchilada */
 				j0 = i0 = 0;
 				j1 = G_obj->header->n_rows    - 1;	/* Minus 1 since we loop up to and including below */
 				i1 = G_obj->header->n_columns - 1;
@@ -5498,7 +5499,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					}
 				}
 			}
-			if (gmtapi_whole_earth (GMT, M_obj->range, S_obj->wesn)) {
+			if (gmt_whole_earth (GMT, M_obj->range, S_obj->wesn)) {
 				/* Global grids passed via matrix are not rotated to fit the desired global region, so we need to correct the wesn for this grid to match the matrix */
 				gmt_M_memcpy (G_obj->header->wesn, M_obj->range, 4U, double);
 			}
@@ -5518,7 +5519,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			 * only kick in after we allocate the G_obj and come back the second time (after getting header) since otherwise S_obj->wesn is not set yet */
 			if (!(!S_obj->region ||
 				(S_obj->wesn[XLO] >= M_obj->range[XLO] && S_obj->wesn[XHI] <= M_obj->range[XHI] && S_obj->wesn[YLO] >= M_obj->range[YLO] && S_obj->wesn[YHI] <= M_obj->range[YHI]) ||
-				gmtapi_whole_earth (GMT, M_obj->range, S_obj->wesn))) {	/* Cannot do this by reference, switch to duplication */
+				gmt_whole_earth (GMT, M_obj->range, S_obj->wesn))) {	/* Cannot do this by reference, switch to duplication */
 				method -= GMT_IS_REFERENCE;
 				method += GMT_IS_DUPLICATE;
 				start_over_method = GMT_IS_DUPLICATE;
@@ -5579,7 +5580,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			API->object[new_item]->resource = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			GH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
-			if (gmtapi_whole_earth (GMT, M_obj->range, S_obj->wesn)) {
+			if (gmt_whole_earth (GMT, M_obj->range, S_obj->wesn)) {
 				/* Global grids passed via matrix are not rotated to fit the desired global region, so we need to correct the wesn for this grid to match the matrix */
 				gmt_M_memcpy (G_obj->header->wesn, M_obj->range, 4U, double);
 			}
