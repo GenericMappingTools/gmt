@@ -5193,6 +5193,15 @@ GMT_LOCAL int gmtapi_export_image (struct GMTAPI_CTRL *API, int object_ID, unsig
 	return (GMT_NOERROR);
 }
 
+unsigned int gmt_whole_earth (struct GMT_CTRL *GMT, double we_in[], double we_out[]) {
+	/* Determines if this is a global geographic grid and we want the whole world, regardless of central longitude */
+	if (!gmt_M_is_geographic (GMT, GMT_IN)) return 0;
+	if (!gmt_M_360_range (we_in[XLO],  we_in[XHI])) return 0;
+	if (!gmt_M_360_range (we_out[XLO], we_out[XHI])) return 0;
+	if (doubleAlmostEqualZero (we_in[XLO], we_out[XLO])) return 2;	/* Both regions are the same */
+	return 1;	/* Different central meridians */
+}
+
 /*! . */
 GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid) {
 	/* Handles the reading of a 2-D grid given in one of several ways.
@@ -5207,10 +5216,10 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 
 	int item, new_item, new_ID;
 	bool done = true, new = false, row_by_row;
- 	uint64_t row, col, kol, i0, i1, j0, j1, ij, ij_orig;
+ 	uint64_t row, col, kol, row_out, i0, i1, j0, j1, ij, ij_orig;
 	size_t size;
 	unsigned int both_set = (GMT_CONTAINER_ONLY | GMT_DATA_ONLY);
-	unsigned int method;
+	unsigned int method, start_over_method = 0;
 	double dx, dy, d;
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	struct GMT_GRID *G_obj = NULL, *G_orig = NULL;
@@ -5243,6 +5252,9 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 		if (grid->header->wesn[XLO] == S_obj->wesn[XLO] && grid->header->wesn[XHI] == S_obj->wesn[XHI] && grid->header->wesn[YLO] == S_obj->wesn[YLO] && grid->header->wesn[YHI] == S_obj->wesn[YHI]) S_obj->region = false;
 	}
 	method = gmtapi_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
+
+start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENCE from below */
+
 	switch (method) {
 		/* Status: This case is fully tested and operational */
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
@@ -5332,26 +5344,32 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			if (!S_obj->region && gmt_grd_pad_status (GMT, G_obj->header, GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
 				gmt_M_memcpy (G_obj->data, G_orig->data, G_orig->header->size, gmt_grdfloat);
+				gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
+				if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
+					return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 				break;		/* Done with this grid */
 			}
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
 			dx = G_obj->header->inc[GMT_X] * G_obj->header->xy_off;	dy = G_obj->header->inc[GMT_Y] * G_obj->header->xy_off;
-			j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, G_obj->header->wesn[YLO]+dy, G_orig->header);
-			j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, G_obj->header->wesn[YHI]-dy, G_orig->header);
-			i0 = (unsigned int)gmt_M_grd_x_to_col (GMT, G_obj->header->wesn[XLO]+dx, G_orig->header);
-			i1 = (unsigned int)gmt_M_grd_x_to_col (GMT, G_obj->header->wesn[XHI]-dx, G_orig->header);
+			j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YLO]+dy, G_orig->header);
+			j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YHI]-dy, G_orig->header);
+			i0 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XLO]+dx, G_orig->header);
+			i1 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XHI]-dx, G_orig->header);
 			gmt_M_memcpy (G_obj->header->pad, GMT->current.io.pad, 4, int);	/* Set desired padding */
+			gmt_M_memcpy (G_obj->header->wesn, S_obj->wesn, 4U, double);	/* Update the grid header region to match subset request */
+			gmt_set_grddim (GMT, G_obj->header);	/* Adjust all dimensions accordingly before accessing the grid for output */
 			/* get stats */
 			HH = gmt_get_H_hidden (G_obj->header);
 			G_obj->header->z_min = DBL_MAX;
 			G_obj->header->z_max = -DBL_MAX;
 			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
-			for (row = j0; row <= j1; row++) {
+			for (row = j0, row_out = 0; row <= j1; row++, row_out++) {
+				ij = gmt_M_ijp (G_obj->header, row_out, 0);	/* Position in output grid at start of current row */
 				for (col = i0; col <= i1; col++, ij++) {
-					ij_orig = gmt_M_ijp (G_orig->header, row, col);	/* Position of this (row,col) in original grid organization */
-					ij = gmt_M_ijp (G_obj->header, row, col);		/* Position of this (row,col) in output grid organization */
+					kol = col % G_orig->header->n_columns;
+					ij_orig = gmt_M_ijp (G_orig->header, row, kol);	/* Position of this (row,col) in original grid organization */
 					G_obj->data[ij] = G_orig->data[ij_orig];
 					if (gmt_M_is_fnan (G_obj->data[ij]))
 						HH->has_NaNs = GMT_GRID_HAS_NANS;
@@ -5419,34 +5437,38 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 			if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
 				return_null (API, GMT_NOT_A_VALID_TYPE);
-			G_obj->header->z_min = +DBL_MAX;
-			G_obj->header->z_max = -DBL_MAX;
 			HH = gmt_get_H_hidden (G_obj->header);
-			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 
 			if (! (mode & GMT_DATA_ONLY)) {	/* Must first init header and copy the header information from the matrix header */
 				gmtapi_matrixinfo_to_grdheader (GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
-				if (mode & GMT_CONTAINER_ONLY) {	/* Just needed the header */
-					/* Must get the full zmin/max range since not provided by the matrix header */
+				/* Must get the full zmin/max range since not provided by the matrix header */
+					G_obj->header->z_min = +DBL_MAX;
+					G_obj->header->z_max = -DBL_MAX;
+					HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 					gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
-						ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
-						api_get_val (&(M_obj->data), ij_orig, &d);
-						if (gmt_M_is_dnan (d))
-							HH->has_NaNs = GMT_GRID_HAS_NANS;
-						else {
-							G_obj->header->z_min = MIN (G_obj->header->z_min, (gmt_grdfloat)d);
-							G_obj->header->z_max = MAX (G_obj->header->z_max, (gmt_grdfloat)d);
-						}
+					ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
+					api_get_val (&(M_obj->data), ij_orig, &d);
+					if (gmt_M_is_dnan (d))
+						HH->has_NaNs = GMT_GRID_HAS_NANS;
+					else {
+						G_obj->header->z_min = MIN (G_obj->header->z_min, (gmt_grdfloat)d);
+						G_obj->header->z_max = MAX (G_obj->header->z_max, (gmt_grdfloat)d);
 					}
-					break;	/* Done for now */
 				}
+				if (mode & GMT_CONTAINER_ONLY)	/* Just needed the header */
+					break;	/* Done for now */
 			}
 
 			GMT_Report (API, GMT_MSG_INFORMATION, "Importing grid data from user matrix memory location\n");
 
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
-			if (S_obj->region) {	/* Want a subset */
+			if (!S_obj->region || gmt_whole_earth (GMT, M_obj->range, S_obj->wesn)) {	/* Easy, get the whole enchilada */
+				j0 = i0 = 0;
+				j1 = G_obj->header->n_rows    - 1;	/* Minus 1 since we loop up to and including below */
+				i1 = G_obj->header->n_columns - 1;
+			}
+			else {	/* Want a subset */
 				dx = G_obj->header->inc[GMT_X] * G_obj->header->xy_off;	dy = G_obj->header->inc[GMT_Y] * G_obj->header->xy_off;
 				j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YLO]+dy, G_obj->header);
 				j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YHI]-dy, G_obj->header);
@@ -5455,11 +5477,6 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 				gmt_M_memcpy (G_obj->header->wesn, S_obj->wesn, 4U, double);	/* Update the grid header region to match subset request */
 				gmt_set_grddim (GMT, G_obj->header);	/* Adjust all dimensions accordingly before allocating space */
 			}
-			else {	/* Easy, get the whole enchilada */
-				j0 = i0 = 0;
-				j1 = G_obj->header->n_rows - 1;	/* Minus 1 since we loop up to and including below */
-				i1 = G_obj->header->n_columns - 1;
-			}
 			if (G_obj->data) {	/* This is an error - there cannot be a data pointer yet */
 				GMT_Report (API, GMT_MSG_ERROR, "G->data is not NULL when memory allocation is about to happen\n");
 				return_null (API, GMT_PTR_IS_NULL);
@@ -5467,11 +5484,11 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			else
 				G_obj->data = gmt_M_memory_aligned (GMT, NULL, G_obj->header->size, gmt_grdfloat);
 
-			for (row = j0; row <= j1; row++) {
+			for (row = j0, row_out = 0; row <= j1; row++, row_out++) {
+				ij = gmt_M_ijp (G_obj->header, row_out, 0);	/* Position in output grid at start of current row */
 				for (col = i0; col <= i1; col++, ij++) {
 					kol = col % M_obj->n_columns;
 					ij_orig = GMT_2D_to_index (row, kol, M_obj->dim);	/* Position of this (row,col) in input matrix organization */
-					ij = gmt_M_ijp (G_obj->header, row, kol);	/* Position of this (row,col) in output grid organization */
 					api_get_val (&(M_obj->data), ij_orig, &d);	/* Get the next item from the matrix */
 					G_obj->data[ij] = (gmt_grdfloat)d;
 					if (gmt_M_is_dnan (d))
@@ -5482,7 +5499,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 					}
 				}
 			}
-			if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (M_obj->range[XLO], M_obj->range[XHI]) && gmt_M_360_range (G_obj->header->wesn[XLO], G_obj->header->wesn[XHI])) {
+			if (gmt_whole_earth (GMT, M_obj->range, S_obj->wesn)) {
 				/* Global grids passed via matrix are not rotated to fit the desired global region, so we need to correct the wesn for this grid to match the matrix */
 				gmt_M_memcpy (G_obj->header->wesn, M_obj->range, 4U, double);
 			}
@@ -5491,13 +5508,25 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			API->object[new_item]->actual_family = GMT_IS_GRID;	/* Done reading from matrix */
+			if (start_over_method) API->object[new_item]->method = start_over_method;	/* We changed our mind from reference to duplicate due to region */
 			GH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			break;
 
 	 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
 			/* Getting a matrix info S_obj->resource. Create grid header and then pass the grid pointer via the matrix pointer */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-			//if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
+			/* Determine if it is possible to use the matrix given the region selected and the fact we chose GMT_IS_REFERENCE. This test will
+			 * only kick in after we allocate the G_obj and come back the second time (after getting header) since otherwise S_obj->wesn is not set yet */
+			if (!(!S_obj->region ||
+				(S_obj->wesn[XLO] >= M_obj->range[XLO] && S_obj->wesn[XHI] <= M_obj->range[XHI] && S_obj->wesn[YLO] >= M_obj->range[YLO] && S_obj->wesn[YHI] <= M_obj->range[YHI]) ||
+				gmt_whole_earth (GMT, M_obj->range, S_obj->wesn))) {	/* Cannot do this by reference, switch to duplication */
+				method -= GMT_IS_REFERENCE;
+				method += GMT_IS_DUPLICATE;
+				start_over_method = GMT_IS_DUPLICATE;
+				GMT_Report (API, GMT_MSG_DEBUG, "Subset selection requires GMT_IS_DUPLICATION instead of GMT_IS_REFERENCE - method has been switched\n");
+				goto start_over_import_grid;
+			}
+
 			/* This method requires the input data to be a GMT_GRD_FORMAT matrix - otherwise we should be DUPLICATING */
 			MH = gmt_get_M_hidden (M_obj);
 			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_GRDFLOAT && (mode & GMT_GRID_IS_COMPLEX_MASK) == 0))
@@ -5514,27 +5543,26 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {
 				gmtapi_matrixinfo_to_grdheader (GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
-				if (mode & GMT_CONTAINER_ONLY) {	/* Just needed the header but need to set zmin/zmax first */
-					/* Temporarily set data pointer for convenience; removed later */
+				/* Temporarily set data pointer for convenience; removed later */
 #ifdef DOUBLE_PRECISION_GRID
-					G_obj->data = M_obj->data.f8;
+				G_obj->data = M_obj->data.f8;
 #else
-					G_obj->data = M_obj->data.f4;
+				G_obj->data = M_obj->data.f4;
 #endif
-					G_obj->header->z_min = +DBL_MAX;
-					G_obj->header->z_max = -DBL_MAX;
-					HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
-					gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
-						if (gmt_M_is_fnan (G_obj->data[ij]))
-							HH->has_NaNs = GMT_GRID_HAS_NANS;
-						else {
-							G_obj->header->z_min = MIN (G_obj->header->z_min, G_obj->data[ij]);
-							G_obj->header->z_max = MAX (G_obj->header->z_max, G_obj->data[ij]);
-						}
+				G_obj->header->z_min = +DBL_MAX;
+				G_obj->header->z_max = -DBL_MAX;
+				HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
+				gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
+					if (gmt_M_is_fnan (G_obj->data[ij]))
+						HH->has_NaNs = GMT_GRID_HAS_NANS;
+					else {
+						G_obj->header->z_min = MIN (G_obj->header->z_min, G_obj->data[ij]);
+						G_obj->header->z_max = MAX (G_obj->header->z_max, G_obj->data[ij]);
 					}
-					G_obj->data = NULL;	/* Since data are not requested yet */
-					break;
 				}
+				G_obj->data = NULL;	/* Since data are not requested yet */
+				if (mode & GMT_CONTAINER_ONLY)	/* Just needed the header but had to set zmin/zmax first */
+					break;
 			}
 			if ((new_ID = gmtapi_get_object (API, GMT_IS_GRID, G_obj)) == GMT_NOTSET)
 				return_null (API, GMT_OBJECT_NOT_FOUND);
@@ -5548,11 +5576,15 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 #endif
 			GH = gmt_get_G_hidden (G_obj);
 			S_obj->alloc_mode = MH->alloc_mode;	/* Pass on alloc_mode of matrix */
-			GH->alloc_mode = MH->alloc_mode;
+			GH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since we cannot have both M and G try to free */
 			API->object[new_item]->resource = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			GH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
-			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+			if (gmt_whole_earth (GMT, M_obj->range, S_obj->wesn)) {
+				/* Global grids passed via matrix are not rotated to fit the desired global region, so we need to correct the wesn for this grid to match the matrix */
+				gmt_M_memcpy (G_obj->header->wesn, M_obj->range, 4U, double);
+			}
+			else if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
 					S_obj->reset_pad = 0;
