@@ -5335,26 +5335,32 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			if (!S_obj->region && gmt_grd_pad_status (GMT, G_obj->header, GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
 				gmt_M_memcpy (G_obj->data, G_orig->data, G_orig->header->size, gmt_grdfloat);
+				gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
+				if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
+					return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 				break;		/* Done with this grid */
 			}
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
 			dx = G_obj->header->inc[GMT_X] * G_obj->header->xy_off;	dy = G_obj->header->inc[GMT_Y] * G_obj->header->xy_off;
-			j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, G_obj->header->wesn[YLO]+dy, G_orig->header);
-			j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, G_obj->header->wesn[YHI]-dy, G_orig->header);
-			i0 = (unsigned int)gmt_M_grd_x_to_col (GMT, G_obj->header->wesn[XLO]+dx, G_orig->header);
-			i1 = (unsigned int)gmt_M_grd_x_to_col (GMT, G_obj->header->wesn[XHI]-dx, G_orig->header);
+			j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YLO]+dy, G_orig->header);
+			j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YHI]-dy, G_orig->header);
+			i0 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XLO]+dx, G_orig->header);
+			i1 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XHI]-dx, G_orig->header);
 			gmt_M_memcpy (G_obj->header->pad, GMT->current.io.pad, 4, int);	/* Set desired padding */
+			gmt_M_memcpy (G_obj->header->wesn, S_obj->wesn, 4U, double);	/* Update the grid header region to match subset request */
+			gmt_set_grddim (GMT, G_obj->header);	/* Adjust all dimensions accordingly before accessing the grid for output */
 			/* get stats */
 			HH = gmt_get_H_hidden (G_obj->header);
 			G_obj->header->z_min = DBL_MAX;
 			G_obj->header->z_max = -DBL_MAX;
 			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
-			for (row = j0; row <= j1; row++) {
+			for (row = j0, row_out = 0; row <= j1; row++, row_out++) {
+				ij = gmt_M_ijp (G_obj->header, row_out, 0);	/* Position in output grid at start of current row */
 				for (col = i0; col <= i1; col++, ij++) {
-					ij_orig = gmt_M_ijp (G_orig->header, row, col);	/* Position of this (row,col) in original grid organization */
-					ij = gmt_M_ijp (G_obj->header, row, col);		/* Position of this (row,col) in output grid organization */
+					kol = col % G_orig->header->n_columns;
+					ij_orig = gmt_M_ijp (G_orig->header, row, kol);	/* Position of this (row,col) in original grid organization */
 					G_obj->data[ij] = G_orig->data[ij_orig];
 					if (gmt_M_is_fnan (G_obj->data[ij]))
 						HH->has_NaNs = GMT_GRID_HAS_NANS;
