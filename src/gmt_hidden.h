@@ -193,6 +193,7 @@ struct GMT_GRID_HIDDEN {	/* Supporting information hidden from the API */
 	unsigned int id;                /* The internal number of the grid */
 	unsigned int alloc_level;       /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode; /* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc xy_alloc_mode[2];	 /* Stores how the x and y arrays were allocated (external or internal) */
 	void *extra;                    /* Row-by-row machinery information [NULL] */
 };
 
