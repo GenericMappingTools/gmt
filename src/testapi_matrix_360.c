@@ -19,7 +19,7 @@ int main () {
 	M->inc[0] = M->inc[1] = 1.0;
 	M->registration = 1;
 	/* Create a virtual file to pass as a grid */
-	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, M, input);
+	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN, M, input);
 	/* Call grdimage with central longitude 0, which is the center of the grid */
 	sprintf (args, "%s -Rg -JH0/6i -Bg30 -K -Cgeo -P", input);
 	GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, args);
