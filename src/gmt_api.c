@@ -2822,6 +2822,99 @@ GMT_LOCAL int gmtapi_get_object_id_from_data_ptr (struct GMTAPI_CTRL *API, void 
 }
 
 /*! . */
+GMT_LOCAL int gmtapi_destroy_grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_obj) {
+	/* Delete the given grid resource. */
+	struct GMT_GRID_HIDDEN *GH = NULL;
+	if (!(*G_obj)) {	/* Probably not a good sign */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_grid: Passed NULL pointer - skipped\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	GH = gmt_get_G_hidden (*G_obj);
+	if (GH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+
+	gmt_free_grid (API->GMT, G_obj, true);
+	return GMT_NOERROR;
+}
+
+/*! . */
+GMT_LOCAL int gmtapi_destroy_dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET **D_obj) {
+	/* Delete the given dataset resource. */
+	struct GMT_DATASET_HIDDEN *DH = NULL;
+
+	if (!(*D_obj)) {	/* Probably not a good sign */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_dataset: Passed NULL pointer - skipped\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	DH = gmt_get_DD_hidden (*D_obj);
+
+	if (DH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+
+	gmt_free_dataset (API->GMT, D_obj);
+	return GMT_NOERROR;
+}
+
+/*! . */
+GMT_LOCAL int gmtapi_destroy_palette (struct GMTAPI_CTRL *API, struct GMT_PALETTE **P_obj) {
+	/* Delete the given CPT resource. */
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
+
+	if (!(*P_obj)) {	/* Probably not a good sign */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_palette: Passed NULL pointer - skipped\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	PH = gmt_get_C_hidden (*P_obj);
+	if (PH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+
+	gmtlib_free_palette (API->GMT, P_obj);
+	return GMT_NOERROR;
+}
+
+/*! . */
+GMT_LOCAL int gmtapi_destroy_postscript (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT **P_obj) {
+	/* Delete the given GMT_POSTSCRIPT resource. */
+	struct GMT_POSTSCRIPT_HIDDEN *PH = NULL;
+	if (!(*P_obj)) {	/* Probably not a good sign */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_postscript: Passed NULL pointer - skipped\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	PH = gmt_get_P_hidden (*P_obj);
+	if (PH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+
+	gmtlib_free_ps (API->GMT, P_obj);
+	return GMT_NOERROR;
+}
+
+/*! . */
+GMT_LOCAL int gmtapi_destroy_matrix (struct GMTAPI_CTRL *API, struct GMT_MATRIX **M_obj) {
+	/* Delete the given Matrix resource. */
+	struct GMT_MATRIX_HIDDEN *MH = NULL;
+	if (!(*M_obj)) {	/* Probably not a good sign */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_matrix: Passed NULL pointer - skipped\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	MH = gmt_get_M_hidden (*M_obj);
+	if (MH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+
+	gmtlib_free_matrix (API->GMT, M_obj, true);
+	return GMT_NOERROR;
+}
+
+/*! . */
+GMT_LOCAL int gmtapi_destroy_vector (struct GMTAPI_CTRL *API, struct GMT_VECTOR **V_obj) {
+	/* Delete the given Matrix resource. */
+	struct GMT_VECTOR_HIDDEN *VH = NULL;
+	if (!(*V_obj)) {	/* Probably not a good sign */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_vector: Passed NULL pointer - skipped\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	VH = gmt_get_V_hidden (*V_obj);
+	if (VH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+
+	gmt_free_vector (API->GMT, V_obj, true);
+	return GMT_NOERROR;
+}
+
+/*! . */
 bool gmt_is_an_object (struct GMT_CTRL *GMT, void *ptr) {
 	/* Needed by g*math.c so exported as part of the gmt_dev library */
 	return (gmtapi_get_object_id_from_data_ptr (GMT->parent, ptr) == GMT_NOTSET) ? false : true;
@@ -3342,6 +3435,40 @@ GMT_LOCAL struct GMT_MATRIX * gmtapi_read_matrix (struct GMT_CTRL *GMT, void *so
 	return (M);
 }
 
+GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid);
+
+GMT_LOCAL void * gmtapi_grid2matrix (struct GMTAPI_CTRL *API, struct GMT_GRID *In, struct GMT_MATRIX *Out) {
+	bool alloc = (Out == NULL);
+	uint64_t row, col, ij, ij_M;
+	double d;
+	GMT_putfunction api_put_val = NULL;
+	p_func_uint64_t GMT_2D_to_index = NULL;
+
+	if (alloc) Out = gmtlib_create_matrix (API->GMT, 1U, GMT_OUT, 0);
+
+	gmtapi_grdheader_to_matrixinfo (In->header, Out);
+	if (alloc) {	/* Allocate the matrix itself */
+		int error;
+		Out->type = API->GMT->current.setting.export_type;
+		Out->registration = In->header->registration;
+		Out->shape = GMT_IS_ROW_FORMAT;	/* For now */
+
+		if ((error = gmtlib_alloc_univector (API->GMT, &(Out->data), Out->type, Out->n_rows * Out->n_columns)) != GMT_NOERROR)
+			return_null (API, error);
+	}
+	GMT_2D_to_index = gmtapi_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL);
+	if ((api_put_val = gmtapi_select_put_function (API, Out->type)) == NULL)
+		return_null (API, GMT_NOT_A_VALID_TYPE);
+
+	gmt_M_grd_loop (API->GMT, In, row, col, ij) {
+		d = In->data[ij];
+		ij_M = GMT_2D_to_index (row, col, Out->dim);
+		api_put_val (&(Out->data), ij_M, d);
+	}
+
+	return Out;
+}
+
 /*! . */
 GMT_LOCAL struct GMT_MATRIX * gmtapi_import_matrix (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
 	/* Does the actual work of loading in a GMT matrix. */
@@ -3370,7 +3497,16 @@ GMT_LOCAL struct GMT_MATRIX * gmtapi_import_matrix (struct GMTAPI_CTRL *API, int
 		case GMT_IS_FILE:
 			/* gmtapi_read_vector will report where it is reading from if level is GMT_MSG_INFORMATION */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Reading MATRIX from %s %s\n", gmtapi_method (S_obj->method), S_obj->filename);
-			if ((M_obj = gmtapi_read_matrix (GMT, S_obj->filename, S_obj->method, mode)) == NULL)
+			if (S_obj->geometry == GMT_IS_SURFACE && (strstr (S_obj->filename, ".grd") || strstr (S_obj->filename, ".nc"))) {
+				/* Looks like we were given a grid file so we read it as a grid and then convert to MATRIX */
+				struct GMT_GRID *G = NULL;
+				if ((G = gmtapi_import_grid (API, object_ID, mode, NULL)) == NULL)
+					return_null (API, GMT_DATA_READ_ERROR);
+				M_obj = gmtapi_grid2matrix (API, G, NULL);
+				if (gmtapi_destroy_grid (API, &G))
+					return_null (API, GMT_DATA_READ_ERROR);
+			}
+			else if ((M_obj = gmtapi_read_matrix (GMT, S_obj->filename, S_obj->method, mode)) == NULL)
 				return_null (API, GMT_DATA_READ_ERROR);
 			S_obj->resource = M_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
 			break;
@@ -6218,99 +6354,6 @@ GMT_LOCAL int gmtapi_destroy_image (struct GMTAPI_CTRL *API, struct GMT_IMAGE **
 	if (IH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	gmtlib_free_image (API->GMT, I_obj, true);
-	return GMT_NOERROR;
-}
-
-/*! . */
-GMT_LOCAL int gmtapi_destroy_grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_obj) {
-	/* Delete the given grid resource. */
-	struct GMT_GRID_HIDDEN *GH = NULL;
-	if (!(*G_obj)) {	/* Probably not a good sign */
-		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_grid: Passed NULL pointer - skipped\n");
-		return (GMT_PTR_IS_NULL);
-	}
-	GH = gmt_get_G_hidden (*G_obj);
-	if (GH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
-
-	gmt_free_grid (API->GMT, G_obj, true);
-	return GMT_NOERROR;
-}
-
-/*! . */
-GMT_LOCAL int gmtapi_destroy_dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET **D_obj) {
-	/* Delete the given dataset resource. */
-	struct GMT_DATASET_HIDDEN *DH = NULL;
-
-	if (!(*D_obj)) {	/* Probably not a good sign */
-		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_dataset: Passed NULL pointer - skipped\n");
-		return (GMT_PTR_IS_NULL);
-	}
-	DH = gmt_get_DD_hidden (*D_obj);
-
-	if (DH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
-
-	gmt_free_dataset (API->GMT, D_obj);
-	return GMT_NOERROR;
-}
-
-/*! . */
-GMT_LOCAL int gmtapi_destroy_palette (struct GMTAPI_CTRL *API, struct GMT_PALETTE **P_obj) {
-	/* Delete the given CPT resource. */
-	struct GMT_PALETTE_HIDDEN *PH = NULL;
-
-	if (!(*P_obj)) {	/* Probably not a good sign */
-		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_palette: Passed NULL pointer - skipped\n");
-		return (GMT_PTR_IS_NULL);
-	}
-	PH = gmt_get_C_hidden (*P_obj);
-	if (PH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
-
-	gmtlib_free_palette (API->GMT, P_obj);
-	return GMT_NOERROR;
-}
-
-/*! . */
-GMT_LOCAL int gmtapi_destroy_postscript (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT **P_obj) {
-	/* Delete the given GMT_POSTSCRIPT resource. */
-	struct GMT_POSTSCRIPT_HIDDEN *PH = NULL;
-	if (!(*P_obj)) {	/* Probably not a good sign */
-		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_postscript: Passed NULL pointer - skipped\n");
-		return (GMT_PTR_IS_NULL);
-	}
-	PH = gmt_get_P_hidden (*P_obj);
-	if (PH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
-
-	gmtlib_free_ps (API->GMT, P_obj);
-	return GMT_NOERROR;
-}
-
-/*! . */
-GMT_LOCAL int gmtapi_destroy_matrix (struct GMTAPI_CTRL *API, struct GMT_MATRIX **M_obj) {
-	/* Delete the given Matrix resource. */
-	struct GMT_MATRIX_HIDDEN *MH = NULL;
-	if (!(*M_obj)) {	/* Probably not a good sign */
-		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_matrix: Passed NULL pointer - skipped\n");
-		return (GMT_PTR_IS_NULL);
-	}
-	MH = gmt_get_M_hidden (*M_obj);
-	if (MH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
-
-	gmtlib_free_matrix (API->GMT, M_obj, true);
-	return GMT_NOERROR;
-}
-
-/*! . */
-GMT_LOCAL int gmtapi_destroy_vector (struct GMTAPI_CTRL *API, struct GMT_VECTOR **V_obj) {
-	/* Delete the given Matrix resource. */
-	struct GMT_VECTOR_HIDDEN *VH = NULL;
-	if (!(*V_obj)) {	/* Probably not a good sign */
-		GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_destroy_vector: Passed NULL pointer - skipped\n");
-		return (GMT_PTR_IS_NULL);
-	}
-	VH = gmt_get_V_hidden (*V_obj);
-	if (VH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
-
-	gmt_free_vector (API->GMT, V_obj, true);
 	return GMT_NOERROR;
 }
 
@@ -12686,12 +12729,14 @@ void * GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Ou
 	 * 	GMT_WRITE_TABLE: Collect all segments into ONE table.
 	 * 	GMT_WRITE_SEGMENT: Combine segments into ONE segment per table.
 	 * 	0: Retain initial layout.
+	 * If GRID then flags are not yet used
 	 *
 	 * The following conversions are valid; the brackets indicate any side-effects or limitations]
 	 *
 	 * DATASET -> MATRIX,  VECTOR
 	 * MATRIX  -> DATASET, VECTOR
 	 * VECTOR  -> DATASET, MATRIX
+	 * GRID    -> MATRIX
 	 */
 	int object_ID, item;
 	void *X = NULL;
@@ -12738,6 +12783,15 @@ void * GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Ou
 					break;
 				case GMT_IS_MATRIX:
 					X = gmtapi_vector2matrix (API, In, Out, flag[GMT_HEADER_MODE], flag[GMT_TYPE_MODE]);
+					break;
+				default:
+					API->error = GMT_NOT_A_VALID_FAMILY;
+					break;
+			}
+		case GMT_IS_GRID:
+			switch (family_out) {
+				case GMT_IS_MATRIX:
+					X = gmtapi_grid2matrix (API, In, Out);
 					break;
 				default:
 					API->error = GMT_NOT_A_VALID_FAMILY;
