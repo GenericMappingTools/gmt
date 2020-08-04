@@ -5207,7 +5207,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 
 	int item, new_item, new_ID;
 	bool done = true, new = false, row_by_row;
- 	uint64_t row, col, kol, i0, i1, j0, j1, ij, ij_orig;
+ 	uint64_t row, col, kol, row_out, i0, i1, j0, j1, ij, ij_orig;
 	size_t size;
 	unsigned int both_set = (GMT_CONTAINER_ONLY | GMT_DATA_ONLY);
 	unsigned int method;
@@ -5467,11 +5467,11 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 			else
 				G_obj->data = gmt_M_memory_aligned (GMT, NULL, G_obj->header->size, gmt_grdfloat);
 
-			for (row = j0; row <= j1; row++) {
+			for (row = j0, row_out = 0; row <= j1; row++, row_out++) {
+				ij = gmt_M_ijp (G_obj->header, row_out, 0);	/* Position in output grid at start of current row */
 				for (col = i0; col <= i1; col++, ij++) {
 					kol = col % M_obj->n_columns;
 					ij_orig = GMT_2D_to_index (row, kol, M_obj->dim);	/* Position of this (row,col) in input matrix organization */
-					ij = gmt_M_ijp (G_obj->header, row, kol);	/* Position of this (row,col) in output grid organization */
 					api_get_val (&(M_obj->data), ij_orig, &d);	/* Get the next item from the matrix */
 					G_obj->data[ij] = (gmt_grdfloat)d;
 					if (gmt_M_is_dnan (d))
