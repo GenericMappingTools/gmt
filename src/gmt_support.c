@@ -8974,6 +8974,18 @@ int gmt_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double val
 	return (index);
 }
 
+bool gmt_same_fill (struct GMT_CTRL *GMT, struct GMT_FILL *F1, struct GMT_FILL *F2) {
+	/* Return true if the two fills are identical */
+	if (F1->use_pattern != F2->use_pattern) return false;	/* One is a pattern, the other isn't, so cannot be the same */
+	if (F1->use_pattern) {	/* Both are patterns */
+		if (F1->pattern_no != F2->pattern_no) return false;	/* Different patters used */
+		if (F1->pattern_no == -1)	/* Both have custom fill patterns */
+			return !strcmp (F1->pattern, F2->pattern);
+		return true;	/* They are the same */
+	}
+	return gmt_M_same_rgb (F1->rgb, F2->rgb);	/* true if the same color, including transparency level */
+}
+
 /*! . */
 GMT_LOCAL int gmtsupport_get_index_from_key (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *key) {
 	/* Will match key to a key in the color table.  Because a key is a string and may

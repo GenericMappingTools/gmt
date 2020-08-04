@@ -758,10 +758,10 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		Ctrl->D.set = 'a';	/* Auto-select resolution under modern mode if -D not given */
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
-	fill[0] = (Ctrl->S.active) ? Ctrl->S.fill : no_fill;
-	fill[1] = fill[3] = (Ctrl->G.active) ? Ctrl->G.fill : no_fill;
-	fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];
-	fill[5] = (Ctrl->C.active) ? Ctrl->C.fill[RIVER] : fill[2];
+	fill[0] = (Ctrl->S.active) ? Ctrl->S.fill : no_fill;	/* Ocean fill */
+	fill[1] = fill[3] = (Ctrl->G.active) ? Ctrl->G.fill : no_fill;	/* Continent and islands in lakes fill */
+	fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];	/* Lakes and ponds-in-islands-in-lakes fill */
+	fill[5] = (Ctrl->C.active) ? Ctrl->C.fill[RIVER] : fill[2];		/* River-lake fill */
 	need_coast_base = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active);
 	if (Ctrl->Q.active) need_coast_base = false;	/* Since we just end clipping */
 	if (Ctrl->G.active && Ctrl->S.active) {	/* Must check if any of then are transparent */
@@ -771,8 +771,8 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 			clobber_background = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "Do double recursive painting due to transparency option for land or ocean\n");
 		}
-		else	/* OK to paint ocean first then overlay land */
-			clobber_background = true;
+		else	/* OK to paint ocean first then overlay land unless lakes have a different fill */
+			clobber_background = (!Ctrl->C.active || gmt_same_fill (GMT, &(Ctrl->C.fill[LAKE]), &(Ctrl->S.fill))) ? true : false;
 	}
 	recursive = (double_recursive || (Ctrl->G.active != (Ctrl->S.active || Ctrl->C.active)) || clipping);
 	paint_polygons = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active);
