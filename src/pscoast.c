@@ -764,7 +764,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	fill[5] = (Ctrl->C.active) ? Ctrl->C.fill[RIVER] : fill[2];		/* River-lake fill */
 	need_coast_base = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active);
 	if (Ctrl->Q.active) need_coast_base = false;	/* Since we just end clipping */
-	if (Ctrl->G.active && Ctrl->S.active ) {	/* Must check if any of then are transparent */
+	if (Ctrl->G.active && Ctrl->S.active) {	/* Must check if any of then are transparent */
 		if (Ctrl->G.fill.rgb[3] > 0.0 || Ctrl->S.fill.rgb[3] > 0.0) {	/* Transparency requested */
 			/* Special case since we cannot overprint so must run recursive twice */
 			double_recursive = true;
