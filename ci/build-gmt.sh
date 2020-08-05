@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Build the GMT source codes of a specific branch, version or commit
+# Build the GMT source codes of a specific branch or tag/release
 #
 # Usage:
 #
@@ -12,7 +12,7 @@
 # Environmental variables that affect the building process:
 #
 # - GMT_INSTALL_DIR : GMT installation location [$HOME/gmt-install-dir]
-# - GMT_GIT_REF     : branch name, version, or commit full sha [master]
+# - GMT_GIT_REF     : branch name or tag/release [master]
 #
 
 set -x -e
@@ -34,19 +34,18 @@ GMT_BUILD_TMPDIR=$(mktemp -d ${TMPDIR:-/tmp/}gmt.XXXXXX)
 cd ${GMT_BUILD_TMPDIR}
 
 # 2. Download GMT, GSHHG and DCW from GitHub
-curl -SLO https://github.com/GenericMappingTools/gmt/archive/${GMT_GIT_REF}.${EXT}
+git clone --depth=1 --single-branch --branch ${GMT_GIT_REF} https://github.com/GenericMappingTools/gmt
 curl -SLO https://github.com/GenericMappingTools/gshhg-gmt/releases/download/${GSHHG_VERSION}/${GSHHG}.${EXT}
 curl -SLO https://github.com/GenericMappingTools/dcw-gmt/releases/download/${DCW_VERSION}/${DCW}.${EXT}
 
 # 3. Extract tarballs
-tar -xvf ${GMT_GIT_REF}.${EXT}
 tar -xvf ${GSHHG}.${EXT}
 tar -xvf ${DCW}.${EXT}
-mv ${GSHHG} gmt-${GMT_GIT_REF}/share/gshhg-gmt
-mv ${DCW} gmt-${GMT_GIT_REF}/share/dcw-gmt
+mv ${GSHHG} gmt/share/gshhg-gmt
+mv ${DCW} gmt/share/dcw-gmt
 
 # 4. Configure GMT
-cd gmt-${GMT_GIT_REF}/
+cd gmt/
 cat > cmake/ConfigUser.cmake << EOF
 set (CMAKE_INSTALL_PREFIX "${GMT_INSTALL_DIR}")
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement \${CMAKE_C_FLAGS}")
