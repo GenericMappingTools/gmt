@@ -741,7 +741,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, Out) != GMT_NOERROR)
 		error++;
 
 	/* Clean up memory */

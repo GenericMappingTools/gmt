@@ -267,8 +267,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				gmt_M_str_free (Ctrl->D.opt);
-				if (opt->arg[0]) Ctrl->D.opt = strdup (opt->arg);
+				if (opt->arg[0] == '+' && (strstr (opt->arg, "+e") || strstr (opt->arg, "+n")) && strstr (opt->arg, "w") == NULL) {
+					/* Only want +e or +n to be added to defaults */
+					sprintf (string, "%s%s", Ctrl->D.opt, opt->arg);
+					gmt_M_str_free (Ctrl->D.opt);
+					Ctrl->D.opt = strdup (string);
+				}
+				else if (opt->arg[0]) {
+					gmt_M_str_free (Ctrl->D.opt);
+					Ctrl->D.opt = strdup (opt->arg);
+				}
 				break;
 			case 'E':
 				GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");

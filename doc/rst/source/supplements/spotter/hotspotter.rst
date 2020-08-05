@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt hotspotter** [*tables*] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt hotspotter** [*table*] |-E|\ *rotfile* |-G|\ *CVAgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-N|\ *upper_age* ]
@@ -34,7 +34,7 @@ Description
 -----------
 
 **hotspotter** reads (longitude, latitude, amplitude, radius, age)
-records from *tables* [or standard input] and calculates flowlines
+records from *table* [or standard input] and calculates flowlines
 using the specified stage or total reconstruction rotations. These
 flowlines are convolved with the shape of the seamount (using a Gaussian
 shape given amplitude and radius = 6 sigma) and added up to give a
@@ -160,4 +160,3 @@ Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 Wessel, P., 2008, Hotspotting: Principles and properties of a plate
 tectonic Hough transform, Geochem. Geophys. Geosyst. 9(Q08004):
 doi:10.1029/2008GC002058.
-

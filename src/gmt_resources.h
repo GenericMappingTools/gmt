@@ -52,7 +52,7 @@ typedef float gmt_grdfloat;
  * is no guarantee that the "private" members cannot change over time.
  */
 
-/*! Session modes for GMT_Create_Session */
+/*! Session modes for GMT_Create_Session. Do NOT change first 4 as affects GMT.jl */
 enum GMT_enum_session {
 	GMT_SESSION_NORMAL    = 0,	/* Typical mode to GMT_Create_Session */
 	GMT_SESSION_NOEXIT    = 1,	/* Call return and not exit when error */
@@ -117,8 +117,8 @@ enum GMT_enum_method {
 	GMT_IS_FILE	 =    0,	/* Entity is a filename */
 	GMT_IS_STREAM	 =    1,	/* Entity is an open stream */
 	GMT_IS_FDESC	 =    2,	/* Entity is an open file descriptor */
-	GMT_IS_DUPLICATE =    3,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE =    4,	/* Entity is a memory location that should be referenced */
+	GMT_IS_DUPLICATE =   16,	/* Entity is a memory location that should be duplicated */
+	GMT_IS_REFERENCE =   32,	/* Entity is a memory location that should be referenced */
 	GMT_IS_OUTPUT	 = 1024		/* When creating a resource as a container for output */
 };
 
