@@ -102,7 +102,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all th
 	{ 0, 'E', "extend", "b,r,s", "box-whisker,record,source", "l,h", "lower,higher" },
 #endif
 	{ 0, 'G', "gridfile", "", "", "", "" },
-	{ '/', 'I', "increment", "", "", "e,n", "exact,number" },
+	GMT_INCREMENT_KW,
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode have a -Q option */
 	{ 0, 'Q', "quicker", "", "", "", "" },
 #endif
