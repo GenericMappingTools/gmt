@@ -1,25 +1,33 @@
 #!/usr/bin/env bash
 #
-# Build the GMT source codes of a specific branch or tag/release
+# Build the GMT source codes of a specific branch or tag/release.
 #
 # Usage:
 #
-# 1. Install GMT dependencies following the [wiki](https://github.com/GenericMappingTools/gmt/wiki)
-# 2. Run the following command to build the GMT source codes (master branch by default):
+#    bash build-gmt.sh [branch-or-tag]
 #
-#      curl https://raw.githubusercontent.com/GenericMappingTools/gmt/master/ci/build-gmt.sh | bash
-#
-# Environmental variables that affect the building process:
+# Environmental variables that controls the building process:
 #
 # - GMT_INSTALL_DIR : GMT installation location [$HOME/gmt-install-dir]
-# - GMT_GIT_REF     : branch name or tag/release [master]
+# - GMT_GIT_REF     : branch name or tag/release [master if CLI argument isn't given]
+#
+# Notes for CI service users:
+#
+# 1. Install GMT dependencies following the [wiki](https://github.com/GenericMappingTools/gmt/wiki)
+# 2. Run the following command to build the GMT source codes:
+#
+#      curl https://raw.githubusercontent.com/GenericMappingTools/gmt/master/ci/build-gmt.sh | bash
 #
 
 set -x -e
 
 # Following variables can be modified via environment variables
 GMT_INSTALL_DIR=${GMT_INSTALL_DIR:-${HOME}/gmt-install-dir}
-GMT_GIT_REF=${GMT_GIT_REF:-master}
+if [ "X$1" = "X" ]; then
+	GMT_GIT_REF=${GMT_GIT_REF:-master}
+else
+	GMT_GIT_REF=$1
+fi
 
 # General settings
 GSHHG_VERSION="2.3.7"
