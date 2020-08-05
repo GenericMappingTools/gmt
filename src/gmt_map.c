@@ -7956,13 +7956,20 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	O->header->z_min = FLT_MAX; O->header->z_max = -FLT_MAX;	/* Min/max for out */
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
+		bool skip_repeat = false;
 		int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
 		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
+		if (gmt_whole_earth (GMT, I->header->wesn, GMT->common.R.wesn) == 1 && I->header->registration == GMT_GRID_NODE_REG) {
+			/* Need to avoid giving the repeated east and west meridian values double weight when they plot inside the image.
+			 * This is only likely to happen when external global grids are passed in via GMT_IS_REFERENCE. */
+			skip_repeat = true;
+		}
 
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
 			gmt_M_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
+				if (skip_repeat && col_in == 0) continue;
 				if (gmt_M_is_rect_graticule (GMT))
 					x_proj = x_in_proj[col_in];
 				else if (inverse)
