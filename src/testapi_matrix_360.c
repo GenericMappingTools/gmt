@@ -14,7 +14,7 @@ int main () {
 	API = GMT_Create_Session ("test", 2U, mode, NULL);
 
 	/* Read in earth_relief_01d as a matrix from text file and set correct region, inc, registration */
-	M = GMT_Read_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "@earth_relief_01d.txt", NULL);
+	M = GMT_Read_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "@earth_relief_01d", NULL);
 	M->range[0] = -180;	M->range[1] = 180; M->range[2] = -90;	M->range[3] = 90.0;
 	M->inc[0] = M->inc[1] = 1.0;
 	M->registration = 1;
