@@ -233,6 +233,8 @@ static uint64_t (*GMTAPI_index_function) (struct GMT_GRID_HEADER *, uint64_t, ui
 #define multiple_files_ok(family) (family == GMT_IS_DATASET)
 /* GRID and IMAGE can be read it two steps (header, then data). */
 #define a_grid_or_image(family) (family == GMT_IS_GRID || family == GMT_IS_IMAGE)
+/* A MATRIX read as a SURFACE will read a grid */
+#define a_matrix_surface(family,geometry) (family == GMT_IS_MATRIX && geometry == GMT_IS_SURFACE)
 
 /* Misc. local text strings needed in this file only, used when debug verbose is on (-Vd).
  * NOTE: The order of these MUST MATCH the order in the enums in gmt_resources.h! */
@@ -5381,6 +5383,7 @@ GMT_LOCAL void * gmtapi_grid2matrix (struct GMTAPI_CTRL *API, struct GMT_GRID *I
 		Out->type = API->GMT->current.setting.export_type;
 		Out->registration = In->header->registration;
 		Out->shape = GMT_IS_ROW_FORMAT;	/* For now */
+		Out->dim = (Out->shape == GMT_IS_ROW_FORMAT) ? Out->n_columns : Out->n_rows;	/* Matrix layout order */
 
 		if ((error = gmtlib_alloc_univector (API->GMT, &(Out->data), Out->type, Out->n_rows * Out->n_columns)) != GMT_NOERROR)
 			return_null (API, error);
@@ -5404,23 +5407,37 @@ GMT_LOCAL void * gmtapi_matrix2grid (struct GMTAPI_CTRL *API, struct GMT_MATRIX 
 	double d;
 	GMT_getfunction api_get_val = NULL;
 	p_func_uint64_t GMT_2D_to_index = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	if (alloc) Out = gmt_create_grid (API->GMT);
 
 	gmtapi_matrixinfo_to_grdheader (API->GMT, Out->header, In);
 	if (alloc) {	/* Allocate the grid itself */
+		int error;
 		gmt_set_grddim (API->GMT, Out->header);	/* Set all dimensions */
 		if ((Out->data = gmt_M_memory (API->GMT, NULL, Out->header->size, gmt_grdfloat)) == NULL)
 			return_null (API, API->error);
+		if ((error = gmtapi_alloc_grid_xy (API, Out)) != GMT_NOERROR)
+			return_null (API, error);	/* Allocation error */
 	}
 	GMT_2D_to_index = gmtapi_get_2d_to_index (API, In->shape, GMT_GRID_IS_REAL);
 	if ((api_get_val = gmtapi_select_get_function (API, In->type)) == NULL)
 		return_null (API, GMT_NOT_A_VALID_TYPE);
 
+	HH = gmt_get_H_hidden (Out->header);
+	Out->header->z_min = DBL_MAX;
+	Out->header->z_max = -DBL_MAX;
+	HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	gmt_M_grd_loop (API->GMT, Out, row, col, ij) {
 		ij_M = GMT_2D_to_index (row, col, In->dim);
 		api_get_val (&(In->data), ij_M, &d);
 		Out->data[ij] = (gmt_grdfloat)d;
+		if (gmt_M_is_fnan (Out->data[ij]))
+			HH->has_NaNs = GMT_GRID_HAS_NANS;
+		else {
+			Out->header->z_min = MIN (Out->header->z_min, Out->data[ij]);
+			Out->header->z_max = MAX (Out->header->z_max, Out->data[ij]);
+		}
 	}
 
 	return Out;
@@ -7110,7 +7127,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 		if ((item = gmtlib_validate_id (API, GMT_NOTSET, object_ID, direction, GMT_NOTSET)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);
 		S_obj = API->object[item];	/* Use S as shorthand */
 		if (module_input) S_obj->module_input = true;
-		if (a_grid_or_image (family) && !full_region (wesn)) {	/* Update the subset region if given (for grids/images only) */
+		if ((a_grid_or_image (family) || a_matrix_surface(family,geometry)) && !full_region (wesn)) {	/* Update the subset region if given (for grids/images only) */
 			gmt_M_memcpy (S_obj->wesn, wesn, 4, double);
 			S_obj->region = true;
 		}
@@ -7202,7 +7219,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			break;
 	}
 
-	if (a_grid_or_image (family) && !full_region (wesn)) {	/* Copy the subset region if it was given (for grids) */
+	if ((a_grid_or_image (family) || a_matrix_surface(family,geometry)) && !full_region (wesn)) {	/* Copy the subset region if it was given (for grids) */
 		gmt_M_memcpy (S_obj->wesn, wesn, 4, double);
 		S_obj->region = true;
 	}
@@ -8004,8 +8021,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			if (API->remote_info == NULL && !API->GMT->current.io.internet_error) {
 				/* Maybe using the API without a module call first so server has not been refreshed yet */
 				gmt_refresh_server (API);
-				gmt_set_unspecified_remote_registration (API, &input);	/* Same, this call otherwise only happens with modules */
 			}
+			gmt_set_unspecified_remote_registration (API, &input);	/* Same, this call otherwise only happens with modules */
 			first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable GMT data sets first */
 			strncpy (file, &input[first], PATH_MAX-1);
 			if ((k_data = gmt_remote_no_extension (API, input)) != GMT_NOTSET)	/* A remote @earth_relief_xxm|s grid without extension */
