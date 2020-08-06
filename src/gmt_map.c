@@ -7966,7 +7966,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			 * This is only likely to happen when external global grids are passed in via GMT_IS_REFERENCE. */
 			skip_repeat = true;	/* Since both -180 and +180 fall inside the image, we only want to use one of then (-180) */
 			duplicate_east = gmt_M_is_periodic (GMT);	/* Since the meridian corresponding to map west only appears once we may need to duplicate on east */
-			if (duplicate_east)
+			if (duplicate_east)	/* Find the column in I->data that corresponds to the longitude of the left boundary of the map */
 				duplicate_col = gmt_M_grd_x_to_col (GMT, GMT->common.R.wesn[XLO], I->header);
 		}
 
@@ -8004,13 +8004,14 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			}
 			if (duplicate_east) {
 				ij_in = ij_in - I->header->n_columns + duplicate_col;	/* Rewind to the col to be duplicated */
+				col_in = duplicate_col;
 				if (gmt_M_is_rect_graticule (GMT))
 					x_proj = GMT->current.proj.rect[XHI];
 				else if (inverse)
 					gmt_xy_to_geo (GMT, &x_proj, &y_proj, x_in[col_in], y_in[row_in]);
 				else {
 					if (GMT->current.map.outside (GMT, x_in[col_in], y_in[row_in])) continue;	/* Quite possible we are beyond the horizon */
-					gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], y_in[row_in], &x_proj, &y_proj);
+					gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], y_in[row_in], &x_proj, &y_proj);
 				}
 
 				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
