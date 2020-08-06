@@ -54,6 +54,7 @@ EXTERN_MSC double gmtmap_lat_swap_quick (struct GMT_CTRL *GMT, double lat, doubl
 #define gmt_M_y_is_lat(C,way) (C->current.io.col_type[way][GMT_Y] & GMT_IS_LAT)
 #define gmt_M_is_geographic(C,way) (gmt_M_x_is_lon(C,way) && gmt_M_y_is_lat(C,way))
 #define gmt_M_is_cartesian(C,way) (!gmt_M_is_geographic(C,way))
+
 #define GMT_N_PROJECTIONS	29	/* Total number of projections in GMT */
 
 /* These numbers should remain flexible. Do not use them in any programming. Use only their symbolic names.
@@ -139,7 +140,7 @@ enum GMT_enum_zdown {GMT_ZDOWN_R = 0,	/* Default: Annotating radius */
 	GMT_ZDOWN_ZP	= 2,	/* Annotating planetary radius - r */
 	GMT_ZDOWN_ZR	= 3};	/* Annotating given radius - r */
 
-/* gmt_M_is_periodic means the east and west meridian of a global map are separated */
+/* gmt_M_is_periodic means the east and west meridians of a global map are separated */
 #define gmt_M_is_periodic(C) (gmt_M_is_cylindrical (C) || gmt_M_is_misc (C))
 
 /* gmt_M_is_rect_graticule means parallels and meridians are orthogonal, but does not imply linear spacing */
