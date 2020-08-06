@@ -1555,7 +1555,9 @@ in three different situations:
 
 Space will be allocated to hold the results, as needed, and a pointer to
 the object is returned. If there are errors we simply return NULL and
-report the error. The ``mode`` parameter has different meanings for
+report the error. Note that you can read in a GMT_IS_MATRIX either from a text
+table (passing ``geometry`` as GMT_IS_POINT) or from a grid (passing ``geometry``
+as GMT_IS_SURFACE).  The ``mode`` parameter has different meanings for
 different data types.
 
 **Color palette table**.
