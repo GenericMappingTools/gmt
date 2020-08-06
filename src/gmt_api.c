@@ -5033,11 +5033,6 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			else
 				G_obj->y = gmtapi_grid_coord (API, GMT_Y, G_obj);	/* Get array of y coordinates */
 		}
-<<<<<<< HEAD
-		/* If neither TRB or TRP we call for a changed layout, which may or may not have been implemented */
-		GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);
-=======
->>>>>>> 02af19c043... Reading/writing a matrix from/to a grid file (#3848)
 	}
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
@@ -5572,15 +5567,9 @@ GMT_LOCAL int gmtapi_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned in
 			strcpy (M_file, "<output file descriptor>");
 		close_file = true;	/* since fdopen allocates space */
 	}
-<<<<<<< HEAD
-	if ((mode & GMT_CONTAINER_ONLY) && S_obj->region && S_obj->method == GMT_IS_FILE) {
-		GMT_Report (API, GMT_MSG_ERROR, "Cannot request a subset when just inquiring about the grid header\n");
-		return_null (API, GMT_SUBSET_NOT_ALLOWED);
-=======
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized source type %d in gmtapi_write_matrix\n", dest_type);
 		return (GMT_NOT_A_VALID_METHOD);
->>>>>>> 02af19c043... Reading/writing a matrix from/to a grid file (#3848)
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s Matrix to %s\n", msg1[append], &M_file[append]);
 
