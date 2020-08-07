@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grd2cpt** *grid* [ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
-[ |-E|\ [*nlevels*] ]
+[ |-E|\ [*nlevels*][**+c**] ]
 [ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
@@ -105,10 +105,12 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [*nlevels*]
+**-E**\ [*nlevels*][**+c**]
     Create a linear color table by using the grid z-range as the new
     limits in the CPT.  Alternatively, append *nlevels* and we will
-    resample the color table into *nlevels* equidistant slices.
+    resample the color table into *nlevels* equidistant slices. As an
+    option, append **+c** to estimate the cumulative density function
+    of the data and assign color levels accordingly.
 
 .. _-F:
 
