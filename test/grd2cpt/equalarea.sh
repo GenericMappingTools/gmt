@@ -3,7 +3,7 @@
 # Test using the cumulative density function to create an equal-area
 # CPT for a chunk of the word.
 
-gmt begin equalarea
+gmt begin equalarea ps
 	gmt set MAP_FRAME_TYPE plain
 	gmt grdcut -R0/90/0/45 @earth_relief_05m -Gtmp.grd
 	gmt subplot begin 2x1 -Fs16c/11c -BWSrt -M6p -T"CPT Equalization" -Y0.5i
