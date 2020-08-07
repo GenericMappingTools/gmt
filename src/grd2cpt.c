@@ -38,9 +38,9 @@
 #define THIS_MODULE_MODERN_NAME	"grd2cpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make linear or histogram-equalized color palette table from grid"
-#define THIS_MODULE_KEYS	"<G{+,>C}"
+#define THIS_MODULE_KEYS	"<G{+,>C},ED)=f"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"->RVh"
+#define THIS_MODULE_OPTIONS	"->RVhbo"
 
 #define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
 
@@ -65,9 +65,10 @@ struct GRD2CPT_CTRL {
 		bool active;
 		unsigned int mode;
 	} D;
-	struct GRD2CPT_E {	/* -E<nlevels>[+c] */
+	struct GRD2CPT_E {	/* -E<nlevels>[+c][+f<file>] */
 		bool active;
 		bool cdf;
+		char *file;
 		unsigned int levels;
 	} E;
 	struct GRD2CPT_F {	/* -F[r|R|h|c][+c] */
@@ -135,6 +136,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallo
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->E.file);
 	gmt_M_str_free (C->T.file);
 	gmt_M_free (GMT, C);
 }
@@ -143,9 +145,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A<transparency>[+a]] [-C<cpt>] [-D[i]] [-E[<nlevels>][+c]] [-F[R|r|h|c][+c]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n", H_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<start>/<stop>/<inc> or -T<n>]\n\t[-Sh|l|m|u] [%s] [-W[w]] [-Z] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A<transparency>[+a]] [-C<cpt>] [-D[i]] [-E[<nlevels>][+c][+f<file>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n", H_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<start>/<stop>/<inc> or -T<n>] [-Sh|l|m|u]\n\t[%s] [-W[w]] [-Z] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -159,6 +161,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set CPT to go from grid zmin to zmax (i.e., a linear scale).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append <nlevels> to sample equidistant color levels from zmin to zmax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Instead, append +c to use the cumulative density function (cdf) to set color bounds.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<file> to save the CDF table to a file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to output a discrete CPT in categorical CPT format.\n");
@@ -189,7 +192,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Force a continuous color palette [Default is discontinuous, i.e., constant color intervals].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette. Alternatively, append w for a wrapped CPT.\n");
-	GMT_Option (API, "h,.");
+	GMT_Option (API, "bo,h,o,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -202,8 +205,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	int n;
-	unsigned int n_errors = 0, n_files[2] = {0, 0};
-	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
+	unsigned int n_errors = 0, pos = 0, n_files[2] = {0, 0};
+	char txt_a[GMT_LEN128] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
 	char *T_arg = NULL, *S_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -248,15 +251,29 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
-				if ((c = strstr (opt->arg, "+c"))) {
-					Ctrl->E.cdf = true;
-					c[0] = '\0';
+				if (gmt_validate_modifiers (GMT, opt->arg, 'E', "cf", GMT_MSG_ERROR)) n_errors++;
+				if ((c = gmt_first_modifier (GMT, opt->arg, "cf")) ) {
+					while (gmt_getmodopt (GMT, 'E', c, "cf", &pos, txt_a, &n_errors) && n_errors == 0) {
+						switch (txt_a[0]) {
+							case 'c': Ctrl->E.cdf = true;	break;	/* Determine Cumulative Density Function */
+							case 'f':
+								if (txt_a[1])
+									Ctrl->E.file = strdup (&txt_a[1]);
+								else {
+									GMT_Report (API, GMT_MSG_ERROR, "Option -E: No filename given via +f\n");
+									n_errors++;
+								}
+								break;	/* Incremental distance */
+							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+						}
+					}
+					c[0] = '\0';	/* Chop off the modifiers */
 				}
 				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
 					n_errors++;
 				}
-				if (c) c[0] = '+';	/* Restore */
+				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 			case 'F':	/* Set color model for output */
 				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
@@ -415,6 +432,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 					"Option -S: Bad arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->S.active || Ctrl->E.active),
 					"Option -T: Cannot be combined with -E nor -S option.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.file && !Ctrl->E.cdf, "Option -E modifier +f is only valid if +c is used\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 					"Option -A: Transparency must be n 0-100 range [0 or opaque]\n");
@@ -631,14 +649,24 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			wsum += pair[k].weight;
 			pair[k].weight = (gmt_grdfloat)wsum;
 		}
-#if DEBUG
-		{
-			FILE *fp = fopen ("grd2cpt.dump", "w");
-			for (k = 0; k < nxy; k++)
-				fprintf (fp, "%16g\t%16g\n", pair[k].value, pair[k].weight);
-			fclose (fp);
+		if (Ctrl->E.file) {	/* Save the CDF to file */
+			uint64_t dim[4] = {1, 1, nxy, 2};
+			struct GMT_DATASET *CDF = NULL;
+			struct GMT_DATASEGMENT *S = NULL;
+			if ((CDF = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate memory for CDF output.\n");
+				Return (GMT_MEMORY_ERROR);
+			}
+			S = CDF->table[0]->segment[0];
+			for (k = 0; k < nxy; k++) {
+				S->data[GMT_X][k] = pair[k].value;
+				S->data[GMT_Y][k] = pair[k].weight;
+			}
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, Ctrl->E.file, CDF) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to write CDF output.\n");
+				Return (API->error);
+			}
 		}
-#endif
 	}
 
 	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
