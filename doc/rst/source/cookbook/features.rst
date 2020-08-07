@@ -711,7 +711,8 @@ option argument, with commas separating the given attributes, e.g.,
        from black [0] to white [255]).
 
     #. RGB. Specify *r*/*g*/*b*, each ranging from 0–255. Here 0/0/0 is
-       black, 255/255/255 is white, 255/0/0 is red, etc.
+       black, 255/255/255 is white, 255/0/0 is red, etc. Alternatively,
+       you can give RGB in hexadecimal using the *#rrggbb* format.
 
     #. HSV. Specify *hue*-*saturation*-*value*, with the former in the
        0–360 degree range while the latter two take on the range 0–1 [17]_.

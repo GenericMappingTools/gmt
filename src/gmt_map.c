@@ -9187,7 +9187,7 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 	if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 		/* Limit east-west range to 360 and make sure east > -180 and west < 360 */
-		if (!GMT->common.R.oblique) {	/* Only makes sense if not corner coordinates */
+		if (!GMT->common.R.oblique || gmt_M_is_rect_graticule (GMT)) {	/* Only makes sense if not corner coordinates */
 			if (wesn[XHI] < wesn[XLO]) wesn[XHI] += 360.0;
 			if ((fabs (wesn[XHI] - wesn[XLO]) - 360.0) > GMT_CONV4_LIMIT) Return (GMT_MAP_EXCEEDS_360);
 		}

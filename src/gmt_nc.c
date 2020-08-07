@@ -1685,6 +1685,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	uint64_t imag_offset;
 	size_t n, nm;
 	size_t width_t, height_t;
+	size_t was_chunk_setting = GMT->current.setting.io_nc4_chunksize[0];	/* Remember current setting */
 	double limit[2];      /* minmax of z variable */
 	gmt_grdfloat *pgrid = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -1804,6 +1805,8 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	status = nc_close (HH->ncid);
 	if (status != NC_NOERR)
 		goto nc_err;
+
+	GMT->current.setting.io_nc4_chunksize[0] = was_chunk_setting;	/* Restore to previous status */
 
 	return GMT_NOERROR;
 
