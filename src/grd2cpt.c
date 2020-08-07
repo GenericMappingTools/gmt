@@ -158,7 +158,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set CPT to go from grid zmin to zmax (i.e., a linear scale).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append <nlevels> to sample equidistant color levels from zmin to zmax.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Instead, append +c to use the cumulative density function to set color bounds.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Instead, append +c to use the cumulative density function (cdf) to set color bounds.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to output a discrete CPT in categorical CPT format.\n");
@@ -489,6 +489,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->T.n_levels > 0) ? Ctrl->T.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
+	if (Ctrl->E.cdf && Ctrl->E.levels == 0) Ctrl->E.levels = GRD2CPT_N_LEVELS;
 	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;		/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 2) cpt_flags |= GMT_CPT_EXTEND_BNF;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->Z.active) cpt_flags |= GMT_CPT_CONTINUOUS;	/* Controls if final CPT should be continuous in case input is a list of colors */
@@ -742,10 +743,13 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "z = %16g cdf(z) = %6.4f\n", cdf_cpt[Ctrl->E.levels-1].z, 1.0);
 		gmt_M_free (GMT, pair);
 		/* Make sure we do not have slices with no z-range */
+		p = 0.0;
+		dp = GMT_CONV8_LIMIT * (cdf_cpt[Ctrl->E.levels-1].z - cdf_cpt[0].z);
 		for (j = 1; j < (Ctrl->E.levels - 1); j++) {
-			if (doubleAlmostEqualZero (cdf_cpt[j-1].z, cdf_cpt[j].z)) {
-				GMT_Report (API, GMT_MSG_WARNING, "CDF is vertical, adding %g to have monotonic increasing z-values:\n", GMT_CONV8_LIMIT);
-				cdf_cpt[j].z += GMT_CONV8_LIMIT;
+			if (doubleAlmostEqualZero (cdf_cpt[j-1].z, cdf_cpt[j].z+p)) {
+				GMT_Report (API, GMT_MSG_WARNING, "CDF is vertical, adding %g to have monotonic increasing z-values:\n", dp);
+				p += dp;
+				cdf_cpt[j].z += p;
 			}
 		}
 	}
