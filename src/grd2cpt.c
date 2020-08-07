@@ -436,8 +436,10 @@ GMT_LOCAL int grd2cpt_free_the_grids (struct GMTAPI_CTRL *API, struct GMT_GRID *
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+EXTERN_MSC int gmtlib_compare_observation (const void *a, const void *b);
+
 EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
-	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
+	uint64_t ij, k, ngrd = 0, nxyg, nxy = 0, nfound, ngood;
 	unsigned int row, col, j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
@@ -445,7 +447,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	char format[GMT_BUFSIZ] = {""}, *l = NULL, **grdfile = NULL;
 
-	double *z = NULL, *cdf_cpt = NULL, wesn[4], mean, sd, wsum, scale;
+	double *z = NULL, wesn[4], mean, sd, wsum = 0.0, scale;
 
 	struct CDF_CPT {
 		double	z;	/* Data value  */
@@ -694,7 +696,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		}
 		if (j == Ctrl->E.levels-1) cdf_cpt[j].z = G[0]->header->z_max;
 	}
-	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make an equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
+	else if (Ctrl->S.active || (Ctrl->E.active && !Ctrl->E.cdf)) {	/* Make an equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
 		double start, range;
 
 		switch (Ctrl->S.kind) {
@@ -724,7 +726,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	else if (Ctrl->E.cdf) {	/* Use the cumulative weighted distribution to issue the desired equal-area level boundaries */
 		double dw = pair[nxy-1].weight / (Ctrl->E.levels - 1), p = 0.0, dp = 1.0 / (Ctrl->E.levels - 1);
 
-		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, CDF_CPT);
+		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
 		cdf_cpt[0].z = pair[0].value;
 		wsum = dw;	p = dp;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Evaluated %d equidistant points on the cumulative density function:\n", Ctrl->E.levels);
