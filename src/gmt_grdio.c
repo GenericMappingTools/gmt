@@ -2759,7 +2759,7 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, unsigned i
 			GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			if (add_pad) {
 				gmt_grd_pad_on (GMT, *Out, pad);	/* Add pad */
-				gmt_BC_init (GMT, *Out->header);	/* Initialize grid interpolation and boundary condition parameters */
+				gmt_BC_init (GMT, (*Out)->header);	/* Initialize grid interpolation and boundary condition parameters */
 				gmt_grd_BC_set (GMT, *Out, GMT_IN);	/* Set boundary conditions */
 			}
 		}
@@ -2769,7 +2769,7 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, unsigned i
 	(*Out) = G;
 	if (add_pad) {
 		gmt_grd_pad_on (GMT, *Out, pad);	/* Add pad */
-		gmt_BC_init (GMT, *Out->header);	/* Initialize grid interpolation and boundary condition parameters */
+		gmt_BC_init (GMT, (*Out)->header);	/* Initialize grid interpolation and boundary condition parameters */
 		gmt_grd_BC_set (GMT, *Out, GMT_IN);	/* Set boundary conditions */
 	}
 	return (false);
