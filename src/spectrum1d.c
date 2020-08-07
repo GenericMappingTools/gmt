@@ -783,7 +783,7 @@ EXTERN_MSC int GMT_spectrum1d (void *V_API, int mode, void *args) {
 
 	spectrum1d_free_space (GMT, &C);
 
-	if (!Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
+	if (!Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 		Return (API->error);
 	}
 

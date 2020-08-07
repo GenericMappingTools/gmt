@@ -89,6 +89,7 @@ while read line; do
 	#if [ "$cpt" = "broc" ] || [ "$cpt" = "cork" ] || [ "$cpt" = "vik" ] || [ "$cpt" = "lisbon" ] || [ "$cpt" = "tofino" ] || [ "$cpt" = "berlin" ] || [ "$cpt" = "oleron" ] ; then
 	if [ $(echo $line | grep -c "\[H") -eq 1 ]; then
 		hinge="HARD_HINGE"
+		echo "Remember to manually fix the hard hinge for $cpt"
 	elif [ $(echo $line | grep -c "\[S") -eq 1 ]; then
 		hinge="SOFT_HINGE"
 	else

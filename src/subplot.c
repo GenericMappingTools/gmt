@@ -1245,7 +1245,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			sprintf (command, "0/%g/0/%g", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y]);	/* Save page region */
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_TEXT, command, D);
 			gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, 0, NULL, file, D) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_NORMAL, NULL, file, D) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			gmt_set_tableheader (API->GMT, GMT_OUT, save);	/* Restore the state of affairs */
@@ -1353,7 +1353,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Check if we should draw debug lines */
 		sprintf (file, "%s/gmt.subplotdebug.%d", API->gwf_dir, fig);
 		if (!access (file, R_OK)) {	/* Yes, must draw debug lines on top */
-			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, 0, NULL, file, NULL)) == NULL) {
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, vfile) != GMT_NOERROR) {

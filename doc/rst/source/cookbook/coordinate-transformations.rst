@@ -246,7 +246,7 @@ and :math:`y' = g(\theta,r)`, hence it is similar to a regular map
 projection because *x* and *y* are coupled and *x*
 (i.e., :math:`\theta`) has a 360° periodicity. With input and output
 points both in the plane it is a **two-dimensional** projection. The
-transformation comes in two flavors:
+transformation comes in several flavors:
 
 #. Normally, :math:`\theta` is understood to be directions
    counter-clockwise from the horizontal axis, but we may choose to
@@ -261,18 +261,28 @@ transformation comes in two flavors:
    :math:`x' = f(\theta, r) = ar \cos (90 - (\theta-\theta_0)) + b` and
    :math:`y' = g(\theta, r) = ar \sin (90 - (\theta-\theta_0)) + c`.
 
+#. The radius *r* can either be radius or inverted to mean depth from the surface,
+   planetary radii, or even elevations in degrees.
+
 Consequently, the polar transformation is defined by providing
 
 -  scale in inches/unit (**-Jp**) or full width of plot in inches (**-JP**)
 
 -  Optionally, append **+a** to indicate CW azimuths rather than CCW directions
 
--  Optionally, append **+o**\ *origin* in degrees to indicate a CW (or CCW if **+a** is set) angular offset [0]
+-  Optionally, append **+t**\ *origin* in degrees so that this angular value is aligned with the positive *x*-axis
+   (or the azimuth to be aligned with the positive *y*-axis if **+a**) [0].
 
--  Optionally, append **+r** to reverse the radial direction (here,
-   *south* and *north* must be elevations in 0–90 range).
+-  Optionally, append **+f** to flip the radial direction to point inwards, and append **e** to indicate
+   that *r* represents *elevations* in degrees (requires *south* >= 0 and *north* <= 90),
+   **p** to select current planetary radius (determined by :term:`PROJ_ELLIPSOID`) as maximum radius [*north*], or *radius*
+   to specify a custom radius.
 
--  Optionally, append **+z** to annotate depths rather than radius.
+-  Optionally, append **+r**\ *offset* to include a radial offset in measurement units [0].
+
+-  Optionally, append **+z** to annotate depths rather than radius.  Alternatively,
+   if your *r* data are actually depths then you can append **p** or *radius* to get
+   radial annotations (*r = radius - z*) instead.
 
 As an example of this projection we will create a gridded data set in
 polar coordinates :math:`z(\theta, r) = r^2 \cdot \cos{4\theta}` using

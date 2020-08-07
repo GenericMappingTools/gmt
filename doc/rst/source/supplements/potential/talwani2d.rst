@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt talwani2d** [ *modeltable* ]
+**gmt talwani2d** [ *table* ]
 [ |-A| ] [ |-D|\ *rho* ] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-M|\ [**h**]\ [**v**] ]
@@ -33,7 +33,7 @@ Synopsis
 Description
 -----------
 
-**talwani2d** will read the multi-segment *modeltable* from file (or standard input).
+**talwani2d** will read the multi-segment *table* from file (or standard input).
 This file contains cross-sections of one or more 2-D bodies, with one polygon
 per segment.  The segment header must contain the parameter *rho*, which
 states the the density of this body (individual body
@@ -47,7 +47,7 @@ Options are available to control axes units and direction.
 Required Arguments
 ------------------
 
-*modeltable*
+*table*
     The file describing cross-sectional polygons of one or more bodies.  Polygons
     will be automatically closed if not already closed, and repeated vertices will
     be eliminated.  The segment header for each body will be examined for a density

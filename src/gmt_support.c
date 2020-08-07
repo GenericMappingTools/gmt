@@ -8088,6 +8088,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		double noise;
 		struct GMT_PALETTE_HIDDEN *PH = NULL;
 
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "CPT argument %s understood to be a master table\n", file);
 		if (gmt_M_is_dnan (zmin) || gmt_M_is_dnan (zmax)) {	/* Safety valve 1 */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
 			return (NULL);
@@ -8124,6 +8125,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	}
 	else if (file) {	/* Gave a CPT file */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "CPT argument %s understood to be a regular CPT table\n", file);
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &file[first], NULL);
 	}
 	else
@@ -8972,6 +8974,18 @@ int gmt_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double val
 	return (index);
 }
 
+bool gmt_same_fill (struct GMT_CTRL *GMT, struct GMT_FILL *F1, struct GMT_FILL *F2) {
+	/* Return true if the two fills are identical */
+	if (F1->use_pattern != F2->use_pattern) return false;	/* One is a pattern, the other isn't, so cannot be the same */
+	if (F1->use_pattern) {	/* Both are patterns */
+		if (F1->pattern_no != F2->pattern_no) return false;	/* Different patters used */
+		if (F1->pattern_no == -1)	/* Both have custom fill patterns */
+			return !strcmp (F1->pattern, F2->pattern);
+		return true;	/* They are the same */
+	}
+	return gmt_M_same_rgb (F1->rgb, F2->rgb);	/* true if the same color, including transparency level */
+}
+
 /*! . */
 GMT_LOCAL int gmtsupport_get_index_from_key (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *key) {
 	/* Will match key to a key in the color table.  Because a key is a string and may
@@ -9321,21 +9335,223 @@ void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	gmt_M_rgb_copy (G->rgb, GMT->current.setting.ps_page_rgb);		/* Default box color is page color [nominally white] */
 }
 
+
+unsigned int gmt_contour_C_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_ARGS *A) {
+	unsigned int n_errors = 0;
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	/* Parse the -C<arg> options for grdcontour and pscontour */
+
+	if (gmt_M_no_cpt_given (arg)) {
+		if (GMT->current.setting.run_mode == GMT_MODERN)
+			A->check = true;	/* Must see (after parsing) if there is a current CPT in this modern mode session */
+		else {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -C: No argument given\n");
+			n_errors++;
+		}
+	}
+	else if (gmt_M_file_is_memory (arg)) {	/* Passed a CPT memory reference from a module */
+		A->interval = 1.0;	/* This takes us past a check only */
+		A->cpt = true;
+		gmt_M_str_free (A->file);
+		A->file = strdup (arg);
+	}
+	else if (!gmt_access (GMT, arg, R_OK) || gmt_file_is_cache (API, arg)) {	/* Gave a readable file (CPT or contourfile) */
+		size_t L = strlen(arg);
+		A->interval = 1.0;	/* This takes us past a check only */
+		A->cpt = (L > 4 && !strncmp (&arg[L-4], ".cpt", 4U)) ? true : false;	/* Extension determines if we got a CPT file */
+		gmt_M_str_free (A->file);
+		A->file = strdup (arg);
+	}
+	else if (strchr (arg, ',')) {	/* Gave a comma-separated list of one or more contours */
+		A->interval = 1.0;	/* This takes us past a check only */
+		gmt_M_str_free (A->file);
+		A->file = strdup (arg);
+	}
+	else if (arg[0] == '+' && (isdigit(arg[1]) || strchr ("-+.", arg[1]))) {
+		if (!gmt_M_compat_check (GMT, 5))
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -C: Specifying single contour with leading + is deprecated.  Please use -C<cont>, instead\n");
+		A->single_cont = atof (&arg[1]);
+	}
+	else if (arg[0] != '-') {	/* Constant contour interval */
+		A->interval = atof (arg);
+		if (gmt_M_is_zero (A->interval)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -C: Contour interval cannot be zero\n");
+			n_errors++;
+		}
+	}
+	else {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -C: Contour interval cannot be negative (%s)\n", arg);
+		n_errors++;
+	}
+	return (n_errors);
+}
+
+unsigned int gmt_contour_first_pos (struct GMT_CTRL *GMT, char *arg) {
+	/* Because of backwards compatibility, we need to anticipate shits like -A+1 for a
+	 * single annotated contour and hence cannot confuse it with a modifier for contour specs.
+	 * Thus, here we scan past any leading single contour specification using deprecated syntax. */
+	unsigned int k = 1;
+	if (arg[0] != '+') return 0;	/* Start checking from start */
+	if (isalpha (arg[1]) || arg[1] == '=') return 0;	/* Standard modifier */
+	/* Here we must have +<value> which we wish to skip */
+	if (arg[k] == '+') k++;	/* Must step over a signed contour since ++2 and +-2 were OK back then */
+	while (arg[k] && arg[k] != '+') k++;
+	return k;
+}
+
+unsigned int gmt_contour_A_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_ARGS *A) {
+	unsigned int n_errors = 0;
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	/* Parse the -A<arg> options for grdcontour and pscontour after contour-specs are stripped off */
+	if (arg[0] == '\0') return GMT_NOERROR;	/* Probably the -A was just setting contour parameters via modifiers */
+
+	if (arg[0] == 'n' && arg[1] == '\0')	/* -An turns off all labels */
+		A->mode = 1;	/* Turn off all labels */
+	else if (arg[0] == '+' && (isdigit(arg[1]) || strchr ("-+.", arg[1]))) {
+		if (!gmt_M_compat_check (GMT, 5))
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -A: Specifying single contour with leading + is deprecated.  Please use -A<cont>, instead\n");
+		A->single_cont = atof (&arg[1]);
+	}
+	else if (strchr (arg, ',')) {	/* Gave a comma-separated list of one or more annotated contours */
+		gmt_M_str_free (A->file);
+		A->file = strdup (arg);
+	}
+	else if (arg[0] == '-' && arg[1] == '\0') {	/* -A- is deprecated version of -An */
+		if (!gmt_M_compat_check (GMT, 5))
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -A: Turning off annotations with -A- is deprecated.  Please use -An instead\n");
+		A->mode = 1;	/* Turn off all labels */
+	}
+	else if (arg[0] != '-') {	/* Constant annotated contour interval */
+		A->interval = atof (arg);
+		if (gmt_M_is_zero (A->interval)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -A: Contour interval cannot be zero\n");
+			n_errors++;
+		}
+	}
+	else {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -A: Annotated contour interval cannot be negative (%s)\n", arg);
+		n_errors++;
+	}
+	return n_errors;
+}
+
+GMT_LOCAL unsigned int gmtsupport_contour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_CLOSED *I) {
+	/* The backwards compatible parser for old-style -T option: */
+	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] but also accept new -Th|l<...> */
+	int n, j;
+	unsigned int n_errors = 0;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	if (strchr (arg, '/')) {	/* Gave gap/length */
+		n = sscanf (arg, "%[^/]/%[^:]", txt_a, txt_b);
+		if (n == 2) {
+			I->dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+			I->dim[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
+		}
+	}
+	for (j = 0; arg[j] && arg[j] != ':'; j++);
+	if (arg[j] == ':') I->label = true, j++;
+	if (arg[j]) {	/* Override high/low markers */
+		if (strlen (&(arg[j])) == 2) {	/* Standard :LH syntax */
+			txt_a[0] = arg[j++];	txt_a[1] = '\0';
+			txt_b[0] = arg[j++];	txt_b[1] = '\0';
+		}
+		else if (strchr (&(arg[j]), ',')) {	/* Found :<labellow>,<labelhigh> */
+			sscanf (&(arg[j]), "%[^,],%s", txt_a, txt_b);
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR,
+			            "Option -T: Give low and high labels either as :LH or :<low>,<high>.\n");
+			I->label = false;
+			n_errors++;
+		}
+		if (I->label) {	/* Replace defaults */
+			I->txt[0] = strdup (txt_a);
+			I->txt[1] = strdup (txt_b);
+		}
+	}
+	return (n_errors);
+}
+
+unsigned int gmt_contour_T_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_CLOSED *I) {
+	unsigned int j = 0, n_errors = 0;
+	int n;
+	char string[GMT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	/* Parse the -T<arg> options for grdcontour and pscontour */
+
+	I->high = I->low = true;	/* Default if just -T is given */
+	if (arg[0]) {	/* But here we gave more options */
+		if (arg[0] == 'h' || (arg[0] == '+' && !strchr ("adl", arg[1])))			/* Only tick local highs */
+			I->low = false, j = 1;
+		else if (arg[0] == 'l' || arg[0] == '-')	/* Only tick local lows */
+			I->high = false, j = 1;
+		else
+			j = 0;
+		if (strstr (arg, "+a") || strstr (arg, "+d") || strstr (arg, "+l")) {	/* New parser */
+			if (gmt_validate_modifiers (GMT, arg, 'T', "adl", GMT_MSG_ERROR)) n_errors++;
+			if (gmt_get_modifier (arg, 'a', string))
+				I->all = true;
+			if (gmt_get_modifier (arg, 'd', string))
+				if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, I->dim)) < 1) n_errors++;
+			if (gmt_get_modifier (arg, 'l', string)) {	/* Want to label innermost contours */
+				I->label = true;
+				if (string[0] == 0)
+					;	/* Use default labels */
+				else if (strlen (string) == 2) {	/* Standard +lLH syntax */
+					char A[2] = {0, 0};
+					A[0] = string[0];	I->txt[0] = strdup (A);
+					A[0] = string[1];	I->txt[1] = strdup (A);
+				}
+				else if (strchr (string, ',') && (n = sscanf (string, "%[^,],%s", txt_a, txt_b)) == 2) {	/* Found :<labellow>,<labelhigh> */
+					I->txt[0] = strdup (txt_a);
+					I->txt[1] = strdup (txt_b);
+				}
+				else {
+					GMT_Report (API, GMT_MSG_ERROR,
+					            "Option -T: Give low and high labels either as +lLH or +l<low>,<high>.\n");
+					n_errors++;
+				}
+			}
+		}
+		else {
+			if (gmt_M_compat_check (API->GMT, 4))  {
+				GMT_Report (API, GMT_MSG_COMPAT, "Your format for -T is deprecated (but accepted); use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+					GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+				n_errors += gmtsupport_contour_old_T_parser (GMT, &arg[j], I);
+			}
+			else {
+				GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Your format for -T is deprecated; use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+					GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+				n_errors++;
+			}
+		}
+		n_errors += gmt_M_check_condition (GMT, I->dim[GMT_X] <= 0.0 || I->dim[GMT_Y] == 0.0,
+		                "Option -T: Expected\n\t-T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
+		                	GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	}
+
+	return (n_errors);
+}
+
 /*! . */
 int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G) {
-	unsigned int k, bad = 0, pos = 0;
+	unsigned int k = 0, bad = 0, pos = 0;
 	size_t L;
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, c;
 	char *specs = NULL;
 
-	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+x|X<suffix>][+=<prefix>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+i][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+x|X<suffix>][+=<prefix>] strings */
+
+	/* txt is pointing to the very first modifier */
 
 	G->nudge_flag = 0;
 	G->draw = true;
 
-	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
-
-	if (!txt[k]) return (0);
+	if (txt == NULL || !txt[k]) return (0);
 
 	/* Decode new-style +separated substrings */
 
@@ -9523,20 +9739,6 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case '=':	/* Label Prefix specification */
 				if (p[1]) strncpy (G->prefix, &p[1], GMT_LEN64-1);
-				break;
-
-			case '.':	/* Assume it can be a decimal part without leading 0 */
-			case '0':	/* A single annotated contour */
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-			case '-':	/* Assume it can be a negative contour */
 				break;
 
 			default:

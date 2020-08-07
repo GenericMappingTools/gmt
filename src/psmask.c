@@ -41,7 +41,7 @@
 #define THIS_MODULE_MODERN_NAME	"mask"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Clip or mask map areas with no data table coverage"
-#define THIS_MODULE_KEYS	"<D{,DDD,C-(,>X},LG)@<D{,DD),C-(,LG)"
+#define THIS_MODULE_KEYS	"<D{,DDD,C-(,>X},LG)"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqrstxy" GMT_OPT("Ec")
 

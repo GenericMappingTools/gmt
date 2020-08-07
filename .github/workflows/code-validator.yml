@@ -1,0 +1,45 @@
+# Workflow to validify the consistence of the codes
+
+on:
+  push:
+    branches:
+      - master
+      - '[0-9]+.[0-9]+'
+  pull_request:
+
+name: Code Validator
+
+jobs:
+  code-validator:
+    name: Code Validator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Check PSL_strings.h
+        run: |
+          cd src/
+          bash gmt_make_PSL_strings.sh
+          if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
+          cd ..
+
+      - name: Check gmt_enum_dict.h
+        run: |
+          cd src/
+          bash gmt_make_enum_dicts.sh
+          if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
+          cd ..
+
+      - name: Check module purposes
+        run: |
+          cd src/
+          bash gmt_make_module_purpose.sh
+          if [ $(git ls-files -m) ]; then git --no-pager diff HEAD; exit 1; fi
+          cd ..
+
+      - name: Check GMT version year
+        run: |
+          current_year=$(date +%Y)
+          gmt_version_year=$(grep GMT_VERSION_YEAR cmake/ConfigDefault.cmake | awk -F'"' '{print $2}')
+          if [ "$current_year" != "$gmt_version_year" ]; then exit 1; fi

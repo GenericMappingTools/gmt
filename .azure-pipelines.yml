@@ -17,24 +17,6 @@ variables:
 
 jobs:
 
-- job:
-  displayName: 'Code Checker'
-
-  steps:
-  - bash: |
-      set -x -e
-      cd src
-      bash gmt_make_PSL_strings.sh
-      bash gmt_make_enum_dicts.sh
-      bash gmt_make_module_purpose.sh
-      cd ..
-      # check if any files are changed
-      if [ $(git ls-files -m) ]; then
-        git diff HEAD
-        exit 1
-      fi
-    displayName: Check if any C codes and headers need to be manually updated
-
 # Lint Checker
 - job:
   displayName: 'Lint Checker'
