@@ -508,7 +508,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, legend_file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, 0, NULL, Ctrl->T.file, In) != GMT_NOERROR) {
+		if (Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_WRITE_NORMAL, NULL, Ctrl->T.file, In) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

@@ -185,10 +185,11 @@ export GMT_END_SHOW=off
 gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT ps
 # Tentative PS file name
 ps="${script_name%.sh}.ps"
-# Modern mode needs a stable PPID but ctest messes that up when pipes are used
+# Modern mode needs a stable PPID but ctest messes that up when pipes are used.
+# Because classic scripts also look to see what mode they are we set this for all.
+export GMT_SESSION_NAME=\$\$
+echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
 if [ ${modern} -gt 0 ]; then
-	export GMT_SESSION_NAME=\$\$
-	echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
 	script_mode=M
 fi
 # Now run the script

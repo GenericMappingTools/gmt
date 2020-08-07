@@ -30,7 +30,7 @@
 #define THIS_MODULE_MODERN_NAME	"ternary"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot data on ternary diagrams"
-#define THIS_MODULE_KEYS	"<D{,>X},>DM,C-(@<D{,MD),C-("
+#define THIS_MODULE_KEYS	"<D{,>X},>DM,C-("
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy"
 
@@ -396,7 +396,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	gmt_set_dataset_minmax (GMT, D);		/* Update column stats */
 
 	if (Ctrl->M.active) {	/* Just print the converted data and exit */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, 0, NULL, NULL, D) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, NULL, D) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to write x,y file to stdout\n");
 			Return (API->error);
 		}

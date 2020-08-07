@@ -2170,13 +2170,16 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	/* Periodic grid with 360 degree range is easy */
 
 	if (grid_global) {
+		bool true_global_region = (gmt_M_360_range (h->wesn[XLO], h->wesn[XHI]) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
 		wesn[XLO] = h->wesn[XLO] + floor ((wesn[XLO] - h->wesn[XLO]) * HH->r_inc[GMT_X] + GMT_CONV4_LIMIT) * h->inc[GMT_X];
 		wesn[XHI] = h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) * HH->r_inc[GMT_X] - GMT_CONV4_LIMIT) * h->inc[GMT_X];
 		/* For the odd chance that xmin or xmax are outside the region: bring them in */
-		if (wesn[XHI] - wesn[XLO] >= 360.0) {
+		if ((wesn[XHI] - wesn[XLO]) >= 360.0) {
 			while ((wesn[XLO]) < GMT->common.R.wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
 			while ((wesn[XHI]) > GMT->common.R.wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
 		}
+		if (true_global_region && (wesn[XHI] - wesn[XLO]) < 360.0)	/* Need to enforce 360 range since that is what it should be */
+			wesn[XHI] = wesn[XLO] + 360.0;
 		return (1);
 	}
 	if (GMT->current.map.is_world) {
@@ -2657,6 +2660,7 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	gmt_copy_gridheader (GMT, Gnew->header, G->header);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
+		struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (Gnew);
 		if ((mode & GMT_DUPLICATE_RESET) && !gmt_grd_pad_status (GMT, G->header, GMT->current.io.pad)) {
 			/* Pads differ and we requested resetting the pad */
 			gmt_M_grd_setpad (GMT, Gnew->header, GMT->current.io.pad);	/* Set default pad size */
@@ -2679,6 +2683,7 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 
 		Gnew->x = gmt_grd_coord (GMT, Gnew->header, GMT_X);	/* Get array of x coordinates */
 		Gnew->y = gmt_grd_coord (GMT, Gnew->header, GMT_Y);	/* Get array of y coordinates */
+		GH->xy_alloc_mode[GMT_X] = GH->xy_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
 	}
 	return (Gnew);
 }
@@ -2709,13 +2714,11 @@ unsigned int gmtlib_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, boo
 		if (GH->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, G->data);
 		G->data = NULL;	/* This will remove reference to external memory since gmt_M_free_aligned would not have been called */
 	}
-	if (G->x && G->y && free_grid) {
-		if (GH->alloc_mode == GMT_ALLOC_INTERNALLY) {
-			gmt_M_free (GMT, G->x);
-			gmt_M_free (GMT, G->y);
-		}
-		G->x = G->y = NULL;	/* This will remove reference to external memory since gmt_M_free would not have been called */
-	}
+	if (G->x && GH->xy_alloc_mode[GMT_X] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, G->x);
+	if (G->y && GH->xy_alloc_mode[GMT_Y] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, G->y);
+	G->x = G->y = NULL;	/* This will remove reference to external memory since gmt_M_free would not have been called */
 	if (GH->extra) gmtlib_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	alloc_mode = GH->alloc_mode;
 	gmt_M_free (GMT, G->hidden);

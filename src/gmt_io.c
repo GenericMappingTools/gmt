@@ -4107,6 +4107,9 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 /*! . */
 GMT_LOCAL bool gmtio_file_is_readable (struct GMT_CTRL *GMT, char *path) {
 	/* Returns true if readable, otherwise give error and return false */
+	struct stat S;
+	int err = stat (path, &S);	/* Stat the path (which may not exist) */
+	if (err == 0 && S_ISDIR (S.st_mode)) return (false);	/* A directory is not a file */
 	if (!access (path, R_OK)) return (true);	/* Readable */
 	/* Get here when found, but not readable */
 	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to read %s (permissions?)\n", path);
@@ -8344,6 +8347,10 @@ void gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool fr
 		gmtio_free_text_array (V->n_rows, V->text);
 		gmt_M_free (GMT, V->text);
 	}
+	if (V->n_headers) {
+		for (unsigned int k = 0; k < V->n_headers; k++) gmt_M_str_free (V->header[k]);
+		gmt_M_free (GMT, V->header);
+	}
 	gmt_M_free (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
 	gmt_M_free (GMT, V->type);
 	gmt_M_free (GMT, VH->alloc_mode);
@@ -8421,6 +8428,10 @@ void gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool fr
 	if (M->text && free_matrix && MH->alloc_mode_text == GMT_ALLOC_INTERNALLY) {
 		gmtio_free_text_array (M->n_rows, M->text);
 		gmt_M_free (GMT, M->text);
+	}
+	if (M->n_headers) {
+		for (unsigned int k = 0; k < M->n_headers; k++) gmt_M_str_free (M->header[k]);
+		gmt_M_free (GMT, M->header);
 	}
 	alloc_mode = MH->alloc_mode;
 	gmt_M_free (GMT, M->hidden);
@@ -8554,7 +8565,7 @@ bool gmt_is_float (struct GMT_CTRL *GMT, char *text) {
 }
 
 /*! . */
-unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsigned int ncols, double *out) {
+unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsigned int ncols, double *out, unsigned int *ptext) {
 	/* Used when we read text records and need to obtain doubles */
 	/* Convert the first ncols fields in the record string to numbers that we
 	 * store in GMT->current.io.curr_rec, which is what normal GMT_DATASET processing do.
@@ -8569,6 +8580,7 @@ unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsig
 		gmt_scanf (GMT, p, gmt_M_type (GMT, GMT_IN, k), &out[k]);	/* Be tolerant of errors */
 		k++;
 	}
+	*ptext = pos;	/* Location of trailing text in record */
 	return (k);
 }
 

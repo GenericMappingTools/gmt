@@ -378,7 +378,9 @@ static char *map_annot_oblique_item[N_MAP_ANNOT_OBLIQUE_ITEMS] = {
  *
  * Without these we are blind to the keyword arrays.  Note that while you can test the
  * common options without the module options, you cannot do the reverse.
-  */
+ *
+ * Note: For the near-global option -I (--increment), see gmt_constants.h for GMT_INCREMENT_KW definition.
+ */
 
 static struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
@@ -392,6 +394,7 @@ static struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	{   0, 'Y', "yshift",        "a,c,f,r", "absolute,center,fixed,relative",           "",         				""},
 	{   0, 'a', "aspatial",      "",        "",                                         "",         				""},
 	{   0, 'b', "binary",        "",        "",                                         "b,l",      				"big-endian,little-endian"},
+	{   0, 'c', "panel",         "",        "",                                         "",      				    ""},
 	{   0, 'd', "nodata",        "i,o",     "in,out",                                   "",         				""},
 	{   0, 'e', "find",          "",        "",                                         "f",        				"file"},
 	{ ',', 'f', "coltypes",      "i,o",     "in,out",                                   "",        					""},
@@ -399,12 +402,14 @@ static struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	{   0, 'h', "header",        "i,o",     "in,out",                                   "c,d,r,t", 					"columns,delete,remark,title"},
 	{ ',', 'i', "read-columns",  "",        "",                                         "l,o,s",   					"log10,offset,scale"},
 	{   0, 'j', "spherical",     "e,f,g",   "ellipsoidal,flat-earth,great-circle",      "",   			    		""},
-	{   0, 'l', "legend",        "",        "",                                         "d,f,g,h,j,l,n,s,v,w,x",   	"drawline,font,gap,header,justify,linetext,ncols,size,vertline,width,scale"},
+	{   0, 'l', "legend",        "",        "",                                         "D,G,H,L,N,S,V,f,g,j,o,p,s,w",   	"drawline,gap,header,linetext,ncols,size,vertline,font,fill,justify,offset,pen,scale,width"},
 	{   0, 'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "a,b,c,t",     				"antialias,bc,clip,threshold"},
 	{ ',', 'o', "write-columns", "",        "",                                         "",        					""},
 	{   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",     					"view,world"},
+	{ ',', 'q', "read-rows",     "~",       "invert",                                   "a,c,f,s",   				"per-set,column,per-file,per-segment"},
+	{ ',', 'q', "write-rows",    "~",       "invert",                                   "a,c,f,s",   				"per-set,column,per-file,per-segment"},
 	{   0, 'r', "registration",  "g,p",     "gridline,pixel",                           "",        					""},
-	{   0, 's', "skip-record",   "",       "",                                         "a,r",     					"any,reverse"},
+	{   0, 's', "skip-rows",     "",       "",                                         "a,r",     					"any,reverse"},
 	{   0, 't', "transparency",  "",        "",                                         "",        					""},
 	{   0, 'x', "cores",         "",        "",                                         "",        					""},
 	{   0, '\0', "",             "",        "",                                         "",        					""}	/* End of list marked with empty code and strings */
@@ -425,7 +430,7 @@ static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 #include <Windows.h>
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
 	OVERLAPPED over = { 0 };
 	HANDLE hand = (HANDLE)_get_osfhandle(fd);
 	if (!LockFileEx(hand, LOCKFILE_EXCLUSIVE_LOCK, 0, 1, 0, &over)) /* Will block until exclusive lock is acquired */
@@ -437,7 +442,7 @@ GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	HANDLE hand = (HANDLE)_get_osfhandle(fd);
 	if (!UnlockFile(hand, 0, 0, 0, 1))
 	{
@@ -449,7 +454,7 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 
 #elif defined (HAVE_FCNTL_H_) /* Use POSIX fcntl */
 /*! . */
-GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
 	int status;
 	struct flock lock;
 	lock.l_type = F_WRLCK;		/* Lock for exclusive reading/writing */
@@ -466,7 +471,7 @@ GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	int status;
 	struct flock lock;
 	lock.l_type = F_UNLCK;		/* Release lock and close file */
@@ -484,13 +489,13 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 
 #else /* Not Windows and fcntl not available */
 /*! . */
-GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File locking not supported.\n");
 	return false;
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	return false;
 }
 #endif
@@ -656,6 +661,11 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 		sep[0] = kw[k].separator;			/* Need a string with separator to strcat below */
 		new_arg[0] = '\0';					/* Initialize short option arguments */
 		modified = true;					/* We have at least modified one option */
+		/* Special handling for --read-rows and --write-rows since they both map to q and need -qi and -qo, respectively */
+		if (!strcmp (kw[k].long_option, "read-rows"))
+			strcat (new_arg, "i");
+		else if (!strcmp (kw[k].long_option, "write-rows"))
+			strcat (new_arg, "o");
 
 		for (section = 0; section < n_sections; section++) {	/* Parse the sections separately but strcat together a single short option */
 			/* Make sure a few things are correct */
@@ -2880,7 +2890,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	}
 
 	/* When we get here the file exists */
-	gmtinit_file_lock (GMT, fileno(fp));
+	gmtlib_file_lock (GMT, fileno(fp));
 	/* Format of GMT gmt.history is as follow:
 	 * BEGIN GMT <version>		This is the start of parsable section
 	 * OPT ARG
@@ -2919,7 +2929,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	}
 
 	/* Close the file */
-	gmtinit_file_unlock (GMT, fileno(fp));
+	gmtlib_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmtinit_get_history\n");
@@ -2975,7 +2985,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if ((fp = fopen (hfile, "w")) == NULL) return (-1);	/* Not OK to be unsuccessful in creating this file */
 
 	/* When we get here the file is open */
-	if (!gmtinit_file_lock (GMT, fileno(fp)))
+	if (!gmtlib_file_lock (GMT, fileno(fp)))
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Directory %s is not locked for exclusive access. Multiple gmt processes running at once could corrupt history file.\n", hfile);
 
 	fprintf (fp, "# GMT %d Session common arguments shelf\n", GMT_MAJOR_VERSION);
@@ -2991,7 +3001,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	fprintf (fp, "END\n");
 
 	/* Close the file */
-	gmtinit_file_unlock (GMT, fileno(fp));
+	gmtlib_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
 	return (GMT_NOERROR);
@@ -13602,6 +13612,7 @@ GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
 	bool quote = false;	/* We are outside any quoted text */
 	size_t k;
 	if (strchr (file, '@') == NULL) return false;	/* No @ anywhere */
+	if (gmt_M_file_is_memory (file)) return false;	/* Not a remote file but a memory reference */
 	if (file[0] == '@') return true;	/* Definitively a remote file */
 	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
 	for (k = 0; k < strlen (file); k++) {
@@ -13654,11 +13665,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if (options) {
 	  for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		  if (remote_first && gmtinit_might_be_remotefile (opt->arg)) {
+		  if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+		  if (remote_first) {
 			  gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
 			  remote_first = false;
 		  }
-		  if (opt->arg[0] != '@') continue;	/* No remote file argument given */
 		  gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 		}
 	}
@@ -14338,11 +14349,13 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	*/
 	GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;
 
+#ifdef HAVE_GDAL
 	/* Reset these GDAL in/out stuff */
 	gmt_M_memset (&GMT->current.gdal_read_in,  1, struct GMT_GDALREAD_IN_CTRL);
 	gmt_M_memset (&GMT->current.gdal_read_out, 1, struct GMT_GDALREAD_OUT_CTRL);
 	gmt_M_memset (&GMT->current.gdal_write,    1, struct GMT_GDALWRITE_CTRL);
-
+#endif
+	
 	GMT->parent->cache = false;		/* Otherwise gdalread from externals on Windows would mingle CACHEDIR in fnames */
 
 	gmt_M_str_free (Ccopy);	/* Good riddance */
@@ -17520,7 +17533,9 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 					}
 				}
 			}
-			if (error) return (error);			/* Bail at this point */
+			if (error) return (error);		/* Bail at this point */
+			gmt_reset_history (API->GMT);	/* No old classic history shall affect a new modern mode session */
+
 			gmt_conf (API->GMT);				/* Get the original system defaults */
 			if (!clean_start) gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			snprintf (dir, PATH_MAX, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);	/* Reuse dir string for saving gmt.conf to this dir */

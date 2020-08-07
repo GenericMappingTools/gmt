@@ -197,12 +197,16 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get first record */
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_ERROR, "Read error first record in file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Deleting %s so it can get regenerated - please try again\n", file);
+		gmt_remove_file (GMT, file);
 		return NULL;
 	}
 	*n = atoi (line);		/* Number of non-commented records to follow */
 	if (*n <= 0 || *n > GMT_BIG_CHUNK) {	/* Probably not a good value */
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_ERROR, "Bad record counter in file %s\n", file);
+		GMT_Report (API, GMT_MSG_ERROR, "Deleting %s so it can get regenerated - please try again\n", file);
+		gmt_remove_file (GMT, file);
 		return NULL;
 	}
 	if (fgets (line, GMT_LEN256, fp) == NULL) {	/* Try to get second record */
@@ -320,7 +324,13 @@ int gmtremote_wind_to_file (const char *file) {
 }
 
 int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
-	/* Return the entry in the remote file table of file is found, else -1 */
+	/* Return the entry in the remote file table of file is found, else -1.
+	 * Complications to consider before finding a match:
+	 * Input file may or may not have leading @
+	 * Input file may or may not have _g or _p for registration
+	 * Input file may or many not have an extension
+	 * Key file may be a tiled data set and thus ends with '/'
+	 */
 	int pos = 0;
 	struct GMT_DATA_INFO *key = NULL;
 	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
@@ -328,6 +338,16 @@ int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	/* Exclude leading directory for local saved versions of the file */
 	if (pos == 0) pos = gmtremote_wind_to_file (file);	/* Skip any leading directories */
 	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
+	if (key) {	/* Make sure we actually got a real hit since file = "earth" will find a key starting with "earth****" */
+		char *ckey = strrchr (key->file, '.');		/* Find location of the start of the key file extension (or NULL if no extension) */
+		char *cfile = strrchr (&file[pos], '.');	/* Find location of the start of the input file extension (or NULL if no extension) */
+		size_t Lfile = (cfile) ? (size_t)(cfile - &file[pos]) : strlen (&file[pos]);	/* Length of key file name without extension */
+		size_t Lkey  = (ckey)  ? (size_t)(ckey  - key->file)  : strlen (key->file);		/* Length of key file name without extension */
+		if (ckey == NULL && Lkey > 1 && key->file[Lkey-1] == '/') Lkey--;	/* Skip trailing dir flag */
+		if (Lkey > Lfile && Lkey > 2 && key->file[Lkey-2] == '_' && strchr ("gp", key->file[Lkey-1])) Lkey -= 2;	/* Remove the length of _g or _p from Lkey */
+		if (Lfile != Lkey)	/* Not an exact match (apart from trailing _p|g) */
+			key = NULL;
+	}
 	return ((key == NULL) ? GMT_NOTSET : key->id);
 }
 
@@ -437,7 +457,20 @@ GMT_LOCAL int gmtremote_find_and_give_data_attribution (struct GMTAPI_CTRL *API,
 	return (match);
 }
 
-GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit) {
+GMT_LOCAL char *gmtremote_lockfile (struct GMTAPI_CTRL *API, char *file) {
+	/* Create a dummy file in temp with extension .download and use as a lock file */
+	char *c = strrchr (file, '/');
+	char Lfile[PATH_MAX] = {""};
+	if (c)	/* Found the last slash, skip it */
+		c++;
+	else	/* No path, just point to file */
+		c = file;
+	if (c[0] == '@') c++;	/* Skip any leading @ sign */
+	sprintf (Lfile, "%s/%s.download", API->tmp_dir, c);
+	return (strdup (Lfile));
+}
+
+GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, size_t limit) {
 	/* Get the remote file's size and if too large we refuse to download */
 	CURL *curl = NULL;
 	CURLcode res;
@@ -487,11 +520,24 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char* URL, si
 #define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
 
 GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index) {
+	bool query = gmt_M_file_is_query (url);
 	int curl_err = 0;
 	long time_spent;
+	char *Lfile = NULL;
+	FILE *fp = NULL;
 	CURL *Curl = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
+	struct GMTAPI_CTRL *API = GMT->parent;
 	time_t begin, end;
+
+	if (!query) {	/* Only make a filename if not a query */
+		Lfile = gmtremote_lockfile (API, file);
+		if ((fp = fopen (Lfile, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", Lfile);
+			return 1;
+		}
+		gmtlib_file_lock (GMT, fileno(fp));	/* Attempt exclusive lock */
+	}
 
 	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", url);
@@ -557,6 +603,14 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
+
+	if (!query) {	/* Remove lock file after successful download */
+		gmtlib_file_unlock (GMT, fileno(fp));
+		fclose(fp);
+		gmt_remove_file (GMT, Lfile);
+		gmt_M_str_free (Lfile);
+	}
+
 	gmtremote_turn_off_ctrl_C_check ();
 	return 0;
 }
@@ -1057,9 +1111,12 @@ int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 }
 
 int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *localfile, bool be_fussy) {
+	bool query = gmt_M_file_is_query (url);
 	int curl_err, error;
 	size_t fsize;
+	char *Lfile = NULL;
 	CURL *Curl = NULL;
+	FILE *fp = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -1079,6 +1136,15 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	}
 
 	/* Here we will try to download a file */
+
+	if (!query) {	/* Only make a filename if not a query */
+		Lfile = gmtremote_lockfile (API, (char *)name);
+		if ((fp = fopen (Lfile, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", Lfile);
+			return 1;
+		}
+		gmtlib_file_lock (GMT, fileno(fp));	/* Attempt exclusive lock */
+	}
 
   	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to initiate curl\n");
@@ -1133,6 +1199,14 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
+
+	if (!query) {	/* Remove lock file after successful download */
+		gmtlib_file_unlock (GMT, fileno(fp));
+		fclose(fp);
+		gmt_remove_file (GMT, Lfile);
+		gmt_M_str_free (Lfile);
+	}
+
 	gmtremote_turn_off_ctrl_C_check ();
 
 	error = gmtremote_convert_jp2_to_nc (API, localfile);
@@ -1491,6 +1565,11 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to receive blended grid from grdblend\n");
 		return NULL;
 	}
+	if (gmtlib_delete_virtualfile (API, grid)) {	/* Remove trace since passed upwards anyway */
+		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to destroy temporary object for assembled grid\n");
+		return NULL;
+	}
+
 	HH = gmt_get_H_hidden (G->header);
 	HH->orig_datatype = GMT_SHORT;	/* Since we know this */
 	return (G);
