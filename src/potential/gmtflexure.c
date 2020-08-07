@@ -1461,7 +1461,7 @@ EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, 0, NULL, Ctrl->Out.file, W) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, W) != GMT_NOERROR) {
 		Return (API->error);
 	}
 

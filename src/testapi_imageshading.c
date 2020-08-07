@@ -8,7 +8,7 @@ int main (int argc, char **argv) {
 	char args[128] = {""};         	/* String to hold module command arguments */
 	/* Initialize the GMT session */
 	API = GMT_Create_Session ("test", 2U, GMT_SESSION_EXTERNAL, NULL);
-	M = GMT_Read_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL, "2d-matrix.txt", NULL);
+	M = GMT_Read_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, "2d-matrix.txt", NULL);
 	/* Associate our matrix with a virtual file */
 	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN, M, input);
 
