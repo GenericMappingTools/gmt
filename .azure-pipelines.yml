@@ -49,7 +49,7 @@ jobs:
     BUILD_DOCS: false
     DEPLOY_DOCS: false
     PACKAGE: false
-    TEST: false
+    RUN_TESTS: false
 
   steps:
   - template: ci/azure-pipelines-linux.yml
@@ -68,7 +68,7 @@ jobs:
     BUILD_DOCS: true
     DEPLOY_DOCS: true
     PACKAGE: true
-    TEST: false
+    RUN_TESTS: false
 
   steps:
   - template: ci/azure-pipelines-linux.yml
@@ -86,7 +86,7 @@ jobs:
     BUILD_DOCS: false
     DEPLOY_DOCS: false
     PACKAGE: false
-    TEST: true
+    RUN_TESTS: true
 
   steps:
   - template: ci/azure-pipelines-linux.yml
@@ -104,7 +104,7 @@ jobs:
     BUILD_DOCS: false
     DEPLOY_DOCS: false
     PACKAGE: false
-    TEST: false
+    RUN_TESTS: false
 
   steps:
   - template: ci/azure-pipelines-mac.yml
@@ -122,7 +122,7 @@ jobs:
     BUILD_DOCS: true
     DEPLOY_DOCS: false
     PACKAGE: true
-    TEST: false
+    RUN_TESTS: false
 
   steps:
   - template: ci/azure-pipelines-mac.yml
@@ -140,7 +140,7 @@ jobs:
     BUILD_DOCS: false
     DEPLOY_DOCS: false
     PACKAGE: false
-    TEST: true
+    RUN_TESTS: true
 
   steps:
   - template: ci/azure-pipelines-mac.yml
