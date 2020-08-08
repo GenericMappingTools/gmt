@@ -337,6 +337,14 @@
    a line with text along it, similar to an annotated contour in a contour map. There is
    a rich set of directives and modifiers to select a specific outcome:
 
+.. figure:: /_images/GMT_base_symbols8.*
+   :width: 600 px
+   :align: center
+
+   Quoted lines are lines with text.  However, the text can be static, read via files,
+   or be quantities computed along the line.  This example just shows a wiggly line with
+   a text-aligned label.  A rich set of modifier controls the appearance.
+
 .. _-basic_symbols8:
 
     **-Sq**
