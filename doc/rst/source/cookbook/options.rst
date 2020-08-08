@@ -1313,6 +1313,34 @@ Thus, given the same region (**-R**) and grid spacing, the
 pixel-registered grids have one less column and one less row than the
 gridline-registered grids; here we find nx = ny = 3.
 
+Switching registrations
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _Switch_Registrations:
+
+GMT offer ways to convert a pixel-registered grid to a gridline-registered grid.
+One way is to simply adjust the region of the grid by half the grid-spacing and
+toggle the registration in :doc:`/grdedit` **-T**.  This is a *non-destructive* way to convert the grid,
+but it does change the domain which may not be desirable depending on application.
+The other is to *resample* the grid at the other set of nodes via :doc:`/grdsample` **-T**.
+This approach leaves the region exactly the same but is *destructive* due to the loss
+of the higher data frequencies, as shown in Figure :ref:`Registration resampling <Grid_grid2pix>`.
+
+.. _Grid_grid2pix:
+
+.. figure:: /_images/GMT_grid2pix.*
+   :width: 500 px
+   :align: center
+
+   a) Cross-section of a grid along the *x*-axis for a constant value of *y*, showing just the Nyquist
+   *x*-component (heavy line) at its grid nodes (red circles).  Resampling this component half-way
+   between nodes (vertical lines) will always give zero (red triangles), hence this signal is lost,
+   unlike long wavelength components (thin line), which can be interpolated (blue triangles).
+   Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
+   resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
+   of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
+   function of wavenumber :math:`k_j` [Marks and Smith, 2007].
+
 .. _option_-s:
 
 NaN-record treatment: The **-s** option
