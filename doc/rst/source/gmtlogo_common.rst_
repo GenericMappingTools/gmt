@@ -8,7 +8,7 @@ positioned relative to the current plot origin. Use various options to change th
 transparent or opaque rectangular map panel behind the GMT logo.
 
 .. figure:: /_images/GMT_coverlogo.*
-   :width: 300 px
+   :width: 200 px
    :align: center
 
    Standard presentation of the GMT logo.
