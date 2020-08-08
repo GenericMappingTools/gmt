@@ -2,33 +2,12 @@
 
 steps:
 
-- bash: |
-    set -x -e
-    brew update
-    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript || true
-  displayName: Install dependencies
+- bash: bash ci/install-dependencies-macos.sh
+  displayName: Install GMT dependencies
 
-- bash: |
-    set -x -e
-    brew install graphicsmagick || true
-  displayName: Install dependencies for running tests
-  condition: eq(variables['TEST'], true)
-
-- bash: |
-    set -x -e
-    brew install pngquant
-    pip3 install --user sphinx
-    echo "##vso[task.prependpath]$HOME/Library/Python/3.7/bin"
-    brew install graphicsmagick ffmpeg || true
-  displayName: Install dependencies for building documentation
+- bash: echo "##vso[task.prependpath]$HOME/Library/Python/3.8/bin"
+  displayName: Add sphinx to PATH
   condition: eq(variables['BUILD_DOCS'], true)
-
-- bash: |
-    set -x -e
-    # we need the GNU tar
-    brew install gnu-tar
-  displayName: Install dependencies for packaging
-  condition: eq(variables['PACKAGE'], true)
 
 - bash: |
     echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
@@ -119,7 +98,7 @@ steps:
   displayName: Full tests
   env:
     CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 360"
-  condition: eq(variables['TEST'], true)
+  condition: eq(variables['RUN_TESTS'], true)
 
 # Publish the whole build directory for debugging purpose
 - task: CopyFiles@2
@@ -141,7 +120,7 @@ steps:
     bash <(curl -s https://codecov.io/bash)
   env:
     CODECOV_TOKEN: $(codecov.token)
-  condition: and(eq(variables['TEST'], true), succeededOrFailed())
+  condition: and(eq(variables['RUN_TESTS'], true), succeededOrFailed())
   displayName: Upload test coverage
 
 - bash: |
