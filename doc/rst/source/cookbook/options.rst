@@ -1316,11 +1316,13 @@ gridline-registered grids; here we find nx = ny = 3.
 Switching registrations
 ^^^^^^^^^^^^^^^^^^^^^^^
 
+.. _Switch_Registrations:
+
 GMT offer ways to convert a pixel-registered grid to a gridline-registered grid.
 One way is to simply adjust the region of the grid by half the grid-spacing and
-toggle the registration in :doc:`grdedit`.  This is a *non-destructive* way to convert the grid,
+toggle the registration in :doc:`/grdedit` **-T**.  This is a *non-destructive* way to convert the grid,
 but it does change the domain which may not be desirable depending on application.
-The other is to *resample* the grid at the other set of nodes via :doc:`grdsample`.
+The other is to *resample* the grid at the other set of nodes via :doc:`/grdsample` **-T**.
 This approach leaves the region exactly the same but is *destructive* due to the loss
 of the higher data frequencies, as shown in Figure :ref:`Registration resampling <Grid_grid2pix>`.
 

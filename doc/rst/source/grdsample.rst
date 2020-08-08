@@ -71,7 +71,7 @@ Optional Arguments
 **-T**
     Translate between grid and pixel registration; if the input is
     grid-registered, the output will be pixel-registered and vice-versa.
-    This is a destructive grid change; see :ref:`Registration resampling <Grid_grid2pix>`.
+    This is a *destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
 .. _-V:
 
