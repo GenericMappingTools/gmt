@@ -54,6 +54,25 @@ jobs:
   steps:
   - template: ci/azure-pipelines-linux.yml
 
+# Linux - Compile only (no GDAL et. al.)
+########################################################################################
+- job:
+  displayName: 'Linux | Compile only (GDAL et. al. excluded)'
+  condition: ne(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'ubuntu-18.04'
+
+  variables:
+    BUILD_DOCS: false
+    DEPLOY_DOCS: false
+    PACKAGE: false
+    RUN_TESTS: false
+    EXCLUDE_OPTIONAL: true
+
+  steps:
+  - template: ci/azure-pipelines-linux.yml
+
 # Linux - Build docs + Deploy docs + Package
 ########################################################################################
 - job:

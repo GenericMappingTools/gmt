@@ -12,11 +12,16 @@ set -x -e
 # set defaults to false
 BUILD_DOCS="${BUILD_DOCS:-false}"
 RUN_TESTS="${RUN_TESTS:-false}"
+EXCLUDE_OPTIONAL=${EXCLUDE_OPTIONAL:-false}
 
-# packages for compiling GMT
+# required packages for compiling GMT
 packages="build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev \
-          libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev \
           ghostscript curl git"
+#
+if [ "$EXCLUDE_OPTIONAL" = "false" ]; then
+	packages+=" libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev"
+fi
+
 # packages for building documentations
 if [ "$BUILD_DOCS" = "true" ]; then
     packages+=" python3-pip python3-setuptools python3-wheel graphicsmagick ffmpeg"
