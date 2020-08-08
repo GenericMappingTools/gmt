@@ -133,6 +133,7 @@ Optional Arguments
     Basically, gridline-registered grids will have their domain extended
     by half the x- and y-increments whereas pixel-registered grids will
     have their domain shrunk by the same amount.
+    This is a *non-destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
 .. _-V:
 

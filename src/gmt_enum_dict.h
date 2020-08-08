@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 246
+#define GMT_N_API_ENUMS 248
 
 static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -166,19 +166,21 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_LOG_ONCE", 1},
 	{"GMT_LOG_SET", 2},
 	{"GMT_LONG", 6},
-	{"GMT_MODULE_CLASSIC", -5},
+	{"GMT_MODULE_CLASSIC", -7},
+	{"GMT_MODULE_CLASSIC_CORE", -5},
 	{"GMT_MODULE_CMD", 0},
 	{"GMT_MODULE_EXIST", -3},
 	{"GMT_MODULE_GROUP", 1},
 	{"GMT_MODULE_HELP", 0},
 	{"GMT_MODULE_KEYS", 0},
-	{"GMT_MODULE_LIST", -4},
+	{"GMT_MODULE_LIST", -6},
+	{"GMT_MODULE_LIST_CORE", -4},
 	{"GMT_MODULE_OPT", -1},
 	{"GMT_MODULE_PURPOSE", -2},
 	{"GMT_MODULE_SHOW_CLASSIC", 2},
 	{"GMT_MODULE_SHOW_MODERN", 1},
-	{"GMT_MODULE_SYNOPSIS", -6},
-	{"GMT_MODULE_USAGE", -7},
+	{"GMT_MODULE_SYNOPSIS", -8},
+	{"GMT_MODULE_USAGE", -9},
 	{"GMT_MSG_COMPAT", 6},
 	{"GMT_MSG_DEBUG", 7},
 	{"GMT_MSG_ERROR", 2},
