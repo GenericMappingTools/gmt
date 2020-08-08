@@ -18,7 +18,7 @@ set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")
 EOF
 
-if [[ "$TEST" == "true" ]]; then
+if [[ "$RUN_TESTS" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_BUILD_TYPE Debug)
 
