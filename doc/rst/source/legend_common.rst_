@@ -9,7 +9,7 @@ Unless otherwise noted, annotations will be made using the primary
 annotation font and size in effect (i.e., :term:`FONT_ANNOT_PRIMARY`)
 
 .. figure:: /_images/GMT_seislegend.*
-   :width: 300 px
+   :width: 600 px
    :align: center
 
    Example of a map legend, here for seismicity in the Pacific region.
