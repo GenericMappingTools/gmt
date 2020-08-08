@@ -5,7 +5,7 @@
 # Environmental variables that can control the installation:
 #
 # - BUILD_DOCS: Build GMT documentations [false]
-# - TESTS:		Run GMT tests            [false]
+# - RUN_TESTS:	Run GMT tests            [false]
 #
 set -x -e
 
