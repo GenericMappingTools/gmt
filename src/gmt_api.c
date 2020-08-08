@@ -2941,6 +2941,7 @@ GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_f
 GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *filename) {
 	char SP, D, F, A, G, M;
 	int k, object_ID;
+	gmt_M_unused(family);
 	if (!gmt_M_file_is_memory (filename)) return GMT_NOTSET;	/* If not a memory reference then there is no ID etc */
 	/* Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.
 	 * S stands for P(rimary) or S(econdary) input or output object (command line is primary, files via options are secondary).

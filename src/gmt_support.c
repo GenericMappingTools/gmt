@@ -8976,6 +8976,7 @@ int gmt_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double val
 }
 
 bool gmt_same_fill (struct GMT_CTRL *GMT, struct GMT_FILL *F1, struct GMT_FILL *F2) {
+	gmt_M_unused(GMT);
 	/* Return true if the two fills are identical */
 	if (F1->use_pattern != F2->use_pattern) return false;	/* One is a pattern, the other isn't, so cannot be the same */
 	if (F1->use_pattern) {	/* Both are patterns */
@@ -9392,6 +9393,7 @@ unsigned int gmt_contour_first_pos (struct GMT_CTRL *GMT, char *arg) {
 	/* Because of backwards compatibility, we need to anticipate shits like -A+1 for a
 	 * single annotated contour and hence cannot confuse it with a modifier for contour specs.
 	 * Thus, here we scan past any leading single contour specification using deprecated syntax. */
+	gmt_M_unused(GMT);
 	unsigned int k = 1;
 	if (arg[0] != '+') return 0;	/* Start checking from start */
 	if (isalpha (arg[1]) || arg[1] == '=') return 0;	/* Standard modifier */
