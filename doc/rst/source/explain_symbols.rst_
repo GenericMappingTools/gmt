@@ -301,6 +301,14 @@
    and more.  While the line appearance is controlled by **-W**, there are many modifiers
    to control the selection and appearance of the along-line symbols:
 
+.. figure:: /_images/GMT_base_symbols7.*
+   :width: 600 px
+   :align: center
+
+   Fronts offer various symbols, such as squares, triangles and circles that may be
+   plotted centered or as a half-symbol on one side.  Special options exist for indication
+   motion (e.g., faults) along a line.
+
 .. _-basic_symbols7:
 
     **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
