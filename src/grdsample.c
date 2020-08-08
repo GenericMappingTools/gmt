@@ -83,7 +83,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "I");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   When omitted: grid spacing is copied from input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a subregion [Default is old region].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle between grid registration and pixel registration.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Translate between grid registration and pixel registration.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Implies resampling halfway between nodes (a destructive change to the grid).\n");
 	GMT_Option (API, "V,f,n,r,x,.");
 
