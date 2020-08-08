@@ -625,6 +625,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					case 'c':	/* Image with colormask */
 						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
+						Ctrl->Q.cpt = true;	/* Will need a CPT */
 						Ctrl->Q.mask = true;
 						break;
 					case 't':	/* Image without color interpolation */
@@ -848,7 +849,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (!Ctrl->C.active && Ctrl->Q.cpt && Ctrl->G.n == 1)
+	if (!Ctrl->C.active && Ctrl->Q.cpt && Ctrl->G.n != 3)
 		Ctrl->C.active = true;	/* Use default CPT (GMT_DEFAULT_CPT_NAME) and autostretch or under modern reuse current CPT */
 
 	/* Determine what wesn to pass to map_setup */
