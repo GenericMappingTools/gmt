@@ -272,6 +272,17 @@
 
     The next symbol is the programmable *custom* symbol:
 
+.. figure:: /_images/GMT_base_symbols6.*
+   :width: 600 px
+   :align: center
+
+   Custom symbols are designed using :ref:`Custom Symbol Macro Language <Custom_symbols>`.
+   We supply about 40 custom symbols, and users have contributed discipline-
+   specific symbols for structural geology and marine biology that you can explore on
+   our RESOURCES page, so you have lots of
+   examples to use as a template.  The language allows you to design symbols that
+   takes many parameters and can make decisions based on these parameters.
+
 .. _-basic_symbols6:
 
     **-Sk**
@@ -281,6 +292,8 @@
         **$GMT_SHAREDIR**/custom. The symbol as defined in that file is of size
         1.0 by default; the appended *size* will scale symbol accordingly. Users
         may add their own custom \*.def files; see CUSTOM SYMBOLS below.
+        Alternatively, you can supply an EPS file instead of a \*.def file and
+        we will scale and place that graphics as a symbol.
 
    The last group of symbols are all special *lines* with embellishments along them.
    The first symbol is called a *front* and has specific
