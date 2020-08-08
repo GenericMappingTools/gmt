@@ -1217,6 +1217,7 @@ GMT_LOCAL struct CPT_Z_SCALE *gmtsupport_cpt_parse (struct GMT_CTRL *GMT, char *
 			}
 		}
 		else {	/* Accept zero as hard hinge value */
+			*z_hinge = 0.0;
 			*hinge_mode = 1;
 			c[0] = '\0';	/* Chop off the hinge specification from the file name */
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtsupport_cpt_parse: CPT CPT hard hinge was added at z = 0 for file %s\n", file);
@@ -7945,7 +7946,7 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 		if (file[LOX] == 'L') return strdup (srtm_cpt);
 	}
 	if (API->remote_info[k_data].CPT[0] == '-') return (NULL);
-	
+
 	return (strdup (API->remote_info[k_data].CPT));
 }
 
