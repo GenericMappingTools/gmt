@@ -190,7 +190,17 @@
 
    The next type of symbol is the horizontal or vertical bar:
 
-    **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ [*base*]]
+.. figure:: /_images/GMT_base_symbols4.*
+   :width: 600 px
+   :align: center
+
+   We may place vertical (**b**) or horizontal ((B**) bars, and they may extend from the
+   *base* of your choosing.  The thickness of a bar can be a given dimension or can be
+   specified in the units of that axis so its width scales with the projection and region.
+
+.. _-basic_symbols4:
+
+    **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
         Append **u** if *size* is in x-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
@@ -198,7 +208,7 @@
         data column.  Use **+B**\ [*base*] if the bar height is measured relative
         to *base* [Relative to origin].
 
-    **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ [*base*]]
+    **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]]
         Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
         Append **u** if *size* is in y-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
@@ -210,13 +220,15 @@
    either a length and direction (or optionally the coordinates of the end point), the
    vector head(s) expose a rich set of modifier to customize the vector.
 
-.. figure:: /_images/GMT_base_symbols4.*
+.. figure:: /_images/GMT_base_symbols5.*
    :width: 600 px
    :align: center
 
    There are three classes of vectors: Cartesian (left), circular (center) and geographic (right).
-   While their use is slightly different, they all share common modifier that affects how
+   While their use is slightly different, they all share common modifiers that affect how
    they are displayed.
+
+.. _-basic_symbols5:
 
     **-Sm**
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
@@ -260,6 +272,8 @@
 
     The next symbol is the programmable *custom* symbol:
 
+.. _-basic_symbols6:
+
     **-Sk**
         **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
         definition file called *name*\ .def in (1) the current
@@ -273,6 +287,8 @@
    symbols distributed along the curve.  Typical uses are weather fronts, fault lines,
    and more.  While the line appearance is controlled by **-W**, there are many modifiers
    to control the selection and appearance of the along-line symbols:
+
+.. _-basic_symbols7:
 
     **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront. Supply distance *gap* between symbols and symbol *size*. If *gap* is
@@ -299,6 +315,8 @@
    The next type of embellished line is called a *quoted* line, which is our term for
    a line with text along it, similar to an annotated contour in a contour map. There is
    a rich set of directives and modifiers to select a specific outcome:
+
+.. _-basic_symbols8:
 
     **-Sq**
         **q**\ uoted line, i.e., lines with annotations such as contours. Append
@@ -476,6 +494,8 @@
    The final type of embellished line is called a *decorated* line.  It is a hybrid
    between a *front* and *quoted* lines in that it offers symbols similar to a front
    but the placement can be specified in ways similar to the quoted line:
+
+.. _-basic_symbols9:
 
     **-S~**
         Decorated line, i.e., lines with symbols along them. Append

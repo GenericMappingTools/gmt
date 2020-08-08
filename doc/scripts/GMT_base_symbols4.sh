@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 #
-# Demonstrate a few arrows
-gmt begin GMT_base_symbols4 ps
-# Cartesian straight arrows
-	gmt plot -R0/5/0/5 -JX1.75i -S -W2p -Gred --MAP_VECTOR_SHAPE=0.5 << EOF
-0.5	1.0	4.5	2.5	v0.3i+s+e+bi
+# Plot psxy bar symbol for the man page
+
+ps=GMT_base_symbols4.ps
+
+cat << EOF > ttv.d
+1	1	0
+2	3	1
 EOF
-# Circular arrows
-	gmt plot -S -W2p -Gred --MAP_VECTOR_SHAPE=0.5 -X2i << EOF
-1	0.3	2	0	90	m0.3i+bt+e
+cat << EOF > tth.d
+1	1	0
+3	2	0.7
 EOF
-# Geo arrows
-	gmt plot -R0/90/-41.17/41.17 -JM1.75i -S -W2p -Gred --MAP_VECTOR_SHAPE=0.5 -X2i --MAP_FRAME_TYPE=plain << EOF
-10	-35	80	8000	=0.3i+b+er
-EOF
-gmt end show
+gmt psxy -R0/3.5/0/3.75 -JX2i/1i -P -Bag1 -BWS -Sb0.2i+b -Glightblue -W0.5p -X1i -Y1i ttv.d -K --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > $ps
+gmt psxy -R -J -O -Bag1 -BWS -SB0.2i+b -Glightred -W0.5p -X3i tth.d  --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 >> $ps
