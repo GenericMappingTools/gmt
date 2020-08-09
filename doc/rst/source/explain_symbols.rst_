@@ -524,6 +524,14 @@
    between a *front* and *quoted* lines in that it offers symbols similar to a front
    but the placement can be specified in ways similar to the quoted line:
 
+.. figure:: /_images/GMT_base_symbols9.*
+   :width: 600 px
+   :align: center
+
+   Decorated lines with eleven squares evenly spaced along the line.  By default,
+   the symbol is aligned with the line trend, but numerous modifiers allow you to
+   customize the appearance.
+   
 .. _-basic_symbols9:
 
     **-S~**
