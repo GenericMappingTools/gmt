@@ -2,31 +2,12 @@
 
 steps:
 
-- bash: |
-    set -x -e
-    sudo apt-get update
-    sudo apt-get install -y --no-install-recommends --no-install-suggests \
-        build-essential cmake ninja-build \
-        libcurl4-gnutls-dev libnetcdf-dev libgdal-dev \
-        libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev \
-        ghostscript curl git
-  displayName: Install dependencies
+- bash: bash ci/install-dependencies-linux.sh
+  displayName: Install GMT dependencies
 
 - bash: |
-    set -x -e
-    sudo apt-get install -y --no-install-recommends --no-install-suggests \
-        graphicsmagick gdal-bin
-  displayName: Install dependencies for running tests
-  condition: eq(variables['TEST'], true)
-
-- bash: |
-    set -x -e
-    sudo apt-get install -y --no-install-recommends --no-install-suggests \
-        python3-pip python3-setuptools python3-wheel graphicsmagick ffmpeg
-    sudo snap install pngquant
-    pip3 install --user sphinx
-    echo "##vso[task.prependpath]$HOME/.local/bin"
-  displayName: Install dependencies for building documentation
+    echo "##vso[task.prependpath]${HOME}/.local/bin"
+  displayName: Add sphinx to PATH
   condition: eq(variables['BUILD_DOCS'], true)
 
 - bash: |
@@ -118,7 +99,7 @@ steps:
   displayName: Full tests
   env:
     CTEST_ARGS: "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
-  condition: eq(variables['TEST'], true)
+  condition: eq(variables['RUN_TESTS'], true)
 
 # Publish the whole build directory for debugging purpose
 - task: CopyFiles@2
@@ -140,7 +121,7 @@ steps:
     bash <(curl -s https://codecov.io/bash)
   env:
     CODECOV_TOKEN: $(codecov.token)
-  condition: and(eq(variables['TEST'], true), succeededOrFailed())
+  condition: and(eq(variables['RUN_TESTS'], true), succeededOrFailed())
   displayName: Upload test coverage
 
 - bash: bash ci/deploy-gh-pages.sh

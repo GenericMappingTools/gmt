@@ -2941,6 +2941,7 @@ GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_f
 GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *filename) {
 	char SP, D, F, A, G, M;
 	int k, object_ID;
+	gmt_M_unused(family);
 	if (!gmt_M_file_is_memory (filename)) return GMT_NOTSET;	/* If not a memory reference then there is no ID etc */
 	/* Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.
 	 * S stands for P(rimary) or S(econdary) input or output object (command line is primary, files via options are secondary).
@@ -4195,7 +4196,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 			for (c = 0; c < 3; c++, k++) data[k] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
 		}
 		/* If neither TRB or TRP we call for a changed layout, which may or may not have been implemented */
-		GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);	
+		GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);
 	}
 	gmt_M_free_aligned (GMT, I->data);	/* Free previous aligned image memory */
 	I->data = data;	/* Pass the reallocated rgb TRB image back */
@@ -4664,7 +4665,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 	}
 	if ((mode & GMT_CONTAINER_ONLY) && S_obj->region && S_obj->method == GMT_IS_FILE) {
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot request a subset when just inquiring about the grid header\n");
-		return_null (API, GMT_SUBSET_NOT_ALLOWED);		
+		return_null (API, GMT_SUBSET_NOT_ALLOWED);
 	}
 
 	if (S_obj->region && grid) {	/* See if this is really a subset or just the same region as the grid */
@@ -10962,8 +10963,10 @@ GMT_LOCAL void * gmtapi_get_module_func (struct GMTAPI_CTRL *API, const char *mo
 int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	/* Call the specified shared module and pass it the mode and args.
  	 * mode can be one of the following:
-	 * GMT_MODULE_CLASSIC [-5]:	As GMT_MODULE_PURPOSE, but only lists the classic modules.
-	 * GMT_MODULE_LIST [-4]:	As GMT_MODULE_PURPOSE, but only lists the modern modules.
+	 * GMT_MODULE_CLASSIC [-7]:	As GMT_MODULE_PURPOSE, but only lists the classic modules.
+	 * GMT_MODULE_LIST [-6]:	As GMT_MODULE_PURPOSE, but only lists the modern modules.
+	 * GMT_MODULE_CLASSIC_CORE [-5]:	As GMT_MODULE_PURPOSE, but only lists the classic modules (core only).
+	 * GMT_MODULE_LIST_CORE [-4]:	As GMT_MODULE_PURPOSE, but only lists the modern modules (core only).
 	 * GMT_MODULE_EXIST [-3]:	Return GMT_NOERROR (0) if module exists, GMT_NOT_A_VALID_MODULE otherwise.
 	 * GMT_MODULE_PURPOSE [-2]:	As GMT_MODULE_EXIST, but also print the module purpose.
 	 * GMT_MODULE_OPT [-1]:		Args is a linked list of option structures.
@@ -10977,18 +10980,18 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 	int (*p_func)(void*, int, void*) = NULL;       /* function pointer */
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (module == NULL && !(mode == GMT_MODULE_LIST || mode == GMT_MODULE_CLASSIC || mode == GMT_MODULE_PURPOSE))
+	if (module == NULL && !(mode == GMT_MODULE_LIST || mode == GMT_MODULE_LIST_CORE || mode == GMT_MODULE_CLASSIC || mode == GMT_MODULE_CLASSIC_CORE || mode == GMT_MODULE_PURPOSE))
 		return_error (V_API, GMT_ARG_IS_NULL);
 	API = gmtapi_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 
 	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
 		char gmt_module[GMT_LEN256] = {""};	/* To form name of gmt_<lib>_module_show|list_all function */
-		char *listfunc = (mode == GMT_MODULE_LIST) ? "list" : ( (mode == GMT_MODULE_CLASSIC) ? "classic" : "show");
+		char *listfunc = (mode == GMT_MODULE_LIST || mode == GMT_MODULE_LIST_CORE) ? "list" : ( (mode == GMT_MODULE_CLASSIC || mode == GMT_MODULE_CLASSIC_CORE) ? "classic" : "show");
 		void (*l_func)(void*);       /* function pointer to gmt_<lib>_module_show|list_all which takes one arg (the API) */
-
+		unsigned int n_libs = (mode == GMT_MODULE_LIST_CORE || mode == GMT_MODULE_CLASSIC_CORE) ? 1 : API->n_shared_libs;
 		/* Here we list purpose of all the available modules in each shared library */
-		for (lib = 0; lib < API->n_shared_libs; lib++) {
+		for (lib = 0; lib < n_libs; lib++) {
 			snprintf (gmt_module, GMT_LEN64, "%s_module_%s_all", API->lib[lib].name, listfunc);
 			*(void **) (&l_func) = gmtapi_get_module_func (API, gmt_module, lib);
 			if (l_func == NULL) continue;	/* Not found in this shared library */
@@ -13718,7 +13721,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 				/* Nothing*/
 			}
 			else if (gmt_M_file_is_netcdf (file))	/* Meaning it specifies a layer etc via ?<args> */
-				c = strchr (file, '?');				
+				c = strchr (file, '?');
 			else {	/* Check for modifiers */
 				unsigned int nm = gmt_validate_modifiers (API->GMT, file, 0, "onsuU", GMT_MSG_QUIET);
 				if (nm) /* Found some valid modifiers, lets get to the first */
