@@ -21,24 +21,22 @@
     text with the symbol code is required when symbol code is not specified
     on the command line.  The *symbol-parameters* may vary in numbers; see
     specifics below.
-        
+
     You can change symbols by adding the required **-S** option to any of
     your multisegment headers.
 
     We will first outline the 14 basic geometric symbols that only require
     a *single* size parameter:
 
-.. figure:: /_images/GMT_base_symbols1.*
-   :width: 600 px
-   :align: center
+    .. figure:: /_images/GMT_base_symbols1.*
+        :width: 600 px
+        :align: center
 
-   The 14 basic geometric symbols available, shown with their symbol codes.
-   Four symbols (**-**\ \|\ **+**\ \|\ **x**\ \|\ **y**) are line-symbols only
-   (**-W**), one (the point **p** only takes a color via **-G**) while the rest 
-   may have outline (**-W**) and fill (**-G**) specified.
-   The thin circles represent the circumscribing circle of the same size.
-
-.. _-basic_symbols1:
+        The 14 basic geometric symbols available, shown with their symbol codes.
+        Four symbols (**-**\ \|\ **+**\ \|\ **x**\ \|\ **y**) are line-symbols only
+        (**-W**), one (the point **p** only takes a color via **-G**) while the rest
+        may have outline (**-W**) and fill (**-G**) specified.
+        The thin circles represent the circumscribing circle of the same size.
 
     **-S-**
         x-dash (-). *size* is the length of a short horizontal (x-dir) line segment.
@@ -90,16 +88,14 @@
     The next collection of the five symbols require two or more size parameters, and
     some have optional modifiers to extend the symbol appearance.
 
-.. figure:: /_images/GMT_base_symbols2.*
-   :width: 600 px
-   :align: center
+    .. figure:: /_images/GMT_base_symbols2.*
+        :width: 600 px
+        :align: center
 
-   Five basic geometric multi-parameter symbols, shown with their symbol codes.
-   All take two or three parameters to define the symbol; see below for details.
-   Upper-case versions **E**, **J**, and **W** are similar to **e**, **j** and **w**
-   but expects geographic azimuths and distances.
-
-.. _-basic_symbols2:
+        Five basic geometric multi-parameter symbols, shown with their symbol codes.
+        All take two or three parameters to define the symbol; see below for details.
+        Upper-case versions **E**, **J**, and **W** are similar to **e**, **j** and **w**
+        but expects geographic azimuths and distances.
 
     **-Se**
         **e**\ llipse. Direction (in degrees counter-clockwise from horizontal),
@@ -167,18 +163,16 @@
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
-   Text is normally placed with :doc:`text` but there are times we wish to treat a character
-   of even a string as plottable symbol:
+    Text is normally placed with :doc:`text` but there are times we wish to treat a character
+    of even a string as plottable symbol:
 
-.. figure:: /_images/GMT_base_symbols3.*
-   :width: 600 px
-   :align: center
+    .. figure:: /_images/GMT_base_symbols3.*
+        :width: 600 px
+        :align: center
 
-   A text symbol can be any letter or string (up to 256 characters) and you may specify
-   specific fonts (size and type) and control outline and the fill properties. Note there
-   is no mechanism to perfectly center the string; see **-D** to make a simple global adjustment.
-
-.. _-basic_symbols3:
+        A text symbol can be any letter or string (up to 256 characters) and you may specify
+        specific fonts (size and type) and control outline and the fill properties. Note there
+        is no mechanism to perfectly center the string; see **-D** to make a simple global adjustment.
 
     **-Sl**
         **l**\ etter or text string (less than 256 characters). Give size, and
@@ -188,17 +182,15 @@
         to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
         **+j**\ *justify* to change justification [CM].
 
-   The next type of symbol is the horizontal or vertical bar:
+    The next type of symbol is the horizontal or vertical bar:
 
-.. figure:: /_images/GMT_base_symbols4.*
-   :width: 600 px
-   :align: center
+    .. figure:: /_images/GMT_base_symbols4.*
+        :width: 600 px
+        :align: center
 
-   We may place vertical (**b**) or horizontal (**B**) bars, and they may extend from the
-   *base* of your choosing.  The thickness of a bar can be a given dimension or can be
-   specified in the units of that axis so its width scales with the projection and region.
-
-.. _-basic_symbols4:
+        We may place vertical (**b**) or horizontal (**B**) bars, and they may extend from the
+        *base* of your choosing.  The thickness of a bar can be a given dimension or can be
+        specified in the units of that axis so its width scales with the projection and region.
 
     **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
@@ -216,19 +208,17 @@
         data column.  Use **+B**\ [*base*] if the bar length is measured relative
         to *base* [Relative to origin].
 
-   The next family of symbols are all different types of *vectors*. Apart from requiring
-   either a length and direction (or optionally the coordinates of the end point), the
-   vector head(s) expose a rich set of modifier to customize the vector.
+    The next family of symbols are all different types of *vectors*. Apart from requiring
+    either a length and direction (or optionally the coordinates of the end point), the
+    vector head(s) expose a rich set of modifier to customize the vector.
 
-.. figure:: /_images/GMT_base_symbols5.*
-   :width: 600 px
-   :align: center
+    .. figure:: /_images/GMT_base_symbols5.*
+        :width: 600 px
+        :align: center
 
-   There are three classes of vectors: Cartesian (left), circular (center) and geographic (right).
-   While their use is slightly different, they all share common modifiers that affect how
-   they are displayed.
-
-.. _-basic_symbols5:
+        There are three classes of vectors: Cartesian (left), circular (center) and geographic (right).
+        While their use is slightly different, they all share common modifiers that affect how
+        they are displayed.
 
     **-Sm**
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
@@ -272,18 +262,16 @@
 
     The next symbol is the programmable *custom* symbol:
 
-.. figure:: /_images/GMT_base_symbols6.*
-   :width: 600 px
-   :align: center
+    .. figure:: /_images/GMT_base_symbols6.*
+        :width: 600 px
+        :align: center
 
-   Custom symbols are designed using :ref:`Custom Symbol Macro Language <Custom_symbols>`.
-   We supply about 40 custom symbols, and users have contributed discipline-
-   specific symbols for structural geology and marine biology that you can explore on
-   our RESOURCES page, so you have lots of
-   examples to use as a template.  The language allows you to design symbols that
-   takes many parameters and can make decisions based on these parameters.
-
-.. _-basic_symbols6:
+        Custom symbols are designed using :ref:`Custom Symbol Macro Language <Custom_symbols>`.
+        We supply about 40 custom symbols, and users have contributed discipline-
+        specific symbols for structural geology and marine biology that you can explore on
+        our RESOURCES page, so you have lots of
+        examples to use as a template.  The language allows you to design symbols that
+        takes many parameters and can make decisions based on these parameters.
 
     **-Sk**
         **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
@@ -295,21 +283,19 @@
         Alternatively, you can supply an EPS file instead of a \*.def file and
         we will scale and place that graphic as a symbol.
 
-   The last group of symbols are all special *lines* with embellishments along them.
-   The first symbol is called a *front* and has specific
-   symbols distributed along the curve.  Typical uses are weather fronts, fault lines,
-   and more.  While the line appearance is controlled by **-W**, there are many modifiers
-   to control the selection and appearance of the along-line symbols:
+    The last group of symbols are all special *lines* with embellishments along them.
+    The first symbol is called a *front* and has specific
+    symbols distributed along the curve.  Typical uses are weather fronts, fault lines,
+    and more.  While the line appearance is controlled by **-W**, there are many modifiers
+    to control the selection and appearance of the along-line symbols:
 
-.. figure:: /_images/GMT_base_symbols7.*
-   :width: 600 px
-   :align: center
+    .. figure:: /_images/GMT_base_symbols7.*
+        :width: 600 px
+        :align: center
 
-   Fronts offer various symbols, such as squares, triangles and circles that may be
-   plotted centered or as a half-symbol on one side.  Special options exist for indication
-   motion (e.g., faults) along a line.
-
-.. _-basic_symbols7:
+        Fronts offer various symbols, such as squares, triangles and circles that may be
+        plotted centered or as a half-symbol on one side.  Special options exist for indication
+        motion (e.g., faults) along a line.
 
     **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b+c+f+s+t**][**+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront. Supply distance *gap* between symbols and symbol *size*. If *gap* is
@@ -333,19 +319,17 @@
         By placing **-Sf** options in the segment header you can change the front
         types on a segment-by-segment basis.
 
-   The next type of embellished line is called a *quoted* line, which is our term for
-   a line with text along it, similar to an annotated contour in a contour map. There is
-   a rich set of directives and modifiers to select a specific outcome:
+    The next type of embellished line is called a *quoted* line, which is our term for
+    a line with text along it, similar to an annotated contour in a contour map. There is
+    a rich set of directives and modifiers to select a specific outcome:
 
-.. figure:: /_images/GMT_base_symbols8.*
-   :width: 600 px
-   :align: center
+    .. figure:: /_images/GMT_base_symbols8.*
+        :width: 600 px
+        :align: center
 
-   Quoted lines are lines with text.  However, the text can be static, read via files,
-   or be quantities computed along the line.  This example just shows a wiggly line with
-   a text-aligned label.  A rich set of modifier controls the appearance.
-
-.. _-basic_symbols8:
+        Quoted lines are lines with text.  However, the text can be static, read via files,
+        or be quantities computed along the line.  This example just shows a wiggly line with
+        a text-aligned label.  A rich set of modifier controls the appearance.
 
     **-Sq**
         **q**\ uoted line, i.e., lines with annotations such as contours. Append
@@ -432,7 +416,7 @@
                 Selects opaque text boxes [Default is transparent]; optionally
                 specify the color [Default is :term:`PS_PAGE_COLOR`].
 
-           **+i**
+            **+i**
                 Make the main quoted line invisible [Draw it per **-W**].
 
             **+j**\ *just*
@@ -507,10 +491,10 @@
 
             **+x**\ [*first*,\ *last*]
                 Append the suffices *first* and *last* to the corresponding labels.
-		        This modifier is only available when **-SqN2** is in effect.  Used
-		        to annotate the start and end of a line (e.g., a cross-section),
-		        append two text strings separated by comma
-		        [Default just adds a prime to the second label].
+                This modifier is only available when **-SqN2** is in effect.  Used
+                to annotate the start and end of a line (e.g., a cross-section),
+                append two text strings separated by comma
+                [Default just adds a prime to the second label].
 
             **+=**\ *prefix*
                 Prepends *prefix* to all line labels. If *prefix* starts with a
@@ -520,19 +504,17 @@
         **Note**: By placing **-Sq** options in the segment header you can change
         the quoted text attributes on a segment-by-segment basis.
 
-   The final type of embellished line is called a *decorated* line.  It is a hybrid
-   between a *front* and *quoted* lines in that it offers symbols similar to a front
-   but the placement can be specified in ways similar to the quoted line:
+    The final type of embellished line is called a *decorated* line.  It is a hybrid
+    between a *front* and *quoted* lines in that it offers symbols similar to a front
+    but the placement can be specified in ways similar to the quoted line:
 
-.. figure:: /_images/GMT_base_symbols9.*
-   :width: 600 px
-   :align: center
+    .. figure:: /_images/GMT_base_symbols9.*
+        :width: 600 px
+        :align: center
 
-   Decorated lines with eleven squares evenly spaced along the line.  By default,
-   the symbol is aligned with the line trend, but numerous modifiers allow you to
-   customize the appearance, including to make the line invisible.
-
-.. _-basic_symbols9:
+        Decorated lines with eleven squares evenly spaced along the line.  By default,
+        the symbol is aligned with the line trend, but numerous modifiers allow you to
+        customize the appearance, including to make the line invisible.
 
     **-S~**
         Decorated line, i.e., lines with symbols along them. Append
