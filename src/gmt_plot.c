@@ -2710,10 +2710,13 @@ GMT_LOCAL void gmtplot_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	 * containing spaces will be enclosed in single quotes.
 	 */
 	size_t length = 0;
-	char outstring[GMT_LEN1024] = {""};
+	char outstring[GMT_LEN1024] = {""}, not_used[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	PSL_command (PSL, "\n%% PostScript produced by:\n%%@GMT: gmt %s", GMT->init.module_name);
+	if (GMT->current.setting.run_mode == GMT_MODERN)
+		PSL_command (PSL, "\n%% PostScript produced by:\n%%@GMT: gmt %s", gmt_current_name (GMT->init.module_name, not_used));
+	else
+		PSL_command (PSL, "\n%% PostScript produced by:\n%%@GMT: gmt %s", GMT->init.module_name);
 	for (opt = options; opt; opt = opt->next) {
 		if (length >= GMT_LEN512) {
 			PSL_command (PSL, "%s \\\n%%@GMT:+", outstring);
@@ -7562,7 +7565,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last, form, justify;
 	bool O_active = GMT->common.O.active, auto_media = false, do_paint = false;
 	unsigned int this_proj, write_to_mem = 0, switch_charset = 0, n_movie_items[2] = {0, 0};
-	char *mode[2] = {"w","a"}, *movie_item_arg[2][GMT_LEN32];
+	char *mode[2] = {"w","a"}, *movie_item_arg[2][GMT_LEN32], not_used[GMT_LEN32] = {""};
 	static char *ps_mode[2] = {"classic", "modern"}, *F_name[2] = {"label", "prog_indicator"};
 	double media_size[2], plot_x, plot_y;
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
@@ -7731,7 +7734,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	/* Get title */
 
-	snprintf (GMT->current.ps.title, GMT_LEN256, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
+	if (GMT->current.setting.run_mode == GMT_MODERN)
+		snprintf (GMT->current.ps.title, GMT_LEN256, "GMT v%s Document from %s", GMT_VERSION, gmt_current_name (GMT->init.module_name, not_used));
+	else
+		snprintf (GMT->current.ps.title, GMT_LEN256, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
 	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem|switch_charset, O_active, GMT->current.setting.ps_color_mode,
 		GMT->current.ps.origin, GMT->current.setting.map_origin, media_size, GMT->current.ps.title, fno);
@@ -7799,11 +7805,15 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	/* If requested, place the timestamp */
 
 	if (GMT->current.ps.logo_cmd) {
-		char txt[4] = {' ', '-', 'X', 0};
+		char txt[4] = {' ', '-', 'X', 0}, not_used[GMT_LEN32] = {""};
 		struct GMT_OPTION *opt = NULL;
-		size_t len = strlen (GMT->init.module_name);
+		size_t len;
 		/* -Uc was given as shorthand for "plot current command line" */
-		strncpy (GMT->current.ps.map_logo_label, GMT->init.module_name, GMT_LEN256-1);
+		if (GMT->current.setting.run_mode == GMT_MODERN)
+			strncpy (GMT->current.ps.map_logo_label, gmt_current_name (GMT->init.module_name, not_used), GMT_LEN256-1);
+		else
+			strncpy (GMT->current.ps.map_logo_label, GMT->init.module_name, GMT_LEN256-1);
+		len = strlen (GMT->current.ps.map_logo_label);
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
 			txt[2] = opt->option;
