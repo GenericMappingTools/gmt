@@ -8,7 +8,7 @@ Vector Attributes
     Vector attributes are controlled by options and modifiers.  We will refer to
     this figure and the labels therein when introducing the corresponding modifiers.
     All vectors require you specify the begin point :math:`x_b, y_b` and typically
-    direction *d* ad length *L*, but for map projections we usually specify the
+    direction *d* and length *L*, but for map projections we usually specify the
     azimuth :math:`\alpha` instead.
 
 Several modifiers may be appended to vector-producing options for
