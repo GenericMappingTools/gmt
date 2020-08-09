@@ -969,6 +969,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	}
 
+	if (n_grids && (gmt_whole_earth (GMT, Grid_orig[0]->header->wesn, wesn) == 1))
+		need_to_project = true;	/* This can only happen if reading a global geographic memory grid */
+
 	if (need_to_project) {	/* Need to resample the grd file using the specified map projection */
 		int nx_proj = 0, ny_proj = 0;
 		double inc[2] = {0.0, 0.0};

@@ -122,7 +122,7 @@ enum GMT_enum_length {
 	GMT_LEN128      = 128U,         /* Double of 64 */
 	GMT_LEN256      = 256U,         /* Max size of some text items */
 	GMT_LEN512      = 512U,         /* Max size of other text items */
-	GMT_LEN1024     = 1024U,        /* For file names (antecipating web fnames) */
+	GMT_LEN1024     = 1024U,        /* For file names (anticipating web fnames) */
 	GMT_MAX_RANGES  = 64U,          /* Limit on number of row ranges given in -q */
 	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
 	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
@@ -157,6 +157,10 @@ enum GMT_swap_direction {
 enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 	GMT_CSH_MODE,			/* Write C-shell script */
 	GMT_DOS_MODE};			/* Write DOS script */
+
+/* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
+ * Modules that need it in their module_kw[] array can just add it to their list. */
+#define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }
 
 #define GMT_VERBOSE_CODES	"q ewticd"	/* List of valid codes to -V (the blank is for NOTICE which is not user selectable */
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
@@ -398,7 +402,7 @@ enum GMT_enum_derivative {
 enum GMT_enum_extrap {
 	GMT_EXTRAPOLATE_NONE = 0,   /* No extrapolation; set to NaN outside bounds */
 	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */
-	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
+	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specific constant */
 
 enum GMT_enum_cross {
 	GMT_CROSS_NORMAL = 0,	/* Regular grid cross */

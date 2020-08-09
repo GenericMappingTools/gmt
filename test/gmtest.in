@@ -86,7 +86,12 @@ for apiprog in \
     testapi_imageshading \
     testapi_matrix_as_grid \
     testapi_vector_strings \
-    testapi_vector_plot
+    testapi_vector_plot \
+    testapi_vector_io \
+    testapi_matrix_io \
+    testapi_matrix_360 \
+    testapi_matrix_360_ref \
+    testapi_grid2matrix
 do
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done

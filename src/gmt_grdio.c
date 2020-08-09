@@ -2660,6 +2660,7 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	gmt_copy_gridheader (GMT, Gnew->header, G->header);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
+		struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (Gnew);
 		if ((mode & GMT_DUPLICATE_RESET) && !gmt_grd_pad_status (GMT, G->header, GMT->current.io.pad)) {
 			/* Pads differ and we requested resetting the pad */
 			gmt_M_grd_setpad (GMT, Gnew->header, GMT->current.io.pad);	/* Set default pad size */
@@ -2682,6 +2683,7 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 
 		Gnew->x = gmt_grd_coord (GMT, Gnew->header, GMT_X);	/* Get array of x coordinates */
 		Gnew->y = gmt_grd_coord (GMT, Gnew->header, GMT_Y);	/* Get array of y coordinates */
+		GH->xy_alloc_mode[GMT_X] = GH->xy_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
 	}
 	return (Gnew);
 }
@@ -2712,13 +2714,11 @@ unsigned int gmtlib_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, boo
 		if (GH->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, G->data);
 		G->data = NULL;	/* This will remove reference to external memory since gmt_M_free_aligned would not have been called */
 	}
-	if (G->x && G->y && free_grid) {
-		if (GH->alloc_mode == GMT_ALLOC_INTERNALLY) {
-			gmt_M_free (GMT, G->x);
-			gmt_M_free (GMT, G->y);
-		}
-		G->x = G->y = NULL;	/* This will remove reference to external memory since gmt_M_free would not have been called */
-	}
+	if (G->x && GH->xy_alloc_mode[GMT_X] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, G->x);
+	if (G->y && GH->xy_alloc_mode[GMT_Y] == GMT_ALLOC_INTERNALLY)
+		gmt_M_free (GMT, G->y);
+	G->x = G->y = NULL;	/* This will remove reference to external memory since gmt_M_free would not have been called */
 	if (GH->extra) gmtlib_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	alloc_mode = GH->alloc_mode;
 	gmt_M_free (GMT, G->hidden);
@@ -2732,7 +2732,7 @@ void gmt_free_grid (struct GMT_CTRL *GMT, struct GMT_GRID **G, bool free_grid) {
 	gmt_M_free (GMT, *G);
 }
 
-int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, struct GMT_GRID *G, struct GMT_GRID **Out) {
+int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, unsigned int min_pad, struct GMT_GRID *G, struct GMT_GRID **Out) {
 	/* In most situations we can recycle the input grid to be the output grid as well.  However, there
 	 * are a few situations when we must override this situation:
 	 *   1) When OpenMP is enabled and calculations depend on nearby nodes.
@@ -2741,9 +2741,14 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, struct GMT
 	 * To avoid wasting memory we try to reuse the input array when
 	 * it is possible. We return true when new memory had to be allocated.
 	 * Note we duplicate the grid if we must so that Out always has the input
-	 * data in it (directly or via the pointer).  */
+	 * data in it (directly or via the pointer).
+	 * If the selected grid has a smaller pad than min_pad then we extend it to min_pad  */
+	bool add_pad = false;
+	unsigned int k, pad[4] = {min_pad, min_pad, min_pad, min_pad};
 	struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (G);
 
+	for (k = 0; !add_pad && k < 4; k++)
+		if (G->header->pad[k] < min_pad) add_pad = true;
 	if (separate || gmt_M_file_is_memory (file) || GH->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot store results in a non-GMT read-only input array */
 		if ((*Out = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to duplicate grid! - this is not a good thing and may crash this module\n");
@@ -2752,11 +2757,21 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, struct GMT
 		else {
 			struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (*Out);
 			GH->alloc_mode = GMT_ALLOC_INTERNALLY;
+			if (add_pad) {
+				gmt_grd_pad_on (GMT, *Out, pad);	/* Add pad */
+				gmt_BC_init (GMT, (*Out)->header);	/* Initialize grid interpolation and boundary condition parameters */
+				gmt_grd_BC_set (GMT, *Out, GMT_IN);	/* Set boundary conditions */
+			}
 		}
 		return (true);
 	}
 	/* Here we may overwrite the input grid and just pass the pointer back */
 	(*Out) = G;
+	if (add_pad) {
+		gmt_grd_pad_on (GMT, *Out, pad);	/* Add pad */
+		gmt_BC_init (GMT, (*Out)->header);	/* Initialize grid interpolation and boundary condition parameters */
+		gmt_grd_BC_set (GMT, *Out, GMT_IN);	/* Set boundary conditions */
+	}
 	return (false);
 }
 

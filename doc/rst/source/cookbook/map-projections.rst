@@ -1046,7 +1046,7 @@ This pseudo-cylindrical, equal-area projection was developed by the
 German mathematician and astronomer Karl Brandan Mollweide in 1805.
 Parallels are unequally spaced straight lines with the meridians being
 equally spaced elliptical arcs. The scale is only true along latitudes
-4044' north and south. The projection is used mainly for global maps
+40°44' north and south. The projection is used mainly for global maps
 showing data distributions. It is occasionally referenced under the name
 homalographic projection. Like the Hammer projection, outlined above, we
 need to specify only two parameters to completely define the mapping of

@@ -1217,6 +1217,7 @@ GMT_LOCAL struct CPT_Z_SCALE *gmtsupport_cpt_parse (struct GMT_CTRL *GMT, char *
 			}
 		}
 		else {	/* Accept zero as hard hinge value */
+			*z_hinge = 0.0;
 			*hinge_mode = 1;
 			c[0] = '\0';	/* Chop off the hinge specification from the file name */
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtsupport_cpt_parse: CPT CPT hard hinge was added at z = 0 for file %s\n", file);
@@ -7945,7 +7946,7 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 		if (file[LOX] == 'L') return strdup (srtm_cpt);
 	}
 	if (API->remote_info[k_data].CPT[0] == '-') return (NULL);
-	
+
 	return (strdup (API->remote_info[k_data].CPT));
 }
 
@@ -8974,6 +8975,19 @@ int gmt_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double val
 	return (index);
 }
 
+bool gmt_same_fill (struct GMT_CTRL *GMT, struct GMT_FILL *F1, struct GMT_FILL *F2) {
+	gmt_M_unused(GMT);
+	/* Return true if the two fills are identical */
+	if (F1->use_pattern != F2->use_pattern) return false;	/* One is a pattern, the other isn't, so cannot be the same */
+	if (F1->use_pattern) {	/* Both are patterns */
+		if (F1->pattern_no != F2->pattern_no) return false;	/* Different patters used */
+		if (F1->pattern_no == -1)	/* Both have custom fill patterns */
+			return !strcmp (F1->pattern, F2->pattern);
+		return true;	/* They are the same */
+	}
+	return gmt_M_same_rgb (F1->rgb, F2->rgb);	/* true if the same color, including transparency level */
+}
+
 /*! . */
 GMT_LOCAL int gmtsupport_get_index_from_key (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *key) {
 	/* Will match key to a key in the color table.  Because a key is a string and may
@@ -9379,6 +9393,7 @@ unsigned int gmt_contour_first_pos (struct GMT_CTRL *GMT, char *arg) {
 	/* Because of backwards compatibility, we need to anticipate shits like -A+1 for a
 	 * single annotated contour and hence cannot confuse it with a modifier for contour specs.
 	 * Thus, here we scan past any leading single contour specification using deprecated syntax. */
+	gmt_M_unused(GMT);
 	unsigned int k = 1;
 	if (arg[0] != '+') return 0;	/* Start checking from start */
 	if (isalpha (arg[1]) || arg[1] == '=') return 0;	/* Standard modifier */

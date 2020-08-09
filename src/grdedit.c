@@ -134,6 +134,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle header from grid-line to pixel-registered grid or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This shrinks -R by 0.5*{dx,dy} going from pixel to grid-line registration\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and expands  -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   No grid values will be changed (a non-destructive change to the grid).\n");
 	GMT_Option (API, "V,bi3,di,e,f,h,i.:,.");
 
 	return (GMT_MODULE_USAGE);

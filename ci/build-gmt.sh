@@ -1,21 +1,33 @@
 #!/usr/bin/env bash
 #
-# Build the lastest GMT source codes.
+# Build the GMT source codes of a specific branch or tag/release.
 #
 # Usage:
 #
+#    bash build-gmt.sh [branch-or-tag]
+#
+# Environmental variables that controls the building process:
+#
+# - GMT_INSTALL_DIR : GMT installation location [$HOME/gmt-install-dir]
+# - GMT_GIT_REF     : branch name or tag/release [master if CLI argument isn't given]
+#
+# Notes for CI service users:
+#
 # 1. Install GMT dependencies following the [wiki](https://github.com/GenericMappingTools/gmt/wiki)
-# 2. curl https://raw.githubusercontent.com/GenericMappingTools/gmt/master/ci/build-gmt-master.sh | bash
+# 2. Run the following command to build the GMT source codes:
 #
-# Environmental variables that affect the building process:
-#
-# - GMT_INSTALL_DIR: GMT installation location
+#      curl https://raw.githubusercontent.com/GenericMappingTools/gmt/master/ci/build-gmt.sh | bash
 #
 
 set -x -e
 
 # Following variables can be modified via environment variables
 GMT_INSTALL_DIR=${GMT_INSTALL_DIR:-${HOME}/gmt-install-dir}
+if [ "X$1" = "X" ]; then
+	GMT_GIT_REF=${GMT_GIT_REF:-master}
+else
+	GMT_GIT_REF=$1
+fi
 
 # General settings
 GSHHG_VERSION="2.3.7"
@@ -30,7 +42,7 @@ GMT_BUILD_TMPDIR=$(mktemp -d ${TMPDIR:-/tmp/}gmt.XXXXXX)
 cd ${GMT_BUILD_TMPDIR}
 
 # 2. Download GMT, GSHHG and DCW from GitHub
-git clone --depth 1 https://github.com/GenericMappingTools/gmt.git gmt
+git clone --depth=1 --single-branch --branch ${GMT_GIT_REF} https://github.com/GenericMappingTools/gmt
 curl -SLO https://github.com/GenericMappingTools/gshhg-gmt/releases/download/${GSHHG_VERSION}/${GSHHG}.${EXT}
 curl -SLO https://github.com/GenericMappingTools/dcw-gmt/releases/download/${DCW_VERSION}/${DCW}.${EXT}
 
@@ -52,8 +64,8 @@ EOF
 mkdir build
 cd build
 cmake ..
-make
-make install
+cmake --build .
+cmake --build . --target install
 
 # 6. Cleanup
 cd ${cwd}
