@@ -194,7 +194,7 @@
    :width: 600 px
    :align: center
 
-   We may place vertical (**b**) or horizontal ((B**) bars, and they may extend from the
+   We may place vertical (**b**) or horizontal (**B**) bars, and they may extend from the
    *base* of your choosing.  The thickness of a bar can be a given dimension or can be
    specified in the units of that axis so its width scales with the projection and region.
 
@@ -293,7 +293,7 @@
         1.0 by default; the appended *size* will scale symbol accordingly. Users
         may add their own custom \*.def files; see CUSTOM SYMBOLS below.
         Alternatively, you can supply an EPS file instead of a \*.def file and
-        we will scale and place that graphics as a symbol.
+        we will scale and place that graphic as a symbol.
 
    The last group of symbols are all special *lines* with embellishments along them.
    The first symbol is called a *front* and has specific
@@ -530,8 +530,8 @@
 
    Decorated lines with eleven squares evenly spaced along the line.  By default,
    the symbol is aligned with the line trend, but numerous modifiers allow you to
-   customize the appearance.
-   
+   customize the appearance, including to make the line invisible.
+
 .. _-basic_symbols9:
 
     **-S~**
