@@ -8,8 +8,8 @@ Vector Attributes
     Vector attributes are controlled by options and modifiers.  We will refer to
     this figure and the labels therein when introducing the corresponding modifiers.
     All vectors require you specify the begin point :math:`x_b, y_b` and typically
-    direction *d* and length *L*, but for map projections we usually specify the
-    azimuth :math:`/alpha` instead.
+    direction *d* ad length *L*, but for map projections we usually specify the
+    azimuth :math:`\alpha` instead.
 
 Several modifiers may be appended to vector-producing options for
 specifying the placement of vector heads, their shapes, and the
@@ -17,16 +17,16 @@ justification of the vector. Below, left and right refers to the
 side of the vector line when viewed from the beginning point (**b**) to the
 end point (**e**) of a line segment:
 
-    **+a**\ *angle* sets the angle :math:`/theta` of the vector head apex [30].
+    **+a**\ *angle* sets the angle :math:`\theta` of the vector head apex [30].
 
-    **+b** places a vector head at the beginning of the vector path [none].
+    **+b** places a vector head at the **b**\ eginning of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
     and **I** for plain open tail.
     Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
-    **+e** places a vector head at the end of the vector path [none].
+    **+e** places a vector head at the **e**\ nd of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
     and **I** for plain open tail.
@@ -63,7 +63,8 @@ end point (**e**) of a line segment:
 
     **+p**\ [*pen*] sets the vector pen attributes. If no *pen* is appended
     then the head outline is not drawn. [Default pen is half the width of stem pen, and
-    head outline is drawn]. Above, we used **+p**\ 2p,orange.
+    head outline is drawn]. Above, we used **+p**\ 2p,orange.  The vector stem attributes are
+    controlled by **-W**.
 
     **+q** means the input *direction*, *length* data instead represent the *start* and *stop*
     opening angles of the arc segment relative to the given point. See **+o** to specify
@@ -87,7 +88,7 @@ In addition, all but circular vectors may take these modifiers:
 
 Finally, Cartesian vectors may take these modifiers:
 
-    **+z**\ *scale* expects input :math:`/Delta x, /Delta y` vector components and
+    **+z**\ *scale* expects input :math:`\Delta x, \Delta y` vector components and
     uses the *scale* to convert to polar coordinates with length in given unit.
 
 **Note**: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
