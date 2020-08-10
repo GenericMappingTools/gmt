@@ -218,6 +218,7 @@ GMT_LOCAL int gmtdcw_find_state (struct GMT_CTRL *GMT, char *scode, char *ccode,
 		unsigned int k = 0, id = atoi (scode);
 		while (k < DCW_N_CHINA_PROVINCES && id > gmtdcw_CN_codes[k].id) k++;
 		if (k == DCW_N_CHINA_PROVINCES) return (-1);	/* No such integer ID found in the list */
+		if (id < gmtdcw_CN_codes[k].id) return (-1);	/* No such integer ID found in the list */
 		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "FYI, Chinese province code %d is deprecated. Use %s instead\n", id, gmtdcw_CN_codes[k].code);
 		scode = gmtdcw_CN_codes[k].code;
 	}
@@ -436,8 +437,9 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		k = ks;
 		if (want_state) {
-			if ((item = gmtdcw_find_state (GMT, state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Country %s does not have states (skipped)\n", code);
+			item = gmtdcw_find_state (GMT, state, code, GMT_DCW_state, GMT_DCW_STATES);
+			if (item == -1) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Country %s does not have a state named %s (skipped)\n", code, state);
 				continue;
 			}
 			snprintf (TAG, GMT_LEN16, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[item].code);
