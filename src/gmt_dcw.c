@@ -204,7 +204,7 @@ GMT_LOCAL int gmtdcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int
 	return (low);
 }
 
-GMT_LOCAL int gmtdcw_find_state (struct GMT_CTRL *GMT, char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns) {
+GMT_LOCAL int gmtdcw_find_state (struct GMT_CTRL *GMT, char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns, bool check) {
 	/* Return state id given country and state codes using a linear search */
 	int i;
 	static struct GMT_DCW_CHINA_CODES gmtdcw_CN_codes[DCW_N_CHINA_PROVINCES] = {
@@ -214,7 +214,7 @@ GMT_LOCAL int gmtdcw_find_state (struct GMT_CTRL *GMT, char *scode, char *ccode,
 		{53, "YN"}, {54, "XZ"}, {61, "SN"}, {62, "GS"}, {63, "QH"}, {64, "NX"}, {65, "XJ"}, {71, "TW"},
 		{91, "HK"}, {92, "MO"}
 	};
-	if (!strncmp (ccode, "CN", 2U) && isdigit (scode[0])) {	/* Must switch to 2-character code */
+	if (check && !strncmp (ccode, "CN", 2U) && isdigit (scode[0])) {	/* Must switch to 2-character code */
 		unsigned int k = 0, id = atoi (scode);
 		while (k < DCW_N_CHINA_PROVINCES && id > gmtdcw_CN_codes[k].id) k++;
 		if (k == DCW_N_CHINA_PROVINCES) return (-1);	/* No such integer ID found in the list */
@@ -252,7 +252,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	unsigned int n_items = 0, r_item = 0, pos = 0, kk, tbl = 0, j = 0, *order = NULL;
 	unsigned short int *dx = NULL, *dy = NULL;
 	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
-	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, special = false;
+	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, special = false, new_CN_codes = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
 	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
@@ -374,6 +374,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		gmt_M_free (GMT, order);
 		return NULL;
 	}
+	if (version[0] != '1') new_CN_codes = true;	/* DCW 2.0.0 or later has new Chinese province codes */
 	if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title))) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain DCW attribute title\n");
 		gmt_free_segment (GMT, &P);
@@ -437,7 +438,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		k = ks;
 		if (want_state) {
-			item = gmtdcw_find_state (GMT, state, code, GMT_DCW_state, GMT_DCW_STATES);
+			item = gmtdcw_find_state (GMT, state, code, GMT_DCW_state, GMT_DCW_STATES, new_CN_codes);
 			if (item == -1) {
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Country %s does not have a state named %s (skipped)\n", code, state);
 				continue;
