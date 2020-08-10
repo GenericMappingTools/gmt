@@ -99,7 +99,8 @@
 
     **-Se**
         **e**\ llipse. Direction (in degrees counter-clockwise from horizontal),
-        major_axis, and minor_axis must be found in columns 3, 4, and 5.
+        major_axis, and minor_axis must be found in columns 3, 4, and 5. This yields
+        a Cartesian ellipse whose shape is unaffected by the map projection.
 
     **-SE**
         Same as **-Se**, except azimuth (in degrees east of north) should be
@@ -111,7 +112,8 @@
         For degenerate ellipses (circles) with just the diameter given, use **-SE-**.
         The diameter is excepted to be given in column 3.  Alternatively, append
         the desired diameter to **-SE-** and this fixed diameter is used instead.
-        For allowable geographical units, see `Units`_ [Default is k for km].
+        For allowable geographical units, see `Units`_ [Default is **k** for km]. The
+        shape of the ellipse will be affected by the properties of the map projection.
 
     **-Sj**
         Rotated rectangle. Direction (in degrees counter-clockwise from
