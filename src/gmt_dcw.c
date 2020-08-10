@@ -396,7 +396,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if (gmtversion[0]) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "DCW version %s requires GMT version %s or later.\n", version, gmtversion);
 	}
 
-	if (gmtversion[0]) {	/* The gmtversion attribute was available [starting with DCW 1.2.0] */
+	if (gmtversion[0]) {	/* The gmtversion attribute was available [starting with DCW 2.0.0] */
 		int maj, min, rel;
 		if (sscanf (gmtversion, "%d.%d.%d", &maj, &min, &rel) != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse minimum GMT version information\n");
