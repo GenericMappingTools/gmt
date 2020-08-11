@@ -80,7 +80,9 @@ respectively):
             Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
 
         Use upper-case **A**\|\ **B**\|\ **C** to remove enforcement of a northern hemisphere pole.
-        Append **+v** to let the oblique Equator align with the *y*-axis [*x*-axis].
+        Append **+v** to let the oblique Equator align with the *y*-axis [*x*-axis].  **Note**: If
+        the region (**-R**) is given without the **+r** modifier then the arguments are considered oblique
+        degrees relative to the projection center and not longitude/latitude bounds.
 
 .. _-Jq_full:
 
