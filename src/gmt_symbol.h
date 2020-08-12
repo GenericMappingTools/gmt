@@ -113,6 +113,7 @@ struct GMT_MAP_PANEL {
 	double off[2];			/* Offset for background shaded rectangle (+s) */
 	double gap;			/* Space between main and secondary frame */
 	struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
+	struct GMT_PEN debug_pen;	/* Pen for debug lines */
 	struct GMT_FILL fill;		/* Frame fill */
 	struct GMT_FILL sfill;		/* Background shade */
 	bool clearance;			/* Used by pslegend since it has the -C option as well */

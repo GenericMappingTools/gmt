@@ -3281,7 +3281,7 @@ GMT_LOCAL void gmtplot_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 
 	/* If called we simply draw the helper lines or points to assist in debug */
 
-	gmt_setpen (GMT, &GMT->current.setting.map_default_pen);
+	gmt_setpen (GMT, &G->debug_pen);
 	if (G->fixed) {	/* Place a small open circle at each fixed point */
 		PSL_setfill (PSL, GMT->session.no_rgb, PSL_OUTLINE);
 		for (row = 0; row < (uint64_t)G->f_n; row++)
