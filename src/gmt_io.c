@@ -2445,6 +2445,20 @@ GMT_LOCAL int gmtio_scanf_geo (char *s, double *val) {
 	return (retval);
 }
 
+GMT_LOCAL bool gmtio_is_pi (char *txt) {
+	/* Return true if txt is of the form [+|-][s]pi[f] */
+	unsigned int k = 0;
+	if (txt == NULL) return false;
+	if (txt[k] == '+' || txt[k] == '-') k++;	/* Skip a leading sign */
+	while (txt[k] && isdigit (txt[k])) k++;	/* Skip the s number which must be integer */
+	if (strncmp (&txt[k], "pi", 2U)) return false;	/* No pi found */
+	k += 2;	/* Skip the pi part */
+	if (txt[k] == '\0') return true;	/* OK so far; no fraction involved */
+	while (txt[k] && isdigit (txt[k])) k++;	/* Skip the f number which must be integer */
+	if (txt[k]) return false;	/* Got something at the end of the token that is not part of a pi specification */
+	return true;	/* Made it past all tests */
+}
+
 /*! . */
 int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 	/* Try to decode a value from s and store
@@ -2463,7 +2477,7 @@ int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 	double x;
 	size_t j, k;
 
-	if (strstr (s, "pi")) {	/* Got a number given via multiple/fraction of pi */
+	if (gmtio_is_pi (s)) {	/* Got a number given via multiple/fraction of pi */
 		/* Only allow parsing of [-|+][s]pi[f], with s and f are any number */
 		GMT->current.plot.substitute_pi = true;	/* Used in formatting labels */
 		k = 0;
@@ -6708,9 +6722,9 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		if (s[callen] == '\"') { s[callen] = '\0'; s++;}	/* Strip off trailing quote and advance pointer over the first */
 	}
 	if (s[0] == 'T') {	/* Numbers cannot start with letters except for clocks, e.g., T07:0 */
-		if ((int)s[1] < 0 || !isdigit((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk*/
+		if ((int)s[1] < 0 || !isdigit((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk */
 	}
-	else if (strstr (s, "pi") == NULL && isalpha ((int)s[0])) return (GMT_IS_NAN);	/* Numbers cannot start with letters */
+	else if (!gmtio_is_pi (s) && isalpha ((int)s[0])) return (GMT_IS_NAN);	/* Numbers cannot start with letters */
 
 	switch (expectation) {
 		case GMT_IS_GEO: case GMT_IS_LON: case GMT_IS_LAT:
@@ -6876,7 +6890,7 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 			unsigned int nt = (cmd) ? 0 : gmtio_n_trailing_chars (GMT, s);
 			if ((s[0] == 'T' && isdigit (s[1])) || strchr (s, 'T'))	/* Found a T in the argument - must be Absolute time or it will fail as junk */
 				expectation = GMT_IS_ARGTIME;
-			else if (strstr (s, "pi"))	/* Found "pi" in the number - will try scanning as float */
+			else if (gmtio_is_pi (s))	/* Found a "pi" specification - will try scanning as float */
 				expectation = GMT_IS_FLOAT;
 			else if (c == 't')		/* Found trailing t - assume Relative time */
 				expectation = GMT_IS_ARGTIME;
