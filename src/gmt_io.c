@@ -2450,11 +2450,12 @@ GMT_LOCAL bool gmtio_is_pi (char *txt) {
 	unsigned int k = 0;
 	if (txt == NULL) return false;
 	if (txt[k] == '+' || txt[k] == '-') k++;	/* Skip a leading sign */
-	while (txt[k] && isdigit (txt[k])) k++;	/* Skip the s number which must be integer */
-	if (strncmp (&txt[k], "pi", 2U)) return false;	/* No pi found */
+	while (txt[k] && isdigit (txt[k])) k++;	/* Skip the s number, which must be integer */
+	if (txt[k] == '\0' || strncmp (&txt[k], "pi", 2U)) return false;	/* No pi found */
+	if (txt[k+1] == '\0') return false;	/* Did not have two characters */
 	k += 2;	/* Skip the pi part */
-	if (txt[k] == '\0') return true;	/* OK so far; no fraction involved */
-	while (txt[k] && isdigit (txt[k])) k++;	/* Skip the f number which must be integer */
+	if (txt[k] == '\0') return true;	/* OK so far; no fraction f involved */
+	while (txt[k] && isdigit (txt[k])) k++;	/* Skip the f number, which must be integer */
 	if (txt[k]) return false;	/* Got something at the end of the token that is not part of a pi specification */
 	return true;	/* Made it past all tests */
 }
