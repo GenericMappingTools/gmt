@@ -9333,6 +9333,7 @@ void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	G->font_label.set = 0;
 	G->dist_unit = GMT->current.setting.proj_length_unit;
 	G->pen = GMT->current.setting.map_default_pen;
+	G->debug_pen = GMT->current.setting.map_default_pen;
 	G->line_pen = GMT->current.setting.map_default_pen;
 	gmt_M_rgb_copy (G->rgb, GMT->current.setting.ps_page_rgb);		/* Default box color is page color [nominally white] */
 }
@@ -9547,7 +9548,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, c;
 	char *specs = NULL;
 
-	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+i][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+x|X<suffix>][+=<prefix>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d[<pen>]][+e][+f<font>][+g<fill>][+i][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+x|X<suffix>][+=<prefix>] strings */
 
 	/* txt is pointing to the very first modifier */
 
@@ -9597,6 +9598,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 'd':	/* Debug option - draw helper points or lines */
 				G->debug = true;
+				if (p[1] && gmt_getpen (GMT, &p[1], &G->debug_pen)) bad++;
 				break;
 
 			case 'e':	/* Just lay down text info; Delay actual label plotting until a psclip -C call */
@@ -9885,7 +9887,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	char *specs = NULL;
 
-	/* Decode [+a<angle>|n|p[u|d]][+d][+g<fill>][+i][+n|N<dx>[/<dy>]][+p[<pen>]]+s<symbolinfo>[+w<width>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+d[<pen>]][+g<fill>][+i][+n|N<dx>[/<dy>]][+p[<pen>]]+s<symbolinfo>[+w<width>] strings */
 
 	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
 
@@ -9913,6 +9915,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 
 			case 'd':	/* Debug option - draw helper points or lines */
 				G->debug = true;
+				if (p[1] && gmt_getpen (GMT, &p[1], &G->debug_pen)) bad++;
 				break;
 
 			case 'g':	/* Symbol Fill specification */
@@ -13175,6 +13178,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	gmt_init_fill (GMT, &P->sfill, gmt_M_is255 (127), gmt_M_is255 (127), gmt_M_is255 (127));	/* Default if gray shade is used */
 	P->pen1 = GMT->current.setting.map_frame_pen;			/* Heavier pen for main outline */
 	P->pen2 = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
+	P->debug_pen = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
 	P->gap = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_GAP;	/* Default is 2p */
 	/* Initialize the panel clearances */
 	P->padding[XLO] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
@@ -13208,6 +13212,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 				break;
 			case 'd':	/* debug mode for developers */
 				P->debug = true;
+				if (p[1] && gmt_getpen (GMT, &p[1], &P->debug_pen)) n_errors++;
 				break;
 			case 'g':	/* Set fill */
 				if (!p[1] || gmt_getfill (GMT, &p[1], &P->fill)) n_errors++;

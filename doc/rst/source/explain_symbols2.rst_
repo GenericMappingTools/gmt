@@ -244,9 +244,10 @@
                 **c**\|\ **i**\|\ **p** to specify the unit or % to indicate a
                 percentage of the label font size [15%].
 
-            **+d**
+            **+d**\ [*pen*]
                 Turns on debug which will draw helper points and lines to illustrate
-                the workings of the quoted line setup.
+                the workings of the quoted line setup.  Optionally append the pen
+                to use [:term:`MAP_DEFAULT_PEN`].
 
             **+e**
                 Delay the plotting of the text. This is used to build a clip path
@@ -479,7 +480,8 @@
 
             **+d**
                 Turns on debug which will draw helper points and lines to illustrate
-                the workings of the decorated line setup.
+                the workings of the decorated line setup. Optionally append the pen
+                to use [:term:`MAP_DEFAULT_PEN`].
 
             **+g**\ [*fill*]
                 Sets the symbol fill [no fill].
