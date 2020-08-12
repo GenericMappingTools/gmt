@@ -478,7 +478,7 @@
                 For symbols at a fixed angle, **+an** for line-normal, or
                 **+ap** for line-parallel [Default].
 
-            **+d**
+            **+d**\ [*pen*]
                 Turns on debug which will draw helper points and lines to illustrate
                 the workings of the decorated line setup. Optionally append the pen
                 to use [:term:`MAP_DEFAULT_PEN`].
