@@ -18,6 +18,7 @@ Synopsis
 |SYN_OPT-R|
 |-S|\ *search_radius*
 [ |-E|\ *empty* ]
+[ |-N| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+s**] ]
 [ |SYN_OPT-bi| ]
@@ -51,7 +52,7 @@ Required Arguments
 
 .. _-C:
 
-**-C**\ **a**\|\ **d**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
+**-C**\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
     Choose the statistic that will be computed per node based on the points that
     are within *radius* distance of the node.  Select one of **a** for mean (average),
     **d** for median absolute deviation (MAD), **g** for full (max-min) range,
@@ -96,6 +97,11 @@ Optional Arguments
 
 **-E**\ *empty*
     Set the value assigned to empty nodes [NaN].
+
+.. _-N:
+
+**-N**
+    Normalize the resulting grid values by the area represented by the search *radius* [no normalization].
 
 .. _-V:
 
