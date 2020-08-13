@@ -65,7 +65,7 @@ enum grdcount_types {
 
 struct GMTCOUNT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct GMTCOUNT_C {	/* -Ca|m|p|i|q<q>|r|l|L|u|U|n|s*/
+	struct GMTCOUNT_C {	/* -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z */
 		bool active;
 		unsigned int mode;
 		double quant;
@@ -690,6 +690,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 					Grid->data[ij] -= s[kk];
 					n++;
 				}
+				kk++;
 			}
 			break;
 		case GMTCOUNT_STD:
@@ -698,6 +699,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 					Grid->data[ij] = sqrt ((n_in_circle[kk] * s[kk] - Grid->data[ij] * Grid->data[ij]) / (n_in_circle[kk] * (n_in_circle[kk] - 1)));
 					n++;
 				}
+				kk++;
 			}
 			break;
 		case GMTCOUNT_STDW:
@@ -706,6 +708,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 					Grid->data[ij] = sqrt ((w[kk] * s[kk] - Grid->data[ij] * Grid->data[ij]) / ((n_in_circle[kk] - 1) * w[kk] * w[kk] /n_in_circle[kk]));
 					n++;
 				}
+				kk++;
 			}
 			break;
 		case GMTCOUNT_RMS:
@@ -714,6 +717,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 					Grid->data[ij] = sqrt (Grid->data[ij] / n_in_circle[kk]);
 					n++;
 				}
+				kk++;
 			}
 			break;
 		case GMTCOUNT_RMSW:
@@ -722,6 +726,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 					Grid->data[ij] = sqrt (Grid->data[ij] / w[kk]);
 					n++;
 				}
+				kk++;
 			}
 			break;
 		case GMTCOUNT_MAD:	/* COmpute plain MAD */

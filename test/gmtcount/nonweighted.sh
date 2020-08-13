@@ -4,7 +4,7 @@ gmt begin nonweighted ps
 	gmt set FONT_TAG 12p MAP_FRAME_TYPE plain
 		gmt subplot begin 7x2 -Fs3i/1.25i -M15p/5p -A+gwhite -SCb -SRl -Bwstr -R-110/250/-75/75  -JQ70E/3i -X1.25i -Y0.5i
 		# Plot data
-		gmt subplot set 0 -Az
+		gmt subplot set 0 -Adata
 		gmt makecpt -T0/10000000 -Cjet
 		gmt coast -Glightgray
 		gmt plot @capitals.gmt -a2=population -Sc0.1c -C
@@ -53,8 +53,8 @@ gmt begin nonweighted ps
 		gmt count -I5 @capitals.gmt -a2=population -Cg -Gt.grd -S2000k
 		gmt grdimage t.grd
 		# Plot sum population
-		gmt subplot set 12 -As
-		gmt count -I5 @capitals.gmt -a2=population -Cs -Gt.grd -S2000k
+		gmt subplot set 12 -Az
+		gmt count -I5 @capitals.gmt -a2=population -Cz -Gt.grd -S2000k
 		gmt grdimage t.grd
 		# Plot maximum population
 		gmt subplot set 13 -Au
