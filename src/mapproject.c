@@ -514,7 +514,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 					n_slash = gmt_count_char (GMT, opt->arg, '/');
 					if ((q = strstr (opt->arg, "+u")) && q[2] == '+') q[2] = '*';
 					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv", GMT_MSG_ERROR)) n_errors++;
-					if ((p = gmt_first_modifier (GMT, opt->arg, "aiuv")) == NULL) {	/* If just -G given then we get here; default to cumulate distances in meters */
+					if ((p = gmt_first_modifier (GMT, opt->arg, "aiuv")) == NULL && n_slash == 0) {	/* If just -G given then we get here; default to cumulate distances in meters */
 						Ctrl->G.mode |= GMT_MP_VAR_POINT;
 						Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
 						Ctrl->used[MP_COL_DS] = true;	/* Output incremental distances */
@@ -532,7 +532,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 						}
 					}
 					if (q) q[2] = '+';
-					p[0] = '\0';	/* Chop off all modifiers */
+					if (p) p[0] = '\0';	/* Chop off all modifiers */
 					/* Here, opt->arg is -G[<lon0/lat0>] */
 					if (opt->arg[0] == '\0') /* Just gave -G, should mean -G+ue+a */
 						Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
