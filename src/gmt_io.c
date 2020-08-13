@@ -3489,13 +3489,6 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			return (NULL);
 		}
 
-		GMT->current.io.data_record_number_in_set[GMT_IN]++;
-		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
-		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
-		if (gmtio_outside_in_row_range (GMT, *(GMT->common.q.rec))) {	/* Records is outside desired row range of interest */
-			if (!gmtio_is_segment_header (GMT, line))
-				continue;
-		}
 		/* First chop off trailing whitespace and commas */
 		gmt_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
 
@@ -3548,6 +3541,14 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		}
 
 		/* Here we know we are processing a data record */
+
+		GMT->current.io.data_record_number_in_set[GMT_IN]++;
+		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
+		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
+		if (gmtio_outside_in_row_range (GMT, *(GMT->common.q.rec))) {	/* Records is outside desired row range of interest */
+			if (!gmtio_is_segment_header (GMT, line))
+				continue;
+		}
 
 		if (GMT->common.a.active && GMT->current.io.ogr == GMT_OGR_FALSE) {	/* Cannot give -a and not be reading an OGR/GMT file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Aspatial associations set with -a but input file is not in OGR/GMT format!\n");
