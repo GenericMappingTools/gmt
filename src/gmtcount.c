@@ -32,13 +32,14 @@
 #define THIS_MODULE_PURPOSE	"Grid table data by geospatial counting"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVbdefghinqrs" GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:RVabdefghinqrs" GMT_OPT("FH")
 
 enum grdcount_types {
 	GMTCOUNT_LOWER = 1,
 	GMTCOUNT_LOWERP,
 	GMTCOUNT_UPPER,
 	GMTCOUNT_UPPERP,
+	GMTCOUNT_ZRANGE,
 	GMTCOUNT_SUM,
 	GMTCOUNT_COUNT,
 	GMTCOUNT_COUNTW,
@@ -47,11 +48,26 @@ enum grdcount_types {
 	GMTCOUNT_MEDIAN,
 	GMTCOUNT_MEDIANW,
 	GMTCOUNT_MODE,
-	GMTCOUNT_MODEW
+	GMTCOUNT_MODEW,
+	GMTCOUNT_QUANT,
+	GMTCOUNT_QUANTW,
+	GMTCOUNT_IRANGE,
+	GMTCOUNT_IRANGEW,
+	GMTCOUNT_STD,
+	GMTCOUNT_STDW,
+	GMTCOUNT_MAD,
+	GMTCOUNT_MADW,
+	GMTCOUNT_LMSSCL,
+	GMTCOUNT_LMSSCLW
 };
 
 struct GMTCOUNT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
+	struct GMTCOUNT_C {	/* -Ca|m|p|i|q<q>|r|l|L|u|U|n|s*/
+		bool active;
+		unsigned int mode;
+		double quant;
+	} C;
 	struct GMTCOUNT_E {	/* -E<empty> */
 		bool active;
 		double value;
@@ -60,10 +76,6 @@ struct GMTCOUNT_CTRL {	/* All control options for this program (except common ar
 		bool active;
 		char *file;
 	} G;
-	struct GMTCOUNT_C {	/* -Ca|m|p|l|L|u|U|n|s*/
-		bool active;
-		unsigned int mode;
-	} C;
 	struct GMTCOUNT_S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		bool active;
 		int mode;	/* May be negative */
@@ -82,6 +94,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.mode = GMTCOUNT_COUNT;
+	C->C.quant = 50.0;	/* Median*/
 	return (C);
 }
 
@@ -95,8 +108,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-Ca|m|p|l|L|u|U|n|s %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<empty>] [%s] [-W] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-Ca|b|d|i|l|L|m|n|o|p|q<val>|r|s|u|U %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<empty>] [%s] [-W] [%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -105,14 +118,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify the statistic of data inside the circle we should report per node.  Choose from.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a: The mean (average) value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m: The median value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p: The mode (maximum likelihood) value\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   b: The median absolute deviation (MAD) of values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d: The standard deviation of values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i: The 25-75%% interquartile range\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l: The minimum (low) value\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   L: The minimum of all positive values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m: The median value\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n: The number of the values [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   o: The LMS scale of values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p: The mode (maximum likelihood) value\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   q: The selected quantile value; append quantile [50%%]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r: The full data range (max-min)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s: The sum of the value\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   u: The maximum (upper) value\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   U: The maximum of all negative values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n: The number of the values [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s: The sum of the value\n");
 	GMT_Option (API, "R");
 	gmt_dist_syntax (API->GMT, 'S', "Compute statistics using points inside this search radius.");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -120,7 +139,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Input <table> has observation weights in 4th column.\n");
-	GMT_Option (API, "bi");
+	GMT_Message (API, GMT_TIME_NONE, "\t   We then compute weighted version of selection in -C.\n");
+	GMT_Option (API, "a,bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
 	GMT_Option (API, "di,e,f,h,i");
 	if (gmt_M_showusage (API)) {
@@ -174,15 +194,24 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCOUNT_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'C':	/* -Ca|m|p|l|L|u|U|n|s */
+				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->C.mode = GMTCOUNT_MEAN;	break;
-					case 'm': Ctrl->C.mode = GMTCOUNT_MEDIAN;	break;
-					case 'p': Ctrl->C.mode = GMTCOUNT_MODE;	break;
+					case 'b': Ctrl->C.mode = GMTCOUNT_MAD;	break;
+					case 'd': Ctrl->C.mode = GMTCOUNT_STD;	break;
+					case 'i': Ctrl->C.mode = GMTCOUNT_IRANGE;	break;
 					case 'l': Ctrl->C.mode = GMTCOUNT_LOWER;	break;
 					case 'L': Ctrl->C.mode = GMTCOUNT_LOWERP;	break;
+					case 'm': Ctrl->C.mode = GMTCOUNT_MEDIAN;	break;
+					case 'n': Ctrl->C.mode = GMTCOUNT_COUNT;	break;
+					case 'o': Ctrl->C.mode = GMTCOUNT_LMSSCL;	break;
+					case 'p': Ctrl->C.mode = GMTCOUNT_MODE;	break;
+					case 'q': Ctrl->C.mode = GMTCOUNT_QUANT;
+						if (opt->arg[1]) Ctrl->C.quant = atof (&opt->arg[1]);
+						break;
+					case 'r': Ctrl->C.mode = GMTCOUNT_ZRANGE;	break;
 					case 'u': Ctrl->C.mode = GMTCOUNT_UPPER;	break;
 					case 'U': Ctrl->C.mode = GMTCOUNT_UPPERP;	break;
-					case 'n': Ctrl->C.mode = GMTCOUNT_COUNT;	break;
 					case 's': Ctrl->C.mode = GMTCOUNT_SUM;	break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Method %s not recognized!\n", opt->arg);
@@ -210,36 +239,52 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCOUNT_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Option -S: Unable to decode radius\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Option -S: Radius is negative\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
-	if (Ctrl->C.active) {	/* Update the mode if median or mode */
+	if (Ctrl->W.active) {	/* Update the mode if median or mode */
 		if (Ctrl->C.mode == GMTCOUNT_MEDIAN) Ctrl->C.mode = GMTCOUNT_MEDIANW;
 		if (Ctrl->C.mode == GMTCOUNT_MODE) Ctrl->C.mode = GMTCOUNT_MODEW;
 		if (Ctrl->C.mode == GMTCOUNT_MEAN) Ctrl->C.mode = GMTCOUNT_MEANW;
+		if (Ctrl->C.mode == GMTCOUNT_MAD) Ctrl->C.mode = GMTCOUNT_MADW;
+		if (Ctrl->C.mode == GMTCOUNT_STD) Ctrl->C.mode = GMTCOUNT_STDW;
+		if (Ctrl->C.mode == GMTCOUNT_LMSSCL) Ctrl->C.mode = GMTCOUNT_LMSSCLW;
 		if (Ctrl->C.mode == GMTCOUNT_COUNT) Ctrl->C.mode = GMTCOUNT_COUNTW;
+		if (Ctrl->C.mode == GMTCOUNT_QUANT) Ctrl->C.mode = GMTCOUNT_QUANTW;
+		if (Ctrl->C.mode == GMTCOUNT_IRANGE) Ctrl->C.mode = GMTCOUNT_IRANGEW;
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void gmtcount_assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, char *flag, float *z, float **zp, struct GMT_OBSERVATION **p, unsigned int *np, unsigned int *n_alloc, uint64_t ij, uint64_t kk, unsigned int mode, double *in) {
+GMT_LOCAL void gmtcount_assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, char *flag, float *w, float *s, float **zp, struct GMT_OBSERVATION **p, unsigned int *np, unsigned int *n_alloc, uint64_t ij, uint64_t kk, unsigned int mode, double *in) {
 	/* Assign the input value/weight to the output grid and/or helper arrays, depending on the mode */
 
 	switch (mode) {
 		case GMTCOUNT_MEAN:
 			G->data[ij] += in[GMT_Z];
-			z[kk] += 1.0;
+			w[kk] += 1.0;
 			break;
 		case GMTCOUNT_MEANW:
 			G->data[ij] += in[GMT_Z];
-			z[kk] += in[3];
+			w[kk] += in[3];
 			break;
-		case GMTCOUNT_MEDIAN: case GMTCOUNT_MODE:
+		case GMTCOUNT_STD:
+			G->data[ij] += in[GMT_Z];
+			s[kk] += in[GMT_Z] * in[GMT_Z];	/* Sum of z squared */
+			np[kk]++;
+			break;
+		case GMTCOUNT_STDW:
+			G->data[ij] += in[GMT_Z] * in[3];	/* Sum of weighted z */
+			w[kk] += in[3];	/* Sum of weights */
+			s[kk] += in[GMT_Z] * in[GMT_Z] * in[3];	/* Sum of weighted z^2 */
+			np[kk]++;
+			break;
+		case GMTCOUNT_MEDIAN: case GMTCOUNT_MODE: case GMTCOUNT_QUANT: case GMTCOUNT_MAD: case GMTCOUNT_LMSSCL: case GMTCOUNT_IRANGE:
 			if (n_alloc[kk] >= np[kk]) {
 				n_alloc[kk] += GMT_SMALL_CHUNK;
 				zp[kk] = gmt_M_memory (GMT, zp[kk], n_alloc[kk], float);
 			}
 			zp[kk][np[kk]++] = in[GMT_Z];
 			break;
-		case GMTCOUNT_MEDIANW: case GMTCOUNT_MODEW:
+		case GMTCOUNT_MEDIANW: case GMTCOUNT_MODEW: case GMTCOUNT_QUANTW: case GMTCOUNT_MADW: case GMTCOUNT_LMSSCLW: case GMTCOUNT_IRANGEW:
 			if (n_alloc[kk] >= np[kk]) {
 				n_alloc[kk] += GMT_SMALL_CHUNK;
 				zp[kk] = gmt_M_memory (GMT, zp[kk], n_alloc[kk], struct GMT_OBSERVATION);
@@ -271,11 +316,18 @@ GMT_LOCAL void gmtcount_assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, c
 				flag[kk] = 1;
 			}
 			break;
-		case GMTCOUNT_SUM:
-			G->data[ij] += in[GMT_Z];
+		case GMTCOUNT_ZRANGE:
+			if (flag[kk]) {	/* Been here before, so can make a comparison */
+				if (in[GMT_Z] > G->data[ij]) G->data[ij] = in[GMT_Z];
+				if (in[GMT_Z] < s[kk]) s[kk] = in[GMT_Z];
+			}
+			else {	/* First time, mark it */
+				G->data[ij] = w[kk] = in[GMT_Z];
+				flag[kk] = 1;
+			}
 			break;
-		case GMTCOUNT_COUNTW:
-			G->data[ij] += in[3];
+		case GMTCOUNT_SUM: case GMTCOUNT_COUNTW:
+			G->data[ij] += in[GMT_Z];
 			break;
 		default:	/* GMTCOUNT_COUNT */
 			G->data[ij] += 1.0;
@@ -298,10 +350,10 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 
 	uint64_t ij, kk, n, n_read;
 
-	float *w = NULL, **zp = NULL;
-	double dx, dy, distance = 0.0, wmode;
-	double x_left, x_right, y_top, y_bottom;
-	double half_y_width, y_width, half_x_width, x_width;
+	float *w = NULL, *s = NULL, **zp = NULL;
+
+	double dx, dy, distance = 0.0, x_left, x_right, y_top, y_bottom;
+	double half_y_width, y_width, half_x_width, x_width, median, zmode, mad;
 	double *x0 = NULL, *y0 = NULL, *in = NULL;
 
 	struct GMT_GRID *Grid = NULL;
@@ -382,22 +434,32 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 	/* Add helper arrays depending on the mode */
 	switch (Ctrl->C.mode) {
 		case GMTCOUNT_MEAN: case GMTCOUNT_MEANW:	/* Will need to keep track of n or sum of weights */
-			w = gmt_M_memory (GMT, NULL, Grid->header->nm, float);	/* Matrix with pointers to an array of grdfloats */
+			w = gmt_M_memory (GMT, NULL, Grid->header->nm, float);	/* Array of floats */
 			break;
-		case GMTCOUNT_MEDIAN:
-		case GMTCOUNT_MODE:
+		case GMTCOUNT_MEDIAN: case GMTCOUNT_MODE: case GMTCOUNT_QUANT: case GMTCOUNT_MAD: case GMTCOUNT_LMSSCL: case GMTCOUNT_IRANGE:
 			n_in_circle = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* Number of values inside circle per node */
 			n_alloc = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* Allocation size per node */
 			zp = gmt_M_memory (GMT, NULL, Grid->header->nm, float *);	/* Matrix with pointers to an array of grdfloats */
 			break;
-		case GMTCOUNT_MEDIANW:
-		case GMTCOUNT_MODEW:
+		case GMTCOUNT_MEDIANW: case GMTCOUNT_MODEW: case GMTCOUNT_QUANTW: case GMTCOUNT_MADW: case GMTCOUNT_LMSSCLW: case GMTCOUNT_IRANGEW:
 			n_in_circle = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* Number of values inside circle per node */
 			n_alloc = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* Allocation size per node */
 			zw_pair = gmt_M_memory (GMT, NULL, Grid->header->nm, struct GMT_OBSERVATION *);	/* Matrix with pointers to an array of z,w pairs */
 			break;
 		case GMTCOUNT_LOWER: case GMTCOUNT_LOWERP: case GMTCOUNT_UPPER: case GMTCOUNT_UPPERP:
 			flag = gmt_M_memory (GMT, NULL, Grid->header->nm, char);	/* Flag so we know if we have been here */
+			break;
+		case GMTCOUNT_STD:	/* Will need to keep track of n or sum of weights, plus sum of squares */
+			s = gmt_M_memory (GMT, NULL, Grid->header->nm, float);
+			n_in_circle = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* Number of values inside circle per node */
+			break;
+		case GMTCOUNT_STDW:	/* Will need to keep track of n or sum of weights, plus sum of squares */
+			n_in_circle = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* Number of values inside circle per node */
+			s = gmt_M_memory (GMT, NULL, Grid->header->nm, float);
+			w = gmt_M_memory (GMT, NULL, Grid->header->nm, float);	/* Array of floats */
+			break;
+		case GMTCOUNT_ZRANGE:	/* Will need to keep track of max */
+			s = gmt_M_memory (GMT, NULL, Grid->header->nm, float);
 			break;
 		default:	/* No extra memory needed */
 			break;
@@ -469,7 +531,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 
 				/* OK, this point should affect this node.  */
 
-				gmtcount_assign_node (GMT, Grid, flag, w, zp, zw_pair, n_in_circle, n_alloc, ij, kk, Ctrl->C.mode, in);
+				gmtcount_assign_node (GMT, Grid, flag, w, s, zp, zw_pair, n_in_circle, n_alloc, ij, kk, Ctrl->C.mode, in);
 
 				/* With periodic, gridline-registered grids there are duplicate rows and/or columns
 				   so we may have to assign the point to more than one node.  The next section deals
@@ -478,15 +540,15 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 
 				if (replicate_x) {	/* Must check if we have to replicate a column */
 					if (colu == 0) 	/* Must replicate left to right column */
-						gmtcount_assign_node (GMT, Grid, flag, w, zp, zw_pair, n_in_circle, n_alloc, ij+x_wrap, kk+x_wrap, Ctrl->C.mode, in);
+						gmtcount_assign_node (GMT, Grid, flag, w, s, zp, zw_pair, n_in_circle, n_alloc, ij+x_wrap, kk+x_wrap, Ctrl->C.mode, in);
 					else if (colu == HH->nxp)	/* Must replicate right to left column */
-						gmtcount_assign_node (GMT, Grid, flag, w, zp, zw_pair, n_in_circle, n_alloc, ij-x_wrap, kk-x_wrap, Ctrl->C.mode, in);
+						gmtcount_assign_node (GMT, Grid, flag, w, s, zp, zw_pair, n_in_circle, n_alloc, ij-x_wrap, kk-x_wrap, Ctrl->C.mode, in);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
 					if (rowu == 0)	/* Must replicate top to bottom row */
-						gmtcount_assign_node (GMT, Grid, flag, w, zp, zw_pair, n_in_circle, n_alloc, ij+y_wrap_ij, kk+y_wrap_kk, Ctrl->C.mode, in);
+						gmtcount_assign_node (GMT, Grid, flag, w, s, zp, zw_pair, n_in_circle, n_alloc, ij+y_wrap_ij, kk+y_wrap_kk, Ctrl->C.mode, in);
 					else if (rowu == HH->nyp)	/* Must replicate bottom to top row */
-						gmtcount_assign_node (GMT, Grid, flag, w, zp, zw_pair, n_in_circle, n_alloc, ij-y_wrap_ij, kk-y_wrap_kk, Ctrl->C.mode, in);
+						gmtcount_assign_node (GMT, Grid, flag, w, s, zp, zw_pair, n_in_circle, n_alloc, ij-y_wrap_ij, kk-y_wrap_kk, Ctrl->C.mode, in);
 				}
 			}
 		}
@@ -534,8 +596,8 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 			kk = 0;
 			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
 				if ((k = n_in_circle[kk])) {
-					gmt_mode_f (GMT, zp[kk], k, k/2, 0, gmt_mode_selection, &GMT_n_multiples, &wmode);
-					Grid->data[ij] = (gmt_grdfloat)wmode;
+					gmt_mode_f (GMT, zp[kk], k, k/2, 0, gmt_mode_selection, &GMT_n_multiples, &zmode);
+					Grid->data[ij] = (gmt_grdfloat)zmode;
 					gmt_M_free (GMT, zp[kk]);
 					n++;
 				}
@@ -553,15 +615,143 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 				kk++;
 			}
 			break;
-		case GMTCOUNT_COUNT: case GMTCOUNT_COUNTW:
+		case GMTCOUNT_QUANT:	/* Compute plain quantile */
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if ((k = n_in_circle[kk])) {
+					Grid->data[ij] = (gmt_grdfloat) gmt_quantile_f (GMT, zp[kk], Ctrl->C.quant, k);
+
+					gmt_M_free (GMT, zp[kk]);
+					n++;
+				}
+				kk++;
+			}
+			break;
+		case GMTCOUNT_QUANTW:	/* Compute weighted quantile */
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if (n_in_circle[kk]) {
+					Grid->data[ij] = (gmt_grdfloat)gmt_mode_weighted (GMT, zw_pair[kk], n_in_circle[kk]);
+					gmt_M_free (GMT, zw_pair[kk]);
+					n++;
+				}
+				kk++;
+			}
+			break;
+		case GMTCOUNT_IRANGE:	/* Compute plain inter quartile range */
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if ((k = n_in_circle[kk])) {
+					Grid->data[ij] = (gmt_grdfloat) (gmt_quantile_f (GMT, zp[kk], 75.0, k) - gmt_quantile_f (GMT, zp[kk], 25.0, k));
+					gmt_M_free (GMT, zp[kk]);
+					n++;
+				}
+				kk++;
+			}
+			break;
+		case GMTCOUNT_IRANGEW:	/* Compute weighted quantile */
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if ((k = n_in_circle[kk])) {
+					Grid->data[ij] = (gmt_grdfloat) (gmt_quantile_weighted (GMT, zw_pair[kk], k, 75.0) - gmt_quantile_weighted (GMT, zw_pair[kk], k, 75.0));
+					gmt_M_free (GMT, zw_pair[kk]);
+					n++;
+				}
+				kk++;
+			}
+			break;
+		case GMTCOUNT_COUNT: case GMTCOUNT_COUNTW: case GMTCOUNT_SUM:
 			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
 				if (Grid->data[ij] > 0.0) n++;
 			}
 			break;
 
+		case GMTCOUNT_ZRANGE:
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if (flag[kk]) {
+					Grid->data[ij] -= s[kk];
+					n++;
+				}
+			}
+			break;
+		case GMTCOUNT_STD:
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if (n_in_circle[kk] > 1) {
+					Grid->data[ij] = sqrt ((n_in_circle[kk] * s[kk] - Grid->data[ij] * Grid->data[ij]) / (n_in_circle[kk] * (n_in_circle[kk] - 1)));
+					n++;
+				}
+			}
+			break;
+		case GMTCOUNT_STDW:
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if (n_in_circle[kk] > 1) {
+					Grid->data[ij] = sqrt ((w[kk] * s[kk] - Grid->data[ij] * Grid->data[ij]) / ((n_in_circle[kk] - 1) * w[kk] * w[kk] /n_in_circle[kk]));
+					n++;
+				}
+			}
+			break;
+
+		case GMTCOUNT_MAD:	/* COmpute plain MAD */
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if ((k = n_in_circle[kk])) {
+					gmt_sort_array (GMT, zp[kk], k, GMT_FLOAT);
+					median = (k%2) ? zp[kk][k/2] : 0.5 * (zp[kk][(k-1)/2] + zp[kk][row/2]);
+					gmt_getmad_f (GMT, zp[kk], k, median, &mad);
+					Grid->data[ij] = mad;
+					gmt_M_free (GMT, zp[kk]);
+					n++;
+				}
+				kk++;
+			}
+			break;
+		case GMTCOUNT_MADW:	/* Compute weighted MAD */
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if (n_in_circle[kk]) {
+					median = gmt_median_weighted (GMT, zw_pair[kk], n_in_circle[kk]);
+					/* 3. Compute the absolute deviations from this median */
+					for (k = 0; k < n_in_circle[kk]; k++) zw_pair[kk][k].value = (gmt_grdfloat)fabs (zw_pair[kk][k].value - median);
+					/* 4. Find the weighted median absolute deviation */
+					Grid->data[ij] = (gmt_grdfloat)gmt_median_weighted (GMT, zw_pair[kk], n_in_circle[kk]);
+					gmt_M_free (GMT, zw_pair[kk]);
+					n++;
+				}
+				kk++;
+			}
+			break;
+		case GMTCOUNT_LMSSCL:	/* Compute plain mode lmsscale */
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if ((k = n_in_circle[kk])) {
+					gmt_mode_f (GMT, zp[kk], k, k/2, 0, gmt_mode_selection, &GMT_n_multiples, &zmode);
+					gmt_getmad_f (GMT, zp[kk], k, zmode, &mad);
+					Grid->data[ij] = (gmt_grdfloat)mad;
+					gmt_M_free (GMT, zp[kk]);
+					n++;
+				}
+				kk++;
+			}
+			break;
+		case GMTCOUNT_LMSSCLW:	/* Compute weighted modes */
+			kk = 0;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+				if (n_in_circle[kk]) {
+					zmode = gmt_mode_weighted (GMT, zw_pair[kk], n_in_circle[kk]);
+					for (k = 0; k < n_in_circle[kk]; k++) zw_pair[kk][k].value = (gmt_grdfloat)fabs (zw_pair[kk][k].value - zmode);
+					Grid->data[ij] = (gmt_grdfloat)(MAD_NORMALIZE * gmt_median_weighted (GMT, zw_pair[kk], n_in_circle[kk]));
+					gmt_M_free (GMT, zw_pair[kk]);
+					n++;
+				}
+				kk++;
+			}
+			break;
 		default:	/* Count the flags */
 			for (kk = 0; kk < Grid->header->nm; kk++)
-				if (flag[ij]) n++;
+				if (flag[kk]) n++;
 			break;
 	}
 
