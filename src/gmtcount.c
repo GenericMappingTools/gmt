@@ -107,9 +107,9 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCOUNT_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-Ca|b|d|i|l|L|m|n|o|p|q<val>|r|s|u|U %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<empty>] [%s] [-W] [%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -Ca|b|d|i|l|L|m|n|o|p|q[<val>]|r|s|u|U -G<outgrid> %s\n", name, GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s -S%s [-E<empty>] [%s] [-W]\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -117,20 +117,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Name of output grid.\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify the statistic of data inside the circle we should report per node.  Choose from.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a: The mean (average) value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   b: The median absolute deviation (MAD) of values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d: The standard deviation of values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a: The mean (average)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   b: The median absolute deviation (MAD)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d: The standard deviation\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i: The 25-75%% interquartile range\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l: The minimum (low) value\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   l: The minimum (low)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   L: The minimum of all positive values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m: The median value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n: The number of the values [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   o: The LMS scale of values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p: The mode (maximum likelihood) value\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m: The median\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n: The number of values [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   o: The LMS scale\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p: The mode (maximum likelihood)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   q: The selected quantile value; append quantile [50%%]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r: The full data range (max-min)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s: The sum of the value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   u: The maximum (upper) value\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s: The sum\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   u: The maximum (upper)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   U: The maximum of all negative values\n");
 	GMT_Option (API, "R");
 	gmt_dist_syntax (API->GMT, 'S', "Compute statistics using points inside this search radius.");

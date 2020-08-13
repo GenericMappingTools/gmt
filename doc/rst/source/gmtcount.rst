@@ -51,14 +51,14 @@ Required Arguments
 
 **-C**\ **a**\|\ **b**\|\ **d**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **u**\|\ **U**\|\ **r**\|\ **s**
     Choose the statistic that will be computed per node based on the points that
-    are within *radius* distance of the node.  Select one of **a** for mean (average)
-    value, **b** for median absolute deviation (MAD), **d** for standard deviation, **i** for 25-75% interquartile range,
-    **l** for minimum (low) value, **L** for minimum of positive values,
-    **m** for median value, **n** the number of values, **o** for LMS scale,
-    **p** for mode (maximum likelihood) value, **q** for selected quantile
+    are within *radius* distance of the node.  Select one of **a** for mean (average),
+    **b** for median absolute deviation (MAD), **d** for standard deviation, **i** for 25-75% interquartile range,
+    **l** for minimum (low), **L** for minimum of positive values,
+    **m** for median, **n** the number of values, **o** for LMS scale,
+    **p** for mode (maximum likelihood), **q** for selected quantile
     (append desired quantile in 0-100% range [50]), **r** for full (max-min) range,
-    **u** for maximum (upper) value, **U** for maximum of negative values,
-    or **s** for the sum of the values.
+    **u** for maximum (upper), **U** for maximum of negative values,
+    or **s** for the sum.
 
 .. _-G:
 
