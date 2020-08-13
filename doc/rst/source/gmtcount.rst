@@ -14,12 +14,12 @@ Synopsis
 
 **gmt gmtcount** [ *table* ] |-G|\ *out_grdfile*
 |SYN_OPT-I|
-|-C|\ **a**\|\ **b**\|\ **d**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **u**\|\ **U**\|\ **r**\|\ **s**
+|-C|\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
 |SYN_OPT-R|
 |-S|\ *search_radius*
 [ |-E|\ *empty* ]
 [ |SYN_OPT-V| ]
-[ |-W| ]
+[ |-W|\ [**+s**] ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -39,26 +39,29 @@ Description
 -----------
 
 **gmtcount** reads arbitrarily located (x,y[,z][,w]) points
-(2-4 columns) from standard input [or *table*] and determines
-which nodes in the specified grid layout are within the given
-radius.  The point is then considered in the calculation of the
-specified statistic per node.
+(2-4 columns) from standard input [or *table*] and for each
+node in the specified grid layout determines which points are
+within the given radius.  These point are then used in the
+calculation of the specified statistic. The results may be
+presented as is or may be normalized by the circle area to
+perhaps give density estimates.
 
 Required Arguments
 ------------------
 
 .. _-C:
 
-**-C**\ **a**\|\ **b**\|\ **d**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **u**\|\ **U**\|\ **r**\|\ **s**
+**-C**\ **a**\|\ **d**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
     Choose the statistic that will be computed per node based on the points that
     are within *radius* distance of the node.  Select one of **a** for mean (average),
-    **b** for median absolute deviation (MAD), **d** for standard deviation, **i** for 25-75% interquartile range,
-    **l** for minimum (low), **L** for minimum of positive values,
-    **m** for median, **n** the number of values, **o** for LMS scale,
+    **d** for median absolute deviation (MAD), **g** for full (max-min) range,
+    **i** for 25-75% interquartile range, **l** for minimum (low),
+    **L** for minimum of positive values only, **m** for median,
+    **n** the number of values, **o** for LMS scale,
     **p** for mode (maximum likelihood), **q** for selected quantile
-    (append desired quantile in 0-100% range [50]), **r** for full (max-min) range,
-    **u** for maximum (upper), **U** for maximum of negative values,
-    or **s** for the sum.
+    (append desired quantile in 0-100% range [50]), **r** for the r.m.s.,
+    **s** for standard deviation, **u** for maximum (upper),
+    **U** for maximum of negative values only, or **z** for the sum.
 
 .. _-G:
 
@@ -86,7 +89,7 @@ Optional Arguments
 *table*
     A 2-4 column ASCII file(s) [or binary, see
     **-bi**] holding (x,y[,z][,w]) data values. You must use **-W**
-    to indicate you have weights.  Only **-Cn** will accept 2 columns only.
+    to indicate that you have weights.  Only **-Cn** will accept 2 columns only.
     If no file is specified, **gmtcount** will read from standard input.
 
 .. _-E:
@@ -101,11 +104,12 @@ Optional Arguments
 
 .. _-W:
 
-**-W**
-   Input data have an extra column containing observation point weights.
+**-W**\ [**+s**]
+   Input data have an extra column containing observation point weight.
    If weights are given then weighted statistical quantities will be computed
    while the count will be the sum of the weights instead of number of points.
-
+   If your weights are actually uncertainties (one sigma) then append **+s**
+   and we compute weight = 1/sigma.
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
 .. include:: explain_-bi.rst_
@@ -152,27 +156,13 @@ Examples
 
 .. include:: explain_example.rst_
 
-To grid the data in the remote file @ship_15.txt at 5x5 arc minutes using
-a search radius of 15 arch minutes, and plot the resulting grid using
-default projection and colors, try::
+To examine the population inside a circle of 1000km radius for all nodes in a 5x5 arc degree grid,
+using the remote file @capitals.gmt, and plot the resulting grid using default projection and colors, try::
 
     gmt begin map
-      gmt gmtcount @ship_15.txt -R245/255/20/30 -I5m -Ggrid.nc -S15m
-      gmt grdimage grid.nc -B
+      gmt gmtcount @capitals.gmt -a2=population -Rg -I5 -Cz -Gpop.nc -S1000k
+      gmt grdimage pop.nc -B
     gmt end show
-
-To create a gridded data set from the file seaMARCII_bathy.lon_lat_z
-using a 0.5 min grid, a 5 km search radius, using an octant search with
-100% sector coverage, and set empty nodes to -9999::
-
-    gmt gmtcount seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m -E-9999 -Gbathymetry.nc -S5k -N8+m8
-
-To make a global grid file from the data in geoid.xyz using a 1 degree
-grid, a 200 km search radius, spherical distances, using an quadrant
-search, and set nodes to NaN only when fewer than two quadrants contain
-at least one value::
-
-    gmt gmtcount geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4
 
 See Also
 --------
