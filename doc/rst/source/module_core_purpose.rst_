@@ -30,6 +30,8 @@
 
 .. |gmtconvert_purpose| replace:: Convert, paste, or extract columns from data tables
 
+.. |gmtcount_purpose| replace:: Grid table data by geospatial counting
+
 .. |gmtdefaults_purpose| replace:: List current GMT default settings
 
 .. |gmtget_purpose| replace:: Get individual GMT default settings or download data sets
