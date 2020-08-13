@@ -47,6 +47,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    gmt2kml
    gmtconnect
    gmtconvert
+   gmtcount
    gmtdefaults
    grdgdal
    gmtget
@@ -209,6 +210,7 @@ Core Modules
     - :doc:`gmt2kml`
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
+    - :doc:`gmtcount`
     - :doc:`gmtdefaults`
     - :doc:`grdgdal`
     - :doc:`gmtget`
@@ -523,6 +525,8 @@ Convert or extract subsets of data
 | :doc:`gmtconnect`     | |gmtconnect_purpose|  |
 +-----------------------+-----------------------+
 | :doc:`gmtconvert`     | |gmtconvert_purpose|  |
++-----------------------+-----------------------+
+| :doc:`gmtcount`       | |gmtcount_purpose|    |
 +-----------------------+-----------------------+
 | :doc:`gmtselect`      | |gmtselect_purpose|   |
 +-----------------------+-----------------------+
