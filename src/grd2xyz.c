@@ -86,7 +86,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ci to write grid index instead of (x,y).\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Select -Wa to compute weights equal to the node areas\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Select -Wa to compute weights equal to the node areas.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set exact specification of resulting 1-column output z-table.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Then, append L or R to indicate starting point in row.\n");
@@ -154,12 +154,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				break;
 			case 'S':	/* Suppress/no-suppress NaNs on output */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -S is deprecated; use -s instead.\n");
-					gmt_M_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
-					GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
-					GMT->current.io.io_nan_ncols = GMT_IO_NAN_SKIP;		/* Default is that single z column */
-					GMT->current.setting.io_nan_mode = 1;	/* Plain -S */
-					if (opt->arg[0] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP;	/* Old -Sr */
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -S is deprecated; use -s common option instead.\n");
+					if (gmt_parse_s_option (GMT, opt->arg))
+						n_errors++;
 					GMT->common.s.active = true;
 				}
 				else
@@ -489,7 +486,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {
-		if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_KEEP)
+		if (GMT->current.setting.io_nan_mode & GMT_IO_NAN_KEEP)
 			GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " finite values suppressed\n", n_suppressed);
 		else
 			GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64" NaN values suppressed\n", n_suppressed);

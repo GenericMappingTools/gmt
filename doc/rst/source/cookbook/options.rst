@@ -386,7 +386,7 @@ major and minor ticks and the grid lines, by not specifying the *stride*
 value. For example, **-Bafg** will select all three spacings
 automatically for both axes. In case of longitude–latitude plots, this
 will keep the spacing the same on both axes. You can also use
-**-Bafg/afg** to auto-select them separately. Also note that given the
+**-Bxafg -Byafg** to auto-select them separately. Also note that given the
 myriad ways of specifying time-axis annotations, the automatic selections
 may have to be overridden with manual settings to active exactly what you need.
 
