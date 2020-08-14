@@ -5312,33 +5312,39 @@ bool gmt_is_a_blank_line (char *line) {
 
 /*! . */
 bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols) {
-	/* Consult the -s[<cols>][a|r] setting and the cols values to determine if this record should be output */
+	/* Consult the -s[<cols>][+a][+r] setting and the <cols> values to determine if this record should be output */
 	uint64_t c, n_nan;
 
 	if (n_cols > GMT_MAX_COLUMNS) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Number of output data columns (%d) exceeds limit (GMT_MAX_COLUMNS = %d)\n", n_cols, GMT_MAX_COLUMNS);
 		return (true);	/* Skip record since we cannot access that many columns */
 	}
+	/* Increment record numbers before output */
 	GMT->current.io.data_record_number_in_set[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_tbl[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_seg[GMT_OUT]++;
-	if (GMT->common.q.mode == GMT_RANGE_ROW_OUT) {
+	if (GMT->common.q.mode == GMT_RANGE_ROW_OUT) {	/* Limit output based on data-record range(s) */
 		if (gmtio_outside_out_row_range (GMT, *(GMT->common.q.rec))) return (true);		/* Not in a valid row range for output */
 	}
-	else if (GMT->common.q.mode == GMT_RANGE_DATA_OUT) {
+	else if (GMT->common.q.mode == GMT_RANGE_DATA_OUT) {	/* Limit output based on data value range(s) */
 		if (gmtio_outside_out_data_range (GMT, GMT->common.q.col, cols)) return (true);	/* Not in a valid data range for output */
 	}
-	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);			/* Normal case; output the record */
-	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_ONE) {	/* -sa: Skip records if any NaNs are found */
-		for (c = 0; c < n_cols; c++) if (gmt_M_is_dnan (cols[c])) return (true);	/* Found a NaN so we skip */
-		return (false);	/* No NaNs, output record */
+	if (!GMT->common.s.active) return (false);	/* Normal case; No -s set, just output the record */
+	n_nan = 0;	/* None so far */
+	if (GMT->current.setting.io_nan_mode & GMT_IO_NAN_ANY) {	/* -s[<cols>]+a[+r]: Determine if one or more NaNs are found in given columns */
+		for (c = 0; n_nan == 0 && c < GMT->current.io.io_nan_ncols; c++) {	/* Check each of the specified columns set via -s<cols> [2] */
+			if (GMT->current.io.io_nan_col[c] >= n_cols) continue;	/* Input record does not have this column */
+			if (gmt_M_is_dnan (cols[GMT->current.io.io_nan_col[c]])) n_nan = GMT->current.io.io_nan_ncols;	/* Finding one is enough to flag the entire record */
+		}
 	}
-	for (c = n_nan = 0; c < GMT->current.io.io_nan_ncols; c++) {			/* Check each of the specified columns set via -s */
-		if (GMT->current.io.io_nan_col[c] >= n_cols) continue;			/* Input record does not have this column */
-		if (gmt_M_is_dnan (cols[GMT->current.io.io_nan_col[c]])) n_nan++;		/* Count the nan columns found */
+	else {	/* No +a, so must check if all selected columns equal NaNs */
+		for (c = 0; c < GMT->current.io.io_nan_ncols; c++) {	/* Check each of the specified columns set via -s<cols> [2] */
+			if (GMT->current.io.io_nan_col[c] >= n_cols) continue;	/* Input record does not have this column */
+			if (gmt_M_is_dnan (cols[GMT->current.io.io_nan_col[c]])) n_nan++;	/* Count the NaN-columns found */
+		}
 	}
-	if (n_nan < GMT->current.io.io_nan_ncols  && GMT->current.setting.io_nan_mode == GMT_IO_NAN_KEEP) return (true);	/* Skip records if -sr and not enough NaNs found */
-	if (n_nan == GMT->current.io.io_nan_ncols && GMT->current.setting.io_nan_mode == GMT_IO_NAN_SKIP) return (true);	/* Skip records if -s and NaNs in specified columns */
+	if (GMT->current.setting.io_nan_mode & GMT_IO_NAN_KEEP && n_nan < GMT->current.io.io_nan_ncols)  return (true);	/* Skip record if -s+r and not enough NaNs found */
+	if (GMT->current.setting.io_nan_mode & GMT_IO_NAN_SKIP && n_nan == GMT->current.io.io_nan_ncols) return (true);	/* Skip record if -s and NaNs-test is satisfied */
 	return (false);	/* No match, output record */
 }
 
