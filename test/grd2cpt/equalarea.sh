@@ -12,7 +12,7 @@ gmt begin equalarea ps
 	gmt grdimage tmp.grd -JM?
 	gmt colorbar -DJTC -Baf
 	gmt subplot set 1
-	gmt grd2cpt tmp.grd -E11+c
+	gmt grd2cpt tmp.grd -E11+c+fcdf.txt
 	gmt grdimage tmp.grd -JM?
 	gmt colorbar -DJTC -Baf
 	gmt subplot end
