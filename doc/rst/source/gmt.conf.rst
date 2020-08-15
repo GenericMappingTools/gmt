@@ -623,7 +623,7 @@ MAP Parameters
     **MAP_DEGREE_SYMBOL**
         Determines what symbol is used to plot the degree symbol on
         geographic map annotations. Choose between ring, degree, colon, or
-        none [ring].
+        none [degree].
 
     **MAP_FRAME_AXES**
         Sets which axes to draw and annotate. Combine any uppercase **W**,
