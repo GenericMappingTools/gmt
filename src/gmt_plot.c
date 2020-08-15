@@ -5420,6 +5420,7 @@ GMT_LOCAL void gmtplot_check_primary_secondary (struct GMT_CTRL *GMT) {
 
 	type = gmt_M_is_geographic (GMT, GMT_IN);
 	for (no = 0; no <= GMT_Z; no++) {
+		if (no < GMT_Z && !(GMT->current.map.frame.side[no] && GMT->current.map.frame.side[no+2])) continue;	/* That axis will not be annotated */
 		A = &GMT->current.map.frame.axis[no];
 		if (A->type == GMT_TIME) continue;	/* We assume those are set correctly */
 		for (k = 0; k < 3; k++) {	/* For each axis */
