@@ -259,11 +259,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCOUNT_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Option -C: Must specify a method for the processing");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && gmt_M_is_geographic (GMT, GMT_IN), "Option -T: Hexagonal tiling is a Cartesian operation\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->S.active, "Option -T: No search radius -S can be set for hexagonal tiling\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Option -S: Unrecognized unit\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Option -S: Unable to decode radius\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Option -S: Radius is negative\n");
+	if (Ctrl->T.active) {
+		n_errors += gmt_M_check_condition (GMT, gmt_M_is_geographic (GMT, GMT_IN), "Option -T: Hexagonal tiling is a Cartesian operation\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active, "Option -T: No search radius -S can be set for hexagonal tiling\n");
+		n_errors += gmt_M_check_condition (GMT, !doubleAlmostEqual (GMT->common.R.inc[GMT_X], GMT->common.R.inc[GMT_Y]), "Option -T: Give a single argument reflecting desired y-increment\n");
+	}
+	else {
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Option -S is a required argument when -T is not used\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Option -S: Unrecognized unit\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Option -S: Unable to decode radius\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Option -S: Radius is negative\n");
+	}
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
 	if (Ctrl->W.active) {	/* Update the mode if median or mode */
 		if (Ctrl->C.mode == GMTCOUNT_MEDIAN) Ctrl->C.mode = GMTCOUNT_MEDIANW;

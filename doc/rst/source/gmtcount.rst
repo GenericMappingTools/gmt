@@ -46,7 +46,8 @@ node in the specified grid layout determines which points are
 within the given radius.  These point are then used in the
 calculation of the specified statistic. The results may be
 presented as is or may be normalized by the circle area to
-perhaps give density estimates.
+perhaps give density estimates.  Alternatively, select
+hexagonal tiling instead of a rectangular grid layout.
 
 Required Arguments
 ------------------
@@ -79,12 +80,6 @@ Required Arguments
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-.. _-S:
-
-**-S**\ *search_radius*
-    Sets the *search_radius* that determines which data points are
-    considered close to a node. Append the distance unit (see `Units`_).
-
 Optional Arguments
 ------------------
 
@@ -104,12 +99,19 @@ Optional Arguments
 **-N**
     Normalize the resulting grid values by the area represented by the search *radius* [no normalization].
 
+.. _-S:
+
+**-S**\ *search_radius*
+    Sets the *search_radius* that determines which data points are
+    considered close to a node. Append the distance unit (see `Units`_).
+    Not compatible with **-T**.
+
 .. _-T:
 
 **-T**
     Instead of creating a grid, use hexagonal binning and write a table with the centers of the hexagons
-    and the compute statistics to standard output (or to the file named in **-G**).  The **-I** setting
-    is expected to be given the *y* increment only and we compute the *x*-increment given the geometry.
+    and the computed statistics to standard output (or to the file named in **-G**).  The **-I** setting
+    is expected to set the *y* increment only and we compute the *x*-increment given the geometry.
     Because the horizontal spacing between hexagon centers in *x* and *y* have a ratio of :math:`\sqrt{3}`,
     we will automatically adjust *xmax* in **-R** to fit a whole number of hexagons. **Note**: Requires
     Cartesian data.
