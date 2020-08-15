@@ -47,7 +47,7 @@ gmt begin ex22
 	echo V 0 1p >> neis.legend
 	echo S 0.25c c 0.25c red   0.25p 0.5c Shallow depth (0-100 km) >> neis.legend
 	echo S 0.25c c 0.25c green 0.25p 0.5c Intermediate depth (100-300 km) >> neis.legend
-	echo S 0.25c c 0.25c blue  0.25p 0.5c Very deep (> 300 km) >> neis.legend
+	echo S 0.25c c 0.25c blue  0.25p 0.5c Very deep (^> 300 km) >> neis.legend
 	echo D 0 1p >> neis.legend
 	echo V 0 1p >> neis.legend
 	echo N 7 >> neis.legend
