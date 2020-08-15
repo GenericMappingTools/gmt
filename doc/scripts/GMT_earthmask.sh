@@ -4,7 +4,7 @@
 
 gmt begin GMT_earthmask ps
 	gmt makecpt -Clightblue,burlywood,blue,red,white -T-0.5/4.5/1 -N
-	gmt grdimage @earth_mask_05m_p.grd -JQ0/15c -Baf -BWsNe
+	gmt grdimage @earth_mask_05m -JQ0/15c -Baf -BWsNe
 	gmt legend -DJBC+w15c+o0/0.5c -F+p1p <<- EOF
 	N 5
 	S - s 0.5c lightblue 0.25p - Ocean [0]
