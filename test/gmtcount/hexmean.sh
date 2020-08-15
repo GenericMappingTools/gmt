@@ -2,8 +2,8 @@
 # Test hexagon tile binning
 #
 ps=hexmean.ps
-gmt count hex_data.txt -R0/5/0/3 -I1 -T -Ca > ave.txt
-gmt count hex_data.txt -R0/5/0/3 -I1 -T -Cs > std.txt
+gmt count hex_data.txt -R0/5/0/3 -I1 -Th -Ca > ave.txt
+gmt count hex_data.txt -R0/5/0/3 -I1 -Th -Cs > std.txt
 gmt makecpt -Cjet -E ave.txt > ave.cpt
 gmt makecpt -Chot -E std.txt > std.cpt
 R=$(gmt info ave.txt -Ie)

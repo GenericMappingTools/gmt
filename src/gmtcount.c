@@ -63,6 +63,9 @@ enum grdcount_types {
 	GMTCOUNT_RMSW
 };
 
+#define GMTCOUNT_HEXAGONAL 1
+#define GMTCOUNT_RECTANGULAR 2
+
 struct GMTCOUNT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct GMTCOUNT_C {	/* -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z */
@@ -89,8 +92,9 @@ struct GMTCOUNT_CTRL {	/* All control options for this program (except common ar
 		double area;
 		char unit;
 	} S;
-	struct GMTCOUNT_T {	/* -T */
+	struct GMTCOUNT_T {	/* -Th|r */
 		bool active;
+		unsigned int mode;
 	} T;
 	struct GMTCOUNT_W {	/* -W[+s] */
 		bool active;
@@ -119,7 +123,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s -S%s [-E<empty>] [-N] [-T] [%s] [-W[+s]]\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s -S%s [-E<empty>] [-N] [-T[h|r]] [%s] [-W[+s]]\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -150,8 +154,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize the output by the area of the circle [no normalization].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Use hexagonal binning instead and write table for plotting.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Name the output file via -G or we write to standard output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Use area-covering tiling to set up non-overlapping bins. Choose the binning scheme:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   h for hexagonal binning, write non-equidistant table to standard output (or file named in -G).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r for rectangular binning, writes equidistant grid (named via -G) [Default].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Input <table> has observation weights in 4th column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We then compute weighted version of selection in -C.\n");
@@ -243,8 +248,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCOUNT_CTRL *Ctrl, struct GMT_O
 				Ctrl->S.active = true;
 				Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
-			case 'T':	/* Select hexagonal tiling */
+			case 'T':	/* Select hexagonal or rectangular tiling */
 				Ctrl->T.active = true;
+				switch (opt->arg[0]) {
+					case 'h': Ctrl->T.mode = GMTCOUNT_HEXAGONAL; break;
+					case 'r': Ctrl->T.mode = GMTCOUNT_RECTANGULAR; break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -T: Method %s not recognized!\n", opt->arg);
+						n_errors++;
+						break;
+				}
 				break;
 			case 'W':	/* Use weights */
 				Ctrl->W.active = true;
@@ -260,9 +273,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCOUNT_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Option -C: Must specify a method for the processing");
 	if (Ctrl->T.active) {
-		n_errors += gmt_M_check_condition (GMT, gmt_M_is_geographic (GMT, GMT_IN), "Option -T: Hexagonal tiling is a Cartesian operation\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active, "Option -T: No search radius -S can be set for hexagonal tiling\n");
-		n_errors += gmt_M_check_condition (GMT, !doubleAlmostEqual (GMT->common.R.inc[GMT_X], GMT->common.R.inc[GMT_Y]), "Option -T: Give a single argument reflecting desired y-increment\n");
+		if (Ctrl->T.mode == GMTCOUNT_HEXAGONAL) {
+			n_errors += gmt_M_check_condition (GMT, gmt_M_is_geographic (GMT, GMT_IN), "Option -Th: Hexagonal tiling is a Cartesian operation\n");
+			n_errors += gmt_M_check_condition (GMT, !doubleAlmostEqual (GMT->common.R.inc[GMT_X], GMT->common.R.inc[GMT_Y]), "Option -Th: Give a single argument reflecting desired y-increment\n");
+			n_errors += gmt_M_check_condition (GMT, Ctrl->E.active, "Option -Th: The -E option is not allowed for hexagonal tiling\n");
+		}
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active, "Option -T: No search radius -S can be set for tiling\n");
 	}
 	else {
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Option -S is a required argument when -T is not used\n");
@@ -379,31 +395,38 @@ GMT_LOCAL void gmtcount_assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G, c
 }
 
 bool outside_hexagon (struct GMT_CTRL *GMT, double x0, double y0, double x, double y, double distance, double radius_inner) {
-	/* Return true if we are outside the hexagon */
-	int sector, k;
+	/* Return true if we are outside the hexagon.  Print statements left for future debugging */
+	int sector;	/* 0-5 */
+	bool answer;
+	double d0, d, q;
+#ifdef DEBUG
 	static char *status[2] = {"inside", "outside"};
 	char message[GMT_LEN256] = {""}, string[GMT_LEN128] = {""};
-	double d0, d, q;
 	sprintf (message, "x0 = %5.2lf y0 = %5.2lf to x = %5.2lf y = %5.2lf d = %6.3lf: ", x0, y0, x, y, distance);
+#endif
 	if (distance <= radius_inner) {
+#ifdef DEBUG
 		sprintf (string, "inside inner radius %5.3lg\n", radius_inner);
 		strcat (message, string);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, message);
+#endif
 		return false;	/* We are clearly inside hexagon */
 	}
-	d0 = 90.0 - gmt_az_backaz (GMT, x0, y0, x, y, false);	/* Get angle from center to point */
-	if (d0 < 0.0) d0 += 360.0;
+	d0 = 90.0 - gmt_az_backaz (GMT, x0, y0, x, y, false);	/* Get angle with horizontal from center to point */
+	if (d0 < 0.0) d0 += 360.0;	/* Ensure positive sectors */
 	sector = floor (d0 / 60.0);	/* Determine which of the 6 sectors */
-	d = d0 - sector * 60.0 - 30.0;	/* Find deviation (+/- 30) from the normal to this side */
+	d = d0 - sector * 60.0 - 30.0;	/* Find deviation (up to +/- 30) from the normal to this hexagonal side */
 	q = radius_inner / cosd (d);	/* Get distance from center to cord along the line */
-	k = (distance > q);	/* We are either inside the cord or outside */
-	sprintf (string, "%s cord a0 = %5.1lf sector = %d a = %4.1lf q = %6.3lf\n", status[k], d0, sector, d, q);
+	answer = (distance > q);	/* We are either inside the cord or outside */
+#ifdef DEBUG
+	sprintf (string, "%s cord a0 = %5.1lf sector = %d a = %4.1lf q = %6.3lf\n", status[answer], d0, sector, d, q);
 	strcat (message, string);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, message);
-	return (k);	/* We are either inside the cord or outside */
+#endif
+	return (answer);
 }
 
-#define skip_column(row,col) ((row)%2 != (col)%2)	/* Skip the unused pseudo-nodes */
+#define skip_column(row,col) ((row)%2 != (col)%2)	/* Skip the unused pseudo-nodes where row,col are even,odd or odd,even */
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
@@ -411,7 +434,7 @@ bool outside_hexagon (struct GMT_CTRL *GMT, double x0, double y0, double x, doub
 EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 	char *visited = NULL;
 
-	bool wrap_180, replicate_x, replicate_y;
+	bool wrap_180, replicate_x, replicate_y, hex_tiling, rect_tiling, geographic;
 
 	int col_0, row_0, row, col, row_end, col_stop, col_start, ii, jj, error = 0;
 	unsigned int n_cols, k, rowu, colu, d_row, y_wrap_kk, y_wrap_ij, max_d_col, x_wrap;
@@ -422,7 +445,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 
 	gmt_grdfloat *w = NULL, *s = NULL, **zp = NULL;
 
-	double dx, dy, distance = 0.0, x_left, x_right, y_top, y_bottom, weight = 1.0;
+	double dx, dy, dx2, dy2, distance = 0.0, x_left, x_right, y_top, y_bottom, weight = 1.0;
 	double half_y_width, y_width, half_x_width, x_width, median, zmode, mad;
 	double *x0 = NULL, *y0 = NULL, *in = NULL;
 
@@ -453,27 +476,37 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmtcount main code ----------------------------*/
 
 	if (Ctrl->T.active) {	/* Adjust for pseudo-hexagonal grid nodes */
-		double xmax;
-		unsigned int nx;
-		Ctrl->S.radius_inner = 0.5 * GMT->common.R.inc[GMT_Y];	/* Radius of the hexagon */
-		Ctrl->S.radius = Ctrl->S.radius_inner / cosd (30.0);	/* Inner radius of the hexagon */
-		/* First ensure w/e is compatible with s/n and dy */
-		GMT->common.R.inc[GMT_X] = 3.0 * Ctrl->S.radius;
-		nx = gmt_M_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.inc[GMT_X], 0.0);
-		xmax = GMT->common.R.wesn[XLO] + (nx - 1) * GMT->common.R.inc[GMT_X];
-		if (!doubleAlmostEqualZero (GMT->common.R.wesn[XHI], xmax)) {
-			GMT_Report (API, GMT_MSG_WARNING, "Hexagonal geometry required xmax to be adjusted from %g to %g\n", GMT->common.R.wesn[XHI], xmax);
-			GMT->common.R.wesn[XHI] = xmax;
+		if (Ctrl->T.mode == GMTCOUNT_HEXAGONAL) {
+			double xmax;
+			unsigned int nx;
+			Ctrl->S.radius_inner = 0.5 * GMT->common.R.inc[GMT_Y];	/* Radius of the hexagon */
+			Ctrl->S.radius = Ctrl->S.radius_inner / cosd (30.0);	/* Inner radius of the hexagon */
+			/* First ensure w/e is compatible with s/n and dy */
+			GMT->common.R.inc[GMT_X] = 3.0 * Ctrl->S.radius;
+			nx = gmt_M_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.inc[GMT_X], 0.0);
+			xmax = GMT->common.R.wesn[XLO] + (nx - 1) * GMT->common.R.inc[GMT_X];
+			if (!doubleAlmostEqualZero (GMT->common.R.wesn[XHI], xmax)) {
+				GMT_Report (API, GMT_MSG_WARNING, "Hexagonal geometry required xmax to be adjusted from %g to %g\n", GMT->common.R.wesn[XHI], xmax);
+				GMT->common.R.wesn[XHI] = xmax;
+			}
+			/* Divide grid spacings by two for the pseudo-grid parameters. We do this to ensure every hexagonal center
+			 * is represented by a grid node, knowing that about half of the grid nodes do not correspond to a hex center.
+			 * This is done to simplify coding (always fill a grid) but we check for NaNs on output for unused nodes. */
+			GMT->common.R.inc[GMT_Y] /= 2.0;
+			GMT->common.R.inc[GMT_X] /= 2.0;
+			col_inc = 2;	/* We do every other column in the pseudo grid, and must alternate odd/even columns */
+			Ctrl->S.area = 1.5 * Ctrl->S.radius * Ctrl->S.radius * sind (60.0);	/* Area of a hexagon */
 		}
-		/* Divide grid spacings by two for the pseudo-grid parameters */
-		GMT->common.R.inc[GMT_Y] /= 2.0;
-		GMT->common.R.inc[GMT_X] /= 2.0;
-		col_inc = 2;	/* We do every other column in the pseudo grid, and must alternate odd/even columns */
-		Ctrl->S.area = 1.5 * Ctrl->S.radius * Ctrl->S.radius * sind (60.0);	/* Area of hexagon */
+		else {	/* Rectangular binning */
+			Ctrl->S.area = GMT->common.R.inc[GMT_X] * GMT->common.R.inc[GMT_Y];	/* Area of a rectangle */
+			dx2 = 0.5 * Grid->header->inc[GMT_X];	/* Max |distance| of Cartesian point coordinates from a bin center */
+			dy2 = 0.5 * Grid->header->inc[GMT_Y];
+			Ctrl->S.radius = dy2;	/* Fake radius to get d_col set properly */
+		}
 	}
-	else {	/* Evaluating on a regular grid */
+	else {	/* Evaluating on a regular grid for -S */
 		if (gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
-		Return (GMT_NOT_A_VALID_TYPE);
+			Return (GMT_NOT_A_VALID_TYPE);
 
 		Ctrl->S.area = M_PI * Ctrl->S.radius * Ctrl->S.radius;
 	}
@@ -482,11 +515,11 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	HH = gmt_get_H_hidden (Grid->header);
 
-	gmt_M_grd_loop (GMT, Grid, row, col, ij)	/* Initialize grid to NaN */
+	gmt_M_grd_loop (GMT, Grid, row, col, ij)	/* Initialize grid to NaN which is our flag for an unused grid node */
 		Grid->data[ij] = GMT->session.d_NaN;
 
-	/* Initialize the input since we are doing record-by-record reading/writing */
-	n_cols = (Ctrl->C.mode == GMTCOUNT_COUNT) ? 2 : 3;
+	/* Initialize the input since we are doing record-by-record reading */
+	n_cols = (Ctrl->C.mode == GMTCOUNT_COUNT) ? 2 : 3;	/* Expected number of input columns */
 	if ((error = GMT_Set_Columns (API, GMT_IN, n_cols + Ctrl->W.active, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
@@ -520,6 +553,9 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 	x_wrap = Grid->header->n_columns - 1;	/* Add to node index to go to right column */
 	y_wrap_kk = (Grid->header->n_rows - 1) * Grid->header->n_columns;	/* Add to node index to go to bottom row if no padding */
 	y_wrap_ij = (Grid->header->n_rows - 1) * Grid->header->mx;	/* Add to node index to go to bottom row if padded */
+	hex_tiling = (Ctrl->T.mode == GMTCOUNT_HEXAGONAL);
+	rect_tiling = (Ctrl->T.mode == GMTCOUNT_RECTANGULAR);
+	geographic = gmt_M_is_geographic (GMT, GMT_IN);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
@@ -527,7 +563,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	/* Add helper arrays depending on the mode */
+	/* Allocate helper arrays depending on the mode */
 	switch (Ctrl->C.mode) {
 		case GMTCOUNT_MEAN: case GMTCOUNT_MEANW: case GMTCOUNT_RMSW:	/* Will need to keep track of n or sum of weights */
 			w = gmt_M_memory (GMT, NULL, Grid->header->nm, gmt_grdfloat);	/* Sum of weights */
@@ -577,13 +613,14 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 			continue;	/* Go back and read the next record */
 		}
 		if (In->data == NULL) {
+			gmt_M_free (GMT, d_col);
 			gmt_quit_bad_record (API, In);
 			Return (API->error);
 		}
 
 		in = In->data;	/* Only need to process numerical part here */
 
-		if (gmt_M_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */
+		if (n_cols == 3 && gmt_M_is_dnan (in[GMT_Z])) continue;				/* Skip if z = NaN */
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], y_bottom, y_top)) continue;	/* Outside y-range */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], x_left, x_right)) continue;	/* Outside x-range (or longitude) */
 
@@ -605,15 +642,19 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 			if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
 			rowu = jj;
 
+			if (rect_tiling) {	/* No distance calculation, just dy bounds check */
+				dy = in[GMT_Y] - y0[rowu];
+				if (fabs (dy) > dy2) continue;	/* Outside regardless of x-coordinate */
+			}
 			col_stop  = col_0 + d_col[jj];
 			col_start = col_0 - d_col[jj];
-			if (Ctrl->T.active) {	/* Make sure we start and stop on valid pseudo-columns */
+			if (hex_tiling) {	/* Make sure we start and stop on valid pseudo-columns so both col,row are even or odd */
 				if (skip_column (row,col_start)) col_start++;
 				if (skip_column (row,col_stop))  col_stop--;
 			}
 			for (col = col_start; col <= col_stop; col += col_inc) {
 
-				if (Ctrl->T.active && skip_column (row,col)) continue;	/* Skip this node in the pseudo grid */
+				if (hex_tiling && skip_column (row,col)) continue;	/* Skip this node in the pseudo grid */
 
 				ii = col;
 				if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */
@@ -621,14 +662,25 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
 				colu = ii;
 
-				distance = gmt_distance (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y]);
+				if (rect_tiling) {	/* No distance calculation, just dx bounds check */
+					if (geographic) {
+						gmt_M_set_delta_lon (in[GMT_X], x0[colu], dx);
+					}
+					else
+						dx = in[GMT_X] - x0[colu];
+					if (fabs (dx) > dx2) continue;
+				}
+				else {
+					distance = gmt_distance (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y]);
 
-				if (distance > Ctrl->S.radius) continue;	/* Data constraint is too far from this node */
-				if (Ctrl->T.active && outside_hexagon (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y], distance, Ctrl->S.radius_inner)) continue;
+					if (distance > Ctrl->S.radius) continue;	/* Data constraint is too far from this node */
+					if (hex_tiling && outside_hexagon (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y], distance, Ctrl->S.radius_inner)) continue;
+					dy = in[GMT_Y] - y0[rowu];	/* since not set yet */
+				}
 
 				ij = gmt_M_ijp (Grid->header, rowu, colu);	/* Padding used for output grid */
 				kk = gmt_M_ij0 (Grid->header, rowu, colu);	/* No padding used for helper arrays */
-				dx = in[GMT_X] - x0[colu];	dy = in[GMT_Y] - y0[rowu];
+				dx = in[GMT_X] - x0[colu];	/* Redo since the wrapping will be checked again */
 
 				/* Check for wrap-around in x or y.  This should only occur if the
 				   search radius is larger than 1/2 the grid width/height so that
@@ -781,7 +833,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 					Grid->data[ij] = sqrt ((n_in_circle[kk] * s[kk] - Grid->data[ij] * Grid->data[ij]) / (n_in_circle[kk] * (n_in_circle[kk] - 1)));
 					n++;
 				}
-				else if (n_in_circle[kk])
+				else if (n_in_circle[kk])	/* Finding only one value means std is undefined */
 					Grid->data[ij] = Ctrl->E.value;
 				kk++;
 			}
@@ -792,7 +844,7 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 					Grid->data[ij] = sqrt ((w[kk] * s[kk] - Grid->data[ij] * Grid->data[ij]) / ((n_in_circle[kk] - 1) * w[kk] * w[kk] /n_in_circle[kk]));
 					n++;
 				}
-				else if (n_in_circle[kk])
+				else if (n_in_circle[kk])	/* Finding only one value means std is undefined */
 					Grid->data[ij] = Ctrl->E.value;
 				kk++;
 			}
@@ -887,13 +939,16 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, n_alloc);
 	gmt_M_free (GMT, d_col);
 
-	if (Ctrl->T.active) {	/* Write the hex results */
+	if (hex_tiling) {	/* Write the hex results */
 		uint64_t dim[4] = {1, 1, n, 3}, k = 0;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate a dataset\n");
 			Return (error);
+		}
+		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D)) {
+			Return (API->error);
 		}
 		S = D->table[0]->segment[0];
 		gmt_M_row_loop (GMT, Grid, row) {

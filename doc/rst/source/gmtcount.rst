@@ -19,7 +19,7 @@ Synopsis
 |-S|\ *search_radius*
 [ |-E|\ *empty* ]
 [ |-N| ]
-[ |-T| ]
+[ |-T|\ [**h**\|\ **r**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+s**] ]
 [ |SYN_OPT-bi| ]
@@ -108,13 +108,15 @@ Optional Arguments
 
 .. _-T:
 
-**-T**
-    Instead of creating a grid, use hexagonal binning and write a table with the centers of the hexagons
-    and the computed statistics to standard output (or to the file named in **-G**).  The **-I** setting
-    is expected to set the *y* increment only and we compute the *x*-increment given the geometry.
-    Because the horizontal spacing between hexagon centers in *x* and *y* have a ratio of :math:`\sqrt{3}`,
-    we will automatically adjust *xmax* in **-R** to fit a whole number of hexagons. **Note**: Requires
-    Cartesian data.
+**-T**\ [**h**\|\ **r**]
+    Instead of circular, possibly overlapping areas, select non-overlapping tiling.  Choose between
+    **r**\ ectangularor **h**\ exagonal binning. For **-Tr**, set bin sizes via **-I** and we write
+    the computed statistics to the grid file named in **-G**).  For **-Th**, we write a table with
+    the centers of the hexagons and the computed statistics to standard output (or to the file named
+    in **-G**).  Here, the **-I** setting is expected to set the *y* increment only and we compute
+    the *x*-increment given the geometry. Because the horizontal spacing between hexagon centers in
+    *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in **-R** to
+    fit a whole number of hexagons. **Note**: Hexagonal tiling requires Cartesian data.
 
 .. _-V:
 
@@ -186,7 +188,7 @@ using the remote file @capitals.gmt, and plot the resulting grid using default p
 To do hexagonal binning of the data in the file mydata.txt and counting the number of points inside
 each hexagon, try::
 
-    gmt count mydata.txt -R0/5/0/3 -I1 -T -Cn > counts.txt
+    gmt count mydata.txt -R0/5/0/3 -I1 -Th -Cn > counts.txt
 
 See Also
 --------
