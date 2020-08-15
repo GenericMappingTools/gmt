@@ -19,6 +19,7 @@ Synopsis
 |-S|\ *search_radius*
 [ |-E|\ *empty* ]
 [ |-N| ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+s**] ]
 [ |SYN_OPT-bi| ]
@@ -103,6 +104,16 @@ Optional Arguments
 **-N**
     Normalize the resulting grid values by the area represented by the search *radius* [no normalization].
 
+.. _-T:
+
+**-T**
+    Instead of creating a grid, use hexagonal binning and write a table with the centers of the hexagons
+    and the compute statistics to standard output (or to the file named in **-G**).  The **-I** setting
+    is expected to be given the *y* increment only and we compute the *x*-increment given the geometry.
+    Because the horizontal spacing between hexagon centers in *x* and *y* have a ratio of :math:`\sqrt{3}`,
+    we will automatically adjust *xmax* in **-R** to fit a whole number of hexagons. **Note**: Requires
+    Cartesian data.
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -169,6 +180,11 @@ using the remote file @capitals.gmt, and plot the resulting grid using default p
       gmt gmtcount @capitals.gmt -a2=population -Rg -I5 -Cz -Gpop.nc -S1000k
       gmt grdimage pop.nc -B
     gmt end show
+
+To do hexagonal binning of the data in the file mydata.txt and counting the number of points inside
+each hexagon, try::
+
+    gmt count mydata.txt -R0/5/0/3 -I1 -T -Cn > counts.txt
 
 See Also
 --------
