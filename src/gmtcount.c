@@ -110,6 +110,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.mode = GMTCOUNT_COUNT;
 	C->C.quant = 50.0;	/* Median*/
+	C->E.value = GMT->session.d_NaN;
 	return (C);
 }
 
