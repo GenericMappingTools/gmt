@@ -221,6 +221,12 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT SUPPORT_EXEC_IN_BINARY_DIR)
 	set (SUPPORT_EXEC_IN_BINARY_DIR ON)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT SUPPORT_EXEC_IN_BINARY_DIR)
 
+# Some tests are known to fail, and can be excluded from the test by adding
+# the comment "# GMT_KNOWN_FAILURE".
+if (NOT DEFINED GMT_ENABLE_KNOWN2FAIL)
+	set (GMT_ENABLE_KNOWN2FAIL ON)
+endif (NOT DEFINED GMT_ENABLE_KNOWN2FAIL)
+
 # Make GNU, Intel, Clang and AppleClang compilers default to C99
 if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel|Clang)" AND NOT CMAKE_C_FLAGS MATCHES "-std=")
 	set (CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
