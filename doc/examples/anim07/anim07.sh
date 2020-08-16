@@ -11,7 +11,7 @@
 # The finished movie is available in our YouTube channel as well (without fading):
 # https://youtu.be/KfBwQlyjz5w
 # The movie takes about ~20 minutes to render on a 24-core MacPro 2013.
-# A higher resolution movie requires the higher-resolution data sets.
+# The higher resolution movie on YouTube used the 02m data set resolution.
 
 # 1. Create background plot and data files needed in the loop
 cat << EOF > pre.sh
