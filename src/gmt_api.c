@@ -11495,9 +11495,9 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (!strncmp (module, "gmtget", 6U) && (opt = GMT_Find_Option (API, 'D', *head))) {
 		deactivate_output = true;	/* Download, turn off output */
 	}
-	/* 1r. Check if gmtcount is doing hexabonal binning */
-	else if (!strncmp (module, "gmtcount", 8U)) {
-		type = ((opt = GMT_Find_Option (API, 'T', *head))) ? 'D' : 'G';	/* Giving -T means we change default output from grid to dataset */
+	/* 1r. Check if gmtbinstats is doing hexagonal tiling */
+	else if (!strncmp (module, "gmtbinstats", 11U)) {
+		type = ((opt = GMT_Find_Option (API, 'T', *head)) && opt->arg[0] != 'r') ? 'D' : 'G';	/* Giving -T[h] means we change default output from grid to dataset */
 	}
 
 	/* 2a. Get the option key array for this module */

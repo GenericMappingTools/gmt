@@ -1,18 +1,18 @@
-.. index:: ! gmtcount
+.. index:: ! gmtbinstats
 .. include:: module_core_purpose.rst_
 
-********
-gmtcount
-********
+***********
+gmtbinstats
+***********
 
-|gmtcount_purpose|
+|gmtbinstats_purpose|
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt gmtcount** [ *table* ] |-G|\ *out_grdfile*
+**gmt gmtbinstats** [ *table* ] |-G|\ *out_grdfile*
 |SYN_OPT-I|
 |-C|\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
 |SYN_OPT-R|
@@ -40,7 +40,7 @@ Synopsis
 Description
 -----------
 
-**gmtcount** reads arbitrarily located (x,y[,z][,w]) points
+**gmtbinstats** reads arbitrarily located (x,y[,z][,w]) points
 (2-4 columns) from standard input [or *table*] and for each
 node in the specified grid layout determines which points are
 within the given radius.  These point are then used in the
@@ -87,7 +87,7 @@ Optional Arguments
     A 2-4 column ASCII file(s) [or binary, see
     **-bi**] holding (x,y[,z][,w]) data values. You must use **-W**
     to indicate that you have weights.  Only **-Cn** will accept 2 columns only.
-    If no file is specified, **gmtcount** will read from standard input.
+    If no file is specified, **gmtbinstats** will read from standard input.
 
 .. _-E:
 
@@ -181,7 +181,7 @@ To examine the population inside a circle of 1000km radius for all nodes in a 5x
 using the remote file @capitals.gmt, and plot the resulting grid using default projection and colors, try::
 
     gmt begin map
-      gmt gmtcount @capitals.gmt -a2=population -Rg -I5 -Cz -Gpop.nc -S1000k
+      gmt gmtbinstats @capitals.gmt -a2=population -Rg -I5 -Cz -Gpop.nc -S1000k
       gmt grdimage pop.nc -B
     gmt end show
 
@@ -196,8 +196,6 @@ See Also
 :doc:`blockmean`,
 :doc:`blockmedian`,
 :doc:`blockmode`, :doc:`gmt`,
-:doc:`greenspline`,
 :doc:`nearneighbor`,
-:doc:`sphtriangulate`,
-:doc:`surface`,
-:doc:`triangulate`
+:doc:`triangulate`,
+:doc:`xyz2grd`

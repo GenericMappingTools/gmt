@@ -47,7 +47,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    gmt2kml
    gmtconnect
    gmtconvert
-   gmtcount
+   gmtbinstats
    gmtdefaults
    grdgdal
    gmtget
@@ -208,9 +208,9 @@ Core Modules
     - :doc:`filter1d`
     - :doc:`fitcircle`
     - :doc:`gmt2kml`
+    - :doc:`gmtbinstats`
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
-    - :doc:`gmtcount`
     - :doc:`gmtdefaults`
     - :doc:`grdgdal`
     - :doc:`gmtget`
@@ -522,11 +522,11 @@ Convert or extract subsets of data
 ----------------------------------
 
 +-----------------------+-----------------------+
+| :doc:`gmtbinstats`    | |gmtbinstats_purpose| |
++-----------------------+-----------------------+
 | :doc:`gmtconnect`     | |gmtconnect_purpose|  |
 +-----------------------+-----------------------+
 | :doc:`gmtconvert`     | |gmtconvert_purpose|  |
-+-----------------------+-----------------------+
-| :doc:`gmtcount`       | |gmtcount_purpose|    |
 +-----------------------+-----------------------+
 | :doc:`gmtselect`      | |gmtselect_purpose|   |
 +-----------------------+-----------------------+

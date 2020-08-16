@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test hexagon tile binning on counting values
+# Test hexagon tile binning on counting values in gmtbinstats
 #
 # Hardwire some values to draw the bottom plot to avoid lots of shell math
 # THe commented stuff shows how the script and data were created
@@ -38,7 +38,7 @@ gmt begin hexbinning ps
 	gmt grd2xyz r.grd b.grd | gmt plot -Sc0.2c -Gblack -N
 	gmt basemap -Bxafg0.866025403785 -Byafg0.5
 	gmt plot hex_data.txt -Ss0.2c -Gyellow -Wfaint
-	gmt count hex_data.txt -R0/5/0/3 -I1 -Th -Cn > bin.txt
+	gmt binstats hex_data.txt -R0/5/0/3 -I1 -Th -Cn > bin.txt
 	gmt makecpt -Cjet -T1/10/1 -A50
 	gmt plot -Baf -Y12c bin.txt -C -Sh3.46410161514c -W1p -B+t"Hexagonal Binning"
 	gmt text bin.txt -F+f14p,Helvetica-Bold -Gwhite -W0.25p -N
