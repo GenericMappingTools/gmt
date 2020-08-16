@@ -499,8 +499,8 @@ EXTERN_MSC int GMT_gmtcount (void *V_API, int mode, void *args) {
 		}
 		else {	/* Rectangular binning */
 			Ctrl->S.area = GMT->common.R.inc[GMT_X] * GMT->common.R.inc[GMT_Y];	/* Area of a rectangle */
-			dx2 = 0.5 * Grid->header->inc[GMT_X];	/* Max |distance| of Cartesian point coordinates from a bin center */
-			dy2 = 0.5 * Grid->header->inc[GMT_Y];
+			dx2 = 0.5 * GMT->common.R.inc[GMT_X];	/* Max |distance| of Cartesian point coordinates from a bin center */
+			dy2 = 0.5 * GMT->common.R.inc[GMT_Y];
 			Ctrl->S.radius = dy2;	/* Fake radius to get d_col set properly */
 		}
 	}
