@@ -4193,7 +4193,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		k++;
 	}
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = implicit = true;	/* If no axis were named we default to both x and y */
-
+	GMT->current.map.frame.axis[GMT_Z].angle = 0.0;	/* Default is plotting normal to axis for Z, i.e., will look horizontal on the plot */
+	GMT->current.map.frame.axis[GMT_Z].use_angle = true;
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
 	gmt_handle5_plussign (GMT, text, "afLlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +f, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +f, +p, +S|s or +u */
@@ -6545,7 +6546,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>.\n");
 			gmt_message (GMT, "\t     Cartesian x-axis takes optional +a<angle> for slanted or +an for orthogonal annotations [+ap].\n");
 			gmt_message (GMT, "\t     Cartesian y-axis takes optional +ap for parallel annotations [+an].\n");
-			gmt_message (GMT, "\t     Cartesian z-axis takes optional +an for orthogonal annotations [+ap].\n");
+			gmt_message (GMT, "\t     Cartesian z-axis takes optional +an for parallel annotations [+an].\n");
 			gmt_message (GMT, "\t     Geographic axes take optional +f for \"fancy\" annotations with W|E|S|N suffices.\n");
 			gmt_message (GMT, "\t     To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes.\n");
 			gmt_message (GMT, "\t     For another axis label on the opposite axis, use +s|S as well.\n");

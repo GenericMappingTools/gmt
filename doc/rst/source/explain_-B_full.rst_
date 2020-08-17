@@ -62,9 +62,8 @@
     will plot slanted annotations; *angle* is measured with respect to the horizontal
     and must be in the -90 <= *angle* <= 90 range only.  Also, **+an** is a shorthand
     for normal (i.e., **+a**\ 90) and **+ap** for parallel (i.e., **+a**\ 0) annotations
-    [Default].  For the y-axis, arbitrary angles are not allowed but **+an** and **+ap**
-    specify annotations normal [Default] and parallel to the axis, respectively.  The
-    same restriction applies to the z-axis [Default is parallel]. Note that
+    [Default].  For the y- and z-axes, arbitrary angles are not allowed but **+an** and **+ap**
+    specify annotations normal [Default] and parallel to the axis, respectively. Note that
     these defaults can be changed via :term:`MAP_ANNOT_ORTHO`. Geographic axes can
     take **+f** which will give fancy annotations with W|E|S|N suffices encoding the sign.
 
