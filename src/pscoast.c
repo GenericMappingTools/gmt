@@ -149,8 +149,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->A.info.high = GSHHS_MAX_LEVEL;			/* Include all GSHHS levels */
 	C->D.set = 'l';						/* Low-resolution coastline data */
-	if (GMT->current.map.frame.paint)	/* Default Ocean color = Frame background color */
-		C->S.fill = GMT->current.map.frame.fill;
+	if (GMT->current.map.frame.paint[GMT_Z])	/* Default Ocean color = Frame background color */
+		C->S.fill = GMT->current.map.frame.fill[GMT_Z];
 	else
 		gmt_init_fill (GMT, &C->S.fill, 1.0, 1.0, 1.0);		/* Default Ocean color = white */
 	C->C.fill[LAKE] = C->C.fill[RIVER] = C->S.fill;		/* Default Lake/Riverlake color = Ocean color */
@@ -932,8 +932,8 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		clobber_background = true;
 		recursive = false;
 		if (!Ctrl->S.active) {	/* Since we are painting wet areas we must now reset them to white */
-			if (GMT->current.map.frame.paint)	/* Let ocean color match cancas fill color */
-				fill[0] = GMT->current.map.frame.fill;
+			if (GMT->current.map.frame.paint[GMT_Z])	/* Let ocean color match cancas fill color */
+				fill[0] = GMT->current.map.frame.fill[GMT_Z];
 			else
 				gmt_init_fill (GMT, &fill[0], 1.0, 1.0, 1.0);	/* Default Ocean color = white */
 		}

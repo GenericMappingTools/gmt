@@ -503,13 +503,13 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
 	struct GMT_PLOT_AXIS axis[3];	/* One each for x, y, and z */
 	char header[GMT_LEN256];	/* Plot title */
-	struct GMT_FILL fill;		/* Fill for the basemap inside, if paint == true */
+	struct GMT_FILL fill[3];		/* Fill for the basemap inside for planes x,y,z, if paint == true */
 	bool plotted_header;		/* true if header has been plotted */
 	bool init;			/* true if -B was used at all */
 	bool set;			/* true if -B was used to set any increments */
 	bool draw;			/* true if -B<int> was used, even -B0, as sign to draw axes */
 	bool drawz;			/* true if -B<int> was used, even -Bz0, as sign to draw z axes */
-	bool paint;			/* true if -B +g<fill> was used */
+	bool paint[3];			/* true if -B +x[<fill>], +y[<fill>], +g<fill> was used */
 	bool draw_box;			/* true if a 3-D Z-box is desired */
 	bool no_frame;			/* true if we just want gridlines but no frame, i.e +n was used */
 	bool check_side;		/* true if lon and lat annotations should be on x and y axis only */

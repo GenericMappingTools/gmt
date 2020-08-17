@@ -1556,6 +1556,21 @@ GMT_LOCAL void gmtplot_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	if (nc) gmt_M_free (GMT, xings);
 }
 
+GMT_LOCAL void gmtplot_z_walls (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int plane) {
+	double xx[4], yy[4];
+
+	if (!GMT->current.map.frame.paint[plane]) return;
+	fprintf (stderr, "Plot plane %d\n", plane);
+	xx[0] = xx[3] = (plane == GMT_Y) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[YLO];
+	xx[1] = xx[2] = (plane == GMT_Y) ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI];
+	PSL_command (GMT->PSL, "V\n");
+	gmt_setfill (GMT, &GMT->current.map.frame.fill[plane], 1);
+	yy[0] = yy[1] = gmt_z_to_zz (GMT, zmin);
+	yy[2] = yy[3] = gmt_z_to_zz (GMT, zmax);
+	PSL_plotpolygon (PSL, xx, yy, 4);
+	PSL_command (GMT->PSL, "U\n");
+}
+
 GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int plane) {
 	unsigned int k, i, nz, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
 	double dz, zz, min, max, *z = NULL;
@@ -1563,7 +1578,6 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 
 	min = (plane == GMT_Y) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[YLO];
 	max = (plane == GMT_Y) ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI];
-
 	for (k = 0; k < 2; k++) {
 		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
 
@@ -2628,9 +2642,11 @@ GMT_LOCAL bool gmtplot_is_fancy_boundary (struct GMT_CTRL *GMT) {
 GMT_LOCAL void gmtplot_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int quadrant, double *nesw, bool back) {
 	int plane = (quadrant + 1) % 2;
 	gmt_plane_perspective (GMT, plane, nesw[quadrant % 4]);
-	PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
-	if (back)
+	if (back) {
+		gmtplot_z_walls (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], 1-plane);
 		gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane);
+	}
+	PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
 }
 
 GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, unsigned int justify, char *U_label) {
@@ -7578,10 +7594,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	PSL = GMT->PSL;	/* Shorthand */
 
-	if (GMT->current.map.frame.paint) {	/* Must squirrel this away for now since we may call psbasemap during the movie-indicators below */
+	if (GMT->current.map.frame.paint[GMT_Z]) {	/* Must squirrel this away for now since we may call psbasemap during the movie-indicators below */
 		do_paint = true;
-		gmt_M_memcpy (&fill, &GMT->current.map.frame.fill, 1U, struct GMT_FILL);
-		GMT->current.map.frame.paint = false;	/* Turn off for now */
+		gmt_M_memcpy (&fill, &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
+		GMT->current.map.frame.paint[GMT_Z] = false;	/* Turn off for now */
 	}
 
 	PSL->internal.verbose = GMT->current.setting.verbose;		/* Inherit verbosity level from GMT */
@@ -8024,21 +8040,21 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_command (PSL, "}!\n");
 	}
 	if (do_paint) {	/* Reset any canvas coloring here */
-		GMT->current.map.frame.paint = true;
-		gmt_M_memcpy (&GMT->current.map.frame.fill, &fill, 1U, struct GMT_FILL);
+		GMT->current.map.frame.paint[GMT_Z] = true;
+		gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Z], &fill, 1U, struct GMT_FILL);
 	}
 
 	return (PSL);
 }
 
 void gmt_plotcanvas (struct GMT_CTRL *GMT) {
-	if (GMT->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
+	if (GMT->current.map.frame.paint[GMT_Z]) {	/* Paint the inside of the map (xy plane) with specified fill */
 		double *x = NULL, *y = NULL;
 		uint64_t np;
 		bool donut;
-		PSL_comment (GMT->PSL, "Fill the canvas %s\n", gmtlib_putfill (GMT, &GMT->current.map.frame.fill));
+		PSL_comment (GMT->PSL, "Fill the canvas %s\n", gmtlib_putfill (GMT, &GMT->current.map.frame.fill[GMT_Z]));
 		np = gmt_map_clip_path (GMT, &x, &y, &donut);
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
+		gmt_setfill (GMT, &GMT->current.map.frame.fill[GMT_Z], 0);
 		PSL_plotpolygon (GMT->PSL, x, y, (int)((1 + donut) * np));
 		gmt_M_free (GMT, x);
 		gmt_M_free (GMT, y);

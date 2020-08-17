@@ -3749,7 +3749,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 	gmtinit_handle_dosfile (GMT, in, 0);	/* Temporarily replace DOS files like X:/ with X;/ to avoid colon trouble */
 #endif
 
-	for (i = (int)strlen(in) - 1, ignore = false; !GMT->current.map.frame.paint && !error && i >= 0; i--) {	/** Look for +g<fill */
+	for (i = (int)strlen(in) - 1, ignore = false; !GMT->current.map.frame.paint[GMT_Z] && !error && i >= 0; i--) {	/** Look for +g<fill */
 		if (in[i] == ':') ignore = !ignore;
 		if (ignore) continue;	/* Not look inside text items */
 		if (in[i] == '+' && in[i+1] == 'o') {	/* Found +o<plon>/<plat> */
@@ -3775,9 +3775,9 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 #ifdef _WIN32
 			gmtinit_handle_dosfile (GMT, out1, 1);	/* Undo any DOS files like X;/ back to X:/ */
 #endif
-			if (gmt_getfill (GMT, out1, &GMT->current.map.frame.fill)) error++;
+			if (gmt_getfill (GMT, out1, &GMT->current.map.frame.fill[GMT_Z])) error++;
 			if (!error) {
-				GMT->current.map.frame.paint = true;
+				GMT->current.map.frame.paint[GMT_Z] = true;
 				g = i;
 				in[g] = '\0';	/* Chop off +g for now */
 			}
@@ -4003,6 +4003,7 @@ bool gmtlib_B_is_frame (struct GMT_CTRL *GMT, char *in) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
+	bool blank[2] = {false, false};
 	unsigned int pos = 0, k, error = 0;
 	char p[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
 	double pole[2];
@@ -4018,8 +4019,9 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	/* OK, here we are pretty sure this is a frame -B statement */
 
 	strncpy (text, in, GMT_BUFSIZ-1);
-	gmt_handle5_plussign (GMT, text, "bginot", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
+	gmt_handle5_plussign (GMT, text, "bginotxy", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
 	GMT->current.map.frame.header[0] = '\0';
+	gmt_M_memset (GMT->current.map.frame.paint, 3U, bool);
 
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
 		while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
@@ -4028,11 +4030,11 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					GMT->current.map.frame.draw_box = true;
 					break;
 				case 'g':	/* Paint the basemap interior */
-					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill)) {
+					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_Z])) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +g<fill> argument %s\n", &p[1]);
 						error++;
 					}
-					GMT->current.map.frame.paint = true;
+					GMT->current.map.frame.paint[GMT_Z] = true;
 					break;
 				case 'i':	/* Turn on internal annotation for radiual or longitudinal axes when there is no other place to annotate */
 					GMT->current.map.frame.internal_annot = 1;	/* Longitude/angle */
@@ -4082,6 +4084,22 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 						gmtlib_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 					}
 					break;
+				case 'x':	/* Paint the basemap xz-plane for 3-D plots */
+					if (p[1] && gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_X])) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +x<fill> argument %s\n", &p[1]);
+						error++;
+					}
+					blank[GMT_X] = !p[1];
+					GMT->current.map.frame.paint[GMT_X] = true;
+					break;
+				case 'y':	/* Paint the basemap yz-plane for 3-D plots */
+					if (p[1] && gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_Y])) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +y<fill> argument %s\n", &p[1]);
+						error++;
+					}
+					blank[GMT_X] = !p[1];
+					GMT->current.map.frame.paint[GMT_Y] = true;
+					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Unrecognized frame modifier %s\n", p);
 					error++;
@@ -4091,6 +4109,12 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 		*mod = '\0';	/* Separate the modifiers from the frame selectors */
 	}
 
+	if (GMT->current.map.frame.paint[GMT_Z]) {
+		if (GMT->current.map.frame.paint[GMT_X] && blank[GMT_X])	/* Just +x means same as z-fill */
+			gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_X], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
+		if (GMT->current.map.frame.paint[GMT_Y] && blank[GMT_Y])	/* Just +x means same as z-fill */
+			gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Y], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
+	}
 	/* Now parse the frame choices, if any */
 	error += gmtinit_decode5_wesnz (GMT, text, true);
 
@@ -4105,6 +4129,7 @@ void gmt_init_B (struct GMT_CTRL *GMT) {
 		for (k = 0; k < 6; k++) GMT->current.map.frame.axis[no].item[k].parent = no;
 		if (GMT->current.proj.xyz_projection[no] == GMT_TIME) GMT->current.map.frame.axis[no].type = GMT_TIME;
 	}
+	gmt_M_memset (GMT->current.map.frame.paint, 3U, bool);
 	GMT->common.B.string[0][0] = GMT->common.B.string[1][0] = '\0';
 	GMT->current.map.frame.init = true;
 	GMT->current.map.frame.draw = false;
@@ -12635,11 +12660,11 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_begin_module_sub (struct GMTAPI_CTRL *API, co
 	GMT->common.p.active = GMT->common.s.active = GMT->common.t.active = GMT->common.colon.active = false;
 	gmt_M_memset (GMT->common.b.ncol, 2, int);
 
-	/* Initialize bg fill to white although we don't use it until GMT->current.map.frame.paint = true;
+	/* Initialize bg fill to white although we don't use it until GMT->current.map.frame.paint[GMT_Z] = true;
 	   But needed when using images with an transparency layer.
 	*/
 
-	GMT->current.map.frame.fill.rgb[0] = GMT->current.map.frame.fill.rgb[1] = GMT->current.map.frame.fill.rgb[2] = 1.0;
+	GMT->current.map.frame.fill[GMT_Z].rgb[0] = GMT->current.map.frame.fill[GMT_Z].rgb[1] = GMT->current.map.frame.fill[GMT_Z].rgb[2] = 1.0;
 
 	*Ccopy = Csave; /* Pass back out for safe-keeping by the module until gmt_end_module is called */
 
@@ -14303,8 +14328,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmtinit_free_user_media (GMT);	/* Free user-specified media formats */
 
 	/* Reset frame fill painting */
-	Ccopy->current.map.frame.paint = GMT->current.map.frame.paint;
-	gmt_M_memcpy (Ccopy->current.map.frame.fill.rgb, GMT->current.map.frame.fill.rgb, 3, double);
+	Ccopy->current.map.frame.paint[GMT_Z] = GMT->current.map.frame.paint[GMT_Z];
+	gmt_M_memcpy (Ccopy->current.map.frame.fill[GMT_Z].rgb, GMT->current.map.frame.fill[GMT_Z].rgb, 3, double);
 
 	/* GMT_IO */
 
