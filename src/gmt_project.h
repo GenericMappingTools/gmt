@@ -140,6 +140,12 @@ enum GMT_enum_zdown {GMT_ZDOWN_R = 0,	/* Default: Annotating radius */
 	GMT_ZDOWN_ZP	= 2,	/* Annotating planetary radius - r */
 	GMT_ZDOWN_ZR	= 3};	/* Annotating given radius - r */
 
+/* For drawing the 3-D backboard */
+enum GMT_enum_3Dmode {
+	GMT_3D_NONE = 0,	/* Default: No 3-D backboard */
+	GMT_3D_WALL	= 1,	/* Draw the backboard */
+	GMT_3D_BOX	= 2};	/* Draw the backboard and the 3-D wire box */
+
 /* gmt_M_is_periodic means the east and west meridians of a global map are separated */
 #define gmt_M_is_periodic(C) (gmt_M_is_cylindrical (C) || gmt_M_is_misc (C))
 
@@ -510,12 +516,12 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool draw;			/* true if -B<int> was used, even -B0, as sign to draw axes */
 	bool drawz;			/* true if -B<int> was used, even -Bz0, as sign to draw z axes */
 	bool paint;			/* true if -B +g<fill> was used */
-	bool draw_box;			/* true if a 3-D Z-box is desired */
 	bool no_frame;			/* true if we just want gridlines but no frame, i.e +n was used */
 	bool check_side;		/* true if lon and lat annotations should be on x and y axis only */
 	bool primary;			/* true if current axis is primary, false if secondary */
 	bool set_both;			/* true if -B argument applies to both x and y axes */
 	bool obl_grid;			/* true if +o was given to draw oblique gridlines */
+	unsigned int draw_box;			/* 0 = no 3-D frame. 1 if 3-D Z-box is desired [default], 2 if no -Z box lines covering up the plot */
 	unsigned int internal_annot;	/* 1 (longitude) or 2 (latitude or radius) if +i was given to draw internal annotations */
 	unsigned int set_frame[2];	/* 1 if a -B<WESNframe> setting was given */
 	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
