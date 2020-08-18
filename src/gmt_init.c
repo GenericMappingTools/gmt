@@ -2473,14 +2473,14 @@ GMT_LOCAL bool gmtinit_true_false_or_error (char *value, bool *answer) {
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[], bool *draw_box, int part) {
+GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[], unsigned int *draw_box, int part) {
 	/* Scans the WESNZwesnz+ flags at the end of string "in" and sets the side/drawbox parameters
 	 * and returns the length of the remaining string.  Assumes any +g<fill> has been removed from in.
 	 */
 
 	int i, k, orig_i;
-	unsigned int side_orig[5];
-	bool go = true, orig_draw_box = *draw_box;
+	unsigned int side_orig[5], orig_draw_box = *draw_box;
+	bool go = true;
 
 	GMT->current.map.frame.set_frame[part]++;
 	if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
@@ -2496,7 +2496,7 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 	for (k = 0; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
 		if (k == 0 && part == 0) {	/* Wipe out default values when the first flag is found */
 			for (k = 0; k < 5; k++) side[k] = 0;
-			*draw_box = false;
+			*draw_box = GMT_3D_NONE;
 		}
 		if (in[i] == 's') {	/* Since s can mean both "draw south axis" and "seconds", check further */
 			if (side[S_SIDE]) go = false;	/* If S was set already then s probably means seconds */
@@ -2518,7 +2518,7 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 			case 'n': side[N_SIDE] |= GMT_AXIS_BARB; break;
 			case 'z': side[Z_SIDE] |= GMT_AXIS_BARB; break;
 			/* Draw 3-D box */
-			case '+': *draw_box = true; break;
+			case '+': *draw_box = GMT_3D_BOX; break;
 		}
 	}
 	if (i >= 0 && in[i] == ',') i--;	/* Special case for -BCcustomfile,WESNwesn to avoid the filename being parsed for WESN */
@@ -3948,12 +3948,14 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 			/* Draw 3-D box */
 			case '+':
 				if (in[k+1] == 'b')	/* Got +b appended to MAP_FRAME_AXES, possibly */
-					GMT->current.map.frame.draw_box = true;
+					GMT->current.map.frame.draw_box = GMT_3D_BOX;
+				else if (in[k+1] == 'B')	/* Got +b appended to MAP_FRAME_AXES, possibly */
+					GMT->current.map.frame.draw_box = GMT_3D_WALL;
 				else if (in[k+1] == 'n')	/* Got +n appended to MAP_FRAME_AXES, means no frame nor annotations desired */
 					GMT->current.map.frame.no_frame = true;
 				else if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Modifier + in MAP_FRAME_AXES is deprecated; use +b instead.\n");
-					GMT->current.map.frame.draw_box = true;
+					GMT->current.map.frame.draw_box = GMT_3D_BOX;
 				}
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier + in MAP_FRAME_AXES not recognized.\n");
@@ -4018,14 +4020,17 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	/* OK, here we are pretty sure this is a frame -B statement */
 
 	strncpy (text, in, GMT_BUFSIZ-1);
-	gmt_handle5_plussign (GMT, text, "bginot", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
+	gmt_handle5_plussign (GMT, text, "bBginot", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
 	GMT->current.map.frame.header[0] = '\0';
 
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
 		while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 			switch (p[0]) {
 				case 'b':	/* Activate 3-D box and x-z, y-z gridlines (if selected) */
-					GMT->current.map.frame.draw_box = true;
+					GMT->current.map.frame.draw_box = GMT_3D_BOX;
+					break;
+				case 'B':	/* Activate 3-D box and x-z, y-z gridlines (if selected) */
+					GMT->current.map.frame.draw_box = GMT_3D_WALL;
 					break;
 				case 'g':	/* Paint the basemap interior */
 					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill)) {
@@ -5835,7 +5840,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "WESNZ");
 	for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
-	GMT->current.map.frame.draw_box = false;
+	GMT->current.map.frame.draw_box = GMT_3D_NONE;
 	error += gmtinit_decode5_wesnz (GMT, "WESNZ", false);
 	/* MAP_DEFAULT_PEN */
 	error += gmt_getpen (GMT, "default,black", &GMT->current.setting.map_default_pen);
@@ -6545,8 +6550,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...), add +p<prefix>.\n");
 			gmt_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>.\n");
 			gmt_message (GMT, "\t     Cartesian x-axis takes optional +a<angle> for slanted or +an for orthogonal annotations [+ap].\n");
-			gmt_message (GMT, "\t     Cartesian y-axis takes optional +ap for parallel annotations [+an].\n");
-			gmt_message (GMT, "\t     Cartesian z-axis takes optional +an for parallel annotations [+an].\n");
+			gmt_message (GMT, "\t     Cartesian y- and z-axes take optional +ap for parallel annotations [+an].\n");
 			gmt_message (GMT, "\t     Geographic axes take optional +f for \"fancy\" annotations with W|E|S|N suffices.\n");
 			gmt_message (GMT, "\t     To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes.\n");
 			gmt_message (GMT, "\t     For another axis label on the opposite axis, use +s|S as well.\n");
@@ -9728,7 +9732,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_MAP_FRAME_AXES:
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
 			for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
-			GMT->current.map.frame.draw_box = false;
+			GMT->current.map.frame.draw_box = GMT_3D_NONE;
 			error += (bool)gmtinit_decode5_wesnz (GMT, value, false);
 			break;
 
