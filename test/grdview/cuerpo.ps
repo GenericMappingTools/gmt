@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdview
+%%Title: GMT v6.2.0_adda460_2020.08.17 [64-bit] Document from grdview
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:52:51 2018
+%%CreationDate: Mon Aug 17 18:35:26 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +658,9 @@ V 612 0 T 90 R 0.06 0.06 scale
 
 /PSL_page_xsize 13200 def
 /PSL_page_ysize 10200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -673,21 +670,21 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt grdview super2.nc -Gdomo-filtrado.nc -R-70:10:17.05/-70:10:0.10/-42:40:31.10/-42:40:19.95/550/760 -JM-70:10:13.525/-42:40:25.525/3.5i -JZ1.5i -Ba10sf10s -Bza100f100 -BWESNZ+b -Ccuerpo.cpt -Qi -p315/30/550 -K
-%@PROJ: merc -70.17140278 -70.16669444 -42.67530556 -42.67220833 -80.263 305.684 -3853884.813 -3853540.754 +proj=merc +lon_0=-70.1704236111111 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: 72 72 252 224.65
+%@PROJ: merc -70.17140278 -70.16669444 -42.67530556 -42.67220833 -80.509 306.621 -172.559 172.555 +proj=merc +lon_0=-70.1704236111111 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 252 224.649816435
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [-0.707107 0.353553 -0.707107 -0.353553 5617.37 1323.76] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [-0.707106781187 0.353553390593 -0.707106781187 -0.353553390593 5617.37195754 1323.76173828] concat
 25 W
 O1
 4 W
-PSL_GPP setmatrix [-0.707107 -0.353553 0 0.866025 2647.52 2808.69] concat
+PSL_GPP setmatrix [-0.707106781187 -0.353553390593 0 0.866025403784 2647.52347656 2808.68597877] concat
 1800 3744 0 0 Sb
-PSL_GPP setmatrix [-0.707107 0.353553 0 0.866025 5617.37 1323.76] concat
+PSL_GPP setmatrix [-0.707106781187 0.353553390593 0 0.866025403784 5617.37195754 1323.76173828] concat
 1800 4200 0 0 Sb
-PSL_GPP setmatrix [-0.707107 0.353553 -0.707107 -0.353553 5617.37 1323.76] concat
+PSL_GPP setmatrix [-0.707106781187 0.353553390593 -0.707106781187 -0.353553390593 5617.37195754 1323.76173828] concat
 8 W
 N 1747 0 M 0 -83 D S
 N 1747 3744 M 0 83 D S
@@ -2195,12 +2192,12 @@ NF*:;f;lA2H8pjj8!oa>Yq)T;W*Zq^WiEdHVJ+`l0ibD]'fB"#)sKXgD)NF!5uYI8>#\GV[cl]>ZP<AD
 U
 PSL_cliprestore
 4 W
-/PSL_GPP matrix currentmatrix def [-0.707107 -0.353553 0 0.866025 5617.37 1323.76] concat
+/PSL_GPP matrix currentmatrix def [-0.707106781187 -0.353553390593 0 0.866025403784 5617.37195754 1323.76173828] concat
 1800 -3744 3744 0 Sb
-PSL_GPP setmatrix [-0.707107 0.353553 0 0.866025 2969.85 0] concat
+PSL_GPP setmatrix [-0.707106781187 0.353553390593 0 0.866025403784 2969.84848098 0] concat
 1800 -4200 4200 0 Sb
 PSL_GPP setmatrix
-/PSL_GPP matrix currentmatrix def [0.707107 -0.353553 0 0.866025 0 573062] concat
+/PSL_GPP matrix currentmatrix def [0.707106781187 -0.353553390593 0 0.866025403784 0 573061.690738] concat
 0 -660000 T
 25 W
 N 0 1800 M 0 -1800 D S
@@ -2209,16 +2206,16 @@ N 0 1800 M 0 -1800 D S
 8 W
 N 0 429 M -83 0 D S
 N 0 1286 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
-(600) sh mx
-(700) sh mx
+/PSL_AH0 0
+(600) sw mx
+(700) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 429 PSL_A0_y MM
-V 90 R (600) bc Z U
+(600) mr Z
 1286 PSL_A0_y MM
-V 90 R (700) bc Z U
+(700) mr Z
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 660000 T
@@ -2230,13 +2227,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxyz limites-domo-xyz.dat -R-70:10:17.05/-70:10:0.10/-42:40:31.10/-42:40:19.95/550/760 -JM-70:10:13.525/-42:40:25.525/3.5i -JZ1.5i -Wthick,red,solid -p315/30/550 -L -O
-%@PROJ: merc -70.17140278 -70.16669444 -42.67530556 -42.67220833 -80.263 305.684 -3853884.813 -3853540.754 +proj=merc +lon_0=-70.1704236111111 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxyz /Users/pwessel/GMTdev/gmt-dev/test/grdview/limites-domo-xyz.dat -R-70:10:17.05/-70:10:0.10/-42:40:31.10/-42:40:19.95/550/760 -JM-70:10:13.525/-42:40:25.525/3.5i -JZ1.5i -Wthick,red,solid -p315/30/550 -L -O
+%@PROJ: merc -70.17140278 -70.16669444 -42.67530556 -42.67220833 -80.509 306.621 -172.559 172.555 +proj=merc +lon_0=-70.1704236111111 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [-0.707107 0.353553 -0.707107 -0.353553 5617.37 1323.76] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [-0.707106781187 0.353553390593 -0.707106781187 -0.353553390593 5617.37195754 1323.76173828] concat
 17 W
 1 0 0 C
 PSL_GPP setmatrix
@@ -2278,7 +2275,8 @@ FO
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
