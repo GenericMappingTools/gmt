@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.1.0_07449ba_2019.06.29 [64-bit] Document from grdview
+%%Title: GMT v6.2.0_adda460_2020.08.17 [64-bit] Document from grdview
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Jun 30 01:47:05 2019
+%%CreationDate: Mon Aug 17 18:35:12 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -657,8 +658,9 @@ V 612 0 T 90 R 0.06 0.06 scale
 
 /PSL_page_xsize 13200 def
 /PSL_page_ysize 10200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -673,9 +675,10 @@ O0
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-/PSL_GPP matrix currentmatrix def [0.5 -0.433013 0.866025 0.25 -0 3117.69] concat
+3.32550952342 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.5 -0.433012701892 0.866025403784 0.25 -0 3117.69145362] concat
 25 W
+/PSL_slant_y 0 def
 2 setlinecap
 N 0 7200 M 0 -7200 D S
 /PSL_A0_y 83 def
@@ -702,8 +705,8 @@ N 0 3600 M 83 0 D S
 N 0 4800 M 83 0 D S
 N 0 6000 M 83 0 D S
 N 0 7200 M 83 0 D S
-/PSL_AH0 0
 /MM {exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (”15) sw mx
@@ -743,8 +746,8 @@ N 3600 0 M 0 -83 D S
 N 4800 0 M 0 -83 D S
 N 6000 0 M 0 -83 D S
 N 7200 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 (”15) sh mx
 (”10) sh mx
 (”5) sh mx
@@ -7788,7 +7791,7 @@ FO
 0 -967 D
 6235 1800 D
 FO
-/PSL_GPP matrix currentmatrix def [0.866025 0.25 0 0.866025 0 2078.46] concat
+/PSL_GPP matrix currentmatrix def [0.866025403784 0.25 0 0.866025403784 0 2078.46096908] concat
 0 1200 T
 25 W
 N 0 2400 M 0 -2400 D S
@@ -7800,22 +7803,22 @@ N 0 600 M -83 0 D S
 N 0 1200 M -83 0 D S
 N 0 1800 M -83 0 D S
 N 0 2400 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
-(”0.5) sh mx
-(0.0) sh mx
-(0.5) sh mx
-(1.0) sh mx
+/PSL_AH0 0
+(”0.5) sw mx
+(0.0) sw mx
+(0.5) sw mx
+(1.0) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 600 PSL_A0_y MM
-V 90 R (”0.5) bc Z U
+(”0.5) mr Z
 1200 PSL_A0_y MM
-V 90 R (0.0) bc Z U
+(0.0) mr Z
 1800 PSL_A0_y MM
-V 90 R (0.5) bc Z U
+(0.5) mr Z
 2400 PSL_A0_y MM
-V 90 R (1.0) bc Z U
+(1.0) mr Z
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1200 T
@@ -7823,7 +7826,8 @@ PSL_GPP setmatrix
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
