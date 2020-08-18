@@ -1557,9 +1557,11 @@ GMT_LOCAL void gmtplot_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 }
 
 GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int plane) {
-	unsigned int k, i, nz, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
-	double dz, zz, min, max, *z = NULL;
+	unsigned int k, i, nz, nd, q, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	double dz, dd, zz, z0, z1, min, max, *z = NULL, *d = NULL;
 	char *plane_name[2] = {"y-z", "x-z"};
+	double (*xy_fwd) (struct GMT_CTRL *, double) = NULL;
+	xy_fwd = (plane == GMT_Y) ? &gmt_x_to_xx : &gmt_y_to_yy;
 
 	min = (plane == GMT_Y) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[YLO];
 	max = (plane == GMT_Y) ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI];
@@ -1571,19 +1573,37 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 
 		if (!GMT->current.map.frame.axis[GMT_Z].item[item[k]].active || fabs(dz) == 0.0) continue;
 
-		PSL_comment (PSL, "%s gridlines %s\n", plane_name[plane], k ? "(secondary)" : "(primary)");
+		PSL_comment (PSL, "%s gridlines %s [horizontal]\n", plane_name[plane], k ? "(secondary)" : "(primary)");
 
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[k]);
 
 		nz = gmtlib_coordinate_array (GMT, zmin, zmax, &GMT->current.map.frame.axis[GMT_Z].item[item[k]], &z, NULL);
-		for (i = 0; i < nz; i++) {	/* Here z acts as y and x|y acts as x */
+		/* Because of gmt_plane_perspective, here z acts as "y" and x|y acts as "x" - drawing horizontal z-lines on the back walls */
+		for (i = 0; i < nz; i++) {
 			/* Draw one horizontal line */
 			zz = gmt_z_to_zz (GMT, z[i]);
 			PSL_plotsegment (PSL, min, zz, max, zz);
 		}
+		/* Get the projected z-values for bottom and top of vertical gridlines */
+		z0 = gmt_z_to_zz (GMT, z[0]);
+		z1 = gmt_z_to_zz (GMT, z[nz-1]);
+		gmt_M_free (GMT, z);	/* Now we can retire this array */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) continue;	/* Geographic gridlines projected onto z-walls yet supported */
+		/* Next, we draw the vertical lines on that same wall */
+		dd = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[1-plane].item[item[k]]);
+		if (!GMT->current.map.frame.axis[1-plane].item[item[k]].active || fabs(dd) == 0.0) continue;
+
+		PSL_comment (PSL, "%s gridlines %s [vertical]\n", plane_name[plane], k ? "(secondary)" : "(primary)");
+		q = (plane == GMT_Y) ? 0 : 2;	/* Determine if it is the w/e (q = 0) or s/n (q = 2) we want */
+		nd = gmtlib_coordinate_array (GMT, GMT->common.R.wesn[q], GMT->common.R.wesn[q+1], &GMT->current.map.frame.axis[1-plane].item[item[k]], &d, NULL);
+		for (i = 0; i < nd; i++) {
+			/* Draw one vertical x- or y-lines */
+			dd = xy_fwd (GMT, d[i]);
+			PSL_plotsegment (PSL, dd, z0, dd, z1);
+		}
 
 		PSL_setdash (PSL, NULL, 0);
-		gmt_M_free (GMT, z);
+		gmt_M_free (GMT, d);
 	}
 }
 
