@@ -75,7 +75,7 @@ char *file_to_delete_if_ctrl_C;
 
 struct LOCFILE_FP {
 	char *file;	/* Pointer to file name */
-	FILE *fp;	/* Open file p[pointer */
+	FILE *fp;	/* Open file pointer */
 };
 
 GMT_LOCAL void gmtremote_delete_file_then_exit (int sig_no) {
