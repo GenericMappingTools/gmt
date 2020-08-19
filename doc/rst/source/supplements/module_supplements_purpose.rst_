@@ -30,12 +30,6 @@
 
 .. |mgd77track_purpose| replace:: Plot track-lines of MGD77 cruises
 
-.. |fzanalyzer_purpose| replace:: Analysis of fracture zones using crossing profiles
-
-.. |fzblender_purpose| replace:: Produce a smooth blended FZ trace
-
-.. |mlconverter_purpose| replace:: Convert chrons to ages using selected magnetic timescale
-
 .. |gmtflexure_purpose| replace:: Compute flexural deformation of 2-D loads, forces, and bending moments
 
 .. |gmtgravmag3d_purpose| replace:: Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe
