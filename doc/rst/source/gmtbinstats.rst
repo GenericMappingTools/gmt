@@ -110,7 +110,7 @@ Optional Arguments
 
 **-T**\ [**h**\|\ **r**]
     Instead of circular, possibly overlapping areas, select non-overlapping tiling.  Choose between
-    **r**\ ectangularor **h**\ exagonal binning. For **-Tr**, set bin sizes via **-I** and we write
+    **r**\ ectangular **h**\ exagonal binning. For **-Tr**, set bin sizes via **-I** and we write
     the computed statistics to the grid file named in **-G**).  For **-Th**, we write a table with
     the centers of the hexagons and the computed statistics to standard output (or to the file named
     in **-G**).  Here, the **-I** setting is expected to set the *y* increment only and we compute
