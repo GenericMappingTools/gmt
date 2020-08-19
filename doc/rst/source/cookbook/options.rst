@@ -287,7 +287,7 @@ tick, and gridline intervals, axes labels, and annotation units.
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
+-  **-B**\ [*axes*][**+b**\|\ **w**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
 
 Here, the optional *axes* dictates which of the axes should be drawn
 and possibly annotated.  By default, all 4 map boundaries (or plot axes)
@@ -300,9 +300,9 @@ any axis labels in addition to draw axis/tick-marks.  For 3-D plots you can
 also specify **Z** or **z**.  By default a single vertical axes will then be
 plotted at the most suitable map corner.  You can override this by appending
 any combination of corner ids **1234**, where **1** represents the lower left
-corner and the order goes counter-clockwise.  Append **+b** to draw the outline
-of the 3-D box defined by **-R**; this modifier is also needed to display
-gridlines in the x–z, y–z planes.  You may paint the
+corner and the order goes counter-clockwise.  Use **+w** to enable gridlines to be
+drawn on the x-z and y-z planes. Alternatively, append **+b** to also draw the outline
+of the 3-D cube defined by **-R**.  You may paint the
 map canvas by appending the **+g**\ *fill* modifier [Default is no fill].
 Use **+i** to annotate an internal meridian or parallel when the axis that normally
 would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
