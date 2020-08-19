@@ -47,7 +47,7 @@ within the given radius.  These point are then used in the
 calculation of the specified statistic. The results may be
 presented as is or may be normalized by the circle area to
 perhaps give density estimates.  Alternatively, select
-hexagonal tiling instead of a rectangular grid layout.
+hexagonal tiling instead or a rectangular grid layout.
 
 Required Arguments
 ------------------
