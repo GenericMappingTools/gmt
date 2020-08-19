@@ -73,6 +73,11 @@ struct sigaction cleanup_action, default_action;
 char *file_to_delete_if_ctrl_C;
 #endif
 
+struct LOCFILE_FP {
+	char *file;	/* Pointer to file name */
+	FILE *fp;	/* Open file p[pointer */
+};
+
 GMT_LOCAL void gmtremote_delete_file_then_exit (int sig_no) {
 	/* If we catch a CTRL-C during CURL download we must assume file is corrupted and remove it before exiting */
 	gmt_M_unused (sig_no);
@@ -515,6 +520,68 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 	return action;
 }
 
+int gmtremote_setup_curl (struct GMTAPI_CTRL *API, CURL *Curl, char *url, char *local_file, struct FtpFile *urlfile, unsigned int time_out) {
+	if ((Curl = curl_easy_init ()) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", url);
+		return 1;
+	}
+	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to not verify the peer\n");
+		return 1;
+	}
+	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to follow redirects\n");
+		return 1;
+	}
+	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to fail for 4xx responses\n");
+		return 1;
+	}
+ 	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
+		return 1;
+	}
+	if (time_out) {
+		if (curl_easy_setopt (Curl, CURLOPT_TIMEOUT, time_out)) {	/* Set a max timeout */
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to time out after %d seconds\n", time_out);
+			return 1;
+		}
+	}
+	urlfile->filename = local_file;	/* Set pointer to local filename */
+	/* Define our callback to get called when there's data to be written */
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, gmtremote_fwrite_callback)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
+		return 1;
+	}
+	/* Set a pointer to our struct to pass to the callback */
+	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, urlfile)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to write to %s\n", local_file);
+		return 1;
+	}
+	return GMT_NOERROR;
+}
+
+struct LOCFILE_FP *gmtremote_lock_on (struct GMTAPI_CTRL *API, char *file) {
+	struct LOCFILE_FP *P = gmt_M_memory (API->GMT, NULL, 1, struct LOCFILE_FP);
+	P->file = gmtremote_lockfile (API, file);
+	if ((P->fp = fopen (P->file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", P->file);
+		gmt_M_str_free (P->file);
+		gmt_M_free (API->GMT, P);
+		return NULL;
+	}
+	gmtlib_file_lock (API->GMT, fileno(P->fp));	/* Attempt exclusive lock */
+	return P;
+}
+
+void gmtremote_lock_off (struct GMTAPI_CTRL *API, struct LOCFILE_FP **P) {
+	gmtlib_file_unlock (API->GMT, fileno((*P)->fp));
+	fclose ((*P)->fp);
+	gmt_remove_file (API->GMT, (*P)->file);
+	gmt_M_str_free ((*P)->file);
+	gmt_M_free (API->GMT, *P);
+}
+
 /* Deal with hash values of cache/data files */
 
 #define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
@@ -523,58 +590,26 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	bool query = gmt_M_file_is_query (url), turn_off = false;
 	int curl_err = 0, error = 0;
 	long time_spent;
-	char *Lfile = NULL;
-	FILE *fp = NULL;
 	CURL *Curl = NULL;
+	struct LOCFILE_FP *LF = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
 	struct GMTAPI_CTRL *API = GMT->parent;
 	time_t begin, end;
 
-	if (!query) {	/* Only make a filename if not a query */
-		Lfile = gmtremote_lockfile (API, file);
-		if ((fp = fopen (Lfile, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", Lfile);
-			gmt_M_str_free (Lfile);
-			return 1;
-		}
-		gmtlib_file_lock (GMT, fileno(fp));	/* Attempt exclusive lock */
+	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {  /* Not allowed to use remote copying */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated\n");
+		return 1;
 	}
+	if (GMT->current.io.internet_error) return 1;   			/* Not able to use remote copying in this session */
 
-	if ((Curl = curl_easy_init ()) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", url);
-		error = 1; goto unlocking1;
-	}
-	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to not verify the peer\n");
-		error = 1; goto unlocking1;
-	}
-	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to follow redirects\n");
-		error = 1; goto unlocking1;
-	}
-	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to fail for 4xx responses\n");
-		error = 1; goto unlocking1;
-	}
- 	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
-		error = 1; goto unlocking1;
-	}
- 	if (curl_easy_setopt (Curl, CURLOPT_TIMEOUT, GMT_HASH_TIME_OUT)) {	/* Set a max timeout */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to time out after %ld seconds\n", GMT_HASH_TIME_OUT);
-		error = 1; goto unlocking1;
-	}
-	urlfile.filename = file;	/* Set pointer to local filename */
-	/* Define our callback to get called when there's data to be written */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, gmtremote_fwrite_callback)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
-		error = 1; goto unlocking1;
-	}
-	/* Set a pointer to our struct to pass to the callback */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &urlfile)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to set curl option to write to %s\n", file);
-		error = 1; goto unlocking1;
-	}
+	/* Only make a locl filename if not a query */
+	if (!query && (LF = gmtremote_lock_on (API, file)) == NULL)
+		return 1;
+
+	/* Initialize the curl session */
+	if ((error = gmtremote_setup_curl (API, Curl, url, file, &urlfile, GMT_HASH_TIME_OUT)))
+		goto unlocking1;
+
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading file %s ...\n", url);
 	gmtremote_turn_on_ctrl_C_check (file);	turn_off = true;
 	begin = time (NULL);
@@ -607,12 +642,8 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 
 unlocking1:
 
-	if (!query) {	/* Remove lock file after successful download */
-		gmtlib_file_unlock (GMT, fileno(fp));
-		fclose(fp);
-		gmt_remove_file (GMT, Lfile);
-		gmt_M_str_free (Lfile);
-	}
+	if (!query)	/* Remove lock file after successful download */
+		gmtremote_lock_off (API, &LF);
 
 	if (turn_off) gmtremote_turn_off_ctrl_C_check ();
 	return error;
@@ -1117,10 +1148,9 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	bool query = gmt_M_file_is_query (url), turn_off = false;
 	int curl_err, error = 0;
 	size_t fsize;
-	char *Lfile = NULL;
 	CURL *Curl = NULL;
-	FILE *fp = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
+	struct LOCFILE_FP *LF = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {  /* Not allowed to use remote copying */
@@ -1140,47 +1170,13 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 
 	/* Here we will try to download a file */
 
-	if (!query) {	/* Only make a filename if not a query */
-		Lfile = gmtremote_lockfile (API, (char *)name);
-		if ((fp = fopen (Lfile, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to create lock file %s\n", Lfile);
-			gmt_M_str_free (Lfile);
-			return 1;
-		}
-		gmtlib_file_lock (GMT, fileno(fp));	/* Attempt exclusive lock */
-	}
+	/* Only make a locl filename if not a query */
+	if (!query && (LF = gmtremote_lock_on (API, localfile)) == NULL)
+		return 1;
 
-  	if ((Curl = curl_easy_init ()) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failed to initiate curl\n");
-		error = 1; goto unlocking2;
-	}
-	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
-		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to not verify the peer\n");
-		error = 1; goto unlocking2;
-	}
-	if (curl_easy_setopt (Curl, CURLOPT_FOLLOWLOCATION, 1L)) {		/* Tell libcurl to follow 30x redirects */
-		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to follow redirects\n");
-		error = 1; goto unlocking2;
-	}
-	if (curl_easy_setopt (Curl, CURLOPT_FAILONERROR, 1L)) {		/* Tell libcurl to fail on 4xx responses (e.g. 404) */
-		error = 1; goto unlocking2;
-	}
-
- 	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
-		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
-		error = 1; goto unlocking2;
-	}
-	urlfile.filename = localfile;	/* Set pointer to local filename */
-	/* Define our callback to get called when there's data to be written */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEFUNCTION, gmtremote_fwrite_callback)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl output callback function\n");
-		error = 1; goto unlocking2;
-	}
-	/* Set a pointer to our struct to pass to the callback */
-	if (curl_easy_setopt (Curl, CURLOPT_WRITEDATA, &urlfile)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to write to %s\n", localfile);
-		error = 1; goto unlocking2;
-	}
+	/* Initialize the curl session */
+	if ((error = gmtremote_setup_curl (API, Curl, url, localfile, &urlfile, 0)))
+		goto unlocking2;
 
 	gmtremote_find_and_give_data_attribution (API, name);
 
@@ -1206,12 +1202,8 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 
 unlocking2:
 
-	if (!query) {	/* Remove lock file after successful download */
-		gmtlib_file_unlock (GMT, fileno(fp));
-		fclose(fp);
-		gmt_remove_file (GMT, Lfile);
-		gmt_M_str_free (Lfile);
-	}
+	if (!query)	/* Remove lock file after successful download */
+		gmtremote_lock_off (API, &LF);
 
 	if (turn_off) gmtremote_turn_off_ctrl_C_check ();
 
