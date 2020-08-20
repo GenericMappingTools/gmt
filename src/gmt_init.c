@@ -3832,7 +3832,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 
 		if (out3[0] == '\0') continue;	/* No intervals */
-		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		if (i < GMT_Z) GMT->current.map.frame.set = true;	/* Got here so we are setting x/y intervals */
 
 		/* Parse the annotation/tick info string */
 		if (out3[0] == 'c')
@@ -4343,7 +4343,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		/* Now parse the annotation/tick info string */
 
 		if (orig_string[0] == '\0') continue;	/* Got nothing */
-		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		if (no < GMT_Z) GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
 		if (strstr (orig_string, "pi")) GMT->current.map.frame.axis[no].substitute_pi = true;	/* Use pi in formatting labels */
 
 		gmt_M_memset (string, GMT_BUFSIZ, char);
@@ -15840,7 +15840,7 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
  */
 int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, char *item) {
 
-	int error = 0, i = 0;	/* The i and i+= GMT_more_than_once are there to avoid compiler warnings... */
+	int error = 0, i = 0, q = 0;	/* The i and i+= GMT_more_than_once are there to avoid compiler warnings... */
 
 	if (!list || !strchr (list, option)) return (0);	/* Not a common option we accept */
 
@@ -15856,28 +15856,29 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 	switch (option) {	/* Handle parsing of this option, if allowed here */
 		case 'B':
 			switch (item[0]) {	/* Check for -B[p] and -Bs */
-				case 's': GMT->common.B.active[GMT_SECONDARY] = true; break;
+				case 'p': GMT->common.B.active[GMT_PRIMARY] = true; q = 1; break;
+				case 's': GMT->common.B.active[GMT_SECONDARY] = true; q = 1; break;
 				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
 			if (!error) {
-				if (GMT->current.setting.run_mode == GMT_MODERN && !GMT->current.map.frame.set) {
+				if (GMT->current.setting.run_mode == GMT_MODERN && (!GMT->current.map.frame.set || item[q] == 'z')) {
 					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
-					if (item[0] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
+					if (item[q] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
 					if (c && strchr ("aflLsSu", c[1]))	/* We got the ones suitable for axes that we can chop off */
 						c[0] = '\0';	/* Temporarily chop off these modifiers only */
-					code[0] = item[0]; code[1] = (item[0]) ? item[1] : '\0';
+					code[0] = item[q]; code[1] = (item[q]) ? item[q+1] : '\0';
 					if (c) c[0] = '+';	/* Restore modifiers */
 					if (code[0] == '\0') {	/* Default is -Baf if nothing given */
-						strcpy (args, "af");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "af");	if (c) strcat (args, c);
 					}
 					else if (code[0] == 'x' && code[1] == '\0') {	/* If indicating x we do -Bxaf */
-						strcpy (args, "xaf");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "xaf");	if (c) strcat (args, c);
 					}
 					else if (code[0] == 'y' && code[1] == '\0') {	/* If indicating y we do -Byaf */
-						strcpy (args, "yaf");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "yaf");	if (c) strcat (args, c);
 					}
 					else if (code[0] == 'z' && code[1] == '\0') {	/* If indicating z we do -Bzaf */
-						strcpy (args, "zaf");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "zaf");	if (c) strcat (args, c);
 					}
 					else	/* Keep what we got */
 						strcpy (args, item);
