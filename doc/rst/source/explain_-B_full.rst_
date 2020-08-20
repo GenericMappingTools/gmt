@@ -10,15 +10,16 @@
     append the codes for those you want (e.g., **WSn**). Upper case means plot
     and annotate while lower case just plots and ticks the specified axes.
     To *just* draw an axis without annotation and ticks you can use the **l**\ (eft),
-    **r**\ (ight), **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. If a 3-D basemap
-    is selected with **-p** and **-Jz**, append **Z**, **z**, or **u** to control the
-    appearance of the vertical axis. By default a single vertical axes will be
-    plotted at the most suitable map corner. Override the default by appending
+    **r**\ (ight), **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes.
+    If a 3-D basemap is selected with **-p** and **-Jz**, append **Z**, **z**, or
+    **u** to control the appearance of the vertical axis. By default a single vertical
+    axes will be plotted at the most suitable map corner. Override the default by appending
     any combination of corner ids **1234**, where **1** represents the lower left
     corner and the order goes counter-clockwise.  Use **+w** to draw the outlines of
-    the x-z and y-z planes. Alternatively, append **+b** to also draw the front lines
+    the x-z and y-z planes [no outline] and optionally append the *pen* to use
+    [:term:`MAP_GRID_PEN_PRIMARY]. Alternatively, append **+b** to also draw the front lines
     of the 3-D cube defined by **-R**. By default, the back-walls are transparent.
-    Use **+x** and **y** to paint them, using the same fill as the x-y plane if no fill
+    Use **+x** and **+y** to paint them, using the same fill as the x-y plane if no fill
     is appended. You can paint the interior of the canvas with **+g**\ *fill*.
     Use **+i** to annotate an internal meridian or parallel when the axis that normally
     would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range

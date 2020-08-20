@@ -4032,17 +4032,17 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
 		while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 			switch (p[0]) {
-				case 'b':	/* Activate 3-D box and x-z, y-z gridlines (if selected) */
+				case 'b':	/* Draw 3-D box */
 					GMT->current.map.frame.draw_box |= GMT_3D_BOX;
 					break;
-				case 'g':	/* Paint the basemap interior */
+				case 'g':	/* Paint the basemap x-y plane */
 					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_Z])) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +g<fill> argument %s\n", &p[1]);
 						error++;
 					}
 					GMT->current.map.frame.paint[GMT_Z] = true;
 					break;
-				case 'i':	/* Turn on internal annotation for radiual or longitudinal axes when there is no other place to annotate */
+				case 'i':	/* Turn on internal annotation for radial or longitudinal axes when there is no outside place to annotate */
 					GMT->current.map.frame.internal_annot = 1;	/* Longitude/angle */
 					if (GMT->current.proj.projection == GMT_POLAR)	/* Optional argument is an angle, not longitude, so atof will do */
 						GMT->current.map.frame.internal_arg = (p[1]) ? atof (&p[1]) : GMT->common.R.wesn[XLO];
@@ -4127,7 +4127,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 		*mod = '\0';	/* Separate the modifiers from the frame selectors */
 	}
 
-	if (GMT->current.map.frame.paint[GMT_X] && blank[GMT_X]) {	/* Just +x means use the +g-fill */
+	if (GMT->current.map.frame.paint[GMT_X] && blank[GMT_X]) {	/* Just +x means use the +g-fill (which must exist) */
 		if (GMT->current.map.frame.paint[GMT_Z])
 			gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_X], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
 		else {
@@ -4135,7 +4135,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 			error++;
 		}
 	}
-	if (GMT->current.map.frame.paint[GMT_Y] && blank[GMT_Y]) {	/* Just +x means use the +g-fill */
+	if (GMT->current.map.frame.paint[GMT_Y] && blank[GMT_Y]) {	/* Just +x means use the +g-fill (which must exist) */
 		if (GMT->current.map.frame.paint[GMT_Z])
 			gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Y], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
 		else {
