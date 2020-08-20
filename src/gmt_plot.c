@@ -5480,7 +5480,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	PSL_setdash (PSL, NULL, 0);	/* To ensure no dashed pens are set prior */
 
-	gmt_vertical_axis (GMT, GMT->current.plot.mode_3D);
+	if (GMT->current.proj.three_D && GMT->current.map.frame.drawz) GMT->current.map.frame.plotted_header = true;	/* Just so it is not plotted by gmtplot_map_boundary first */
 
 	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Temporary swap to trick justify machinery */
 
@@ -5504,6 +5504,10 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	if (clip_on) gmt_map_clip_off (GMT);
 
 	PSL_setdash (PSL, NULL, 0);
+
+	if (GMT->current.proj.three_D && GMT->current.map.frame.drawz) GMT->current.map.frame.plotted_header = false;	/* Now we can plot the title [if selected via -B+t] */
+
+	gmt_vertical_axis (GMT, GMT->current.plot.mode_3D);
 
 	PSL_comment (PSL, "End of basemap\n");
 
