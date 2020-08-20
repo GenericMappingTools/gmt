@@ -1563,7 +1563,6 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 
 	min = (plane == GMT_Y) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[YLO];
 	max = (plane == GMT_Y) ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI];
-
 	for (k = 0; k < 2; k++) {
 		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
 
@@ -7591,10 +7590,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	PSL = GMT->PSL;	/* Shorthand */
 
-	if (GMT->current.map.frame.paint) {	/* Must squirrel this away for now since we may call psbasemap during the movie-indicators below */
+	if (GMT->current.map.frame.paint[GMT_Z]) {	/* Must squirrel this away for now since we may call psbasemap during the movie-indicators below */
 		do_paint = true;
-		gmt_M_memcpy (&fill, &GMT->current.map.frame.fill, 1U, struct GMT_FILL);
-		GMT->current.map.frame.paint = false;	/* Turn off for now */
+		gmt_M_memcpy (&fill, &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
+		GMT->current.map.frame.paint[GMT_Z] = false;	/* Turn off for now */
 	}
 
 	PSL->internal.verbose = GMT->current.setting.verbose;		/* Inherit verbosity level from GMT */
@@ -8037,21 +8036,21 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		PSL_command (PSL, "}!\n");
 	}
 	if (do_paint) {	/* Reset any canvas coloring here */
-		GMT->current.map.frame.paint = true;
-		gmt_M_memcpy (&GMT->current.map.frame.fill, &fill, 1U, struct GMT_FILL);
+		GMT->current.map.frame.paint[GMT_Z] = true;
+		gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Z], &fill, 1U, struct GMT_FILL);
 	}
 
 	return (PSL);
 }
 
 void gmt_plotcanvas (struct GMT_CTRL *GMT) {
-	if (GMT->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
+	if (GMT->current.map.frame.paint[GMT_Z]) {	/* Paint the inside of the map (xy plane) with specified fill */
 		double *x = NULL, *y = NULL;
 		uint64_t np;
 		bool donut;
-		PSL_comment (GMT->PSL, "Fill the canvas %s\n", gmtlib_putfill (GMT, &GMT->current.map.frame.fill));
+		PSL_comment (GMT->PSL, "Fill the canvas %s\n", gmtlib_putfill (GMT, &GMT->current.map.frame.fill[GMT_Z]));
 		np = gmt_map_clip_path (GMT, &x, &y, &donut);
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
+		gmt_setfill (GMT, &GMT->current.map.frame.fill[GMT_Z], 0);
 		PSL_plotpolygon (GMT->PSL, x, y, (int)((1 + donut) * np));
 		gmt_M_free (GMT, x);
 		gmt_M_free (GMT, y);
