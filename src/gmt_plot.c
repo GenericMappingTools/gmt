@@ -2654,7 +2654,12 @@ GMT_LOCAL bool gmtplot_is_fancy_boundary (struct GMT_CTRL *GMT) {
 
 GMT_LOCAL void gmtplot_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int quadrant, double *nesw, bool back, unsigned int mode3d) {
 	int plane = (quadrant + 1) % 2;
+	double xx[4], yy[4];
 	gmt_plane_perspective (GMT, plane, nesw[quadrant % 4]);
+	if (back) {
+		xx[0] = xx[1] = nesw[(quadrant+1)%4];	xx[2] = xx[3] = nesw[(quadrant+3)%4];
+		yy[0] = yy[3] = GMT->current.proj.zmin;	yy[1] = yy[2] = GMT->current.proj.zmax;
+	}
 	if (mode3d & GMT_3D_WALL && back) {
 		int wplane = 1 - plane;
 		if (GMT->current.map.frame.paint[wplane]) {	/* First paint the back wall */
@@ -2665,15 +2670,15 @@ GMT_LOCAL void gmtplot_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane, mode3d, quadrant);
 
 		if (GMT->current.map.frame.draw_wall) {
-			PSL_setfill (PSL, GMT->session.no_rgb, 1);
 			gmt_setpen (GMT, &GMT->current.map.frame.pen);
-			PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
+			PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
 		}
 	}
 	else if (back)
 		gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane, mode3d, quadrant);
 	if (mode3d & GMT_3D_BOX) {
-		PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
+		gmt_setpen (GMT, &GMT->current.map.frame.pen);
+		PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
 	}
 }
 
