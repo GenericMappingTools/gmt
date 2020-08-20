@@ -17,7 +17,7 @@
     any combination of corner ids **1234**, where **1** represents the lower left
     corner and the order goes counter-clockwise.  Use **+w** to draw the outlines of
     the x-z and y-z planes [no outline] and optionally append the *pen* to use
-    [:term:`MAP_GRID_PEN_PRIMARY]. Alternatively, append **+b** to also draw the front lines
+    [:term:`MAP_GRID_PEN_PRIMARY`]. Alternatively, append **+b** to also draw the front lines
     of the 3-D cube defined by **-R**. By default, the back-walls are transparent.
     Use **+x** and **+y** to paint them, using the same fill as the x-y plane if no fill
     is appended. You can paint the interior of the canvas with **+g**\ *fill*.
