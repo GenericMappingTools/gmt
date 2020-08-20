@@ -287,7 +287,7 @@ tick, and gridline intervals, axes labels, and annotation units.
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ [*fill*]][**+y**\ [*fill*]]
+-  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
 Here, the optional *axes* dictates which of the axes should be drawn
 and possibly annotated.  By default, all four map boundaries (or plot axes)
@@ -305,9 +305,9 @@ any combination of corner ids **1234**, where **1** represents the lower left
 corner and the order goes counter-clockwise.  Use **+w** to draw the outlines of
 the x-z and y-z planes [no outlines] and optionally append the *pen* to use
 [:term:`MAP_GRID_PEN_PRIMARY`]. Alternatively, append **+b** to also draw the front lines
-of the 3-D cube defined by **-R**.  By default the back-walls are transparent.
-Use **+x** and **+y** to paint them, using the same fill as the x-y plane if no fill
-is appended. You may paint the map canvas by appending the **+g**\ *fill* modifier [Default is no fill].
+of the 3-D cube defined by **-R**.  You can paint the interior of the canvas with
+**+g**\ *fill* (this also sets fill for the two back-walls in 3-D).
+Use **+x**, **+y**, and **+z** to control the painting per plane [Default is no fill].
 Use **+i** to annotate an internal meridian or parallel when the axis that normally
 would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
 has no latitude axis, and a global Hammer map has no longitude axis);
