@@ -3832,7 +3832,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 
 		if (out3[0] == '\0') continue;	/* No intervals */
-		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		if (i < GMT_Z) GMT->current.map.frame.set = true;	/* Got here so we are setting x/y intervals */
 
 		/* Parse the annotation/tick info string */
 		if (out3[0] == 'c')
@@ -4318,7 +4318,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		/* Now parse the annotation/tick info string */
 
 		if (orig_string[0] == '\0') continue;	/* Got nothing */
-		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		if (no < GMT_Z) GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
 		if (strstr (orig_string, "pi")) GMT->current.map.frame.axis[no].substitute_pi = true;	/* Use pi in formatting labels */
 
 		gmt_M_memset (string, GMT_BUFSIZ, char);
