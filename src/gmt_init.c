@@ -4090,9 +4090,9 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 						gmtlib_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 					}
 					break;
-				case 'w':	/* Activate x-z, y-z gridlines and wall (if selected) */
+				case 'w':	/* Set back-wall outline and optionally the pen to use */
 					GMT->current.map.frame.draw_box |= GMT_3D_WALL;
-					GMT->current.map.frame.draw_wall = true;
+					GMT->current.map.frame.draw_wall = true;	/* We will draw the outline of the walls */
 					if (p[1] && gmt_getpen (GMT, &p[1], &GMT->current.map.frame.pen)) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +w<pen> argument %s\n", &p[1]);
 						error++;
@@ -4127,19 +4127,19 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 		*mod = '\0';	/* Separate the modifiers from the frame selectors */
 	}
 
-	if (GMT->current.map.frame.paint[GMT_X] && blank[GMT_X]) {	/* Just +x means same as z-fill */
+	if (GMT->current.map.frame.paint[GMT_X] && blank[GMT_X]) {	/* Just +x means use the +g-fill */
 		if (GMT->current.map.frame.paint[GMT_Z])
 			gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_X], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Modifier +x requires a fill argument if +g not set\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Modifier +x requires a fill argument if +g was not set\n");
 			error++;
 		}
 	}
-	if (GMT->current.map.frame.paint[GMT_Y] && blank[GMT_Y]) {	/* Just +x means same as z-fill */
+	if (GMT->current.map.frame.paint[GMT_Y] && blank[GMT_Y]) {	/* Just +x means use the +g-fill */
 		if (GMT->current.map.frame.paint[GMT_Z])
 			gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Y], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Modifier +y requires a fill argument if +g not set\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Modifier +y requires a fill argument if +g was not set\n");
 			error++;
 		}
 	}
