@@ -290,14 +290,16 @@ The Frame settings are specified by
 -  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ [*fill*]][**+y**\ [*fill*]]
 
 Here, the optional *axes* dictates which of the axes should be drawn
-and possibly annotated.  By default, all 4 map boundaries (or plot axes)
+and possibly annotated.  By default, all four map boundaries (or plot axes)
 are plotted (denoted **W**, **E**, **S**, **N**). To change this selection,
 append the codes for those you want (e.g., **WSn**). In this example,
 the lower case **n** denotes to draw the axis and (major and minor) tick
 marks on the "northern" (top) edge of the plot. The upper case **WS** will
 annotate the "western" and "southern" axes with numerals and plot the
 any axis labels in addition to draw axis/tick-marks.  For 3-D plots you can
-also specify **Z** or **z**.  By default a single vertical axes will then be
+also specify **Z** or **z**.  To *just* draw an axis without annotation and
+ticks you can use the **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op)
+and (for 3-D) **u**\ (p) codes. By default, a single vertical axes will then be
 plotted at the most suitable map corner.  You can override this by appending
 any combination of corner ids **1234**, where **1** represents the lower left
 corner and the order goes counter-clockwise.  Use **+w** to draw the outlines of

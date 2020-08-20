@@ -1556,13 +1556,21 @@ GMT_LOCAL void gmtplot_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	if (nc) gmt_M_free (GMT, xings);
 }
 
-GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int plane, unsigned int mode3d) {
-	unsigned int k, i, nz, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
-	double dz, zz, min, max, *z = NULL;
+GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int plane, unsigned int mode3d, int quadrant) {
+	unsigned int k, i, nz, n, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	int qplane = 1 - plane;
+	double dz, zz, dd, min, max, z0, z1, xx, dummy, value, *z = NULL, *d = NULL;
 	char *plane_name[2] = {"y-z", "x-z"};
 
-	min = (plane == GMT_Y) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[YLO];
-	max = (plane == GMT_Y) ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI];
+	if (qplane == GMT_X) {
+		value = (quadrant == 4) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO];
+		min = GMT->current.proj.rect[XLO];	max = GMT->current.proj.rect[XHI];
+	}
+	else {
+		value = (quadrant == 3) ? GMT->common.R.wesn[XHI] : GMT->common.R.wesn[XLO];
+		min = GMT->current.proj.rect[YLO];	max = GMT->current.proj.rect[YHI];
+	}
+
 	for (k = 0; k < 2; k++) {
 		if (fabs (GMT->current.setting.map_grid_cross_size[k]) > 0.0) continue;
 
@@ -1580,12 +1588,26 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 			zz = gmt_z_to_zz (GMT, z[i]);
 			PSL_plotsegment (PSL, min, zz, max, zz);
 		}
+		z0 = gmt_z_to_zz (GMT, z[0]);
+		z1 = gmt_z_to_zz (GMT, z[nz-1]);
+
+		dd = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[qplane].item[item[k]]);
+		if (!GMT->current.map.frame.axis[qplane].item[item[k]].active || fabs(dd) == 0.0) continue;
+		n = gmtlib_coordinate_array (GMT, GMT->common.R.wesn[2*qplane], GMT->common.R.wesn[2*qplane+1], &GMT->current.map.frame.axis[qplane].item[item[k]], &d, NULL);
+		for (i = 0; i < n; i++) {	/* Here z acts as y and x|y acts as x */
+			/* Draw one horizontal line */
+			if (qplane == GMT_X)	/* The "x" are projection x or longitude */
+				gmt_geo_to_xy (GMT, d[i], value, &xx, &dummy);
+			else	/* The "x" are projection y or latitude */
+				gmt_geo_to_xy (GMT, value, d[i], &dummy, &xx);
+
+			PSL_plotsegment (PSL, xx, z0, xx, z1);
+		}
+		gmt_M_free (GMT, d);
 
 		PSL_setdash (PSL, NULL, 0);
 	}
 	if (z && (mode3d & GMT_3D_BOX) == 0) {
-		double z0 = gmt_z_to_zz (GMT, z[0]);
-		double z1 = gmt_z_to_zz (GMT, z[nz-1]);
 		PSL_plotsegment (PSL, min, z0, min, z1);
 		PSL_plotsegment (PSL, max, z0, max, z1);
 	}
@@ -2644,7 +2666,7 @@ GMT_LOCAL void gmtplot_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
 	}
 	if (back)
-		gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane, mode3d);
+		gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane, mode3d, quadrant);
 }
 
 GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, unsigned int justify, char *U_label) {
