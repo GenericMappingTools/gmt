@@ -1583,7 +1583,7 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 
 		PSL_setdash (PSL, NULL, 0);
 	}
-	if (back && mode3d != GMT_3D_BOX) {
+	if (back && z && (mode3d & GMT_3D_BOX) == 0) {
 		double z0 = gmt_z_to_zz (GMT, z[0]);
 		double z1 = gmt_z_to_zz (GMT, z[nz-1]);
 		PSL_plotsegment (PSL, min, z0, min, z1);
@@ -2633,12 +2633,14 @@ GMT_LOCAL bool gmtplot_is_fancy_boundary (struct GMT_CTRL *GMT) {
 GMT_LOCAL void gmtplot_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int quadrant, double *nesw, bool back, unsigned int mode3d) {
 	int plane = (quadrant + 1) % 2;
 	gmt_plane_perspective (GMT, plane, nesw[quadrant % 4]);
-	if (mode3d == GMT_3D_WALL && back) {
-		PSL_setfill (PSL, GMT->session.no_rgb, 1);
-		gmt_setpen (GMT, &GMT->current.map.frame.pen);
+	if (mode3d & GMT_3D_WALL && back) {
+		int wplane = 1 - plane;
+		double *rgb = (GMT->current.map.frame.paint[wplane]) ? GMT->current.map.frame.fill[wplane].rgb : GMT->session.no_rgb;
+		PSL_setfill (PSL, rgb, GMT->current.map.frame.draw_wall);
+		if (GMT->current.map.frame.draw_wall) gmt_setpen (GMT, &GMT->current.map.frame.pen);
 		PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
 	}
-	if (mode3d == GMT_3D_BOX) {
+	if (mode3d & GMT_3D_BOX) {
 		PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
 	}
 	if (back)

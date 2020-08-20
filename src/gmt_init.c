@@ -3948,14 +3948,14 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 			/* Draw 3-D box */
 			case '+':
 				if (in[k+1] == 'b')	/* Got +b appended to MAP_FRAME_AXES, possibly */
-					GMT->current.map.frame.draw_box = GMT_3D_BOX;
+					GMT->current.map.frame.draw_box |= GMT_3D_BOX;
 				else if (in[k+1] == 'w')	/* Got +w appended to MAP_FRAME_AXES, possibly */
-					GMT->current.map.frame.draw_box = GMT_3D_WALL;
+					GMT->current.map.frame.draw_box |= GMT_3D_WALL;
 				else if (in[k+1] == 'n')	/* Got +n appended to MAP_FRAME_AXES, means no frame nor annotations desired */
 					GMT->current.map.frame.no_frame = true;
 				else if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Modifier + in MAP_FRAME_AXES is deprecated; use +b instead.\n");
-					GMT->current.map.frame.draw_box = GMT_3D_BOX;
+					GMT->current.map.frame.draw_box |= GMT_3D_BOX;
 				}
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier + in MAP_FRAME_AXES not recognized.\n");
@@ -3984,12 +3984,14 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 bool gmtlib_B_is_frame (struct GMT_CTRL *GMT, char *in) {
 	gmt_M_unused (GMT);
 	if (strstr (in, "+b")) return true;	/* Found a +b so likely frame */
-	if (strstr (in, "+w")) return true;	/* Found a +w so likely frame */
 	if (strstr (in, "+g")) return true;	/* Found a +g so likely frame */
 	if (strstr (in, "+i")) return true;	/* Found a +i so likely frame */
 	if (strstr (in, "+n")) return true;	/* Found a +n so likely frame */
 	if (strstr (in, "+o")) return true;	/* Found a +o so likely frame */
 	if (strstr (in, "+t")) return true;	/* Found a +t so likely frame */
+	if (strstr (in, "+w")) return true;	/* Found a +w so likely frame */
+	if (strstr (in, "+s")) return true;	/* Found a +s so likely frame */
+	if (strstr (in, "+y")) return true;	/* Found a +y so likely frame */
 	if (strstr (in, "+a")) return false;	/* Found a +a so likely axis */
 	if (strstr (in, "+f")) return false;	/* Found a +f so likely axis */
 	if (strstr (in, "+l")) return false;	/* Found a +l so likely axis */
@@ -4011,7 +4013,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	char p[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
 	double pole[2];
 
-	/* Parsing of -B<framesettings>: -B[<axes>][+b][+g<fill>][+n][+o<lon>/<lat>][+t<title>][+w[<pen>]] */
+	/* Parsing of -B<framesettings>: -B[<axes>][+b][+g<fill>][+n][+o<lon>/<lat>][+t<title>][+w[<pen>]][+x[<fill>]][+y[<fill>]] */
 
 	/* First determine that the given -B<in> string is indeed the framesetting option.  If not return -1 */
 
@@ -4025,21 +4027,13 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	gmt_handle5_plussign (GMT, text, "bginotwxy", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
 	GMT->current.map.frame.header[0] = '\0';
 	gmt_M_memset (GMT->current.map.frame.paint, 3U, bool);
+	GMT->current.map.frame.draw_box = GMT_3D_NONE;
 
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
 		while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 			switch (p[0]) {
 				case 'b':	/* Activate 3-D box and x-z, y-z gridlines (if selected) */
-					GMT->current.map.frame.draw_box = GMT_3D_BOX;
-					break;
-				case 'w':	/* Activate x-z, y-z gridlines and wall (if selected) */
-					GMT->current.map.frame.draw_box = GMT_3D_WALL;
-					if (p[1] && gmt_getpen (GMT, &p[1], &GMT->current.map.frame.pen)) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +w<pen> argument %s\n", &p[1]);
-						error++;
-					}
-					else if (p[1] == 0)	/* Use grid pen as default */
-						gmt_M_memcpy (&GMT->current.map.frame.pen, &GMT->current.setting.map_grid_pen[GMT_PRIMARY], 1, struct GMT_PEN);
+					GMT->current.map.frame.draw_box |= GMT_3D_BOX;
 					break;
 				case 'g':	/* Paint the basemap interior */
 					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_Z])) {
@@ -4096,6 +4090,16 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 						gmtlib_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 					}
 					break;
+				case 'w':	/* Activate x-z, y-z gridlines and wall (if selected) */
+					GMT->current.map.frame.draw_box |= GMT_3D_WALL;
+					GMT->current.map.frame.draw_wall = true;
+					if (p[1] && gmt_getpen (GMT, &p[1], &GMT->current.map.frame.pen)) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +w<pen> argument %s\n", &p[1]);
+						error++;
+					}
+					else if (p[1] == 0)	/* Use grid pen as default */
+						gmt_M_memcpy (&GMT->current.map.frame.pen, &GMT->current.setting.map_grid_pen[GMT_PRIMARY], 1, struct GMT_PEN);
+					break;
 				case 'x':	/* Paint the basemap xz-plane for 3-D plots */
 					if (p[1] && gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_X])) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +x<fill> argument %s\n", &p[1]);
@@ -4103,6 +4107,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					}
 					blank[GMT_X] = !p[1];
 					GMT->current.map.frame.paint[GMT_X] = true;
+					GMT->current.map.frame.draw_box |= GMT_3D_WALL;
 					break;
 				case 'y':	/* Paint the basemap yz-plane for 3-D plots */
 					if (p[1] && gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_Y])) {
@@ -4111,6 +4116,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					}
 					blank[GMT_Y] = !p[1];
 					GMT->current.map.frame.paint[GMT_Y] = true;
+					GMT->current.map.frame.draw_box |= GMT_3D_WALL;
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Unrecognized frame modifier %s\n", p);
@@ -4163,12 +4169,13 @@ void gmt_init_B (struct GMT_CTRL *GMT) {
 GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	/* GMT5 clean version based on new syntax:
 	 * Frame settings:
-	 *	-B[WESNwesnz|Z[1234]][+b][+g<fill>][+o<lon/lat>][+t<title>][+w[<pen>]]
+	 *	-B[WESNwesnz|Z[1234]][+b][+g<fill>][+o<lon/lat>][+t<title>][+w[<pen>]][+x[<fill>]][+y[<fill>]]
 	 *    		+b draws 3-D box.
 	 *    		+g<fill> as plot interior fill [none].
 	 *    		+t<title> as plot title [none].
 	 *    		+w[<pen>] draws the outline of the xz and yz planes [no outline].
 	 *    		of one or more of w,e,s,n,z then only those axes will be drawn.
+	 *    		+x and +y paints the back walls for xz and yz [with +g fill if not specified].
 	 *		Upper case letters means the chosen axes also will be annotated.
 	 *		Default is determined by MAP_FRAME_AXES setting [WESN].
 	 * Axis settings:
@@ -4211,7 +4218,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if ((error = gmtinit_parse5_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
 	error = 0;	/* Reset since otherwise it is -1 */
 
-	if (strstr (in, "+b") || strstr (in, "+g") || strstr (in, "+i") || strstr (in, "+n") || strstr (in, "+o") || strstr (in, "+o") || strstr (in, "+t") || strstr (in, "+w")) {
+	if (strstr (in, "+b") || strstr (in, "+g") || strstr (in, "+i") || strstr (in, "+n") || strstr (in, "+o") || strstr (in, "+o") || strstr (in, "+t") || strstr (in, "+w") || strstr (in, "+x") || strstr (in, "+y")) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Found frame setting modifiers (+b|g|i|n|o|p|W) mixed with axes settings!\n");
 		return (GMT_PARSE_ERROR);
 	}
@@ -6579,6 +6586,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     at which corner(s) to erect the z-axis via a combination of 1,2,3,4; 1 means lower left corner,\n");
 			gmt_message (GMT, "\t     2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis].\n");
 			gmt_message (GMT, "\t     The +w draws the outline of the xz and yz planes [no outlines].\n");
+			gmt_message (GMT, "\t     The +x|y[<fill>] paint the xz and yz plane [no fill]. The +g<fill> is used if no fill is appended.\n");
 			gmt_message (GMT, "\t     In addition, +b will erect a 3-D frame box to outline the 3-D domain [no frame box].\n");
 			gmt_message (GMT, "\t   2. Axes settings control the annotation, tick, and grid intervals and labels.\n");
 			gmt_message (GMT, "\t     The full axes specification is\n");
@@ -7706,8 +7714,8 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 	switch (option) {
 
 		case 'B':	/* Tickmark option */
-			gmt_message (GMT, "\t-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+l|L<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>][+w[<pen>]] OR\n");
-			gmt_message (GMT, "\t-B[p|s][x|y|z][a|f|g]<tick>[m][l|p] -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>][+w[<pen>]]\n");
+			gmt_message (GMT, "\t-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+l|L<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>][+w[<pen>]][+x[<fill>]][+y[<fill>]] OR\n");
+			gmt_message (GMT, "\t-B[p|s][x|y|z][a|f|g]<tick>[m][l|p] -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>][+w[<pen>]][+x[<fill>]][+y[<fill>]]\n");
 			break;
 
 		case 'J':	/* Map projection option */
