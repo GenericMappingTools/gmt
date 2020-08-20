@@ -1607,7 +1607,7 @@ GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 
 		PSL_setdash (PSL, NULL, 0);
 	}
-	if (z && (mode3d & GMT_3D_BOX) == 0) {
+	if (!GMT->current.map.frame.draw_wall && z && (mode3d & GMT_3D_BOX) == 0) {
 		PSL_plotsegment (PSL, min, z0, min, z1);
 		PSL_plotsegment (PSL, max, z0, max, z1);
 	}
@@ -2657,16 +2657,24 @@ GMT_LOCAL void gmtplot_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	gmt_plane_perspective (GMT, plane, nesw[quadrant % 4]);
 	if (mode3d & GMT_3D_WALL && back) {
 		int wplane = 1 - plane;
-		double *rgb = (GMT->current.map.frame.paint[wplane]) ? GMT->current.map.frame.fill[wplane].rgb : GMT->session.no_rgb;
-		PSL_setfill (PSL, rgb, GMT->current.map.frame.draw_wall);
-		if (GMT->current.map.frame.draw_wall) gmt_setpen (GMT, &GMT->current.map.frame.pen);
-		PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
+		if (GMT->current.map.frame.paint[wplane]) {	/* First paint the back wall */
+			PSL_setfill (PSL, GMT->current.map.frame.fill[wplane].rgb, 0);
+			PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
+		}
+		if (back)
+			gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane, mode3d, quadrant);
+
+		if (GMT->current.map.frame.draw_wall) {
+			PSL_setfill (PSL, GMT->session.no_rgb, 1);
+			gmt_setpen (GMT, &GMT->current.map.frame.pen);
+			PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
+		}
 	}
+	else if (back)
+		gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane, mode3d, quadrant);
 	if (mode3d & GMT_3D_BOX) {
 		PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
 	}
-	if (back)
-		gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane, mode3d, quadrant);
 }
 
 GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, unsigned int justify, char *U_label) {
