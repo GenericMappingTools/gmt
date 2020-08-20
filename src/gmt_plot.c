@@ -1563,12 +1563,12 @@ GMT_LOCAL void gmtplot_z_walls (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	fprintf (stderr, "Plot plane %d\n", plane);
 	xx[0] = xx[3] = (plane == GMT_Y) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[YLO];
 	xx[1] = xx[2] = (plane == GMT_Y) ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI];
-	PSL_command (GMT->PSL, "V\n");
+	//PSL_command (GMT->PSL, "V\n");
 	gmt_setfill (GMT, &GMT->current.map.frame.fill[plane], 1);
 	yy[0] = yy[1] = gmt_z_to_zz (GMT, zmin);
 	yy[2] = yy[3] = gmt_z_to_zz (GMT, zmax);
 	PSL_plotpolygon (PSL, xx, yy, 4);
-	PSL_command (GMT->PSL, "U\n");
+	//PSL_command (GMT->PSL, "U\n");
 }
 
 GMT_LOCAL void gmtplot_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int plane) {

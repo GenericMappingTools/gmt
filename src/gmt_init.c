@@ -4097,7 +4097,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +y<fill> argument %s\n", &p[1]);
 						error++;
 					}
-					blank[GMT_X] = !p[1];
+					blank[GMT_Y] = !p[1];
 					GMT->current.map.frame.paint[GMT_Y] = true;
 					break;
 				default:
@@ -4109,12 +4109,23 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 		*mod = '\0';	/* Separate the modifiers from the frame selectors */
 	}
 
-	if (GMT->current.map.frame.paint[GMT_Z]) {
-		if (GMT->current.map.frame.paint[GMT_X] && blank[GMT_X])	/* Just +x means same as z-fill */
+	if (GMT->current.map.frame.paint[GMT_X] && blank[GMT_X]) {	/* Just +x means same as z-fill */
+		if (GMT->current.map.frame.paint[GMT_Z])
 			gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_X], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
-		if (GMT->current.map.frame.paint[GMT_Y] && blank[GMT_Y])	/* Just +x means same as z-fill */
-			gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Y], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Modifier +x requires a fill argument if +g not set\n");
+			error++;
+		}
 	}
+	if (GMT->current.map.frame.paint[GMT_Y] && blank[GMT_Y]) {	/* Just +x means same as z-fill */
+		if (GMT->current.map.frame.paint[GMT_Z])
+			gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Y], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Modifier +y requires a fill argument if +g not set\n");
+			error++;
+		}
+	}
+
 	/* Now parse the frame choices, if any */
 	error += gmtinit_decode5_wesnz (GMT, text, true);
 
