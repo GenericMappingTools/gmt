@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#
+# Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# See LICENSE.TXT file for copying and redistribution conditions.
+#
+# This script determines which remote data files are used across
+# all the GMT example, doc, and test scripts and writes unique list to stdout.
+
+if [ ! -d cmake ]; then
+	echo "remote_data_use.sh: Must be run from top-level gmt directory" >&2
+	exit 1
+fi
+
+find doc test -name '*.sh' -exec egrep '@earth_relief|@earth_mask|@earth_day|@earth_night|@earth_age' {} \; | grep -v '^#' > /tmp/t1.lis
+awk '{for (k = 1; k <= NF; k++) if (substr ($k, 1, 1) == "@") print $k}' /tmp/t1.lis | grep -v '\$' > /tmp/t2.lis
+echo "s/_g//p" > /tmp/t.sed
+echo "s/_p//p" >> /tmp/t.sed
+sed -f /tmp/t.sed /tmp/t2.lis | sort -u
+rm -f /tmp/t[12].lis /tmp/t.sed
