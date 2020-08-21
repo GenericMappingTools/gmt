@@ -4034,7 +4034,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 		while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 			switch (p[0]) {
 				case 'b':	/* Draw 3-D box */
-					GMT->current.map.frame.draw_box |= GMT_3D_BOX;
+					GMT->current.map.frame.draw_box |= (GMT_3D_BOX|GMT_3D_WALL);
 					break;
 				case 'g':	/* Paint the basemap x-y plane and for 3-D back walls */
 					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_Z])) {

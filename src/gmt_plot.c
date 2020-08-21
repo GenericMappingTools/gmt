@@ -2656,10 +2656,8 @@ GMT_LOCAL void gmtplot_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	int plane = (quadrant + 1) % 2;
 	double xx[4], yy[4];
 	gmt_plane_perspective (GMT, plane, nesw[quadrant % 4]);
-	if (back) {
-		xx[0] = xx[1] = nesw[(quadrant+1)%4];	xx[2] = xx[3] = nesw[(quadrant+3)%4];
-		yy[0] = yy[3] = GMT->current.proj.zmin;	yy[1] = yy[2] = GMT->current.proj.zmax;
-	}
+	xx[0] = xx[1] = nesw[(quadrant+1)%4];	xx[2] = xx[3] = nesw[(quadrant+3)%4];
+	yy[0] = yy[3] = GMT->current.proj.zmin;	yy[1] = yy[2] = GMT->current.proj.zmax;
 	if (mode3d & GMT_3D_WALL && back) {
 		int wplane = 1 - plane;
 		if (GMT->current.map.frame.paint[wplane]) {	/* First paint the back wall */
