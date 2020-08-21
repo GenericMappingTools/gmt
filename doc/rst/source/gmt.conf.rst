@@ -614,7 +614,7 @@ MAP Parameters
         :term:`MAP_GRID_PEN_PRIMARY`, :term:`MAP_GRID_PEN_SECONDARY`,
         :term:`MAP_FRAME_PEN`, :term:`MAP_TICK_PEN_PRIMARY`, and
         :term:`MAP_TICK_PEN_SECONDARY` by the color of :term:`MAP_DEFAULT_PEN`
-        [default,black].
+        [0.25p,black].
 
     **MAP_DEGREE_SYMBOL**
         Determines what symbol is used to plot the degree symbol on
@@ -683,7 +683,7 @@ MAP Parameters
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
-        points (append p) [default,black].
+        points (append p) [0.25p,black].
 
     **MAP_GRID_PEN_SECONDARY**
         Pen attributes used to draw secondary grid lines in dpi units or
