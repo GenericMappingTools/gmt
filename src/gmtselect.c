@@ -22,7 +22,7 @@
  * Version:	6 API
  *
  * Brief synopsis: gmtselect is a general-purpose spatial filter.  Data pass
- * or fail basedon one or more conditions.  Seven conditions may be set:
+ * or fail based on one or more conditions.  Seven conditions may be set:
  *
  *	1. Only data inside a rectangular area may pass
  *	2. Only data within a certain distance from given points may pass
