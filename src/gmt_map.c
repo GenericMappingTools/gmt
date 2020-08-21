@@ -6681,8 +6681,8 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	/* Finally set grid interval (if annotation set as well, use major, otherwise minor interval) */
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) {
-		/* T->interval = set_a ? d : f, T->generated = true; Commented out because f is too fine for gridline spacing, even if no annotations */
-		T->interval = d, T->generated = true;
+		T->interval = set_a ? d : f, T->generated = true; /* Commented out because f is too fine for gridline spacing, even if no annotations */
+		// T->interval = d, T->generated = true;
 		snprintf (tmp, GMT_LEN16, "g%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
