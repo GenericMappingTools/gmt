@@ -20,11 +20,11 @@ gmt begin ex32
 	#   euflag.nc=ns
 	# gmt grdedit euflag.nc -fg $Rflag
 
-	# Now get the topography for the same area from GTOPO30 and store it as@topo_32.nc.
-	# The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_Available/gtopo30/w020n90
-	# We make a gradient grid as well, which we will use to "illuminate" the flag.
+	# Now get the topography for the same area, mask out the oceans and store it as topo_32.nc.
 
-	# gmt grdcut W020N90.DEM $Rflag -Gtopo_32.nc=ns
+	gmt grdcut @earth_relief_30s_p $Rflag -Gtopo_32.nc=ns
+	gmt grdcut @earth_mask_30s_p $Rflag -Gmask_32.nc=ns
+	gmt grdmath topo_32.nc mask_32.nc 0 GT 0 NAN MUL = topo_32.nc
 
 	# The color map assigns "Reflex Blue" to the lower half of the 0-255 range and
 	# "Yellow" to the upper half.
@@ -34,11 +34,11 @@ gmt begin ex32
 	# We use gmt grdview to plot the topography, euflag.nc to give the color, and illum.nc to give
 	# the shading.
 	Rplot=$Rflag/-10/790
-	gmt grdview @topo_32.nc -JM13c $Rplot -C -G@euflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30
+	gmt grdview topo_32.nc -JM13c $Rplot -C -G@euflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30
 
 	# We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
 	# So we write out the borders, pipe them through grdtrack and then plot them with plot3d.
-	gmt coast $Rflag -Df -M -N1 | gmt grdtrack -G@topo_32.nc -s+a | gmt plot3d $Rplot -JZ -p -W1p,white
+	gmt coast $Rflag -Df -M -N1 | gmt grdtrack -Gtopo_32.nc -s+a | gmt plot3d $Rplot -JZ -p -W1p,white
 
 	# Finally, we add dots and names for three cities.
 	# Again, gmt grdtrack is used to put the dots "at elevation".
@@ -48,7 +48,7 @@ gmt begin ex32
 	07:07:03 50:43:09 Bonn
 	EOF
 
-	gmt grdtrack -G@topo_32.nc cities.txt | gmt plot3d $Rplot -JZ -p -Sc7p -W1p,white -Gred
+	gmt grdtrack -Gtopo_32.nc cities.txt | gmt plot3d $Rplot -JZ -p -Sc7p -W1p,white -Gred
 	gmt text -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0 cities.txt
 
 	# cleanup

@@ -32,5 +32,5 @@ gmt project -C$x0/$y0 -E$x1/$y1 -G10 -Q > tt.d
 dist=$(gmt convert tt.d --FORMAT_FLOAT_OUT=%.0lf -El -o2)
 R=$(gmt info -I1 tt.d)
 echo "# Geoid Extrema Separation is $dist km" > App_O_transect.txt
-gmt grdtrack tt.d -GApp_O_geoid.nc | gmt grdtrack -GGMT_App_O.nc >> App_O_transect.txt
+gmt grdtrack tt.d -GApp_O_geoid.nc | gmt grdtrack -G@earth_relief_05m -R77/145/-6/4 >> App_O_transect.txt
 rm -f tt.d gmt.history
