@@ -389,7 +389,10 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 			/* Found, replace given file name with this */
 			if (c) {	/* Restore the modifiers */
 				c[0] = '+';
-				strcat (newfile, c);
+				if (strstr (c, "+s") || strstr (c, "+o"))
+					GMT_Report (API, GMT_MSG_WARNING, "Cannot append +s<scl> and/or +o<offset> to the remote global grid %s - ignored\n", newfile);
+				else
+					strcat (newfile, c);
 			}
 			gmt_M_str_free (*file_ptr);
 			*file_ptr = strdup (newfile);
