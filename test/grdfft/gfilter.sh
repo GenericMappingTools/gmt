@@ -3,7 +3,7 @@
 
 ps=gfilter.ps
 gmt set GMT_FFT kiss
-topo=@topo_38.nc
+topo=topo_38.nc
 gmt grdcut @earth_relief_02m -R-60/-45/-20/-10 -G${topo}=ns
 
 # Do a 100 km Gaussian filter on some topography
