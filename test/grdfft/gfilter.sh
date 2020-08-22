@@ -3,8 +3,8 @@
 
 ps=gfilter.ps
 gmt set GMT_FFT kiss
-
-topo=@topo_38.nc
+topo=topo_38.nc
+gmt grdcut @earth_relief_02m -R-60/-45/-20/-10 -G${topo}=ns
 
 # Do a 100 km Gaussian filter on some topography
 gmt grdfft ${topo} -fg -F-/100000 -Glow.nc -N+l
@@ -16,4 +16,3 @@ echo "315 -10 Original" | gmt pstext -R${topo} -J -O -K -F+jTR+f14p -C+t -Gwhite
 gmt grdimage low.nc -Iilow.nc -Ct.cpt -J -Y-4.6i -K -O -B5 -BWSne >> $ps
 echo "315 -10 100 km Gaussian" | gmt pstext -R -J -O -K -F+jTR+f14p -C+t -Gwhite -W1p -Dj0.1i >> $ps
 gmt psscale -Dx3i/-0.4i+w5i/0.15i+h+jTC+e+n -O -Ct.cpt -B500 >> $ps
-
