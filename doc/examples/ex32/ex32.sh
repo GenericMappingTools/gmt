@@ -20,9 +20,11 @@ gmt begin ex32
 	#   euflag.nc=ns
 	# gmt grdedit euflag.nc -fg $Rflag
 
-	# Now get the topography for the same area and store it as topo_32.nc.
+	# Now get the topography for the same area, mask out the oceans and store it as topo_32.nc.
 
 	gmt grdcut @earth_relief_30s_p $Rflag -Gtopo_32.nc=ns
+	gmt grdcut @earth_mask_30s_p $Rflag -Gmask_32.nc=ns
+	gmt grdmath topo_32.nc mask_32.nc 0 GT 0 NAN MUL = topo_32.nc
 
 	# The color map assigns "Reflex Blue" to the lower half of the 0-255 range and
 	# "Yellow" to the upper half.
