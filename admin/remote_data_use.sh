@@ -12,7 +12,9 @@ if [ ! -d cmake ]; then
 fi
 
 # 1. Find all occurrences of remote grids but skip comments
-find doc test -name '*.sh' -exec egrep '@earth_relief|@earth_mask|@earth_day|@earth_night|@earth_age' {} \; | grep -v '^#' > /tmp/t.lis
+find doc test -name '*.sh' -exec egrep '@earth_relief|@earth_mask|@earth_day|@earth_night|@earth_age' {} \; | grep -v '^#' > /tmp/t1.lis
 # 2. Find the individual words starting with "@" but skip anything that has a variable name.
-awk '{for (k = 1; k <= NF; k++) if (substr ($k, 1, 1) == "@") print $k}' /tmp/t.lis | grep -v '\$' | sort -u
-rm -f /tmp/t.lis
+awk '{for (k = 1; k <= NF; k++) if (substr ($k, 1, 1) == "@") print $k}' /tmp/t1.lis | egrep -v '\$|cpt' > /tmp/t2.lis
+awk '{for (k = 1; k <= NF; k++) if (substr ($k, 3, 1) == "@") print substr ($k,3)}' /tmp/t1.lis | egrep -v '\$|cpt' >> /tmp/t2.lis
+sort -u /tmp/t2.lis
+rm -f /tmp/t[12].lis
