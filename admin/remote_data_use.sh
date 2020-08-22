@@ -12,11 +12,7 @@ if [ ! -d cmake ]; then
 fi
 
 # 1. Find all occurrences of remote grids but skip comments
-find doc test -name '*.sh' -exec egrep '@earth_relief|@earth_mask|@earth_day|@earth_night|@earth_age' {} \; | grep -v '^#' > /tmp/t1.lis
+find doc test -name '*.sh' -exec egrep '@earth_relief|@earth_mask|@earth_day|@earth_night|@earth_age' {} \; | grep -v '^#' > /tmp/t.lis
 # 2. Find the individual words starting with "@" but skip anything that has a variable name.
-awk '{for (k = 1; k <= NF; k++) if (substr ($k, 1, 1) == "@") print $k}' /tmp/t1.lis | grep -v '\$' > /tmp/t2.lis
-# 3. Remove the pixel/gridline specific references and return the unique listing
-echo "s/_g//p" > /tmp/t.sed
-echo "s/_p//p" >> /tmp/t.sed
-sed -f /tmp/t.sed /tmp/t2.lis | sort -u
-rm -f /tmp/t[12].lis /tmp/t.sed
+awk '{for (k = 1; k <= NF; k++) if (substr ($k, 1, 1) == "@") print $k}' /tmp/t.lis | grep -v '\$' | sort -u
+rm -f /tmp/t.lis
