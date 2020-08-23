@@ -45,7 +45,6 @@ All modules are requested via a call to the :doc:`gmt` program.
    filter1d
    fitcircle
    gmt2kml
-   gmtbinstats
    gmtconnect
    gmtconvert
    gmtdefaults
@@ -208,7 +207,6 @@ Core Modules
     - :doc:`filter1d`
     - :doc:`fitcircle`
     - :doc:`gmt2kml`
-    - :doc:`gmtbinstats`
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
     - :doc:`gmtdefaults`
@@ -602,8 +600,6 @@ Miscellaneous
 | :doc:`gmt2kml`        | |gmt2kml_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`grdgdal`        | |grdgdal_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`gmtbinstats`    | |gmtbinstats_purpose| |
 +-----------------------+-----------------------+
 | :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+
