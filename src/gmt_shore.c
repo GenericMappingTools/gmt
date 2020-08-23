@@ -348,9 +348,43 @@ L1:
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "3. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 	}
 
+	/* 4. Try the just-in-time download option from the server */
+
+	if (GMT->session.USERDIR) {	/* Check user dir via remote download */
+		char remote_path[PATH_MAX] = {""};
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: Trying via remote download\n");
+		sprintf (path, "%s/geography/gshhg/%s.nc", GMT->session.USERDIR, stem);
+		if (access (path, R_OK) == 0) {	/* Found it here */
+			if ( gshhg_require_min_version (path, version) ) {
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: OK, could access %s\n", path);
+				return (path);
+			}
+		}
+		/* Must download it the first time */
+		if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to download the GSHHG for GMT since GMT_AUTO_DOWNLOAD is off\n");
+			return NULL;
+		}
+		sprintf (path, "%s/geography/gshhg", GMT->session.USERDIR);	/* Local directory destination */
+		if (access (path, R_OK) && gmt_mkdir (path)) {	/* Must first create the directory */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT directory : %s\n", path);
+			return NULL;
+		}
+		sprintf (path, "%s/geography/gshhg/%s.nc", GMT->session.USERDIR, stem);	/* Final local path */
+		snprintf (remote_path, PATH_MAX, "%s/geography/gshhg/%s.nc", GMT->session.DATASERVER, stem);	/* Unique remote path */
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Downloading %s.nc for the first time - be patient\n", stem);
+		if (gmt_download_file (GMT, stem, remote_path, path, true)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to obtain remote file %s.nc\n", stem);
+		}
+		else if ( gshhg_require_min_version (path, version) ) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: OK, could access %s\n", path);
+			return (path);
+		}
+	}
+
 	/* 4. No success, just break down and cry */
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: Failure, could not access any GSHHG files\n");
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "5. GSHHG: Failure, could not access any GSHHG files\n");
 	if (warn_once && reset) {
 		warn_once = false;
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GSHHG version %d.%d.%d or newer is "
