@@ -29,7 +29,7 @@ Description
 **x2sys_solve** will use the supplied crossover information to solve
 for systematic corrections that can then be applied per track to improve
 data quality. Seven different systematic corrections can be solved for using a
-least-squares approach. Note: Only one data column can be processed at
+least-squares approach. **Note**: Only one data column can be processed at
 the time.
 
 Required Arguments

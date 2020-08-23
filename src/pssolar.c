@@ -28,7 +28,7 @@
 #define THIS_MODULE_MODERN_NAME	"solar"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot day-light terminators and other sunlight parameters"
-#define THIS_MODULE_KEYS	">X},>DI,>DM@ID),MD)"
+#define THIS_MODULE_KEYS	">X},>DI,>DM"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbpto" GMT_OPT("c")
 
@@ -47,28 +47,28 @@ struct SUN_PARAMS {
 };
 
 struct PSSOLAR_CTRL {
-	struct PSSOL_C {		/* -C */
+	struct PSSOLAR_C {		/* -C */
 		bool active;
 	} C;
-	struct PSSOL_G {		/* -G<fill> */
+	struct PSSOLAR_G {		/* -G<fill> */
 		bool active;
 		bool clip;
 		struct GMT_FILL fill;
 	} G;
-	struct PSSOL_I {		/* -I info about solar stuff */
+	struct PSSOLAR_I {		/* -I info about solar stuff */
 		bool   active;
 		bool   position;
 		int    TZ;			/* Time Zone */
 		double lon, lat;
 		struct GMT_GCAL calendar;
 	} I;
-	struct PSSOL_M {		/* -M dumps the terminators data instead of plotting them */
+	struct PSSOLAR_M {		/* -M dumps the terminators data instead of plotting them */
 		bool active;
 	} M;
-	struct PSSOL_N {		/* -N */
+	struct PSSOLAR_N {		/* -N */
 		bool active;
 	} N;
-	struct PSSOL_T {		/* -T terminator options */
+	struct PSSOLAR_T {		/* -T terminator options */
 		bool   active;
 		bool   night, civil, nautical, astronomical;
 		unsigned int n_terminators;
@@ -77,13 +77,13 @@ struct PSSOLAR_CTRL {
 		double radius[4];
 		struct GMT_GCAL calendar;
 	} T;
-	struct PSSOL_W {		/* -W<pen> */
+	struct PSSOLAR_W {		/* -W<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSOLAR_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSSOLAR_CTRL);
@@ -93,12 +93,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void parse_date_tz(char *date_tz, char **date, int *TZ) {
+GMT_LOCAL void pssolar_parse_date_tz(char *date_tz, char **date, int *TZ) {
 	unsigned int pos = 0;
 	char *p;
 
@@ -112,7 +112,7 @@ GMT_LOCAL void parse_date_tz(char *date_tz, char **date, int *TZ) {
 	free(p);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pssolar synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -153,7 +153,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pssolar and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -195,7 +195,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 					                                     "Expected -I[<lon>/<lat>]\n");
 					}
 					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
-						parse_date_tz(pch, &date, &TZ);
+						pssolar_parse_date_tz(pch, &date, &TZ);
 						Ctrl->I.TZ = TZ;
 						if (date) {
 							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
@@ -215,7 +215,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				Ctrl->T.active = true;
 				gmt_M_memset (Ctrl->T.radius, 4, double);	/* Reset to nothing before parsing */
 				if ((pch = strchr (opt->arg, '+')) != NULL) {	/* Have one or two extra options */
-					parse_date_tz (pch, &date, &TZ);
+					pssolar_parse_date_tz (pch, &date, &TZ);
 					Ctrl->T.TZ = TZ;
 					if (date) {
 						gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
@@ -285,8 +285,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
-	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/solar_params.m  */
+GMT_LOCAL int pssolar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
+	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/pssolar_params.m  */
 	/* http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html */
 	/* Compute the day-night terminator and the civil, nautical and astronomical twilights
 	   as well as several other solar parameters such sunrise, sunset, Sun position, etc... */
@@ -396,26 +396,8 @@ GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	return (GMT_NOERROR);
 }
 
-int GMT_solar (void *V_API, int mode, void *args) {
-	/* This is the GMT6 modern mode name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
-		bool print_postion = false, dump_data = false;
-		if (API->error) return (API->error);    /* Set or get option list */
-		print_postion = (GMT_Find_Option (API, 'I', options) != NULL);
-		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
-		gmt_M_free_options (mode);
-		if (!(print_postion || dump_data)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: solar\n");
-			return (GMT_NOT_A_VALID_MODULE);
-		}
-	}
-	return GMT_pssolar (V_API, mode, args);
-}
-
 /* --------------------------------------------------------------------------------------------------- */
-int GMT_pssolar (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 	int     j, n, hour, min, error = 0;
 	int     n_pts = 361;						/* Number of points for the terminators */
 	char    record[GMT_LEN256] = {""};
@@ -448,7 +430,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	Sun = gmt_M_memory (GMT, NULL, 1, struct SUN_PARAMS);
 
 	if (Ctrl->I.active) {
-		solar_params (Ctrl, Sun);
+		pssolar_params (Ctrl, Sun);
 
 		if (Ctrl->C.active) {			/* Output all members of the Sun struct as a vector of doubles */
 			double out[10];
@@ -552,7 +534,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		for (n = 0; n < 4; n++) {				/* Loop over the number of requested terminators */
 			if (Ctrl->T.radius[n] == 0) continue;		/* This terminator was not requested */
 			Ctrl->T.which = n;
-			solar_params (Ctrl, Sun);
+			pssolar_params (Ctrl, Sun);
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			sprintf (record, "%s terminator", terms[n]);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
@@ -582,7 +564,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		for (n = 0; n < 4; n++) {	/* Loop over the number of requested terminators */
 			if (Ctrl->T.radius[n] == 0) continue;	/* This terminator was not requested */
 			Ctrl->T.which = n;
-			solar_params (Ctrl, Sun);
+			pssolar_params (Ctrl, Sun);
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			if (Ctrl->G.clip) {	/* Set up a clip path */
 				bool must_free = true;
@@ -619,4 +601,22 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, Sun);
 
 	Return (GMT_NOERROR);
+}
+
+EXTERN_MSC int GMT_solar (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
+		bool print_postion = false, dump_data = false;
+		if (API->error) return (API->error);    /* Set or get option list */
+		print_postion = (GMT_Find_Option (API, 'I', options) != NULL);
+		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
+		gmt_M_free_options (mode);
+		if (!(print_postion || dump_data)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: solar\n");
+			return (GMT_NOT_A_VALID_MODULE);
+		}
+	}
+	return GMT_pssolar (V_API, mode, args);
 }

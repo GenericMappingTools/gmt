@@ -47,8 +47,9 @@
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 
-# Exclude optional GDAL, PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
+# Exclude optional GDAL, GEOS ,PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
 #set (GMT_EXCLUDE_GDAL TRUE)
+#set (GMT_EXCLUDE_GEOS TRUE)
 #set (GMT_EXCLUDE_PCRE TRUE)
 #set (GMT_EXCLUDE_PCRE2 TRUE)
 #set (GMT_EXCLUDE_FFTW3 TRUE)
@@ -105,6 +106,10 @@
 # gdal-config) [auto]:
 #set (GDAL_ROOT "gdal_install_prefix")
 
+# Set location of GEOS (can be root directory, path to header file or path to
+# geos-config) [auto]:
+#set (GEOS_ROOT "geos_install_prefix")
+
 # Set location of PCRE (can be root directory, path to header file or path to
 # pcre-config) [auto]:
 #set (PCRE_ROOT "pcre_install_prefix")
@@ -150,6 +155,7 @@
 
 # Enable building of shared libraries [TRUE] (disable to use static libraries;
 # not recommended; on non-x86 architectures uncomment the next option as well):
+# NOTE: currently only support shared libraries
 #set (BUILD_SHARED_LIBS FALSE)
 
 # Create position independent code on all targets [auto] (needed for static
@@ -183,6 +189,10 @@
 # Number of parallel test jobs with "make check":
 #set (N_TEST_JOBS 4)
 
+# Ignore the "GMT_KNOWN_FAILURE" comment in tests to let tests fail normally
+# Can only be "ON" or "OFF" in uppercase!
+#set (GMT_ENABLE_KNOWN2FAIL OFF)
+
 # Enable this option to run GMT programs from within ${GMT_BINARY_DIR} without
 # installing or setting GMT_SHAREDIR and GMT_USERDIR first. This is required
 # for testing [OFF]:
@@ -191,16 +201,11 @@
 # Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
 
-# List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes
-# that link against the full gmt libs (not just the API; for building codes
-# that only need the GMT API, see the gmt-custom project).
-#set (EXTRA_BUILD_DIRS apidemo)
-
-# List extra new modules for testing without adding them to the module list
-#set (EXTRA_MODULES newmodule1.c newmodule2.c)
-
-# List extra new supplemental modules for testing without adding them to the module list
-#set (EXTRA_MODULES_SUPPL newsuppl1.c newsuppl2.c)
+# List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules
+# that link against the full gmt libs. (For building codes that only need the GMT API,
+# see the https://github.com/GenericMappingTools/custom-supplements project).
+# These supplemental modules can be built into separate libraries.
+#set (SUPPL_EXTRA_DIRS newsuppl1 newsuppl2 ...)
 
 # Directory in which to install the release sources per default
 # [${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION}]:
@@ -230,6 +235,8 @@
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
 #add_definitions(-DUSE_COMMON_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for common GMT options
 #add_definitions(-DUSE_MODULE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for module options
+#add_definitions(-DEXPORT_GMTLIB)				# Turn on to access normally un-exported or static gmtlib functions from external tools
+
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings
 #set (CMAKE_C_FLAGS_DEBUG -ggdb3)                          # gdb debugging symbols
@@ -273,6 +280,7 @@
 # endif ()
 # set (GMT_DLL_RENAME gmt_w${BITAGE})
 # set (PSL_DLL_RENAME psl_w${BITAGE})
+# set (SUPP_DLL_RENAME supplements_w${BITAGE})
 #endif(WIN32)
 
 # On Windows Visual C 2012 needs _ALLOW_KEYWORD_MACROS to build

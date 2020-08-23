@@ -134,50 +134,50 @@ struct HOTSPOT_ORIGINATOR {
 
 struct ORIGINATOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct D {	/* -D<factor */
+	struct ORIGINATER_D {	/* -D<factor */
 		bool active;
 		double value;
 	} D;
-	struct E {	/* -Erotfile[+i] */
+	struct ORIGINATER_E {	/* -Erotfile[+i] */
 		bool active;
 		bool mode;
 		char *file;
 	} E;
-	struct F {	/* -Fhotspotfile[+d] */
+	struct ORIGINATER_F {	/* -Fhotspotfile[+d] */
 		bool active;
 		bool mode;
 		char *file;
 	} F;
-	struct L {	/* -L */
+	struct ORIGINATER_L {	/* -L */
 		bool active;
 		unsigned int mode;
 		bool degree;	/* Report degrees */
 	} L;
-	struct N {	/* -N */
+	struct ORIGINATER_N {	/* -N */
 		bool active;
 		double t_upper;
 	} N;
-	struct Q {	/* -Q<tfix> */
+	struct ORIGINATER_Q {	/* -Q<tfix> */
 		bool active;
 		double t_fix, r_fix;
 	} Q;
-	struct S {	/* -S */
+	struct ORIGINATER_S {	/* -S */
 		bool active;
 		unsigned int n;
 	} S;
-	struct T {	/* -T */
+	struct ORIGINATER_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W<max_dist> */
+	struct ORIGINATER_W {	/* -W<max_dist> */
 		bool active;
 		double dist;
 	} W;
-	struct Z {	/* -Z */
+	struct ORIGINATER_Z {	/* -Z */
 		bool active;
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct ORIGINATOR_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct ORIGINATOR_CTRL);
@@ -191,14 +191,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->E.file);
 	gmt_M_str_free (C->F.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int comp_hs (const void *p1, const void *p2) {
+GMT_LOCAL int originater_comp_hs (const void *p1, const void *p2) {
 	const struct HOTSPOT_ORIGINATOR *a = p1, *b = p2;
 
 	if (a->np_dist < b->np_dist) return (-1);
@@ -206,7 +206,7 @@ GMT_LOCAL int comp_hs (const void *p1, const void *p2) {
 	return (0);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -E<rottable>[+i] -F<hotspottable>[+d] [-D<d_km>] [-H] [-L[<flag>]]\n", name);
@@ -241,7 +241,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to originater and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -258,7 +258,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Supplemental parameters */
@@ -276,19 +276,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 				Ctrl->E.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
 				else if ((c = strstr (opt->arg, "+i"))) {Ctrl->E.mode = true; c[0] = '\0';}
-				if (gmt_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN, GMT_IS_DATASET))
-					Ctrl->E.file  = strdup (&opt->arg[k]);
-				else
-					n_errors++;
+				if (opt->arg[k]) Ctrl->E.file = strdup (&opt->arg[k]);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file))) n_errors++;
 				if (c) c[0] = '+';
 				break;
 			case 'F':
 				Ctrl->F.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->F.mode = true; k = 1;}
-				if (gmt_check_filearg (GMT, 'F', &opt->arg[k], GMT_IN, GMT_IS_DATASET))
-					Ctrl->F.file  = strdup (&opt->arg[k]);
-				else
-					n_errors++;
+				if (opt->arg[k]) Ctrl->F.file = strdup (&opt->arg[k]);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'L':
 				Ctrl->L.active = true;
@@ -359,7 +355,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_originater (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_originater (void *V_API, int mode, void *args) {
 	unsigned int n_max_spots, n_input;
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np, n_expected_fields, n_out;
@@ -401,10 +397,10 @@ int GMT_originater (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the originater main code ----------------------------*/
 
-	ns = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot);	/* Get geocentric hotspot locations */
-	if (ns < 0) {
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return (GMT_RUNTIME_ERROR);		/* An error message was already issued by spotter_hotspot_init() */
+	if ((ns = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot)) < 0) {	/* Get geocentric hotspot locations */
+		Return (GMT_RUNTIME_ERROR);		/* An error message was already issued by spotter_hotspot_init() */
 	}
+	
 	n_hotspots = (unsigned int)ns;
 	if (Ctrl->S.n > n_hotspots) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -S: Give value between 1 and %d\n", n_hotspots);
@@ -502,6 +498,11 @@ int GMT_originater (void *V_API, int mode, void *args) {
 				break;
 		}
 
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
 		Out->text = In->text;
@@ -547,8 +548,8 @@ int GMT_originater (void *V_API, int mode, void *args) {
 			for (spot = 0; spot < n_hotspots; spot++) {	/* For all hotspots */
 				if (hot[spot].D) {	/* Must interpolate drifting hotspot location at current time c[k+2] */
 					t = c[k+2];	/* Current time */
-					gmt_intpol (GMT, hot[spot].D->data[GMT_Z], hot[spot].D->data[GMT_X], hot[spot].D->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
-					gmt_intpol (GMT, hot[spot].D->data[GMT_Z], hot[spot].D->data[GMT_Y], hot[spot].D->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, hot[spot].D->data[GMT_Z], hot[spot].D->data[GMT_X], NULL, hot[spot].D->n_rows, 1, &t, &lon, 0.0, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, hot[spot].D->data[GMT_Z], hot[spot].D->data[GMT_Y], NULL, hot[spot].D->n_rows, 1, &t, &lat, 0.0, GMT->current.setting.interpolant);
 				}
 				else {	/* Use the fixed hotspot location */
 					lon = hot[spot].h->lon;
@@ -567,8 +568,8 @@ int GMT_originater (void *V_API, int mode, void *args) {
 
 			if (hot[spot].D) {	/* Must interpolate drifting hotspot location at current time c[k+2] */
 				t = c[3*hot[spot].nearest+3];	/* Time of closest approach */
-				gmt_intpol (GMT, hot[spot].D->data[GMT_Z], hot[spot].D->data[GMT_X], hot[spot].D->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
-				gmt_intpol (GMT, hot[spot].D->data[GMT_Z], hot[spot].D->data[GMT_Y], hot[spot].D->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
+				gmt_intpol (GMT, hot[spot].D->data[GMT_Z], hot[spot].D->data[GMT_X], NULL, hot[spot].D->n_rows, 1, &t, &lon, 0.0, GMT->current.setting.interpolant);
+				gmt_intpol (GMT, hot[spot].D->data[GMT_Z], hot[spot].D->data[GMT_Y], NULL, hot[spot].D->n_rows, 1, &t, &lat, 0.0, GMT->current.setting.interpolant);
 			}
 			else {	/* Use the fixed hotspot location */
 				lon = hot[spot].h->lon;
@@ -635,7 +636,7 @@ int GMT_originater (void *V_API, int mode, void *args) {
 			if (hot[spot].stage == 0) hot[spot].stage++;
 		}
 
-		if (n_hotspots > 1) qsort (hot, n_hotspots, sizeof (struct HOTSPOT_ORIGINATOR), comp_hs);
+		if (n_hotspots > 1) qsort (hot, n_hotspots, sizeof (struct HOTSPOT_ORIGINATOR), originater_comp_hs);
 
 		if (hot[0].np_dist < Ctrl->W.dist) {
 			if (Ctrl->L.mode == 1) {	/* Want time, dist, z output */
@@ -695,3 +696,16 @@ int GMT_originater (void *V_API, int mode, void *args) {
 
 	Return (GMT_NOERROR);
 }
+
+
+EXTERN_MSC int GMT_originator (void *V_API, int mode, void *args) {
+	/* This was the GMT5 name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (gmt_M_compat_check (API->GMT, 4)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Module originator is deprecated; use originater.\n");
+		return (GMT_Call_Module (API, "originater", mode, args));
+	}
+	GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: originator\n");
+	return (GMT_NOT_A_VALID_MODULE);
+}
+

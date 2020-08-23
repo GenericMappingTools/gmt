@@ -94,7 +94,7 @@ may be specified in one of five ways, two of which are shown in Figure
    possibly the grid registration (see
    Section `Grid registration: The -r option`_).
 
-#. **-R**\ *code1,code2,...*\ [**+r**\|\ **R**\ [*incs*]]. This indirectly supplies
+#. **-R**\ *code1,code2,...*\ [**+e**\|\ **r**\|\ **R**\ [*incs*]]. This indirectly supplies
    the region by consulting the DCW (Digital Chart of the World) database and derives
    the bounding regions for one or more countries given by the codes.
    Simply append one or more comma-separated countries using the two-character
@@ -106,7 +106,8 @@ may be specified in one of five ways, two of which are shown in Figure
    the polygon(s): Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
    final region boundaries to be multiples of these steps [default is no adjustment].
    Alternatively, use **+R** to extend the region outward by adding these increments
-   instead [default is no extension].  As an example, **-R**\ *FR*\ **+r**\ 1 will select
+   instead, or **+e** which is like **+r** but it ensures that the bounding box extends
+   by at least 0.25 times the increment [no extension]. As an example, **-R**\ *FR*\ **+r**\ 1 will select
    the national bounding box of France rounded to nearest integer degree.
 
 #. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
@@ -172,7 +173,7 @@ Calendar time coordinates:
     where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
     day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
     Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
-    week, and day-of-week) for the ISO calendar. Note: this format requirement
+    week, and day-of-week) for the ISO calendar. **Note**: This format requirement
     only applies to command-line arguments and not time coordinates given via
     data files.  If no *date* is given
     we assume the current day. The **T** flag is required if a *clock* is given.
@@ -325,7 +326,10 @@ but you may also split this into two separate invocations for clarity, i.e.,
 -   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
     The first optional flag following **-B** selects **p** (rimary) [Default] or
-    **s** (econdary) axes information (mostly used for time axes annotations).
+    **s** (econdary) axes information (mostly used for time axes annotations but
+    is available for geographic axes as well. **Note**: primary refers to annotations
+    closest to the axis and secondary to annotations further away.  Hence, primary
+    annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts).
     The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
     If none are given then we default to **xy**.  If you wish to give different annotation intervals
     or labels for the various axes then you must repeat the **B** option for
@@ -383,7 +387,7 @@ major and minor ticks and the grid lines, by not specifying the *stride*
 value. For example, **-Bafg** will select all three spacings
 automatically for both axes. In case of longitude–latitude plots, this
 will keep the spacing the same on both axes. You can also use
-**-Bafg/afg** to auto-select them separately. Also note that given the
+**-Bxafg -Byafg** to auto-select them separately. Also note that given the
 myriad ways of specifying time-axis annotations, the automatic selections
 may have to be overridden with manual settings to active exactly what you need.
 
@@ -756,7 +760,7 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 Timestamps on plots: The **-U** option
 --------------------------------------
 
-The **-U** option draws the GMT UNIX System time stamp on the plot.
+The **-U** option draws the GMT system time stamp on the plot.
 By appending **+j**\ *just* and/or **+o**\ *dx/dy*, the user may
 specify the justification of the stamp and where the stamp should fall
 on the page relative to lower left corner of the plot.
@@ -934,7 +938,7 @@ subplot's **-A** option) or to specify directly the *row*,\ *col* or
 1-D *index* of the desired panel.  The **-c** option is only allowed
 when in subplot mode.  If no **-c** option is given for the first plot
 then we default to *row* = *col* = *index* = 0, i.e., the upper left
-panel.  Note: *row*, *col*, and *index* all start at 0.
+panel.  **Note**: *row*, *col*, and *index* all start at 0.
 
 .. _option_-d:
 
@@ -1025,7 +1029,7 @@ miles. For programs that map data to map coordinates you can optionally
 specify these criteria to apply to the projected coordinates (by using
 upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
 **c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
-by :term:`PROJ_LENGTH_UNIT`]. Note: For **-gx** or **-gy** with time data
+by :term:`PROJ_LENGTH_UNIT`]. **Note**: For **-gx** or **-gy** with time data
 the unit is instead controlled by :term:`TIME_UNIT`.
 Normally, a gap is computed as the absolute value of the
 specified distance measure (see above).  Append **+n** to compute the gap
@@ -1144,7 +1148,7 @@ the label string that goes with the current symbol or line, you can select
 from a series of modifiers that mirror the effect of control codes normally
 added to the *specfile* by hand.  For instance, a simple plot with two
 symbols can obtain a legend by using this option and modifiers and is shown
-in Figure :ref:`Auto Legend <auto_legend>`::
+in Figure :ref:`Auto Legend <auto_legend>`:
 
 .. literalinclude:: /_verbatim/GMT_autolegend.txt
 
@@ -1309,6 +1313,34 @@ spacing by
 Thus, given the same region (**-R**) and grid spacing, the
 pixel-registered grids have one less column and one less row than the
 gridline-registered grids; here we find nx = ny = 3.
+
+Switching registrations
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _Switch_Registrations:
+
+GMT offer ways to convert a pixel-registered grid to a gridline-registered grid.
+One way is to simply adjust the region of the grid by half the grid-spacing and
+toggle the registration in :doc:`/grdedit` **-T**.  This is a *non-destructive* way to convert the grid,
+but it does change the domain which may not be desirable depending on application.
+The other is to *resample* the grid at the other set of nodes via :doc:`/grdsample` **-T**.
+This approach leaves the region exactly the same but is *destructive* due to the loss
+of the higher data frequencies, as shown in Figure :ref:`Registration resampling <Grid_grid2pix>`.
+
+.. _Grid_grid2pix:
+
+.. figure:: /_images/GMT_grid2pix.*
+   :width: 500 px
+   :align: center
+
+   a) Cross-section of a grid along the *x*-axis for a constant value of *y*, showing just the Nyquist
+   *x*-component (heavy line) at its grid nodes (red circles).  Resampling this component half-way
+   between nodes (vertical lines) will always give zero (red triangles), hence this signal is lost,
+   unlike long wavelength components (thin line), which can be interpolated (blue triangles).
+   Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
+   resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
+   of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
+   function of wavenumber :math:`k_j` [Marks and Smith, 2007].
 
 .. _option_-s:
 

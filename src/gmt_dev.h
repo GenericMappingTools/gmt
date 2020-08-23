@@ -83,9 +83,6 @@ extern "C" {
 #	pragma warning( disable : 4244 )	/* conversion from 'uint64_t' to '::size_t', possible loss of data */
 #endif
 
-/* Used to restrict the scope of a function to the file it was declared in */
-#define GMT_LOCAL static
-
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 
@@ -115,7 +112,15 @@ extern "C" {
 
 #include <time.h>
 
-#include "common_math.h"     /* Shared math functions */
+#ifdef EXPORT_GMTLIB
+/* Used to export everything so external environments can do unit tests */
+#	define GMT_LOCAL EXTERN_MSC
+#else
+/* Used to restrict the scope of a function to the file it was declared in */
+#	define GMT_LOCAL static
+#endif
+
+#include "gmt_common_math.h" /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */
 #include "gmt_private.h"     /* API declaration needed by libraries */
 #include "gmt_hidden.h"      /* Hidden bookkeeping structure for API containers */
@@ -144,8 +149,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_error.h"          /* Only contains error codes */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
-#include "gmt_core_module.h" 	/* Core module modes and properties */
-#include "gmt_supplements_module.h" 	/* Suppl module modes and properties */
 #include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */
 #include "gmt_grd.h"            /* Define grd file header structure */
 #include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
@@ -158,13 +161,14 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_plot.h"           /* extern functions defined in gmt_plot.c */
 #include "gmt_memory.h"         /* extern functions defined in gmt_M_memory.c */
 #include "gmt_types.h"          /* GMT type declarations */
+#include "gmt_remote.h"         /* GMT remote dataset structure */
 
 #ifdef _OPENMP                  /* Using open MP parallelization */
-#include "omp.h"
+#include <omp.h>
 #endif
 
 #include "gmt_prototypes.h"     /* All GMT low-level API */
-#include "common_string.h"      /* All code shared between GMT and PSL */
+#include "gmt_common_string.h"  /* All code shared between GMT and PSL */
 
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 

@@ -34,7 +34,7 @@
 
 #include "gmt_notposix.h"
 
-#include "common_byteswap.h"
+#include "gmt_common_byteswap.h"
 
 #include "gshhg.h"		/* The definition of the GSHHG header structure */
 

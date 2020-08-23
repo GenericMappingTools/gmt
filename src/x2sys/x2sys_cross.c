@@ -51,48 +51,48 @@ enum x2sys_sets {
 };
 
 struct X2SYS_CROSS_CTRL {
-	struct X2S_CROSS_A {	/* -A */
+	struct X2SYS_CROSS_A {	/* -A */
 		bool active;
 		char *file;
 	} A;
-	struct X2S_CROSS_C {	/* -C */
+	struct X2SYS_CROSS_C {	/* -C */
 		bool active;
 		char *file;
 	} C;
-	struct X2S_CROSS_D {	/* -Dg|s|n */
+	struct X2SYS_CROSS_D {	/* -Dg|s|n */
 		bool active;	/* Force selection if true, else examine */
 		int mode;	/* -1 for S pole, +1 for N pole */
 	} D;
-	struct X2S_CROSS_I {	/* -I */
+	struct X2SYS_CROSS_I {	/* -I */
 		bool active;
 		int mode;
 	} I;
-	struct X2S_CROSS_S {	/* -S */
+	struct X2SYS_CROSS_S {	/* -S */
 		bool active[2];
 		double limit[3];
 	} S;
-	struct X2S_CROSS_T {	/* -T */
+	struct X2SYS_CROSS_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
-	struct X2S_CROSS_W {	/* -W */
+	struct X2SYS_CROSS_W {	/* -W */
 		bool active;
 		unsigned int width;
 	} W;
-	struct X2S_CROSS_Q {	/* -Q */
+	struct X2SYS_CROSS_Q {	/* -Q */
 		bool active;
 		int mode;
 	} Q;
-	struct X2S_CROSS_Z {	/* -Z */
+	struct X2SYS_CROSS_Z {	/* -Z */
 		bool active;
 	} Z;
 };
 
-struct PAIR {				/* Used with -Kkombinations.lis option */
+struct X2SYS_CROSS_PAIR {				/* Used with -Kkombinations.lis option */
 	char *id1, *id2;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_CROSS_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_CROSS_CTRL);
@@ -104,7 +104,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->C.file);
@@ -112,7 +112,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A<combi.lis>] [-C[<fname>]] [-D[S|N]] [-Il|a|c] [-Qe|i]\n", name);
@@ -151,7 +151,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -178,10 +178,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Get list of approved filepair combinations to check */
-				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->A.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->A.active = true;
+				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
 				break;
 			case 'C':
 				Ctrl->C.active = true;
@@ -279,7 +278,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t n_pairs) {
+GMT_LOCAL int x2syscross_combo_ok (char *name_1, char *name_2, struct X2SYS_CROSS_PAIR *pair, uint64_t n_pairs) {
 	uint64_t i;
 
 	/* Return true if this particular combination is found in the list of pairs */
@@ -291,10 +290,10 @@ GMT_LOCAL int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t 
 	return (false);
 }
 
-GMT_LOCAL void free_pairs (struct GMT_CTRL *GMT, struct PAIR **pair, uint64_t n_pairs) {
+GMT_LOCAL void x2syscross_free_pairs (struct GMT_CTRL *GMT, struct X2SYS_CROSS_PAIR **pair, uint64_t n_pairs) {
 	/* Free the array of pairs */
 	uint64_t k;
-	struct PAIR *P = *pair;
+	struct X2SYS_CROSS_PAIR *P = *pair;
 	for (k = 0; k < n_pairs; k++) {
 		gmt_M_str_free (P[k].id1);
 		gmt_M_str_free (P[k].id2);
@@ -303,7 +302,7 @@ GMT_LOCAL void free_pairs (struct GMT_CTRL *GMT, struct PAIR **pair, uint64_t n_
 
 }
 
-GMT_LOCAL bool is_outside_region (struct GMT_CTRL *GMT, double lon, double lat, bool geo) {
+GMT_LOCAL bool x2syscross_is_outside_region (struct GMT_CTRL *GMT, double lon, double lat, bool geo) {
 	if (!GMT->common.R.active[RSET]) return false;	/* Requires -R to be outside */
 	if (lat < GMT->common.R.wesn[YLO] || lat > GMT->common.R.wesn[YHI]) return true;	/* Outside y range */
 	if (geo) {	/* Must wind the longitude properly */
@@ -315,7 +314,7 @@ GMT_LOCAL bool is_outside_region (struct GMT_CTRL *GMT, double lon, double lat, 
 	return false;	/* Inside */
 }
 
-GMT_LOCAL void local_geo_to_xy (double *lon, double *lat, double plat) {
+GMT_LOCAL void x2syscross_local_geo_to_xy (double *lon, double *lat, double plat) {
 	/* Project lon,lat to polar coordinates (r,theta) then Cartesian x,y */
 	double r, s, c;
 	r = fabs (*lat - plat);		/* Distance from the pole plat in degrees */
@@ -323,7 +322,7 @@ GMT_LOCAL void local_geo_to_xy (double *lon, double *lat, double plat) {
 	*lon = r * c;	*lat = r * s;	/* Cartesian coordinates */
 }
 
-GMT_LOCAL void local_xy_to_geo (double *x, double *y, int plat) {
+GMT_LOCAL void x2syscross_local_xy_to_geo (double *x, double *y, int plat) {
 	/* Project Cartesian x,y to polar coordinates (r,theta) then lon,lat */
 	double r, lon, lat;
 	r = hypot (*x, *y);				/* Distance from our pole in degrees */
@@ -334,9 +333,9 @@ GMT_LOCAL void local_xy_to_geo (double *x, double *y, int plat) {
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
-#define Crashout(code) {gmt_M_free (GMT, duplicate); free_pairs (GMT, &pair, n_pairs); x2sys_free_list (GMT, trk_name, n_tracks); if (fpC) fclose (fpC); x2sys_end (GMT, s); Return (error);}
+#define Crashout(code) {gmt_M_free (GMT, duplicate); x2syscross_free_pairs (GMT, &pair, n_pairs); x2sys_free_list (GMT, trk_name, n_tracks); if (fpC) fclose (fpC); x2sys_end (GMT, s); Return (error);}
 
-int GMT_x2sys_cross (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	char **trk_name = NULL;			/* Name of tracks */
 	char line[GMT_BUFSIZ] = {""};		/* buffer */
 	char item[GMT_BUFSIZ] = {""};		/* buffer */
@@ -403,7 +402,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	struct GMT_XOVER XC;				/* Structure with resulting crossovers */
 	struct X2SYS_FILE_INFO data_set[2];		/* File information */
 	struct X2SYS_BIX Bix;
-	struct PAIR *pair = NULL;			/* Used with -Akombinations.lis option */
+	struct X2SYS_CROSS_PAIR *pair = NULL;			/* Used with -Akombinations.lis option */
 	FILE *fp = NULL, *fpC = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct X2SYS_CROSS_CTRL *Ctrl = NULL;
@@ -484,7 +483,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		}
 
 		n_alloc = add_chunk = GMT_CHUNK;
-		pair = gmt_M_memory (GMT, NULL, n_alloc, struct PAIR);
+		pair = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_CROSS_PAIR);
 
 		while (fgets (line, GMT_BUFSIZ, fp)) {
 
@@ -503,8 +502,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				size_t old_n_alloc = n_alloc;
 				add_chunk *= 2;
 				n_alloc += add_chunk;
-				pair = gmt_M_memory (GMT, pair, n_alloc, struct PAIR);
-				gmt_M_memset (&(pair[old_n_alloc]), n_alloc - old_n_alloc, struct PAIR);
+				pair = gmt_M_memory (GMT, pair, n_alloc, struct X2SYS_CROSS_PAIR);
+				gmt_M_memset (&(pair[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_CROSS_PAIR);
 			}
 		}
 		fclose (fp);
@@ -513,7 +512,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "No combinations found in file %s!\n", Ctrl->A.file);
 			Crashout (GMT_RUNTIME_ERROR);
 		}
-		if (n_pairs < n_alloc) pair = gmt_M_memory (GMT, pair, n_pairs, struct PAIR);
+		if (n_pairs < n_alloc) pair = gmt_M_memory (GMT, pair, n_pairs, struct X2SYS_CROSS_PAIR);
 		GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 "\n", n_pairs);
 	}
 
@@ -590,7 +589,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		plat[SET_A] = plat[SET_B] = iplat * 90.0;	/* Corresponding latitude of pole */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Based on -D setting we will polar project all data using pole latitude %g\n", plat[SET_A]);
 	}
-	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Crashout (GMT_NOT_A_VALID_TYPE);
 
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_SPEED_SELECTION], &vel_scale, -1);	/* Sets output scale for distances using in velocities */
@@ -655,7 +655,10 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			if (n_bad < n_rec[SET_A]) has_time[SET_A] = true;
 		}
 
-		if ((dist[SET_A] = gmt_dist_array_2 (GMT, data[SET_A][s->x_col], data[SET_A][s->y_col], n_rec[SET_A], dist_scale, s->dist_flag)) == NULL) gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+		if ((dist[SET_A] = gmt_dist_array_2 (GMT, data[SET_A][s->x_col], data[SET_A][s->y_col], n_rec[SET_A], dist_scale, s->dist_flag)) == NULL) {
+			error = gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+			Crashout (error);
+		}
 
 		if (do_examine) {	/* Check all the coordinates and find suitable pole */
 			ymin[SET_A] = ymax[SET_A] = data[SET_A][s->y_col][0];
@@ -668,7 +671,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		}
 		if (do_project) {	/* Convert coordinates */
 			for (i = 0; i < n_rec[SET_A]; i++)
-				local_geo_to_xy (&data[SET_A][s->x_col][i], &data[SET_A][s->y_col][i], plat[SET_A]);
+				x2syscross_local_geo_to_xy (&data[SET_A][s->x_col][i], &data[SET_A][s->y_col][i], plat[SET_A]);
 		}
 
 		time[SET_A] = (has_time[SET_A]) ? data[SET_A][s->t_col] : x2sys_dummytimes (GMT, n_rec[SET_A]) ;
@@ -686,7 +689,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			if (!internal &&  same) continue;	/* Only do external errors */
 			if (!external && !same) continue;	/* Only do internal errors */
 
-			if (Ctrl->A.active && !combo_ok (trk_name[A], trk_name[B], pair, n_pairs)) continue;	/* Do not want this combo */
+			if (Ctrl->A.active && !x2syscross_combo_ok (trk_name[A], trk_name[B], pair, n_pairs)) continue;	/* Do not want this combo */
 
 			if (Ctrl->C.active) tic = clock();	/* To report execution time from this pair */
 
@@ -713,7 +716,10 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					if (n_bad < n_rec[SET_B]) has_time[SET_B] = true;
 				}
 
-				if ((dist[SET_B] = gmt_dist_array_2 (GMT, data[SET_B][s->x_col], data[SET_B][s->y_col], n_rec[SET_B], dist_scale, s->dist_flag)) == NULL) gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+				if ((dist[SET_B] = gmt_dist_array_2 (GMT, data[SET_B][s->x_col], data[SET_B][s->y_col], n_rec[SET_B], dist_scale, s->dist_flag)) == NULL) {
+					error = gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+					Crashout (error);
+				}
 
 				if (do_examine) {	/* Check the coordinates and find suitable pole */
 					ymin[SET_B] = ymax[SET_B] = data[SET_B][s->y_col][0];
@@ -733,7 +739,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				}
 				if (do_project) {	/* Convert coordinates the same way as A */
 					for (i = 0; i < n_rec[SET_B]; i++)
-						local_geo_to_xy (&data[SET_B][s->x_col][i], &data[SET_B][s->y_col][i], plat[SET_A]);
+						x2syscross_local_geo_to_xy (&data[SET_B][s->x_col][i], &data[SET_B][s->y_col][i], plat[SET_A]);
 				}
 
 				time[SET_B] = (has_time[SET_B]) ? data[SET_B][s->t_col] : x2sys_dummytimes (GMT, n_rec[SET_B]);
@@ -752,8 +758,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					out[GMT_X] = XC.x[i];
 					out[GMT_Y] = XC.y[i];
 					if (do_project)
-						local_xy_to_geo (&out[GMT_X], &out[GMT_Y], iplat);
-					if (is_outside_region (GMT, out[GMT_X], out[GMT_Y], s->geographic))
+						x2syscross_local_xy_to_geo (&out[GMT_X], &out[GMT_Y], iplat);
+					if (x2syscross_is_outside_region (GMT, out[GMT_X], out[GMT_Y], s->geographic))
 						continue;	/* Outside our area of interest */
 					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[GMT_X]);
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
@@ -769,8 +775,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					out[GMT_X] = XC.x[i];	/* Crossover location */
 					out[GMT_Y] = XC.y[i];
 					if (do_project)
-						local_xy_to_geo (&out[GMT_X], &out[GMT_Y], iplat);
-					if (is_outside_region (GMT, out[GMT_X], out[GMT_Y], s->geographic))
+						x2syscross_local_xy_to_geo (&out[GMT_X], &out[GMT_Y], iplat);
+					if (x2syscross_is_outside_region (GMT, out[GMT_X], out[GMT_Y], s->geographic))
 						continue;	/* Outside our area of interest */
 
 					gmt_M_memset (ok, n_data_col, unsigned int);
@@ -859,7 +865,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 							/* Ok, got enough data to interpolate at xover */
 
 							first = Ctrl->W.width - n_left;
-							n_errors = gmt_intpol (GMT, &t[first], &y[first], (n_left + n_right), 1, &time_x[k], &xdata[k][col], GMT->current.setting.interpolant);
+							n_errors = gmt_intpol (GMT, &t[first], &y[first], NULL, (n_left + n_right), 1, &time_x[k], &xdata[k][col], 0.0, GMT->current.setting.interpolant);
 							if (n_errors == 0) {	/* OK */
 								ok[j]++;
 								n_ok++;
@@ -1001,7 +1007,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Free up other arrays */
 
-	if (Ctrl->A.active) free_pairs (GMT, &pair, n_pairs);
+	if (Ctrl->A.active) x2syscross_free_pairs (GMT, &pair, n_pairs);
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, xdata[SET_A]);
 	gmt_M_free (GMT, xdata[SET_B]);

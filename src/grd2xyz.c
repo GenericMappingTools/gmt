@@ -51,7 +51,7 @@ struct GRD2XYZ_CTRL {
 	struct GMT_PARSE_Z_IO Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2XYZ_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRD2XYZ_CTRL);
@@ -66,12 +66,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[f|i]] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT);
@@ -86,7 +86,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ci to write grid index instead of (x,y).\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Select -Wa to compute weights equal to the node areas\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Select -Wa to compute weights equal to the node areas.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set exact specification of resulting 1-column output z-table.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Then, append L or R to indicate starting point in row.\n");
@@ -113,9 +113,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-EXTERN_MSC unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg);
-
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -156,12 +154,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 				break;
 			case 'S':	/* Suppress/no-suppress NaNs on output */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -S is deprecated; use -s instead.\n");
-					gmt_M_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
-					GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
-					GMT->current.io.io_nan_ncols = GMT_IO_NAN_SKIP;		/* Default is that single z column */
-					GMT->current.setting.io_nan_mode = 1;	/* Plain -S */
-					if (opt->arg[0] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP;	/* Old -Sr */
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -S is deprecated; use -s common option instead.\n");
+					if (gmt_parse_s_option (GMT, opt->arg))
+						n_errors++;
 					GMT->common.s.active = true;
 				}
 				else
@@ -205,7 +200,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	if (Ctrl->Z.active) gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
+	if (Ctrl->Z.active) n_errors += gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 
 	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Must specify at least one input file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Option -E can only handle one input file\n");
@@ -217,7 +212,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grd2xyz (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	bool first = true;
 	unsigned int row, col, n_output, w_col = 3;
 	int error = 0, write_error = 0;
@@ -229,6 +224,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	double wesn[4], d_value, out[4], *x = NULL, *y = NULL;
 
 	struct GMT_GRID *G = NULL, *W = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *H = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_Z_IO io;
 	struct GMT_OPTION *opt = NULL;
@@ -300,16 +296,21 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (gmt_M_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
-			gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");
+		if (gmt_M_is_subset (GMT, G->header, wesn)) {	/* Subset requested; make sure wesn matches header spacing */
+			if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "")))
+				Return (error);
+		}
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, G) == NULL) {
 			Return (API->error);	/* Get subset */
 		}
 
+		H = gmt_get_H_hidden (G->header);
+
 		n_total += G->header->nm;
 
-		gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, G), opt->arg);
+		if ((error = gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, G), opt->arg)))
+			Return (error);
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			bool previous = GMT->common.b.active[GMT_OUT], rst = false;
@@ -416,8 +417,11 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 			/* Compute grid node positions once only */
 
-			x = gmt_grd_coord (GMT, G->header, GMT_X);
-			y = gmt_grd_coord (GMT, G->header, GMT_Y);
+			if (H->var_spacing[GMT_X]) GMT_Report (API, GMT_MSG_WARNING, "Grid %s has non-equidistant x-coordinates (see grd2xyz docs for discussion)\n", opt->arg);
+			if (H->var_spacing[GMT_Y]) GMT_Report (API, GMT_MSG_WARNING, "Grid %s has non-equidistant y-coordinates (see grd2xyz docs for discussion)\n", opt->arg);
+
+			x = (G->x) ? G->x : gmt_grd_coord (GMT, G->header, GMT_X);
+			y = (G->y) ? G->y : gmt_grd_coord (GMT, G->header, GMT_Y);
 			Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 			if (Ctrl->C.active) {	/* Replace x,y with col,row */
 				if (Ctrl->C.mode < 2) {
@@ -469,8 +473,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, Out);		/* Write this to output */
 				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
-			gmt_M_free (GMT, x);
-			gmt_M_free (GMT, y);
+			if (G->x == NULL) gmt_M_free (GMT, x);
+			if (G->y == NULL) gmt_M_free (GMT, y);
 			gmt_M_free (GMT, Out);
 			if (W) gmt_free_grid (GMT, &W, true);
 		}
@@ -482,7 +486,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {
-		if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_KEEP)
+		if (GMT->current.setting.io_nan_mode & GMT_IO_NAN_KEEP)
 			GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " finite values suppressed\n", n_suppressed);
 		else
 			GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64" NaN values suppressed\n", n_suppressed);

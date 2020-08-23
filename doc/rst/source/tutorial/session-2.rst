@@ -46,7 +46,7 @@ used modules in GMT.  In addition to the common command line switches
 it has numerous specific options, and expects different file formats
 depending on what action has been selected.  These circumstances make
 :doc:`/plot` harder to master than most GMT tools.  The table below
-shows a abbreviated list of the options:
+shows an abbreviated list of the options:
 
 ======================================================================= ===================================================================
 Option                                                                  Purpose

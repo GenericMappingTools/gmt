@@ -8,6 +8,6 @@
     directory and second in all directories listed in
     **$X2SYS\_HOME**/*TAG*/*TAG*\ \_paths.txt (if it exists). [If
     **$X2SYS\_HOME** is not set it will default to
-    **$GMT\_SHAREDIR**/x2sys]. (Note: MGD77 files will also be looked
+    **$GMT\_SHAREDIR**/x2sys]. (**Note**: MGD77 files will also be looked
     for via **MGD77\_HOME**/mgd77\_paths.txt and \*.gmt files will be
     searched for via **$GMT\_SHAREDIR**/mgg/gmtfile\_paths).

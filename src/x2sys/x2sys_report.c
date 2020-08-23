@@ -40,38 +40,38 @@
 #define XREPORT_INTERNAL	2
 
 struct X2SYS_REPORT_CTRL {
-	struct In {
+	struct X2SYS_REPORT_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct X2SYS_REPORT_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C */
+	struct X2SYS_REPORT_C {	/* -C */
 		bool active;
 		char *col;
 	} C;
-	struct I {	/* -I */
+	struct X2SYS_REPORT_I {	/* -I */
 		bool active;
 		char *file;
 	} I;
-	struct L {	/* -L */
+	struct X2SYS_REPORT_L {	/* -L */
 		bool active;
 		char *file;
 	} L;
-	struct N {	/* -N */
+	struct X2SYS_REPORT_N {	/* -N */
 		bool active;
 		uint64_t min;
 	} N;
-	struct Q {	/* -Q */
+	struct X2SYS_REPORT_Q {	/* -Q */
 		bool active;
 		int mode;
 	} Q;
-	struct S {	/* -S */
+	struct X2SYS_REPORT_S {	/* -S */
 		bool active;
 		char *file;
 	} S;
-	struct T {	/* -T */
+	struct X2SYS_REPORT_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
@@ -95,7 +95,7 @@ struct COE_ADJLIST {	/* Array with the growing arrays of COE_ADJUST per track */
 	size_t n_alloc;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_REPORT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_REPORT_CTRL);
@@ -103,7 +103,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->C.col);
@@ -114,7 +114,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *C) {	/
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -T<TAG> [<COEdbase>] [-A] [-I<ignorelist>] [-L[<corrtable.txt>]]\n", name);
@@ -141,7 +141,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -212,7 +212,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struc
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ structure on distance */
+GMT_LOCAL int x2sysreport_comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ structure on distance */
         if ( ((struct COE_ADJUST *)point_1)->d < ((struct COE_ADJUST *)point_2)->d)
                 return(-1);
         else if ( ((struct COE_ADJUST *)point_1)->d > ((struct COE_ADJUST *)point_2)->d)
@@ -224,7 +224,7 @@ GMT_LOCAL int comp_structs (const void *point_1, const void *point_2) { /* Sort 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_report (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, *c = NULL, fmt[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, word[GMT_BUFSIZ] = {""};
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
@@ -453,7 +453,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 			adj[k].K[adj[k].n].c = 0.0;
 			adj[k].n++;
 
-			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
+			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), x2sysreport_comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = gmt_fopen (GMT, file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s!\n", file);

@@ -52,15 +52,15 @@ struct GRDCLIP_RECLASSIFY {
 };
 
 struct GRDCLIP_CTRL {
-	struct In {
+	struct GRDCLIP_In {
 		bool active;
 		char *file;
 	} In;
-	struct G {	/* -G<output_grdfile> */
+	struct GRDCLIP_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct S {	/* -Sa<high/above>, -Sb<low/below>, -Si<low/high/between>, -Sr<old>/<new> */
+	struct GRDCLIP_S {	/* -Sa<high/above>, -Sb<low/below>, -Si<low/high/between>, -Sr<old>/<new> */
 		bool active;
 		unsigned int mode;
 		unsigned int n_class;
@@ -72,7 +72,7 @@ struct GRDCLIP_CTRL {
 	} S;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCLIP_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDCLIP_CTRL);
@@ -82,7 +82,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->G.file);
@@ -90,7 +90,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> [%s] [-Sa<high>/<above>]\n", name, GMT_Rgeo_OPT);
@@ -113,7 +113,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int compare_classes (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int grdclip_compare_classes (const void *point_1v, const void *point_2v) {
 	/*  Needed to sort classes on low value. */
 	const struct GRDCLIP_RECLASSIFY *point_1 = point_1v, *point_2 = point_2v;
 
@@ -122,7 +122,7 @@ GMT_LOCAL int compare_classes (const void *point_1v, const void *point_2v) {
 	return (0);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -141,20 +141,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Output filename */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'S':	/* Set limits */
 				Ctrl->S.active = true;
@@ -263,7 +261,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 		unsigned int k;
 		Ctrl->S.class = gmt_M_memory (GMT, Ctrl->S.class, n_class, struct GRDCLIP_RECLASSIFY);
 		Ctrl->S.n_class = n_class;
-		qsort (Ctrl->S.class, Ctrl->S.n_class, sizeof (struct GRDCLIP_RECLASSIFY), compare_classes);
+		qsort (Ctrl->S.class, Ctrl->S.n_class, sizeof (struct GRDCLIP_RECLASSIFY), grdclip_compare_classes);
 		for (k = 1; k < Ctrl->S.n_class; k++) {
 			if (Ctrl->S.class[k].low < Ctrl->S.class[k-1].high) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -Si: Reclassification case %d overlaps with case %d\n", k, k-1);
@@ -298,7 +296,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdclip (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdclip (void *V_API, int mode, void *args) {
 	unsigned int row, col, k;
 	int error = 0;
 	bool new_grid, go = false;
@@ -336,12 +334,15 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (gmt_M_is_subset (GMT, G->header, wesn)) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, G->header, wesn)) {	/* Subset requested; make sure wesn matches header spacing */
+		if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "")))
+			Return (error);
+	}
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {
 		Return (API->error);	/* Get subset */
 	}
 
-	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, false, G, &Out);	/* true if input is a read-only array */
+	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, false, 0, G, &Out);	/* true if input is a read-only array */
 
 	gmt_M_grd_loop (GMT, G, row, col, ij) {
 		/* Checking if extremes are exceeded (need not check NaN) */

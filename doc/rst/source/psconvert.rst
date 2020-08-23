@@ -43,7 +43,7 @@ size of the resulting images is determined by the BoundingBox (or
 HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
 may be computed first. As another option, it can compute ESRI type world
 files used to reference, for instance, tif files and make them be
-recognized as geotiff.  Note: If the PostScript file calls on any of
+recognized as geotiff.  **Note**: If the PostScript file calls on any of
 the Adobe PDF transparency extensions *and* PDF is not the selected output
 format, then the file will first be converted to a temporary PDF file
 (for the transparency to take effect) before converting the PDF to the
@@ -89,7 +89,8 @@ Optional Arguments
     Use **-A+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
     Use **-A+g**\ *paint* to paint the BoundingBox behind the illustration and
     use **-A+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
-    the default pen of 0.25p,black).
+    the default pen of 0.25p,black).  **Note**: If both **+g** and **+f** are used
+    then we use *paint* as the fade color instead of black.
 
 .. _-C:
 
@@ -108,7 +109,7 @@ Optional Arguments
 
 **-E**\ *resolution*
     Set raster resolution in dpi [default = 720 for PDF, 300 for others].
-    Note: Ghostscript limits the final width and height pixel dimensions
+    **Note**: Ghostscript limits the final width and height pixel dimensions
     of a raster to be less than or equal to 65536.
 
 .. _-F:
@@ -213,7 +214,7 @@ Optional Arguments
     with the **-B** option is that it creates a frame and very likely
     its annotations. That introduces pixels outside the map data extent,
     and therefore the map extents estimation will be wrong. To avoid
-    this problem use *-*\ *-*\ MAP_FRAME_TYPE=inside option which plots all
+    this problem use **--MAP_FRAME_TYPE**\ =inside option which plots all
     annotations and ticks inside the image and therefore does not
     compromise the coordinate computations. Pay attention also to the
     cases when the plot has any of the sides with whites only because
@@ -234,7 +235,8 @@ Optional Arguments
     sets **-A** **-P**.
 
     Use **-W+k** to create a minimalist KML file that allows loading the
-    image in GoogleEarth. Note that for this option the image must be in
+    image in GoogleEarth. Note that for this option to work it is necessary that the postscript
+    image must have been created with **-JX** or **-Jx** cartesian projection of
     geographical coordinates. If not, a warning is issued but the KML
     file is created anyway. Several modifier options are available to
     customize the KML file in the form of **+**\ *opt* strings. Append
@@ -256,7 +258,7 @@ Optional Arguments
     `KML documentation <https://code.google.com/apis/kml/documentation/>`_
     for further explanation.
 
-    Note: If any of your titles or names contain a plus symbol next to
+    **Note**: If any of your titles or names contain a plus symbol next to
     a letter it can be confused with an option modifier. Escape such
     plus signs by placing a backslash in front of it.  Alternatively,
     enclose the string in double quotes and then the entire **-W**
@@ -287,6 +289,8 @@ Optional Arguments
     5th elements contain the map limits, 6 to 9th the map limits in
     projected coordinates and the rest of the line has the regular **PROJ**
     string for this projection.
+
+.. _-Z:
 
 **-Z**
     Remove the input PostScript file(s) after the conversion.
@@ -425,4 +429,3 @@ See Also
 
 :doc:`gmt`,
 :doc:`coast`
-

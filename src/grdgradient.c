@@ -44,49 +44,49 @@ enum grdgradient_mode {
 	GRDGRADIENT_VAR = 2};
 
 struct GRDGRADIENT_CTRL {
-	struct In {
+	struct GRDGRADIENT_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A<azim>[/<azim2>] | -A<file>*/
+	struct GRDGRADIENT_A {	/* -A<azim>[/<azim2>] | -A<file>*/
 		bool active;
 		bool two;
 		double azimuth[2];
 		unsigned int mode;
 		char *file;
 	} A;
-	struct D {	/* -D[a][c][o][n] */
+	struct GRDGRADIENT_D {	/* -D[a][c][o][n] */
 		bool active;
 		unsigned int mode;
 	} D;
-	struct E {	/* -E[s|p]<azim>/<elev[+a<ambient>][+d<diffuse>][+p<specular>][+<shine>] */
+	struct GRDGRADIENT_E {	/* -E[s|p]<azim>/<elev[+a<ambient>][+d<diffuse>][+p<specular>][+<shine>] */
 		bool active;
 		unsigned int mode;
 		double azimuth, elevation;
 		double ambient, diffuse, specular, shine;
 	} E;
-	struct G {	/* -G<file> */
+	struct GRDGRADIENT_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N[t_or_e][<amp>][+<ambient>][+o<offset>][+s<sigma>] */
+	struct GRDGRADIENT_N {	/* -N[t_or_e][<amp>][+<ambient>][+o<offset>][+s<sigma>] */
 		bool active;
 		unsigned int set[3];	/* 1 if values are specified for amp, offset and sigma, 2 means we want last-run values */
 		unsigned int mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset, ambient;
 	} N;
-	struct Q {	/* -Qc|r|R */
+	struct GRDGRADIENT_Q {	/* -Qc|r|R */
 		/* Note: If -Qc is set with -N then -G is not required. GMT_Encode_Options turns off the primary output */
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct S {	/* -S<slopefile> */
+	struct GRDGRADIENT_S {	/* -S<slopefile> */
 		bool active;
 		char *file;
 	} S;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDGRADIENT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDGRADIENT_CTRL);
@@ -100,7 +100,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->A.file);
@@ -109,7 +109,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL double specular (double n_columns, double n_rows, double nz, double *s) {
+GMT_LOCAL double grdgradient_specular (double n_columns, double n_rows, double nz, double *s) {
 	/* SPECULAR Specular reflectance.
 	   R = SPECULAR(Nx,Ny,Nz,S,V) returns the reflectance of a surface with
 	   normal vector components [Nx,Ny,Nz].  S and V specify the direction
@@ -127,7 +127,7 @@ GMT_LOCAL double specular (double n_columns, double n_rows, double nz, double *s
 	return (MAX(0, 2 * (s[0]*n_columns + s[1]*n_rows + s[2]*nz) * nz - s[2]));
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]]\n", name);
@@ -179,7 +179,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdgradient and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -196,11 +196,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -297,10 +296,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 				}
 				break;
 			case 'G':	/* Output grid */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'L':	/* GMT4 BCs */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -369,10 +367,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 				}
 				break;
 			case 'S':	/* Slope grid */
-				if ((Ctrl->S.active = gmt_check_filearg (GMT, 'S', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->S.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->S.active = true;
+				if (opt->arg[0]) Ctrl->S.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->S.file))) n_errors++;
 				break;
 
 			default:	/* Report bad options */
@@ -402,7 +399,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdgradient (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	bool bad, new_grid = false, separate = false;
 	int p[4], mx, error = 0;
 	unsigned int row, col, n;
@@ -439,6 +436,8 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
+
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	if (Ctrl->Q.mode & 1) {	/* Read in previous statistics */
 		char sfile[PATH_MAX] = {""};
@@ -524,7 +523,10 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (gmt_M_is_subset (GMT, Surf->header, wesn)) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, Surf->header, wesn)) {	/* Subset requested; make sure wesn matches header spacing */
+		if ((error = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "")))
+			Return (error);
+	}
 	gmt_grd_init (GMT, Surf->header, options, true);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, Surf) == NULL) {	/* Get subset */
@@ -558,7 +560,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	separate = true;	/* Cannot use input grid to hold output grid when doing things in parallel */
 #endif
 #endif
-	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, Surf, &Out);	/* true if input is a read-only array */
+	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 1, Surf, &Out);	/* true if input is a read-only array */
 
 	if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Flat-Earth approximation */
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
@@ -679,7 +681,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 					mag = d_sqrt (dzdx * dzdx + dzdy * dzdy + norm_z * norm_z);
 					dzdx /= mag;	dzdy /= mag;	norm_z /= mag;
 					diffuse = MAX (0, s[0] * dzdx + s[1] * dzdy + s[2] * norm_z);
-					spec = specular (dzdx, dzdy, norm_z, s);
+					spec = grdgradient_specular (dzdx, dzdy, norm_z, s);
 					spec = pow (spec, Ctrl->E.shine);
 					output = (Ctrl->E.ambient + Ctrl->E.diffuse * diffuse + Ctrl->E.specular * spec) / k_ads;
 				}

@@ -68,7 +68,7 @@ void meca_get_trans (struct GMT_CTRL *GMT, double slon, double slat, double *t11
 	*t22 = (dl == 0.0) ? 0.0 : dvdlat/dl;
 }
 
-static double null_axis_dip (double str1, double dip1, double str2, double dip2) {
+static double utilmeca_null_axis_dip (double str1, double dip1, double str2, double dip2) {
 	/*
 	   compute null axis dip when strike and dip are given
 	   for each nodal plane.  Angles are in degrees.
@@ -83,7 +83,7 @@ static double null_axis_dip (double str1, double dip1, double str2, double dip2)
 	return (den);
 }
 
-static double null_axis_strike (double str1, double dip1, double str2, double dip2) {
+static double utilmeca_null_axis_strike (double str1, double dip1, double str2, double dip2) {
 	/*
 	   Compute null axis strike when strike and dip are given
 	   for each nodal plane.   Angles are in degrees.
@@ -109,7 +109,7 @@ static double null_axis_strike (double str1, double dip1, double str2, double di
 	return (phn);
 }
 
-static double proj_radius(double str1, double dip1, double str) {
+static double utilmeca_proj_radius(double str1, double dip1, double str) {
 	/*
 	   Compute the vector radius for a given strike,
 	   equal area projection, inferior sphere.
@@ -140,8 +140,8 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 	struct AXIS N_axis;
 
 	/* compute null axis strike and dip */
-	N_axis.dip = null_axis_dip (meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip);
-	N_axis.str = null_axis_strike (meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip);
+	N_axis.dip = utilmeca_null_axis_dip (meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip);
+	N_axis.str = utilmeca_null_axis_strike (meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip);
 
 	/* compute radius size of the bubble */
 	radius_size = size * 0.5;
@@ -161,7 +161,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		increment = 1.0;
 		str = meca.NP1.str;
 		while (str <= meca.NP1.str + 180. + EPSIL) {
-			radius = proj_radius (meca.NP1.str, meca.NP1.dip, str) * radius_size;
+			radius = utilmeca_proj_radius (meca.NP1.str, meca.NP1.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
@@ -184,7 +184,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		/* second nodal plane part */
 		str = meca.NP2.str;
 		while (str <= meca.NP2.str + 180. + EPSIL) {
-			radius = proj_radius (meca.NP2.str, meca.NP2.dip, str) * radius_size;
+			radius = utilmeca_proj_radius (meca.NP2.str, meca.NP2.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
@@ -239,7 +239,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		if (meca.NP1.str > N_axis.str) meca.NP1.str -= 360.;
 		str = meca.NP1.str;
 		while (fabs (90. - meca.NP1.dip) < EPSIL ? str <= meca.NP1.str + EPSIL : str <= N_axis.str + EPSIL) {
-			radius = proj_radius (meca.NP1.str, meca.NP1.dip, str) * radius_size;
+			radius = utilmeca_proj_radius (meca.NP1.str, meca.NP1.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
@@ -254,7 +254,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		if (fault * (meca.NP2.str - N_axis.str) < -EPSIL) meca.NP2.str += fault * 360.;
 		str = fabs (90. - meca.NP2.dip) < EPSIL ? meca.NP2.str : N_axis.str;
 		while (increment > 0. ? str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
-			radius = proj_radius (meca.NP2.str - (1 + fault) * 90., meca.NP2.dip, str) * radius_size;
+			radius = utilmeca_proj_radius (meca.NP2.str - (1 + fault) * 90., meca.NP2.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
@@ -285,7 +285,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		increment = -1.;
 		str = meca.NP1.str;
 		while (fabs (90. - meca.NP1.dip) < EPSIL ? str >= meca.NP1.str -EPSIL : str >= N_axis.str - EPSIL) {
-			radius = proj_radius (meca.NP1.str - 180., meca.NP1.dip, str) * radius_size;
+			radius = utilmeca_proj_radius (meca.NP1.str - 180., meca.NP1.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
@@ -299,7 +299,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		if (fault * (N_axis.str - meca.NP2.str) < - EPSIL) meca.NP2.str -= fault * 360.;
 		str = fabs (90. - meca.NP2.dip) < EPSIL ? meca.NP2.str : N_axis.str;
 		while (increment > 0. ? str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
-			radius = proj_radius (meca.NP2.str - (1 - fault) * 90., meca.NP2.dip, str) * radius_size;
+			radius = utilmeca_proj_radius (meca.NP2.str - (1 - fault) * 90., meca.NP2.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
@@ -350,7 +350,7 @@ double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 	if (num_of_plane != 2) {
 		for (i = 0; i <= 180; i++) {
 			str = meca.NP1.str + i;
-			radius = proj_radius (meca.NP1.str, meca.NP1.dip, str) * radius_size;
+			radius = utilmeca_proj_radius (meca.NP1.str, meca.NP1.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
@@ -360,7 +360,7 @@ double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 	if (num_of_plane != 1) {
 		for (i = 0; i <= 180; i++) {
 			str = meca.NP2.str + i;
-			radius = proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
+			radius = utilmeca_proj_radius(meca.NP2.str, meca.NP2.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
 			y[i] = y0 + radius * co;
@@ -401,7 +401,7 @@ double meca_computed_mw (struct MOMENT moment, double ms) {
 }
 
 /*********************************************************************/
-static double computed_strike1 (struct nodal_plane NP1) {
+static double utilmeca_computed_strike1 (struct nodal_plane NP1) {
 	/*
 	   Compute the strike of the second nodal plane when are given
 	   strike, dip and rake for the first nodal plane with AKI & RICHARD's
@@ -438,7 +438,7 @@ static double computed_strike1 (struct nodal_plane NP1) {
 }
 
 /*********************************************************************/
-static double computed_dip1 (struct nodal_plane NP1) {
+static double utilmeca_computed_dip1 (struct nodal_plane NP1) {
 	/*
 	   Compute second nodal plane dip when are given strike,
 	   dip and rake for the first nodal plane with AKI & RICHARD's
@@ -455,7 +455,7 @@ static double computed_dip1 (struct nodal_plane NP1) {
 }
 
 /*********************************************************************/
-static double computed_rake1 (struct nodal_plane NP1) {
+static double utilmeca_computed_rake1 (struct nodal_plane NP1) {
 	/*
 	   Compute rake in the second nodal plane when strike ,dip
 	   and rake are given for the first nodal plane with AKI &
@@ -465,8 +465,8 @@ static double computed_rake1 (struct nodal_plane NP1) {
 	*/
 
 	double rake2, sinrake2;
-	double str2 = computed_strike1(NP1);
-	double dip2 = computed_dip1(NP1);
+	double str2 = utilmeca_computed_strike1(NP1);
+	double dip2 = utilmeca_computed_dip1(NP1);
 	double am = (gmt_M_is_zero (NP1.rake) ? 1.0 : NP1.rake / fabs (NP1.rake));
 	double sd, cd, ss, cs;
 	sincosd (NP1.dip, &sd, &cd);
@@ -539,9 +539,9 @@ void meca_define_second_plane (struct nodal_plane NP1, struct nodal_plane *NP2) 
 	    Genevieve Patau
 	*/
 
-	NP2->str = computed_strike1 (NP1);
-	NP2->dip = computed_dip1 (NP1);
-	NP2->rake  = computed_rake1 (NP1);
+	NP2->str = utilmeca_computed_strike1 (NP1);
+	NP2->dip = utilmeca_computed_dip1 (NP1);
+	NP2->rake  = utilmeca_computed_rake1 (NP1);
 }
 
 /***************************************************************************************/
@@ -951,8 +951,8 @@ void meca_dc2axe (st_me meca, struct AXIS *T, struct AXIS *N, struct AXIS *P) {
 		T->dip = dy; T->str = py;
 	}
 
-	N->str = null_axis_strike (T->str, T->dip, P->str, P->dip);
-	N->dip = null_axis_dip (T->str, T->dip, P->str, P->dip);
+	N->str = utilmeca_null_axis_strike (T->str, T->dip, P->str, P->dip);
+	N->dip = utilmeca_null_axis_dip (T->str, T->dip, P->str, P->dip);
 }
 
 void meca_axis2xy (double x0, double y0, double size, double pp, double dp, double pt, double dt, double *xp,double *yp, double *xt, double *yt) {
@@ -975,7 +975,7 @@ void meca_axis2xy (double x0, double y0, double size, double pp, double dp, doub
 
 #if 0	/* Currently not used but saved in case of debug operations */
 #ifdef DEBUG
-GMT_LOCAL int dump_meca (st_me meca) {
+GMT_LOCAL int utilmeca_dump_meca (st_me meca) {
 	fprintf (stderr, "\nNodal plane NP1: str = %g dip = %g rake = %g\n", meca.NP1.str, meca.NP1.dip, meca.NP1.rake);
 	fprintf (stderr, "Nodal plane NP2: str = %g dip = %g rake = %g\n", meca.NP2.str, meca.NP2.dip, meca.NP2.rake);
 	fprintf (stderr, "Magnitude = %g exponent = %d\n", meca.moment.mant, meca.moment.exponent);

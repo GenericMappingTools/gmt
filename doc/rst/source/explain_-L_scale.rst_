@@ -1,5 +1,5 @@
 **-L**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**]\ [**+a**\ *align*]\ [**+f**]\ [**+j**\ *justify*]\ [**+l**\ [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
-    Draws a simple map scale centered on the reference point specified
+    Draw a simple map scale centered on the reference point specified
     using one of four coordinate systems:
 
     .. include:: explain_refpoint.rst_
@@ -24,7 +24,7 @@
     not required, **+f** is not allowed, and no units should be specified in **+w**.
     You must set any Cartesian data units via **+l**.
     For a vertical rather than horizontal Cartesian scale, append **+v**.
-    Note: Use :term:`FONT_LABEL` to change the label font and
+    **Note**: Use :term:`FONT_LABEL` to change the label font and
     :term:`FONT_ANNOT_PRIMARY`
     to change the annotation font.  The height of the map scale is controlled
     by :term:`MAP_SCALE_HEIGHT`, and the pen thickness is

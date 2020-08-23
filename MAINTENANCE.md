@@ -27,7 +27,7 @@ Note: [pngquant](https://pngquant.org/) is needed for optimizing images.
 
 ## Running tests
 
-GMT ships with more than 800 tests to make sure that any changes won't break
+GMT ships with more than 900 tests to make sure that any changes won't break
 its functionality. To enable testing, you need add following lines
 in your `ConfigUserAdvanced.cmake` when configuring GMT:
 

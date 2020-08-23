@@ -36,9 +36,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>KOVabdefghiq" GMT_OPT("HMm")
 
-EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
-EXTERN_MSC void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb);
-
 #define POINT			0
 #define EVENT			1
 #define SPAN			2
@@ -69,79 +66,79 @@ EXTERN_MSC void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P,
 
 struct GMT2KML_CTRL {
 	double t_transp;
-	struct In {
+	struct GMT2KML_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct GMT2KML_A {	/* -A */
 		bool active;
 		bool get_alt;
 		unsigned int mode;
 		double scale;
 		double altitude;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct GMT2KML_C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D<descriptfile> */
+	struct GMT2KML_D {	/* -D<descriptfile> */
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E[+e][+s] */
+	struct GMT2KML_E {	/* -E[+e][+s] */
 		bool active;
 		bool extrude;
 		bool tessellate;
 	} E;
-	struct F {	/* -F */
+	struct GMT2KML_F {	/* -F */
 		bool active;
 		unsigned int mode;
 		unsigned int geometry;
 	} F;
-	struct G {	/* -G<fill>+f|n */
+	struct GMT2KML_G {	/* -G<fill>+f|n */
 		bool active[2];
 		struct GMT_FILL fill[2];
 	} G;
-	struct I {	/* -I<icon> */
+	struct GMT2KML_I {	/* -I<icon> */
 		bool active;
 		char *file;
 	} I;
-	struct L {	/* -L */
+	struct GMT2KML_L {	/* -L */
 		bool active;
 		unsigned int n_cols;
 		char **name;
 	} L;
-	struct N {	/* -N */
+	struct GMT2KML_N {	/* -N */
 		bool active;
 		unsigned int col;
 		unsigned int mode;
 		char *fmt;
 	} N;
-	struct Q {	/* -Qi|a<az> and -Qs<scale> */
+	struct GMT2KML_Q {	/* -Qi|a<az> and -Qs<scale> */
 		bool active;
 		unsigned int mode, dmode;
 		char unit;
 		double value[2];
 		double scale;
 	} Q;
-	struct R2 {	/* -R */
+	struct GMT2KML_R2 {	/* -R */
 		bool active;
 		bool automatic;
 	} R2;
-	struct S {	/* -S */
+	struct GMT2KML_S {	/* -S */
 		bool active;
 		double scale[2];
 	} S;
-	struct T {	/* -T */
+	struct GMT2KML_T {	/* -T */
 		bool active;
 		char *title;
 		char *folder;
 	} T;
-	struct W {	/* -W<pen>[+c[l|f]] */
+	struct GMT2KML_W {	/* -W<pen>[+c[l|f]] */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z */
+	struct GMT2KML_Z {	/* -Z */
 		bool active;
 		bool invisible;
 		bool open;
@@ -149,7 +146,7 @@ struct GMT2KML_CTRL {
 	} Z;
 };
 
-struct KML {
+struct GMT2KML_KML {
 	double *lon, *lat, *z;	/* Points defining the data for the wiggle */
 	double *flon, *flat;	/* The fake lon, lat of the wiggle on the Earth */
 	uint64_t n_in;	/* Poinst making the wiggle data */
@@ -157,7 +154,7 @@ struct KML {
 	uint64_t n_alloc;	/* Allocation size */
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMT2KML_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GMT2KML_CTRL);
@@ -169,7 +166,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->E.tessellate = true;	/* This is the default, use -E+s to turn that off (turned off for symbols later) */
 	C->F.mode = POINT;
 	C->F.geometry = GMT_IS_POINT;
-	gmt_init_fill (GMT, &C->G.fill[F_ID], 1.0, 192.0 / 255.0, 128.0 / 255.0);	/* Default fill color */
+	gmt_init_fill (GMT, &C->G.fill[F_ID], 1.0, gmt_M_is255(192), gmt_M_is255(128));	/* Default fill color */
 	gmt_init_fill (GMT, &C->G.fill[N_ID], 1.0, 1.0, 1.0);				/* Default text color */
 	C->G.fill[N_ID].rgb[3] = 0.25;	/* Default text transparency */
 	C->I.file = strdup ("http://maps.google.com/mapfiles/kml/pal4/icon57.png");	/* Default icon */
@@ -181,7 +178,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->C.file);
@@ -198,7 +195,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the gmt2kml synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -273,7 +270,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct GMT2KML_CTRL *Ctrl, char *text) {
+GMT_LOCAL unsigned int gmt2kml_old_W_parser (struct GMTAPI_CTRL *API, struct GMT2KML_CTRL *Ctrl, char *text) {
 	unsigned int j = 0, n_errors = 0;
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
@@ -284,7 +281,7 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct GMT2KML_CTRL
 	return n_errors;
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmt2kml and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -303,11 +300,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET))
+				if (n_files++ > 0) break;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
-				else if (n_files == 0)	/* Just keep name of first file */
-					Ctrl->In.file = strdup (opt->arg);
-				n_files++;
+				else
+					Ctrl->In.active = true;
 				break;
 
 			/* Processes program-specific parameters */
@@ -510,7 +508,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					}
 					else {
 						GMT_Report (API, GMT_MSG_ERROR, "Your -W syntax is obsolete; see program usage.\n");
-						n_errors += parse_old_W (API, Ctrl, opt->arg);
+						n_errors += gmt2kml_old_W_parser (API, Ctrl, opt->arg);
 					}
 				}
 				else if (opt->arg[0]) {
@@ -584,7 +582,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int kml_print (struct GMTAPI_CTRL *API, struct GMT_RECORD *R, int ntabs, char *format, ...) {
+GMT_LOCAL int gmt2kml_print (struct GMTAPI_CTRL *API, struct GMT_RECORD *R, int ntabs, char *format, ...) {
 	/* Message whose output depends on verbosity setting */
 	int tab;
 	va_list args;
@@ -600,7 +598,7 @@ GMT_LOCAL int kml_print (struct GMTAPI_CTRL *API, struct GMT_RECORD *R, int ntab
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat) {
+GMT_LOCAL int gmt2kml_check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat) {
 	if (*lat < GMT->common.R.wesn[YLO] || *lat > GMT->common.R.wesn[YHI]) return (true);
 	if (*lon < GMT->common.R.wesn[XLO]) *lon += 360.0;
 	if (*lon > GMT->common.R.wesn[XHI]) *lon -= 360.0;
@@ -608,83 +606,83 @@ GMT_LOCAL int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat) {
 	return (false);
 }
 
-GMT_LOCAL void print_altmode (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, bool extrude, bool tessellate, int altmode, int ntabs) {
+GMT_LOCAL void gmt2kml_print_altmode (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, bool extrude, bool tessellate, int altmode, int ntabs) {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
-	if (extrude) kml_print (API, Out, ntabs, "<extrude>1</extrude>");
-	if (tessellate) kml_print (API, Out, ntabs, "<tessellate>1</tessellate>");
-	if (altmode == KML_GROUND_REL || altmode == KML_ABSOLUTE) kml_print (API, Out, ntabs, "<altitudeMode>%s</altitudeMode>", RefLevel[altmode]);
-	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) kml_print (API, Out, ntabs, "<gx:altitudeMode>%s</gx:altitudeMode>", RefLevel[altmode]);
+	if (extrude) gmt2kml_print (API, Out, ntabs, "<extrude>1</extrude>");
+	if (tessellate) gmt2kml_print (API, Out, ntabs, "<tessellate>1</tessellate>");
+	if (altmode == KML_GROUND_REL || altmode == KML_ABSOLUTE) gmt2kml_print (API, Out, ntabs, "<altitudeMode>%s</altitudeMode>", RefLevel[altmode]);
+	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) gmt2kml_print (API, Out, ntabs, "<gx:altitudeMode>%s</gx:altitudeMode>", RefLevel[altmode]);
 }
 
-GMT_LOCAL void ascii_output_three (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double out[], int ntabs) {
+GMT_LOCAL void gmt2kml_ascii_output_three (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double out[], int ntabs) {
 	char X[GMT_LEN256] = {""}, Y[GMT_LEN256] = {""}, Z[GMT_LEN256] = {""};
 	gmt_ascii_format_col (API->GMT, X, out[GMT_X], GMT_OUT, GMT_X);
 	gmt_ascii_format_col (API->GMT, Y, out[GMT_Y], GMT_OUT, GMT_Y);
 	gmt_ascii_format_col (API->GMT, Z, out[GMT_Z], GMT_OUT, GMT_Z);
-	kml_print (API, Out, ntabs, "%s,%s,%s", X, Y, Z);
+	gmt2kml_print (API, Out, ntabs, "%s,%s,%s", X, Y, Z);
 }
 
-GMT_LOCAL void place_region_tag (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double wesn[], double min[], double max[], int N) {
+GMT_LOCAL void gmt2kml_place_region_tag (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double wesn[], double min[], double max[], int N) {
 	char text[GMT_LEN256] = {""};
 	if (gmt_M_360_range (wesn[XLO], wesn[XHI])) { wesn[XLO] = -180.0; wesn[XHI] = +180.0;}
-	kml_print (API, Out, N++, "<Region>");
-	kml_print (API, Out, N++, "<LatLonAltBox>");
+	gmt2kml_print (API, Out, N++, "<Region>");
+	gmt2kml_print (API, Out, N++, "<LatLonAltBox>");
 	gmt_ascii_format_col (API->GMT, text, wesn[YHI], GMT_OUT, GMT_Y);
-	kml_print (API, Out, N, "<north>%s</north>", text);
+	gmt2kml_print (API, Out, N, "<north>%s</north>", text);
 	gmt_ascii_format_col (API->GMT, text, wesn[YLO], GMT_OUT, GMT_Y);
-	kml_print (API, Out, N, "<south>%s</south>", text);
+	gmt2kml_print (API, Out, N, "<south>%s</south>", text);
 	gmt_ascii_format_col (API->GMT, text, wesn[XHI], GMT_OUT, GMT_X);
-	kml_print (API, Out, N, "<east>%s</east>", text);
+	gmt2kml_print (API, Out, N, "<east>%s</east>", text);
 	gmt_ascii_format_col (API->GMT, text, wesn[XLO], GMT_OUT, GMT_X);
-	kml_print (API, Out, N, "<west>%s</west>", text);
+	gmt2kml_print (API, Out, N, "<west>%s</west>", text);
 	if (max[ALT] > min[ALT]) {
-		kml_print (API, Out, N, "<minAltitude>%g</minAltitude>", min[ALT]);
-		kml_print (API, Out, N, "<maxAltitude>%g</maxAltitude>", max[ALT]);
+		gmt2kml_print (API, Out, N, "<minAltitude>%g</minAltitude>", min[ALT]);
+		gmt2kml_print (API, Out, N, "<maxAltitude>%g</maxAltitude>", max[ALT]);
 	}
-	kml_print (API, Out, --N, "</LatLonAltBox>");
+	gmt2kml_print (API, Out, --N, "</LatLonAltBox>");
 	if (max[LOD] != min[LOD]) {
-		kml_print (API, Out, N++, "<Lod>");
-		kml_print (API, Out, N, "<minLodPixels>%ld</minLodPixels>", lrint (min[LOD]));
-		kml_print (API, Out, N, "<maxLodPixels>%ld</maxLodPixels>", lrint (max[LOD]));
+		gmt2kml_print (API, Out, N++, "<Lod>");
+		gmt2kml_print (API, Out, N, "<minLodPixels>%ld</minLodPixels>", lrint (min[LOD]));
+		gmt2kml_print (API, Out, N, "<maxLodPixels>%ld</maxLodPixels>", lrint (max[LOD]));
 		if (min[FADE] > 0.0 || max[FADE] > 0.0) {
-			kml_print (API, Out, N, "<minFadeExtent>%g</minFadeExtent>", min[FADE]);
-			kml_print (API, Out, N, "<maxFadeExtent>%g</maxFadeExtent>", max[FADE]);
+			gmt2kml_print (API, Out, N, "<minFadeExtent>%g</minFadeExtent>", min[FADE]);
+			gmt2kml_print (API, Out, N, "<maxFadeExtent>%g</maxFadeExtent>", max[FADE]);
 		}
-		kml_print (API, Out, --N, "</Lod>");
+		gmt2kml_print (API, Out, --N, "</Lod>");
 	}
-	kml_print (API, Out, --N, "</Region>");
+	gmt2kml_print (API, Out, --N, "</Region>");
 }
 
-GMT_LOCAL void set_iconstyle (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *rgb, double scale, char *iconfile, int N) {
+GMT_LOCAL void gmt2kml_set_iconstyle (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *rgb, double scale, char *iconfile, int N) {
 	/* No icon = no symbol */
-	kml_print (API, Out, N++, "<IconStyle>");
-	kml_print (API, Out, N++, "<Icon>");
-	if (iconfile[0] != '-') kml_print (API, Out, N, "<href>%s</href>", iconfile);
-	kml_print (API, Out, --N, "</Icon>");
+	gmt2kml_print (API, Out, N++, "<IconStyle>");
+	gmt2kml_print (API, Out, N++, "<Icon>");
+	if (iconfile[0] != '-') gmt2kml_print (API, Out, N, "<href>%s</href>", iconfile);
+	gmt2kml_print (API, Out, --N, "</Icon>");
 	if (iconfile[0] != '-') {
-		kml_print (API, Out, N, "<scale>%g</scale>", scale);
-		kml_print (API, Out, N, "<color>%02x%02x%02x%02x</color>", gmt_M_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+		gmt2kml_print (API, Out, N, "<scale>%g</scale>", scale);
+		gmt2kml_print (API, Out, N, "<color>%02x%02x%02x%02x</color>", gmt_M_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	}
-	kml_print (API, Out, --N, "</IconStyle>");
+	gmt2kml_print (API, Out, --N, "</IconStyle>");
 }
 
-GMT_LOCAL void set_linestyle (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, struct GMT_PEN *pen, double *rgb, int N) {
-	kml_print (API, Out, N++, "<LineStyle>");
-	kml_print (API, Out, N, "<color>%02x%02x%02x%02x</color>", gmt_M_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
-	kml_print (API, Out, N, "<width>%g</width>", pen->width);
-	kml_print (API, Out, --N, "</LineStyle>");
+GMT_LOCAL void gmt2kml_set_linestyle (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, struct GMT_PEN *pen, double *rgb, int N) {
+	gmt2kml_print (API, Out, N++, "<LineStyle>");
+	gmt2kml_print (API, Out, N, "<color>%02x%02x%02x%02x</color>", gmt_M_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+	gmt2kml_print (API, Out, N, "<width>%g</width>", pen->width);
+	gmt2kml_print (API, Out, --N, "</LineStyle>");
 }
 
-GMT_LOCAL void set_polystyle (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *rgb, int outline, int active, int N) {
-	kml_print (API, Out, N++, "<PolyStyle>");
-	kml_print (API, Out, N, "<color>%02x%02x%02x%02x</color>", gmt_M_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
-	kml_print (API, Out, N, "<fill>%d</fill>", !active);
-	kml_print (API, Out, N, "<outline>%d</outline>", outline);
-	kml_print (API, Out, --N, "</PolyStyle>");
+GMT_LOCAL void gmt2kml_set_polystyle (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *rgb, int outline, int active, int N) {
+	gmt2kml_print (API, Out, N++, "<PolyStyle>");
+	gmt2kml_print (API, Out, N, "<color>%02x%02x%02x%02x</color>", gmt_M_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+	gmt2kml_print (API, Out, N, "<fill>%d</fill>", !active);
+	gmt2kml_print (API, Out, N, "<outline>%d</outline>", outline);
+	gmt2kml_print (API, Out, --N, "</PolyStyle>");
 }
 
-GMT_LOCAL void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double *rgb) {
-	/* Special version of gmt_get_rgb_lookup since no interpolation can take place */
+GMT_LOCAL void gmt2kml_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double *rgb) {
+	/* Special version of gmt_gmt2kml_get_rgb_lookup since no interpolation can take place */
 	struct GMT_PALETTE_HIDDEN *PH = gmt_get_C_hidden (P);
 	if (index < 0) {	/* NaN, Foreground, Background */
 		gmt_M_rgb_copy (rgb, P->bfn[index+3].rgb);
@@ -700,7 +698,7 @@ GMT_LOCAL void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int 
 	}
 }
 
-GMT_LOCAL bool crossed_dateline (double this_x, double last_x) {
+GMT_LOCAL bool gmt2kml_crossed_dateline (double this_x, double last_x) {
 	if (this_x > 90.0 && this_x <= 180.0 && last_x > +180.0 && last_x < 270.0) return (true);	/* Positive lons 0-360 */
 	if (last_x > 90.0 && last_x <= 180.0 && this_x > +180.0 && this_x < 270.0) return (true);	/* Positive lons 0-360 */
 	if (this_x > 90.0 && this_x <= 180.0 && last_x > -180.0 && last_x < -90.0) return (true);	/* Lons in -180/+180 range */
@@ -708,9 +706,9 @@ GMT_LOCAL bool crossed_dateline (double this_x, double last_x) {
 	return (false);
 }
 
-GMT_LOCAL struct KML * kml_alloc (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+GMT_LOCAL struct GMT2KML_KML * gmt2kml_alloc (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	uint64_t tbl, seg, max = 0;
-	struct KML *kml = gmt_M_memory (GMT, NULL, 1, struct KML);
+	struct GMT2KML_KML *kml = gmt_M_memory (GMT, NULL, 1, struct GMT2KML_KML);
 	for (tbl = 0; tbl < D->n_tables; tbl++) for (seg = 0; seg < D->table[tbl]->n_segments; seg++) if (D->table[tbl]->segment[seg]->n_rows > max) max = D->table[tbl]->segment[seg]->n_rows;
 	kml->n_alloc = 3 * max;
 	kml->lon  = gmt_M_memory (GMT, NULL, kml->n_alloc, double);
@@ -721,7 +719,7 @@ GMT_LOCAL struct KML * kml_alloc (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	return (kml);
 }
 
-GMT_LOCAL void kml_free (struct GMT_CTRL *GMT, struct KML ** kml) {
+GMT_LOCAL void gmt2kml_free (struct GMT_CTRL *GMT, struct GMT2KML_KML ** kml) {
 	gmt_M_free (GMT, (*kml)->lon);
 	gmt_M_free (GMT, (*kml)->lat);
 	gmt_M_free (GMT, (*kml)->z);
@@ -730,39 +728,39 @@ GMT_LOCAL void kml_free (struct GMT_CTRL *GMT, struct KML ** kml) {
 	gmt_M_free (GMT, *kml);
 }
 
-void KML_plot_object (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *x, double *y, uint64_t np, int type, int process_id, int alt_mode, int N, double z_level) {
+GMT_LOCAL void gmt2kml_plot_object (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *x, double *y, uint64_t np, int type, int process_id, int alt_mode, int N, double z_level) {
 	/* Wiggles: Plots a self-contained polygon or line, depending on type, using
 	 * the current fill/line styles */
 	static char *name[2] = {"Wiggle Anomaly", "Positive Anomaly"};
 	static char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"};
 	double out[3];
 	uint64_t k;
-	kml_print (API, Out, N++, "<Placemark>");
-	kml_print (API, Out, N, "<name>%s</name>", name[type-LINE]);
-	kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, 0); /* It is always style 0 */
-	kml_print (API, Out, N++, "<%s>", feature[type]);
-	print_altmode (API, Out, false, true, alt_mode, N);
+	gmt2kml_print (API, Out, N++, "<Placemark>");
+	gmt2kml_print (API, Out, N, "<name>%s</name>", name[type-LINE]);
+	gmt2kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, 0); /* It is always style 0 */
+	gmt2kml_print (API, Out, N++, "<%s>", feature[type]);
+	gmt2kml_print_altmode (API, Out, false, true, alt_mode, N);
 	if (type == POLYGON) {
-		kml_print (API, Out, N++, "<outerBoundaryIs>");
-		kml_print (API, Out, N++, "<LinearRing>");
+		gmt2kml_print (API, Out, N++, "<outerBoundaryIs>");
+		gmt2kml_print (API, Out, N++, "<LinearRing>");
 	}
-	kml_print (API, Out, N++, "<coordinates>");
+	gmt2kml_print (API, Out, N++, "<coordinates>");
 	out[GMT_Z] = z_level;
 	for (k = 0; k < np; k++) {
 		out[GMT_X] = x[k];
 		out[GMT_Y] = y[k];
-		ascii_output_three (API, Out, out, N);
+		gmt2kml_ascii_output_three (API, Out, out, N);
 	}
-	kml_print (API, Out, --N, "</coordinates>");
+	gmt2kml_print (API, Out, --N, "</coordinates>");
 	if (type == POLYGON) {
-		kml_print (API, Out, --N, "</LinearRing>");
-		kml_print (API, Out, --N, "</outerBoundaryIs>");
+		gmt2kml_print (API, Out, --N, "</LinearRing>");
+		gmt2kml_print (API, Out, --N, "</outerBoundaryIs>");
 	}
-	kml_print (API, Out, --N, "</%s>", feature[type]);
-	kml_print (API, Out, --N, "</Placemark>");
+	gmt2kml_print (API, Out, --N, "</%s>", feature[type]);
+	gmt2kml_print (API, Out, --N, "</Placemark>");
 }
 
-GMT_LOCAL void kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out, struct KML *kml, double zscale, int mode, double azim[], int fill, int outline, int process_id, int amode, int N, double altitude) {
+GMT_LOCAL void gmt2kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out, struct GMT2KML_KML *kml, double zscale, int mode, double azim[], int fill, int outline, int process_id, int amode, int N, double altitude) {
 	int64_t i, np = 0;
 	double lon_len, lat_len, az = 0.0, s = 0.0, c = 0.0, lon_inc, lat_inc;
 	double start_az = 0, stop_az = 0, daz;
@@ -813,17 +811,17 @@ GMT_LOCAL void kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out, st
 	}
 
 	if (fill) /* First shade wiggles */
-		KML_plot_object (GMT->parent, Out, kml->flon, kml->flat, kml->n_out, POLYGON, process_id, amode, N, altitude);
+		gmt2kml_plot_object (GMT->parent, Out, kml->flon, kml->flat, kml->n_out, POLYGON, process_id, amode, N, altitude);
 
 	if (outline) /* Then draw wiggle outline */
-		KML_plot_object (GMT->parent, Out, kml->flon, kml->flat, np, LINE, process_id, amode, N, altitude);
+		gmt2kml_plot_object (GMT->parent, Out, kml->flon, kml->flat, np, LINE, process_id, amode, N, altitude);
 }
 
 /* Must free allocated memory before returning */
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmt2kml (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act;
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl;
 
@@ -839,7 +837,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	double rgb[4], out[5], last_x = 0;
 
-	struct KML *kml = NULL;
+	struct GMT2KML_KML *kml = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -939,7 +937,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		char unit_name[GMT_LEN16] = {""};
 		gmt_check_scalingopt (GMT, 'Q', Ctrl->Q.unit, unit_name);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Wiggle scale given as %g z-data units per %s.\n", Ctrl->Q.scale, unit_name);
-		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Initialize distance machinery */
+		if (gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) Return (GMT_NOT_A_VALID_TYPE);	/* Initialize distance machinery */
 		Ctrl->Q.scale = 1.0 / Ctrl->Q.scale;	/* Now in map-distance units (i.e, unit they appended) per users data units */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Wiggle scale inverted as %g %s per z-data units.\n", Ctrl->Q.scale, unit_name);
 		/* Convert to degrees per user data unit - this is our scale that converts z-data to degree distance latitude */
@@ -948,68 +946,68 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	}
 	if (!GMT->common.O.active) {
 		/* Create KML header */
-		kml_print (API, Out, 0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		kml_print (API, Out, 0, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
-		kml_print (API, Out, N++, "<%s>", Document[KML_DOCUMENT]);
+		gmt2kml_print (API, Out, 0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		gmt2kml_print (API, Out, 0, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
+		gmt2kml_print (API, Out, N++, "<%s>", Document[KML_DOCUMENT]);
 		if (Ctrl->T.title != NULL && *Ctrl->T.title != '\0')
-			kml_print (API, Out, N, "<name>%s</name>", Ctrl->T.title);
-		if (Ctrl->Z.invisible) kml_print (API, Out, N, "<visibility>0</visibility>");
-		if (Ctrl->Z.open) kml_print (API, Out, N, "<open>1</open>");
+			gmt2kml_print (API, Out, N, "<name>%s</name>", Ctrl->T.title);
+		if (Ctrl->Z.invisible) gmt2kml_print (API, Out, N, "<visibility>0</visibility>");
+		if (Ctrl->Z.open) gmt2kml_print (API, Out, N, "<open>1</open>");
 	}
 
 	/* Apparently, for Google Maps (not Google Earth), styles need to be outside any <Folder></Folder> pair, so we do them first */
 	process_id = (int) getpid();
-	kml_print (API, Out, N++, "<Style id=\"st-%d-0\">", process_id);	/* Default style unless -C is used, use PID to get unique style ID in case of layer-caking -O -K */
+	gmt2kml_print (API, Out, N++, "<Style id=\"st-%d-0\">", process_id);	/* Default style unless -C is used, use PID to get unique style ID in case of layer-caking -O -K */
 
 	/* Set icon style (applies to symbols only */
-	set_iconstyle (API, Out, Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
+	gmt2kml_set_iconstyle (API, Out, Ctrl->G.fill[F_ID].rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
 
 	/* Set shared line and polygon style (also for extrusions) */
 	if (Ctrl->F.mode == WIGGLE) {
 		if (!Ctrl->G.active[F_ID]) {
-			set_polystyle (API, Out, Ctrl->G.fill[F_ID].rgb, 0, 0, N);
+			gmt2kml_set_polystyle (API, Out, Ctrl->G.fill[F_ID].rgb, 0, 0, N);
 		}
 		if (Ctrl->W.active) {
-			set_linestyle (API, Out, &Ctrl->W.pen, Ctrl->W.pen.rgb, N);
+			gmt2kml_set_linestyle (API, Out, &Ctrl->W.pen, Ctrl->W.pen.rgb, N);
 		}
 	}
 	else {
-		set_linestyle (API, Out, &Ctrl->W.pen, Ctrl->W.pen.rgb, N);
-		set_polystyle (API, Out, Ctrl->G.fill[F_ID].rgb, !Ctrl->W.pen.cptmode, Ctrl->G.active[F_ID], N);
+		gmt2kml_set_linestyle (API, Out, &Ctrl->W.pen, Ctrl->W.pen.rgb, N);
+		gmt2kml_set_polystyle (API, Out, Ctrl->G.fill[F_ID].rgb, !Ctrl->W.pen.cptmode, Ctrl->G.active[F_ID], N);
 	}
 
 	/* Set style for labels */
-	kml_print (API, Out, N++, "<LabelStyle>");
-	kml_print (API, Out, N, "<scale>%g</scale>", Ctrl->S.scale[N_ID]);
-	kml_print (API, Out, N, "<color>%02x%02x%02x%02x</color>", gmt_M_u255 (1.0 - Ctrl->G.fill[N_ID].rgb[3]), GMT_3u255 (Ctrl->G.fill[N_ID].rgb));
-	kml_print (API, Out, --N, "</LabelStyle>");
-	kml_print (API, Out, --N, "</Style>");
+	gmt2kml_print (API, Out, N++, "<LabelStyle>");
+	gmt2kml_print (API, Out, N, "<scale>%g</scale>", Ctrl->S.scale[N_ID]);
+	gmt2kml_print (API, Out, N, "<color>%02x%02x%02x%02x</color>", gmt_M_u255 (1.0 - Ctrl->G.fill[N_ID].rgb[3]), GMT_3u255 (Ctrl->G.fill[N_ID].rgb));
+	gmt2kml_print (API, Out, --N, "</LabelStyle>");
+	gmt2kml_print (API, Out, --N, "</Style>");
 
 	for (index = -3; Ctrl->C.active && index < (int)P->n_colors; index++) {	/* Place styles for each color in CPT */
-		get_rgb_lookup (GMT, P, index, rgb);	/* For -3, -2, -1 we get the back, fore, nan colors */
-		kml_print (API, Out, N++, "<Style id=\"st-%d-%d\">", process_id, index + 4); /* +4 to make the first style ID = 1 */
+		gmt2kml_get_rgb_lookup (GMT, P, index, rgb);	/* For -3, -2, -1 we get the back, fore, nan colors */
+		gmt2kml_print (API, Out, N++, "<Style id=\"st-%d-%d\">", process_id, index + 4); /* +4 to make the first style ID = 1 */
 		if (Ctrl->F.mode < LINE)	/* Set icon style (applies to symbols only */
-			set_iconstyle (API, Out, rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
+			gmt2kml_set_iconstyle (API, Out, rgb, Ctrl->S.scale[F_ID], Ctrl->I.file, N);
 		else if (Ctrl->F.mode == LINE)	/* Line style only */
-			set_linestyle (API, Out, &Ctrl->W.pen, rgb, N);
+			gmt2kml_set_linestyle (API, Out, &Ctrl->W.pen, rgb, N);
 		else {	/* Polygons */
 			if (!Ctrl->W.active) {	/* Only fill, no outline */
-				set_polystyle (API, Out, rgb, false, Ctrl->G.active[F_ID], N);
+				gmt2kml_set_polystyle (API, Out, rgb, false, Ctrl->G.active[F_ID], N);
 			}
 			else if (Ctrl->W.pen.cptmode == 2) { /* Use -C for fill, -W for outline */
-				set_polystyle (API, Out, rgb, true, Ctrl->G.active[F_ID], N);
-				set_linestyle (API, Out, &Ctrl->W.pen, Ctrl->W.pen.rgb, N);
+				gmt2kml_set_polystyle (API, Out, rgb, true, Ctrl->G.active[F_ID], N);
+				gmt2kml_set_linestyle (API, Out, &Ctrl->W.pen, Ctrl->W.pen.rgb, N);
 			}
 			else if (Ctrl->W.pen.cptmode == 1) { /* Use -G for fill, -C for outline */
-				set_polystyle (API, Out, Ctrl->G.fill[F_ID].rgb, true, Ctrl->G.active[F_ID], N);
-				set_linestyle (API, Out, &Ctrl->W.pen, rgb, N);
+				gmt2kml_set_polystyle (API, Out, Ctrl->G.fill[F_ID].rgb, true, Ctrl->G.active[F_ID], N);
+				gmt2kml_set_linestyle (API, Out, &Ctrl->W.pen, rgb, N);
 			}
 			else if (Ctrl->W.pen.cptmode == 3) { /* Use -C for fill and outline */
-				set_polystyle (API, Out, rgb, true, Ctrl->G.active[F_ID], N);
-				set_linestyle (API, Out, &Ctrl->W.pen, rgb, N);
+				gmt2kml_set_polystyle (API, Out, rgb, true, Ctrl->G.active[F_ID], N);
+				gmt2kml_set_linestyle (API, Out, &Ctrl->W.pen, rgb, N);
 			}
 		}
-		kml_print (API, Out, --N, "</Style>");
+		gmt2kml_print (API, Out, --N, "</Style>");
 	}
 	index = -4;	/* Default style unless -C changes things */
 
@@ -1021,10 +1019,10 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	if (GMT->common.O.active || GMT->common.K.active) use_folder = true;	/* When at least one or -O, -K is used */
 	if (GMT->common.O.active) N++;	/* Due to the extra folder tag */
 	if (use_folder) {
-		kml_print (API, Out, N++, "<%s>", Document[KML_FOLDER]);
-		kml_print (API, Out, N, "<name>%s</name>", Ctrl->T.folder);
-		if (Ctrl->Z.invisible) kml_print (API, Out, N, "<visibility>0</visibility>");
-		if (Ctrl->Z.open) kml_print (API, Out, N, "<open>1</open>");
+		gmt2kml_print (API, Out, N++, "<%s>", Document[KML_FOLDER]);
+		gmt2kml_print (API, Out, N, "<name>%s</name>", Ctrl->T.folder);
+		if (Ctrl->Z.invisible) gmt2kml_print (API, Out, N, "<visibility>0</visibility>");
+		if (Ctrl->Z.open) gmt2kml_print (API, Out, N, "<open>1</open>");
 	}
 
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
@@ -1034,37 +1032,37 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Could not open description file %s\n", Ctrl->D.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		kml_print (API, Out, N++, "<description>");
-		kml_print (API, Out, N++, "<![CDATA[");
-		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) kml_print (API, Out, N, "%s", line);
+		gmt2kml_print (API, Out, N++, "<description>");
+		gmt2kml_print (API, Out, N++, "<![CDATA[");
+		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) gmt2kml_print (API, Out, N, "%s", line);
 		gmt_fclose (GMT, fp);
-		kml_print (API, Out, --N, "]]>");
-		kml_print (API, Out, --N, "</description>");
+		gmt2kml_print (API, Out, --N, "]]>");
+		gmt2kml_print (API, Out, --N, "</description>");
 	}
 
 	if (GMT->common.R.active[RSET] && first)	/* Issue Region tag as given on command line */
-		place_region_tag (API, Out, GMT->common.R.wesn, Ctrl->Z.min, Ctrl->Z.max, N);
+		gmt2kml_place_region_tag (API, Out, GMT->common.R.wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 	else if (Ctrl->R2.automatic) {	/* Issue Region tag */
 		double wesn[4];
 		/* This information is part of the dataset header and obtained during reading */
 		wesn[XLO] = D->min[GMT_X];	wesn[XHI] = D->max[GMT_X];
 		wesn[YLO] = D->min[GMT_Y];	wesn[YHI] = D->max[GMT_Y];
-		place_region_tag (API, Out, wesn, Ctrl->Z.min, Ctrl->Z.max, N);
+		gmt2kml_place_region_tag (API, Out, wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 	}
 	set_nr = pnt_nr = 0;
 
-	if (Ctrl->F.mode == WIGGLE) kml = kml_alloc (GMT, D);
+	if (Ctrl->F.mode == WIGGLE) kml = gmt2kml_alloc (GMT, D);
 
 	for (tbl = 0; tbl < n_tables; tbl++) {
 		n_segments = D->table[tbl]->n_segments;
 		TH = gmt_get_DT_hidden (D->table[tbl]);
 		file = TH->file;
 		if (file[GMT_IN]) {	/* Place all of this file's content in its own named folder */
-			kml_print (API, Out, N++, "<Folder>");
+			gmt2kml_print (API, Out, N++, "<Folder>");
 			if (!strcmp (file[GMT_IN], "<stdin>"))
-				kml_print (API, Out, N, "<name>stdin</name>");
+				gmt2kml_print (API, Out, N, "<name>stdin</name>");
 			else
-				kml_print (API, Out, N, "<name>%s</name>", basename (file[GMT_IN]));
+				gmt2kml_print (API, Out, N, "<name>%s</name>", basename (file[GMT_IN]));
 		}
 		for (seg = 0; seg < n_segments; seg++) {	/* Process each segment in this table */
 			pnt_nr = 0;
@@ -1074,35 +1072,35 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 			/* Only point sets will be organized in folders as lines/polygons are single entities */
 			if (Ctrl->F.mode < LINE) {	/* Meaning point-types, not lines or polygons */
-				kml_print (API, Out, N++, "<Folder>");
+				gmt2kml_print (API, Out, N++, "<Folder>");
 				if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 				else if (label)
-					kml_print (API, Out, N, "<name>%s</name>", label);
+					gmt2kml_print (API, Out, N, "<name>%s</name>", label);
 				else
-					kml_print (API, Out, N, "<name>%s Set %d</name>", name[Ctrl->F.mode], set_nr);
+					gmt2kml_print (API, Out, N, "<name>%s Set %d</name>", name[Ctrl->F.mode], set_nr);
 				if (gmt_M_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
 					act = (gmt_parse_segment_item (GMT, header, "-D", buffer) || gmt_parse_segment_item (GMT, header, "-T", buffer));
 				else
 					act = (gmt_parse_segment_item (GMT, header, "-T", buffer));
 				if (act)
-					kml_print (API, Out, N, "<description>%s</description>", description);
+					gmt2kml_print (API, Out, N, "<description>%s</description>", description);
 			}
 			else if (Ctrl->F.mode < WIGGLE) {	/* Line or polygon means we lay down the placemark first*/
 				if (Ctrl->C.active && gmt_parse_segment_item (GMT, header, "-Z", description)) {
 					double z_val = atof (description);
 					index = gmt_get_index (GMT, P, z_val);
 				}
-				kml_print (API, Out, N++, "<Placemark>");
+				gmt2kml_print (API, Out, N++, "<Placemark>");
 				if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 				else if (Ctrl->N.mode == FMT_LABEL) {
-					kml_print (API, Out, N, "<name>");
-					kml_print (API, Out, 0, Ctrl->N.fmt, (int)set_nr);
-					kml_print (API, Out, 0, "</name>");
+					gmt2kml_print (API, Out, N, "<name>");
+					gmt2kml_print (API, Out, 0, Ctrl->N.fmt, (int)set_nr);
+					gmt2kml_print (API, Out, 0, "</name>");
 				}
 				else if (label)
-					kml_print (API, Out, N, "<name>%s</name>", label);
+					gmt2kml_print (API, Out, N, "<name>%s</name>", label);
 				else
-					kml_print (API, Out, N, "<name>%s %d</name>", name[Ctrl->F.mode], set_nr);
+					gmt2kml_print (API, Out, N, "<name>%s %d</name>", name[Ctrl->F.mode], set_nr);
 				description[0] = 0;
 				do_description = false;
 				if (gmt_parse_segment_item (GMT, header, "-I", buffer)) {
@@ -1119,15 +1117,15 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					do_description = true;
 				}
 				if (do_description)
-					kml_print (API, Out, N, "<description>%s</description>", description);
-				kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make style ID  >= 0 */
-				kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
-				print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
+					gmt2kml_print (API, Out, N, "<description>%s</description>", description);
+				gmt2kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make style ID  >= 0 */
+				gmt2kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
+				gmt2kml_print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
 				if (Ctrl->F.mode == POLYGON) {
-					kml_print (API, Out, N++, "<outerBoundaryIs>");
-					kml_print (API, Out, N++, "<LinearRing>");
+					gmt2kml_print (API, Out, N++, "<outerBoundaryIs>");
+					gmt2kml_print (API, Out, N++, "<LinearRing>");
 				}
-				kml_print (API, Out, N++, "<coordinates>");
+				gmt2kml_print (API, Out, N++, "<coordinates>");
 			}
 			if (Ctrl->F.mode == WIGGLE) {
 				bool positive;
@@ -1138,15 +1136,15 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 				lat = S->data[GMT_Y];
 				z = S->data[GMT_Z];
 				if (!Ctrl->G.active[F_ID]) {	/* Wants to fill positive wiggles, must get those polygons */
-					kml_print (API, Out, N++, "<Folder>");
-					kml_print (API, Out, N, "<name>Positive Wiggles</name>");
+					gmt2kml_print (API, Out, N++, "<Folder>");
+					gmt2kml_print (API, Out, N, "<name>Positive Wiggles</name>");
 					kml->lon[0] = lon[0];
 					kml->lat[0] = lat[0];
 					kml->z[0]   = z[0];
 					for (row = kml->n_in = 1; row < S->n_rows; row++) {	/* Convert to inches/cm and get distance increments */
 						if (kml->n_in > 0 && gmt_M_is_dnan (z[row])) {	/* Data gap, plot what we have */
 							positive = (z[kml->n_in-1] > 0.0);
-							if (positive) kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, true, false, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
+							if (positive) gmt2kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, true, false, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
 							kml->n_in = 0;
 						}
 						else if (!gmt_M_is_dnan (z[row-1]) && (z[row]*z[row-1] < 0.0 || z[row] == 0.0)) {	/* Crossed 0, add new point and plot */
@@ -1155,7 +1153,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 							kml->lat[kml->n_in] = (dz == 0.0) ? lat[row] : lat[row-1] + fabs (z[row-1] / dz) * (lat[row] - lat[row-1]);
 							kml->z[kml->n_in++] = 0.0;
 							positive = (kml->z[kml->n_in-2] > 0.0);
-							if (positive) kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, true, false, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
+							if (positive) gmt2kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, true, false, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
 							kml->lon[0] = kml->lon[kml->n_in-1];
 							kml->lat[0] = kml->lat[kml->n_in-1];
 							kml->z[0]   = 0.0;
@@ -1168,16 +1166,16 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					}
 					if (kml->n_in > 1) {
 						positive = (kml->z[kml->n_in-1] > 0.0);
-						if (positive) kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, true, false, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
+						if (positive) gmt2kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, true, false, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
 					}
-					kml_print (API, Out, --N, "</Folder>");
+					gmt2kml_print (API, Out, --N, "</Folder>");
 				}
 				if (Ctrl->W.active) {	/* Draw the entire wiggle */
 					gmt_M_memcpy (kml->lon, lon, S->n_rows, double);
 					gmt_M_memcpy (kml->lat, lat, S->n_rows, double);
 					gmt_M_memcpy (kml->z, z, S->n_rows, double);
 					kml->n_in = S->n_rows;
-					kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, false, true, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
+					gmt2kml_plot_wiggle (GMT, Out, kml, Ctrl->Q.scale, Ctrl->Q.mode, Ctrl->Q.value, false, true, process_id, Ctrl->A.mode, N, Ctrl->A.altitude);
 				}
 			}
 			else {
@@ -1188,7 +1186,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 				for (row = 0; row < n_rows; row++) {
 					for (col = 0; col < n_coord; col++)
 						out[col] = S->data[col][row];
-					if (GMT->common.R.active[RSET] && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
+					if (GMT->common.R.active[RSET] && gmt2kml_check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 					if (get_z) {	/* For point data we use z to determine color */
 						if (Ctrl->C.active) index = gmt_get_index (GMT, P, out[GMT_Z]);
 						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
@@ -1196,39 +1194,39 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					if (Ctrl->F.mode < LINE && gmt_M_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
 
 					if (Ctrl->F.mode < LINE) {	/* Print the information for this point */
-						kml_print (API, Out, N++, "<Placemark>");
+						gmt2kml_print (API, Out, N++, "<Placemark>");
 						if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 						else if (Ctrl->N.mode == GET_COL_LABEL) {
 							gmt_ascii_format_one (GMT, item, S->data[Ctrl->N.col][row], gmt_M_type(GMT,GMT_IN,Ctrl->N.col));
-							kml_print (API, Out, N, "<name>%s</name>", item);
+							gmt2kml_print (API, Out, N, "<name>%s</name>", item);
 						}
 						else if (Ctrl->N.mode == GET_LABEL)
-							kml_print (API, Out, N, "<name>%s</name>", S->text[row]);
+							gmt2kml_print (API, Out, N, "<name>%s</name>", S->text[row]);
 						else if (Ctrl->N.mode == FMT_LABEL) {
-							kml_print (API, Out, N, "<name>");
-							kml_print (API, Out, 0, Ctrl->N.fmt, pnt_nr);
-							kml_print (API, Out, 0, "</name>");
+							gmt2kml_print (API, Out, N, "<name>");
+							gmt2kml_print (API, Out, 0, Ctrl->N.fmt, pnt_nr);
+							gmt2kml_print (API, Out, 0, "</name>");
 						}
 						else if (label && n_rows > 1)
-							kml_print (API, Out, N, "<name>%s %" PRIu64 "</name>", label, row);
+							gmt2kml_print (API, Out, N, "<name>%s %" PRIu64 "</name>", label, row);
 						else if (label)
-							kml_print (API, Out, N, "<name>%s</name>", label);
+							gmt2kml_print (API, Out, N, "<name>%s</name>", label);
 						else
-							kml_print (API, Out, N, "<name>%s %d</name>", name[Ctrl->F.mode], pnt_nr);
+							gmt2kml_print (API, Out, N, "<name>%s %d</name>", name[Ctrl->F.mode], pnt_nr);
 						if (Ctrl->L.n_cols) {
 							size_t P = 0;
 							char *trail, *orig = strdup (S->text[row]);
 							trail = orig;
-							kml_print (API, Out, N++, "<ExtendedData>");
+							gmt2kml_print (API, Out, N++, "<ExtendedData>");
 							for (col = 0; col < Ctrl->L.n_cols; col++) {
-								kml_print (API, Out, N, "<Data name = \"%s\">", Ctrl->L.name[col]);
-								kml_print (API, Out, N++, "<value>");
+								gmt2kml_print (API, Out, N, "<Data name = \"%s\">", Ctrl->L.name[col]);
+								gmt2kml_print (API, Out, N++, "<value>");
 								if ((n_coord+col) < S->n_columns) {	/* Part of the numerical section */
 									gmt_ascii_format_one (GMT, item, S->data[n_coord+col][row], gmt_M_type(GMT,GMT_IN,n_coord+col));
-									kml_print (API, Out, N, "%s", item);
+									gmt2kml_print (API, Out, N, "%s", item);
 								}
 								else if (all_text) {	/* Place entire trailing text */
-									kml_print (API, Out, N, "%s", orig);
+									gmt2kml_print (API, Out, N, "%s", orig);
 								}
 								else {	/* Biting into trailing text */
 									word = strsepz (&trail, " \t", &P);
@@ -1236,48 +1234,48 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 									L = strlen (item);
 									if (L && item[0] == '\"' && item[L-1] == '\"') {	/* Quoted string on input, remove quotes on output */
 										item[L-1] = '\0';
-										kml_print (API, Out, N, "%s", &item[1]);
+										gmt2kml_print (API, Out, N, "%s", &item[1]);
 									}
 									else
-										kml_print (API, Out, N, "%s", item);
+										gmt2kml_print (API, Out, N, "%s", item);
 								}
-								kml_print (API, Out, --N, "</value>");
-								kml_print (API, Out, N, "</Data>");
+								gmt2kml_print (API, Out, --N, "</value>");
+								gmt2kml_print (API, Out, N, "</Data>");
 							}
 							gmt_M_str_free (orig);
-							kml_print (API, Out, --N, "</ExtendedData>");
+							gmt2kml_print (API, Out, --N, "</ExtendedData>");
 						}
 						if (Ctrl->F.mode == SPAN) {
-							kml_print (API, Out, N++, "<TimeSpan>");
+							gmt2kml_print (API, Out, N++, "<TimeSpan>");
 							if (!gmt_M_is_dnan (out[t1_col])) {
 								gmt_ascii_format_col (GMT, text, out[t1_col], GMT_OUT, t1_col);
-								kml_print (API, Out, N, "<begin>%s</begin>", text);
+								gmt2kml_print (API, Out, N, "<begin>%s</begin>", text);
 							}
 							if (!gmt_M_is_dnan (out[t2_col])) {
 								gmt_ascii_format_col (GMT, text, out[t2_col], GMT_OUT, t2_col);
-								kml_print (API, Out, N, "<end>%s</end>", text);
+								gmt2kml_print (API, Out, N, "<end>%s</end>", text);
 							}
-							kml_print (API, Out, --N, "</TimeSpan>");
+							gmt2kml_print (API, Out, --N, "</TimeSpan>");
 						}
 						else if (Ctrl->F.mode == EVENT) {
-							kml_print (API, Out, N++, "<TimeStamp>");
+							gmt2kml_print (API, Out, N++, "<TimeStamp>");
 							gmt_ascii_format_col (GMT, text, out[t1_col], GMT_OUT, t1_col);
-							kml_print (API, Out, N, "<when>%s</when>", text);
-							kml_print (API, Out, --N, "</TimeStamp>");
+							gmt2kml_print (API, Out, N, "<when>%s</when>", text);
+							gmt2kml_print (API, Out, --N, "</TimeStamp>");
 						}
-						kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make index a positive integer */
-						kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
-						print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
-						kml_print (API, Out, N, "<coordinates>");
-						ascii_output_three (API, Out, out, N);
-						kml_print (API, Out, N, "</coordinates>");
-						kml_print (API, Out, --N, "</%s>", feature[Ctrl->F.mode]);
-						kml_print (API, Out, --N, "</Placemark>");
+						gmt2kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make index a positive integer */
+						gmt2kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
+						gmt2kml_print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
+						gmt2kml_print (API, Out, N, "<coordinates>");
+						gmt2kml_ascii_output_three (API, Out, out, N);
+						gmt2kml_print (API, Out, N, "</coordinates>");
+						gmt2kml_print (API, Out, --N, "</%s>", feature[Ctrl->F.mode]);
+						gmt2kml_print (API, Out, --N, "</Placemark>");
 					}
 					else {	/* For lines and polygons we just output the coordinates */
 						if (gmt_M_is_dnan (out[GMT_Z])) out[GMT_Z] = 0.0;	/* Google Earth can not handle lines at NaN altitude */
-						ascii_output_three (API, Out, out, N);
-						if (row > 0 && no_dateline && crossed_dateline (out[GMT_X], last_x)) {
+						gmt2kml_ascii_output_three (API, Out, out, N);
+						if (row > 0 && no_dateline && gmt2kml_crossed_dateline (out[GMT_X], last_x)) {
 							/* GE cannot handle polygons crossing the dateline; warn for now */
 							GMT_Report (API, GMT_MSG_WARNING,
 							            "At least on polygon is straddling the Dateline. Google Earth will wrap these the wrong way\n");
@@ -1295,27 +1293,27 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			if (pnt_nr == 0)
 				set_nr--;
 			else if (Ctrl->F.mode < LINE)
-				kml_print (API, Out, --N, "</Folder>");
+				gmt2kml_print (API, Out, --N, "</Folder>");
 			else {
-				kml_print (API, Out, --N, "</coordinates>");
+				gmt2kml_print (API, Out, --N, "</coordinates>");
 				if (Ctrl->F.mode == POLYGON) {
-					kml_print (API, Out, --N, "</LinearRing>");
-					kml_print (API, Out, --N, "</outerBoundaryIs>");
+					gmt2kml_print (API, Out, --N, "</LinearRing>");
+					gmt2kml_print (API, Out, --N, "</outerBoundaryIs>");
 				}
-				kml_print (API, Out, --N, "</%s>", feature[Ctrl->F.mode]);
-				kml_print (API, Out, --N, "</Placemark>");
+				gmt2kml_print (API, Out, --N, "</%s>", feature[Ctrl->F.mode]);
+				gmt2kml_print (API, Out, --N, "</Placemark>");
 			}
 			set_nr++;
 		}
-		if (file[GMT_IN]) kml_print (API, Out, --N, "</Folder>");
+		if (file[GMT_IN]) gmt2kml_print (API, Out, --N, "</Folder>");
 	}
-	if (use_folder) kml_print (API, Out, --N, "</%s>", Document[KML_FOLDER]);
+	if (use_folder) gmt2kml_print (API, Out, --N, "</%s>", Document[KML_FOLDER]);
 	if (!GMT->common.K.active) {
-		kml_print (API, Out, --N, "</%s>", Document[KML_DOCUMENT]);
-		kml_print (API, Out, 0, "</kml>");
+		gmt2kml_print (API, Out, --N, "</%s>", Document[KML_DOCUMENT]);
+		gmt2kml_print (API, Out, 0, "</kml>");
 	}
 
-	if (Ctrl->F.mode == WIGGLE) kml_free (GMT, &kml);
+	if (Ctrl->F.mode == WIGGLE) gmt2kml_free (GMT, &kml);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);

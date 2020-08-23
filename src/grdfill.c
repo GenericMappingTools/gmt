@@ -41,26 +41,26 @@ enum GRDFILL_mode {
 };
 
 struct GRDFILL_CTRL {
-	struct In {
+	struct GRDFILL_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A<algo>[<options>] */
+	struct GRDFILL_A {	/* -A<algo>[<options>] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} A;
-	struct G {	/* -G<outgrid> */
+	struct GRDFILL_G {	/* -G<outgrid> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L[p] */
+	struct GRDFILL_L {	/* -L[p] */
 		bool active;
 		unsigned int mode;	/* 0 = region, 1 = polygons */
 	} L;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFILL_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDFILL_CTRL);
@@ -70,14 +70,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->G.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [-A<mode><options>] [-G<outgrid>] [-L[p]]\n\t[%s] [%s] [%s] [%s]\n\n",
@@ -102,14 +102,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdfill and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -117,22 +117,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input and Output files */
-				/* Since grdfill allowed output grid to be given without -G we must actually
-				 * check for two input files and assign the 2nd as the actual output file */
-				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) {
-					Ctrl->In.file= strdup (opt->arg);
-				}
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Cannot find input file %s\n", opt->arg);
-					n_errors++;
-				}
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 			case '>':	/* Output file  */
 				Ctrl->G.active = true;
-				if (gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -161,11 +154,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 			case 'G':
 				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
-					GMT_Report (API, GMT_MSG_ERROR, "ecify only one output file\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Specify only one output file\n");
 					n_errors++;
 				}
-				else
+				else {
 					Ctrl->G.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				}
 				break;
 
 			case 'L':
@@ -186,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_grdfloat value) {
+GMT_LOCAL int grdfill_do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_grdfloat value) {
 	/* Algorithm 1: Replace NaNs with a constant value */
 	uint64_t node;
 
@@ -201,7 +196,7 @@ GMT_LOCAL int do_constant_fill (struct GMT_GRID *G, unsigned int limit[], gmt_gr
 }
 
 #if 1
-GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
+GMT_LOCAL int grdfill_do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double wesn[], unsigned int limit[], unsigned int n_in_hole, double value) {
 	/* Algorithm 2: Replace NaNs with a spline */
 	char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, args[GMT_LEN256] = {""}, method[GMT_LEN32] = {""};
 	unsigned int row, col, row_hole, col_hole, mode, d_limit[4], n_constraints;
@@ -218,7 +213,7 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 		return (API->error);
 	}
 	/* Create a virtual file to hold the resampled grid */
-	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, output) == GMT_NOTSET) {
+	if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, output) == GMT_NOTSET) {
 		return (API->error);
 	}
 	/* Add up to 2 rows/cols around hole, but watch for grid edges */
@@ -253,7 +248,7 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 	GMT_Put_Vector (API, V, GMT_Y, GMT_DOUBLE, y);
 	GMT_Put_Vector (API, V, GMT_Z, GMT_FLOAT,  z);
 	/* Associate our input data vectors with a virtual input file */
-	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V, input) == GMT_NOTSET)
+	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V, input) == GMT_NOTSET)
 		return (API->error);
 	/* Prepare the greenspline command-line arguments */
 	mode = (gmt_M_is_geographic (GMT, GMT_IN)) ? 2 : 1;
@@ -263,7 +258,7 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 		sprintf (method, "c");
 	sprintf (args, "%s -G%s -S%s -R%.16g/%.16g/%.16g/%.16g -I%.16g/%.16g -D%d", input, output, method, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], mode);
 	if (G->header->registration == GMT_GRID_PIXEL_REG) strcat (args, " -r");
-	strcat (args, " --GMT_HISTORY=false");
+	strcat (args, " --GMT_HISTORY=readonly");
    	/* Run the greenspline module */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Calling greenspline with args %s\n", args);
   	if (GMT_Call_Module (API, "greenspline", GMT_MODULE_CMD, args)) {
@@ -302,7 +297,7 @@ GMT_LOCAL int do_splinefill (struct GMTAPI_CTRL *API, struct GMT_GRID *G, double
 }
 #endif
 
-GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row, unsigned int col, int64_t *step, char *ID, unsigned int limit[]) {
+GMT_LOCAL unsigned int grdfill_trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row, unsigned int col, int64_t *step, char *ID, unsigned int limit[]) {
 	/* Determine all the direct neighbor nodes in the W/E/S/N directions that are also NaN, recursively.
 	 * This is a limited form of Moore neighborhood called Von Neumann neighborhood since we only do the
 	 * four cardinal directions and ignore the diagonals.  Ignoring the diagonal means two holes that
@@ -324,14 +319,14 @@ GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsign
 			if (next_row < limit[YLO]) limit[YLO] = next_row;
 			else if (next_row > limit[YHI]) limit[YHI] = next_row;
 			/* Recursively trace this nodes next neighbors as well */
-			n_nodes = n_nodes + 1 + trace_the_hole (G, ij, next_row, next_rcol, step, ID, limit);
+			n_nodes = n_nodes + 1 + grdfill_trace_the_hole (G, ij, next_row, next_rcol, step, ID, limit);
 		}
 	}
 	return (n_nodes);
 }
 
-GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, int64_t *js, int64_t *xs, int64_t *ys) {
-	/* function to find the nearest point based on previous search, smallest distance ourside a radius */
+GMT_LOCAL int64_t grdfill_find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, int64_t *js, int64_t *xs, int64_t *ys) {
+	/* function to find the nearest point based on previous search, smallest distance outside a radius */
 	int64_t ct = 0, nx, ny, nx1, ii, k = 0, rr, nx1_2, ny_2;
 
 	rr = INTMAX_MAX;	/* Ensure we reset this the first time */
@@ -402,7 +397,7 @@ GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, 
 	return (ct);
 }
 
-GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct GMT_GRID *Out, int64_t radius) {
+GMT_LOCAL void grdfill_nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct GMT_GRID *Out, int64_t radius) {
 	uint64_t ij, node;
 	int64_t nx = In->header->n_columns, ny = In->header->n_rows;
  	int64_t i, j, flag, ct, k, recx = 1, recy = 1, cs = 0, rr;
@@ -442,7 +437,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 					rr = 0;
 
 				while (flag == 0 && rr <= rad2) {
-					ct = find_nearest (i, j, &rr, is, js, xs, ys);
+					ct = grdfill_find_nearest (i, j, &rr, is, js, xs, ys);
 					cs++;
 					for (k = 0; k < ct; k++) {
 						if (is[k] >= 0 && is[k] < ny && js[k] >=0 && js[k] < nx) {
@@ -474,7 +469,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdfill (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	char *ID = NULL, *RG_orig_hist = NULL;
 	int error = 0, RG_id = 0;
 	unsigned int hole_number = 0, row, col, limit[4], n_nodes;
@@ -533,7 +528,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate input grid!\n");
 			Return (API->error);
 		}
-		nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
+		grdfill_nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
 
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to write output grid!\n");
@@ -590,7 +585,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			ID[node] = 1;	/* Flag this node as part of a hole */
 			++hole_number;	/* Increase the current hole number */
 			/* Trace all the contiguous neighbors, updating the bounding box as we go along */
-			n_nodes = 1 + trace_the_hole (Grid, node, row, col, off, ID, limit);
+			n_nodes = 1 + grdfill_trace_the_hole (Grid, node, row, col, off, ID, limit);
 			wesn[XLO] = gmt_M_grd_col_to_x (GMT, limit[XLO], Grid->header) - 0.5 * Grid->header->inc[GMT_X];
 			wesn[XHI] = gmt_M_grd_col_to_x (GMT, limit[XHI], Grid->header) + 0.5 * Grid->header->inc[GMT_X];
 			wesn[YLO] = gmt_M_grd_row_to_y (GMT, limit[YHI], Grid->header) - 0.5 * Grid->header->inc[GMT_Y];
@@ -618,10 +613,10 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			else {
 				switch (Ctrl->A.mode) {
 					case ALG_CONSTANT:	/* Fill in using a constant value */
-						error = do_constant_fill (Grid, limit, (gmt_grdfloat)Ctrl->A.value);
+						error = grdfill_do_constant_fill (Grid, limit, (gmt_grdfloat)Ctrl->A.value);
 						break;
 					case ALG_SPLINE:	/* Fill in using a spline */
-						error = do_splinefill (API, Grid, wesn, limit, n_nodes, Ctrl->A.value);
+						error = grdfill_do_splinefill (API, Grid, wesn, limit, n_nodes, Ctrl->A.value);
 						break;
 				}
 				if (error) {

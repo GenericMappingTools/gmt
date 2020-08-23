@@ -140,6 +140,9 @@ enum GMT_enum_zdown {GMT_ZDOWN_R = 0,	/* Default: Annotating radius */
 	GMT_ZDOWN_ZP	= 2,	/* Annotating planetary radius - r */
 	GMT_ZDOWN_ZR	= 3};	/* Annotating given radius - r */
 
+/* gmt_M_is_periodic means the east and west meridians of a global map are separated */
+#define gmt_M_is_periodic(C) (gmt_M_is_cylindrical (C) || gmt_M_is_misc (C))
+
 /* gmt_M_is_rect_graticule means parallels and meridians are orthogonal, but does not imply linear spacing */
 #define gmt_M_is_rect_graticule(C) (C->current.proj.projection <= GMT_MILLER)
 
@@ -378,7 +381,7 @@ struct GMT_PROJ {
 
 	/* All Cylindrical Projections */
 
-	double j_x, j_y, j_ix, j_iy;
+	double j_x, j_y, j_ix, j_iy, j_yc;
 
 	/* Albers Equal-area conic parameters. */
 
@@ -427,6 +430,7 @@ struct GMT_PROJ {
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0, proj4_scl;
 	bool is_proj4;
+	bool proj4_is_cart[2];	/* Fist is for origin ref sys and second (if requested) for destiny */
 };
 
 enum GMT_enum_frame {GMT_IS_PLAIN = 0,	/* Plain baseframe */

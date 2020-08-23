@@ -86,7 +86,7 @@ Optional Arguments
 
     *lat lon dist cruiseZ gridZ diff [cruiseZ2 gridZ2 diff2 ...]*
 
-    Note: grid values are subtracted from cruise data so a positive
+    **Note**: Grid values are subtracted from cruise data so a positive
     difference implies cruise > grid. For multiple grid comparison,
     *cruiseZ gridZ diff* are repeated for each grid comparison in
     command line order.

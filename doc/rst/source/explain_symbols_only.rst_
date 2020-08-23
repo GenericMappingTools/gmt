@@ -7,11 +7,21 @@
     Optionally, append **c**, **i**, or
     **p** to indicate that the size information in the input data is in
     units of cm, inch, or point, respectively [Default is
-    :term:`PROJ_LENGTH_UNIT`]. Note: if you provide *both* size and symbol via the
+    :term:`PROJ_LENGTH_UNIT`]. **Note**: If you provide *both* size and symbol via the
     input file you must use :term:`PROJ_LENGTH_UNIT` to indicate the unit
     used for the symbol size or append the units to the sizes in the file.
     If symbol sizes are expected via the third data column then you may convert
-    those values to suitable symbol sizes via the **-i** mechanism.
+    those values to suitable symbol sizes via the **-i** mechanism. The general
+    input expectations are::
+
+    *x y* [ *z* ] [ *size* ] [ *symbol-parameters* ] [ *symbol* ]
+
+    where the optional *z* is required when **-C** is used, the optional
+    *size* is required when no symbol size is specified, and the trailing
+    text with the symbol code is required when symbol code is not specified
+    on the command line.  The *symbol-parameters* may vary in numbers; see
+    specifics below.
+    
 
     The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
     **S**, **T** are normalized to have the same area as a circle with

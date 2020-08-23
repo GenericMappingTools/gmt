@@ -16,8 +16,13 @@ script="@GMT_SOURCE_DIR@/test/${script_name}"
 src="@GMT_SOURCE_DIR@/test/${script_dir}"
 # Is it a modern mode script?
 modern=$(grep "gmt begin" "$script" -c)
+
 # Is it a script that is known to fail?
-known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+if [ "@GMT_ENABLE_KNOWN2FAIL@" = "ON" ]; then
+	known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+else
+	known2fail=0
+fi
 # Any script override of GRAPHICSMAGICK_RMS?  Must be a comment line of the format
 # GRAPHICSMAGICK_RMS = <custom-limit>
 GRAPHICSMAGICK_RMS=$(grep "GRAPHICSMAGICK_RMS" "$script" | awk '{print $4}')
@@ -82,7 +87,16 @@ for apiprog in \
     testapi_uservectors \
     testapi_vector \
     testapiconv \
-    testgrdio
+    testgrdio \
+    testapi_imageshading \
+    testapi_matrix_as_grid \
+    testapi_vector_strings \
+    testapi_vector_plot \
+    testapi_vector_io \
+    testapi_matrix_io \
+    testapi_matrix_360 \
+    testapi_matrix_360_ref \
+    testapi_grid2matrix
 do
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done
@@ -236,10 +250,11 @@ export HAVE_GLIB_GTHREAD="@HAVE_GLIB_GTHREAD@"
 export GMT_END_SHOW=off
 # Start with proper GMT defaults
 gmt set -Du
-# Modern mode needs a stable PPID but ctest messes that up when pipes are used
+# Modern mode needs a stable PPID but ctest messes that up when pipes are used.
+# Because classic scripts also look to see what mode they are we set this for all.
+export GMT_SESSION_NAME=\$\$
+echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
 if [ ${modern} -gt 0 ]; then
-	export GMT_SESSION_NAME=\$\$
-	echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
 	script_mode=M
 fi
 # Now run the script

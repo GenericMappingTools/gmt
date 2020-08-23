@@ -20,7 +20,7 @@ Synopsis (begin mode)
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
 |-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
 [ |-A|\ *autolabel* ]
-[ |-C|\ [*side*]\ /*clearance*]
+[ |-C|\ [*side*]\ *clearance* ]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
 [ |-M|\ *margins* ]
@@ -46,7 +46,7 @@ Required Arguments
 *nrows*\ **x**\ *ncols*
     Specifies the number of rows and columns of subplots.  Each row will have
     the same number of subplots.
-    Note: You are not required to place a plot in each subplot.
+    **Note**: You are not required to place a plot in each subplot.
 
 .. _-F:
 
@@ -90,9 +90,9 @@ Optional Arguments
     Specify automatic tagging of each subplot.  Append either a number or letter [a].
     This sets the tag of the first, top-left subplot and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
-    as part of the tag (Note: In UNIX shells you may need to escape these parentheses.)
+    as part of the tag (**Note**: In UNIX shells you may need to escape these parentheses.)
     Use **+j**\|\ **J**\ *refpoint* to specify where the tag should be placed in the subplot [TL].
-    Note: **+j** sets the justification of the tag to *refpoint* (suitable for interior tags)
+    **Note**: **+j** sets the justification of the tag to *refpoint* (suitable for interior tags)
     while **+J** instead selects the mirror opposite (suitable for exterior tags).
     Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
     requested via **+g** or **+p** [3p/3p, i.e., 15% of the :term:`FONT_TAG` size dimension].
@@ -108,13 +108,13 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*side*]\ /*clearance*
+**-C**\ [*side*]\ *clearance*
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
     or **y** for both **s** and **n**.  No *side* means all sides. The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** directive apply
-    to all subplots, while settings under **set** only apply to the selected (active) subplot.  Note: Common options **-X**
+    to all subplots, while settings under **set** only apply to the selected (active) subplot.  **Note**: Common options **-X**
     and **-Y** are not available during subplots; use **-C** instead.
 
 .. _-J:
@@ -135,7 +135,7 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| replace:: This is useful when all subplots share a common plot domain.
+.. |Add_-R| replace:: This is useful when all subplots share a common plot domain. In this module, the chosen region will also become the default for any data region needed by computational modules.
 .. include:: explain_-R.rst_
 
 .. _-S:
@@ -176,10 +176,10 @@ Optional Arguments
 Synopsis (set mode)
 -------------------
 
-**gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance* ] [ |SYN_OPT-V| ]
+**gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ *clearance* ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot.
-Note: If any **-J** option is passed with **?** as scale or width when plotting subplots,
+**Note**: If any **-J** option is passed with **?** as scale or width when plotting subplots,
 then the dimensions of the map are automatically determined by the subplot size and your region.
 For Cartesian plots: If you want the scale to apply *equally* to both dimensions
 then you must specify **-Jx** [The default **-JX** will fill the subplot by using unequal scales].
@@ -188,7 +188,7 @@ Optional Arguments
 ------------------
 
 *row,col*
-    Sets the current subplot until further notice.  Note: First *row* or *col* is 0, not 1. If not given we go to the next subplot by order
+    Sets the current subplot until further notice.  **Note**: First *row* or *col* is 0, not 1. If not given we go to the next subplot by order
     specified via **-A**.  As an alternative, you may bypass the **set** mode and
     instead supply the common option **-c**\ [*row,col*] to the first plot command you issue in that subplot.
     GMT maintains information about the current figure and subplot. Also, you may give the one-dimensional
@@ -203,7 +203,7 @@ Optional Arguments
 
 .. _subplot_set-C2:
 
-**-C**\ *side*\ /*clearance*
+**-C**\ [*side*]\ *clearance*
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can

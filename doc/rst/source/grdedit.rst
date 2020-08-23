@@ -41,7 +41,7 @@ replaces the information with values provided on the command line [if
 any]. As an option, global, geographical grids (with 360 degrees
 longitude range) can be rotated in the east-west direction, and
 individual nodal values can be replaced from a table of *x*, *y*, *z*
-values. **grdedit** only operates on files containing a grid header. Note:
+values. **grdedit** only operates on files containing a grid header. **Note**:
 If it is important to retain the original data you should use **-G**
 to save the modified grid to a new file.
 
@@ -133,6 +133,7 @@ Optional Arguments
     Basically, gridline-registered grids will have their domain extended
     by half the x- and y-increments whereas pixel-registered grids will
     have their domain shrunk by the same amount.
+    This is a *non-destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
 .. _-V:
 

@@ -4,7 +4,7 @@
 
 # Generic Mapping Tools
 
-[![Azure](https://dev.azure.com/GenericMappingTools/GMT/_apis/build/status/GenericMappingTools.gmt?branchName=master)](https://dev.azure.com/GenericMappingTools/GMT/_build/latest?definitionId=2&branchName=master)
+[![Azure](https://dev.azure.com/GenericMappingTools/GMT/_apis/build/status/GenericMappingTools.gmt?branchName=master)](https://dev.azure.com/GenericMappingTools/GMT/_build/?definitionId=2)
 [![CodeCov](https://img.shields.io/codecov/c/github/GenericMappingTools/gmt.svg)](https://codecov.io/gh/GenericMappingTools/gmt/)
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
@@ -101,7 +101,7 @@ GMT may be linked with these libraries (* means optional):
 [Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),
 [Basic Linear Algebra Subprograms (BLAS*)](http://www.netlib.org/blas/), and
 [ZLIB*](https://www.zlib.net). GMT may call these executables:
-GDAL (ogr2ogr, gdal_info), [Ghostscript](https://www.ghostscript.com),
+GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 [FFmpeg](https://www.ffmpeg.org),
 [xdg-open](https://www.freedesktop.org/wiki/Software/xdg-utils/), and
 [GraphicsMagick](http://www.graphicsmagick.org).

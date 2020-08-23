@@ -42,7 +42,7 @@ a pattern. Other standard geometric symbols can also be used. See Appendix
 GMT4 Vector
 -----------
 
-Note: The old-style, single-polygon vector available in GMT4 and earlier versions
+**Note**: The old-style, single-polygon vector available in GMT4 and earlier versions
 has been added to GMT5 for backwards compatibility with old scripts.
 For reference, the old vector syntax is listed here:
 The *size*, if present, will be interpreted as *arrowwidth/headlength/headwidth*.
@@ -66,3 +66,19 @@ cannot handle polygons crossing the Dateline.  They work around this
 problem by splitting polygons into a west and east polygon or inserting
 artificial helper lines that makes a cut into the pole and back.  Such
 doctored polygons may be misrepresented in GMT.
+
+Bezier spline
+-------------
+
+The **+s** modifier to pen settings (**-W**) is limited to plotting lines and
+polygons.  Lines with embellishments (fronts, decorated, or quoted lines) are
+excluded.
+
+Auto-Legend
+-----------
+
+The **-l** option for symbols expects the symbol color, size, and type to be given
+on the command line.  If you have variable symbol sizes then you must append **+s**\ *size* to set
+a suitable size for the legend entry.  For other symbol cases the **-l** option will
+be ignored.  Legend entries also work for lines and polygons, but not more complicated
+features such as decorated and quoted lines, fronts, etc.

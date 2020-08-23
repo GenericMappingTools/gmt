@@ -42,7 +42,7 @@ Examples
 To add an example of a legend to a Mercator plot (map.ps) with the given
 specifications, use::
 
-    gmt makecpt -Cpanoply -T-8/8/1 > tt.cpt
+    gmt makecpt -Cpanoply -T-8/8 > tt.cpt
     gmt set FONT_ANNOT_PRIMARY 12p
 
     gmt pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i+w5i+jBL+l1.2 -C0.1i/0.1i -F+p+gazure1+r -B5f1 -P > legend.ps <<EOF

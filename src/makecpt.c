@@ -50,75 +50,75 @@ enum makecpt_enum_mode {DO_RANGE = 0,		/* Use actual data range in -T */
 /* Control structure for makecpt */
 
 struct MAKECPT_CTRL {
-	struct Out {	/* -> */
+	struct MAKECPT_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A<transp>[+a] */
+	struct MAKECPT_A {	/* -A<transp>[+a] */
 		bool active;
 		unsigned int mode;
 		double value;
 	} A;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct MAKECPT_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[i|o] */
+	struct MAKECPT_D {	/* -D[i|o] */
 		bool active;
 		unsigned int mode;
 	} D;
-	struct E {	/* -E<nlevels> */
+	struct MAKECPT_E {	/* -E<nlevels> */
 		bool active;
 		unsigned int levels;
 	} E;
-	struct F {	/* -F[r|R|h|c][+c] */
+	struct MAKECPT_F {	/* -F[r|R|h|c][+c] */
 		bool active;
 		bool cat;
 		unsigned int model;
 	} F;
-	struct G {	/* -Glow/high for input CPT truncation */
+	struct MAKECPT_G {	/* -Glow/high for input CPT truncation */
 		bool active;
 		double z_low, z_high;
 	} G;
-	struct H {	/* -H */
+	struct MAKECPT_H {	/* -H */
 		bool active;
 	} H;
-	struct I {	/* -I[z][c] */
+	struct MAKECPT_I {	/* -I[z][c] */
 		bool active;
 		unsigned int mode;
 	} I;
-	struct M {	/* -M */
+	struct MAKECPT_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct MAKECPT_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S */
+	struct MAKECPT_S {	/* -S */
 		bool active;
 		bool discrete;
 		unsigned int mode;
 		double scale;
 		double q[2];
 	} S;
-	struct T {	/* -T<min/max[/inc>[+n]]|<file>|<z0,z1,...,zn> */
+	struct MAKECPT_T {	/* -T<min/max[/inc>[+n]]|<file>|<z0,z1,...,zn> */
 		bool active;
 		bool interpolate;
 		struct GMT_ARRAY T;
 	} T;
-	struct Q {	/* -Q[i|o] */
+	struct MAKECPT_Q {	/* -Q[i|o] */
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct W {	/* -W[w] */
+	struct MAKECPT_W {	/* -W[w] */
 		bool active;
 		bool wrap;
 	} W;
-	struct Z {	/* -Z */
+	struct MAKECPT_Z {	/* -Z */
 		bool active;
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MAKECPT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct MAKECPT_CTRL);
@@ -128,7 +128,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->C.file);
@@ -136,7 +136,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -191,7 +191,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to makecpt and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -248,7 +248,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':	/* Sets format for color reporting */
 				Ctrl->F.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c")) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) Ctrl->F.cat = true;
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
@@ -370,7 +370,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_makecpt (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	int i, nz = 0, error = 0;
 	unsigned int cpt_flags = 0;
 
@@ -408,7 +408,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	else {	/* No table specified; set default table */
 		Ctrl->C.active = true;
-		Ctrl->C.file = strdup (GMT->init.cpt[0]);
+		Ctrl->C.file = strdup (GMT_DEFAULT_CPT_NAME);
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Prepare CPT via the master file %s\n", Ctrl->C.file);

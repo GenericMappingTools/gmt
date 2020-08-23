@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: grdvolume reads a 2d grid file, and calculates the volume
+ * Brief synopsis: grdvolume reads a 2D grid file, and calculates the volume
  * under the surface using exact integration of the bilinear interpolating
  * surface.  As an option, the user may supply a contour value; then the
  * volume is only integrated inside the chosen contour.
@@ -36,38 +36,45 @@
 #define THIS_MODULE_OPTIONS "-RVfho"
 
 struct GRDVOLUME_CTRL {
-	struct In {
+	struct GRDVOLUME_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C */
+	struct GRDVOLUME_C {	/* -C */
 		bool active;
 		bool reverse, reverse_min;
 		double low, high, inc;
 	} C;
-	struct L {	/* -L<base> */
+	struct GRDVOLUME_D {	/* -D */
+		bool active;
+	} D;
+	struct GRDVOLUME_L {	/* -L<base> */
 		bool active;
 		double value;
 	} L;
-	struct S {	/* -S */
+	struct GRDVOLUME_S {	/* -S */
 		bool active;
 		char unit;
 	} S;
-	struct T {	/* -T[c|z] */
+	struct GRDVOLUME_T {	/* -T[c|z] */
 		bool active;
 		unsigned int mode;
 	} T;
-	struct Z {	/* Z<fact>[/<shift>] */
+	struct GRDVOLUME_Z {	/* Z<fact>[/<shift>] */
 		bool active;
 		double scale, offset;
 	} Z;
 };
 
+/* For equations underlying the math here, see the explanation in
+ * https://github.com/GenericMappingTools/sandbox/blob/master/gurudocs/grdvolume_integration.pdf
+  */
+
 /* This function returns the volume bounded by a trapezoid based on two vertical
- * lines x0 and x1 and two horizontal lines y0 = ax +b and y1 = cx + d
+ * lines x0 and x1 and two horizontal lines y0 = ax + b and y1 = cx + d
  */
 
-GMT_LOCAL double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, double a, double b, double c, double d) {
+GMT_LOCAL double grdvolume_vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, double a, double b, double c, double d) {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, x02, x12, x03, x04, x13, x14;
 
 	dzdx  = (G->data[ij+1] - G->data[ij]);
@@ -94,7 +101,7 @@ GMT_LOCAL double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, d
  * lines y0 and y1 and two vertical lines x0 = ay +b and x1 = cy + d
  */
 
-GMT_LOCAL double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, double a, double b, double c, double d) {
+GMT_LOCAL double grdvolume_vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, double a, double b, double c, double d) {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, y02, y03, y04, y12, y13, y14;
 
 	dzdx = (G->data[ij+1] - G->data[ij]);
@@ -117,14 +124,14 @@ GMT_LOCAL double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, d
 	return (v);
 }
 
-GMT_LOCAL void SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+GMT_LOCAL void grdvolume_SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
 	/* Calculates area of a SW-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x1, y0, frac;
 
 	x1 = G->data[ij] / (G->data[ij] - G->data[ij+1]);
 	y0 = G->data[ij] / (G->data[ij] - G->data[ij-G->header->mx]);
-	frac = (x1 == 0.0) ? 0.0 : vol_prism_frac_x (G, ij, 0.0, x1, 0.0, 0.0, -y0 / x1, y0);
+	frac = (x1 == 0.0) ? 0.0 : grdvolume_vol_prism_frac_x (G, ij, 0.0, x1, 0.0, 0.0, -y0 / x1, y0);
 	if (triangle) {
 		*dv += frac;
 		*da += 0.5 * x1 * y0;
@@ -135,7 +142,7 @@ GMT_LOCAL void SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, doub
 	}
 }
 
-GMT_LOCAL void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+GMT_LOCAL void grdvolume_NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
 	/* Calculates area of a NE-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x0, y1, a, x0_1, y1_1, frac = 0.0;
@@ -146,7 +153,7 @@ GMT_LOCAL void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, doub
 	y1_1 = y1 - 1.0;
 	if (x0_1 != 0.0) {
 		a = y1_1 / x0_1;
-		frac = vol_prism_frac_x (G, ij, x0, 1.0, a, 1.0 - a * x0, 0.0, 0.0);
+		frac = grdvolume_vol_prism_frac_x (G, ij, x0, 1.0, a, 1.0 - a * x0, 0.0, 1.0);
 	}
 	if (triangle) {
 		*dv += frac;
@@ -158,7 +165,7 @@ GMT_LOCAL void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, doub
 	}
 }
 
-GMT_LOCAL void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+GMT_LOCAL void grdvolume_SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
 	/* Calculates area of a SE-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x0, y1, c, x0_1, frac = 0.0;
@@ -168,7 +175,7 @@ GMT_LOCAL void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, doub
 	x0_1 = 1.0 - x0;
 	if (x0_1 != 0.0) {
 		c = y1 / x0_1;
-		frac = vol_prism_frac_x (G, ij, x0, 1.0, 0.0, 0.0, c, -c * x0);
+		frac = grdvolume_vol_prism_frac_x (G, ij, x0, 1.0, 0.0, 0.0, c, -c * x0);
 	}
 	if (triangle) {
 		*dv += frac;
@@ -180,7 +187,7 @@ GMT_LOCAL void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, doub
 	}
 }
 
-GMT_LOCAL void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+GMT_LOCAL void grdvolume_NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
 	/* Calculates area of a NW-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x1, y0, y0_1, frac;
@@ -188,7 +195,7 @@ GMT_LOCAL void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, doub
 	x1 = G->data[ij-G->header->mx] / (G->data[ij-G->header->mx] - G->data[ij+1-G->header->mx]);
 	y0 = G->data[ij] / (G->data[ij] - G->data[ij-G->header->mx]);
 	y0_1 = 1.0 - y0;
-	frac = (x1 == 0.0) ? 0.0 : vol_prism_frac_x (G, ij, 0.0, x1, y0_1 / x1, y0, 0.0, 1.0);
+	frac = (x1 == 0.0) ? 0.0 : grdvolume_vol_prism_frac_x (G, ij, 0.0, x1, y0_1 / x1, y0, 0.0, 1.0);
 	if (triangle) {
 		*dv += frac;
 		*da += 0.5 * x1 * y0_1;
@@ -199,7 +206,7 @@ GMT_LOCAL void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, doub
 	}
 }
 
-GMT_LOCAL void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double *dv, double *da) {
+GMT_LOCAL void grdvolume_NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double *dv, double *da) {
 	/* Calculates area of a NS trapezoid */
 	/* right = true gets the right trapezoid, false gets the left */
 	double x0, x1;
@@ -207,16 +214,16 @@ GMT_LOCAL void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double
 	x0 = G->data[ij] / (G->data[ij] - G->data[ij+1]);
 	x1 = G->data[ij-G->header->mx] / (G->data[ij-G->header->mx] - G->data[ij+1-G->header->mx]);
 	if (right) {	/* Need right piece */
-		*dv += vol_prism_frac_y (G, ij, 0.0, 1.0, x1 - x0, x0, 0.0, 1.0);
+		*dv += grdvolume_vol_prism_frac_y (G, ij, 0.0, 1.0, x1 - x0, x0, 0.0, 1.0);
 		*da += 0.5 * (2.0 - x0 - x1);
 	}
 	else {
-		*dv += vol_prism_frac_y (G, ij, 0.0, 1.0, 0.0, 0.0, x1 - x0, x0);
+		*dv += grdvolume_vol_prism_frac_y (G, ij, 0.0, 1.0, 0.0, 0.0, x1 - x0, x0);
 		*da += 0.5 * (x0 + x1);
 	}
 }
 
-GMT_LOCAL void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *dv, double *da) {
+GMT_LOCAL void grdvolume_EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *dv, double *da) {
 	/* Calculates area of a EW trapezoid */
 	/* top = true gets the top trapezoid, false gets the bottom */
 	double y0, y1;
@@ -224,16 +231,16 @@ GMT_LOCAL void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *
 	y0 = G->data[ij] / (G->data[ij] - G->data[ij-G->header->mx]);
 	y1 = G->data[ij+1] / (G->data[ij+1] - G->data[ij+1-G->header->mx]);
 	if (top) {	/* Need top piece */
-		*dv += vol_prism_frac_x (G, ij, 0.0, 1.0, y1 - y0, y0, 0.0, 1.0);
+		*dv += grdvolume_vol_prism_frac_x (G, ij, 0.0, 1.0, y1 - y0, y0, 0.0, 1.0);
 		*da += 0.5 * (2.0 - y0 - y1);
 	}
 	else {
-		*dv += vol_prism_frac_x (G, ij, 0.0, 1.0, 0.0, 0.0, y1 - y0, y0);
+		*dv += grdvolume_vol_prism_frac_x (G, ij, 0.0, 1.0, 0.0, 0.0, y1 - y0, y0);
 		*da += 0.5 * (y0 + y1);
 	}
 }
 
-GMT_LOCAL double median3 (double x[]) {
+GMT_LOCAL double grdvolume_median3 (double x[]) {
 	/* Returns the median of the three points in x */
 	if (x[0] < x[1]) {
 		if (x[2] > x[1]) return (x[1]);
@@ -247,7 +254,7 @@ GMT_LOCAL double median3 (double x[]) {
 	}
 }
 
-GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, unsigned int mode) {
+GMT_LOCAL int grdvolume_ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, unsigned int mode) {
 	/* mode: 0 = find value maximum, 1 = find curvature maximum */
 	unsigned int i, im;
 	double *c = NULL, *f = NULL;
@@ -269,7 +276,7 @@ GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, u
 	/* Apply 3-point median filter to curvatures to mitigate noisy values */
 
 	f = gmt_M_memory (GMT, NULL, n, double);
-	for (i = 1; i < (n-1); i++) f[i] = median3 (&c[i-1]);
+	for (i = 1; i < (n-1); i++) f[i] = grdvolume_median3 (&c[i-1]);
 
 	/* Find maximum negative filtered curvature */
 
@@ -281,7 +288,7 @@ GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, u
 	return (im);
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVOLUME_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDVOLUME_CTRL);
@@ -293,16 +300,16 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high> or -Cr<cval>] [-L<base>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high> or -Cr<cval>] [-D] [-L<base>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<unit>] [-T[c|h]] [%s] [%s] [-Z<fact>[/<shift>]]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
@@ -312,9 +319,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Find area, volume, and mean height inside the given <cval> contour,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   OR search using all contours from <low> to <high> in steps of <delta>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default returns area, volume and mean height of entire grid].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default returns cval=0, area, volume and mean height of entire grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   OR append r (-Cr) to compute 'outside' area and volume between <low> and <high>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or below <cval> and grid's minimum.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D In conjunction with -C<low>/<high>/<delta>, report slice volumes and area.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S For geographic grids we convert degrees to \"Flat-Earth\" distances in meters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a unit from %s to select another distance unit.\n", GMT_LEN_UNITS2_DISPLAY);
@@ -327,7 +335,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdvolume and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -344,11 +352,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -382,6 +389,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 					else
 						Ctrl->C.high = Ctrl->C.low, Ctrl->C.inc = 1.0;	/* So calculation of ncontours will yield 1 */
 				}
+				break;
+			case 'D':
+				Ctrl->D.active = true;
 				break;
 			case 'L':
 				Ctrl->L.active = true;
@@ -427,6 +437,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 	                                   "Option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_dnan (Ctrl->L.value),
 	                                   "Option -L: Must specify base\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && n < 3,
+	                                   "Option -D: Must specify a range of contours with -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active,
 	                                   "Option -T: Must also specify -Clow/high/delta\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && doubleAlmostEqualZero (Ctrl->C.high, Ctrl->C.low),
@@ -438,7 +450,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdvolume (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdvolume (void *V_API, int mode, void *args) {
 	bool bad, shrink, cut[4];
 	int error = 0, ij_inc[5];
 	unsigned int row, col, c, k, pos, neg, nc, n_contours;
@@ -514,7 +526,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		}
 	}
 
-	(void) gmt_set_outgrid (GMT, Ctrl->In.file, false, Grid, &Work);	/* true if input is a read-only array */
+	(void) gmt_set_outgrid (GMT, Ctrl->In.file, false, 0, Grid, &Work);	/* true if input is a read-only array */
 	gmt_grd_init (GMT, Work->header, options, true);
 
 	/* Set node increments relative to the lower-left node of a 4-point box */
@@ -522,7 +534,8 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	ij_inc[4] = ij_inc[0];	/* Repeat for convenience */
 	cellsize = Work->header->inc[GMT_X] * Work->header->inc[GMT_Y];
 	if (shrink) {
-		gmt_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST);	/* Flat Earth mode */
+		if (gmt_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Flat Earth mode */
+			Return (GMT_NOT_A_VALID_TYPE);
 		dist_pr_deg = GMT->current.proj.DIST_M_PR_DEG;
 		dist_pr_deg *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scales meters to desired unit */
 		cellsize *= dist_pr_deg * dist_pr_deg;
@@ -599,31 +612,31 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 					if (nc == 4) {	/* Saddle scenario */
 						if (Work->data[ij] > 0.0) {	/* Need both SW and NE triangles */
-							SW_triangle (Work, ij, true, &dv, &da);
-							NE_triangle (Work, ij, true, &dv, &da);
+							grdvolume_SW_triangle (Work, ij, true, &dv, &da);
+							grdvolume_NE_triangle (Work, ij, true, &dv, &da);
 						}
 						else {			/* Need both SE and NW corners */
-							SE_triangle (Work, ij, true, &dv, &da);
-							NW_triangle (Work, ij, true, &dv, &da);
+							grdvolume_SE_triangle (Work, ij, true, &dv, &da);
+							grdvolume_NW_triangle (Work, ij, true, &dv, &da);
 						}
 
 					}
 					else if (cut[0]) {	/* Contour enters at S border ... */
 						if (cut[1])	/* and exits at E border */
-							SE_triangle (Work, ij, (Work->data[ij+ij_inc[1]] > 0.0), &dv, &da);
+							grdvolume_SE_triangle (Work, ij, (Work->data[ij+ij_inc[1]] > 0.0), &dv, &da);
 						else if (cut[2])	/* or exits at N border */
-							NS_trapezoid (Work, ij, Work->data[ij] < 0.0, &dv, &da);
+							grdvolume_NS_trapezoid (Work, ij, Work->data[ij] < 0.0, &dv, &da);
 						else			/* or exits at W border */
-							SW_triangle (Work, ij, (Work->data[ij] > 0.0), &dv, &da);
+							grdvolume_SW_triangle (Work, ij, (Work->data[ij] > 0.0), &dv, &da);
 					}
 					else if (cut[1]) {	/* Contour enters at E border */
 						if (cut[2])	/* exits at N border */
-							NE_triangle (Work, ij, (Work->data[ij+ij_inc[2]] > 0.0), &dv, &da);
+							grdvolume_NE_triangle (Work, ij, (Work->data[ij+ij_inc[2]] > 0.0), &dv, &da);
 						else			/* or exits at W border */
-							EW_trapezoid (Work, ij, Work->data[ij] < 0.0, &dv, &da);
+							grdvolume_EW_trapezoid (Work, ij, Work->data[ij] < 0.0, &dv, &da);
 					}
 					else			/* Contours enters at N border and exits at W */
-						NW_triangle (Work, ij, (Work->data[ij+ij_inc[3]] > 0.0), &dv, &da);
+						grdvolume_NW_triangle (Work, ij, (Work->data[ij+ij_inc[3]] > 0.0), &dv, &da);
 				}
 			}
 			ij++;
@@ -707,7 +720,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	if (Ctrl->T.active) {	/* Determine the best contour value and return the corresponding information for that contour only */
-		c = ors_find_kink (GMT, height, n_contours, Ctrl->T.mode);
+		c = grdvolume_ors_find_kink (GMT, height, n_contours, Ctrl->T.mode);
 		out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
 		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 	}
@@ -716,7 +729,14 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 			out[0] = 0;	out[1] = area[0] - area[1];	out[2] = vol[0] - vol[1];	out[3] = out[2] / out[1];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
-		else {
+		else if (Ctrl->D.active) {	/* Get slice volumes */
+			out[3] = Ctrl->C.inc;	/* Fixed slice height = thickness */
+			for (c = 0; c < (n_contours-1); c++) {
+				out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c] - vol[c+1];
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+			}
+		}
+		else {	/* Get volumes above contours */
 			for (c = 0; c < n_contours; c++) {
 				out[0] = Ctrl->C.low + c * Ctrl->C.inc;	out[1] = area[c];	out[2] = vol[c];	out[3] = height[c];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */

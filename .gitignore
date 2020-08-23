@@ -6,5 +6,9 @@ cmake/ConfigUser.cmake
 cmake/ConfigUserAdvanced.cmake
 share/coast
 share/dcw
+src/newsuppl*
 **/gmt.history
 .DS_Store
+doc/examples/**/*.mp4
+doc/examples/**/*.png
+doc/examples/**/*.gif

@@ -25,7 +25,7 @@
  * value and follow a ":" in the comment ("grep : segy.h" will spit
  * all default fields out).  Two pairs of fields exist to cover an
  * inherited limitation; sampleLength/num_samps and deltaSample/samp_rate.
- * When the value is too large to fit in a int16_t, sampleLength or
+ * When the value is too large to fit in an int16_t, sampleLength or
  * deltaSample become flags and require their int32_t counterparts,
  * num_samps and samp_rate, to contain that value.
  *

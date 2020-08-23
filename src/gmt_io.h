@@ -126,10 +126,9 @@ enum GMT_lon_enum {
 
 /*! How to handle NaNs in records */
 enum GMT_io_nan_enum {
-	GMT_IO_NAN_OK = 0,	/* NaNs are fine; just output the record as is */
-	GMT_IO_NAN_SKIP,	/* -s[cols]	: Skip records with z == NaN in selected cols [z-col only] */
-	GMT_IO_NAN_KEEP,	/* -sr		: Skip records with z != NaN */
-	GMT_IO_NAN_ONE};	/* -sa		: Skip records with at least one NaN */
+	GMT_IO_NAN_SKIP = 1,	/* -s[cols]	: Skip records with z == NaN in selected cols [col=2 only] */
+	GMT_IO_NAN_KEEP = 2,	/* -s+r		: Skip records with z != NaN */
+	GMT_IO_NAN_ANY  = 4};	/* -s+a		: Skip records with at least one NaN [skip records with all cols = NaN] */
 
 /* Use POSIX functions ftello() and fseeko(), which represent the
  * position using the off_t type: */
@@ -255,8 +254,11 @@ struct GMT_IO {				/* Used to process input data records */
 	bool warn_geo_as_cartesion;	/* true if we should warn if we read a record with geographic data while the expected format has not been set (i.e., no -J or -fg) */
 	bool first_rec;			/* true when reading very first data record in a dataset */
 	bool trailing_text[2];	/* Default is to process training text unless turned off via -i, -o */
-	bool hash_refreshed;		/* true after calling the hash_refresh function the first time */
+	bool refreshed[2];		/* true after calling the hash_refresh function the first time, for hash and info, respectively */
+	bool new_data_list;		/* true after when a server refresh yields an updated gmt_data_server.txt */
 	bool internet_error;		/* true after failing to get hash table due to time-out */
+	bool grid_padding;		/* If true we try to read two extra rows/cols from grids for BC purposes */
+	bool leave_as_jp2;		/* If true we do not convert downloaded JP2 grids to NC right away, but as needed */
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
@@ -313,6 +315,7 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_DATA_RANGE data_range[2][GMT_MAX_RANGES];		/* One or more ranges for input or output times */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
+	double *nc_xarray, *nc_yarray;	/* For grids with variable x,y arrays */
 	/* The remainder are just pointers to memory allocated elsewhere */
 	int *varid;			/* Array of variable IDs (netCDF only) */
 	double *scale_factor;		/* Array of scale factors (netCDF only) */

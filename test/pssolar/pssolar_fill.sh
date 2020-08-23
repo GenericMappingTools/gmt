@@ -4,7 +4,7 @@
 # becomes harder to decide.  The 11:30:58 time is ok but an hour later...
 
 ps=pssolar_fill.ps
-gmt pscoast -P -Rd -JKs0/6i -Dl -A5000 -W0.5p -N1/0.5p,gray -S175/210/255 -Bafg --MAP_FRAME_TYPE=plain -K -Xc > $ps
+gmt pscoast -P -Rd -JKs0/6i -Dc -A50000 -W0.5p -S175/210/255 -Bafg --MAP_FRAME_TYPE=plain -K -Xc > $ps
 
 date="2017-09-26T11:40:58"
 
@@ -14,7 +14,7 @@ gmt pssolar -R  -J -Tn+d$date -Wthick,red@80 -Gnavy@80 -K -O >> $ps
 gmt pssolar -R  -J -Ta+d$date -Wthick,blue@80 -Gnavy@80 -K -O >> $ps
 gmt pssolar -I+d$date -C | gmt psxy -R -J -Sc1c -Gyellow -O -K -B+t"$date" >> $ps
 
-gmt pscoast -R -J -Dl -A5000 -W0.5p -N1/0.5p,gray -S175/210/255 -Bafg --MAP_FRAME_TYPE=plain -O -K -Y4.5i >> $ps
+gmt pscoast -R -J -Dc -A50000 -W0.5p -S175/210/255 -Bafg --MAP_FRAME_TYPE=plain -O -K -Y4.5i >> $ps
 
 date="2017-09-26T12:40:58"
 

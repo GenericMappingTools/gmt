@@ -12,7 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdgdal** *infile* **-A**\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*] **-G**\ *outfile* [**-F**\ "*gd opts*"] [**-M**\ [**+r+w**]]
+**gmt grdgdal** *infile*
+|-A|\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*]
+|-G|\ *outfile* 
+[ |-F|\ "*gd opts*"]
+[ |-M|\ [**+r+w**]]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]

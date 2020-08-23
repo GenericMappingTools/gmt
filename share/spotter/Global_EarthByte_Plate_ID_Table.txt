@@ -1,16 +1,13 @@
-# PLATE IDENTIFICATIONS FOR Matthews_etal_GPC_2016_410-0Ma_GK07	
-#	
-# Plate Id	Code	Description	Notes
-1	AHS	Atlantic-Indian hotspots
-2	PHS	"Pacific Hotspots (Wessel JGR 2008, model WK08-A)"
-3	PPH	Present-day Pacific hotspots
-4	TPWC	True Polar Wander Correction
-8	RHS	Reunion Hotspot 
-9	KHS	Kerguelen Hotspot 
-10	THS	Tristan Hotspot
-11	SHH	St Helena Hotspot
-12	GMH	Great Meteor Hotspot
-28	IHS 	Iceland Hotspot
+# PLATE IDENTIFICATIONS FOR Müller et al (2019) Global_250-0Ma_Rotations_2019_v2.rot
+#       
+# Plate Id      Code    Description     Notes
+000	Hotspots	
+008	RHS	Reunion Hotspot 
+009	KHS	Kerguelen Hotspot 
+010	THS	Tristan Hotspot
+011	SHH	St Helena Hotspot
+012	GMH	Great Meteor Hotspot
+028	IHS 	Iceland Hotspot
 101	NAM	North America
 102	GRN	Greenland
 103	NSL	North Slope Alaska
@@ -81,11 +78,14 @@
 253	SJH	San Juan/Hispaniola
 254	HCO	Hispaniola Cordillera
 255	NHI	Northern Hispaniola
-263	PAT	Patagonia
 274	NCT	North Cuban Thrust Sheets
 275	SCT	South Cuban Thrust Sheets
-280	NPM2	North Patagonian Massif2
+276	SPE	Sandwich Plate East
+278	CSS	Central Scotia Sea South
+280	BDW	Burdwood Plate
+281	SPW	Sandwich Plate West
 283	NPM	North Patagonian Massif
+285	SGR	South Georgia
 288	FLI	Falkland Islands
 290	SSP	Salado Subplate
 291	RAW	Rawson Block
@@ -123,13 +123,7 @@
 346	PEL	Peloponnese
 347	CRT	Crete
 349	SMD	Serbo Macedonia
-352	LOI1	Isochron of AFR-IBR  Ligurian Ocean
-354	LOI3	Isochron of IBR-ADR East
 355	VAR1	"Isochron of IBR, Vardar Ocean"
-356	AT1	"Isochron of AFR, Alpine Tethys"
-357	AT2	"Isochron of AFR, Alpine Tethys"
-358	VAL1	"Isochron of AFR, Valais Sea"
-359	VAL2	"Isochron of IBR, Valais Sea"
 372	YWK	Yamal Peninsula (Western Kara Sea)
 373	NVS	Novaya Semya
 374	PER	Perunica
@@ -165,6 +159,13 @@
 466	CTI	Central Tien Shan
 467	STI	South Tien Shan
 468	WSI	West Siberian Basin
+469	JUN3	Junction-Izanagi plate boundary
+470	JUN4	Junction-Izanagi plate boundary
+471	IZAMP1	Izanagi Microplate in Cretaceous near SE Asia
+472	IZAMP2	Izanagi Microplate in Cretaceous near SE Asia
+473	IZAMP3	Izanagi Microplate in Cretaceous near SE Asia
+474	IZAMP4	Izanagi Microplate in Cretaceous near SE Asia
+475	SPK	Sepik Jurassic-Cretaceous back-arc
 498	JUN1	Junction plate 1
 499	JUN2	Junction plate 2
 501	IND	Southern India Craton
@@ -200,14 +201,28 @@
 545		Isochron of ARB
 550	INA	India
 551	GGS	Gagra/Shatsky
-552	EAR	East Argo Abyssal Plain
 554	LAD	Ladakh Arc
 555		Isochron of AFR
+557	WTET	Western Tethys Back-arc north of Arabia in Cretaceous 
+558	WTET	Western Tethys Back-arc north of Arabia in Cretaceous 
+559	WTET	Western Tethys Back-arc north of Arabia in Cretaceous 
+560	WTET	Western Tethys Back-arc north of Arabia in Cretaceous 
 563	MINO	Mindoro 
 564	MINA	Mindanao
 565	SES	Southeast Sulawesi
 566	SWS	Southwest Sulawesi
 567	OBI	Obi Island 
+568	NTI3	Central Neo-Tethys synthetic isochrons north of Greater India
+569	NTI4	"Neo-Tethys synthetic isochrons north of Greater India, southern flank"
+570		Not in model yet - Reserved
+571		Not in model yet - Reserved
+572	NTI1	Neo-Tethys synthetic isochrons in the Banda region
+573	NTI2	Neo-Tethys synthetic isochrons in the Banda region
+574	NTI5	Neo-Tethys synthetic isochrons in the Argo region near Tethyan triple junction (Australian flank)
+575	NTI6	Neo-Tethys synthetic isochrons in the Argo region near Tethyan triple junction (Indian flank)
+577		Not in model yet - Reserved
+578	SBA1	Sepik back-arc
+579	SBA2	Conjugate of Sepik back-arc
 580	TRM	Tarim
 590	NPAM	North Pamirs
 591	CPAM	Central Pamirs
@@ -307,19 +322,14 @@
 723	BNE	Benue Microplate
 726	BGR	Bongor Microplate
 727	NPSC	North Proto South China Sea
-729	NTJ1	NeoTethys Triple Junction isochrons 1 
-730	PPSP	Proto Philippine Sea Plate
 731	NSEP	North Sepik isochrons
 732	PMOL	Proto Molucca Plate isochrons
 734	NSOL	North Solomon isochrons 
 735	SEM	Semitau Block
-736	EJAV	WJAV East Java
+736	EJAV	East Java
 737	ELB	East Luzon Block
 738	SPA	South Palawan
-739	NTJ2	NeoTethys Triple Junction isochrons 2 
 740	JUN4	Junction 4 
-741	NTJ3	NeoTethys triple junction 3 
-742	NTJ4	NeoTethys triple junction 4 
 750	MLV	Malvinas Plate
 752	LOI1	Isochron of AFR-IBR  Ligurian Ocean
 754	LOI4	"Isochron of IBR-ADR East,  Ligurian Ocean"
@@ -339,6 +349,8 @@
 786	JUN3	Junction 3
 787	WOY2	Woyla backarc 2 
 789	WOY1	Woyla backarc
+790		Mascarene Basin isochrons SZ2018
+791		Arabian Sea and Eastern Somali Basin isochrons SZ2018
 801	AUS	Australia
 802	ANT	Antarctica
 804	MBL	Marie Byrd Land
@@ -348,22 +360,11 @@
 813	CBP	Campbell Plateau
 814	BEL	Bellingshausen
 815	SAN	Sandwich Plate
-8151	RSN	Remnant arc for ancestral South Sandwich trench
 816	PSOL	Melanesian Sea/Present day Solomon sea
 817	SGR	SouthGeorgia
-8171	SHG	Shag Rocks
 818	CSS	Central Scotia Sea
-8181	TER	Terror Rise
-8182	PIR	Pirie Bank
-8183	BRU	Bruce Bank
-8184	DIS	Discovery Bank
-8185	HER	Herdman Bank
-8186	JNE	Jane Bank
 819	MAG	Magallanes plate
-8191	DAV	Davis Bank
-8192	BAR	Barker bank (formerly Aurora)
 820	BWB	Burdwood Bank
-8201	TCS	Trapped Weddell Sea/Central Scotia plate
 821	TON	Tonga Ridge
 822	NLB	North Lau Basin
 823	LAU	Lau Ridge
@@ -385,7 +386,7 @@
 842	MNF	Mid Norfolk Ridge
 844	LYR	Loyalty Ridge
 845	SLYB	South Loyalty Basin
-847	MELA	Melanesian Arc
+847	MELA	"Melanesian Arc, North Bismark Basin"
 849	SOL	South Solomon Basin
 850	TAS	Tasmania
 851	WSTR	Western South Tasman Rise
@@ -442,11 +443,9 @@
 918	KUL	Kula Plate
 919	PHX	Phoenix Plate
 920	TPAC	Trapped Pacific plate on the Phoenix/Aluk plate
-921	OTP	Osbourn Trough Phoenix Plate
 922	MELN1	Melanesia Basin North 1
 923	JFD	Juan Fernandez Plate
 924	NFAR	Northern Farallon/Cocos
-925	GAL	Galapagos microplate
 926	IZA1	Izanagi Plate 1
 929	ALK	Aluk Plate 2
 930	PXN	Phoenix/Aluk       
@@ -476,7 +475,6 @@
 971	BAU	Bauer Microplate
 972	BAUC	Bauer Microplate core
 973	TCAR	Trapped Caribbean
-975	GRNS1	Ridge jump is Greenland Sea at C23 
 977	JMN	Jan Mayen Plate
 979	MAR	Makarov Basin
 981	OJP	Ontong Java
@@ -488,7 +486,6 @@
 987	SMC4	Southeast Manihiki/Catequil 4 
 988	PHIL	Philippine Sea plate
 990	PPHX	Trapped Phoenix
-999	Comment line	This is a comment line - do not use
 1001	PKT1	Proto-Kazakhstania terrane 1
 1002	PKT2	Proto-Kazakhstania terrane 2
 1003		South Qinling Unit
@@ -497,18 +494,16 @@
 1042	ORPJ	Orphan Basin ( Jurassic)
 1043	FLM	Flemish Cap
 1044	GBN	Grand Banks North
-1316	JAB	Jeanne d'Arc Basin
 1614	SBB	Stikinia BAB isochrons
 2000	CAFS	Forearc Sliver Central America
 2001	ECT	Eastern Cayman Trough
 2004	YCT	Yucatan
-2041		
 2005	JAM	Jamaica
 2006	SNH	Southern Hispaniola 
-2007	CPI	Carribean Plate Interior 
+2007	CAR	Caribbean Plate interior
 2008	AVR	Aves Ridge
 2009	GRB	Grenada Basin
-2010		
+2010	LAA	Lesser Antilles Arc 
 2011	BAP	Barbados Accretionary Prism
 2013	WPA	Western Panama 
 2014	CPA	Central Panama 
@@ -540,6 +535,14 @@
 2051	IMG	Isla Margarita 
 2052	MAY	Mayari
 2053	EJC	East Jamaica CLIP
+2060	QBTW	Quebradagrande back-arc western flank
+2061	QBTE	Quebradagrande back-arc eastern flank
+2063	PSZ	Peru subduction retreat (QT opening)
+2064	NQTO	Northern QT back-arc transform (opening)
+2065	NQSC	Northern QT back-arc subduction (closure)
+2067	NQSZ	Northern subduction Farallon beneath QT
+2068	NQTC	Northern QT back-arc transform (closure)
+2069	SQBT	Southern QT back-arc transform
 2881	SJUB	San Julian Massif Block
 2891	NFB	North Falkland Block
 2901	PMP	Pampean Terrane
@@ -707,44 +710,44 @@
 7138	LOB	Long et al. 2010 profile Bhutan
 7139	YPAP	Yin et al. 2010 profile Arunachal Pradesh  
 7140	MMTH	Main Mantle Thrust @ 7133 
-7141	MCT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7142	MBT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7143	MFT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7144	MMT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7145	STD	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7146	MCT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7147	MBT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7148	MFT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7149	MMT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7150	STD	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7151	MCT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7152	MBT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7153	MFT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7154	IYSZ	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7155	STD	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7156	MCT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7157	MBT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7158	MFT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7159	IYSZ	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7160	STD	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7161	MCT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7162	MBT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7163	MFT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7164	IYSZ	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7165	STD	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7166	MCT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7167	MBT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7168	MFT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7169	IYSZ	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7170	STD	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7171	MCT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7172	MBT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7173	MFT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7174	IYSZ	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7175	STD	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7176	MCT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7177	MBT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
-7178	MFT	"India-Eurasia convergence (van Hinsbergen et al., 2011 Tectonics)"
+7141	MCT	@7133
+7142	MBT	@7133
+7143	MFT	@7133
+7144	MMT	@7134
+7145	STD	@7134
+7146	MCT	@7134
+7147	MBT	@7134
+7148	MFT	@7134
+7149	MMT	@7135
+7150	STD	@7135
+7151	MCT	@7135
+7152	MBT	@7135
+7153	MFT	@7135
+7154	IYSZ	@7136
+7155	STD	@7136
+7156	MCT	@7136
+7157	MBT	@7136
+7158	MFT	@7136
+7159	IYSZ	@7137
+7160	STD	@7137
+7161	MCT	@7137
+7162	MBT	@7137
+7163	MFT	@7137
+7164	IYSZ	@7138
+7165	STD	@7138
+7166	MCT	@7138
+7167	MBT	@7138
+7168	MFT	@7138
+7169	IYSZ	@7139
+7170	STD	@7139
+7171	MCT	@7139
+7172	MBT	@7139
+7173	MFT	@7139
+7174	IYSZ	@7140
+7175	STD	@7140
+7176	MCT	@7140
+7177	MBT	@7140
+7178	MFT	@7140
 7179	HIMM	Himalayan microcontinent
 7180	FSTD	Future STD
 7181	THLH	TH-LH Boundary
@@ -844,6 +847,17 @@
 7302	OPE	ophiolites east
 7303	OPW	ophiolites west
 7701	TUN	Tunisia
+8151	RSN	Remnant arc for ancestral South Sandwich trench
+8171	SHG	Shag Rocks
+8181	TER	Terror Rise
+8182	PIR	Pirie Bank
+8183	BRU	Bruce Bank
+8184	DIS	Discovery Bank
+8185	HER	Herdman Bank
+8186	JNE	Jane Bank
+8191	DAV	Davis Bank
+8192	BAR	Barker bank (formerly Aurora)
+8201	TCS	Trapped Weddell Sea/Central Scotia plate
 8330	LHR	Lord Howe Rise (part of deforming region)
 8331	NLHR	Northern Lord Howe Rise
 8333	SNFR	S. Norfolk Ridge (part of deforming region)
@@ -853,7 +867,6 @@
 8690	NLHR	Used for AUS-LHR Points (deforming region)
 8691	ALHR	Alteration of 833 rotations as used in Aus-LHR points script 
 8824	VITO	Older Vitiaz Trench
-8827	NHB	New Hebrides
 8847	MALT	"Malaita Terrane, Solomon Islands"
 8853	WSOL2	"Western Solomon Basin, trapped crust"
 8858	NFR2	Norfolk Ridge Block 2
@@ -863,7 +876,6 @@
 8862	NB4	Norfolk Basin Block 4
 8863	NB5	Norfolk Basin Block 5
 9000	PTJ	Panthalassa triple junction
-9004	RHES	Rheic Plate South
 9005	RHEN	Rheic Plate North
 9006	PTE	Paleotethys Plate East
 9007	PTW	Paleotethys Plate West
@@ -872,8 +884,8 @@
 9010	MOK2	Mongol-Okhotsk Plate 2
 9011	SPUD	Minor plate between Siberia and Laurussia
 9012	TKN	Turkestan Plate
-9013	JNG	Junggar Plate
-9014	PAP	Paleoasian Plate
+9013	PAO1	Paleoasian Plate 1
+9014	PAO2	Paleoasian Plate 2
 9015	SMO	West Slide Mountain Ocean Plate
 9016	PAPS	Paleoasian Plate South
 9017	POO	Microplate between Laurentia and Gondwana
@@ -951,9 +963,9 @@
 60401	SIM	Simao
 60402	SICH	South Indochina
 60403	ICH1	Indochina sliver 1 
-60404	ICH2	1 Indochina sliver 2 
-60405	ICH3	2 Indochina sliver 3 
-60406	ICH4	3 Indochina sliver 4 
+60404	ICH2	Indochina sliver 2 
+60405	ICH3	Indochina sliver 3 
+60406	ICH4	Indochina sliver 4 
 61401	KLM4	Kalimantan 4
 61403	CRF	Crocker Formation
 61404	LUC	Luconia
@@ -991,6 +1003,7 @@
 68601	SUMA	Sumatra Arc
 69701	TPA1	"Central Toricelli, Prince Alexander, Finisterre Arc     "
 69702	TPA2	"Eastern Toricelli, Prince Alexander, Finisterre Arc     "
+70000	Africa	
 70822	GKAB2	Grande Kabylie2
 70833	GKAB3	Grande Kabylie3
 70844	GKAB4	Grande Kabylie4

@@ -8,7 +8,6 @@
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 27 (az = 135)
 	opt="-M27,ps -Fnone"
-	ps=anim03.ps
 else	# Make animated GIF, infinitely looping
 	opt="-A+l"
 fi
@@ -17,7 +16,7 @@ cat << EOF > pre.sh
 gmt begin
 	gmt math -T0/355/5 -o1 T = angles.txt
 	gmt makecpt -Crelief -T-2000/2000/20 -H > iceland.cpt
-	gmt grdclip -Sb0/-1 -Gabove.nc @Iceland.nc
+	gmt grdclip @earth_relief_02m -R-26/-12/63/67 -Sb0/-1 -Gabove.nc
 gmt end
 EOF
 # 2. Set up the main frame script
@@ -28,5 +27,4 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -C4ix2.5ix100 -Nanim03 -Tangles.txt -Sbpre.sh -D10 -Pb -Z $opt
-rm -rf main.sh pre.sh
+gmt movie main.sh -C4ix2.5ix100 -Nanim03 -Tangles.txt -Sbpre.sh -D10 -Pb -Zs $opt

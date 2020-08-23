@@ -8,6 +8,52 @@ summarizes the philosophy behind the system. Some of the features
 described here may make more sense once you reach the cook-book section
 where we present actual examples of their use.
 
+GMT Modern Mode Hierarchical Levels
+-----------------------------------
+
+As you read below of how we handle default settings, command-line history, and
+color tables, it is important to understand that under GMT **modern mode** we
+maintain several *levels* of these parameters.  As you will see later, this affects
+*three* aspects of GMT: The chosen default settings, the current history of
+previous common option arguments, and the current color table.  All three items
+are given a consistent treatment in GMT modern mode (in classic mode there is
+only a single level and no concept of a current color table). Below, *item* refers
+to any of those three aspects.
+
+#. The top level is the *session*.  Any item set here is accessible to all other
+   levels.
+
+#. The next level is the *figure* level.  A session may create numerous figures
+   and items determined at this level are only accessible to that figure and
+   plot constructs below it (like subplots).
+
+#. A figure may include a *subplot*.  Before any panels are started, any
+   items determined at this level apply to *all* the panels in the subplot.
+   For instance, setting a new color table will apply to all the panels that
+   need it.
+
+#. Once you start a specific *panel* in a subplot, any items determined at this
+   level only apply to that panel.  For instance, changing the font used for
+   frame annotations for this panel is not affecting any other panels.
+
+#. Figures or panels may include a map *inset*.  Any items determined in an
+   inset is private to that inset and does not affect the higher levels.
+
+There is a distinction between *setting* an item (e.g., a font choice, an option
+like plot region, or a color table) and *getting* that item.  When we *specify*
+a particular item it is recorded at that level.  When we need to *access*
+that item, there may or may not be an item at the current hierarchical level.
+If there is not, we look at the level above the current level to see if it has
+the required item, and this search may go all the way back to the session level.
+In other words, we always give preference to items set at or just above the
+current hierarchical level as possible.  If no such item is found anywhere then
+we use the GMT defaults or color table, or we must terminate with an error if a
+required setting such as a region cannot be determined from your options or data sets.
+
+Discussions below on GMT defaults and history are presented as they apply to
+classic mode, but under modern mode these files are maintained at the levels we
+just discussed.
+
 GMT units
 ---------
 
@@ -115,7 +161,7 @@ for an ellipsoid is required (typically for a limited surface area). For
 instance, a search radius of 5000 feet using this mode of computation
 would be specified as **-S**\ 5000\ **f**.
 
-Note: There are two additional
+**Note**: There are two additional
 GMT defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
@@ -152,11 +198,11 @@ Overview and the gmt.conf file
 
 There are almost 150 parameters which can be adjusted individually to
 modify the appearance of plots or affect the manipulation of data. When
-a program is run, it initializes all parameters to the
-GMT\ defaults [9]_, then tries to open the file ``gmt.conf`` in the current
+a new session starts (unless **-C** is given), it initializes all parameters to the
+GMT defaults [9]_, then tries to open the file ``gmt.conf`` in the current
 directory [10]_. If not found, it will look for that file in a
 sub-directory ``/.gmt`` of your home directory, and finally in your home directory
-itself. If successful, the program will read the contents and set the
+itself. If successful, the session will read the contents and set the
 default values to those provided in the file. By editing this file you
 can affect features such as pen thicknesses used for maps, fonts and
 font sizes used for annotations and labels, color of the pens,
@@ -263,7 +309,7 @@ listing, see the :doc:`/gmt.conf` man pages.
 We suggest that you go through all the available parameters at least
 once so that you know what is available to change via one of the
 described mechanisms.  The gmt.conf file can be cleared by running
-**gmt clear conf**.
+**gmt clear settings**.
 
 Command line arguments
 ----------------------
@@ -371,15 +417,15 @@ Three classes of files are given special treatment in GMT.
    a grid input named **@earth_relief_**\ *res* on a command line then
    such a grid will automatically be downloaded from the GMT Data Server and placed
    in the *server* directory under **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
-   15 common grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
+   15 common grid spacings: 01d, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
    30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
    11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively) as well
    as the SRTM tile resolutions 03s and 01s (6.8 Gb and 41 Gb for the whole set, respectively). Once
    one of these grids have been downloaded any future reference will simply obtain the
    file from **$GMT_USERDIR** (except if explicitly removed by the user).
-   Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
-   ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
-   of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
+   **Note**: The 15 arc-sec data comes from the original dataset SRTM15+.
+   Lower resolutions are spherically Gaussian-filtered versions of SRTM15+.
+   The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
    between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
    tiles on the GMT server.  These are individually downloaded as requested, converted to netCDF
    grids and stored in subdirectories srtm1 and srtm3 under the server directory, and assembled
@@ -402,7 +448,8 @@ Three classes of files are given special treatment in GMT.
    the default setting for :term:`GMT_DATA_SERVER`.  Alternatively, configure the CMake
    parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
-   set the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` to be 0.
+   limit the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` or
+   you can temporarily turn off such downloads by setting :term:`GMT_AUTO_DOWNLOAD` off.
 
 The user cache (:term:`DIR_CACHE`) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
@@ -608,7 +655,8 @@ option argument, with commas separating the given attributes, e.g.,
        from black [0] to white [255]).
 
     #. RGB. Specify *r*/*g*/*b*, each ranging from 0–255. Here 0/0/0 is
-       black, 255/255/255 is white, 255/0/0 is red, etc.
+       black, 255/255/255 is white, 255/0/0 is red, etc. Alternatively,
+       you can give RGB in hexadecimal using the *#rrggbb* format.
 
     #. HSV. Specify *hue*-*saturation*-*value*, with the former in the
        0–360 degree range while the latter two take on the range 0–1 [17]_.
@@ -738,8 +786,9 @@ specification. The line attribute modifiers are:
 
 * **+s**
     Normally, all PostScript line drawing is implemented as a linear spline, i.e., we simply
-    draw straight line-segments between the given data points.  Use this modifier to render the
-    line using Bezier splines for a smoother curve.
+    draw straight line-segments between the map-projected data points.  Use this modifier to render the
+    line using Bezier splines for a smoother curve. **Note**: The spline is fit to the projected
+    2-D coordinates, not the raw user coordinates (i.e., it is not a spherical surface spline).
 
 .. _Line_bezier:
 
@@ -748,7 +797,7 @@ specification. The line attribute modifiers are:
    :align: center
 
    (left) Normal plotting of line given input points (red circles) via **-W**\ 2p. (right) Letting
-   the points be interpolated by a Bezier cubic spline via **-W**\ 2p\ **+s**.
+   the projected points be interpolated by a Bezier cubic spline via **-W**\ 2p\ **+s**.
 
 * **+v**\ [**b**\|\ **e**]\ *vspecs*
     By default, lines are normally drawn from start to end.  Using the **+v** modifier you can
@@ -891,7 +940,7 @@ neither print nor show transparency. They will simply ignore your
 attempt to create transparency and will plot any material as opaque.
 Ghostscript and its derivatives such as GMT's
 :doc:`/psconvert` support transparency (if
-compiled with the correct build option). Note: If you use **Acrobat
+compiled with the correct build option). **Note**: If you use **Acrobat
 Distiller** to create a PDF file you must first change some settings to
 make transparency effective: change the parameter /AllowTransparency to
 true in your \*.joboptions file.
@@ -1278,7 +1327,7 @@ provide a default CPT if none is provided.  By default, the default CPT is the
 (we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
 these CPTs are read and scaled to match the range of the grid values. You may append
 **+i**\ *dz* to the CPT to have the exact range rounded to nearest multiple of *dz*.
-THis is helpful if you plan to place a colorbar and prefer start and stop *z*-values
+This is helpful if you plan to place a colorbar and prefer start and stop *z*-values
 that are multiples of *dz*.
 
 The Drawing of Vectors
@@ -2159,7 +2208,7 @@ the coordinates of the grid passed to such programs:
 -  You have a geographic grid (i.e., in longitude and latitude). Simply
    supply the **-fg** option and your grid coordinates will
    automatically be converted to meters via a "Flat Earth" approximation
-   on the currently selected ellipsoid (Note: this is only possible in
+   on the currently selected ellipsoid (**Note**: This is only possible in
    those few programs that require this capability. In general, **-fg**
    is used to specify table coordinates).
 
@@ -2446,7 +2495,7 @@ u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes signed\|unsigned. If not
 is float32. Both driver names and data types are case insensitive. The *options* is a list of one or more concatenated
 number of GDAL *-co* options. For example, to write a lossless JPG2000 grid one would append
 **+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO
-Note: you will have to specify a *nan* value for integer data types unless you wish that all NaN data values
+**Note**: You will have to specify a *nan* value for integer data types unless you wish that all NaN data values
 should be replaced by zero.
 
 The NaN data value

@@ -12,12 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
+**gmt grdtrack** [ *trackfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
 [ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
 [ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
-[ |-F|\ [**+b**][**+n**][**+z**\ *z0*] ]
+[ |-F|\ [**+b**][**+n**][**+r**][**+z**\ *z0*] ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *method*/*modifiers* ]
@@ -82,7 +82,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-*xyfile*
+*trackfile*
     This is an ASCII (or binary, see **-bi**)
     file where the first 2 columns hold the (x,y) positions where the
     user wants to sample the 2-D data set.
@@ -158,31 +158,34 @@ Optional Arguments
     this option requires either **+n** or **+i**.  The **+n**\ *np* modifier sets
     the desired number of points, while **+l**\ *length* gives the
     total length of the profile. Append **+d** to output the along-track
-    distances after the coordinates.  Note: No track file will be read.
+    distances after the coordinates.  **Note**: No track file will be read.
     Also note that only one distance unit can be chosen.  Giving different units
     will result in an error.  If no units are specified we default to
     great circle distances in km (if geographic).  If working with geographic
     data you can use **-j** to control distance calculation mode [Great Circle].
-    Note: If **-C** is set and *spacing* is given the that sampling scheme
+    **Note**: If **-C** is set and *spacing* is given the that sampling scheme
     overrules any modifier set in **-E**.
 
 .. _-F:
 
-**-F**\ [**+b**][**+n**][**+z**\ *z0*]
-    Find critical points along each cross-profile.
-    Requires **-C** and a single input grid. We examine each cross-profile generated
-    and report (*lonc*, *latc*, *distc*, *azimuthc*, *zc*) at the center peak of
+**-F**\ [**+b**][**+n**][**+r**][**+z**\ *z0*]
+    Find critical points along each cross-profile as a function of along-track distance.
+    Requires **-C** and a single input grid (*z*). We examine each cross-profile generated
+    and report (*dist*, *lonc*, *latc*, *distc*, *azimuthc*, *zc*) at the center peak of
     maximum *z* value, (*lonl*, *latl*, *distl*) and (*lonr*, *latr*, *distr*)
     at the first and last non-NaN point whose *z*-value exceeds *z0*, respectively,
-    and the *width* based on the two extreme points found. When searching for
-    the center peak and the extreme first and last values that exceed the threshold
-    we assume the profile is positive up.  If we instead are looking
-    for a trough then you must use **+n** to temporarily flip the profile to positive.
-    The threshold *z0* value is always given as >= 0; use **+z** to change it [0].
-    Alternatively, use **+b** to determine the balance point and standard deviation of the profile.
-    Note that we round the exact results to the nearest distance nodes.
-    We write 12 output columns per track with an identified center peak, with values
-    *lonc, latc, distc, azimuthc, zc, lonl, latl, distl, lonr, latr, distr, width*.
+    and the *width* based on the two extreme points found. Here, *dist* is the distance
+    along the original input *trackfile* and the other 12 output columns are a function
+    of that distance.  When searching for the center peak and the extreme first and last
+    values that exceed the threshold we assume the profile is positive up.  If we instead
+    are looking for a trough then you must use **+n** to temporarily flip the profile to
+    positive. The threshold *z0* value is always given as >= 0; use **+z** to change it [0].
+    Alternatively, use **+b** to determine the balance point and standard deviation of the
+    profile; this is the weighted mean and weighted standard deviation of the distances,
+    with *z* acting as the weight. Finally, use **+r** to obtain the weighted rms about the
+    cross-track center (*distc* == 0).  **Note**: We round the exact results to the nearest
+    distance nodes along the cross-profiles.  We write 13 output columns per track:
+    *dist, lonc, latc, distc, azimuthc, zc, lonl, latl, distl, lonr, latr, distr, width*.
 
 .. _-N:
 

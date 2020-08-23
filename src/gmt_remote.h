@@ -27,36 +27,40 @@
 #define GMT_REMOTE_H
 
 struct GMT_DATA_INFO {
-	char tag[4];	/* E.g., 30m */
-	char size[8];	/* E.g., 300M */
-	char remark[GMT_LEN128];	/* What it is */
+	int id;						/* Running number 0-(n-1) AFTER array is sorted */
+	bool used;					/* If true then do not repeat the attribution details */
+	char dir[GMT_LEN64];		/* Directory of file.  Here, / (root) means /export/gmtserver/gmt/data */
+	char file[GMT_LEN64];		/* Full file (or tile directory) name. E.g., earth_relief_20m_g.grd or earth_relief_01m_g/ */
+	char ext[GMT_LEN8];			/* Data file extension. E.g., .grd, *tif, etc. */
+	char inc[GMT_LEN8];			/* Grid spacing in text format. E.g., 30m */
+	char reg;					/* Grid/Image registration (g or p). E.g., g */
+	double d_inc;				/* Grid spacing in floating point degrees (e.g., 0.5) */
+	double scale;				/* Scale to convert integers to data units */
+	double offset;				/* Offset to shift to original data range */
+	char size[GMT_LEN8];		/* Total file/tile set size in text format. E.g., 300M */
+	double tile_size;			/* Tile size in integer degrees (0 if no tiling) */
+	char date[GMT_LEN16];		/* Creation date in yyyy-mm-dd (e.g., 2020-06-01) */
+	char tag[GMT_LEN64];		/* Tag for tiling.  E.g., earth_relief_01m_g, SRTMGL3 */
+	char coverage[GMT_LEN64];	/* File with tile coverage. E.g., srtm_tiles.nc or - for none */
+	char filler[GMT_LEN64];		/* File with background filler. E.g., earth_relief_tiles_15s.grd or - for none */
+	char CPT[GMT_LEN64];		/* Name of default master CPT. E.g., geo or - for none */
+	char remark[GMT_LEN256];	/* Attribution and information about this data set */
 };
 
-struct GMT_DATA_HASH {	/* Holds file hashes (probably SHA256) */
-	char name[GMT_LEN64];	/* File name */
-	char hash[GMT_LEN128];	/* The file hash */
-	size_t size;		/* File size in bytes */
+struct GMT_DATA_HASH {			/* Holds file hashes (probably SHA256) */
+	char name[GMT_LEN64];		/* File name (no leading directory) */
+	char hash[GMT_LEN128];		/* The file hash */
+	size_t size;				/* File size in bytes */
 };
 
-#define GMT_N_DATA_INFO_ITEMS 16
+#define GMT_SRTM_ONLY	1	/* Mode so that when srtm_relief* is used we do not blend in earth_relief_15s */
 
-GMT_LOCAL struct GMT_DATA_INFO gmt_data_info[GMT_N_DATA_INFO_ITEMS] = {
-	{"60m", "106K", "Earth Relief at 60x60 arc minutes obtained by Gaussian Cartesian filtering (111 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"01d", "106K", "Earth Relief at 1x1 arc degrees obtained by Gaussian Cartesian filtering (111 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"30m", "363K", "Earth Relief at 30x30 arc minutes obtained by Gaussian Cartesian filtering (55 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"20m", "759K", "Earth Relief at 20x20 arc minutes obtained by Gaussian Cartesian filtering (37 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"15m", "1.3M", "Earth Relief at 15x15 arc minutes obtained by Gaussian Cartesian filtering (28 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"10m", "2.8M", "Earth Relief at 10x10 arc minutes obtained by Gaussian Cartesian filtering (18 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"06m", "7.3M", "Earth Relief at 6x6 arc minutes obtained by Gaussian Cartesian filtering (10 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"05m",  "10M", "Earth Relief at 5x5 arc minutes obtained by Gaussian Cartesian filtering (9 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"04m",  "16M", "Earth Relief at 4x4 arc minutes obtained by Gaussian Cartesian filtering (7.5 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"03m",  "27M", "Earth Relief at 3x3 arc minutes obtained by Gaussian Cartesian filtering (5.6 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"02m",  "58M", "Earth Relief at 2x2 arc minutes obtained by Gaussian Cartesian filtering (3.7 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"01m", "214M", "Earth Relief at 1x1 arc minutes obtained by Gaussian Cartesian filtering (1.9 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"30s", "765M", "Earth Relief at 30x30 arc seconds obtained by Gaussian Cartesian filtering (0.9 km fullwidth) of SRTM15+V2 [Tozer et al., 2019]"},
-	{"15s", "2.6G", "Earth Relief at 15x15 arc seconds provided by SRTM15+ [Tozer et al., 2019]"},
-	{"03s", "6.8G", "Earth Relief at 3x3 arc seconds tiles provided by SRTMGL3 (land only) [NASA/USGS]"},
-	{"01s",  "41G", "Earth Relief at 1x1 arc seconds tiles provided by SRTMGL1 (land only) [NASA/USGS]"}
-};
+#define GMT_HASH_SERVER_FILE "gmt_hash_server.txt"
+#define GMT_INFO_SERVER_FILE "gmt_data_server.txt"
+
+#define GMT_TILE_EXTENSION_REMOTE  		"jp2"	/* Tile extension of JPEG2000 files to be downloaded */
+#define GMT_TILE_EXTENSION_REMOTE_LEN	3U		/* Length of JPEG2000 file extension */
+#define GMT_TILE_EXTENSION_LOCAL		"nc"	/* Tile extension of netCDF nc short int files to be saved */
+#define GMT_TILE_EXTENSION_LOCAL_LEN	2U		/* Length of nc short int file extension */
 
 #endif /* GMT_REMOTE_H */

@@ -42,48 +42,48 @@
 #define THIS_MODULE_OPTIONS "-:>JRVbdefhiqrs" GMT_OPT("Hm")
 
 struct TRIANGULATE_CTRL {
-	struct Out {	/* -> */
+	struct TRIANGULATE_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct C {	/* -C<input_slope_grid> */
+	struct TRIANGULATE_C {	/* -C<input_slope_grid> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -Dx|y */
+	struct TRIANGULATE_D {	/* -Dx|y */
 		bool active;
 		unsigned int dir;
 	} D;
-	struct E {	/* -E<value> */
+	struct TRIANGULATE_E {	/* -E<value> */
 		bool active;
 		double value;
 	} E;
-	struct F {	/* -F<pregrid>[+d] */
+	struct TRIANGULATE_F {	/* -F<pregrid>[+d] */
 		bool active;
 		char *file;
 		unsigned int mode;
 	} F;
-	struct G {	/* -G<output_grdfile> */
+	struct TRIANGULATE_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct M {	/* -M */
+	struct TRIANGULATE_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct TRIANGULATE_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q[n] */
+	struct TRIANGULATE_Q {	/* -Q[n] */
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct S {	/* -S */
+	struct TRIANGULATE_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct TRIANGULATE_T {	/* -T */
 		bool active;
 	} T;
-	struct Z {	/* -Z */
+	struct TRIANGULATE_Z {	/* -Z */
 		bool active;
 	} Z;
 };
@@ -100,7 +100,7 @@ enum curve_enum {	/* Indices for coeff array for normalization */
 	GMT_U = GMT_H
 };
 
-GMT_LOCAL int compare_edge (const void *p1, const void *p2) {
+GMT_LOCAL int triangulate_compare_edge (const void *p1, const void *p2) {
 	const struct TRIANGULATE_EDGE *a = p1, *b = p2;
 
 	if (a->begin < b->begin) return (-1);
@@ -110,7 +110,7 @@ GMT_LOCAL int compare_edge (const void *p1, const void *p2) {
 	return (0);
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TRIANGULATE_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct TRIANGULATE_CTRL);
@@ -120,7 +120,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->F.file);
@@ -128,7 +128,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Dx|y] [-C<slopegrid>] [-E<empty>] [-G<outgrid>]\n", name);
@@ -175,7 +175,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to triangulate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -191,20 +191,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* CURVE input slope grid */
-				if ((Ctrl->C.active = gmt_check_filearg (GMT, 'C', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->C.file = strdup (opt->arg);
+				Ctrl->C.active = true;
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file))) n_errors++;
 				break;
 			case 'D':
 				Ctrl->D.active = true;
@@ -233,17 +234,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 					c[0] = '\0';	/* Temporarily chop off modifier */
 					Ctrl->F.mode = 1;
 				}
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				if (c) c[0] = '+';	/* Restore chopped off modifier */
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -317,7 +316,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_triangulate (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 	int *link = NULL;	/* Must remain int and not int due to triangle function */
 
 	uint64_t ij, ij1, ij2, ij3, np = 0, i, j, k, n_edge, p, node = 0, seg, n = 0;
@@ -446,6 +445,11 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			continue;	/* Go back and read the next record */
 		}
 
+		if (In->data == NULL) {
+			gmt_quit_bad_record (API, In);
+			Return (API->error);
+		}
+
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
 
@@ -538,8 +542,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Delaunay optimal triangulation on projected coordinates\n");
 
-		if (Ctrl->Q.active)
-			V = gmt_voronoi (GMT, xxp, yyp, n, GMT->current.proj.rect, Ctrl->Q.mode);
+		if (Ctrl->Q.active) {
+			if ((V = gmt_voronoi (GMT, xxp, yyp, n, GMT->current.proj.rect, Ctrl->Q.mode)) == NULL)
+				Return (GMT_RUNTIME_ERROR);
+		}
 		else
 			np = gmt_delaunay (GMT, xxp, yyp, n, &link);
 
@@ -549,8 +555,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	else {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Delaunay optimal triangulation on given coordinates\n");
 
-		if (Ctrl->Q.active)
-			V = gmt_voronoi (GMT, xx, yy, n, GMT->common.R.wesn, Ctrl->Q.mode);
+		if (Ctrl->Q.active) {
+			if ((V = gmt_voronoi (GMT, xx, yy, n, GMT->common.R.wesn, Ctrl->Q.mode)) == NULL)
+				Return (GMT_RUNTIME_ERROR);
+		}
 		else
 			np = gmt_delaunay (GMT, xx, yy, n, &link);
 	}
@@ -833,7 +841,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				for (i = 0; i < n_edge; i++)
 					if (edge[i].begin > edge[i].end) gmt_M_int_swap (edge[i].begin, edge[i].end);
 
-				qsort (edge, n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
+				qsort (edge, n_edge, sizeof (struct TRIANGULATE_EDGE), triangulate_compare_edge);
 				for (i = 1, j = 0; i < n_edge; i++) {
 					if (edge[i].begin != edge[j].begin || edge[i].end != edge[j].end) j++;
 					edge[j] = edge[i];

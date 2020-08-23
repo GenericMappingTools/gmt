@@ -25,7 +25,7 @@
 */
 
 /*
-This is a experimental multi-threaded version that uses gthreads from GLIB an hence depends on that lib
+This is an experimental multi-threaded version that uses gthreads from GLIB an hence depends on that lib
 that on its turn depends on  linintl (gettext)
 
 To compile I patched src/CMakeList.txt by adding these two lines
@@ -181,9 +181,9 @@ struct THREAD_STRUCT {
 };
 
 static void *threading_function (void *args);
-void threaded_function (struct THREAD_STRUCT *t);
+void grdfilter_threaded_function (struct THREAD_STRUCT *t);
 
-void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFILTER_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDFILTER_CTRL);
@@ -195,7 +195,7 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
+static void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->F.file);
@@ -205,8 +205,8 @@ void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* D
 }
 
 /* -----------------------------------------------------------------------------------*/
-static void *thread_function (void *args) {
-	threaded_function ((struct THREAD_STRUCT *)args);
+static void *grdfilter_thread_function (void *args) {
+	grdfilter_threaded_function ((struct THREAD_STRUCT *)args);
 	return NULL;
 }
 
@@ -460,11 +460,10 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) {n_errors++; continue; }
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -537,10 +536,9 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 				}
 				break;
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* New grid spacings */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -969,7 +967,7 @@ int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 
 		if (Ctrl->z.n_threads == 1) {		/* Independently of WITH_THREADS, if only one don't call the threading machine */
    			threadArg[i].r_stop = Gout->header->n_rows;
-			threaded_function (&threadArg[0]);
+			grdfilter_threaded_function (&threadArg[0]);
 			break;		/* Make sure we don't go through the threads lines below */
 		}
 #ifndef HAVE_GLIB_GTHREAD
@@ -977,7 +975,7 @@ int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Gout->header->n_rows) / Ctrl->z.n_threads);
    		if (i == Ctrl->z.n_threads - 1) threadArg[i].r_stop = Gout->header->n_rows;	/* Make sure last row is not left behind */
-		threads[i] = g_thread_new(NULL, thread_function, (void*)&(threadArg[i]));
+		threads[i] = g_thread_new(NULL, grdfilter_thread_function, (void*)&(threadArg[i]));
 	}
 
 	if (Ctrl->z.n_threads > 1) {		/* Otherwise g_thread_new was never called aand so no need to "join" */
@@ -1012,16 +1010,16 @@ int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 			char in_string[GMT_VF_LEN], out_string[GMT_VF_LEN], cmd[GMT_LEN256];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
 			/* Create a virtual file for the low-pass filtered grid */
-			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Gout, in_string) == GMT_NOTSET) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, Gout, in_string) == GMT_NOTSET) {
 				Return (API->error);
 			}
 			/* Create a virtual file to hold the resampled grid */
-			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string) == GMT_NOTSET) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, out_string) == GMT_NOTSET) {
 				Return (API->error);
 			}
 			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
-			strcat (cmd, " --GMT_HISTORY=false");
+			strcat (cmd, " --GMT_HISTORY=readonly");
 			GMT_Report (API, GMT_MSG_INFORMATION,
 					"Highpass requires us to resample the lowpass result at original registration via grdsample %s\n", cmd);
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling grdsample with args %s\n", cmd);
@@ -1077,7 +1075,7 @@ int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 }
 
 /* ----------------------------------------------------------------------------------------------------- */
-void threaded_function (struct THREAD_STRUCT *t) {
+void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 
 	bool visit_check = false, go_on, get_weight_sum = true;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out;

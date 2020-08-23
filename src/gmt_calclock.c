@@ -55,13 +55,13 @@
 #include "gmt_internals.h"
 
 /* Private functions to this file:
-   int calclock_kday_on_or_before (int date, int kday);
-   int calclock_kday_after (int date, int kday);
-   int calclock_kday_before (int date, int kday);
-   int calclock_nth_kday (int n, int kday, int date);
-   int calclock_cal_imod (int x, int y);
-   int calclock_gyear_from_rd (int date);
-   void calclock_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, int init);  Aux to gmtlib_moment_interval
+   int gmtcalclock_kday_on_or_before (int date, int kday);
+   int gmtcalclock_kday_after (int date, int kday);
+   int gmtcalclock_kday_before (int date, int kday);
+   int gmtcalclock_nth_kday (int n, int kday, int date);
+   int gmtcalclock_cal_imod (int x, int y);
+   int gmtcalclock_gyear_from_rd (int date);
+   void gmtcalclock_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, int init);  Aux to gmtlib_moment_interval
 */
 
 /* Modulo functions.  The C operation "x%y" and the POSIX
@@ -75,7 +75,7 @@
 	print a domain error and return something anyway.
 */
 
-GMT_LOCAL int calclock_cal_imod (int64_t x, int y) {
+GMT_LOCAL int gmtcalclock_cal_imod (int64_t x, int y) {
 	assert (y != 0);
 	return ((int)(x - y * lrint (floor ((double)x / (double)y))));
 }
@@ -85,40 +85,40 @@ GMT_LOCAL int calclock_cal_imod (int64_t x, int y) {
    1 = Mon, etc. through 6 = Sat.  (Note that ISO day of
    the week is the same for all of these except ISO Sunday
    is 7.)  Since rata die 1 is a Monday, we have kday from
-   rd is simply calclock_cal_imod(rd, 7).  The various functions
+   rd is simply gmtcalclock_cal_imod(rd, 7).  The various functions
    below take an rd and find another rd related to the first
    through the fact that the related day falls on a given
    kday of the week.  */
 
-GMT_LOCAL int64_t calclock_kday_on_or_before (int64_t date, int kday) {
+GMT_LOCAL int64_t gmtcalclock_kday_on_or_before (int64_t date, int kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   on or before the given date. */
-	return (date - calclock_cal_imod (date-kday, 7));
+	return (date - gmtcalclock_cal_imod (date-kday, 7));
 }
 
-GMT_LOCAL int64_t calclock_kday_after (int64_t date, int kday) {
+GMT_LOCAL int64_t gmtcalclock_kday_after (int64_t date, int kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   after the given date. */
-	return (calclock_kday_on_or_before (date+7, kday));
+	return (gmtcalclock_kday_on_or_before (date+7, kday));
 }
 
-GMT_LOCAL int64_t calclock_kday_before (int64_t date, int kday) {
+GMT_LOCAL int64_t gmtcalclock_kday_before (int64_t date, int kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   before the given date. */
-	return (calclock_kday_on_or_before (date-1, kday));
+	return (gmtcalclock_kday_on_or_before (date-1, kday));
 }
 
-GMT_LOCAL int64_t calclock_nth_kday (int n, int kday, int64_t date) {
+GMT_LOCAL int64_t gmtcalclock_nth_kday (int n, int kday, int64_t date) {
 	/* Given date, kday, and n, return the date of the n'th
 	   kday before or after the given date, according to the
 	   sign of n. */
 	if (n > 0)
-		return (7*n + calclock_kday_before (date, kday));
+		return (7*n + gmtcalclock_kday_before (date, kday));
 	else
-		return (7*n + calclock_kday_after (date, kday));
+		return (7*n + gmtcalclock_kday_after (date, kday));
 }
 
-GMT_LOCAL int calclock_gyear_from_rd (int64_t date) {
+GMT_LOCAL int gmtcalclock_gyear_from_rd (int64_t date) {
 	/* Given rata die integer day number, return proleptic Gregorian year  */
 
 	int64_t d0, d1, d2, d3;
@@ -126,13 +126,13 @@ GMT_LOCAL int calclock_gyear_from_rd (int64_t date) {
 
 	d0 = date - 1;
 	n400 = irint (floor (d0 / 146097.0));
-	d1 = calclock_cal_imod (d0, 146097);
+	d1 = gmtcalclock_cal_imod (d0, 146097);
 	n100 = irint (floor (d1 / 36524.0));
-	d2 = calclock_cal_imod (d1, 36524);
+	d2 = gmtcalclock_cal_imod (d1, 36524);
 	n4 = irint (floor (d2 / 1461.0));
-	d3 = calclock_cal_imod (d2, 1461);
+	d3 = gmtcalclock_cal_imod (d2, 1461);
 	n1 = irint (floor (d3 / 365.0));
-	/* d4 = calclock_cal_imod (d3, 365) + 1; NOT USED (removed) */
+	/* d4 = gmtcalclock_cal_imod (d3, 365) + 1; NOT USED (removed) */
 	year = 400*n400 + 100*n100 + 4*n4 + n1;
 
 	if (n100 != 4 && n1 != 4) year++;
@@ -140,7 +140,7 @@ GMT_LOCAL int calclock_gyear_from_rd (int64_t date) {
 	return (year);
 }
 
-GMT_LOCAL void calclock_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, bool init) {
+GMT_LOCAL void gmtcalclock_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, bool init) {
 
 	/* Called by gmtlib_moment_interval ().  Get here when p->stuff[0] is initialized and
 	   0 < step_secs <= GMT_DAY2SEC_I.  If init, stuff[0] may need to be truncated.  */
@@ -257,11 +257,11 @@ bool gmtlib_is_gleap (int gyear) {
 
 	int y400;
 
-	if (calclock_cal_imod (gyear, 4) != 0) return (false);
+	if (gmtcalclock_cal_imod (gyear, 4) != 0) return (false);
 
-	y400 = calclock_cal_imod (gyear, 400);
+	y400 = gmtcalclock_cal_imod (gyear, 400);
 	if (y400 == 0) return (true);
-	if (calclock_cal_imod (y400, 100) == 0) return (false);
+	if (gmtcalclock_cal_imod (y400, 100) == 0) return (false);
 
 	return (true);
 }
@@ -302,7 +302,7 @@ int64_t gmtlib_rd_from_iywd (struct GMT_CTRL *GMT, int iy, int iw, int id) {
 
 	/* Add id to the iw'th Sunday after Dec 28 iy-1:  */
 	rdtemp = gmt_rd_from_gymd (GMT, iy-1, 12, 28);
-	return (id + calclock_nth_kday (iw, 0, rdtemp));
+	return (id + gmtcalclock_nth_kday (iw, 0, rdtemp));
 }
 
 /* Set calendar struct data from fixed date:  */
@@ -316,11 +316,11 @@ void gmt_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_GCAL *gcal
 
 	/* Day of the week in 0 through 6:  */
 
-	gcal->day_w = calclock_cal_imod (date, 7);
+	gcal->day_w = gmtcalclock_cal_imod (date, 7);
 
 	/* proleptic Gregorian operations:  */
 
-	gcal->year = calclock_gyear_from_rd (date);
+	gcal->year = gmtcalclock_gyear_from_rd (date);
 	prior_days = date - gmt_rd_from_gymd (GMT, gcal->year, 1, 1);
 	gcal->day_y = (unsigned int)prior_days + 1;
 
@@ -603,7 +603,7 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit c for seconds is deprecated; use s.\n");
 				k = p->step;
-				calclock_small_moment_interval (GMT, p, k, init);
+				gmtcalclock_small_moment_interval (GMT, p, k, init);
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
@@ -613,17 +613,17 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 		case 'S':
 
 			k = p->step;
-			calclock_small_moment_interval (GMT, p, k, init);
+			gmtcalclock_small_moment_interval (GMT, p, k, init);
 			break;
 		case 'm':
 		case 'M':
 			k = GMT_MIN2SEC_I * p->step;
-			calclock_small_moment_interval (GMT, p, k, init);
+			gmtcalclock_small_moment_interval (GMT, p, k, init);
 			break;
 		case 'h':
 		case 'H':
 			k = GMT_HR2SEC_I * p->step;
-			calclock_small_moment_interval (GMT, p, k, init);
+			gmtcalclock_small_moment_interval (GMT, p, k, init);
 			break;
 		case 'd':
 		case 'D':
@@ -631,7 +631,7 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 				/* Here we want every day (of the Gregorian month or year)
 					so the stepping is easy.  */
 				k = GMT_DAY2SEC_I;
-				calclock_small_moment_interval (GMT, p, k, init);
+				gmtcalclock_small_moment_interval (GMT, p, k, init);
 			}
 			else if (GMT->current.plot.calclock.date.day_of_year) {
 				/* Select every n'th day of the Gregorian year  */
@@ -741,7 +741,7 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 				/* Floor to the first day of the week start.  */
 				k = p->cc[0].day_w - GMT->current.setting.time_week_start;
 				if (k) {
-					p->rd[0] -= calclock_cal_imod(k, 7);
+					p->rd[0] -= gmtcalclock_cal_imod(k, 7);
  					gmt_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );
  				}
 				p->sd[0] = 0.0;
@@ -825,12 +825,12 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 				/* Floor to the step'th year, either ISO or Gregorian, depending on... */
 				if (GMT->current.plot.calclock.date.iso_calendar) {
 					p->sd[0] = 0.0;
-					if (p->step > 1) p->cc[0].iso_y -= calclock_cal_imod (p->cc[0].iso_y, p->step);
+					if (p->step > 1) p->cc[0].iso_y -= gmtcalclock_cal_imod (p->cc[0].iso_y, p->step);
 					p->rd[0] = gmtlib_rd_from_iywd (GMT, p->cc[0].iso_y, 1, 1);
 				}
 				else {
 					p->sd[0] = 0.0;
-					if (p->step > 1) p->cc[0].year -= calclock_cal_imod (p->cc[0].year, p->step);
+					if (p->step > 1) p->cc[0].year -= gmtcalclock_cal_imod (p->cc[0].year, p->step);
 					p->rd[0] = gmt_rd_from_gymd (GMT, p->cc[0].year, 1, 1);
 				}
 				gmt_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );

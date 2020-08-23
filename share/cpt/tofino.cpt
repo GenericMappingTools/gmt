@@ -1,13 +1,14 @@
 #
-# perceptually uniform bimodal colormap, dark, by Fabio Crameri [H=0,C=RGB]
+# Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 #
 #	www.fabiocrameri.ch/visualisation
 #
 # License: Creative Commons Attribution 4.0 International License
 # Copyright (c) 2018, Fabio Crameri All rights reserved.
 # Crameri, F., (2018). Scientific colour-maps. Zenodo. http://doi.org/10.5281/zenodo.1243862
+# This is Scientific Colour Maps version 6.0.4
 # Note: Original file converted to GMT version >= 5 CPT format.
-# Note: Range changed from 0-1 to -1/+1 to place soft hinge at zero.
+# Note: Range changed from 0-1 to -1/+1 to place hinge at zero.
 #
 #----------------------------------------------------------
 # COLOR_MODEL = RGB
@@ -140,8 +141,7 @@
 -0.027450	13/21/23	-0.019608	13/21/22
 -0.019608	13/21/22	-0.011764	13/21/21
 -0.011764	13/21/21	-0.003922	13/21/20
--0.003922	13/21/20	0		13/22/19
-0		13/22/19	0.003922	13/22/19
+-0.003922	13/21/20	0.003922	13/22/19
 0.003922	13/22/19	0.011764	13/22/19
 0.011764	13/22/19	0.019608	13/23/18
 0.019608	13/23/18	0.027450	13/23/18

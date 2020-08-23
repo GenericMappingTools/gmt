@@ -51,38 +51,38 @@ enum sphdist_modes {
 	SPHD_VALUES = 2};
 
 struct SPHDISTANCE_CTRL {
-	struct A {	/* -A[m|p|x|y|step] */
+	struct SPHDISTANCE_A {	/* -A[m|p|x|y|step] */
 		bool active;
 		unsigned int mode;
 		double step;
 	} A;
-	struct C {	/* -C */
+	struct SPHDISTANCE_C {	/* -C */
 		bool active;
 	} C;
-	struct E {	/* -Ed|n|z[<dist>] */
+	struct SPHDISTANCE_E {	/* -Ed|n|z[<dist>] */
 		bool active;
 		unsigned int mode;
 		double dist;
 	} E;
-	struct G {	/* -G<maskfile> */
+	struct SPHDISTANCE_G {	/* -G<maskfile> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L<unit>] */
+	struct SPHDISTANCE_L {	/* -L<unit>] */
 		bool active;
 		char unit;
 	} L;
-	struct N {	/* -N */
+	struct SPHDISTANCE_N {	/* -N */
 		bool active;
 		char *file;
 	} N;
-	struct Q {	/* -Q */
+	struct SPHDISTANCE_Q {	/* -Q */
 		bool active;
 		char *file;
 	} Q;
 };
 
-GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P) {
+GMT_LOCAL void sphdistance_prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P) {
 	/* Set the min/max extent of this polygon and determine if it
 	 * is a polar cap; if so set the required metadata flags */
 	uint64_t row;
@@ -115,7 +115,7 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 	}
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPHDISTANCE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct SPHDISTANCE_CTRL);
@@ -124,7 +124,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->N.file);
@@ -132,7 +132,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/*
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
@@ -168,7 +168,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to sphdistance and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -183,7 +183,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -208,10 +208,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 				if (opt->arg[k]) Ctrl->E.dist = atof (&opt->arg[k]);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -251,8 +250,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sphdistance (void *V_API, int mode, void *args) {
-	bool first = false, periodic, duplicate_col;
+EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
+	bool first = false, periodic, duplicate_col, duplicate = false;
 	int error = 0, s_row, south_row, north_row, w_col, e_col;
 
 	unsigned int row, col, p_col, west_col, east_col, nx1, n_in = 0;
@@ -299,7 +298,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (&T, 1, struct STRIPACK);
 
-	gmt_init_distaz (GMT, Ctrl->L.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, Ctrl->L.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	if (!GMT->common.R.active[RSET]) {	/* Default to a global grid */
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
@@ -309,7 +309,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
-		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -Q files */
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -Q files */
 		if ((Qin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -317,7 +317,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->Q.file, (int)Qin->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		Table = Qin->table[0];	/* Only one table in a file */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " segments\n", Table->n_segments);
 	 	lon = gmt_M_memory (GMT, NULL, Table->n_segments, double);
@@ -329,7 +329,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				Return (error);
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read Nodes from %s ...", Ctrl->N.file);
-			gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -N files */
+			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -N files */
 			if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -337,7 +337,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)Nin->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
-			gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
+			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			NTable = Nin->table[0];	/* Only one table in a file with a single segment */
 			if (NTable->n_segments != 1) {
 				GMT_Report (API, GMT_MSG_ERROR, "File %s can only have 1 segment!\n", Ctrl->N.file);
@@ -403,6 +403,11 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				continue;	/* Go back and read the next record */
 			}
 
+			if (In->data == NULL) {
+				gmt_quit_bad_record (API, In);
+				Return (API->error);
+			}
+
 			/* Data record to process - avoid duplicate points as gmt_stripack_lists cannot handle that */
 			in = In->data;	/* Only need to process numerical part here */
 
@@ -446,7 +451,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
-		gmt_stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
+		if (gmt_stripack_lists (GMT, n, xx, yy, zz, &T)) Return (GMT_RUNTIME_ERROR);	/* Do the basic triangulation */
 		gmt_M_free (GMT, T.D.tri);	/* Don't need the triangulation */
 		if (Ctrl->C.active) {	/* Recompute lon,lat and set pointers */
 			gmt_n_cart_to_geo (GMT, n, xx, yy, zz, xx, yy);	/* Revert to lon, lat */
@@ -474,15 +479,21 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	gmt_set_inside_mode (GMT, NULL, GMT_IOO_SPHERICAL);
 
-	if (Ctrl->Q.active)	/* Pre-chewed, just get number of nodes */
+	if (Ctrl->Q.active) {	/* Pre-chewed, just get number of nodes */
+		struct GMT_DATASET_HIDDEN *QH =  gmt_get_DD_hidden (Qin);
 		n = Table->n_segments;
+		duplicate = (QH->alloc_mode == GMT_ALLOC_EXTERNALLY);
+	}
 	else
 		V = &T.V;
 
 	for (node = 0; node < n; node++) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing polygon %7ld\r", node);
 		if (Ctrl->Q.active) {	/* Just point to next polygon */
-			P = Table->segment[node];
+			if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
+				P = gmt_duplicate_segment (GMT, Table->segment[node]);
+			else
+				P = Table->segment[node];
 		}
 		else {	/* Obtain current polygon from Voronoi listings */
 			if (P == NULL) {	/* Need a single polygon structure that we reuse for each polygon */
@@ -524,7 +535,6 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				case SPHD_VALUES:	f_val = z_val[node];	break;
 				default:	break;	/* Must compute distances below */
 			}
-
 		}
 
 		/* Here we have the polygon in P */
@@ -534,7 +544,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		P->n_rows = n_new;
-		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
+		sphdistance_prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)gmt_M_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
 		north_row = (int)gmt_M_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
@@ -571,6 +581,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				}
 			}
 		}
+		if (duplicate)	/* Free duplicate segment */
+			gmt_free_segment (GMT, &P);
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing polygon %7ld\n", node);
 

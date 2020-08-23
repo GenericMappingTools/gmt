@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.1.0_f5f2ed6-dirty_2020.01.09 [64-bit] Document from grdimage
+%%Title: GMT v6.1.0_07d3b13-dirty_2020.03.19 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Jan 10 10:30:57 2020
+%%CreationDate: Thu Mar 19 12:12:10 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -659,7 +659,8 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_plot_completion {} def
-/PSL_movie_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -70550,10 +70551,12 @@ def
 (16) mr Z
 6120 PSL_A0_y MM
 (24) mr Z
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+/PSL_LH 267 F0
+(M) sh def
+/PSL_L_y PSL_A0_y PSL_A1_y mx 133 add PSL_LH add def
+3600 PSL_L_y MM
+V 90 R (SST) bc Z U
 90 R
-3600 -624 M 267 F0
-(SST) tc Z
 -90 R
 -240 0 T
 0 setlinecap
@@ -70561,7 +70564,8 @@ def
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

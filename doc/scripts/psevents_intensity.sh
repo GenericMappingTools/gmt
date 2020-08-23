@@ -49,4 +49,3 @@ gmt begin psevents_intensity
 	EOF
 	rm -f B.txt t.txt
 gmt end show
-

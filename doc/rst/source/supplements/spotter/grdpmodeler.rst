@@ -73,7 +73,7 @@ Optional Arguments
 
 **-G**\ *outgrdfile*
     Name of output grid. This is the grid with the model predictions
-    given the specified rotations. Note: If you specified more than one
+    given the specified rotations. **Note**: If you specified more than one
     model prediction in **-S** then the filename *must* be a template
     that contains the format %s; this will be replaced with the corresponding
     tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.

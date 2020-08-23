@@ -3,19 +3,9 @@
     max-width: 1000px;
 }
 
-/* See https://github.com/GenericMappingTools/gmt/pull/1564 */
-.rst-content .highlighted{
-    padding:0 0px;
-}
-
 /* See https://github.com/GenericMappingTools/gmt/pull/1605 */
 .rst-content dl dt {
     font-weight: normal;
-}
-
-/* https://github.com/readthedocs/sphinx_rtd_theme/pull/775 */
-.hlist {
-    width: 100%;
 }
 
 /* style for example gallery */
@@ -24,6 +14,14 @@
     width: 180px;
     display: inline-grid;
     margin-right: 15px;
+}
+
+/* style for gmt movies */
+.gmtmovie li {
+    list-style: none;
+    width: 45%;
+    display: inline-grid;
+    margin: 10px;
 }
 
 /* Set tab-width to 2 spaces */

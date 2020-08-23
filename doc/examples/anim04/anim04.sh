@@ -8,7 +8,6 @@
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
-	ps=anim04.ps
 else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
 	opt="-Fmp4 -A+l+s10"
 fi
@@ -31,5 +30,4 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -C7.2ix4.8ix100 -Nanim04 -Tflight_path.txt -Sbpre.sh -Z -H2 -Lf+o0.1i+f14p,Helvetica-Bold $opt
-rm -f main.sh pre.sh
+gmt movie main.sh -C7.2ix4.8ix100 -Nanim04 -Tflight_path.txt -Sbpre.sh -Zs -H2 -Lf+o0.1i+f14p,Helvetica-Bold $opt

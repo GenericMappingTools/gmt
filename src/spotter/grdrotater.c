@@ -37,44 +37,44 @@
 
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct In {
+	struct GRDROTATER_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -Aw/e/s/n */
+	struct GRDROTATER_A {	/* -Aw/e/s/n */
 		bool active;
 		double wesn[4];
 	} A;
-	struct D {	/* -Drotpolfile or -Dtemplate */
+	struct GRDROTATER_D {	/* -Drotpolfile or -Dtemplate */
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
+	struct GRDROTATER_E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
 		bool active;
 		struct SPOTTER_ROT rot;
 	} E;
-	struct F {	/* -Fpolfile */
+	struct GRDROTATER_F {	/* -Fpolfile */
 		bool active;
 		char *file;
 	} F;
-	struct G {	/* -Goutfile or -Gtemplate*/
+	struct GRDROTATER_G {	/* -Goutfile or -Gtemplate*/
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N */
+	struct GRDROTATER_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S */
+	struct GRDROTATER_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T<time>, -T<start/stop/inc> or -T<tfile.txt> */
+	struct GRDROTATER_T {	/* -T<time>, -T<start/stop/inc> or -T<tfile.txt> */
 		bool active;
 		unsigned int n_times;	/* Number of reconstruction times */
 		double *value;	/* Array with one or more reconstruction times */
 	} T;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDROTATER_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
@@ -82,7 +82,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->D.file);
@@ -93,7 +93,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* 
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> %s -G<outgrid> [-F<polygontable>]\n", name, SPOTTER_E_OPT);
@@ -131,7 +131,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdrotater and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -154,10 +154,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->In.active = true;
+				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Supplemental parameters */
@@ -213,16 +212,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 			case 'F':
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->F.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				Ctrl->G.active = true;
+				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -308,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL struct GMT_DATASET * grdrotater_get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Return a single polygon that encloses this geographic grid exactly.
 	 * It is used in the case when no particular clip polygon has been given.
 	 * Note that the path is the same for pixel or grid-registered grids.
@@ -393,7 +390,7 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	return (D);
 }
 
-GMT_LOCAL bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon, double lat) {
+GMT_LOCAL bool grdrotater_skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon, double lat) {
 	/* Returns true if the selected point is outside the polygon */
 	uint64_t seg;
 	unsigned int inside = 0;
@@ -407,7 +404,7 @@ GMT_LOCAL bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, d
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdrotater (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 	int scol, srow, error = 0;	/* Signed row, col */
 	int n_stages;
 	bool not_global, global = false;
@@ -490,7 +487,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "No grid give so cannot determine grid outline path\n");
 			Return (API->error);
 		}
-		if ((D = get_grid_path (GMT, G->header)) == NULL) Return (API->error);
+		if ((D = grdrotater_get_grid_path (GMT, G->header)) == NULL) Return (API->error);
 		pol = D->table[0];	/* Since we know it is a single file */
 	}
 	if (pol) {
@@ -637,7 +634,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 		gmt_M_grd_loop (GMT, G_rot, row, col, ij_rot) {
 			G_rot->data[ij_rot] = GMT->session.f_NaN;
-			if (not_global && skip_if_outside (GMT, polr, grd_x[col], grd_y[row])) continue;	/* Outside rotated polygon */
+			if (not_global && grdrotater_skip_if_outside (GMT, polr, grd_x[col], grd_y[row])) continue;	/* Outside rotated polygon */
 
 			/* Here we are inside; get the coordinates and rotate back to original grid coordinates */
 
@@ -669,7 +666,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 						if (col >= G_rot->header->n_columns) continue;
 						ij_rot = gmt_M_ijp (G_rot->header, row, col);
 						if (!gmt_M_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
-						if (not_global && skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside input polygon */
+						if (not_global && grdrotater_skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside input polygon */
 						gmt_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, true);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 						gmt_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 						gmt_cart_to_geo (GMT, &xx, &yy, P_original, true);	/* Recover degree lon lat representation */

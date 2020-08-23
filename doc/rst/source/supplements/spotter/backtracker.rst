@@ -51,13 +51,13 @@ additional data fields after the first 3 columns which must have
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_intables.rst_
+
 .. include:: explain_rots.rst_
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_intables.rst_
 
 .. _-A:
 
@@ -74,7 +74,7 @@ Optional Arguments
 **-Df**\|\ **b**
     Set the direction to go: **-Df** will go backward in time (from
     younger to older positions), while **-Db** will go forward in time
-    (from older to younger positions) [Default]. Note: For **-Db** you
+    (from older to younger positions) [Default]. **Note**: For **-Db** you
     are specifying the age at the given location, whereas for **-Df**
     you are not; instead you specify the age at the reconstructed point.
 
@@ -87,7 +87,7 @@ Optional Arguments
     location of the hotspot at that time, via an interpolation of the
     hotspot motion history. Input data locations are then adjusted by the
     change in hotspot location when reconstructing the point or path [No drift].
-    Note: (1) When **-F** is used the **-L** *step* values will be in time (Myr).
+    **Note**: (1) When **-F** is used the **-L** *step* values will be in time (Myr).
     (2) Drift is only considered when backtracking a point (**-Db**) or predicting
     seamount trails (**-Df** **-Lb**). (3) Cannot be used with **-M**.
 

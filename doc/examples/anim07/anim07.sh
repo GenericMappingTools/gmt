@@ -1,45 +1,45 @@
 #!/usr/bin/env bash
-#               GMT ANIMATION 07
 #
-# Purpose:      Make a Plate Tectonics movie of crustal ages
-# GMT modules:  math, set, grdgradient, grdmath, grdimage, makecpt, movie, coast
-# Unix progs:   cat
-# Note:         Run with any argument to build movie; otherwise one frame is plotted only.
+## Animation of a spinning Earth showing the crustal ages from EarthByte for the oceans
+# and topographic relief on land, with shading given by the global relief and modified
+# by position relative to an artificial sun in the east.  A progress slice is added as well.
+# We add a 1 second fade in and a 1 second fade out for the animation
+# DEM:   @earth_relief_06m
+# Ages:  @earth_age_06m
+# A similar movie was presented at the Fall 2019 AGU meeting in an eLighting talk:
+# P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.
+# The finished movie is available in our YouTube channel as well (without fading):
+# https://youtu.be/KfBwQlyjz5w
+# The movie takes about ~20 minutes to render on a 24-core MacPro 2013.
+# The higher resolution movie on YouTube used the 02m data set resolution.
 
-if [ $# -eq 0 ]; then   # Just make master PostScript frame 10
-	opt="-M10,ps -Fnone"
-	ps=anim07.ps
-else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
-	opt="-Fmp4 -A+l+s5"
-fi
 # 1. Create background plot and data files needed in the loop
 cat << EOF > pre.sh
 gmt begin
 	# Set view and sun longitudes
-	gmt math -T0/360/5 -I T 5 SUB = longitudes.txt
+	gmt math -T-12/372/0.5 -I T 5 SUB = longitudes.txt
 	# Extract a topography CPT
-	gmt makecpt -Cdem2 -T0/6000 -H > t.cpt
+	gmt makecpt -Cdem2 -T0/6000 -H > z.cpt
 	# Get gradients of the relief from N45E
-	gmt grdgradient @earth_relief_20m -Nt1.25 -A45 -Gintens.nc
+	gmt grdgradient @earth_relief_06m -Nt1.2 -A45 -Gintens.grd
 gmt end
 EOF
 # 2. Set up main script
 cat << EOF > main.sh
 gmt begin
-	# Let HSV minimum value go to zero
-	gmt set COLOR_HSV_MIN_V 0
-	# Fake simulation of sun illumination from east combined with relief slopes
-	gmt grdmath intens.nc X \${MOVIE_COL1} SUB DUP -180 LE 360 MUL ADD 90 DIV ERF ADD 0.25 SUB = s.nc
-	# Plot age grid first using age cpt
-	gmt grdimage @age.3.20.nc -Is.nc -C@crustal_age.cpt -JG\${MOVIE_COL0}/0/6i -X0 -Y0
+	# Let HSV minimum value go to zero and faint map border
+	gmt set COLOR_HSV_MIN_V 0 MAP_FRAME_PEN=faint
+	# Fake simulation of sun illumination from east added to relief intensities
+	gmt grdmath intens.grd X \${MOVIE_COL1} SUB SIND 0.8 MUL ADD 0.2 SUB = s.nc
+	# Plot age grid first using EarthByte age cpt
+	gmt grdimage @earth_age_06m -Is.nc -JG\${MOVIE_COL0}/15/10.8c -X0 -Y0
 	# Clip to expose land areas only
-	gmt coast -G
+	gmt coast -G -Di
 	# Overlay relief over land only using dem cpt
-	gmt grdimage @earth_relief_20m -Is.nc -Ct.cpt
+	gmt grdimage @earth_relief_06m -Is.nc -Cz.cpt
 	# Undo clipping and overlay gridlines
 	gmt coast -Q -B30g30
-gmt end
+gmt end show
 EOF
-# 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Tlongitudes.txt -Nanim07 -H2 -Pa -Z $opt
-rm -rf main.sh pre.sh
+# 3. Run the movie, requesting a fade in/out via white
+gmt movie main.sh -Sbpre.sh -C10.8cx10.8cx100 -Tlongitudes.txt -Nanim07 -Lf -K+gwhite -H8 -Pa+w1c+Gwhite -Fmp4 -V -W -Zs

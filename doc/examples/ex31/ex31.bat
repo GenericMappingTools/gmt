@@ -20,7 +20,7 @@ gmt begin ex31
 	REM common settings
 	gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p ^
 		MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-5 ^
-		FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
+		FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel,tick_extend
 
 	REM map of countries
 	gmt coast -R-7/31/64/66+r -JL15/50/40/60/16c -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 -Slightblue -Glightgreen -W0.25p -N1/1p,white
@@ -54,5 +54,6 @@ gmt begin ex31
 	REM plot legend
 	gmt legend -DjTR+o0.1c+w8.0c+l1.2 -C0.3c/0.4c -F+p+gwhite legend.txt
 
-	del PSL_custom_fonts.txt legend.txt ex31CropNoLogo.eps europe-capitals-ru.csv
+	del legend.txt ex31CropNoLogo.eps europe-capitals-ru.csv
 gmt end show
+del PSL_custom_fonts.txt

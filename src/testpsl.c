@@ -37,7 +37,7 @@ int main () {
 	if ((API = GMT_Create_Session ("PSLTEST", GMT_NOTSET, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Create a virtual file to be the destination allocated and written to by pscoast */
-	if (GMT_Open_VirtualFile (API, GMT_IS_POSTSCRIPT, GMT_IS_NONE, GMT_OUT, NULL, string) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Open_VirtualFile (API, GMT_IS_POSTSCRIPT, GMT_IS_NONE, GMT_OUT|GMT_IS_REFERENCE, NULL, string) != GMT_NOERROR) exit (EXIT_FAILURE);
 	sprintf (cmd, "-R0/20/0/20 -JM6i -P -Gred -K > %s", string);			/* Create command for pscoast */
 
 	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
@@ -61,7 +61,7 @@ int main () {
 	if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) exit (EXIT_FAILURE);
 
 	/* 6. Write the plot to file */
-	if (GMT_Write_Data (API, GMT_IS_POSTSCRIPT, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "newmap.ps", PS) != GMT_NOERROR) exit (EXIT_FAILURE);
+	if (GMT_Write_Data (API, GMT_IS_POSTSCRIPT, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, "newmap.ps", PS) != GMT_NOERROR) exit (EXIT_FAILURE);
 
 	/* 7. Destroy GMT session */
 	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);

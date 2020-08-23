@@ -72,6 +72,15 @@ struct GMT_LABEL {	/* Contains information on contour/lineation labels */
 	char *label;
 };
 
+struct GMT_CONTOUR_INFO {	/* Used in grdcontour and pscontour to keep information about how to draw a contour level */
+	double val;				/* Contour value */
+	double angle;			/* Fixed annotation angle [or NaN] */
+	bool do_tick;			/* Tick this contour if it is an innermost contour */
+	bool penset;			/* true if we have a specific pen for this contour */
+	char type;				/* COntour type: A, C */
+	struct GMT_PEN pen;		/* Pen to use, if penset is true */
+};
+
 struct GMT_CONTOUR_LINE {
 	uint64_t n;			/* Length of the contour */
 	unsigned int n_labels;		/* Number of labels; if 0 we just have a line segment */
@@ -151,6 +160,7 @@ struct GMT_CONTOUR {
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */
 	struct GMT_PEN pen;		/* Pen for drawing textbox outline */
 	struct GMT_PEN line_pen;	/* Pen for drawing the contour line */
+	struct GMT_PEN debug_pen;	/* Pen for drawing the debugging lines */
 	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
 	struct GMT_DATASET *Out;	/* Textset with positions, angles and labels used in contouring */
 	/* Contour line section */

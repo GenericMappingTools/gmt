@@ -27,21 +27,21 @@
 
 struct MGD77PATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A */
+	struct MGD77PATH_A {	/* -A */
 		bool active;
 		bool mode;
 	} A;
-	struct D {	/* -D */
+	struct MGD77PATH_D {	/* -D */
 		bool active;
 	} D;
-	struct I {	/* -I */
+	struct MGD77PATH_I {	/* -I */
 		bool active;
 		unsigned int n;
 		char code[3];
 	} I;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77PATH_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct MGD77PATH_CTRL);
@@ -51,12 +51,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> A[c] -D [-I<code>] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
@@ -74,7 +74,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mgd77path and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -143,7 +143,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77path (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77path (void *V_API, int mode, void *args) {
 	uint64_t n_cruises = 0, i, n_paths;
 	int error = 0;
 

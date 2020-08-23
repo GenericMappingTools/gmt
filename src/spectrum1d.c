@@ -48,36 +48,36 @@
 #define SPECTRUM1D_N_OUTPUT_CHOICES 8
 
 struct SPECTRUM1D_CTRL {
-	struct SPECT1D_Out {	/* -><file> */
+	struct SPECTRUM1D_Out {	/* -><file> */
 		bool active;
 		char *file;
 	} Out;
-	struct SPECT1D_C {	/* -C[<xycnpago>] */
+	struct SPECTRUM1D_C {	/* -C[<xycnpago>] */
 		bool active;
 		char col[SPECTRUM1D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} C;
-	struct SPECT1D_D {	/* -D<inc> */
+	struct SPECTRUM1D_D {	/* -D<inc> */
 		bool active;
 		double inc;
 	} D;
-	struct SPECT1D_L {	/* -L[m|h] */
+	struct SPECTRUM1D_L {	/* -L[m|h] */
 		bool active;
 		bool debug;
 		unsigned int mode;
 	} L;
-	struct SPECT1D_N {	/* -N[+]<namestem> */
+	struct SPECTRUM1D_N {	/* -N[+]<namestem> */
 		bool active;
 		unsigned int mode;
 		char *name;
 	} N;
-	struct SPECT1D_S {	/* -S<segment_size> */
+	struct SPECTRUM1D_S {	/* -S<segment_size> */
 		bool active;
 		unsigned int size;
 	} S;
-	struct SPECT1D_T {	/* -T */
+	struct SPECTRUM1D_T {	/* -T */
 		bool active;
 	} T;
-	struct SPECT1D_W {	/* -W */
+	struct SPECTRUM1D_W {	/* -W */
 		bool active;
 	} W;
 };
@@ -87,7 +87,7 @@ struct SPECTRUM1D_INFO {	/* Control structure for spectrum1d */
 	int n_spec, window, window_2;
 	gmt_grdfloat *datac;
 	double dt, x_variance, y_variance, d_n_windows, y_pow;
-	struct SPEC {
+	struct SPECTRUM1D_SPEC {
 		double xpow;	/* PSD in X(t)  */
 		double ypow;	/* PSD in Y(t)  */
 		double gain;	/* Amplitude increase X->Y in Optimal Response Function  */
@@ -97,15 +97,15 @@ struct SPECTRUM1D_INFO {	/* Control structure for spectrum1d */
 	} *spec;
 };
 
-GMT_LOCAL void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
+GMT_LOCAL void spectrum1d_alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
 	C->n_spec = C->window/2;	/* This means we skip zero frequency; data are detrended  */
 	C->window_2 = 2 * C->window;		/* This is for complex array stuff  */
 
-	C->spec = gmt_M_memory (GMT, NULL, C->n_spec, struct SPEC);
+	C->spec = gmt_M_memory (GMT, NULL, C->n_spec, struct SPECTRUM1D_SPEC);
 	C->datac = gmt_M_memory (GMT, NULL, C->window_2, gmt_grdfloat);
 }
 
-GMT_LOCAL void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode) {
+GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode) {
 	/* If leave_trend is true we do not remove best-fitting LS trend.  Otherwise
 	 * we do, modulated by mode: 0: remove trend, 1: remove mean, 2: remove mid-value.
 	 * In all cases we apply the Hanning windowing */
@@ -178,7 +178,7 @@ GMT_LOCAL void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend,
 	}
 }
 
-GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode) {
+GMT_LOCAL int spectrum1d_compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode) {
 	int n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
 	double xreal, ximag, yreal, yimag, xpower, ypower, co_spec, quad_spec;
@@ -214,7 +214,7 @@ GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, 
 			}
 		}
 
-		detrend_and_hanning (C, leave_trend, mode);
+		spectrum1d_detrend_and_hanning (C, leave_trend, mode);
 
 		if (GMT_FFT_1D (GMT->parent, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX))
 			return GMT_RUNTIME_ERROR;
@@ -287,7 +287,7 @@ GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, 
 	return 0;
 }
 
-GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, char *namestem) {
+GMT_LOCAL int spectrum1d_write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, char *namestem) {
 	/* Writes separate hardwired files for each output type.  Does NOT use GMT_Put_* functions */
 	int i, j;
 	double delta_f, eps_pow, out[3], *f_or_w = NULL;
@@ -446,7 +446,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 	return (0);
 }
 
-GMT_LOCAL void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, double *out[]) {
+GMT_LOCAL void spectrum1d_assign_output (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, double *out[]) {
 	/* Fills out the 2-D table array given */
 	int i, j, k;
 	double delta_f, eps_pow, tmp, *f_or_w;
@@ -509,12 +509,12 @@ GMT_LOCAL void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D
 	gmt_M_free (GMT, f_or_w);
 }
 
-GMT_LOCAL void free_space_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
+GMT_LOCAL void spectrum1d_free_space (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
 	gmt_M_free (GMT, C->spec);
 	gmt_M_free (GMT, C->datac);
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPECTRUM1D_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct SPECTRUM1D_CTRL);
@@ -533,13 +533,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->N.name);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[m|h]] [-N[<name_stem>]] [-T]\n", name);
@@ -571,7 +571,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to spectrum1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -587,14 +587,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				if (n_files++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -681,7 +681,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_spectrum1d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_spectrum1d (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int k, n_outputs;
 
@@ -742,7 +742,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 		Return (GMT_DIM_TOO_SMALL);
 	}
 
-	alloc_arrays (GMT, &C);
+	spectrum1d_alloc_arrays (GMT, &C);
 
 	if (!Ctrl->T.active) {	/* Write single data file with 17 columns to stdout (or specified name) */
 		uint64_t dim[GMT_DIM_SIZE];
@@ -764,26 +764,26 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " data points.\n", S->n_rows);
 
 			y = (C.y_given) ? S->data[GMT_Y] : NULL;
-			if (compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+			if (spectrum1d_compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
+				Return (GMT_RUNTIME_ERROR);
 			}
 
 			if (!Ctrl->T.active) {
 				unsigned smode = (Tout->segment[seg]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				Sout = Tout->segment[seg] = GMT_Alloc_Segment (GMT->parent, smode, C.n_spec, Tout->n_columns, NULL, Tout->segment[seg]);
-				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->data);
+				spectrum1d_assign_output (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->data);
 				Sout->n_rows = C.n_spec;
 			}
 			if (Ctrl->N.mode == 0) {	/* Write separate tables */
-				if (write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))
+				if (spectrum1d_write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))
 					Return (GMT_RUNTIME_ERROR);
 			}
 		}
 	}
 
-	free_space_spectrum1d (GMT, &C);
+	spectrum1d_free_space (GMT, &C);
 
-	if (!Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
+	if (!Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 		Return (API->error);
 	}
 

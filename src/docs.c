@@ -38,14 +38,15 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [-S] [%s] <module-name> [<-option>]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or one of gmt, api, colors, cookbook, gallery, settings, and tutorial.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules, or one of\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   api, colors, cookbook, data, gallery, gmt, home, settings, and tutorial.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Also acceptable are forum (GMT Discourse Forum) and [web]site (GMT Main Website).\n");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");
@@ -61,16 +62,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC const char *api_get_module_group (void *V_API, char *module);
-
-int GMT_docs (void *V_API, int mode, void *args) {
-	bool other_file = false, print_url = false, got_file = false, called = false, remote = false;
+EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
+	bool other_file = false, print_url = false, got_file = false, called = false, remote = false, direct_URL = false;
 	int error = 0, id;
 	size_t vlen = 0;
 	char cmd[PATH_MAX] = {""}, view[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL, *ext = NULL;
 	const char *group = NULL, *docname = NULL;
 	char *ps_viewer = NULL;
-	static const char *known_group[2] = {"core", "other"}, *known_doc[7] = {"gmtcolors", "cookbook", "api", "tutorial", "gallery", "gmt.conf", "gmt"};
+	static const char *known_group[2] = {"core", "other"};
+	static const char *known_doc[9] = {"gmtcolors", "cookbook", "api", "tutorial", "gallery", GMT_SETTINGS_FILE, "gmt", "datasets", "index"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -202,28 +202,44 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			else if (!strcmp (t, "gallery")) {
 				docname = known_doc[4];	group   = known_group[0];	/* Pretend it is in the core */
 			}
-			else if (!strcmp (t, "gmt.conf") || !strncmp (t, "setting", 7U)) {
+			else if (!strcmp (t, GMT_SETTINGS_FILE) || !strncmp (t, "setting", 7U)) {
 				docname = known_doc[5];	group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (!strcmp (t, "gmt")) {
 				docname = known_doc[6];	group   = known_group[0];	/* Pretend it is in the core */
 			}
+			else if (!strcmp (t, "data")) {
+				docname = known_doc[7];	group   = known_group[0];	/* Pretend it is in the core */
+			}
+			else if (!strcmp (t, "home")) {
+				docname = known_doc[8];	group   = known_group[0];	/* Pretend it is in the core */
+			}
+			else if (!strcmp (t, "forum")) {	/* Fixed URL */
+				snprintf (URL, PATH_MAX, "https://forum.generic-mapping-tools.org");
+				direct_URL = remote = true;
+			}
+			else if (strstr (t, "site")) {	/* Fixed URL */
+				snprintf (URL, PATH_MAX, "https://www.generic-mapping-tools.org");
+				direct_URL = remote = true;
+			}
 			else if (gmt_get_ext (docname)) {
 				group = known_group[1];
 				other_file = true;
 			}
-			else if ((group = api_get_module_group (API, name)) == NULL) {
+			else if ((group = gmt_get_module_group (API, name)) == NULL) {
 				gmt_M_str_free (t);
 				Return (GMT_RUNTIME_ERROR);
 			}
 
 			gmt_M_str_free (t);
-			if (!strcmp (group, "core"))	/* Core module */
-				snprintf (module, GMT_LEN64, "%s.html", docname);
-			else if (!other_file)		/* A supplemental module */
-				snprintf (module, GMT_LEN64, "supplements/%s/%s.html", group, docname);
+			if (!direct_URL) {
+				if (!strcmp (group, "core"))	/* Core module */
+					snprintf (module, GMT_LEN64, "%s.html", docname);
+				else if (!other_file)		/* A supplemental module */
+					snprintf (module, GMT_LEN64, "supplements/%s/%s.html", group, docname);
 
-			if (opt->next && opt->next->option != GMT_OPT_INFILE) remote = true;	/* Can only use anchors on actual URLs not local files */
+				if (opt->next && opt->next->option != GMT_OPT_INFILE) remote = true;	/* Can only use anchors on actual URLs not local files */
+			}
 
 			/* Get the local URL (which may not exist) */
 			if (other_file) {	/* A local or Web file */
@@ -245,8 +261,8 @@ int GMT_docs (void *V_API, int mode, void *args) {
 			}
 			else {	/* One of the fixed doc files */
 				if (remote) {	/* Go directly to GMT server online */
-						snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
-						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try URL path: %s\n", URL);
+					if (!direct_URL) snprintf (URL, PATH_MAX, "%s/%s", GMT_DOC_URL, module);
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try URL path: %s\n", URL);
 				}
 				else {	/* Try local paths first */
 					snprintf (URL, PATH_MAX, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
@@ -266,11 +282,13 @@ int GMT_docs (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (opt->next && opt->next->option != GMT_OPT_INFILE) {	/* If an option request was made we position the doc there */
-				char t[4] = {""};
-				snprintf (t, 4U, "#%c", tolower (opt->next->option));
-				strncat (URL, t, PATH_MAX-1);
-				opt = opt->next;	/* Skip past this module option */
+			if (!direct_URL) {
+				if (opt->next && opt->next->option != GMT_OPT_INFILE) {	/* If an option request was made we position the doc there */
+					char t[4] = {""};
+					snprintf (t, 4U, "#%c", tolower (opt->next->option));
+					strncat (URL, t, PATH_MAX-1);
+					opt = opt->next;	/* Skip past this module option */
+				}
 			}
 			called = true;
 

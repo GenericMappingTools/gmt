@@ -36,6 +36,25 @@
  * GMT TYPE DEFINITIONS
  *--------------------------------------------------------------------*/
 
+/*! Definition of CONTOUR_ARGS used by grdcontour and pscontour */
+struct CONTOUR_ARGS {
+	bool cpt;		/* true of we were given a CPT file */
+	bool check;		/* true if in modern mode and no CPT was given */
+	unsigned int mode;	/* Module specific action, usually to indicate no annotations desired */
+	char *file;		/* File with cpt or contours, or list of contours */
+	double interval;	/* Constant interval */
+	double single_cont;	/* Single specified contour */
+};
+
+/*! Definition of CONTOUR_CLOSED used by grdcontour and pscontour */
+struct CONTOUR_CLOSED {
+	bool label;
+	bool all;
+	bool low, high;	/* true to tick low and high locals */
+	double dim[2];	/* spacing, length */
+	char *txt[2];	/* Low and high label [-+] */
+};
+
 /*! Definition of GMT_MATH_MACRO used by grdmath and gmtmath */
 struct GMT_MATH_MACRO {
 	unsigned int n_arg;	/* How many commands this macro represents */
@@ -314,7 +333,6 @@ struct GMT_INIT { /* Holds misc run-time parameters */
 	char *runtime_library;        /* Name of the main shared library at run-time */
 	char *runtime_plugindir;      /* Directory that contains the main supplemental plugins at run-time */
 	char *history[GMT_N_UNIQUE];  /* The internal gmt.history information */
-	char cpt[GMT_N_CPT][GMT_LEN16];	/* The default CPTs for different data types; see gmt_cpt_default() */
 	struct GMT_CUSTOM_SYMBOL **custom_symbol; /* For custom symbol plotting in psxy[z]. */
 };
 
@@ -329,6 +347,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */
 	double *y;
+	double gridline_spacing[2];		/* Holds last gridline spacing used for this plot, via gmt.history */
 	char format[3][2][GMT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
 	struct GMT_SUBPLOT panel;	/* Current subplot panel settings */
 	struct GMT_INSET inset;		/* Current inset settings */
@@ -445,7 +464,7 @@ typedef int (*p_to_io_func) (struct GMT_CTRL *, FILE *, uint64_t, double *);
    let GMT_exit possibly call exit, else it does nothing.  Thus, calls to GMT_exit
    must be followed by return <type> so that we return where we said we would. */
 
-/* If GMT is not set or no_not_exit is false then we call system exit, else we move along */
+/* If GMT is not set or do_not_exit is false then we call system exit, else we move along */
 static inline void GMT_exit (struct GMT_CTRL *GMT, int code) {
 	if (GMT == NULL || GMT->parent == NULL || GMT->parent->do_not_exit == false)
 		exit (code);

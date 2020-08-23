@@ -14,7 +14,7 @@ Synopsis
 
 **gmt select** [ *table* ]
 [ |SYN_OPT-Area| ]
-[ |-C|\ *pointfile*\ **+d**\ *dist* ]
+[ |-C|\ *pointfile*\ \|\ *lon*/*lat*\ **+d**\ *dist* ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ [**fn**] ]
 [ |-F|\ *polygonfile* ]
@@ -50,7 +50,7 @@ selected based on whether or not they are 1) inside a rectangular region (**-R**
 polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
 within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
 be reversed for each of these 6 criteria by using the **-I** option. See option **-:** on how to read
-(y,x) or (latitude,longitude) files (this option affects all module input data).  Note: If no projection
+(y,x) or (latitude,longitude) files (this option affects all module input data).  **Note**: If no projection
 information is used then you must supply **-fg** to tell **select** that your data are geographical.
 
 Required Arguments
@@ -71,12 +71,14 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *pointfile*\ **+d**\ *dist*
+**-C**\ *pointfile*\ \|\ *lon*/*lat*\ **+d**\ *dist*
     Pass all records whose location is within *dist* of any of the
     points in the ASCII file *pointfile*. If *dist* is zero then the 3rd
     column of *pointfile* must have each point's individual radius of
-    influence. Distances are Cartesian and in user units; specify
-    **-fg** to indicate spherical distances and append a distance unit
+    influence. . If you only have a single point then you can specify
+    *lon*/*lat* instead of *pointfile*.  Distances are Cartesian and in
+    user units; specify **-fg** to indicate spherical distances and
+    append a distance unit, even if the distance specified is 0.
     (see `Units`_). Alternatively, if **-R** and **-J** are used then
     geographic coordinates are projected to map coordinates (in cm,
     inch, or points, as determined by :term:`PROJ_LENGTH_UNIT`) before
@@ -194,7 +196,7 @@ Optional Arguments
     min or max, specify a hyphen (-). If your 3rd column is absolute
     time then remember to supply **-f**\ 2T. To specify another column, append
     **+c**\ *col*, and to specify several tests just repeat the **Z** option as
-    many times has you have columns to test. Note: when more than one **Z** option
+    many times has you have columns to test. **Note**: When more than one **Z** option
     is given then the **-Iz** option cannot be used.  In the case of multiple tests
     you may use these modifiers as well: **a** passes any record that passes at least
     one of your *z* tests [all tests must pass], and **i** reverses the tests to pass

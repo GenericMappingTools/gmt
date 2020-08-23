@@ -21,8 +21,8 @@
  * Date:	17-Aug-2017
  */
 
-#include "gdal.h"
-#include "ogr_srs_api.h"
+#include <gdal.h>
+#include <ogr_srs_api.h>
 
 OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GMT, const char *pSrcSRS, const char *pDstSRS) {
     /* pSrcSRS and pDstSRS are pointers to strings defining the Source and Destination Referencing

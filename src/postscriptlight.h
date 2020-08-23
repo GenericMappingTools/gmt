@@ -314,6 +314,7 @@ struct PSL_CTRL {
 		char *user_image[PSL_N_PATTERNS];	/* Name of user patterns		*/
 		char origin[2];			/* 'r', 'a', 'f', 'c' depending on reference for new origin x and y coordinate */
 		double offset[2];		/* Origin offset [1/1]				*/
+		double prev_offset[2];		/* Previous Origin offset [1/1]				*/
 		double p_width;			/* Paper width in points, set in PSL_beginplot();	*/
 		double p_height;		/* Paper height in points, set in PSL_beginplot();	*/
 		double dpu;			/* PS dots per unit.  Must be set through PSL_beginplot();		*/

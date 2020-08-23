@@ -48,7 +48,7 @@ if (PNGQUANT)
 		COMMAND ${PNGQUANT} --strip --force --ext .png ${RST_BINARY_DIR}/_images/*.png
 	)
 	add_dependencies (optimize_images docs_depends)
-	add_dependencies (gmt_release optimize_images)
+	add_depend_to_target (gmt_release optimize_images)
 endif (PNGQUANT)
 
 
@@ -63,4 +63,5 @@ install (DIRECTORY examples
 	PATTERN "${_exclude_bat}" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	PATTERN "gmt.history" EXCLUDE
+	PATTERN ".DS_Store" EXCLUDE
 	REGEX "[.](cmake|in|ps)$" EXCLUDE)

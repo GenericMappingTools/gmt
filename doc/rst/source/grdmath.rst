@@ -20,6 +20,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
@@ -38,7 +39,7 @@ Description
 -----------
 
 **grdmath** will perform operations like add, subtract, multiply, and
-numerous other operands on one or more grid files or constants using
+hundreds of other operands on one or more grid files or constants using
 `Reverse Polish Notation (RPN) <https://en.wikipedia.org/wiki/Reverse_Polish_notation>`_
 syntax.  Arbitrarily complicated expressions may therefore be evaluated; the
 final result is written to an output grid file. Grid operations are
@@ -108,7 +109,7 @@ Optional Arguments
 **-S**
     Reduce (i.e., collapse) the entire stack to a single grid by applying the
     next operator to all co-registered nodes across the entire stack.  You
-    must specify **-S** *after* listing all of your grids.  Note: You can only
+    must specify **-S** *after* listing all of your grids.  **Note**: You can only
     follow **-S** with a reducing operator, i.e., from the list ADD, AND, MAD,
     LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.
 
@@ -116,6 +117,8 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: The binary input option
     only applies to the data files needed by operators **LDIST**,
@@ -148,7 +151,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 209 operators. "args" are the number of input
+Choose among the following 224 operators. "args" are the number of input
 and output arguments.
 
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -206,6 +209,8 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **BITXOR**    | 2 1   | A ^ B (bitwise XOR operator)                                                                           |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **BLEND**     | 3 1   | Blend A and B using weights in C (0-1 range) as A*C + B*(1-C)                                          |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CAZ**       | 2 1   | Cartesian azimuth from grid nodes to stack x,y (i.e., A, B)                                            |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CBAZ**      | 2 1   | Cartesian back-azimuth from grid nodes to stack x,y (i.e., A, B)                                       |
@@ -252,6 +257,8 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DDX**       | 1 1   | d(A)/dx Central 1st derivative                                                                         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **DAYNIGHT**  | 3 1   | 1 where sun at (A, B) shines and 0 elsewhere, with C transition width                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DDY**       | 1 1   | d(A)/dy Central 1st derivative                                                                         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DEG2KM**    | 1 1   | Converts Spherical Degrees to Kilometers                                                               |
@@ -261,6 +268,8 @@ and output arguments.
 | **DILOG**     | 1 1   | dilog (A)                                                                                              |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DIV**       | 2 1   | A / B                                                                                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **DOT**       | 2 1   | 2-D (Cartesian) or 3-D (geographic) dot products between nodes and stack (A, B) unit vector(s)         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DUP**       | 1 2   | Places duplicate of A on the stack                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -309,7 +318,7 @@ and output arguments.
 | **HSV2RGB**   | 3 3   | Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **HSV2XYZ**   | 3 3   | Convert h,s,v triplets to x,t,z triplets, with h = A (0-360), s = B and v = C (0-1)                    |
-+-----------------+--------+-----------------------------------------------------------------------------------------------------+
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **HYPOT**     | 2 1   | hypot (A, B) = sqrt (A\*A + B\*B)                                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **I0**        | 1 1   | Modified Bessel function of A (1st kind, order 0)                                                      |
@@ -651,7 +660,7 @@ Notes On Operators
    Similarly, the **SAZ** and **SBAZ** operators calculate spherical
    azimuth and back-azimuths in degrees, respectively. The operators
    **LDIST** and **PDIST** compute spherical distances in km if **-fg** is
-   set or implied, else they return Cartesian distances. Note: If the current
+   set or implied, else they return Cartesian distances. **Note**: If the current
    :term:`PROJ_ELLIPSOID` is ellipsoidal then
    geodesics are used in calculations of distances, which can be slow.
    You can trade speed with accuracy by changing the algorithm used to
@@ -717,9 +726,18 @@ Notes On Operators
 #. Operators **DEG2KM** and **KM2DEG** are only exact when a spherical Earth
    is selected with :term:`PROJ_ELLIPSOID`.
 
+#. Operator **DOT** normalizes 2-D vectors before the dot-product takes place.
+   For 3-D vector they are all unit vectors to begin with.
+
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
    only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
    sRGB (x, y, z) conversions between all four color spaces.
+
+#. The DAYNIGHT operator returns a grid with ones on the side facing the given
+   sun location at (A,B).  If the transition width (C) is zero then we get
+   either 1 or 0, but if C is nonzero then we approximate the step function
+   using an atan-approximation instead.  Thus, the values are never exactly
+   0 or 1, but close, and the smaller C the closer we get.
 
 .. include:: explain_float.rst_
 
@@ -749,7 +767,7 @@ modes that are inside the given circle to 1 and those outside to 0:
 INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1
 inside circle
 
-Note: Because geographic or time constants may be present in a macro, it
+**Note**: Because geographic or time constants may be present in a macro, it
 is required that the optional comment flag (:) must be followed by a space.
 
 Examples
@@ -757,78 +775,56 @@ Examples
 
 .. include:: explain_example.rst_
 
-To compute all distances to north pole:
-
-    ::
+To compute all distances to north pole, try::
 
      gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc
 
-To take log10 of the average of 2 files, use
-
-   ::
+To take log10 of the average of 2 files, use::
 
     gmt grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
 
 Given the file ages.nc, which holds seafloor ages in m.y., use the
-relation depth(in m) = 2500 + 350 \* sqrt (age) to estimate normal seafloor depths:
-
-   ::
+relation depth(in m) = 2500 + 350 \* sqrt (age) to estimate normal seafloor depths, try::
 
     gmt grdmath ages.nc SQRT 350 MUL 2500 ADD = depths.nc
 
 To find the angle a (in degrees) of the largest principal stress from
 the stress tensor given by the three files s_xx.nc s_yy.nc, and
-s_xy.nc from the relation tan (2\*a) = 2 \* s_xy / (s_xx - s_yy), use
-
-   ::
+s_xy.nc from the relation tan (2\*a) = 2 \* s_xy / (s_xx - s_yy), use::
 
     gmt grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN 2 DIV = direction.nc
 
 To calculate the fully normalized spherical harmonic of degree 8 and
 order 4 on a 1 by 1 degree world map, using the real amplitude 0.4 and
-the imaginary amplitude 1.1:
-
-   ::
+the imaginary amplitude 1.1, use::
 
     gmt grdmath -R0/360/-90/90 -I1 8 4 YLM 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
 
-To extract the locations of local maxima that exceed 100 mGal in the file faa.nc:
-
-   ::
+To extract the locations of local maxima that exceed 100 mGal in the file faa.nc, use::
 
     gmt grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
     gmt grd2xyz z.nc -s > max.xyz
 
 To demonstrate the use of named variables, consider this radial wave
-where we store and recall the normalized radial arguments in radians:
-
-   ::
+where we store and recall the normalized radial arguments in radians by::
 
     gmt grdmath -R0/10/0/10 -I0.25 5 5 CDIST 2 MUL PI MUL 5 DIV STO@r COS @r SIN MUL = wave.nc
 
-To create a dumb file saved as a 32 bits float GeoTiff using GDAL, run
-
-   ::
+To create a dumb file saved as a 32 bits float GeoTiff using GDAL, run::
 
     gmt grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
 
 To compute distances in km from the line trace.txt for the area represented by the
-geographic grid data.grd, run
-
-   ::
+geographic grid data.grd, run::
 
     gmt grdmath -Rdata.grd trace.txt LDIST = dist_from_line.grd
 
 To demonstrate the stack-reducing effect of **-S**, we compute the standard deviation
-per node of all the grids matching the name model_*.grd using
-
-   ::
+per node of all the grids matching the name model_*.grd using::
 
     gmt grdmath model_*.grd -S STD = std_of_models.grd
 
-To create a geotiff with resolution 0.5x0.5 degrees with distances in km from the coast line, use
-
-   ::
+To create a geotiff with resolution 0.5x0.5 degrees with distances in km from the coast line, use::
 
     grdmath -RNO,IS -Dc -I.5 LDISTG = distance.tif=gd:GTIFF
 

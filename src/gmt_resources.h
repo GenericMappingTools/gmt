@@ -34,10 +34,10 @@
 #define GMT_RESOURCES_H
 
 #ifdef DOUBLE_PRECISION_GRID
-/* Build GMT using double-precicion for grids.  Untested and caveat emptor */
+/* Build GMT using double-precision for grids.  Untested and caveat emptor */
 typedef double gmt_grdfloat;
 #else
-/* GMT default is single-precicion grids */
+/* GMT default is single-precision grids */
 typedef float gmt_grdfloat;
 #endif
 
@@ -52,7 +52,7 @@ typedef float gmt_grdfloat;
  * is no guarantee that the "private" members cannot change over time.
  */
 
-/*! Session modes for GMT_Create_Session */
+/*! Session modes for GMT_Create_Session. Do NOT change first 4 as affects GMT.jl */
 enum GMT_enum_session {
 	GMT_SESSION_NORMAL    = 0,	/* Typical mode to GMT_Create_Session */
 	GMT_SESSION_NOEXIT    = 1,	/* Call return and not exit when error */
@@ -60,10 +60,7 @@ enum GMT_enum_session {
 	GMT_SESSION_COLMAJOR  = 4,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
 	GMT_SESSION_LOGERRORS = 8,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
 	GMT_SESSION_RUNMODE   = 16,	/* If set enable GMT's modern runmode. [Classic] */
-	GMT_SESSION_BEGIN     = 32,	/* Begin a new session. [Sets modern mode] */
-	GMT_SESSION_END       = 64,	/* End a session. [Ends modern mode] */
-	GMT_SESSION_CLEAR     = 128,	/* Clear session files/directories */
-	GMT_SESSION_FIGURE    = 256	/* Add a figure to the session queue. [Modern mode only] */
+	GMT_SESSION_NOHISTORY = 32	/* Do not use gmt.history at all [Let modules decide] */
 };
 
 /*! Logging settings */
@@ -120,8 +117,8 @@ enum GMT_enum_method {
 	GMT_IS_FILE	 =    0,	/* Entity is a filename */
 	GMT_IS_STREAM	 =    1,	/* Entity is an open stream */
 	GMT_IS_FDESC	 =    2,	/* Entity is an open file descriptor */
-	GMT_IS_DUPLICATE =    3,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE =    4,	/* Entity is a memory location that should be referenced */
+	GMT_IS_DUPLICATE =   16,	/* Entity is a memory location that should be duplicated */
+	GMT_IS_REFERENCE =   32,	/* Entity is a memory location that should be referenced */
 	GMT_IS_OUTPUT	 = 1024		/* When creating a resource as a container for output */
 };
 
@@ -179,14 +176,21 @@ enum GMT_enum_apierr {
 };
 
 enum GMT_enum_module {
-	GMT_MODULE_USAGE	= -7,	/* What GMT_Call_Module returns if told to print usage only */
-	GMT_MODULE_SYNOPSIS	= -6,	/* What GMT_Call_Module returns if told to print synopsis only */
-	GMT_MODULE_CLASSIC	= -5,	/* mode for GMT_Call_Module to print list of all classic modules */
-	GMT_MODULE_LIST		= -4,	/* mode for GMT_Call_Module to print list of all modern modules */
-	GMT_MODULE_EXIST	= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
-	GMT_MODULE_PURPOSE	= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
-	GMT_MODULE_OPT		= -1,	/* Gave linked list of option structures to GMT_Call_Module */
-	GMT_MODULE_CMD		=  0	/* Gave an array of text strings (argv[]) to GMT_Call_Module */
+	GMT_MODULE_USAGE		= -9,	/* What GMT_Call_Module returns if told to print usage only */
+	GMT_MODULE_SYNOPSIS		= -8,	/* What GMT_Call_Module returns if told to print synopsis only */
+	GMT_MODULE_CLASSIC		= -7,	/* mode for GMT_Call_Module to print list of all classic modules */
+	GMT_MODULE_LIST			= -6,	/* mode for GMT_Call_Module to print list of all modern modules */
+	GMT_MODULE_CLASSIC_CORE	= -5,	/* mode for GMT_Call_Module to print list of all classic modules (core only) */
+	GMT_MODULE_LIST_CORE	= -4,	/* mode for GMT_Call_Module to print list of all modern modules (core only) */
+	GMT_MODULE_EXIST		= -3,	/* mode for GMT_Call_Module to return 0 if it exists */
+	GMT_MODULE_PURPOSE		= -2,	/* mode for GMT_Call_Module to print purpose of module, or all modules */
+	GMT_MODULE_OPT			= -1,	/* Gave linked list of option structures to GMT_Call_Module */
+	GMT_MODULE_CMD			=  0,	/* Gave an array of text strings (argv[]) to GMT_Call_Module */
+	GMT_MODULE_HELP     	 	=  0,	/* Mode for GMT_Show_ModuleInfo to do gmt --help */
+	GMT_MODULE_SHOW_MODERN   	=  1,	/* Mode for GMT_Show_ModuleInfo to list all modern modules in gmt --show-modules */
+	GMT_MODULE_SHOW_CLASSIC  	=  2,	/* Mode for GMT_Show_ModuleInfo to list all classic modules in gmt --show-classic */
+	GMT_MODULE_KEYS  		=  0,	/* Mode for GMT_Get_ModuleInfo to request the module keys */
+	GMT_MODULE_GROUP   		=  1	/* Mode for GMT_Get_ModuleInfo to request the module group */
 };
 
 /* Array indices for input/output/stderr variables */
@@ -212,6 +216,13 @@ enum GMT_enum_freg {
 	GMT_ADD_STDIO_ALWAYS  =  8,	/* Tell GMT_Init_IO to always register std(in|out) */
 	GMT_ADD_EXISTING      = 16,	/* Tell GMT_Init_IO to only use already registered resources */
 	GMT_ADD_DEFAULT       =  6	/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
+};
+
+/* Three constants for GMT_Get_DataPath modes */
+enum GMT_enum_files {
+	GMT_FILE_LOCAL        =  0,	/* Tell GMT_Get_DataPath to only consider local files and ignore remote files */
+	GMT_FILE_REMOTE       =  1,	/* Tell GMT_Get_DataPath to try to download remote files if given such files (@filename) */
+	GMT_FILE_CHECK        =  2,	/* Tell GMT_Get_DataPath to only return error codes but not update the path */
 };
 
 enum GMT_enum_ioset {
@@ -345,7 +356,9 @@ enum GMT_enum_gridio {
 	GMT_GRID_ROW_BY_ROW_MANUAL = 64U,   /* Read|write the grid array one row at the time in any order */
 	GMT_GRID_XY		   = 128U,  /* Allocate and initialize x,y vectors */
 	GMT_GRID_IS_GEO		   = 256U,  /* Grid is a geographic grid, not Cartesian */
-	GMT_GRID_IS_IMAGE	   = 512U   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
+	GMT_GRID_IS_IMAGE	   = 512U,   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
+	GMT_IMAGE_NO_INDEX	   = 4096,	/* If reading an indexed grid, convert to rgb so we can interpolate */
+	GMT_IMAGE_ALPHA_LAYER  = 8192	/* Place any alpha layer in the image band, not alpha array */
 };
 
 #define GMT_GRID_ALL		0U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_AND_DATA */
@@ -396,21 +409,21 @@ struct GMT_GRID_HEADER {
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 
 	/* Items not stored in the data file for grids but explicitly used in macros computing node numbers */
-	size_t nm;                       /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
-	size_t size;                     /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
-	unsigned int bits;               /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
-	unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
-	unsigned int type;               /* Grid format */
-	unsigned int n_bands;            /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
-	unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
-	unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */
-	char   mem_layout[4];            /* Three or Four char codes T|B R|C S|R|S (grd) or B|L|P + A|a (img) describing array layout in mem and interleaving */
-	gmt_grdfloat  nan_value;         /* Missing value as stored in grid file */
-	double xy_off;                   /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
-	char *ProjRefPROJ4;             /* To store a referencing system string in PROJ.4 format */
-	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
-	int ProjRefEPSG;                /* To store a referencing system EPSG code */
-	void *hidden;                    /* Lower-level information for GMT use only */
+	size_t nm;                  /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
+	size_t size;                /* Actual number of items (not bytes) required to hold this grid (= mx * my), per band (for images) */
+	unsigned int bits;          /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
+	unsigned int complex_mode;  /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
+	unsigned int type;          /* Grid format */
+	unsigned int n_bands;       /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
+	unsigned int mx, my;        /* Actual dimensions of the grid in memory, allowing for the padding */
+	unsigned int pad[4];        /* Padding on west, east, south, north sides [2,2,2,2] */
+	char   mem_layout[4];       /* Three or Four char codes T|B R|C S|R|S (grd) or B|L|P + A|a (img) describing array layout in mem and interleaving */
+	gmt_grdfloat  nan_value;    /* Missing value as stored in grid file */
+	double xy_off;              /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
+	char *ProjRefPROJ4;         /* To store a referencing system string in PROJ.4 format */
+	char *ProjRefWKT;           /* To store a referencing system string in WKT format */
+	int ProjRefEPSG;            /* To store a referencing system EPSG code */
+	void *hidden;               /* Lower-level information for GMT use only */
 };
 
 /* grd is stored in rows going from west (xmin) to east (xmax)
@@ -454,7 +467,7 @@ enum GMT_enum_geometry {
 	GMT_IS_PLP	= 7U,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8U,
 	GMT_IS_NONE	= 16U,	/* Non-geographical items like color palettes */
-	GMT_IS_TEXT	= 32U	/* Text strings which triggers ascii text reading */
+	GMT_IS_TEXT	= 32U	/* Text strings which triggers ASCII text reading */
 };
 
 /* These are two polygon modes */
@@ -468,8 +481,8 @@ enum GMT_enum_columns {
 	GMT_COL_FIX = 0,		/* Specify fixed numerical columns to read, anything beyond is considered trailing text */
 	GMT_COL_ADD = 1,		/* Add to current number of columns */
 	GMT_COL_SUB = 2,		/* Subtract from current number of columns */
-	GMT_COL_VAR = 3,		/* Input ascii records have variable number of columns */
-	GMT_COL_FIX_NO_TEXT = 4		/* Specify fixed numerical columns to read, skip anyt trailing text */
+	GMT_COL_VAR = 3,		/* Input ASCII records have variable number of columns */
+	GMT_COL_FIX_NO_TEXT = 4		/* Specify fixed numerical columns to read, skip any trailing text */
 };
 
 /* Return codes for GMT_Get_Record: */
@@ -767,6 +780,19 @@ struct GMT_RESOURCE {	/* Information related to passing resources between GMT an
 	int pos;			/* Corresponding index into external object in|out arrays */
 	int mode;			/* Either primary (0) or secondary (1) resource */
 	void *object;			/* Pointer to the actual GMT object */
+};
+
+/*============================================================ */
+/*  struct GMT_MODULEINFO is for supplement Developers only == */
+/*============================================================ */
+
+/* Shared library structure: name (classic and modern), library, purpose, keys for each module */
+struct GMT_MODULEINFO {
+	const char *mname;            /* Program (modern) name */
+	const char *cname;            /* Program (classic) name */
+	const char *component;        /* Component (core, supplement, custom) */
+	const char *purpose;          /* Program purpose */
+	const char *keys;             /* Program option info for external APIs */
 };
 
 #endif /* GMT_RESOURCES_H */

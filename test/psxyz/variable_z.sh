@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Test psxyz -Zfile for coloring
+# Test psxy -Zfile for coloring
 
 ps=variable_z.ps
 
@@ -24,6 +24,15 @@ cat << EOF > z.txt
 EOF
 gmt makecpt -Chot -T0/5 > t.cpt
 
-gmt psxyz -R-2/5/-1/3/0/1 -Jx2c -Jz1c pol.txt -Zz.txt -B0 -Ct.cpt -W1p -P -K -X4c -Y1.5c -p135/35 > $ps
-gmt psxyz -R -J -Jz pol.txt -Zz.txt+f -B0 -Ct.cpt -W1p -p -O -K -Y8c >> $ps
-gmt psxyz -R -J -Jz pol.txt -Zz.txt+l -B0 -Ct.cpt -W1p -p -O -Y8c >> $ps
+gmt psxy -R-1/3/-1/3 -Jx2c -Jz1c pol.txt -B0 -Ct.cpt -Zz.txt -G+z -P -K -p165/35 -X2c -Y1.5c > $ps
+echo "-Zz.txt -G+z" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i -p >> $ps
+gmt psxy -R -J pol.txt -B0 -Ct.cpt -Zz.txt -G+z -W2p -O -K -X8.5c -p >> $ps
+echo "-Zz.txt -G+z -W2p" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i -p >> $ps
+gmt psxy -R -J pol.txt -B0 -Ct.cpt -Zz.txt -G+z -W2p+z -O -K -X-8.5c -Y8.5c -p >> $ps
+echo "-Zz.tx -G+z -W2p+z" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i -p >> $ps
+gmt psxy -R -J pol.txt -B0 -Ct.cpt -Zz.txt -Gcyan -W2p+z -O -K -X8.5c -p >> $ps
+echo "-Zz.txt -Gcyan -W2p+z" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i -p >> $ps
+gmt psxy -R -J pol.txt -B0 -Ct.cpt -Zz.txt -W2p+z -O -K -X-8.5c -Y8.5c -p >> $ps
+echo "-Zz.txt -W2p+z" | gmt pstext -R -J -O -K -F+f12p+cTL -Dj0.1i -p >> $ps
+gmt psxy -R -J pol.txt -B0 -Ct.cpt -Z3 -G+z -W2p -O -K -X8.5c -p >> $ps
+echo "-Z3 -G+z -W2p" | gmt pstext -R -J -O -F+f12p+cTL -Dj0.1i -p >> $ps

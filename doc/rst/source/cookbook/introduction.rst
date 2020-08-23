@@ -24,7 +24,7 @@ Line drawings, bitmapped images, and text can be easily combined in one
 illustration. PostScript plot files are device-independent: The same
 file can be printed at 300 dots per inch (dpi) on a cheap
 printer or converted to a high-resolution PNG image for online usage.
-GMT software is written as a set of UNIX tools [3]_ and is
+GMT software is written as a set of command-line tools [3]_ and is
 totally self-contained and fully documented. The system is offered free
 of charge and is distributed over the Internet
 [*Wessel and Smith, 1991; 1995; 1998*; *Wessel et al., 2013*; *Wessel et al., 2019*].
@@ -79,11 +79,11 @@ GMT is thoroughly documented and comes with a technical reference and
 cookbook which explains the purpose of the package and its many
 features, and provides numerous examples to help new users quickly
 become familiar with the operation and philosophy of the system. The
-cookbook contains the shell scripts that were used for each example;
-PostScript files of each illustration are also provided. All programs
-have individual manual pages which can be installed as part of the
-on-line documentation under the UNIX **man** utility or as web
-pages. In addition, the programs offer friendly help messages which make
+cookbook contains the shell scripts that were used for each example. The online 
+GMT Documentation is also home to the extensive technical reference for all programs. 
+The programs also have individual manual pages which can be installed as part of the
+on-line documentation under the UNIX **man** utility. 
+In addition, the programs offer friendly help messages which make
 them essentially self-teaching – if a user enters invalid or ambiguous
 command arguments, the program will print a warning to the screen with a
 synopsis of the valid arguments. All the documentation is available for
@@ -249,7 +249,7 @@ Footnotes
    for terms on redistribution and modifications.
 
 .. [3]
-   The tools can also be installed on other platforms (see Chapter :doc:`non-unix-platforms`).
+   The tools can be installed on a variety of platforms - UNIX and non-UNIX alike (see Chapter :doc:`non-unix-platforms`).
 
 .. [4]
    One public-domain RIP is ghostscript, available from `<https://www.ghostscript.com/>`_.

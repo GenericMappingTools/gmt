@@ -48,8 +48,8 @@ gmt vector vec2d.txt -Am -C >> result
 echo "# gmtvector vec3d.txt -Am -C" >> result
 gmt vector vec3d.txt -Am -C >> result
 # Mean geo vectors
-echo "# gmtvector vecg.txt -Am -fg" >> result
-gmt vector vecg.txt -Am -fg >> result
+echo "# gmtvector vecg.txt -Am -fg -E" >> result
+gmt vector vecg.txt -Am -fg -E >> result
 # Convert 2-D Cartesian to polar r/theta
 echo "# gmtvector -A1/1 -Ci" >> result
 gmt vector -A1/1 -Ci >> result

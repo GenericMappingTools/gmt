@@ -39,23 +39,23 @@
 
 struct PROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A<azimuth> */
+	struct PROJECT_A {	/* -A<azimuth> */
 		bool active;
 		double azimuth;
 	} A;
-	struct C {	/* -C<ox>/<oy> */
+	struct PROJECT_C {	/* -C<ox>/<oy> */
 		bool active;
 		double x, y;
 	} C;
-	struct E {	/* -E<bx>/<by> */
+	struct PROJECT_E {	/* -E<bx>/<by> */
 		bool active;
 		double x, y;
 	} E;
-	struct F {	/* -F<flags> */
+	struct PROJECT_F {	/* -F<flags> */
 		bool active;
 		char col[PROJECT_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
-	struct G {	/* -G<inc>[/<colat>][+h] */
+	struct PROJECT_G {	/* -G<inc>[/<colat>][+h] */
 		bool active;
 		bool header;
 		bool through_C;
@@ -63,29 +63,29 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 		double inc;
 		double colat;
 	} G;
-	struct L {	/* -L[w][<l_min>/<l_max>] */
+	struct PROJECT_L {	/* -L[w][<l_min>/<l_max>] */
 		bool active;
 		bool constrain;
 		double min, max;
 	} L;
-	struct N {	/* -N */
+	struct PROJECT_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q */
+	struct PROJECT_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S */
+	struct PROJECT_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T<px>/<py> */
+	struct PROJECT_T {	/* -T<px>/<py> */
 		bool active;
 		double x, y;
 	} T;
-	struct W {	/* -W<w_min>/<w_max> */
+	struct PROJECT_W {	/* -W<w_min>/<w_max> */
 		bool active;
 		double min, max;
 	} W;
-	struct Z {	/* -Z<major/minor/azimuth>[+e] */
+	struct PROJECT_Z {	/* -Z<major/minor/azimuth>[+e] */
 		bool active;
 		bool exact;
 		double major, minor, azimuth;
@@ -110,7 +110,7 @@ struct PROJECT_INFO {
 	double plon, plat;	/* Pole location */
 };
 
-GMT_LOCAL int compare_distances (const void *point_1, const void *point_2) {
+GMT_LOCAL int project_compare_distances (const void *point_1, const void *point_2) {
 	double d_1, d_2;
 
 	d_1 = ((struct PROJECT_DATA *)point_1)->a[2];
@@ -121,7 +121,7 @@ GMT_LOCAL int compare_distances (const void *point_1, const void *point_2) {
 	return (0);
 }
 
-GMT_LOCAL double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, bool c_given, bool generate) {
+GMT_LOCAL double project_oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, bool c_given, bool generate) {
 	/* routine sets up a unit 3-vector p, the pole of an
 	   oblique projection, given plat, plon, the position
 	   of this pole in the usual coordinate frame.
@@ -155,13 +155,13 @@ GMT_LOCAL double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, 
 	return (sin_lat_to_pole);
 }
 
-GMT_LOCAL void oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon, double *x_t_lat, double *x_t_lon, double *p, double *c) {
+GMT_LOCAL void project_oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon, double *x_t_lat, double *x_t_lon, double *p, double *c) {
 	/* routine takes the point x at conventional (xlat, xlon) and
 	   computes the transformed coordinates (x_t_lat, x_t_lon) in
 	   an oblique reference frame specified by the unit 3-vectors
 	   p (the pole) and c (the directed normal to the oblique
 	   central meridian).  p and c have been computed earlier by
-	   the routine oblique_setup().
+	   the routine project_oblique_setup().
 	   Latitudes and longitudes are in degrees. */
 
 	double x[3], p_cross_x[3], temp1, temp2;
@@ -179,7 +179,7 @@ GMT_LOCAL void oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon
 	*x_t_lon = copysign(d_acosd(temp1), temp2);
 }
 
-GMT_LOCAL void make_euler_matrix (double *p, double *e, double theta) {
+GMT_LOCAL void project_make_euler_matrix (double *p, double *e, double theta) {
 	/* Routine to fill an euler matrix e with the elements
 	   needed to rotate a 3-vector about the pole p through
 	   an angle theta (in degrees).  p is a unit 3-vector.
@@ -211,7 +211,7 @@ GMT_LOCAL void make_euler_matrix (double *p, double *e, double theta) {
 	e[8] = temp * p[2] + cos_theta;
 }
 
-GMT_LOCAL void matrix_3v (double *a, double *x, double *b) {
+GMT_LOCAL void project_matrix_3v (double *a, double *x, double *b) {
 	/* routine to find b, where Ax = b, A is a 3 by 3 square matrix,
 	   and x and b are 3-vectors.  A is stored row wise, that is:
 
@@ -222,7 +222,7 @@ GMT_LOCAL void matrix_3v (double *a, double *x, double *b) {
 	b[2] = x[0]*a[6] + x[1]*a[7] + x[2]*a[8];
 }
 
-GMT_LOCAL void matrix_2v (double *a, double *x, double *b) {
+GMT_LOCAL void project_matrix_2v (double *a, double *x, double *b) {
 	/* routine to find b, where Ax = b, A is a 2 by 2 square matrix,
 	   and x and b are 2-vectors.  A is stored row wise, that is:
 
@@ -232,7 +232,7 @@ GMT_LOCAL void matrix_2v (double *a, double *x, double *b) {
 	b[1] = x[0]*a[2] + x[1]*a[3];
 }
 
-GMT_LOCAL void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, bool two_pts) {
+GMT_LOCAL void project_sphere_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, bool two_pts) {
 	/* routine to initialize a pole vector, p, and a central meridian
 	   normal vector, c, for use in projecting points onto a great circle.
 
@@ -242,7 +242,7 @@ GMT_LOCAL void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double a
 	   if !(two_pts), then the user has given one point, a, and an azimuth,
 	   azim, clockwise from north, which defines the projection.
 
-	   The strategy is to use the oblique_transform operations above,
+	   The strategy is to use the project_oblique_transform operations above,
 	   in such a way that the great circle of the projection is the
 	   equator of an oblique transform, and the central meridian goes
 	   through a.  Then the transformed longitude gives the distance
@@ -273,8 +273,8 @@ GMT_LOCAL void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double a
 		b[2] = 1.0;
 		gmt_cross3v (GMT, a, b, c);	/* use c for p_temp  */
 		gmt_normalize3v (GMT, c);
-		make_euler_matrix(a, e, -azim);
-		matrix_3v(e, c, p);	/* c (p_temp) rotates to p  */
+		project_make_euler_matrix(a, e, -azim);
+		project_matrix_3v(e, c, p);	/* c (p_temp) rotates to p  */
 	}
 
 	/* Now set c vector  */
@@ -283,7 +283,7 @@ GMT_LOCAL void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double a
 	gmt_normalize3v (GMT, c);
 }
 
-GMT_LOCAL void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
+GMT_LOCAL void project_flat_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
 	/* Sets up stuff for rotation of Cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
 	   Output is the negative Cartesian azimuth in degrees.
@@ -300,7 +300,7 @@ GMT_LOCAL void flat_project_setup (double alat, double alon, double blat, double
 	e[2] = -e[1];
 }
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PROJECT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1U, struct PROJECT_CTRL);
@@ -311,12 +311,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+c|h]]\n", name);
@@ -380,7 +380,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to project and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -399,7 +399,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files are OK */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -569,12 +569,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, struct PROJECT_INFO *P) {
+GMT_LOCAL int project_write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, struct PROJECT_INFO *P) {
 	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	struct GMT_RECORD *Out = NULL;
 
-	if (Ctrl->S.active) qsort (p_data, P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
+	if (Ctrl->S.active) qsort (p_data, P->n_used, sizeof (struct PROJECT_DATA), project_compare_distances);
 
 	/* Get here when all data are loaded with p,q and p is in increasing order if desired. */
 
@@ -590,8 +590,8 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 		else {
 			gmt_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, x, true);
 			for (rec = 0; rec < P->n_used; rec++) {
-				make_euler_matrix (P->pole, e, p_data[rec].a[2]);
-				matrix_3v (e,x,xt);
+				project_make_euler_matrix (P->pole, e, p_data[rec].a[2]);
+				project_matrix_3v (e,x,xt);
 				gmt_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, true);
 			}
 		}
@@ -632,7 +632,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_project (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
 	bool skip, z_first = true, z_set_auto = false;
 	int error = 0;
@@ -731,7 +731,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_OUT, GMT_Y, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT);
 		gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
 	}
-	else {	/* Decode and set the various output column types */
+	else if (!Ctrl->N.active) {	/* Decode and set the various output column types in the geographic case */
 		for (col = 0; col < P.n_outputs; col++) {
 			switch (P.output_choice[col]) {
 				case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);		break;
@@ -748,7 +748,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Flat Earth mode */
 		theta = Ctrl->A.azimuth;
-		flat_project_setup (Ctrl->C.y, Ctrl->C.x, Ctrl->E.y, Ctrl->E.x, Ctrl->T.y, Ctrl->T.x, &theta, e, Ctrl->E.active, Ctrl->T.active);
+		project_flat_setup (Ctrl->C.y, Ctrl->C.x, Ctrl->E.y, Ctrl->E.x, Ctrl->T.y, Ctrl->T.x, &theta, e, Ctrl->E.active, Ctrl->T.active);
 		/* Azimuth (theta) is now Cartesian in degrees */
 		if (Ctrl->L.constrain) {
 			Ctrl->L.min = 0.0;
@@ -760,7 +760,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 	}
 	else {	/* Spherical Earth mode */
 		if (Ctrl->T.active) {	/* Gave the pole */
-			sin_lat_to_pole = oblique_setup (GMT, Ctrl->T.y, Ctrl->T.x, P.pole, &Ctrl->C.y, &Ctrl->C.x, center, Ctrl->C.active, Ctrl->G.active);
+			sin_lat_to_pole = project_oblique_setup (GMT, Ctrl->T.y, Ctrl->T.x, P.pole, &Ctrl->C.y, &Ctrl->C.x, center, Ctrl->C.active, Ctrl->G.active);
 			gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
 			if (Ctrl->G.through_C) {	/* Must compute the colatitude from P to C and use that */
 				gmt_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, x, true);	/* Cartesian vector to C */
@@ -773,7 +773,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 			double s_hi, s_lo, s_mid, radius, m[3], ap[3], bp[3];
 			int done, n_iter = 0;
 
-			sphere_project_setup (GMT, Ctrl->C.y, Ctrl->C.x, a, Ctrl->E.y, Ctrl->E.x, b, Ctrl->A.azimuth, P.pole, center, Ctrl->E.active);
+			project_sphere_setup (GMT, Ctrl->C.y, Ctrl->C.x, a, Ctrl->E.y, Ctrl->E.x, b, Ctrl->A.azimuth, P.pole, center, Ctrl->E.active);
 			gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
 			radius = 0.5 * d_acosd (gmt_dot3v (GMT, a, b));
 			if (radius > fabs (Ctrl->G.colat)) {
@@ -891,7 +891,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 					sincos (d_azim*rec, &sa, &ca);
 					r = Ctrl->Z.minor / sqrt (1.0 - e2 * pow (ca, 2.0));
 					x[0] = r * ca;	x[1] = r * sa;
-					matrix_2v (e, x, xt);
+					project_matrix_2v (e, x, xt);
 					p_data[rec].a[4] = Ctrl->C.x + xt[GMT_X];
 					p_data[rec].a[5] = Ctrl->C.y + xt[GMT_Y];
 				}
@@ -921,12 +921,12 @@ int GMT_project (void *V_API, int mode, void *args) {
 			gmt_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, C, true);	/* User origin C */
 			gmt_cross3v (GMT, P.pole, C, N);		/* This is vector normal to meridian plan */
 			gmt_normalize3v (GMT, N);			/* Make it a unit vector */
-			make_euler_matrix (N, e, Ctrl->G.colat);	/* Rotation matrix about N */
-			matrix_3v (e, P.pole, x);			/* This is the generating vector for our circle */
+			project_make_euler_matrix (N, e, Ctrl->G.colat);	/* Rotation matrix about N */
+			project_matrix_3v (e, P.pole, x);			/* This is the generating vector for our circle */
 			if (Ctrl->L.constrain) counteract = 1.0 / sin_lat_to_pole;	/* Increase angle to counteract effect of small circle settings */
 			for (rec = 0; rec < P.n_used; rec++) {
-				make_euler_matrix (P.pole, e, sign * p_data[rec].a[2] * counteract);
-				matrix_3v (e,x,xt);
+				project_make_euler_matrix (P.pole, e, sign * p_data[rec].a[2] * counteract);
+				project_matrix_3v (e,x,xt);
 				gmt_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, true);
 			}
 		}
@@ -1017,7 +1017,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 				else if (gmt_M_rec_is_segment_header (GMT)) {			/* Echo segment headers */
 					if (P.n_used) {	/* Write out previous segment */
-						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P)) != 0) Return (error);
+						if ((error = project_write_one_segment (GMT, Ctrl, theta, p_data, &P)) != 0) Return (error);
 						n_total_used += P.n_used;
 						P.n_used = 0;
 					}
@@ -1026,6 +1026,10 @@ int GMT_project (void *V_API, int mode, void *args) {
 				else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 				continue;							/* Go back and read the next record */
+			}
+			if (In->data == NULL) {
+				gmt_quit_bad_record (API, In);
+				Return (API->error);
 			}
 
 			/* Data record to process */
@@ -1038,11 +1042,13 @@ int GMT_project (void *V_API, int mode, void *args) {
 						P.want_z_output = z_set_auto = false;
 						for (col = 3; col < P.n_outputs; col++) P.output_choice[col-1] = P.output_choice[col];	/* Shuffle pqrs to the left */
 						P.n_outputs--;
-						for (col = 0; col < P.n_outputs; col++) {
-							switch (P.output_choice[col]) {
-								case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);	break;
-								case 1: case 5: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);	break;
-								default: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
+						if (!Ctrl->N.active) {
+							for (col = 0; col < P.n_outputs; col++) {
+								switch (P.output_choice[col]) {
+									case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);	break;
+									case 1: case 5: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);	break;
+									default: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
+								}
 							}
 						}
 					}
@@ -1056,7 +1062,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 					gmt_M_free (GMT, p_data);
 					Return (GMT_RUNTIME_ERROR);
 				}
-				else {	/* Must update col types since # of z values will need to be considered */
+				else if (!Ctrl->N.active) {	/* Must update col types since # of z values will need to be considered */
 					unsigned int k, kk;
 					P.n_z = n_cols - 2;
 					for (col = kk = 0; col < P.n_outputs; col++, kk++) {
@@ -1086,10 +1092,10 @@ int GMT_project (void *V_API, int mode, void *args) {
 			if (Ctrl->N.active) {
 				x[0] = xx - Ctrl->C.x;
 				x[1] = yy - Ctrl->C.y;
-				matrix_2v (e, x, xt);
+				project_matrix_2v (e, x, xt);
 			}
 			else
-				oblique_transform (GMT, yy, xx, &xt[1], &xt[0], P.pole, center);
+				project_oblique_transform (GMT, yy, xx, &xt[1], &xt[0], P.pole, center);
 
 			skip = ((Ctrl->L.active && (xt[0] < Ctrl->L.min || xt[0] > Ctrl->L.max)) || (Ctrl->W.active && (xt[1] < Ctrl->W.min || xt[1] > Ctrl->W.max)));
 
@@ -1119,7 +1125,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		if (P.n_used < n_alloc) p_data = gmt_M_memory (GMT, p_data, P.n_used, struct PROJECT_DATA);
 
 		if (P.n_used) {	/* Finish last segment output */
-			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P)) != 0) Return (error);
+			if ((error = project_write_one_segment (GMT, Ctrl, theta, p_data, &P)) != 0) Return (error);
 			n_total_used += P.n_used;
 		}
 

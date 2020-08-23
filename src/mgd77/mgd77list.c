@@ -140,7 +140,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
-	struct T {	/* -T */
+	struct MGD77LIST_T {	/* -T */
 		bool active;
 		int mode;	/* May be -1 */
 	} T;
@@ -154,7 +154,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 	} Z;
 };
 
-GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77LIST_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct MGD77LIST_CTRL);
@@ -174,14 +174,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->F.flags);
 	gmt_M_str_free (C->L.file);
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -F<dataflags>[,<tests>] [-Ac|d|f|m|t[<code>][+f]]\n", name);
@@ -348,7 +348,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mgd77list and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -716,7 +716,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
+GMT_LOCAL int mgd77list_separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
 	unsigned int i, j, k, n_aux;
 	int this_aux;
 
@@ -741,7 +741,7 @@ GMT_LOCAL int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, s
 	return (n_aux);
 }
 
-GMT_LOCAL int augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, int n_aux) {
+GMT_LOCAL int mgd77list_augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, int n_aux) {
 	/* This adds additional aux columns that are required by the correction table and not already requested by other means (e.g. -F) */
 	int i, j, k, this_aux, n;
 
@@ -762,7 +762,7 @@ GMT_LOCAL int augment_aux_columns (int n_items, char **item_name, struct MGD77_A
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77list (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 	int i, c, id, k, time_column, lon_column, lat_column, error = 0;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
 	int ms_col = 0, md_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
@@ -893,9 +893,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	n_out_columns = M.n_out_columns;				/* This is the total number of columns in the final output */
 	if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) negative_depth = false;	/* Just so we don't accidentally access dvalue[z_col] further down in the loop */
 	if (MGD77_Get_Column (GMT, "msd", &M) == MGD77_NOT_SET) negative_msd = false;	/* Just so we don't accidentally access dvalue[m_col] further down in the loop */
-	n_aux = separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxiliary columns are requested (if any) */
+	n_aux = mgd77list_separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxiliary columns are requested (if any) */
 	if (Ctrl->L.active) {
-		n_aux = augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxiliary columns are needed by -L */
+		n_aux = mgd77list_augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxiliary columns are needed by -L */
 		for (kk = 0; kk < n_items; kk++) gmt_M_free (GMT, item_names[kk]);
 		if (n_items) gmt_M_free (GMT, item_names);
 		MGD77_Free_Table (GMT, n_items, item_names);
@@ -1024,7 +1024,8 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			break;
 	}
 
-	gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT->common.j.mode, GMT_MAP_DIST);
+	if (gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT->common.j.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		Return (GMT_NOT_A_VALID_TYPE);
 
 	Ctrl->S.start *= dist_scale;	Ctrl->S.stop *= dist_scale;	/* Convert the meters to the same units used for cumulative distances */
 	if (Ctrl->A.cable_adjust) Ctrl->A.sensor_offset *= dist_scale;
@@ -1479,7 +1480,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 						for (k_off = 1; k_off < D->H.n_records; k_off++) {
 							/* Often cruises have repeated points that will prevent gmt_intpol usage because dx = 0
-							   We will workaround it by adding a epsilon (.1 meter) to the repeated pt. However,
+							   We will workaround it by adding an epsilon (.1 meter) to the repeated pt. However,
 							   often the situation is further complicated because repeat points can come in large
 							   packs. For those cases we add an increasingly small offset. But when the number of
 							   repetitions are large, even this strategy fails and we get error from gmt_intpol */
@@ -1504,7 +1505,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 						/* --------------- Attack the NaNs problem -----------------*/
 						if (clean)		/* Nice, no NaNs at sight */
-							gmt_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, GMT->current.setting.interpolant);
+							gmt_intpol(GMT, cumdist, mtf_bak, NULL, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, 0.0, GMT->current.setting.interpolant);
 						else {
 							/* Need to allocate these auxiliary vectors */
 							ind = gmt_M_memory(GMT, NULL, D->H.n_records, int);
@@ -1522,7 +1523,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 									n++;
 								}
 							}
-							gmt_intpol(GMT, cumdist_cl, mtf_cl, n, n, cumdist_off_cl, mtf_int_cl, GMT->current.setting.interpolant);
+							gmt_intpol(GMT, cumdist_cl, mtf_cl, NULL, n, n, cumdist_off_cl, mtf_int_cl, 0.0, GMT->current.setting.interpolant);
 							for (k_off = n = 0; k_off < D->H.n_records; k_off++) {
 								if (ind[k_off])
 									mtf_int[k_off] = mtf_int_cl[n++];
