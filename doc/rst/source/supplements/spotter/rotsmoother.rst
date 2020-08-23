@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt rotsmoother** [ *rottable* ]
+**gmt rotsmoother** [ *table* ]
 [ |-A| ]
 [ |-C| ]
 [ |-N| ]
@@ -43,7 +43,7 @@ based on rotation age.
 Required Arguments
 ------------------
 
-*rottable*
+*table*
     Name of a rotation table containing (lon, lat, time, angle, [weight]) values.
 
 Optional Arguments

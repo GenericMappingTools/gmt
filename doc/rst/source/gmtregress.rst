@@ -19,8 +19,9 @@ Synopsis
 [ |-N|\ **1**\|\ **2**\|\ **r**\|\ **w** ]
 [ |-S|\ [**r**] ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list* ]
-[ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
+[ |-Z|\ [±]\ *limit* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -38,14 +39,15 @@ Description
 -----------
 
 **regress** reads one or more data tables [or *stdin*]
-and determines the best linear regression model *y* = *a* + *b*\ \* *x* for each segment using the chosen parameters.
+and determines the best linear [weighted] regression model *y* = *a* + *b*\ \* *x* for each segment using the chosen parameters.
 The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate
 the model, or turn off evaluation completely.  Instead of determining the best fit we can
 perform a scan of all possible regression lines
 (for a range of slope angles) and examine how the chosen misfit measure varies with slope.
 This is particularly useful when analyzing data with many outliers.  **Note**: If you
-actually need to work with log10 of *x* or *y* you can accomplish that transformation during read by using the **-i** option.
+actually need to work with log10 of *x* or *y* you can accomplish that transformation during
+the read phase by using the **-i** option.
 
 
 Required Arguments
@@ -58,7 +60,7 @@ Optional Arguments
 
 .. |Add_intables| replace:: The first two columns are expected to contain the required *x* and *y* data.  Depending on
    your **-W** and **-E** settings we may expect an additional 1-3 columns with error estimates
-   of one of both of the data coordinates, and even their correlation.
+   of one of both of the data coordinates, and even their correlation (see **-W** for details).
 .. include:: explain_intables.rst_
 
 .. _-A:
@@ -75,6 +77,14 @@ Optional Arguments
     only consider the given restricted range of angles [all angles].  As shortcuts for negative
     or positive slopes, just use **+fn** or **+fp**, respectively.
 
+.. figure:: /_images/GMT_slopes.*
+   :width: 500 px
+   :align: center
+
+   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (-Nr) criterion
+   varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
+   but there is another local minimum for an angle of 78.6 degrees that is almost as good.
+
 .. _-C:
 
 **-C**\ *level*
@@ -89,6 +99,13 @@ Optional Arguments
     **y** (regress *y* on *x*; i.e., the misfit is measured vertically [Default]), **o** (orthogonal regression;
     i.e., the misfit is measured from data point orthogonally to nearest point on the line), or **r** (Reduced Major
     Axis regression; i.e., the misfit is the product of both vertical and horizontal misfits) [**y**].
+
+.. figure:: /_images/GMT_misfit.*
+   :width: 600 px
+   :align: center
+
+   The four types of misfit.  The sum of the squared lengths of :math:`e_k` is minimized, for k = e, y, or o.
+   For **-Er** the sum of the green areas is minimized instead.
 
 .. _-F:
 
@@ -127,6 +144,11 @@ Optional Arguments
     To skip the model evaluation entirely, simply provide **-T**\ 0.
     For details on array creation, see `Generate 1D Array`_.
 
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
+
 .. _-W:
 
 **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**]
@@ -141,10 +163,11 @@ Optional Arguments
     with respect to the regression line will be scaled by the given weights.  Most norms will then square this weighted
     residual (**-N1** is the only exception).
 
-.. _-V:
+.. _-Z:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-V.rst_
+**-Z**\ [±]\ *limit*
+    Change the threshold for outlier detection: When **-Nw** is used, residual *z-scores* that exceed this *limit* [±2.5] will
+    be flagged as outliers.  To only consider negative or positive *z-scores* as possible outliers, specify a signed *limit*.
 
 .. include:: explain_-aspatial.rst_
 
@@ -178,22 +201,28 @@ Optional Arguments
 
 .. include:: explain_array.rst_
 
-Note:
------
+Notes:
+------
 
 The output segment header will contain all the various statistics we compute for each segment.
 These are in order: *N* (number of points), *x0* (weighted mean x), *y0* (weighted mean y),
-*angle* (of line), *E* (misfit), *slope*, *intercept*, *sigma_slope*, and *sigma_intercept*.  More the
+*angle* (of line), *E* (misfit), *slope*, *intercept*, *sigma_slope*, and *sigma_intercept*.  For the
 standard regression (**-Ey**) we also report the Pearsonian correlation (*r*) and
-coefficient of determination (*R*).
+coefficient of determination (*R*). We end with the effective number of measurements, :math:`n_{eff}`.
 
-.. figure:: /_images/GMT_slopes.*
-   :width: 500 px
-   :align: center
+For weighted data and the calculation of squared regression misfit to minimize (**-N2**), we use
 
-   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (-Nr) criterion
-   varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
-   but there is another local minimum for an angle of 78.6 degrees that is almost as good.
+.. math::
+
+    E_2(\nu) = \frac{\sum_{i=1}^n w_i e_i^2}{\sum_{i=1}^n w_i} \frac{n_{eff}}{n_{eff}-2},
+
+where the effective number of measurements is given by
+
+.. math::
+
+    n_{eff} = \frac{\left (\sum_{i=1}^n w_i\right )^2}{\sum_{i=1}^n w_i^2}.
+
+and hence :math:`\nu = n_{eff} - 2` are the effective degrees of freedom.
 
 Examples
 --------
@@ -249,6 +278,9 @@ To force an orthogonal LMS to pick the best solution with a positive slope, try
 
 References
 ----------
+
+Bevington, P. R., 1969, *Data reduction and error analysis for the physical sciences*,
+336 pp., McGraw-Hill, New York.
 
 Draper, N. R., and H. Smith, 1998, *Applied regression analysis*, 3rd ed., 736 pp.,
 John Wiley and Sons, New York.

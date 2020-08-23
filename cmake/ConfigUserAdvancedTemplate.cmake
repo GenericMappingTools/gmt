@@ -47,8 +47,9 @@
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 
-# Exclude optional GDAL, PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
+# Exclude optional GDAL, GEOS ,PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
 #set (GMT_EXCLUDE_GDAL TRUE)
+#set (GMT_EXCLUDE_GEOS TRUE)
 #set (GMT_EXCLUDE_PCRE TRUE)
 #set (GMT_EXCLUDE_PCRE2 TRUE)
 #set (GMT_EXCLUDE_FFTW3 TRUE)
@@ -104,6 +105,10 @@
 # Set location of GDAL (can be root directory, path to header file or path to
 # gdal-config) [auto]:
 #set (GDAL_ROOT "gdal_install_prefix")
+
+# Set location of GEOS (can be root directory, path to header file or path to
+# geos-config) [auto]:
+#set (GEOS_ROOT "geos_install_prefix")
 
 # Set location of PCRE (can be root directory, path to header file or path to
 # pcre-config) [auto]:
@@ -183,6 +188,10 @@
 #set (DO_ANIMATIONS TRUE)
 # Number of parallel test jobs with "make check":
 #set (N_TEST_JOBS 4)
+
+# Ignore the "GMT_KNOWN_FAILURE" comment in tests to let tests fail normally
+# Can only be "ON" or "OFF" in uppercase!
+#set (GMT_ENABLE_KNOWN2FAIL OFF)
 
 # Enable this option to run GMT programs from within ${GMT_BINARY_DIR} without
 # installing or setting GMT_SHAREDIR and GMT_USERDIR first. This is required

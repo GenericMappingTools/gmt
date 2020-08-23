@@ -1,22 +1,32 @@
 Vector Attributes
 -----------------
 
+.. figure:: /_images/GMT_vector.*
+    :width: 600 px
+    :align: center
+
+    Vector attributes are controlled by options and modifiers.  We will refer to
+    this figure and the labels therein when introducing the corresponding modifiers.
+    All vectors require you specify the begin point :math:`x_b, y_b` and typically
+    direction *d* and length *L*, but for map projections we usually specify the
+    azimuth :math:`\alpha` instead.
+
 Several modifiers may be appended to vector-producing options for
 specifying the placement of vector heads, their shapes, and the
 justification of the vector. Below, left and right refers to the
-side of the vector line when viewed from the start point to the
-end point of a segment:
+side of the vector line when viewed from the beginning point (**b**) to the
+end point (**e**) of a line segment:
 
-    **+a**\ *angle* sets the angle of the vector head apex [30].
+    **+a**\ *angle* sets the angle :math:`\theta` of the vector head apex [30].
 
-    **+b** places a vector head at the beginning of the vector path [none].
+    **+b** places a vector head at the **b**\ eginning of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
     and **I** for plain open tail.
     Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
-    **+e** places a vector head at the end of the vector path [none].
+    **+e** places a vector head at the **e**\ nd of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
     and **I** for plain open tail.
@@ -24,10 +34,13 @@ end point of a segment:
     half-sides of this head [both sides].
 
     **+g**\ [*fill*] sets the vector head fill [Default fill is used, which may be no fill].
-    Turn off vector head fill by not appending a *fill*.
+    Turn off vector head fill by not appending a *fill*.  Some modules have a separate
+    **-G**\ *fill* option and if used will select the fill as well.
 
     **+h**\ *shape* sets the shape of the vector head (range -2/2). Default
-    is controlled by :term:`MAP_VECTOR_SHAPE` [0].
+    is controlled by :term:`MAP_VECTOR_SHAPE` [0]. A zero value produces no notch
+    (e.g., the dashed line in the figure). Positive values moves the notch toward the
+    head apex while a negative value moves away. The example above uses **+h**\ 0.5.
 
     **+l** draws half-arrows, using only the left side of specified heads [both sides].
 
@@ -50,9 +63,10 @@ end point of a segment:
 
     **+p**\ [*pen*] sets the vector pen attributes. If no *pen* is appended
     then the head outline is not drawn. [Default pen is half the width of stem pen, and
-    head outline is drawn]
+    head outline is drawn]. Above, we used **+p**\ 2p,orange.  The vector stem attributes are
+    controlled by **-W**.
 
-    **+q** means the input *angle*, *length* data instead represent the *start* and *stop*
+    **+q** means the input *direction*, *length* data instead represent the *start* and *stop*
     opening angles of the arc segment relative to the given point. See **+o** to specify
     a specific pole for the arc [north pole].
 
@@ -69,12 +83,12 @@ In addition, all but circular vectors may take these modifiers:
     **+j**\ *just* determines how the input *x*,\ *y* point relates to the
     vector. Choose from **b**\ eginning [default], **e**\ nd, or **c**\ enter.
 
-    **+s** means the input *angle*, *length* are instead the *x*, *y*
+    **+s** means the input *angle*, *length* are instead the :math:`x_e, y_e`
     coordinates of the vector end point.
 
 Finally, Cartesian vectors may take these modifiers:
 
-    **+z**\ *scale* expects input *dx*,\ *dy* vector components and
+    **+z**\ *scale* expects input :math:`\Delta x, \Delta y` vector components and
     uses the *scale* to convert to polar coordinates with length in given unit.
 
 **Note**: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)

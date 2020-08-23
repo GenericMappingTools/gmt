@@ -894,24 +894,26 @@ The ``mode`` argument is only used for external APIs that need
 to communicate their special needs during the session creation.  This integer argument
 is a sum of bit flags and the various bits control the following settings:
 
-#. Bit 1 (1): If set, then GMT will not call the system exit function when a
+#. Bit 1 (1 or GMT_SESSION_NOEXIT): If set, then GMT will not call the system exit function when a
    serious problem has been detected but instead will simply return control
    to the calling environment.  For instance, this is required by the GMT/MATLAB toolbox
    since calling exit would also exit MATLAB itself.  Unless your environment
    has this feature you should leave this bit alone.
-#. Bit 2 (2): If set, then it means we are calling the GMT API from an external
+#. Bit 2 (2 or GMT_SESSION_EXTERNAL): If set, then it means we are calling the GMT API from an external
    API, such as MATLAB, Octave, or Python.  Normal C/C++ programs should
    leave this bit alone.  Its effect is to enable two additional modules
    for reading and writing GMT resources from these environments (those modules
    would not make any sense in a Unix command-line environment).
-#. Bit 3 (4): If set, then it means the external API uses a column-major format for
+#. Bit 3 (4 or GMT_SESSION_COLMAJOR): If set, then it means the external API uses a column-major format for
    matrices (e.g., MATLAB, Fortran).  If not set we default to row-major
    format (C/C++, Python, etc.).
-#. Big 4 (8): If set, we redirect all error messages to a log file based on the
+#. Big 4 (8 or GMT_SESSION_LOGERRORS): If set, we redirect all error messages to a log file based on the
    session name (we append ".log").
-#. Bit 5 (16): If set, the we enable GMT's modern run-mode (where -O -K are
+#. Bit 5 (16 or GMT_SESSION_RUNMODE): If set, the we enable GMT's modern run-mode (where -O -K are
    not allowed and PostScript is written to hidden temp file).  Default
    is the GMT classic run-mode.
+#. Bit 6 (32 or GMT_SESSION_NOHISTORY): If set, the we disable GMT's command shorthand via gmt.history files.
+   The default is to allow this communication between GMT modules.
 
 The ``print_func`` argument is a pointer to a function that is used to print
 messages from GMT via GMT_Message_ or GMT_Report_ from external environments that cannot use the
@@ -1352,9 +1354,11 @@ array of text strings, one per row.  This is done via
 
 where ``family`` is either GMT_IS_VECTOR or GMT_IS_MATRIX, ``X`` is either a
 :ref:`GMT_VECTOR <struct-vector>` or :ref:`GMT_MATRIX <struct-matrix>`, and
-``array`` is the a pointer to your string array.
+``array`` is the a pointer to your string array.  You may add ``GMT_IS_DUPLICATE`` to
+``family`` to indicate you want the array of strings to be duplicated; the default
+is to just set a pointer to ``array``.
 
-To extract the string array from an output vector or matrix container you will use
+To access the string array from an output vector or matrix container you will use
 
 .. _GMT_Get_Strings:
 
@@ -1551,7 +1555,9 @@ in three different situations:
 
 Space will be allocated to hold the results, as needed, and a pointer to
 the object is returned. If there are errors we simply return NULL and
-report the error. The ``mode`` parameter has different meanings for
+report the error. Note that you can read in a GMT_IS_MATRIX either from a text
+table (passing ``geometry`` as GMT_IS_POINT) or from a grid (passing ``geometry``
+as GMT_IS_SURFACE).  The ``mode`` parameter has different meanings for
 different data types.
 
 **Color palette table**.

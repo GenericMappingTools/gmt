@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt talwani3d** [ *modeltable* ]
+**gmt talwani3d** [ *table* ]
 [ |-A| ] [ |-D|\ *rho* ] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
@@ -37,7 +37,7 @@ Synopsis
 Description
 -----------
 
-**talwani3d** will read the multi-segment *modeltable* from file (or standard input).
+**talwani3d** will read the multi-segment *table* from file (or standard input).
 This file contains horizontal contours of a 3-D body at different *z*-levels, with one contour
 per segment.  Each segment header must contain the parameters *zlevel rho*, which
 states the *z* level of the contour and the density of this slice (optionally, individual slice
@@ -52,7 +52,7 @@ axes units and direction.
 Required Arguments
 ------------------
 
-*modeltable*
+*table*
     The file describing the horizontal contours of the bodies.  Contours will be
     automatically closed if not already closed, and repeated vertices will be eliminated.
     The segment header for each slice will be examined for the pair *zlevel rho*, i.e.,

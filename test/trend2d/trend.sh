@@ -6,7 +6,7 @@ ps=trend.ps
 gmt makecpt -Crainbow -T690/960/10 > z.cpt
 gmt makecpt -Cjet -T-60/120/10 > r.cpt
 gmt makecpt -Chot -T0.7/1/0.02 > w.cpt
-gmt pscontour -R0/6.5/0/6.5 @Table_5_11.txt -C25 -A50 -JX3i -Y6.5i -Baf -B+tData -K -X1i -I -Cz.cpt -P > $ps
+gmt pscontour -R0/6.5/0/6.5 @Table_5_11.txt -JX3i -Y6.5i -Baf -B+tData -K -X1i -I -Cz.cpt -P > $ps
 gmt triangulate -M @Table_5_11.txt | gmt psxy -R -J -O -K -W0.25p,- >> $ps
 gmt psxy -R -J -O -K @Table_5_11.txt -Sc0.1c -Gblack >> $ps
 gmt psscale -Cz.cpt -Dx1.5i/-0.5i+w3i/0.1i+h+jTC -O -K -Ba >> $ps

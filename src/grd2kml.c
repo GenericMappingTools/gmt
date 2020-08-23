@@ -571,7 +571,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 		Ctrl->I.file = strdup (file);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Derive an intensity grid from data grid\n");
 		/* Prepare the grdgradient arguments using selected -A -N and the data region in effect */
-		sprintf (cmd, "%s -G%s -A%s -N%s --GMT_HISTORY=false", Ctrl->In.file, Ctrl->I.file, Ctrl->I.azimuth, Ctrl->I.method);
+		sprintf (cmd, "%s -G%s -A%s -N%s --GMT_HISTORY=readonly", Ctrl->In.file, Ctrl->I.file, Ctrl->I.azimuth, Ctrl->I.method);
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdgradient with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
@@ -675,7 +675,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 		}
 		if (cpt) gmt_M_str_free (cpt);
 		sprintf (cptfile, "%s/grd2kml_%d.cpt", API->tmp_dir, uniq);
-		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, cptfile, P) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, cptfile, P) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		Ctrl->C.active = tmp_cpt = true;

@@ -27,7 +27,7 @@ Synopsis
 [ |-O| ]
 [ |-P| ] [ |-Q| ]
 [ |SYN_OPT-R| ]
-[ |-S| ]
+[ |-S|\ [**+c**\|\ **n**\ ][**+s**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *scale* ]

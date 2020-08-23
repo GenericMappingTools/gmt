@@ -47,7 +47,7 @@
 #define THIS_MODULE_MODERN_NAME	"rose"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
-#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI@<D{,ID),CC("
+#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI,ID)"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqstxy" GMT_OPT("c")
 
@@ -400,7 +400,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 
 	/* Check that the options selected are mutually consistent */
 
-	GMT->common.R.wesn[XLO] = 0.0;
 	range = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
 	if (doubleAlmostEqual (range, 180.0) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_WARNING, "-T only needed for 0-360 range data (ignored)");
@@ -425,6 +424,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 180.0)
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 360.0)),
 				"Option -R: theta0/theta1 must be either -90/90, 0/180 or 0/360\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.wesn[XLO] != 0.0, "Option -R: r0/r1 must have r0 == 0 and r1 must be positive\n");
 	}
 	n_errors += gmt_check_binary_io (GMT, 2);
 
@@ -435,8 +435,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
-	bool do_fill = false, automatic = false, sector_plot = false, windrose = true;
-	unsigned int n_bins, n_modes = 0, form, n_in, half_only = 0, bin;
+	bool do_fill = false, automatic = false, sector_plot = false, windrose = true, do_labels = true;
+	unsigned int n_bins, n_modes = 0, form, n_in, half_only = 0, bin, save;
 	int error = 0, k, n_annot, n_alpha, sbin, significant, index;
 
 	uint64_t n = 0, i;
@@ -728,13 +728,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		else
 			tmp = GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
 		max_radius = ceil (max / tmp) * tmp;
-		if (gmt_M_is_zero (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) || gmt_M_is_zero (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval)) {	/* Tickmarks not set */
-			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval = tmp;
-			GMT->current.map.frame.draw = true;
-		}
 	}
-
-	if (GMT->current.map.frame.draw && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval)) GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval = 30.0;
 
 	/* Ready to plot.  So set up GMT projections (not used by psrose), we set region to actual plot width and scale to 1 */
 
@@ -763,6 +757,26 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->S.normalize) Ctrl->S.scale /= max_radius;
 
+	/* Must redo any automatically set intervals via -Bag is junk, so the wesn passed to gmt_map_setup had no angles, we must rerun them */ 
+	/* The factor of 2 is a bit ad-hoc but yields graticules that are more squa8e than otherwise */
+	f = (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].generated) ? 1.0 : 2.0;
+	GMT->common.R.wesn[XLO] = -f*max_radius;	GMT->common.R.wesn[XHI] = f*max_radius;
+	GMT->common.R.wesn[YLO] = 0.0;				GMT->common.R.wesn[YHI] = 360.0;
+	for (k = GMT_X; k < GMT_Z; k++) {	/* If an interval was generated, rest to 0 */
+		if (GMT->current.map.frame.axis[k].item[GMT_ANNOT_UPPER].generated) GMT->current.map.frame.axis[k].item[GMT_ANNOT_UPPER].interval = 0.0;
+		if (GMT->current.map.frame.axis[k].item[GMT_GRID_UPPER].generated)  GMT->current.map.frame.axis[k].item[GMT_GRID_UPPER].interval  = 0.0;
+	}
+	save = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_GEO;	/* Let y be geographic to get division fo 90 etc */
+	/* Update, if generated previously */
+	gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
+	gmt_auto_frame_interval (GMT, GMT_Y, GMT_ANNOT_UPPER);
+	/* Reset to what it was, i.e. Cartesian square box */
+	gmt_M_memcpy (GMT->common.R.wesn, wesn, 4U, double);
+	GMT->current.io.col_type[GMT_IN][GMT_Y] = save;	/* Reset */
+
+	if (GMT->current.map.frame.draw && !GMT->current.map.frame.no_frame && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval) && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval)) do_labels = false;
+
 	if (do_fill) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
 		double dim = 2.0 * Ctrl->S.scale;
 		GMT->current.map.frame.paint = true;	/* Restore original setting */
@@ -776,7 +790,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		PSL_plotsymbol (PSL, 0.0, 0.0, &dim, PSL_CIRCLE);
 		if (half_only) PSL_endclipping (PSL, 1);		/* Reduce polygon clipping by one level */
 	}
-	if (GMT->common.B.active[0]) {	/* Draw frame */
+	if (GMT->common.B.active[0] && !GMT->current.map.frame.no_frame ) {	/* Draw frame */
 		int symbol = (half_only) ? PSL_WEDGE : PSL_CIRCLE;
 		double dim[PSL_MAX_DIMS];
 		struct GMT_FILL no_fill;
@@ -1037,7 +1051,8 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		Ctrl->L.s = strdup (GMT->current.language.cardinal_name[0][2]);
 		Ctrl->L.n = strdup (GMT->current.language.cardinal_name[0][3]);
 	}
-	if (GMT->current.map.frame.draw) {	/* Draw grid lines etc */
+	if ((GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) && !GMT->current.map.frame.no_frame) {
+
 		gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 		off = max_radius * Ctrl->S.scale;
 		n_alpha = (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval > 0.0) ? irint (total_arc / GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval) : -1;
@@ -1060,79 +1075,80 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		PSL_plottext (PSL, 0.0, off + y, GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
 
 		gmt_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
-
-		if (half_only) {
-			char text[GMT_LEN64] = {""};
-			if (!Ctrl->L.active) {	/* Use default labels */
-				gmt_M_str_free (Ctrl->L.w);
-				gmt_M_str_free (Ctrl->L.e);
-				gmt_M_str_free (Ctrl->L.n);
-				if (GMT->current.setting.map_degree_symbol == gmt_none) {
-					if (half_only == 1) {
-						sprintf (Ctrl->L.w, "90%s", GMT->current.language.cardinal_name[2][0]);
-						sprintf (Ctrl->L.e, "90%s", GMT->current.language.cardinal_name[2][1]);
-						sprintf (Ctrl->L.n, "0");
+		if (do_labels) {
+			if (half_only) {
+				char text[GMT_LEN64] = {""};
+				if (!Ctrl->L.active) {	/* Use default labels */
+					gmt_M_str_free (Ctrl->L.w);
+					gmt_M_str_free (Ctrl->L.e);
+					gmt_M_str_free (Ctrl->L.n);
+					if (GMT->current.setting.map_degree_symbol == gmt_none) {
+						if (half_only == 1) {
+							sprintf (text, "90%s", GMT->current.language.cardinal_name[2][0]);	Ctrl->L.w = strdup (text);
+							sprintf (text, "90%s", GMT->current.language.cardinal_name[2][1]);	Ctrl->L.e = strdup (text);
+							sprintf (text, "0");	Ctrl->L.n = strdup (text);
+						}
+						else {
+							sprintf (text, "0%s",   GMT->current.language.cardinal_name[2][3]);	Ctrl->L.w = strdup (text);
+							sprintf (text, "180%s", GMT->current.language.cardinal_name[2][2]);	Ctrl->L.e = strdup (text);
+							sprintf (text, "90%s",  GMT->current.language.cardinal_name[2][1]);	Ctrl->L.n = strdup (text);
+						}
 					}
 					else {
-						sprintf (Ctrl->L.w, "0%s",   GMT->current.language.cardinal_name[2][3]);
-						sprintf (Ctrl->L.e, "180%s", GMT->current.language.cardinal_name[2][2]);
-						sprintf (Ctrl->L.n, "90%s",  GMT->current.language.cardinal_name[2][1]);
+						if (half_only == 1) {
+							sprintf (text, "90%c%s", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][0]);	Ctrl->L.w = strdup (text);
+							sprintf (text, "90%c%s", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][1]);	Ctrl->L.e = strdup (text);
+							sprintf (text, "0%c",    (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);	Ctrl->L.n = strdup (text);
+						}
+						else {
+							sprintf (text, "0%c%s",   (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][3]);	Ctrl->L.w = strdup (text);
+							sprintf (text, "180%c%s", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][2]);	Ctrl->L.e = strdup (text);
+							sprintf (text, "90%c%s",  (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][1]);	Ctrl->L.n = strdup (text);
+						}
 					}
 				}
-				else {
-					if (half_only == 1) {
-						sprintf (Ctrl->L.w, "90%c%s", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][0]);
-						sprintf (Ctrl->L.e, "90%c%s", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][1]);
-						sprintf (Ctrl->L.n, "0%c",    (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
-					}
-					else {
-						sprintf (Ctrl->L.w, "0%c%s",   (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][3]);
-						sprintf (Ctrl->L.e, "180%c%s", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][2]);
-						sprintf (Ctrl->L.n, "90%c%s",  (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol], GMT->current.language.cardinal_name[2][1]);
-					}
-				}
-			}
-			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
-			y = -(3.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height * asize);
-			if (GMT->current.map.frame.axis[GMT_X].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_X].label, 0.0, PSL_TC, form);
-			y = -(5.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height * lsize + GMT->session.font[GMT->current.setting.font_label.id].height * lsize);
-			if (GMT->current.map.frame.axis[GMT_Y].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_Y].label, 0.0, PSL_TC, form);
-			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
-			PSL_plottext (PSL, 0.0, -GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_annot[GMT_PRIMARY].size, "0", 0.0, PSL_TC, form);
-			n_annot = (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval > 0.0) ? irint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) : -1;
-			for (k = 1; n_annot > 0 && k <= n_annot; k++) {
-				x = k * GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
-				sprintf (text, format, x);
-				x *= Ctrl->S.scale;
-				PSL_plottext (PSL, x, -GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, PSL_TC, form);
-				PSL_plottext (PSL, -x, -GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, PSL_TC, form);
-			}
-		}
-		else {
-			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
-			PSL_plottext (PSL, 0.0, -off - 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_label.size, Ctrl->L.s, 0.0, PSL_TC, form);
-			if (!Ctrl->F.active && GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) {	/* Draw scale bar but only if x-grid interval is set */
-				PSL_plotsegment (PSL, off, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off);
-				PSL_plotsegment (PSL, off, -off, off, GMT->current.setting.map_tick_length[0] - off);
-				PSL_plotsegment (PSL, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, GMT->current.setting.map_tick_length[0] - off);
-				if (GMT->current.map.frame.axis[GMT_X].label[0]) {
-					strcat (format, " %s");
-					sprintf (text, format, GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval, GMT->current.map.frame.axis[GMT_X].label);
-				}
-				else
-					sprintf (text, format, GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval);
+				form = gmt_setfont (GMT, &GMT->current.setting.font_label);
+				y = -(3.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height * asize);
+				if (GMT->current.map.frame.axis[GMT_X].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_X].label, 0.0, PSL_TC, form);
+				y = -(5.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height * lsize + GMT->session.font[GMT->current.setting.font_label.id].height * lsize);
+				if (GMT->current.map.frame.axis[GMT_Y].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_Y].label, 0.0, PSL_TC, form);
 				form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
-				PSL_plottext (PSL, (max_radius - 0.5 * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -(off + GMT->current.setting.map_annot_offset[GMT_PRIMARY]), GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, PSL_TC, form);
+				n_annot = (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval > 0.0) ? irint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) : -1;
+				if (n_annot > 0) PSL_plottext (PSL, 0.0, -GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_annot[GMT_PRIMARY].size, "0", 0.0, PSL_TC, form);
+				for (k = 1; n_annot > 0 && k <= n_annot; k++) {
+					x = k * GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
+					sprintf (text, format, x);
+					x *= Ctrl->S.scale;
+					PSL_plottext (PSL, x, -GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, PSL_TC, form);
+					PSL_plottext (PSL, -x, -GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, PSL_TC, form);
+				}
 			}
-			y = -(off + 5.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height * lsize + GMT->session.font[GMT->current.setting.font_label.id].height * lsize);
+			else {
+				form = gmt_setfont (GMT, &GMT->current.setting.font_label);
+				PSL_plottext (PSL, 0.0, -off - 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_label.size, Ctrl->L.s, 0.0, PSL_TC, form);
+				if (!Ctrl->F.active && GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) {	/* Draw scale bar but only if x-grid interval is set */
+					PSL_plotsegment (PSL, off, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off);
+					PSL_plotsegment (PSL, off, -off, off, GMT->current.setting.map_tick_length[0] - off);
+					PSL_plotsegment (PSL, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, GMT->current.setting.map_tick_length[0] - off);
+					if (GMT->current.map.frame.axis[GMT_X].label[0]) {
+						strcat (format, " %s");
+						sprintf (text, format, GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval, GMT->current.map.frame.axis[GMT_X].label);
+					}
+					else
+						sprintf (text, format, GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval);
+					form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+					PSL_plottext (PSL, (max_radius - 0.5 * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -(off + GMT->current.setting.map_annot_offset[GMT_PRIMARY]), GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, PSL_TC, form);
+				}
+				y = -(off + 5.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height * lsize + GMT->session.font[GMT->current.setting.font_label.id].height * lsize);
+				form = gmt_setfont (GMT, &GMT->current.setting.font_label);
+				if (GMT->current.map.frame.axis[GMT_Y].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_Y].label, 0.0, PSL_TC, form);
+			}
 			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
-			if (GMT->current.map.frame.axis[GMT_Y].label[0]) PSL_plottext (PSL, 0.0, y, GMT->current.setting.font_label.size, GMT->current.map.frame.axis[GMT_Y].label, 0.0, PSL_TC, form);
+			PSL_plottext (PSL, off + 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0, GMT->current.setting.font_label.size, Ctrl->L.e, 0.0, PSL_ML, form);
+			PSL_plottext (PSL, -off - 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0, GMT->current.setting.font_label.size, Ctrl->L.w, 0.0, PSL_MR, form);
+			PSL_plottext (PSL, 0.0, off + 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_label.size, Ctrl->L.n, 0.0, PSL_BC, form);
+			PSL_setcolor (PSL, GMT->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
 		}
-		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
-		PSL_plottext (PSL, off + 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0, GMT->current.setting.font_label.size, Ctrl->L.e, 0.0, PSL_ML, form);
-		PSL_plottext (PSL, -off - 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.0, GMT->current.setting.font_label.size, Ctrl->L.w, 0.0, PSL_MR, form);
-		PSL_plottext (PSL, 0.0, off + 2.0 * GMT->current.setting.map_annot_offset[GMT_PRIMARY], GMT->current.setting.font_label.size, Ctrl->L.n, 0.0, PSL_BC, form);
-		PSL_setcolor (PSL, GMT->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
 	}
 
 	gmt_plane_perspective (GMT, -1, 0.0);
