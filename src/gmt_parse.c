@@ -86,7 +86,7 @@ GMT_LOCAL int gmtparse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	int gmt4 = 0, gmt5 = 0, n_digits = 0, n_colons = 0, n_slashes = 0, colon_text = 0, wesn_at_end = 0;
 	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
 	bool ignore5 = false;	/* true if label, title, prefix, suffix */
-	bool custom = false;	/* True if -B[p|s][x|y|z]c<filename> was given; then we relax checing for .c (old second) */
+	bool custom = false;	/* True if -B[p|s][x|y|z]c<filename> was given; then we relax checking for .c (old second) */
 	char mod = 0;
 
 	if (!in || in[0] == 0) return (9);	/* Just a safety precaution, 9 means "either" syntax but it is an empty string */
@@ -124,10 +124,12 @@ GMT_LOCAL int gmtparse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 		if (ignore) continue;	/* Don't look inside a title or label */
 		switch (in[k]) {
 			case '/': if (mod == 0) n_slashes++; break;	/* Only GMT4 uses slashes */
-			case '+':	/* Plus, might be GMT5 modifier switch */
+			case '+':	/* Plus, might be a GMT5 modifier switch */
 				if      (k < last && in[k+1] == 'u') {mod = 'u'; ignore5 = true;  gmt5++;}	/* unit (suffix) settings */
 				else if (k < last && in[k+1] == 'b') {mod = 'b'; ignore5 = false; gmt5++;}	/* 3-D box settings */
 				else if (k < last && in[k+1] == 'g') {mod = 'g'; ignore5 = false; gmt5++;}	/* fill settings */
+				else if (k < last && in[k+1] == 'i') {mod = 'i'; ignore5 = false; gmt5++;}	/* internal annotation settings */
+				else if (k < last && in[k+1] == 'n') {mod = 'n'; ignore5 = true;  gmt5++;}	/* Turn off frames and annotations */
 				else if (k < last && in[k+1] == 'o') {mod = 'o'; ignore5 = false; gmt5++;}	/* oblique pole settings */
 				else if (k < last && in[k+1] == 'p') {mod = 'p'; ignore5 = true;  gmt5++;}	/* prefix settings */
 				else if (k < last && in[k+1] == 'l') {mod = 'l'; ignore5 = true;  gmt5++;}	/* Label */
@@ -135,7 +137,10 @@ GMT_LOCAL int gmtparse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 				else if (k < last && in[k+1] == 's') {mod = 's'; ignore5 = true;  gmt5++;}	/* Secondary label */
 				else if (k < last && in[k+1] == 'S') {mod = 'S'; ignore5 = true;  gmt5++;}	/* Forced horizontal Secondary lLabel */
 				else if (k < last && in[k+1] == 't') {mod = 't'; ignore5 = true;  gmt5++;}	/* title */
-				else if (k < last && in[k+1] == 'n') {mod = 'n'; ignore5 = true;  gmt5++;}	/* Turn off frames and annotations */
+				else if (k < last && in[k+1] == 'w') {mod = 'w'; ignore5 = false; gmt5++;}	/* Pen for walls */
+				else if (k < last && in[k+1] == 'x') {mod = 'x'; ignore5 = false; gmt5++;}	/* Paint for yz plane */
+				else if (k < last && in[k+1] == 'y') {mod = 'y'; ignore5 = false; gmt5++;}	/* Paint for xz plane */
+				else if (k < last && in[k+1] == 'z') {mod = 'z'; ignore5 = false; gmt5++;}	/* Paint for xy plane */
 				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) {ignore5 = false; gmt4++;}	/* Z-axis with 3-D box */
 				break;
 			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
