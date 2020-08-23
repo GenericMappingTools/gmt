@@ -225,7 +225,8 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	}
 	n_tracks = (uint64_t)error;
 
-	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
+	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG))
+		Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->E.active && !s->geographic) {
 		GMT_Report (API, GMT_MSG_ERROR, "-E requires geographic data; your TAG implies Cartesian\n");
@@ -327,7 +328,8 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Reading file %s ", trk_name[trk]);
 
-		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]);
+		if (x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]))
+			Return (GMT_RUNTIME_ERROR);
 		GMT_Report (API, GMT_MSG_INFORMATION, "[%s]\n", s->path);
 
 		if (p.n_rows == 0) {
@@ -358,8 +360,10 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		last_bin_col = last_bin_row = -1;
 		for (row = 0; row < p.n_rows; row++) {
 			if (x2sysbinlist_outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
-			x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col,
-			                                          &this_bin_row, &B, &this_bin_index), "");
+			if (x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col,
+			                                          &this_bin_row, &B, &this_bin_index), ""))
+				Return (GMT_RUNTIME_ERROR);
+
 
 			/* While this may be the same bin as the last bin, the data available may have changed so we keep
 			 * turning the data flags on again and again. */
@@ -463,7 +467,8 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 						x = 0.5 * (X[curr_x_pt].x + X[prev_x_pt].x);
 					y = 0.5 * (X[curr_x_pt].y + X[prev_x_pt].y);
 					if (s->geographic && fabs (y) > y_max) y = copysign (y_max, y);
-					x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, x, y, &ii_notused, &jj_notused, &B, &index), "");
+					if (x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, x, y, &ii_notused, &jj_notused, &B, &index), ""))
+								Return (GMT_RUNTIME_ERROR);
 					dist_bin[index] += gmt_distance (GMT, X[curr_x_pt].x, X[curr_x_pt].y, X[prev_x_pt].x, X[prev_x_pt].y);
 					B.binflag[index] |= nav_flag;		/* Only update nav flags we have not been here already */
 				}

@@ -5182,8 +5182,6 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 		if ((c = gmt_first_modifier (API->GMT, file, mods)))
 			c[0] = '\0';	/* Begone with you */
 	}
-if (file[0] == ' ')
-	c++;
 	clean_file = strdup (file);
 
 	GMT_Report (API, GMT_MSG_DEBUG, "gmt_get_filename: In: %s Out: %s\n", filename, clean_file);

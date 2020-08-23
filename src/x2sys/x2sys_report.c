@@ -234,6 +234,7 @@ EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	int error = 0;
 	bool internal = false;	/* false if only external xovers are needed */
 	bool external = true;	/* false if only internal xovers are needed */
+	int64_t value;
 	uint64_t i, k, n, n_use, n_tracks;
 	uint64_t p, np, nx, Tnx = 0;
 	size_t len;
@@ -268,11 +269,13 @@ EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 
 	/* Initialize system via the tag */
 
-	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
+	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG))
+		Return (GMT_RUNTIME_ERROR);
 
 	/* Verify that the chosen column is known to the system */
 
-	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
+	if (Ctrl->C.col && x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C"))
+		Return (GMT_RUNTIME_ERROR);
 	if (s->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_ERROR, "-C must specify a single column name\n");
 		x2sys_end (GMT, s);
@@ -293,7 +296,10 @@ EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	/* Read the entire data base; note the -I, R and -S options are applied during reading */
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Read crossover database %s...\n", Ctrl->In.file);
-	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, GMT->common.R.wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
+	if ((value = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, GMT->common.R.wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks)) < 0)
+		Return (-value);
+
+	np = (uint64_t)value;
 	GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
@@ -309,7 +315,8 @@ EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
-		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, Ctrl->C.col, NULL, NULL, &CORR);
+		if ((error = x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, Ctrl->C.col, NULL, NULL, &CORR)))
+			Return (error);
 	}
 
 	Tsum = Tsum2 = 0.0;
