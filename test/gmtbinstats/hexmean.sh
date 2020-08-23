@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test hexagon tile binning in gmtbinstats
+# Test unweighted hexagon tile binning in gmtbinstats
 #
 ps=hexmean.ps
 gmt binstats hex_data.txt -R0/5/0/3 -I1 -Th -Ca > ave.txt

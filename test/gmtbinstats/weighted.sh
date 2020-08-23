@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test most operators in gmtbinstats, with -W
+# Test most operators in gmtbinstats for circular binning, with weights
 gmt begin weighted ps
 	gmt convert @capitals.gmt -a2=population,3=population > tmp.txt
 	gmt set FONT_TAG 12p MAP_FRAME_TYPE plain

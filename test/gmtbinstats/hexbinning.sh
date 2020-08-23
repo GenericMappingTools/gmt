@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Test hexagon tile binning on counting values in gmtbinstats
 #
-# Hardwire some values to draw the bottom plot to avoid lots of shell math
-# THe commented stuff shows how the script and data were created
+# Hardwire some values to draw the bottom plot so we avoid lots of shell math
+# The commented stuff shows how the script and data were developed
 #e=5
 #n=3
 #dy=1
@@ -24,6 +24,7 @@
 #gmt math -T1/100/1 0 $n RAND = y
 #gmt math -T1/100/1 50 25 NRAND = z
 #gmt convert -A x y z -o1,3,5 > hex_data.txt
+
 # Create grids to find nodes of hexagons
 gmt grdmath -R0/5.19615242271/0/3 -I1.73205080757/1 0 = b.grd
 gmt grdmath -R0.866025403785/4.33012701893/0.5/2.5 -I1.73205080757/1 0 = r.grd

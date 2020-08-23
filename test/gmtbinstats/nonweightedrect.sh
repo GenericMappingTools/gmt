@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test most operators in gmtbinstats, without -W
+# Test most operators in gmtbinstats for rectangular binning, without weights
 gmt begin nonweightedrect ps
 	gmt set FONT_TAG 12p MAP_FRAME_TYPE plain
 		gmt subplot begin 7x2 -Fs3i/1.25i -M15p/5p -A+gwhite -SCb -SRl -Bwstr -R-110/250/-75/75  -JQ70E/3i -X1.25i -Y0.5i
