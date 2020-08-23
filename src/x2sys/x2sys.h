@@ -269,7 +269,7 @@ EXTERN_MSC int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file);
 
 EXTERN_MSC int64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *ntracks);
 EXTERN_MSC void x2sys_free_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_COE_PAIR *P, uint64_t np);
-EXTERN_MSC void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, char *table, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR);
+EXTERN_MSC int x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, char *table, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR);
 
 #define X2SYS_ASCII		0
 #define X2SYS_BINARY		1

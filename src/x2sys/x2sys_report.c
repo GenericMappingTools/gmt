@@ -313,7 +313,8 @@ EXTERN_MSC int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
-		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, Ctrl->C.col, NULL, NULL, &CORR);
+		if ((error = x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, Ctrl->C.col, NULL, NULL, &CORR)))
+			Return (error);
 	}
 
 	Tsum = Tsum2 = 0.0;

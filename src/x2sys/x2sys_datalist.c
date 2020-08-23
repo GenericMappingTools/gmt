@@ -380,7 +380,8 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		Return (GMT_NOT_A_VALID_TYPE);
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
-		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR);
+		if ((error = x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR)))
+			Return (error);
 		if (auxlist[MGD77_AUX_SP].requested && s->t_col == -1) {
 			GMT_Report (API, GMT_MSG_ERROR, "Selected correction table requires velocity which implies time (not selected)\n");
 			MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);

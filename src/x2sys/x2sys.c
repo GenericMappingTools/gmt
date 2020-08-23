@@ -2026,7 +2026,7 @@ GMT_LOCAL unsigned int x2sys_separate_aux_columns2 (struct GMT_CTRL *GMT, unsign
 	return (n_aux);
 }
 
-void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctable, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR) {
+int x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctable, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR) {
 	/* Load an ephemeral correction table */
 	/* Pass aux as NULL if the auxiliary columns do not matter (only used by x2sys_datalist) */
 	unsigned int i, n_items, n_aux = 0, n_cols, missing;
@@ -2037,7 +2037,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 		sprintf (path, "%s/%s/%s_corrections.txt", X2SYS_HOME, S->TAG, S->TAG);
 		if (access (path, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No default X2SYS Correction table (%s) for %s found!\n", path, S->TAG);
-			GMT_exit (GMT, GMT_FILE_NOT_FOUND);
+			return (GMT_FILE_NOT_FOUND);
 		}
 		ctable = path;
 	}
@@ -2076,5 +2076,5 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 	x2sys_free_list (GMT, aux_name, n_aux);
 	if (!missing) MGD77_Parse_Corrtable (GMT, ctable, trk_name, (unsigned int)ntracks, n_cols, col_name, 0, CORR);
 	x2sys_free_list (GMT, col_name, n_cols);
-	if (missing) GMT_exit (GMT, GMT_RUNTIME_ERROR);
+	return (missing)? GMT_RUNTIME_ERROR : GMT_NOERROR;
 }
