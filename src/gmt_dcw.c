@@ -76,32 +76,61 @@ static char *GMT_DCW_continents[GMT_DCW_N_CONTINENTS] = {"Africa", "Antarctica",
 /* Local functions only visible inside this file */
 
 GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *path) {
-	bool found = false;
-
 	/* This is the order of checking:
 	 * 1. Check in GMT->session.DCWDIR, if set
 	 * 2. Look via gmt_getsharepath.
+	 * 3. Look in userdir/geography/dcw
+	 * 4. Try to download from server into (3)
+	 * 5. Give up.
 	 */
 
 	if (GMT->session.DCWDIR) {	/* 1. Check in GMT->session.DCWDIR */
 		sprintf (path, "%s/%s%s", GMT->session.DCWDIR, name, suffix);
-		if ( access (path, R_OK) == 0)
-			found = true;
-		else {
-			/* remove reference to invalid GMT->session.DCWDIR but don't free
-			 * the pointer. this is no leak because the reference still exists
-			 * in the previous copy of the current GMT_CTRL struct. */
-			GMT->session.DCWDIR = NULL;
+		if (access (path, R_OK) == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. DCW: Read the Digital Chart of the World from %s\n", path);
+			return true;
+		}
+		/* Failed, so remove reference to invalid GMT->session.DCWDIR but don't free
+		 * the pointer. this is no leak because the reference still exists
+		 * in the previous copy of the current GMT_CTRL struct. */
+		GMT->session.DCWDIR = NULL;
+	}
+	if (gmt_getsharepath (GMT, "dcw", name, suffix, path, R_OK)) {
+		if (access (path, R_OK) == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. DCW: Read the Digital Chart of the World from %s\n", path);
+			return true;	/* Found it in share or user somewhere */
 		}
 	}
-	if (!found && gmt_getsharepath (GMT, "dcw", name, suffix, path, R_OK)) found = true;	/* Found it in share or user somewhere */
-	if (!found) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to find or open the Digital Chart of the World for GMT\n");
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Perhaps you did not install this file in DIR_DCW, the shared dir, or the user dir?\n");
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Use your package manager to install package dcw-gmt.\n");
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Alternatively, get the latest dcw-gmt-<version>.tar.gz or dcw-gmt-<version>.zip from the %s.\n", DCW_SITE);
+	if (GMT->session.USERDIR) {	/* Check user dir via remote download */
+		char remote_path[PATH_MAX] = {""};
+		sprintf (path, "%s/geography/dcw/%s%s", GMT->session.USERDIR, name, suffix);
+		if (access (path, R_OK) == 0) {	/* Previously downloaded */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. DCW: Read the Digital Chart of the World from %s\n", path);
+			return true;	/* Found it here */
+		}
+		/* Must download it the first time */
+		if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to download the Digital Chart of the World for GMT since GMT_AUTO_DOWNLOAD is off\n");
+			return false;
+		}
+		sprintf (path, "%s/geography/dcw", GMT->session.USERDIR);	/* Local directory destination */
+		if (access (path, R_OK) && gmt_mkdir (path)) {	/* Must first create the directory */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT directory : %s\n", path);
+			return false;
+		}
+		sprintf (path, "%s/geography/dcw/%s%s", GMT->session.USERDIR, name, suffix);	/* Final local path */
+		snprintf (remote_path, PATH_MAX, "%s/geography/dcw/%s%s", GMT->session.DATASERVER, name, suffix);	/* Unique remote path */
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Downloading %s%s for the first time - be patient\n", name, suffix);
+		if (gmt_download_file (GMT, name, remote_path, path, true)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to obtain remote file %s%s\n", name, suffix);
+			return false;
+		}
+		else {	/* Successfully downloaded the first time */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. DCW: Read the Digital Chart of the World from %s\n", path);
+			return true;
+		}
 	}
-	return (found);
+	return (false);
 }
 
 GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, unsigned int dim[]) {
