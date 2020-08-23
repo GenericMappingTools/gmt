@@ -1368,20 +1368,20 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	if (!fgets (line, GMT_BUFSIZ, ftrack)) {	/* Skip header record */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error in header record\n");
 		fclose (ftrack);
-		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
+		return GMT_DATA_READ_ERROR;
 	}
 	gmt_chop (line);	/* Remove trailing CR or LF */
 	if (strcmp (&line[2], S->TAG)) {	/* Mismatch between database tag and present tag */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "track data file %s lists tag as %s but active tag is %s\n",  track_path, &line[2], S->TAG);
 		fclose (ftrack);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		return GMT_RUNTIME_ERROR;
 	}
 	while (fgets (line, GMT_BUFSIZ, ftrack)) {
 		gmt_chop (line);	/* Remove trailing CR or LF */
 		if (sscanf (line, "%s %d %d", name, &id, &flag) != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read name id flag from track data file\n");
 			fclose (ftrack);
-			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+			return GMT_RUNTIME_ERROR;
 		}
 		if (mode == 1) {	/* Add to array */
 			if (id >= n_alloc) {
