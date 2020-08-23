@@ -1886,15 +1886,13 @@ int gmt_examine_nc_cube (struct GMT_CTRL *GMT, char *file, uint64_t *nz, double 
 	return GMT_NOERROR;
 }
 
-/* Write a 3-D cube to file; cube is represented internally by a stack of 2-D grids */
+/* Write a 3-D cube to file; cube is represented internally by a stack of 2-D grids and a layer z-array */
 
-#define GMT_WRITE_CUBE_LAYERS 0
-
-int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlayers, double *layer, char *file, unsigned int mode) {
+int gmt_write_nc_cube (struct GMT_CTRL *GMT, struct GMT_GRID **G, uint64_t nlayers, double *layer, const char *file) {
 	/* Depending on mode, we either write individual layer grid files or a single 3-D data cube */
 	uint64_t k;
 
-	if (mode == GMT_WRITE_CUBE_LAYERS) {
+	if (strchr (file, '%')) {	/* Format specifier found, do individual layer grids */
 		char gfile[PATH_MAX] = {""};
 		for (k = 0; k < nlayers; k++) {
 			sprintf (gfile, file, layer[k]);
