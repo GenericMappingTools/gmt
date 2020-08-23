@@ -10,7 +10,7 @@
     two shorthands **-Rg** and **-Rd** stand for global domain (0/360
     and -180/+180 in longitude respectively, with -90/+90 in latitude).
     Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
-    **-R**\ *code1,code2,...*\ [**+r**\|\ **R**\ [*incs*]] instead:
+    **-R**\ *code1,code2,...*\ [**+e**\|\ **r**\|\ **R**\ [*incs*]] instead:
     Append one or more comma-separated countries using the 2-character
     ISO 3166-1 alpha-2 convention.  To select a state of a country
     (if available), append .state, e.g, US.TX for Texas.  To specify a

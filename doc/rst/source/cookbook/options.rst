@@ -94,7 +94,7 @@ may be specified in one of five ways, two of which are shown in Figure
    possibly the grid registration (see
    Section `Grid registration: The -r option`_).
 
-#. **-R**\ *code1,code2,...*\ [**+r**\|\ **R**\ [*incs*]]. This indirectly supplies
+#. **-R**\ *code1,code2,...*\ [**+e**\|\ **r**\|\ **R**\ [*incs*]]. This indirectly supplies
    the region by consulting the DCW (Digital Chart of the World) database and derives
    the bounding regions for one or more countries given by the codes.
    Simply append one or more comma-separated countries using the two-character
@@ -106,7 +106,8 @@ may be specified in one of five ways, two of which are shown in Figure
    the polygon(s): Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
    final region boundaries to be multiples of these steps [default is no adjustment].
    Alternatively, use **+R** to extend the region outward by adding these increments
-   instead [default is no extension].  As an example, **-R**\ *FR*\ **+r**\ 1 will select
+   instead, or **+e** which is like **+r** but it ensures that the bounding box extends
+   by at least 0.25 times the increment [no extension]. As an example, **-R**\ *FR*\ **+r**\ 1 will select
    the national bounding box of France rounded to nearest integer degree.
 
 #. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
@@ -386,7 +387,7 @@ major and minor ticks and the grid lines, by not specifying the *stride*
 value. For example, **-Bafg** will select all three spacings
 automatically for both axes. In case of longitude–latitude plots, this
 will keep the spacing the same on both axes. You can also use
-**-Bafg/afg** to auto-select them separately. Also note that given the
+**-Bxafg -Byafg** to auto-select them separately. Also note that given the
 myriad ways of specifying time-axis annotations, the automatic selections
 may have to be overridden with manual settings to active exactly what you need.
 

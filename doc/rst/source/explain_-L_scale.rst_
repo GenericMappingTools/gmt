@@ -1,5 +1,5 @@
 **-L**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**]\ [**+a**\ *align*]\ [**+f**]\ [**+j**\ *justify*]\ [**+l**\ [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
-    Draws a simple map scale centered on the reference point specified
+    Draw a simple map scale centered on the reference point specified
     using one of four coordinate systems:
 
     .. include:: explain_refpoint.rst_

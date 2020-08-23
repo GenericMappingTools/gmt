@@ -290,6 +290,8 @@ Optional Arguments
     projected coordinates and the rest of the line has the regular **PROJ**
     string for this projection.
 
+.. _-Z:
+
 **-Z**
     Remove the input PostScript file(s) after the conversion.
     The input file(s) will **not** be removed in case of failures.

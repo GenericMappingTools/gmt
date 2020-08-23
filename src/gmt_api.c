@@ -2941,6 +2941,7 @@ GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_f
 GMT_LOCAL int gmtapi_memory_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *filename) {
 	char SP, D, F, A, G, M;
 	int k, object_ID;
+	gmt_M_unused(family);
 	if (!gmt_M_file_is_memory (filename)) return GMT_NOTSET;	/* If not a memory reference then there is no ID etc */
 	/* Name template: @GMTAPI@-S-D-F-A-G-M-###### where # is the 6-digit integer object code.
 	 * S stands for P(rimary) or S(econdary) input or output object (command line is primary, files via options are secondary).
@@ -4195,7 +4196,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 			for (c = 0; c < 3; c++, k++) data[k] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
 		}
 		/* If neither TRB or TRP we call for a changed layout, which may or may not have been implemented */
-		GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);	
+		GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);
 	}
 	gmt_M_free_aligned (GMT, I->data);	/* Free previous aligned image memory */
 	I->data = data;	/* Pass the reallocated rgb TRB image back */
@@ -4664,7 +4665,7 @@ GMT_LOCAL struct GMT_GRID * gmtapi_import_grid (struct GMTAPI_CTRL *API, int obj
 	}
 	if ((mode & GMT_CONTAINER_ONLY) && S_obj->region && S_obj->method == GMT_IS_FILE) {
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot request a subset when just inquiring about the grid header\n");
-		return_null (API, GMT_SUBSET_NOT_ALLOWED);		
+		return_null (API, GMT_SUBSET_NOT_ALLOWED);
 	}
 
 	if (S_obj->region && grid) {	/* See if this is really a subset or just the same region as the grid */
@@ -13720,7 +13721,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 				/* Nothing*/
 			}
 			else if (gmt_M_file_is_netcdf (file))	/* Meaning it specifies a layer etc via ?<args> */
-				c = strchr (file, '?');				
+				c = strchr (file, '?');
 			else {	/* Check for modifiers */
 				unsigned int nm = gmt_validate_modifiers (API->GMT, file, 0, "onsuU", GMT_MSG_QUIET);
 				if (nm) /* Found some valid modifiers, lets get to the first */

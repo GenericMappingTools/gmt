@@ -2445,6 +2445,21 @@ GMT_LOCAL int gmtio_scanf_geo (char *s, double *val) {
 	return (retval);
 }
 
+GMT_LOCAL bool gmtio_is_pi (char *txt) {
+	/* Return true if txt is of the form [+|-][s]pi[f] */
+	unsigned int k = 0;
+	if (txt == NULL) return false;
+	if (txt[k] == '+' || txt[k] == '-') k++;	/* Skip a leading sign */
+	while (txt[k] && isdigit (txt[k])) k++;	/* Skip the s number, which must be integer */
+	if (txt[k] == '\0' || strncmp (&txt[k], "pi", 2U)) return false;	/* No pi found */
+	if (txt[k+1] == '\0') return false;	/* Did not have two characters */
+	k += 2;	/* Skip the pi part */
+	if (txt[k] == '\0') return true;	/* OK so far; no fraction f involved */
+	while (txt[k] && isdigit (txt[k])) k++;	/* Skip the f number, which must be integer */
+	if (txt[k]) return false;	/* Got something at the end of the token that is not part of a pi specification */
+	return true;	/* Made it past all tests */
+}
+
 /*! . */
 int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 	/* Try to decode a value from s and store
@@ -2463,7 +2478,7 @@ int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 	double x;
 	size_t j, k;
 
-	if (strstr (s, "pi")) {	/* Got a number given via multiple/fraction of pi */
+	if (gmtio_is_pi (s)) {	/* Got a number given via multiple/fraction of pi */
 		/* Only allow parsing of [-|+][s]pi[f], with s and f are any number */
 		GMT->current.plot.substitute_pi = true;	/* Used in formatting labels */
 		k = 0;
@@ -3474,13 +3489,6 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			return (NULL);
 		}
 
-		GMT->current.io.data_record_number_in_set[GMT_IN]++;
-		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
-		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
-		if (gmtio_outside_in_row_range (GMT, *(GMT->common.q.rec))) {	/* Records is outside desired row range of interest */
-			if (!gmtio_is_segment_header (GMT, line))
-				continue;
-		}
 		/* First chop off trailing whitespace and commas */
 		gmt_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
 
@@ -3533,6 +3541,14 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		}
 
 		/* Here we know we are processing a data record */
+
+		GMT->current.io.data_record_number_in_set[GMT_IN]++;
+		GMT->current.io.data_record_number_in_tbl[GMT_IN]++;
+		GMT->current.io.data_record_number_in_seg[GMT_IN]++;
+		if (gmtio_outside_in_row_range (GMT, *(GMT->common.q.rec))) {	/* Records is outside desired row range of interest */
+			if (!gmtio_is_segment_header (GMT, line))
+				continue;
+		}
 
 		if (GMT->common.a.active && GMT->current.io.ogr == GMT_OGR_FALSE) {	/* Cannot give -a and not be reading an OGR/GMT file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Aspatial associations set with -a but input file is not in OGR/GMT format!\n");
@@ -5166,8 +5182,6 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 		if ((c = gmt_first_modifier (API->GMT, file, mods)))
 			c[0] = '\0';	/* Begone with you */
 	}
-if (file[0] == ' ')
-	c++;
 	clean_file = strdup (file);
 
 	GMT_Report (API, GMT_MSG_DEBUG, "gmt_get_filename: In: %s Out: %s\n", filename, clean_file);
@@ -5296,33 +5310,39 @@ bool gmt_is_a_blank_line (char *line) {
 
 /*! . */
 bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols) {
-	/* Consult the -s[<cols>][a|r] setting and the cols values to determine if this record should be output */
+	/* Consult the -s[<cols>][+a][+r] setting and the <cols> values to determine if this record should be output */
 	uint64_t c, n_nan;
 
 	if (n_cols > GMT_MAX_COLUMNS) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Number of output data columns (%d) exceeds limit (GMT_MAX_COLUMNS = %d)\n", n_cols, GMT_MAX_COLUMNS);
 		return (true);	/* Skip record since we cannot access that many columns */
 	}
+	/* Increment record numbers before output */
 	GMT->current.io.data_record_number_in_set[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_tbl[GMT_OUT]++;
 	GMT->current.io.data_record_number_in_seg[GMT_OUT]++;
-	if (GMT->common.q.mode == GMT_RANGE_ROW_OUT) {
+	if (GMT->common.q.mode == GMT_RANGE_ROW_OUT) {	/* Limit output based on data-record range(s) */
 		if (gmtio_outside_out_row_range (GMT, *(GMT->common.q.rec))) return (true);		/* Not in a valid row range for output */
 	}
-	else if (GMT->common.q.mode == GMT_RANGE_DATA_OUT) {
+	else if (GMT->common.q.mode == GMT_RANGE_DATA_OUT) {	/* Limit output based on data value range(s) */
 		if (gmtio_outside_out_data_range (GMT, GMT->common.q.col, cols)) return (true);	/* Not in a valid data range for output */
 	}
-	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);			/* Normal case; output the record */
-	if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_ONE) {	/* -sa: Skip records if any NaNs are found */
-		for (c = 0; c < n_cols; c++) if (gmt_M_is_dnan (cols[c])) return (true);	/* Found a NaN so we skip */
-		return (false);	/* No NaNs, output record */
+	if (!GMT->common.s.active) return (false);	/* Normal case; No -s set, just output the record */
+	n_nan = 0;	/* None so far */
+	if (GMT->current.setting.io_nan_mode & GMT_IO_NAN_ANY) {	/* -s[<cols>]+a[+r]: Determine if one or more NaNs are found in given columns */
+		for (c = 0; n_nan == 0 && c < GMT->current.io.io_nan_ncols; c++) {	/* Check each of the specified columns set via -s<cols> [2] */
+			if (GMT->current.io.io_nan_col[c] >= n_cols) continue;	/* Input record does not have this column */
+			if (gmt_M_is_dnan (cols[GMT->current.io.io_nan_col[c]])) n_nan = GMT->current.io.io_nan_ncols;	/* Finding one is enough to flag the entire record */
+		}
 	}
-	for (c = n_nan = 0; c < GMT->current.io.io_nan_ncols; c++) {			/* Check each of the specified columns set via -s */
-		if (GMT->current.io.io_nan_col[c] >= n_cols) continue;			/* Input record does not have this column */
-		if (gmt_M_is_dnan (cols[GMT->current.io.io_nan_col[c]])) n_nan++;		/* Count the nan columns found */
+	else {	/* No +a, so must check if all selected columns equal NaNs */
+		for (c = 0; c < GMT->current.io.io_nan_ncols; c++) {	/* Check each of the specified columns set via -s<cols> [2] */
+			if (GMT->current.io.io_nan_col[c] >= n_cols) continue;	/* Input record does not have this column */
+			if (gmt_M_is_dnan (cols[GMT->current.io.io_nan_col[c]])) n_nan++;	/* Count the NaN-columns found */
+		}
 	}
-	if (n_nan < GMT->current.io.io_nan_ncols  && GMT->current.setting.io_nan_mode == GMT_IO_NAN_KEEP) return (true);	/* Skip records if -sr and not enough NaNs found */
-	if (n_nan == GMT->current.io.io_nan_ncols && GMT->current.setting.io_nan_mode == GMT_IO_NAN_SKIP) return (true);	/* Skip records if -s and NaNs in specified columns */
+	if (GMT->current.setting.io_nan_mode & GMT_IO_NAN_KEEP && n_nan < GMT->current.io.io_nan_ncols)  return (true);	/* Skip record if -s+r and not enough NaNs found */
+	if (GMT->current.setting.io_nan_mode & GMT_IO_NAN_SKIP && n_nan == GMT->current.io.io_nan_ncols) return (true);	/* Skip record if -s and NaNs-test is satisfied */
 	return (false);	/* No match, output record */
 }
 
@@ -6708,9 +6728,9 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		if (s[callen] == '\"') { s[callen] = '\0'; s++;}	/* Strip off trailing quote and advance pointer over the first */
 	}
 	if (s[0] == 'T') {	/* Numbers cannot start with letters except for clocks, e.g., T07:0 */
-		if ((int)s[1] < 0 || !isdigit((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk*/
+		if ((int)s[1] < 0 || !isdigit((int)s[1])) return (GMT_IS_NAN);	/* Clocks must have T followed by digit, e.g., T07:0 otherwise junk */
 	}
-	else if (strstr (s, "pi") == NULL && isalpha ((int)s[0])) return (GMT_IS_NAN);	/* Numbers cannot start with letters */
+	else if (!gmtio_is_pi (s) && isalpha ((int)s[0])) return (GMT_IS_NAN);	/* Numbers cannot start with letters */
 
 	switch (expectation) {
 		case GMT_IS_GEO: case GMT_IS_LON: case GMT_IS_LAT:
@@ -6876,7 +6896,7 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 			unsigned int nt = (cmd) ? 0 : gmtio_n_trailing_chars (GMT, s);
 			if ((s[0] == 'T' && isdigit (s[1])) || strchr (s, 'T'))	/* Found a T in the argument - must be Absolute time or it will fail as junk */
 				expectation = GMT_IS_ARGTIME;
-			else if (strstr (s, "pi"))	/* Found "pi" in the number - will try scanning as float */
+			else if (gmtio_is_pi (s))	/* Found a "pi" specification - will try scanning as float */
 				expectation = GMT_IS_FLOAT;
 			else if (c == 't')		/* Found trailing t - assume Relative time */
 				expectation = GMT_IS_ARGTIME;

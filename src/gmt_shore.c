@@ -1663,6 +1663,7 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 		for (id = 0; id < 2; id++) {
 			gmt_free_shore_polygons (GMT, p[id], np[id]);
 			if (np[id]) gmt_M_free (GMT, p[id]);
+			np[id] = 0;
 		}
 		gmt_free_shore (GMT, c);	/* Free previously allocated arrays */
 		last_bin = INT_MAX;		/* In case process lives on in API */
