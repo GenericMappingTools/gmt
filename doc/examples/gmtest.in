@@ -14,8 +14,13 @@ script="@GMT_SOURCE_DIR@/doc/examples/${script_name}"
 src="@GMT_SOURCE_DIR@/doc/examples/${script_dir}"
 # Is it a modern mode script?
 modern=$(grep "gmt begin" "$script" -c)
+
 # Is it a script that is known to fail?
-known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+if [ "@GMT_ENABLE_KNOWN2FAIL@" = "ON" ]; then
+	known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+else
+	known2fail=0
+fi
 # Any script override of GRAPHICSMAGICK_RMS?  Must be a comment line of the format
 # GRAPHICSMAGICK_RMS = <custom-limit>
 GRAPHICSMAGICK_RMS=$(grep "GRAPHICSMAGICK_RMS" "$script" | awk '{print $4}')

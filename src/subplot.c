@@ -640,10 +640,10 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->S[GMT_X].extra = strdup (c);
 					c[0] = '\0';	/* Chop off for now */
 				}
-				for (k = px = 0; k < 6; k++) /* Build up x-axis args from seletion */
+				for (k = px = 0; k < 6; k++) /* Build up x-axis args from selection */
 					if (strchr (Bframe->arg, Bx_items[k])) Ctrl->S[GMT_X].axes[px++] = Bx_items[k];
 				if (Ctrl->S[GMT_X].axes[0] && Ctrl->S[GMT_X].active) gmt_str_tolower (Ctrl->S[GMT_X].axes);	/* Used to control the non-annotated axes */
-				for (k = py = 0; k < 6; k++)/* Build up y-axis args from seletion */
+				for (k = py = 0; k < 6; k++)/* Build up y-axis args from selection */
 					if (strchr (Bframe->arg, By_items[k])) Ctrl->S[GMT_Y].axes[py++] = By_items[k];
 				if (Ctrl->S[GMT_Y].axes[0] && Ctrl->S[GMT_Y].active) gmt_str_tolower (Ctrl->S[GMT_Y].axes);	/* Used to control the non-annotated axes */
 				if (c) c[0] = '+';	/* Restore modifiers */
@@ -694,15 +694,15 @@ void subplot_wipe_history_and_settings (struct GMTAPI_CTRL *API) {
 	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
 	if (subplot && (P = gmt_subplot_info (API, fig))) {
 		for (row = 0; row < P->nrows; row++) for (col = 0; col < P->ncolumns; col++) {
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);		
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);		
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
 		}
 	}
-	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_HISTORY_FILE, fig);		
-	gmt_remove_file (API->GMT, file);	
-	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_SETTINGS_FILE, fig);		
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_HISTORY_FILE, fig);
+	gmt_remove_file (API->GMT, file);
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_SETTINGS_FILE, fig);
 	gmt_remove_file (API->GMT, file);
 }
 

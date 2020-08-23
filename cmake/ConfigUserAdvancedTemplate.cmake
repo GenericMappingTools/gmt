@@ -189,6 +189,10 @@
 # Number of parallel test jobs with "make check":
 #set (N_TEST_JOBS 4)
 
+# Ignore the "GMT_KNOWN_FAILURE" comment in tests to let tests fail normally
+# Can only be "ON" or "OFF" in uppercase!
+#set (GMT_ENABLE_KNOWN2FAIL OFF)
+
 # Enable this option to run GMT programs from within ${GMT_BINARY_DIR} without
 # installing or setting GMT_SHAREDIR and GMT_USERDIR first. This is required
 # for testing [OFF]:

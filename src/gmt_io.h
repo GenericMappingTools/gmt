@@ -126,10 +126,9 @@ enum GMT_lon_enum {
 
 /*! How to handle NaNs in records */
 enum GMT_io_nan_enum {
-	GMT_IO_NAN_OK = 0,	/* NaNs are fine; just output the record as is */
-	GMT_IO_NAN_SKIP,	/* -s[cols]	: Skip records with z == NaN in selected cols [z-col only] */
-	GMT_IO_NAN_KEEP,	/* -sr		: Skip records with z != NaN */
-	GMT_IO_NAN_ONE};	/* -sa		: Skip records with at least one NaN */
+	GMT_IO_NAN_SKIP = 1,	/* -s[cols]	: Skip records with z == NaN in selected cols [col=2 only] */
+	GMT_IO_NAN_KEEP = 2,	/* -s+r		: Skip records with z != NaN */
+	GMT_IO_NAN_ANY  = 4};	/* -s+a		: Skip records with at least one NaN [skip records with all cols = NaN] */
 
 /* Use POSIX functions ftello() and fseeko(), which represent the
  * position using the off_t type: */

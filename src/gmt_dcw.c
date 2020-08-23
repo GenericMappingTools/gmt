@@ -62,6 +62,13 @@ struct GMT_DCW_COUNTRY_STATE {		/* Information per country with state */
 	char country[4];		/* 2/3-char country code ISO 3166-1 (e.g., BR, US) for countries with states */
 };
 
+/* For version 2.0.0 we follow https://en.wikipedia.org/wiki/ISO_3166-2:CN and use 2-char instead of int codes */
+#define DCW_N_CHINA_PROVINCES	34
+struct GMT_DCW_CHINA_CODES {
+	unsigned int id;
+	char code[4];
+};
+
 /* Compile in read-only structures and arrays with the information */
 
 static char *GMT_DCW_continents[GMT_DCW_N_CONTINENTS] = {"Africa", "Antarctica", "Asia", "Europe", "Oceania", "North America", "South America", "Miscellaneous"};
@@ -213,10 +220,24 @@ GMT_LOCAL int gmtdcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int
 	return (low);
 }
 
-GMT_LOCAL int gmtdcw_find_state (char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns) {
+GMT_LOCAL int gmtdcw_find_state (struct GMT_CTRL *GMT, char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns, bool check) {
 	/* Return state id given country and state codes using a linear search */
 	int i;
-
+	static struct GMT_DCW_CHINA_CODES gmtdcw_CN_codes[DCW_N_CHINA_PROVINCES] = {
+		{11, "BJ"}, {12, "TJ"}, {13, "HE"}, {14, "SX"}, {15, "NM"}, {21, "LN"}, {22, "JL"}, {23, "HL"},
+		{31, "SH"}, {32, "JS"}, {33, "ZJ"}, {34, "AH"}, {35, "FJ"}, {36, "JX"}, {37, "SD"}, {41, "HA"},
+		{42, "HB"}, {43, "HN"}, {44, "GD"}, {45, "GX"}, {46, "HI"}, {50, "CQ"}, {51, "SC"}, {52, "GZ"},
+		{53, "YN"}, {54, "XZ"}, {61, "SN"}, {62, "GS"}, {63, "QH"}, {64, "NX"}, {65, "XJ"}, {71, "TW"},
+		{91, "HK"}, {92, "MO"}
+	};
+	if (check && !strncmp (ccode, "CN", 2U) && isdigit (scode[0])) {	/* Must switch to 2-character code */
+		unsigned int k = 0, id = atoi (scode);
+		while (k < DCW_N_CHINA_PROVINCES && id > gmtdcw_CN_codes[k].id) k++;
+		if (k == DCW_N_CHINA_PROVINCES) return (-1);	/* No such integer ID found in the list */
+		if (id < gmtdcw_CN_codes[k].id) return (-1);	/* No such integer ID found in the list */
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "FYI, Chinese province code %d is deprecated. Use %s instead\n", id, gmtdcw_CN_codes[k].code);
+		scode = gmtdcw_CN_codes[k].code;
+	}
 	for (i = 0; i < ns; i++) if (!strcmp (scode, slist[i].code) && !strcmp (ccode, slist[i].country)) return (i);
 	return (-1);
 }
@@ -247,7 +268,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	unsigned int n_items = 0, r_item = 0, pos = 0, kk, tbl = 0, j = 0, *order = NULL;
 	unsigned short int *dx = NULL, *dy = NULL;
 	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
-	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, special = false;
+	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, special = false, new_CN_codes = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
 	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
@@ -369,6 +390,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		gmt_M_free (GMT, order);
 		return NULL;
 	}
+	if (version[0] != '1') new_CN_codes = true;	/* DCW 2.0.0 or later has new Chinese province codes */
 	if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title))) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot obtain DCW attribute title\n");
 		gmt_free_segment (GMT, &P);
@@ -392,7 +414,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if (gmtversion[0]) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "DCW version %s requires GMT version %s or later.\n", version, gmtversion);
 	}
 
-	if (gmtversion[0]) {	/* The gmtversion attribute was available [starting with DCW 1.2.0] */
+	if (gmtversion[0]) {	/* The gmtversion attribute was available [starting with DCW 2.0.0] */
 		int maj, min, rel;
 		if (sscanf (gmtversion, "%d.%d.%d", &maj, &min, &rel) != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse minimum GMT version information\n");
@@ -432,8 +454,9 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		k = ks;
 		if (want_state) {
-			if ((item = gmtdcw_find_state (state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Country %s does not have states (skipped)\n", code);
+			item = gmtdcw_find_state (GMT, state, code, GMT_DCW_state, GMT_DCW_STATES, new_CN_codes);
+			if (item == -1) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Country %s does not have a state named %s (skipped)\n", code, state);
 				continue;
 			}
 			snprintf (TAG, GMT_LEN16, "%s%s", GMT_DCW_country[k].code, GMT_DCW_state[item].code);

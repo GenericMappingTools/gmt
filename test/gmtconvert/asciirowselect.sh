@@ -34,8 +34,10 @@ gmt convert one.txt two.txt -q:1+f > answer2.txt
 cat << EOF > truth2.txt
 > Seg 1 File 1
 2010-12-01T00:00:00	0
+2010-12-02T00:00:00	1
 > Seg 1 File 2
 2011-02-01T00:00:00	200
+2011-02-02T00:00:00	201
 EOF
 diff truth2.txt answer2.txt --strip-trailing-cr >> fail
 # Case 3: Limit to just Dec 30-Jan 2 inclusive
