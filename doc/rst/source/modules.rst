@@ -45,9 +45,9 @@ All modules are requested via a call to the :doc:`gmt` program.
    filter1d
    fitcircle
    gmt2kml
+   gmtbinstats
    gmtconnect
    gmtconvert
-   gmtbinstats
    gmtdefaults
    grdgdal
    gmtget
