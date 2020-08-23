@@ -5565,7 +5565,6 @@ GMT_LOCAL bool gmtplot_z_axis_side (struct GMT_CTRL *GMT, unsigned int axis, uns
 		case 4: below = (quadrant == 3);	break;
 		default: below = true;	/* Just to avoid Coverity issues */
 	}
-	fprintf (stderr, "Zaxis = %d quadrant = %d below = %d\n", axis, quadrant, below);
 	return below;
 }
 
