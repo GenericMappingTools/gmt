@@ -1663,7 +1663,7 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file) {
 		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
 	else
 		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
-	GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+	return GMT_RUNTIME_ERROR;
 }
 
 /* Functions dealing with the reading of the COE ASCII database */
