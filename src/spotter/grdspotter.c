@@ -567,7 +567,10 @@ EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 	/* Load in the Euler stage poles */
 
-	n_stages = spotter_init (GMT, Ctrl->E.file, &p, 1, false, Ctrl->E.mode, &Ctrl->N.t_upper);
+	if ((i = spotter_init (GMT, Ctrl->E.file, &p, 1, false, Ctrl->E.mode, &Ctrl->N.t_upper)) < 0)
+		Return (-i);
+	
+	n_stages = (unsigned int)i;
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
 

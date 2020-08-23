@@ -398,6 +398,7 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 	unsigned int n_stages = 0;	/* Number of stage poles */
 	unsigned int geometry;
 	int n_fields, error;		/* Misc. signed counters */
+	int sval;
 	int spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 	bool make_path = false;		/* true means create continuous path, false works on discrete points */
 	bool E_first = true;
@@ -456,12 +457,14 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to convert %s to half-rates\n", Ctrl->E.rot.file);
 				Return (API->error);
 			}
-			n_stages = spotter_init (GMT, tmpfile, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
+			sval = spotter_init (GMT, tmpfile, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
 			gmt_remove_file (GMT, tmpfile);
 		}
 		else
-			n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
-
+			sval = spotter_init (GMT, Ctrl->E.rot.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
+		if (sval < 0)
+			Return (-sval);
+		n_stages = (unsigned int)sval;
 		spotter_way = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? SPOTTER_FWD : SPOTTER_BACK;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Loaded rotations in order for %slines; calling backtracker_spotter_track with direction %swards\n", emode[mode], fmode[(spotter_way+1)/2]);
 
