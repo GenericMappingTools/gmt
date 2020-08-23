@@ -105,7 +105,7 @@ steps:
 # Cache the ${HOME}/.gmt directory, for docs and testing
 - task: Cache@2
   inputs:
-    key: cachedata | 20200702
+    key: cachedata | 20200820-3
     path: $(HOMEPATH)/.gmt
     cacheHitVar: CACHE_CACHEDATA_RESTORED
   displayName: Cache GMT remote data for testing
@@ -139,16 +139,10 @@ steps:
     gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
   displayName: Check a few simple commands
 
-# Download remote files, if not already cached
+# Download remote files, if not already cached [Windows agents always fail]
 - bash: |
     set -x -e
-    gmt get -Dcache
-    gmt which -Ga @earth_relief_30m @earth_relief_20m @earth_relief_15m \
-        @earth_relief_10m @earth_relief_10m_g @earth_relief_06m \
-        @earth_relief_05m_g @earth_relief_05m @earth_relief_04m \
-        @earth_relief_02m @earth_relief_01m
-    gmt which -Ga @earth_day_01d @earth_day_20m
-    gmt which -Ga @earth_night_20m
+    exit 1
   displayName: Download remote data
   condition: ne(variables['CACHE_CACHEDATA_RESTORED'], true)
 

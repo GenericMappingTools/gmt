@@ -8992,6 +8992,7 @@ int gmt_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double val
 }
 
 bool gmt_same_fill (struct GMT_CTRL *GMT, struct GMT_FILL *F1, struct GMT_FILL *F2) {
+	gmt_M_unused(GMT);
 	/* Return true if the two fills are identical */
 	if (F1->use_pattern != F2->use_pattern) return false;	/* One is a pattern, the other isn't, so cannot be the same */
 	if (F1->use_pattern) {	/* Both are patterns */
@@ -9348,6 +9349,7 @@ void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	G->font_label.set = 0;
 	G->dist_unit = GMT->current.setting.proj_length_unit;
 	G->pen = GMT->current.setting.map_default_pen;
+	G->debug_pen = GMT->current.setting.map_default_pen;
 	G->line_pen = GMT->current.setting.map_default_pen;
 	gmt_M_rgb_copy (G->rgb, GMT->current.setting.ps_page_rgb);		/* Default box color is page color [nominally white] */
 }
@@ -9408,6 +9410,7 @@ unsigned int gmt_contour_first_pos (struct GMT_CTRL *GMT, char *arg) {
 	/* Because of backwards compatibility, we need to anticipate shits like -A+1 for a
 	 * single annotated contour and hence cannot confuse it with a modifier for contour specs.
 	 * Thus, here we scan past any leading single contour specification using deprecated syntax. */
+	gmt_M_unused(GMT);
 	unsigned int k = 1;
 	if (arg[0] != '+') return 0;	/* Start checking from start */
 	if (isalpha (arg[1]) || arg[1] == '=') return 0;	/* Standard modifier */
@@ -9561,7 +9564,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, c;
 	char *specs = NULL;
 
-	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+i][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+x|X<suffix>][+=<prefix>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d[<pen>]][+e][+f<font>][+g<fill>][+i][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+x|X<suffix>][+=<prefix>] strings */
 
 	/* txt is pointing to the very first modifier */
 
@@ -9611,6 +9614,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 'd':	/* Debug option - draw helper points or lines */
 				G->debug = true;
+				if (p[1] && gmt_getpen (GMT, &p[1], &G->debug_pen)) bad++;
 				break;
 
 			case 'e':	/* Just lay down text info; Delay actual label plotting until a psclip -C call */
@@ -9899,7 +9903,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	char *specs = NULL;
 
-	/* Decode [+a<angle>|n|p[u|d]][+d][+g<fill>][+i][+n|N<dx>[/<dy>]][+p[<pen>]]+s<symbolinfo>[+w<width>] strings */
+	/* Decode [+a<angle>|n|p[u|d]][+d[<pen>]][+g<fill>][+i][+n|N<dx>[/<dy>]][+p[<pen>]]+s<symbolinfo>[+w<width>] strings */
 
 	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
 
@@ -9927,6 +9931,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 
 			case 'd':	/* Debug option - draw helper points or lines */
 				G->debug = true;
+				if (p[1] && gmt_getpen (GMT, &p[1], &G->debug_pen)) bad++;
 				break;
 
 			case 'g':	/* Symbol Fill specification */
@@ -13189,6 +13194,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	gmt_init_fill (GMT, &P->sfill, gmt_M_is255 (127), gmt_M_is255 (127), gmt_M_is255 (127));	/* Default if gray shade is used */
 	P->pen1 = GMT->current.setting.map_frame_pen;			/* Heavier pen for main outline */
 	P->pen2 = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
+	P->debug_pen = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
 	P->gap = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_GAP;	/* Default is 2p */
 	/* Initialize the panel clearances */
 	P->padding[XLO] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
@@ -13222,6 +13228,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 				break;
 			case 'd':	/* debug mode for developers */
 				P->debug = true;
+				if (p[1] && gmt_getpen (GMT, &p[1], &P->debug_pen)) n_errors++;
 				break;
 			case 'g':	/* Set fill */
 				if (!p[1] || gmt_getfill (GMT, &p[1], &P->fill)) n_errors++;
@@ -13422,6 +13429,8 @@ unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char 
 	bool done = false, in_quote = false;
 	gmt_M_unused(GMT);
 
+	if (string == NULL) return 0;	/* Nothing to do */
+	
 	string_len = (unsigned int)strlen (string);
 	token[0] = 0;	/* Initialize token to NULL in case we are at end */
 

@@ -7,18 +7,19 @@
 #
 
 gmt begin ex49
-	# Convert coarser age grid to pixel registration to match bathymetry grid
-	gmt grdsample @age_gridline.nc -T -Gage_pixel.nc
+	# Pull depth and age subsets from the global remote files
+	gmt grdcut @earth_relief_02m -R30W/5E/30S/5S -Gdepth_pixel.nc
+	gmt grdcut @earth_age_02m -R30W/5E/30S/5S -Gage_pixel.nc
 	# Image depths with color-coded age contours
 	gmt makecpt -Cabyss -T-7000/0 -H > z.cpt
 	gmt makecpt -Chot -T0/100/10 -H > t.cpt
-	gmt grdimage @depth_pixel.nc -JM15c -Cz.cpt -B -BWSne --FORMAT_GEO_MAP=dddF
+	gmt grdimage depth_pixel.nc -JM15c -Cz.cpt -B -BWSne --FORMAT_GEO_MAP=dddF
 	gmt plot -W1p @ridge_49.txt
 	gmt grdcontour age_pixel.nc -A+f14p -Ct.cpt -Wa0.1p+c -GL30W/22S/5E/13S
 	gmt colorbar -Cz.cpt -DjTR+w5c/0.4c+h+o0.75c/0.4c -Baf+u" km" -W0.001 -F+p1p+gbeige
 	# Obtain depth, age pairs by dumping grids and pasting results
 	gmt grd2xyz age_pixel.nc -bof > age.bin
-	gmt grd2xyz @depth_pixel.nc -bof > depth.bin
+	gmt grd2xyz depth_pixel.nc -bof > depth.bin
 	gmt convert -A age.bin depth.bin -bi3f -o2,5,5 -bo3f > depth-age.bin
 	# Create and map density grid of (age,depth) distribution
 	gmt xyz2grd -R0/100/-6500/0 -I0.25/25 -r depth-age.bin -bi3f -An -Gdensity.nc
@@ -52,5 +53,5 @@ gmt begin ex49
 	S 0.5c - 0.9c - 1p 0.75c
 	S 0.5c s 0.1c white - 0.75c
 	EOF
-	rm -f age_pixel.nc age.bin depth.bin depth-age.bin density.nc modal.txt ps.txt ss.txt z.cpt t.cpt
+	rm -f age_pixel.nc depth_pixel.nc age.bin depth.bin depth-age.bin density.nc modal.txt ps.txt ss.txt z.cpt t.cpt
 gmt end show

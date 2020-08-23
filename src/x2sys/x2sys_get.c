@@ -241,7 +241,8 @@ EXTERN_MSC int GMT_x2sys_get (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the x2sys_get main code ----------------------------*/
 
-	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
+	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG))
+		Return (GMT_RUNTIME_ERROR);
 
 	if (s->geographic) {	/* Meaning longitude, latitude */
 		gmt_set_geographic (GMT, GMT_OUT);
@@ -252,11 +253,13 @@ EXTERN_MSC int GMT_x2sys_get (void *V_API, int mode, void *args) {
 
 	if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region to match TAG region */
 
-	if (Ctrl->F.flags) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F");
+	if (Ctrl->F.flags && x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F"))
+		Return (GMT_RUNTIME_ERROR);
 	for (ii = combo = 0; ii < s->n_out_columns; ii++) combo |= X2SYS_bit (s->out_order[ii]);
 
 	if (Ctrl->N.flags) {
-		x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->N.flags, s), "-N");
+		if (x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->N.flags, s), "-N"))
+			Return (GMT_RUNTIME_ERROR);
 		for (ii = missing = 0; ii < s->n_out_columns; ++ii)
 			missing |= X2SYS_bit (s->out_order[ii]);
 	}
@@ -265,11 +268,13 @@ EXTERN_MSC int GMT_x2sys_get (void *V_API, int mode, void *args) {
 
 	/* Read existing track-information from <ID>_tracks.d file */
 
-	x2sys_err_fail (GMT, x2sys_bix_read_tracks (GMT, s, &B, 1, &n_tracks), "");
+	if (x2sys_err_fail (GMT, x2sys_bix_read_tracks (GMT, s, &B, 1, &n_tracks), ""))
+		Return (GMT_RUNTIME_ERROR);
 
 	/* Read geographical track-info from <ID>_index.b file */
 
-	x2sys_err_fail (GMT, x2sys_bix_read_index (GMT, s, &B, Ctrl->S.active), "");
+	if (x2sys_err_fail (GMT, x2sys_bix_read_index (GMT, s, &B, Ctrl->S.active), ""))
+		Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->L.active) {
 		n_flags = urint (ceil (n_tracks / 32.0));
@@ -334,8 +339,10 @@ EXTERN_MSC int GMT_x2sys_get (void *V_API, int mode, void *args) {
 
 	/* Ok, now we can start finding the tracks requested */
 
-	x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &start_i, &start_j, &B, &ID), "");
-	x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &stop_i, &stop_j, &B, &ID), "");
+	if (x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &start_i, &start_j, &B, &ID), ""))
+		Return (GMT_RUNTIME_ERROR);
+	if (x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &stop_i, &stop_j, &B, &ID), ""))
+		Return (GMT_RUNTIME_ERROR);
 	if (B.periodic && stop_i < start_i) stop_i += B.nx_bin;	/* Deal with longitude periodicity */
 
 	for (j = start_j; j <= stop_j; j++) {

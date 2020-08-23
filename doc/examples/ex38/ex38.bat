@@ -10,21 +10,22 @@ gmt begin ex38
 	gmt makecpt -Crainbow -T0/15/1 -H > c.cpt
 	gmt makecpt -Crainbow -T-3/3 -H > n.cpt
 	gmt makecpt -Crainbow -T0/15 -H > q.cpt
+	gmt grdcut @earth_relief_02m -R-60/-45/-20/-10 -Gtopo_38.nc
 
-	gmt subplot begin 2x2 -Fs7c -A+jTR+gwhite+p1p+o0.2c/0.2c -M0.75c/1.2c -R@topo_38.nc -JM7c -B5 -BWSen -Y10c
+	gmt subplot begin 2x2 -Fs7c -A+jTR+gwhite+p1p+o0.2c/0.2c -M0.75c/1.2c -Rtopo_38.nc -JM7c -B5 -BWSen -Y10c
 		gmt subplot set 0 -A"Original"
-		gmt grdimage @topo_38.nc -I+d -Ct.cpt
+		gmt grdimage topo_38.nc -I+d -Ct.cpt
 
 		gmt subplot set 1 -A"Equalized"
-		gmt grdhisteq @topo_38.nc -Gout.nc -C16
+		gmt grdhisteq topo_38.nc -Gout.nc -C16
 		gmt grdimage out.nc -Cc.cpt
 
 		gmt subplot set 2 -A"Normalized"
-		gmt grdhisteq @topo_38.nc -Gout.nc -N
+		gmt grdhisteq topo_38.nc -Gout.nc -N
 		gmt grdimage out.nc -Cn.cpt
 
 		gmt subplot set 3 -A"Quadratic"
-		gmt grdhisteq @topo_38.nc -Gout.nc -Q
+		gmt grdhisteq topo_38.nc -Gout.nc -Q
 		gmt grdimage out.nc -Cq.cpt
 	gmt subplot end
 

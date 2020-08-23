@@ -232,27 +232,23 @@ GMT_LOCAL int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
 	return (err);
 }
 
-void x2sys_set_home (struct GMT_CTRL *GMT) {
+int x2sys_set_home (struct GMT_CTRL *GMT) {
 	char *this = NULL;
-#ifdef WIN32
-	static char *par = "%X2SYS_HOME%";
-#else
-	static char *par = "$X2SYS_HOME";
-#endif
 
-	if (X2SYS_HOME) return;	/* Already set elsewhere */
+	if (X2SYS_HOME) return GMT_NOERROR;	/* Already set elsewhere */
 
 	if ((this = getenv ("X2SYS_HOME")) != NULL) {	/* Set user's default path */
 		X2SYS_HOME = gmt_M_memory (GMT, NULL, strlen (this) + 1, char);
 		strcpy (X2SYS_HOME, this);
 	}
 	else {	/* Require user to set this parameters since subdirs will be created and it would be messy to just use . */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s has not been set but is a required parameter\n", par);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Environmental parameter X2SYS_HOME has not been set but is a required parameter\n");
+		return (GMT_RUNTIME_ERROR);
 	}
 #ifdef WIN32
-		gmt_dos_path_fix (X2SYS_HOME);
+	gmt_dos_path_fix (X2SYS_HOME);
 #endif
+	return GMT_NOERROR;
 }
 
 void x2sys_path (struct GMT_CTRL *GMT, char *fname, char *path) {
@@ -293,7 +289,7 @@ int x2sys_fclose (struct GMT_CTRL *GMT, char *fname, FILE *fp) {
 	return (X2SYS_NOERROR);
 }
 
-GMT_LOCAL void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s) {
+GMT_LOCAL int x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s) {
 	unsigned int i;
 	char line[GMT_BUFSIZ] = {""};
 
@@ -301,16 +297,17 @@ GMT_LOCAL void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_I
 		for (i = 0; i < s->skip; i++) {
 			if (!fgets (line, GMT_BUFSIZ, fp)) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error in header line %d\n", i);
-				GMT_exit (GMT, GMT_DATA_READ_ERROR);
+				return (GMT_DATA_READ_ERROR);
 			}
 		}
 	}
 	else if (s->file_type == X2SYS_BINARY) {			/* Native binary, skip bytes */
 		if (fseek (fp, (off_t)s->skip, SEEK_CUR)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Seed error while skipping headers\n");
-			GMT_exit (GMT,GMT_DATA_READ_ERROR);
+			return (GMT_DATA_READ_ERROR);
 		}
 	}
+	return (GMT_NOERROR);
 }
 
 int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I) {
@@ -324,7 +321,8 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	struct X2SYS_INFO *X = NULL;
 	char line[GMT_BUFSIZ] = {""}, cardcol[80] = {""}, yes_no;
 
-	x2sys_set_home (GMT);
+	if (x2sys_set_home (GMT))
+		return (GMT_RUNTIME_ERROR);
 
 	X = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_INFO);
 	X->TAG = strdup (TAG);
@@ -653,6 +651,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	 * pointer data.
 	 */
 
+	int error;
 	uint64_t j;
  	unsigned int i, start = 0;
 	bool first = true;
@@ -682,7 +681,8 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	z = gmt_M_memory (GMT, NULL, s->n_fields, double *);
 	for (i = 0; i < s->n_fields; i++) z[i] = gmt_M_memory (GMT, NULL, n_alloc, double);
 	p->ms_rec = gmt_M_memory (GMT, NULL, n_alloc, uint64_t);
-	x2sys_skip_header (GMT, fp, s);
+	if ((error = x2sys_skip_header (GMT, fp, s)))
+		return error;
 	p->n_segments = 0;	/* So that first increment sets it to 0 */
 	j = 0;
 	while (!x2sys_read_record (GMT, fp, rec, s, G)) {	/* Gets the next data record */
@@ -1108,7 +1108,8 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 
 	if (!TAG) return (X2SYS_TAG_NOT_SET);
 
-	x2sys_set_home (GMT);
+	if (x2sys_set_home (GMT))
+		return (GMT_RUNTIME_ERROR);
 
 	gmt_M_memset (B, 1, struct X2SYS_BIX);
 	gmt_M_memset (unit, 4, char);
@@ -1312,7 +1313,8 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 	else
 		strncpy (s->suffix, sfile, 16);
 
-	x2sys_path_init (GMT, s);		/* Prepare directory paths to data */
+	if (x2sys_path_init (GMT, s))		/* Prepare directory paths to data */
+		return (GMT_DIM_TOO_LARGE);
 
 	*S = s;
 	return (X2SYS_NOERROR);
@@ -1366,20 +1368,20 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	if (!fgets (line, GMT_BUFSIZ, ftrack)) {	/* Skip header record */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error in header record\n");
 		fclose (ftrack);
-		GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
+		return GMT_DATA_READ_ERROR;
 	}
 	gmt_chop (line);	/* Remove trailing CR or LF */
 	if (strcmp (&line[2], S->TAG)) {	/* Mismatch between database tag and present tag */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "track data file %s lists tag as %s but active tag is %s\n",  track_path, &line[2], S->TAG);
 		fclose (ftrack);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+		return GMT_RUNTIME_ERROR;
 	}
 	while (fgets (line, GMT_BUFSIZ, ftrack)) {
 		gmt_chop (line);	/* Remove trailing CR or LF */
 		if (sscanf (line, "%s %d %d", name, &id, &flag) != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read name id flag from track data file\n");
 			fclose (ftrack);
-			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+			return GMT_RUNTIME_ERROR;
 		}
 		if (mode == 1) {	/* Add to array */
 			if (id >= n_alloc) {
@@ -1536,11 +1538,12 @@ int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *
  * the data directories (if any) for this TAG.
  */
 
-void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
+int x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 	char file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
-	x2sys_set_home (GMT);
+	if (x2sys_set_home (GMT))
+		return (GMT_RUNTIME_ERROR);
 
 	sprintf (file, "%s/%s/%s_paths.txt", X2SYS_HOME, S->TAG, S->TAG);
 
@@ -1552,7 +1555,7 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "(Will only look in current directory for such files)\n");
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "(mgd77[+] also looks in MGD77_HOME and mgg looks in GMT_SHAREDIR/mgg)\n");
 		}
-		return;
+		return GMT_NOERROR;
 	}
 
 	while (fgets (line, GMT_BUFSIZ, fp) && n_x2sys_paths < MAX_DATA_PATHS) {
@@ -1565,7 +1568,10 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 		x2sys_datadir[n_x2sys_paths] = gmt_M_memory (GMT, NULL, strlen (line)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], line);
 		n_x2sys_paths++;
-		if (n_x2sys_paths == MAX_DATA_PATHS) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Reached maximum directory (%d) count in %s!\n", MAX_DATA_PATHS, file);
+		if (n_x2sys_paths == MAX_DATA_PATHS) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Reached maximum directory (%d) count in %s!\n", MAX_DATA_PATHS, file);
+			return GMT_DIM_TOO_LARGE;
+		}
 	}
 	fclose (fp);
 
@@ -1575,8 +1581,12 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 		x2sys_datadir[n_x2sys_paths] = gmt_M_memory (GMT, NULL, strlen (GMT->session.CACHEDIR)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], GMT->session.CACHEDIR);
 		n_x2sys_paths++;
-		if (n_x2sys_paths == MAX_DATA_PATHS) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Reached maximum directory (%d) count by adding cache dir!\n", MAX_DATA_PATHS);
+		if (n_x2sys_paths == MAX_DATA_PATHS) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Reached maximum directory (%d) count by adding cache dir!\n", MAX_DATA_PATHS);
+			return GMT_DIM_TOO_LARGE;
+		}
 	}
+	return GMT_NOERROR;
 }
 
 /* x2sys_get_data_path takes a track name as argument and returns the full path
@@ -1653,12 +1663,12 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file) {
 		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
 	else
 		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
-	GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+	return GMT_RUNTIME_ERROR;
 }
 
 /* Functions dealing with the reading of the COE ASCII database */
 
-uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *nt) {
+int64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *nt) {
 	 /* S:		The X2SYS_INFO structure
 	 * dbase:	Name of the crossover data file [NULL for stdin]
 	 * ignorefile:	Name of file with track names to ignore [or NULL if none]
@@ -1685,7 +1695,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open crossover file %s\n", dbase);
 		*nx = 0;
-		return 0;
+		return -GMT_ERROR_ON_FOPEN;
 	}
 
 	n_alloc_p = n_alloc_t = GMT_CHUNK;
@@ -1702,7 +1712,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		if (!strncmp (line, "# Tag:", 6)) {	/* Found the # TAG record */
 			if (strcmp (S->TAG, &line[7])) {	/* -Ttag and this TAG do not match */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", dbase, &line[7], S->TAG);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR);
+				return (-GMT_RUNTIME_ERROR);
 			}
 			continue;	/* Goto next record */
 		}
@@ -1734,12 +1744,12 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 	our_item -= 10;		/* Account for the 10 common items */
 	if (our_item < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Crossover file %s does not have the specified column %s - aborting\n", dbase, fflag);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		return (-GMT_RUNTIME_ERROR);
 	}
 
 	if (ignorefile && (k = x2sys_read_list (GMT, ignorefile, &ignore, &n_ignore)) != X2SYS_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Ignore file %s cannot be read - aborting\n", ignorefile);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		return (-GMT_RUNTIME_ERROR);
 	}
 
 	check_box = (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI]));	/* Specified a rectangular box */
@@ -1762,7 +1772,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		}
 		if (line[0] != '>') {	/* Trouble */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No segment header found [line %" PRIu64 "]\n", rec_no);
-			GMT_exit (GMT, GMT_RUNTIME_ERROR);
+			return (-GMT_RUNTIME_ERROR);
 		}
 		n_items = sscanf (&line[2], "%s %d %s %d %s %s", trk[0], &year[0], trk[1], &year[1], info[0], info[1]);
 		for (k = 0; k < strlen (trk[0]); k++) if (trk[0][k] == '.') trk[0][k] = '\0';
@@ -1823,11 +1833,11 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 			else {
 				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Header time specification tstart%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), start[k], rec_no);
-					GMT_exit (GMT, GMT_RUNTIME_ERROR);
+					return (-GMT_RUNTIME_ERROR);
 				}
 				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Header time specification tstop%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), stop[k], rec_no);
-					GMT_exit (GMT, GMT_RUNTIME_ERROR);
+					return (-GMT_RUNTIME_ERROR);
 				}
 			}
 			P[p].dist[k] = dist[k];
@@ -1868,7 +1878,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 					P[p].COE[k].data[i][COE_T] = GMT->session.d_NaN;
 				else if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time specification t%d (%s) in wrong format [line %" PRIu64 "]\n", (i+1), t_txt[i], rec_no);
-					GMT_exit (GMT, GMT_RUNTIME_ERROR);
+					return (-GMT_RUNTIME_ERROR);
 				}
 			}
 			if (!two_values) {	/* Modify z to return the two values at the crossover point */
@@ -2016,7 +2026,7 @@ GMT_LOCAL unsigned int x2sys_separate_aux_columns2 (struct GMT_CTRL *GMT, unsign
 	return (n_aux);
 }
 
-void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctable, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR) {
+int x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctable, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR) {
 	/* Load an ephemeral correction table */
 	/* Pass aux as NULL if the auxiliary columns do not matter (only used by x2sys_datalist) */
 	unsigned int i, n_items, n_aux = 0, n_cols, missing;
@@ -2027,7 +2037,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 		sprintf (path, "%s/%s/%s_corrections.txt", X2SYS_HOME, S->TAG, S->TAG);
 		if (access (path, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No default X2SYS Correction table (%s) for %s found!\n", path, S->TAG);
-			GMT_exit (GMT, GMT_FILE_NOT_FOUND);
+			return (GMT_FILE_NOT_FOUND);
 		}
 		ctable = path;
 	}
@@ -2066,5 +2076,5 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 	x2sys_free_list (GMT, aux_name, n_aux);
 	if (!missing) MGD77_Parse_Corrtable (GMT, ctable, trk_name, (unsigned int)ntracks, n_cols, col_name, 0, CORR);
 	x2sys_free_list (GMT, col_name, n_cols);
-	if (missing) GMT_exit (GMT, GMT_RUNTIME_ERROR);
+	return (missing)? GMT_RUNTIME_ERROR : GMT_NOERROR;
 }
