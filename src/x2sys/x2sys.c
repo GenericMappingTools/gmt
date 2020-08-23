@@ -289,7 +289,7 @@ int x2sys_fclose (struct GMT_CTRL *GMT, char *fname, FILE *fp) {
 	return (X2SYS_NOERROR);
 }
 
-GMT_LOCAL void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s) {
+GMT_LOCAL int x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s) {
 	unsigned int i;
 	char line[GMT_BUFSIZ] = {""};
 
@@ -297,16 +297,17 @@ GMT_LOCAL void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_I
 		for (i = 0; i < s->skip; i++) {
 			if (!fgets (line, GMT_BUFSIZ, fp)) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error in header line %d\n", i);
-				GMT_exit (GMT, GMT_DATA_READ_ERROR);
+				return (GMT_DATA_READ_ERROR);
 			}
 		}
 	}
 	else if (s->file_type == X2SYS_BINARY) {			/* Native binary, skip bytes */
 		if (fseek (fp, (off_t)s->skip, SEEK_CUR)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Seed error while skipping headers\n");
-			GMT_exit (GMT,GMT_DATA_READ_ERROR);
+			return (GMT_DATA_READ_ERROR);
 		}
 	}
+	return (GMT_NOERROR);
 }
 
 int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I) {
@@ -650,6 +651,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	 * pointer data.
 	 */
 
+	int error;
 	uint64_t j;
  	unsigned int i, start = 0;
 	bool first = true;
@@ -679,7 +681,8 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	z = gmt_M_memory (GMT, NULL, s->n_fields, double *);
 	for (i = 0; i < s->n_fields; i++) z[i] = gmt_M_memory (GMT, NULL, n_alloc, double);
 	p->ms_rec = gmt_M_memory (GMT, NULL, n_alloc, uint64_t);
-	x2sys_skip_header (GMT, fp, s);
+	if ((error = x2sys_skip_header (GMT, fp, s)))
+		return error;
 	p->n_segments = 0;	/* So that first increment sets it to 0 */
 	j = 0;
 	while (!x2sys_read_record (GMT, fp, rec, s, G)) {	/* Gets the next data record */
