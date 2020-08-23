@@ -429,7 +429,8 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the x2sys_cross main code ----------------------------*/
 
-	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &Bix, &GMT->current.io), Ctrl->T.TAG);
+	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &Bix, &GMT->current.io), Ctrl->T.TAG))
+		Return (GMT_RUNTIME_ERROR);
 	if (!s->geographic) {
 		gmt_set_column (GMT, GMT_IO, GMT_X, GMT_IS_UNKNOWN);
 		gmt_set_column (GMT, GMT_IO, GMT_Y, GMT_IS_UNKNOWN);
@@ -642,7 +643,8 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			Crashout (error);
 		}
 
-		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[A], &data[SET_A], s, &data_set[SET_A], &GMT->current.io, &n_rec[SET_A]), trk_name[A]);
+		if (x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[A], &data[SET_A], s, &data_set[SET_A], &GMT->current.io, &n_rec[SET_A]), trk_name[A]))
+			Return (GMT_RUNTIME_ERROR);
 
 		if (n_rec[SET_A] == 0) {	/* No data in track A */
 			x2sys_free_data (GMT, data[SET_A], s->n_out_columns, &data_set[SET_A]);
@@ -704,7 +706,8 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			}
 			else {	/* Must read a second file */
 
-				x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[B], &data[SET_B], s, &data_set[SET_B], &GMT->current.io, &n_rec[SET_B]), trk_name[B]);
+				if (x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[B], &data[SET_B], s, &data_set[SET_B], &GMT->current.io, &n_rec[SET_B]), trk_name[B]))
+					Return (GMT_RUNTIME_ERROR);
 
 				if (n_rec[SET_B] == 0) {	/* No data in track B */
 					x2sys_free_data (GMT, data[SET_B], s->n_out_columns, &data_set[SET_B]);

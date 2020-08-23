@@ -339,11 +339,13 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	/* Initialize system via the tag */
 
-	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &S, &B, &GMT->current.io), Ctrl->T.TAG);
+	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &S, &B, &GMT->current.io), Ctrl->T.TAG))
+		Return (GMT_RUNTIME_ERROR);
 
 	/* Verify that the chosen column is known to the system */
 
-	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C");
+	if (Ctrl->C.col && x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C"))
+		Return (GMT_RUNTIME_ERROR);
 	if (S->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -C must specify a single column name\n");
 		x2sys_end (GMT, S);
