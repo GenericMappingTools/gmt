@@ -38,8 +38,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVj"
 
-EXTERN_MSC void x2sys_set_home (struct GMT_CTRL *GMT);
-
 struct X2SYS_INIT_CTRL {
 	struct X2SYS_INIT_In {	/*  */
 		bool active;
@@ -329,7 +327,9 @@ EXTERN_MSC int GMT_x2sys_init (void *V_API, int mode, void *args) {
 
 	/* Determine the TAG directory */
 
-	x2sys_set_home (GMT);
+	if (x2sys_set_home (GMT))
+		Return (GMT_RUNTIME_ERROR);
+
 	x2sys_path (GMT, Ctrl->In.TAG, path);
 	if (x2sys_access (GMT, Ctrl->In.TAG, R_OK)) {	/* No such dir */
 		if (gmt_mkdir (path)) {
@@ -444,7 +444,8 @@ EXTERN_MSC int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	(Ctrl->I.active) ? fprintf (fp, " -I%s", Ctrl->I.string) : fprintf (fp, " -I1/1");
 	(GMT->common.R.active[RSET]) ? fprintf (fp, " -R%g/%g/%g/%g", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]) : fprintf (fp, " -R0/360/-90/90");
 	fprintf (fp, "\n");
-	x2sys_err_fail (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
+	if (x2sys_err_fail (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file))
+		Return (GMT_RUNTIME_ERROR);
 
 	/* Initialize the system's definition file  */
 
@@ -455,7 +456,8 @@ EXTERN_MSC int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	while (fgets (line, GMT_BUFSIZ, fp_def)) fprintf (fp, "%s", line);
-	x2sys_err_fail (GMT, x2sys_fclose (GMT, def_file, fp), def_file);
+	if (x2sys_err_fail (GMT, x2sys_fclose (GMT, def_file, fp), def_file))
+		Return (GMT_RUNTIME_ERROR);
 	fclose (fp_def);	/* Close local def file */
 
 	/* Initialize the system's tracks data base  */
@@ -467,7 +469,8 @@ EXTERN_MSC int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	}
 	fprintf (fp,"# %s\n", Ctrl->In.TAG);	/* Write header record to empty track file */
 
-	x2sys_err_fail (GMT, x2sys_fclose (GMT, track_file, fp), track_file);
+	if (x2sys_err_fail (GMT, x2sys_fclose (GMT, track_file, fp), track_file))
+		Return (GMT_RUNTIME_ERROR);
 
 	/* Initialize the system's index data base  */
 
@@ -476,7 +479,8 @@ EXTERN_MSC int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Could not create %s\n", bin_file);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
-	x2sys_err_fail (GMT, x2sys_fclose (GMT, bin_file, fp), bin_file);
+	if (x2sys_err_fail (GMT, x2sys_fclose (GMT, bin_file, fp), bin_file))
+		Return (GMT_RUNTIME_ERROR);
 
 	/* Initialize the system's track path file  */
 
@@ -488,7 +492,8 @@ EXTERN_MSC int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	fprintf (fp, "# Directories with data files for TAG %s\n", Ctrl->In.TAG);
 	fprintf (fp, "# The current directory is always searched first.\n");
 	fprintf (fp, "# Add full paths to search additional directories\n");
-	x2sys_err_fail (GMT, x2sys_fclose (GMT, path_file, fp), path_file);
+	if (x2sys_err_fail (GMT, x2sys_fclose (GMT, path_file, fp), path_file))
+		Return (GMT_RUNTIME_ERROR);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "completed successfully\n");
 
