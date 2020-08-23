@@ -20,7 +20,7 @@
  *
  *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * GMT_plot.c contains code related to plotting maps.  These functions requires
- * we pass both the GMT and PSL control strucure pointers.
+ * we pass both the GMT and PSL control structure pointers.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -2710,10 +2710,13 @@ GMT_LOCAL void gmtplot_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	 * containing spaces will be enclosed in single quotes.
 	 */
 	size_t length = 0;
-	char outstring[GMT_LEN1024] = {""};
+	char outstring[GMT_LEN1024] = {""}, not_used[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	PSL_command (PSL, "\n%% PostScript produced by:\n%%@GMT: gmt %s", GMT->init.module_name);
+	if (GMT->current.setting.run_mode == GMT_MODERN)
+		PSL_command (PSL, "\n%% PostScript produced by:\n%%@GMT: gmt %s", gmt_current_name (GMT->init.module_name, not_used));
+	else
+		PSL_command (PSL, "\n%% PostScript produced by:\n%%@GMT: gmt %s", GMT->init.module_name);
 	for (opt = options; opt; opt = opt->next) {
 		if (length >= GMT_LEN512) {
 			PSL_command (PSL, "%s \\\n%%@GMT:+", outstring);
@@ -3278,7 +3281,7 @@ GMT_LOCAL void gmtplot_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 
 	/* If called we simply draw the helper lines or points to assist in debug */
 
-	gmt_setpen (GMT, &GMT->current.setting.map_default_pen);
+	gmt_setpen (GMT, &G->debug_pen);
 	if (G->fixed) {	/* Place a small open circle at each fixed point */
 		PSL_setfill (PSL, GMT->session.no_rgb, PSL_OUTLINE);
 		for (row = 0; row < (uint64_t)G->f_n; row++)
@@ -4809,8 +4812,8 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	xyz_fwd = ((axis == GMT_X) ? &gmt_x_to_xx : (axis == GMT_Y) ? &gmt_y_to_yy : &gmt_z_to_zz);
 	primary = gmtplot_get_primary_annot (A);			/* Find primary axis items */
 	if (A->use_angle) {	/* Must honor the +a modifier */
-		if (axis == GMT_Y && doubleAlmostEqualZero (A->angle, 90.0)) ortho = false;	/* Y-Annotations are parallel */
-		else if (axis == GMT_Y && doubleAlmostEqualZero (A->angle, 0.0)) ortho = true;	/* Y-Annotations are normal */
+		if (axis != GMT_X && doubleAlmostEqualZero (A->angle, 90.0)) ortho = false;	/* Y/Z-Annotations are parallel */
+		else if (axis != GMT_X && doubleAlmostEqualZero (A->angle, 0.0)) ortho = true;	/* Y/Z-Annotations are normal */
 		if (axis == GMT_X && doubleAlmostEqualZero (A->angle, 0.0)) skip = true;	/* X-Annotations are parallel so do nothing */
 	}
 	else if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below]))
@@ -5417,6 +5420,7 @@ GMT_LOCAL void gmtplot_check_primary_secondary (struct GMT_CTRL *GMT) {
 
 	type = gmt_M_is_geographic (GMT, GMT_IN);
 	for (no = 0; no <= GMT_Z; no++) {
+		if (no < GMT_Z && !(GMT->current.map.frame.side[no] && GMT->current.map.frame.side[no+2])) continue;	/* That axis will not be annotated */
 		A = &GMT->current.map.frame.axis[no];
 		if (A->type == GMT_TIME) continue;	/* We assume those are set correctly */
 		for (k = 0; k < 3; k++) {	/* For each axis */
@@ -7499,7 +7503,7 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width, double fsize, struct GMT_FONT *F) {
 	/* Place time axis indicator via call to basemap plus adding triangle here */
 	int symbol = PSL_INVTRIANGLE;	/* Time marker when labels are below the line */
-	char cmd[GMT_LEN128] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis = 0;
+	char cmd[GMT_LEN256] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis = 0;
 	bool was = GMT->current.map.frame.init;
 	double fx, fy, dy, dy2, xt, s = 1.0, angle = 0.0, h;
 	struct GMT_PEN pen;
@@ -7508,7 +7512,7 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 	gmtplot_just_f_xy (justify, &fx, &fy);
 	gmt_M_memset (&pen, 1, struct GMT_PEN);
 	gmt_getpen (GMT, P1, &pen);	/* Pen for the time axis */
-	dy = pen.width / PSL_POINTS_PER_INCH;	/* Need to get pen width t odetermine triangle size */
+	dy = pen.width / PSL_POINTS_PER_INCH;	/* Need to get pen width to determine triangle size */
 	dy2 = dy / 2.0;	/* Half pen width */
 	x += fx * w;	y += fy * dy;	/* Adjust the (x,y) to be mid-point of axis */
 	xt = w * t;	/* Relative fraction of w along the axis from left point */
@@ -7538,10 +7542,10 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 		GMT->common.R.active[RSET] = GMT->common.J.active = false;
 	if (fsize == 0.0)
 			F->size = 3.0 * dy * PSL_POINTS_PER_INCH;	/* Set a scaled font size */
-	if (kind == 'F')	/* Want annotations so add a */
-		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
-	else	/* Only axis with ticks */
-		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s", region, width, unit, axis, P1, gmt_putfont (GMT, F));
+	if (kind == 'F')	/* Want annotations so add -Baf and set annotation font */
+		sprintf (cmd, "%s -JX%gi/0.0001i -Baf%s -B%c -X0 -Y0 --MAP_FRAME_PEN=%s --FONT_ANNOT_PRIMARY=+%s --GMT_HISTORY=false", region, width, unit, axis, P1, gmt_putfont (GMT, F));
+	else	/* Only axis with ticks so only -Bf is used */
+		sprintf (cmd, "%s -JX%gi/0.0001i -Bf%s -B%c -X0 -Y0 --MAP_FRAME_PEN=%s --GMT_HISTORY=false", region, width, unit, axis, P1);
 	GMT->current.map.frame.init = false;	/* To enable more -B parsing */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call basemap from gmtplot_prog_indicator_F with args %s\n", cmd);
 	if (GMT_Call_Module (GMT->parent, "basemap", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
@@ -7562,7 +7566,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last, form, justify;
 	bool O_active = GMT->common.O.active, auto_media = false, do_paint = false;
 	unsigned int this_proj, write_to_mem = 0, switch_charset = 0, n_movie_items[2] = {0, 0};
-	char *mode[2] = {"w","a"}, *movie_item_arg[2][GMT_LEN32];
+	char *mode[2] = {"w","a"}, *movie_item_arg[2][GMT_LEN32], not_used[GMT_LEN32] = {""};
 	static char *ps_mode[2] = {"classic", "modern"}, *F_name[2] = {"label", "prog_indicator"};
 	double media_size[2], plot_x, plot_y;
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
@@ -7656,7 +7660,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	}
 	else if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
-		if (O_active && k == 0) {
+		if (O_active && k == 0 && !gmt_M_file_is_memory (Out->arg)) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "-O given but append-mode not selected for file %s\n", &(Out->arg[k]));
 		}
 		if (gmt_M_file_is_memory (&(Out->arg[k]))) {
@@ -7731,7 +7735,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	/* Get title */
 
-	snprintf (GMT->current.ps.title, GMT_LEN256, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
+	if (GMT->current.setting.run_mode == GMT_MODERN)
+		snprintf (GMT->current.ps.title, GMT_LEN256, "GMT v%s Document from %s", GMT_VERSION, gmt_current_name (GMT->init.module_name, not_used));
+	else
+		snprintf (GMT->current.ps.title, GMT_LEN256, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
 	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem|switch_charset, O_active, GMT->current.setting.ps_color_mode,
 		GMT->current.ps.origin, GMT->current.setting.map_origin, media_size, GMT->current.ps.title, fno);
@@ -7799,11 +7806,15 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	/* If requested, place the timestamp */
 
 	if (GMT->current.ps.logo_cmd) {
-		char txt[4] = {' ', '-', 'X', 0};
+		char txt[4] = {' ', '-', 'X', 0}, not_used[GMT_LEN32] = {""};
 		struct GMT_OPTION *opt = NULL;
-		size_t len = strlen (GMT->init.module_name);
+		size_t len;
 		/* -Uc was given as shorthand for "plot current command line" */
-		strncpy (GMT->current.ps.map_logo_label, GMT->init.module_name, GMT_LEN256-1);
+		if (GMT->current.setting.run_mode == GMT_MODERN)
+			strncpy (GMT->current.ps.map_logo_label, gmt_current_name (GMT->init.module_name, not_used), GMT_LEN256-1);
+		else
+			strncpy (GMT->current.ps.map_logo_label, GMT->init.module_name, GMT_LEN256-1);
+		len = strlen (GMT->current.ps.map_logo_label);
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
 			txt[2] = opt->option;
@@ -8177,7 +8188,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		P->n_bytes = PSL->internal.n;   /* Length of plot buffer; note P->n_alloc = 0 since we did not allocate this string here */
 		P->mode = PSL->internal.pmode;  /* Mode of plot (GMT_PS_{HEADER,TRAILER,COMPLETE}) */
 		PH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
-		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_TEXT, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
+		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_TEXT, GMT_WRITE_NORMAL, NULL, GMT->current.ps.memname, P) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 		}
 		/* coverity[leaked_storage] */	/* We can't free P because it was written into a 'memory file' */

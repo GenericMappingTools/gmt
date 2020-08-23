@@ -158,7 +158,10 @@ static int clear_sessions (struct GMTAPI_CTRL *API) {
 		return GMT_FILE_NOT_FOUND;
 	}
 #ifdef _WIN32
-	sprintf (del_cmd, "rmdir /s /q %s", API->session_dir);
+	char* t = gmt_strrep(API->session_dir, "/", "\\");		/* rmdir needs paths with back-slashes */
+	strcpy(del_cmd, "rmdir /s /q ");
+	strcat(del_cmd, t);
+	gmt_M_str_free(t);
 #else
 	sprintf (del_cmd, "rm -rf %s", API->session_dir);
 #endif

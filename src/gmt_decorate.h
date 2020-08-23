@@ -70,6 +70,7 @@ struct GMT_DECORATE {
 	char size[GMT_LEN64];		/* The symbol size */
 	char fill[GMT_LEN64];		/* The symbol fill */
 	char pen[GMT_LEN64];		/* The symbol outline pen */
+	struct GMT_PEN debug_pen;	/* Pen for drawing the debugging lines */
 	char symbol_code[GMT_LEN64];	/* The symbol code only as a null-terminated string */
 	char flag;			/* Char for the option key */
 	struct GMT_DATASET *X;		/* Dataset with list of structures with crossing-line coordinates */

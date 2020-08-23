@@ -46,18 +46,20 @@ Description
 
 **surface** reads randomly-spaced (x,y,z) triples from standard input
 [or *table*] and produces a binary grid file of gridded values z(x,y) by
-solving:
+solving the differential equation (away from data points)
 
-   (1 - T) \* L (L (z)) + T \* L (z) = 0
+.. math::
 
-where T is a tension factor between 0 and 1, and L indicates the
-Laplacian operator. T = 0 gives the "minimum curvature" solution which
+    (1 - t) \nabla ^2(z) + t \nabla (z) = 0,
+
+where *t* is a tension factor between 0 and 1, and :math:`\nabla` indicates the
+Laplacian operator. Here, *t* = 0 gives the "minimum curvature" solution which
 is equivalent to SuperMISP and the ISM packages. Minimum curvature can
 cause undesired oscillations and false local maxima or minima (See Smith
-and Wessel, 1990), and you may wish to use T > 0 to suppress these
-effects. Experience suggests T ~ 0.25 usually looks good for potential
-field data and T should be larger (T ~ 0.35) for steep topography data.
-T = 1 gives a harmonic surface (no maxima or minima are possible except
+and Wessel, 1990), and you may wish to use *t* > 0 to suppress these
+effects. Experience suggests *t* ~ 0.25 usually looks good for potential
+field data and *t* should be larger (*t* ~ 0.35) for steep topography data.
+*t* = 1 gives a harmonic surface (no maxima or minima are possible except
 at control data points). It is recommended that the user pre-process the
 data with :doc:`blockmean`, :doc:`blockmedian`, or :doc:`blockmode` to avoid
 spatial aliasing and eliminate redundant data. You may impose lower

@@ -858,7 +858,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		/* Determine if we need to worry about repeating periodic symbols */
 		if (clip_set && (Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
-			periodic = (gmt_M_is_cylindrical (GMT) || gmt_M_is_misc (GMT));
+			periodic = gmt_M_is_periodic (GMT);
 			if (S.symbol == GMT_SYMBOL_GEOVECTOR) periodic = false;
 		}
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */

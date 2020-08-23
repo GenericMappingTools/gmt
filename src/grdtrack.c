@@ -433,8 +433,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'S':
 				if (opt->arg[0] == 0 && gmt_M_compat_check (GMT, 4)) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -S deprecated. Use -sa instead.\n");
-					GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE;
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -S deprecated. Use common option -s instead.\n");
+					if (gmt_parse_s_option (GMT, opt->arg))
+						n_errors++;
+					GMT->common.s.active = true;
 					break;
 				}
 				Ctrl->S.active = true;

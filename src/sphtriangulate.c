@@ -692,7 +692,7 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 	if (Ctrl->T.active) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Must produce multisegment output files */
 
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, 0, NULL, Ctrl->Out.file, Dout[0]) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, Dout[0]) != GMT_NOERROR) {
 		gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		Return (API->error);
@@ -704,7 +704,7 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 		Dout[1]->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);
 		Dout[1]->table[0]->n_headers = 1;
 		Dout[1]->table[0]->header[0] = strdup (header);
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, 0, NULL, Ctrl->N.file, Dout[1]) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, Ctrl->N.file, Dout[1]) != GMT_NOERROR) {
 			gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
 			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 			Return (API->error);

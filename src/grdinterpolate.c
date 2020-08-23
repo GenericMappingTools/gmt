@@ -732,7 +732,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	gmt_M_grd_loop (GMT, G[GMT_IN][start_k], row, col, node) {	/* Loop over all coregistered nodes (picking G[GMT_IN][start_k] to represent all grid layouts) */
 		for (k = start_k; k <= stop_k; k++)	/* For all available input levels */
 			i_value[k] = G[GMT_IN][k]->data[node];	/* Get the values at this (x,y) across all input levels */
-		gmt_intpol (GMT, &level[start_k], &i_value[start_k], n_layers_used, Ctrl->T.T.n, Ctrl->T.T.array, o_value, int_mode);	/* Resample at requested output levels */
+		gmt_intpol (GMT, &level[start_k], &i_value[start_k], NULL, n_layers_used, Ctrl->T.T.n, Ctrl->T.T.array, o_value, 0.0, int_mode);	/* Resample at requested output levels */
 		for (k = 0; k < Ctrl->T.T.n; k++)	/* For all output levels */
 			G[GMT_OUT][k]->data[node] = (float)o_value[k];	/* Put interpolated output values at this (x,y) across all levels */
 	}

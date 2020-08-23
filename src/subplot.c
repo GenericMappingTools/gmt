@@ -640,10 +640,10 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->S[GMT_X].extra = strdup (c);
 					c[0] = '\0';	/* Chop off for now */
 				}
-				for (k = px = 0; k < 6; k++) /* Build up x-axis args from seletion */
+				for (k = px = 0; k < 6; k++) /* Build up x-axis args from selection */
 					if (strchr (Bframe->arg, Bx_items[k])) Ctrl->S[GMT_X].axes[px++] = Bx_items[k];
 				if (Ctrl->S[GMT_X].axes[0] && Ctrl->S[GMT_X].active) gmt_str_tolower (Ctrl->S[GMT_X].axes);	/* Used to control the non-annotated axes */
-				for (k = py = 0; k < 6; k++)/* Build up y-axis args from seletion */
+				for (k = py = 0; k < 6; k++)/* Build up y-axis args from selection */
 					if (strchr (Bframe->arg, By_items[k])) Ctrl->S[GMT_Y].axes[py++] = By_items[k];
 				if (Ctrl->S[GMT_Y].axes[0] && Ctrl->S[GMT_Y].active) gmt_str_tolower (Ctrl->S[GMT_Y].axes);	/* Used to control the non-annotated axes */
 				if (c) c[0] = '+';	/* Restore modifiers */
@@ -694,15 +694,15 @@ void subplot_wipe_history_and_settings (struct GMTAPI_CTRL *API) {
 	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
 	if (subplot && (P = gmt_subplot_info (API, fig))) {
 		for (row = 0; row < P->nrows; row++) for (col = 0; col < P->ncolumns; col++) {
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);		
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);		
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
 		}
 	}
-	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_HISTORY_FILE, fig);		
-	gmt_remove_file (API->GMT, file);	
-	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_SETTINGS_FILE, fig);		
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_HISTORY_FILE, fig);
+	gmt_remove_file (API->GMT, file);
+	snprintf (file, PATH_MAX, "%s/%s.%d.subplot", API->gwf_dir, GMT_SETTINGS_FILE, fig);
 	gmt_remove_file (API->GMT, file);
 }
 
@@ -782,9 +782,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		if (xymode == 'a') gmt_M_memcpy (off, GMT->current.setting.map_origin, 2, double);
 		sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 		if (!access (file, F_OK))	{	/* Subplot information file already exists, two begin subplot commands? */
-			GMT_Report (API, GMT_MSG_ERROR, "Subplot information file already exists: %s\n", file);
-			GMT_Report (API, GMT_MSG_ERROR, "Please run 'gmt clear sessions' (or equivalent if from Julia, Matlab, Python, etc...) to solve this issue.\n");
-			Return (GMT_RUNTIME_ERROR);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Subplot information file exists from incomplete command and will be deleted: %s\n", file);
+			gmt_remove_file (API->GMT, file);
 		}
 		/* COmpute dimensions such as ticks and distance from tick to top of annotation etc */
 		tick_height   = MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Allow for axis ticks */
@@ -1207,7 +1206,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, T, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=false",
+			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=readonly",
 				width, height, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
 			if (Bopt[0] == ' ') strcat (command, Bopt);	/* The -B was set above, so include it in the command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for text: %s\n", command);
@@ -1217,7 +1216,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 		else {	/* plot is required, since nothing is plotted (except for possibly the canvas fill/outline) */
-			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", width, height, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=readonly", width, height, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
 			if (Bopt[0]) strcat (command, Bopt);	/* The -B was set above, so include it in the command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for : %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
@@ -1226,7 +1225,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		if (fabs (Ctrl->F.clearance[GMT_X]) > 0.0 || fabs (Ctrl->F.clearance[GMT_Y]) > 0.0) {	/* Must reset origin */
 			width  -= 2.0 * Ctrl->F.clearance[GMT_X];
 			height -= 2.0 * Ctrl->F.clearance[GMT_Y];
-			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", width, height, 'r', Ctrl->F.clearance[GMT_X], 'r', Ctrl->F.clearance[GMT_Y]);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=readonly", width, height, 'r', Ctrl->F.clearance[GMT_X], 'r', Ctrl->F.clearance[GMT_Y]);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
@@ -1235,7 +1234,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, L, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=false", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->F.Lpen, vfile);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=readonly", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->F.Lpen, vfile);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
@@ -1246,7 +1245,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			sprintf (command, "0/%g/0/%g", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y]);	/* Save page region */
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_TEXT, command, D);
 			gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, 0, NULL, file, D) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_NORMAL, NULL, file, D) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			gmt_set_tableheader (API->GMT, GMT_OUT, save);	/* Restore the state of affairs */
@@ -1354,13 +1353,13 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		/* Check if we should draw debug lines */
 		sprintf (file, "%s/gmt.subplotdebug.%d", API->gwf_dir, fig);
 		if (!access (file, R_OK)) {	/* Yes, must draw debug lines on top */
-			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, 0, NULL, file, NULL)) == NULL) {
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R%s -Jx1i %s -L -Wfaint,red -Xa0i -Ya0i --GMT_HISTORY=false", D->table[0]->header[0], vfile);
+			sprintf (command, "-R%s -Jx1i %s -L -Wfaint,red -Xa0i -Ya0i --GMT_HISTORY=readonly", D->table[0]->header[0], vfile);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot to draw debug lines: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);

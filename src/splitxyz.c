@@ -153,7 +153,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tGive xyz[dh]file name or read stdin.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tGive xy[z][dh]file name or read stdin.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
@@ -345,7 +345,7 @@ EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	n_in = (Ctrl->S.active) ? 5 : 3;
-	if ((error = GMT_Set_Columns (API, GMT_IN, n_in, GMT_COL_FIX)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_in, GMT_COL_VAR)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -354,7 +354,7 @@ EXTERN_MSC int GMT_splitxyz (void *V_API, int mode, void *args) {
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_FILEBREAK, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (D[GMT_IN]->n_columns < n_in) {
+	if (D[GMT_IN]->n_columns < (n_in-1)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least %u are needed\n", (int)D[GMT_IN]->n_columns, n_in);
 		Return (GMT_DIM_TOO_SMALL);
 	}

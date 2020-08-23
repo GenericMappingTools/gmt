@@ -4,7 +4,7 @@ Description
 -----------
 
 Plots gray scales or color scales on maps. Both horizontal
-and vertical scales are supported. For CPTs with gradational
+and vertical scales are supported. For color palette tables (CPTs) with gradational
 colors (i.e., the lower and upper boundary of an interval have different
 colors) we will interpolate to give a continuous scale.
 Variations in intensity due to shading/illumination may be displayed by
@@ -12,7 +12,14 @@ setting the option **-I**. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
 widths. The font used for the annotations along the scale and optional
 units is specified by :term:`FONT_ANNOT_PRIMARY`.
-If a label is requested, it is plotted with :term:`FONT_LABEL`.
+If a label is requested, it is plotted with :term:`FONT_LABEL`. For
+a full overview of CPTs, see the Cookbook section on :ref:`Color palette tables <CPT_section>`.
+
+.. figure:: /_images/GMT_colorbar.*
+   :width: 500 px
+   :align: center
+
+   Example of a horizontal colorbar placed below a geographic map.
 
 Required Arguments
 ------------------
@@ -175,8 +182,11 @@ Optional Arguments
 
 .. _-S:
 
-**-S**
-    Do not separate different color intervals with black grid lines.
+**-S**\ [**+c**\|\ **n**\ ][**+s**]
+    Control various aspects of color bar appearance when **-B** is *not* used.
+    Append **+c** to use custom labels if given in the CPT as annotations.
+    Append **+n** to use numerical labels [Default].
+    Append **+s** to skip drawing gridlines separating different color intervals [Default draws gridlines].
 
 .. _-U:
 

@@ -38,7 +38,7 @@ Description
 -----------
 
 **splitxyz** reads a series of (x,y[,z]) records [or optionally
-(x,y,z,d,h); see **-S** option] from standard input [or *xyz[dh]file*]
+(x,y[,z],d,h); see **-S** option] from standard input [or *xy[z][dh]file*]
 and splits this into separate lists of (x,y[,z]) series, such that each
 series has a nearly constant azimuth through the x,y plane. There are
 options to choose only those series which have a certain orientation, to

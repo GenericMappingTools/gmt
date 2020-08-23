@@ -95,6 +95,9 @@ If no module is given then several other options are available:
 **--show-classic**
     List classic module names on stdout and exit.
 
+**--show-classic-core**
+    List classic module names (core only) on stdout and exit.
+
 **--show-cores**
     Show number of available cores.
 
@@ -109,6 +112,9 @@ If no module is given then several other options are available:
 
 **--show-modules**
     List modern module names on stdout and exit.
+
+**--show-modules-core**
+    List modern module names (core only) on stdout and exit.
 
 **--show-library**
     Show the path of the shared GMT library.

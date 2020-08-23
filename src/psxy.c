@@ -36,6 +36,7 @@
 /* Control structure for psxy */
 
 struct PSXY_CTRL {
+	bool no_RJ_needed;	/* Special case of -T and no -B when -R -J is not required */
 	struct PSXY_A {	/* -A[m|y|p|x|step] */
 		bool active;
 		unsigned int mode;
@@ -283,13 +284,39 @@ GMT_LOCAL void psxy_plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PS
 	}
 }
 
-GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, char *symbol_code, bool decorate_custom) {
+GMT_LOCAL void psxy_decorate_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_DECORATE *G) {
+	uint64_t row;
+	double size[1] = {0.05};
+
+	/* If called we simply draw the helper lines or points to assist in debug */
+
+	gmt_setpen (GMT, &G->debug_pen);
+	if (G->fixed) {	/* Place a small open circle at each fixed point */
+		PSL_setfill (PSL, GMT->session.no_rgb, PSL_OUTLINE);
+		for (row = 0; row < (uint64_t)G->f_n; row++)
+			PSL_plotsymbol (PSL, G->f_xy[0][row], G->f_xy[1][row], size, PSL_CIRCLE);
+	}
+	else if (G->crossing) {	/* Draw a thin line */
+		uint64_t seg;
+		unsigned int *pen = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
+		for (seg = 0; seg < G->X->n_segments; seg++) {
+			S = G->X->table[0]->segment[seg];	/* Current segment */
+			pen = gmt_M_memory (GMT, NULL, S->n_rows, unsigned int);
+			for (row = 1, pen[0] = PSL_MOVE; row < S->n_rows; row++) pen[row] = PSL_DRAW;
+			gmt_plot_line (GMT, S->data[GMT_X], S->data[GMT_Y], pen, S->n_rows, PSL_LINEAR);
+			gmt_M_free (GMT, pen);
+		}
+	}
+}
+
+GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, struct GMT_DECORATE *G, bool decorate_custom) {
 	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
 	unsigned int type = 0, pos = 0;
 	size_t len;
 	char string[GMT_VF_LEN] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[PATH_MAX] = {""}, kode[2] = {'K', 'k'};
-	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""};
+	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, *symbol_code = G->symbol_code;
 	FILE *fp = NULL;
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column and add up total records */
 	if (D->n_records == 0)	/* No symbols to plot */
@@ -305,6 +332,9 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 			return (GMT_RUNTIME_ERROR);
 		}
 	}
+
+	if (G->debug) psxy_decorate_debug (GMT, GMT->PSL, G);		/* Debugging lines and points */
+
 	if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
 		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());
 	else	/* Make unique file in current dir */
@@ -338,7 +368,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	len = strlen (tmp_file) - 4;	/* Position of the '.' since we know extension is .def */
 	tmp_file[len] = '\0';	/* Temporarily hide the ".def" extension */
 	/* Use -Sk for custom; otherwise -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
-	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -S%c%s %s --GMT_HISTORY=false", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
+	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -S%c%s %s --GMT_HISTORY=readonly", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
 		GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], kode[decorate_custom], tmp_file, string);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR)	/* Plot all the symbols */
@@ -859,6 +889,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 
 	/* Check that the options selected are mutually consistent */
 
+	if (Ctrl->T.active && (GMT->common.B.active[GMT_PRIMARY] == false && GMT->common.B.active[GMT_SECONDARY] == false))
+		Ctrl->no_RJ_needed = true;	/* Not plotting any data or frame that needs -R -J */
+
 	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->C.active, "Option -Z: No CPT given via -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.file == NULL || Ctrl->C.file[0] == '\0'), "Option -C: No CPT given\n");
@@ -866,8 +899,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (S->symbol == PSL_VECTOR || S->symbol == GMT_SYMBOL_GEOVECTOR || S->symbol == PSL_MARC \
 		|| S->symbol == PSL_ELLIPSE || S->symbol == GMT_SYMBOL_FRONT || S->symbol == GMT_SYMBOL_QUOTED_LINE || S->symbol == GMT_SYMBOL_DECORATED_LINE || S->symbol == PSL_ROTRECT),
 		"Option -E: Incompatible with -Se, -Sf, -Sj, -Sm|M, -Sq, -Sv|V, -S=\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+	if (!Ctrl->no_RJ_needed) {
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
+	}
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Binary input data cannot have symbol information\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode && !Ctrl->C.active, "Option -E: +|-<pen> requires the -C option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Option -W modifier +c requires the -C option\n");
@@ -1054,7 +1089,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	GMT_Report (API, GMT_MSG_DEBUG, "Operation will require %d input columns [n_cols_start = %d]\n", n_needed, n_cols_start);
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+	if (GMT->common.R.active[RSET] && GMT->common.J.active && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
 		Return (GMT_PROJECTION_ERROR);
 	if (S.u_set) {	/* When -Sc<unit> is given we temporarily reset the system unit to these units so conversions will work */
 		save_u = GMT->current.setting.proj_length_unit;
@@ -1209,7 +1244,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		/* Determine if we need to worry about repeating periodic symbols */
 		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
-			periodic = (gmt_M_is_cylindrical (GMT) || gmt_M_is_misc (GMT));
+			periodic = gmt_M_is_periodic (GMT);
 		}
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
 
@@ -2224,7 +2259,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							end += 3;
 						}
 						/* Project and get ready */
-						if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end)) == 0) continue;
+						if (gmt_M_is_geographic (GMT, GMT_IN)) {
+							if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end)) == 0) continue;
+						}
+						else
+							GMT->current.plot.n = gmt_cart_to_xy_line (GMT,  GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end);
 						if (Ctrl->L.outline) gmt_setpen (GMT, &Ctrl->L.pen);	/* Select separate pen for polygon outline */
 						if (Ctrl->G.active)	/* Specify the fill, possibly set outline */
 							gmt_setfill (GMT, &current_fill, Ctrl->L.outline);
@@ -2276,7 +2315,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, -1, 0.0);
 
 	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via call to psxy */
-		if ((error = psxy_plot_decorations (GMT, Decorate, S.D.symbol_code, decorate_custom)) != 0)	/* Cannot possibly be a good thing */
+		if ((error = psxy_plot_decorations (GMT, Decorate, &S.D, decorate_custom)) != 0)	/* Cannot possibly be a good thing */
 			Return (error);
 		if (GMT_Destroy_Data (API, &Decorate) != GMT_NOERROR) {	/* Might as well delete since no good later */
 			Return (API->error);

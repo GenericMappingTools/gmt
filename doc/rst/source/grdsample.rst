@@ -71,6 +71,7 @@ Optional Arguments
 **-T**
     Translate between grid and pixel registration; if the input is
     grid-registered, the output will be pixel-registered and vice-versa.
+    This is a *destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
 .. _-V:
 
@@ -147,3 +148,11 @@ See Also
 :doc:`grdfilter`,
 :doc:`greenspline`,
 :doc:`surface`
+
+
+References
+----------
+
+Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity,
+*Geophys. Res. Lett., 34 (L03307)*, http://doi.org/10.1029/2006GL028857.
+

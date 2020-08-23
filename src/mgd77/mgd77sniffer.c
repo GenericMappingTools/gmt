@@ -56,7 +56,7 @@ static struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED] = {
 
 EXTERN_MSC bool gmtlib_is_gleap (int gyear);
 EXTERN_MSC int gmtlib_gmonth_length (int year, int month);
-EXTERN_MSC void gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode);
+EXTERN_MSC int gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode);
 
 GMT_LOCAL double median (struct GMT_CTRL *GMT, double *x, unsigned int n) {
 	double *sorted = NULL, med;

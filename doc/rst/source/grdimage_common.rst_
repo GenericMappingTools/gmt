@@ -110,6 +110,7 @@ Optional Arguments
     for that module, or just give **+d** to select the
     default arguments (**+a**\ -45\ **+nt**\ 1\ **+m**\ 0). If you want a more
     specific intensity scenario then run :doc:`grdgradient` separately first.
+    If we should derive intensities from another file than *grd_z*, specify the file
     [Default is no illumination].
 
 .. _-M:

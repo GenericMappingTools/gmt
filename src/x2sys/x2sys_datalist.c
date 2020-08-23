@@ -277,9 +277,11 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
+	if (x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG))
+		Return (GMT_RUNTIME_ERROR);
 
-	if (Ctrl->F.flags) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F");	/* Determine output order of selected columns */
+	if (Ctrl->F.flags && x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F"))	/* Determine output order of selected columns */
+		Return (GMT_RUNTIME_ERROR);
 
 	s->ascii_out = !GMT->common.b.active[1];
 
@@ -380,7 +382,8 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		Return (GMT_NOT_A_VALID_TYPE);
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
-		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR);
+		if ((error = x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR)))
+			Return (error);
 		if (auxlist[MGD77_AUX_SP].requested && s->t_col == -1) {
 			GMT_Report (API, GMT_MSG_ERROR, "Selected correction table requires velocity which implies time (not selected)\n");
 			MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
@@ -475,7 +478,8 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Reading track %s\n", trk_name[trk_no]);
 
-		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &row), trk_name[trk_no]);
+		if (x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &row), trk_name[trk_no]))
+			Return (GMT_RUNTIME_ERROR);
 
 		if (Ctrl->L.active && s->t_col >= 0) MGD77_Init_Correction (GMT, CORR[trk_no], data);	/* Initialize origins if needed */
 
@@ -520,7 +524,7 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			for (ocol = 0; ocol < s->n_out_columns; ocol++) {	/* Load output record one column at the time */
 				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][ocol].term, data, aux_dvalue, row) : 0.0;
 				if (Ctrl->A.active && adj_col[ocol]) {	/* Determine along-track adjustment */
-					if (gmt_intpol (GMT, A[ocol]->d, A[ocol]->c, A[ocol]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, GMT->current.setting.interpolant)) {
+					if (gmt_intpol (GMT, A[ocol]->d, A[ocol]->c, NULL, A[ocol]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, 0.0, GMT->current.setting.interpolant)) {
 						GMT_Report (API, GMT_MSG_ERROR, "Interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[ocol]].name, row);
 						adj_amount = 0.0;
 					}

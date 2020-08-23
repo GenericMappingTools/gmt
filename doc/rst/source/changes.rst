@@ -4,6 +4,87 @@
 Changelog
 =========
 
+New Features in GMT 6.1
+=======================
+
+GMT 6.1 may be a minor revision to 6.0 but packs quite a punch. For general
+changes, we mention
+
+ #. Updated remote global data sets: Earth reliefs, crustal ages, land/ocean masks, and day/night imagery.
+    The larger grid files (5x5 arc minutes and smaller resolutions) are now tiled and faster to download.
+ #. Let *gmt.history*, *gmt.conf*, and *gmt.cpt* be hierarchical and maintained
+    separately for figures, subplot panels, and insets in modern mode.
+ #. Use a list of keywords (*separate,anywhere,lon_horizontal,lat_horizontal,
+    tick_extend,tick_normal,lat_parallel*) instead of bit-sum for **MAP_ANNOT_OBLIQUE**.
+ #. Let the macOS bundle be built with OpenMP support to accelerate some computational modules.
+ #. Let GMT recognize MATLAB headers/comments via multiple **IO_HEADER_MARKER** characters.
+ #. Let an explicitly signed grid cross size in **GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY** or
+    **MAP_GRID_CROSS_SIZE_SECONDARY** mean centered (if positive) or asymmetrical (if negative) grid ticks.
+ #. Add modifier **+v** for a *vertical* oblique Equator in -JO [horizontal].
+ #. New **-B** modifier **+i** for placing internal frame annotations
+ #. New **-B** modifier **+f** to turn on fancy geographic annotations.
+ #. New polar projection (**-JP**) modifiers  (**+f**\|\ **r**\|\ **t**\|\ **z**) adds new 
+    capabilities for annotating azimuths, depths or radii.
+ #. Revise verbosity default levels and their names and abbreviations.
+ #. Add Web-Mercator as new sphere that can be selected.
+ #. Explore adding long-format GMT options (e.g., **--region**\ =\ *w/e/s/n*).
+ #. Allow both **-i** and **-o** to specify an open-ended list of columns to end of record.
+ #. API improvements to support the GMT/MEX, PyGMT, and GMT.jl environments.
+
+New Common Options:
+-------------------
+ #. **-l**: Add automatic legend entries from the modules :doc:`plot`, :doc:`plot3d`, 
+    :doc:`grdcontour` and :doc:`pscontour` in modern mode.
+ #. **-q**\[**i**\|\ **o**\ ]: Select specific data rows to complement selection of data columns (via **-i**, **-o**).
+
+New Modules:
+------------
+
+#. :doc:`batch`: Automate batch job processing by replicating a master script with job-specific parameters.
+#. :doc:`grdmix`: Blending and transforming grids and images, including manipulating transparency.
+#. :doc:`grdinterpolate`: Interpolate new 2-D grids or 1-D data series from a 3-D data cube.
+#. :doc:`grdgdal`: Execute GDAL raster programs (such as info, dem, grid, translate, rasterize or warp), from GMT.
+
+New Core Module Features:
+-------------------------
+
+#. :doc:`begin`: Ignore the user's *gmt.conf* files normally included by using **-C**.
+#. :doc:`colorbar`: Option **-S** has been enhanced to handle bar appearance when **-B** is not used.
+#. :doc:`gmtget`: Options **-D**, **-I**, **-N**, and **-Q** handle download and query of remote data sets.
+#. :doc:`gmtmath`: New operators **RGB2HSV** and **HSV2RGB** for color manipulation.
+#. :doc:`gmtregress`: Let **-A** also be used to limit angles considered for LMS regressions.
+#. :doc:`gmtspatial`: New directive **-Sb** computes buffers around lines (via the optional GEOS library).
+#. :doc:`gmtvector`: Add vector operator **-Tt** that translates points by given distance in given direction.
+#. :doc:`grd2kml`: New option **-W** for adding contour overlays. Also rebuilt for global grids as well as
+   to write PNG or JPG directly (depending on transparency) without going via *PostScript* conversion (only
+   required if **-W** is used).
+#. :doc:`grdcontour`: Better handling of contour file that can now have unique angles and pens per contour.
+#. :doc:`grdconvert`: Enable scaling/translation services on output with **-Z**.
+#. :doc:`grdfill`: Implement minimum-curvature spline infill with **-As**.
+#. :doc:`grdfilter`: Let filter width optionally be a grid with variable widths.
+#. :doc:`grdgradient`: Add support for ambient light in **-N**, as in **-E**, and therefore via **-I**
+   in :doc:`grdimage` and :doc:`grdview`.
+#. :doc:`grdimage`: Now **-I** may take a filename in addition to requests to derive intensities from it.
+#. :doc:`grdinfo`: Now **-C** also appends registration and grid type as last two output columns
+   (0 = gridline, 1 = pixel registration; 0 = Cartesian, 1 = geographic).
+#. :doc:`grdmath`: New operators **DAYNIGHT** (for day/night terminator), **BLEND** (blend two grids using the weights
+   from a third), **DOT** (dot product), and **RGB2HSV**, and **HSV2RGB** for color manipulations.
+#. :doc:`grdtrack`: Determine central peak in all crossections with **-F** (requires **-C**); let **-E+c** continue
+   a track if next line is a direct continuation of previous line.
+#. :doc:`grdview`: Now **-I** may take a filename in addition to requests to derive intensities from it.
+#. :doc:`pscontour`: Better handling of contour file that can now have unique angles and pens per contour.
+#. :doc:`movie`: Add **-E** for an optional title sequence (with or without fading in/out), **-K** for fade in and
+   fade out for main animation sequence, **-Sb** and **-Sf** can now take a PostScript layer instead of a script,
+   and **-P** for adding one of six progress indicators.
+#. :doc:`nearneighbor`: Let **-Nn** call GDAL's nearest neighbor algorithm.
+#. :doc:`sample1d`: Adds a smoothing cubic spline via **-Fs**\ *p* (for a fit parameter *p*), with optional weights (**-W**).
+#. :doc:`surface`: Let **-D** take a modifier **+z**\ *value* to set a constant breakline level.
+
+Supplement updates:
+-------------------
+#. *seis*: Update all module syntax to GMT 6 standards and make their i/o more robust.
+#. *potential*: :doc:`grdflexure </supplements/potential/grdflexure>` adds new transfer functions now documented with equations.
+
 New Features in GMT 6.0
 =======================
 

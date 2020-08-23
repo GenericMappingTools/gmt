@@ -122,7 +122,7 @@ enum GMT_enum_length {
 	GMT_LEN128      = 128U,         /* Double of 64 */
 	GMT_LEN256      = 256U,         /* Max size of some text items */
 	GMT_LEN512      = 512U,         /* Max size of other text items */
-	GMT_LEN1024     = 1024U,        /* For file names (antecipating web fnames) */
+	GMT_LEN1024     = 1024U,        /* For file names (anticipating web fnames) */
 	GMT_MAX_RANGES  = 64U,          /* Limit on number of row ranges given in -q */
 	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
 	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
@@ -157,6 +157,10 @@ enum GMT_swap_direction {
 enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 	GMT_CSH_MODE,			/* Write C-shell script */
 	GMT_DOS_MODE};			/* Write DOS script */
+
+/* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
+ * Modules that need it in their module_kw[] array can just add it to their list. */
+#define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }
 
 #define GMT_VERBOSE_CODES	"q ewticd"	/* List of valid codes to -V (the blank is for NOTICE which is not user selectable */
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
@@ -221,6 +225,8 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 #define GMT_CPT_TEMPORARY	1024	/* CPT was built from list of colors, e.g., red,green,255,blue,... */
 #define GMT_CPT_C_REVERSE	1	/* Reverse CPT colors */
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
+#define GMT_CPT_L_ANNOT		1	/* Annotate lower slice boundary */
+#define GMT_CPT_U_ANNOT		2	/* Annotate upper slice boundary */
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
@@ -241,6 +247,9 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 
 /* Allowable refpoint codes */
 #define GMT_REFPOINT_CODES "gjJnx"
+
+/* Modifiers for contour -A option */
+#define GMT_CONTSPEC_MODS "acdefghijklLnNoprstuvwxX="
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
@@ -381,13 +390,19 @@ enum GMT_enum_spline {
 	GMT_SPLINE_LINEAR = 0, /* Linear spline */
 	GMT_SPLINE_AKIMA,      /* Akima spline */
 	GMT_SPLINE_CUBIC,      /* Cubic spline */
+	GMT_SPLINE_SMOOTH,     /* Smooth cubic spline */
 	GMT_SPLINE_NN,         /* Nearest neighbor */
 	GMT_SPLINE_NONE};      /* No spline set */
+
+/*! Various 1-D interpolation derivatives */
+enum GMT_enum_derivative {
+	GMT_SPLINE_SLOPE = 10,		 /* Spline 1st derivative*/
+	GMT_SPLINE_CURVATURE = 20};   /* Spline 2nd derivative */
 
 enum GMT_enum_extrap {
 	GMT_EXTRAPOLATE_NONE = 0,   /* No extrapolation; set to NaN outside bounds */
 	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */
-	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
+	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specific constant */
 
 enum GMT_enum_cross {
 	GMT_CROSS_NORMAL = 0,	/* Regular grid cross */

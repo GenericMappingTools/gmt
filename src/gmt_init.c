@@ -175,6 +175,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "GMT_AUTO_DOWNLOAD"},
 	{ 0, "GMT_DATA_SERVER"},
 	{ 0, "GMT_DATA_SERVER_LIMIT"},
+	{ 0, "GMT_DATA_UPDATE_INTERVAL"},
 	{ 0, "GMT_COMPATIBILITY"},
 	{ 0, "GMT_CUSTOM_LIBS"},
 	{ 0, "GMT_EXPORT_TYPE"},
@@ -377,7 +378,9 @@ static char *map_annot_oblique_item[N_MAP_ANNOT_OBLIQUE_ITEMS] = {
  *
  * Without these we are blind to the keyword arrays.  Note that while you can test the
  * common options without the module options, you cannot do the reverse.
-  */
+ *
+ * Note: For the near-global option -I (--increment), see gmt_constants.h for GMT_INCREMENT_KW definition.
+ */
 
 static struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
@@ -391,6 +394,7 @@ static struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	{   0, 'Y', "yshift",        "a,c,f,r", "absolute,center,fixed,relative",           "",         				""},
 	{   0, 'a', "aspatial",      "",        "",                                         "",         				""},
 	{   0, 'b', "binary",        "",        "",                                         "b,l",      				"big-endian,little-endian"},
+	{   0, 'c', "panel",         "",        "",                                         "",      				    ""},
 	{   0, 'd', "nodata",        "i,o",     "in,out",                                   "",         				""},
 	{   0, 'e', "find",          "",        "",                                         "f",        				"file"},
 	{ ',', 'f', "coltypes",      "i,o",     "in,out",                                   "",        					""},
@@ -398,12 +402,14 @@ static struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 	{   0, 'h', "header",        "i,o",     "in,out",                                   "c,d,r,t", 					"columns,delete,remark,title"},
 	{ ',', 'i', "read-columns",  "",        "",                                         "l,o,s",   					"log10,offset,scale"},
 	{   0, 'j', "spherical",     "e,f,g",   "ellipsoidal,flat-earth,great-circle",      "",   			    		""},
-	{   0, 'l', "legend",        "",        "",                                         "d,f,g,h,j,l,n,s,v,w,x",   	"drawline,font,gap,header,justify,linetext,ncols,size,vertline,width,scale"},
+	{   0, 'l', "legend",        "",        "",                                         "D,G,H,L,N,S,V,f,g,j,o,p,s,w",   	"drawline,gap,header,linetext,ncols,size,vertline,font,fill,justify,offset,pen,scale,width"},
 	{   0, 'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "a,b,c,t",     				"antialias,bc,clip,threshold"},
 	{ ',', 'o', "write-columns", "",        "",                                         "",        					""},
 	{   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",     					"view,world"},
+	{ ',', 'q', "read-rows",     "~",       "invert",                                   "a,c,f,s",   				"per-set,column,per-file,per-segment"},
+	{ ',', 'q', "write-rows",    "~",       "invert",                                   "a,c,f,s",   				"per-set,column,per-file,per-segment"},
 	{   0, 'r', "registration",  "g,p",     "gridline,pixel",                           "",        					""},
-	{   0, 's', "skip-record",   "",       "",                                         "a,r",     					"any,reverse"},
+	{   0, 's', "skip-rows",     "",       "",                                         "a,r",     					"any,reverse"},
 	{   0, 't', "transparency",  "",        "",                                         "",        					""},
 	{   0, 'x', "cores",         "",        "",                                         "",        					""},
 	{   0, '\0', "",             "",        "",                                         "",        					""}	/* End of list marked with empty code and strings */
@@ -424,7 +430,7 @@ static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 #include <Windows.h>
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
 	OVERLAPPED over = { 0 };
 	HANDLE hand = (HANDLE)_get_osfhandle(fd);
 	if (!LockFileEx(hand, LOCKFILE_EXCLUSIVE_LOCK, 0, 1, 0, &over)) /* Will block until exclusive lock is acquired */
@@ -436,7 +442,7 @@ GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	HANDLE hand = (HANDLE)_get_osfhandle(fd);
 	if (!UnlockFile(hand, 0, 0, 0, 1))
 	{
@@ -448,7 +454,7 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 
 #elif defined (HAVE_FCNTL_H_) /* Use POSIX fcntl */
 /*! . */
-GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
 	int status;
 	struct flock lock;
 	lock.l_type = F_WRLCK;		/* Lock for exclusive reading/writing */
@@ -465,7 +471,7 @@ GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	int status;
 	struct flock lock;
 	lock.l_type = F_UNLCK;		/* Release lock and close file */
@@ -483,13 +489,13 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 
 #else /* Not Windows and fcntl not available */
 /*! . */
-GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File locking not supported.\n");
 	return false;
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
+bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	return false;
 }
 #endif
@@ -655,6 +661,11 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_D
 		sep[0] = kw[k].separator;			/* Need a string with separator to strcat below */
 		new_arg[0] = '\0';					/* Initialize short option arguments */
 		modified = true;					/* We have at least modified one option */
+		/* Special handling for --read-rows and --write-rows since they both map to q and need -qi and -qo, respectively */
+		if (!strcmp (kw[k].long_option, "read-rows"))
+			strcat (new_arg, "i");
+		else if (!strcmp (kw[k].long_option, "write-rows"))
+			strcat (new_arg, "o");
 
 		for (section = 0; section < n_sections; section++) {	/* Parse the sections separately but strcat together a single short option */
 			/* Make sure a few things are correct */
@@ -715,10 +726,12 @@ GMT_LOCAL int gmtinit_check_markers (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.io_head_marker_in, "#%\"\'");	/* Accept GMT or MATLAB header records or comments or quoted text */
 
 	if (strchr (GMT->current.setting.io_head_marker_in, GMT->current.setting.io_seg_marker[GMT_IN])) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conflict between the settings of IO_HEADER_MARKER and IO_SEGMENT_MARKER for input:\n");
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot let %c be both a header record flag and multiple segment header flag for input data\n", GMT->current.setting.io_seg_marker[GMT_IN]);
 		error++;
 	}
 	if (GMT->current.setting.io_seg_marker[GMT_OUT] == GMT->current.setting.io_head_marker_out) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conflict between the settings of IO_HEADER_MARKER and IO_SEGMENT_MARKER for input:\n");
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot let %c be both a header record flag and multiple segment header flag for output data\n", GMT->current.setting.io_seg_marker[GMT_OUT]);
 		error++;
 	}
@@ -935,7 +948,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 				v[0] = '\0';
 		}
 	}
-	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s --GMT_HISTORY=false",
+	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s --GMT_HISTORY=readonly",
 		wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], Jstring, unit, in_string, out_string);
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtaining geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Get the corners in degrees via mapproject */
@@ -1468,7 +1481,7 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 		/* Got --PAR */
 		n = gmtlib_setparameter (GMT, text, "true", false);
 	}
-	if (!strncmp (text, "PS_CHAR_ENCODING", 16U)) GMT->current.ps.switch_set = true;
+	if (!strcmp (text, "PS_CHAR_ENCODING")) GMT->current.ps.switch_set = true;
 	return (n);
 }
 
@@ -2347,29 +2360,43 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
+bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	unsigned int error = 0, n, pos = 0;
 	int64_t i, start = -1, stop = -1, inc;
-	char p[GMT_BUFSIZ] = {""}, tmp[GMT_MAX_COLUMNS] = {""}, *c = NULL;
-	/* Parse the -s option.  Full syntax: -s[<cols>][+r|a] Old syntax was -s[<cols>][r|a] */
+	char p[GMT_BUFSIZ] = {""}, tmp[GMT_MAX_COLUMNS] = {""}, *ca = NULL, *cr = NULL;
+	/* Parse the -s option.  Full syntax: -s[<cols>][+a][+r] Old syntax was -s[<cols>][r|a] */
 
 	gmt_M_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
+	GMT->current.setting.io_nan_mode = 0;
 	GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
 	GMT->current.io.io_nan_ncols = 1;		/* Default is that single z column */
-	GMT->current.setting.io_nan_mode = GMT_IO_NAN_SKIP;	/* Plain -s */
-	if (!item || !item[0]) return (false);	/* Nothing more to do */
-	strncpy (GMT->common.s.string, item, GMT_LEN64-1);	/* Make copy of -n argument verbatim */
-	if ((c = strstr (item, "+a")))
-		GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE, c[0] = '\0';		/* Set -s+a */
-	else if ((c = strstr (item, "+r")))
-		GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, c[0] = '\0';		/* Set -s+r */
+	if (!item || !item[0]) {	/* Plain -s */
+		GMT->current.setting.io_nan_mode |= GMT_IO_NAN_SKIP;
+		return (false);	/* Nothing more to do */
+	}
+	strncpy (GMT->common.s.string, item, GMT_LEN64-1);	/* Make copy of -s argument verbatim */
+	if ((ca = strstr (item, "+a")))
+		GMT->current.setting.io_nan_mode |= GMT_IO_NAN_ANY;		/* Set -s+a */
+	if ((cr = strstr (item, "+r")))
+		GMT->current.setting.io_nan_mode |= GMT_IO_NAN_KEEP;		/* Set -s+r */
+	else
+		GMT->current.setting.io_nan_mode |= GMT_IO_NAN_SKIP;	/* Plain -s */
+	if (ca) {	/* Give +a */
+		if (cr && cr < ca)	/* Gave +r+a so chop cr */
+			cr[0] = '\0';
+		else	/* Either gave +a+r or just +a */
+			ca[0] = '\0';
+	}
+	else if (cr)	/* Gave +r */
+		cr[0] = '\0';
 	n = (int)strlen (item);
 	if (n == 0) {
-		if (c) c[0] = '+';	/* Restore string */
+		if (ca) ca[0] = '+';	/* Restore string */
+		if (cr) cr[0] = '+';	/* Restore string */
 		return (false);		/* Nothing more to do */
 	}
-	if (item[n-1] == 'a') GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE, n--;		/* Old syntax set -sa */
-	else if (item[n-1] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, n--;	/* Old syntax set -sr */
+	if (item[n-1] == 'a') GMT->current.setting.io_nan_mode |= GMT_IO_NAN_ANY, n--;			/* Old syntax set -sa */
+	else if (item[n-1] == 'r') GMT->current.setting.io_nan_mode |= GMT_IO_NAN_KEEP, n--;	/* Old syntax set -sr */
 	if (n == 0) return (false);		/* No column arguments to process */
 	/* Here we have user-supplied column information */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
@@ -2386,7 +2413,8 @@ GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 		return true;
 	}
 	GMT->current.io.io_nan_ncols = n;
-	if (c) c[0] = '+';	/* Restore string */
+	if (ca) ca[0] = '+';	/* Restore string */
+	if (cr) cr[0] = '+';	/* Restore string */
 
 	return (false);
 }
@@ -2837,6 +2865,9 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	FILE *fp = NULL; /* For gmt.history file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
 
+	if (GMT->parent->no_history)
+		return (GMT_NOERROR); /* gmt.history mechanism was disabled by GMT_Create_Session */
+
 	if (!(GMT->current.setting.history & GMT_HISTORY_READ))
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 
@@ -2874,7 +2905,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	}
 
 	/* When we get here the file exists */
-	gmtinit_file_lock (GMT, fileno(fp));
+	gmtlib_file_lock (GMT, fileno(fp));
 	/* Format of GMT gmt.history is as follow:
 	 * BEGIN GMT <version>		This is the start of parsable section
 	 * OPT ARG
@@ -2913,7 +2944,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	}
 
 	/* Close the file */
-	gmtinit_file_unlock (GMT, fileno(fp));
+	gmtlib_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmtinit_get_history\n");
@@ -2927,6 +2958,9 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	bool empty;
 	char hfile[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	FILE *fp = NULL; /* For gmt.history file */
+
+	if (GMT->parent->no_history)
+		return (GMT_NOERROR); /* gmt.history mechanism was disabled by GMT_Create_Session */
 
 	if (!(GMT->current.setting.history & GMT_HISTORY_WRITE)) {
 		if (GMT->current.setting.run_mode == GMT_MODERN && GMT->current.setting.history == GMT_HISTORY_OFF)
@@ -2966,7 +3000,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if ((fp = fopen (hfile, "w")) == NULL) return (-1);	/* Not OK to be unsuccessful in creating this file */
 
 	/* When we get here the file is open */
-	if (!gmtinit_file_lock (GMT, fileno(fp)))
+	if (!gmtlib_file_lock (GMT, fileno(fp)))
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Directory %s is not locked for exclusive access. Multiple gmt processes running at once could corrupt history file.\n", hfile);
 
 	fprintf (fp, "# GMT %d Session common arguments shelf\n", GMT_MAJOR_VERSION);
@@ -2982,7 +3016,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	fprintf (fp, "END\n");
 
 	/* Close the file */
-	gmtinit_file_unlock (GMT, fileno(fp));
+	gmtlib_file_unlock (GMT, fileno(fp));
 	fclose (fp);
 
 	return (GMT_NOERROR);
@@ -3798,7 +3832,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 
 		if (out3[0] == '\0') continue;	/* No intervals */
-		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		if (i < GMT_Z) GMT->current.map.frame.set = true;	/* Got here so we are setting x/y intervals */
 
 		/* Parse the annotation/tick info string */
 		if (out3[0] == 'c')
@@ -4159,7 +4193,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		k++;
 	}
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = implicit = true;	/* If no axis were named we default to both x and y */
-
+	GMT->current.map.frame.axis[GMT_Z].angle = 0.0;	/* Default is plotting normal to axis for Z, i.e., will look horizontal on the plot */
+	GMT->current.map.frame.axis[GMT_Z].use_angle = true;
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
 	gmt_handle5_plussign (GMT, text, "afLlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +f, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +f, +p, +S|s or +u */
@@ -4188,7 +4223,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot use +a for geographic basemaps\n");
 							error++;
 						}
-						else if (no == 0) {	/* Variable angles are only allowed for the x-axis */
+						else if (no == GMT_X) {	/* Variable angles are only allowed for the x-axis */
 							if (p[1] == 'n')	/* +an is short for +a90 or normal to x-axis */
 								GMT->current.map.frame.axis[no].angle = 90.0;
 							else if (p[1] == 'p')	/* +ap is short for +a0 or parallel to x-axis */
@@ -4202,21 +4237,19 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 							else
 								GMT->current.map.frame.axis[no].use_angle = true;
 						}
-						else if (no == 1) {	/* Only +an|p is allowed for y-axis */
+						else {	/* Only +an|p is allowed for y/z-axis */
 							GMT->current.map.frame.axis[no].use_angle = true;
-							if (p[1] == 'n')	/* +an is code for normal to y-axis;*/
+							if (p[1] == 'n')	/* +an is code for normal to y/z-axis;*/
 								GMT->current.map.frame.axis[no].angle = 0.0;
-							else if (p[1] == 'p')	/* +ap is code for normal to y-axis; this triggers ortho=false later */
+							else if (p[1] == 'p')	/* +ap is code for normal to y/z-axis; this triggers ortho=false later */
 								GMT->current.map.frame.axis[no].angle = 90.0;
 							else if (!implicit) {	/* Means user gave -By...+a<angle> which is no good */
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Only modifiers +an|p is allowed for the y-axis\n");
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Only modifiers +an|p is allowed for the %c-axis\n", the_axes[no]);
 								error++;
 							}
 							else	/* Probably did -Baf+a30 and only meant that to apply to the x-axis */
 								GMT->current.map.frame.axis[no].use_angle = false;
 						}
-						else if (!implicit)
-							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -B: The +a modifier only applies to the x and y axes; selection for %c-axis ignored\n", the_axes[no]);
 						break;
 					case 'f':	/* Select fancy annotations with trailing W|E|S|N */
 						if (gmt_M_x_is_lon(GMT,GMT_IN) || gmt_M_y_is_lat(GMT,GMT_IN))
@@ -4285,7 +4318,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		/* Now parse the annotation/tick info string */
 
 		if (orig_string[0] == '\0') continue;	/* Got nothing */
-		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		if (no < GMT_Z) GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
 		if (strstr (orig_string, "pi")) GMT->current.map.frame.axis[no].substitute_pi = true;	/* Use pi in formatting labels */
 
 		gmt_M_memset (string, GMT_BUFSIZ, char);
@@ -5994,6 +6027,8 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 	/* GMTCASE_GMT_DATA_SERVER_LIMIT */
 	GMT->current.setting.url_size_limit = 0;
+	/* GMTCASE_GMT_DATA_UPDATE_INTERVAL */
+	GMT->current.setting.refresh_time = 1;
 	/* GMT_CUSTOM_LIBS (default to none) */
 	/* GMT_EXPORT_TYPE */
 	GMT->current.setting.export_type = GMT_DOUBLE;
@@ -6511,6 +6546,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>.\n");
 			gmt_message (GMT, "\t     Cartesian x-axis takes optional +a<angle> for slanted or +an for orthogonal annotations [+ap].\n");
 			gmt_message (GMT, "\t     Cartesian y-axis takes optional +ap for parallel annotations [+an].\n");
+			gmt_message (GMT, "\t     Cartesian z-axis takes optional +an for parallel annotations [+an].\n");
 			gmt_message (GMT, "\t     Geographic axes take optional +f for \"fancy\" annotations with W|E|S|N suffices.\n");
 			gmt_message (GMT, "\t     To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes.\n");
 			gmt_message (GMT, "\t     For another axis label on the opposite axis, use +s|S as well.\n");
@@ -7096,11 +7132,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 's':	/* Output control for records where z are NaN */
 
-			gmt_message (GMT, "\t-s Suppress output for records whose z-value (col = 2) equals NaN\n");
-			gmt_message (GMT, "\t   [Default prints all records].\n");
-			gmt_message (GMT, "\t   Append <cols> to examine other column(s) instead [2].\n");
-			gmt_message (GMT, "\t   Append +a to suppress records where any column equals NaN, or\n");
-			gmt_message (GMT, "\t   append +r to reverse the suppression (only output z = NaN records).\n");
+			gmt_message (GMT, "\t-s Suppress output of data records whose z-value(s) equal NaN [Default prints all records].\n");
+			gmt_message (GMT, "\t   Append <cols> to test all specified column(s) [2].\n");
+			gmt_message (GMT, "\t   Append +a to suppress records where any column equals NaN [all columns must equal NaN].\n");
+			gmt_message (GMT, "\t   Append +r to reverse the test (only output record that fail the NaN-test).\n");
 			break;
 
 		case 'F':	/* -r Pixel registration option  */
@@ -7186,7 +7221,7 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 		gmt_message (GMT, "%s   and d for down-hill cartographic annotations.\n", pad);
 	}
 	if (kind < 2) gmt_message (GMT, "%s +c<dx>[/<dy>] sets clearance between label and text box [15%%].\n", pad);
-	gmt_message (GMT, "%s +d turns on debug which draws helper points and lines.\n", pad);
+	gmt_message (GMT, "%s +d turns on debug which draws helper points and lines; optionally add a pen [%s]\n", pad, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
 	if (kind < 2) gmt_message (GMT, "%s +e delays the plotting of the text as text clipping is set instead.\n", pad);
 	if (kind < 2) gmt_message (GMT, "%s +f sets specified label font [Default is %s].\n", pad, gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
 	if (kind < 2)
@@ -9372,14 +9407,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_FORMAT_CLOCK_IN:
 			strncpy (GMT->current.setting.format_clock_in, value, GMT_LEN64-1);
-			gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_in, &GMT->current.io.clock_input, 0);
+			error = gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_in, &GMT->current.io.clock_input, 0);
 			break;
 		case GMTCASE_INPUT_DATE_FORMAT:
 			GMT_COMPAT_TRANSLATE ("FORMAT_DATE_IN");
 			break;
 		case GMTCASE_FORMAT_DATE_IN:
 			strncpy (GMT->current.setting.format_date_in, value, GMT_LEN64-1);
-			gmtlib_date_C_format (GMT, GMT->current.setting.format_date_in, &GMT->current.io.date_input, 0);
+			error = gmtlib_date_C_format (GMT, GMT->current.setting.format_date_in, &GMT->current.io.date_input, 0);
 			break;
 		case GMTCASE_OUTPUT_CLOCK_FORMAT:
 			GMT_COMPAT_TRANSLATE ("FORMAT_CLOCK_OUT");
@@ -9393,14 +9428,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_FORMAT_DATE_OUT:
 			strncpy (GMT->current.setting.format_date_out, value, GMT_LEN64-1);
-			gmtlib_date_C_format (GMT, GMT->current.setting.format_date_out, &GMT->current.io.date_output, 1);
+			error = gmtlib_date_C_format (GMT, GMT->current.setting.format_date_out, &GMT->current.io.date_output, 1);
 			break;
 		case GMTCASE_OUTPUT_DEGREE_FORMAT:
 			GMT_COMPAT_TRANSLATE ("FORMAT_GEO_OUT");
 			break;
 		case GMTCASE_FORMAT_GEO_OUT:
 			strncpy (GMT->current.setting.format_geo_out, value, GMT_LEN64-1);
-			gmtlib_geo_C_format (GMT);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of gmt_begin */
+			error = gmtlib_geo_C_format (GMT);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of gmt_begin */
 			break;
 		case GMTCASE_PLOT_CLOCK_FORMAT:
 			GMT_COMPAT_TRANSLATE ("FORMAT_CLOCK_MAP");
@@ -9414,14 +9449,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_FORMAT_DATE_MAP:
 			strncpy (GMT->current.setting.format_date_map, value, GMT_LEN64-1);
-			gmtlib_date_C_format (GMT, GMT->current.setting.format_date_map, &GMT->current.plot.calclock.date, 2);
+			error = gmtlib_date_C_format (GMT, GMT->current.setting.format_date_map, &GMT->current.plot.calclock.date, 2);
 			break;
 		case GMTCASE_PLOT_DEGREE_FORMAT:
 			GMT_COMPAT_TRANSLATE ("FORMAT_GEO_MAP");
 			break;
 		case GMTCASE_FORMAT_GEO_MAP:
 			strncpy (GMT->current.setting.format_geo_map, value, GMT_LEN64-1);
-			gmtlib_plot_C_format (GMT);	/* Update format statements */
+			error = gmtlib_plot_C_format (GMT);	/* Update format statements */
 			break;
 		case GMTCASE_FORMAT_TIME_MAP:
 			error = gmtlib_setparameter (GMT, "FORMAT_TIME_PRIMARY_MAP", value, core) +
@@ -9685,7 +9720,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_degree_symbol = gmt_none;
 			else
 				error = true;
-			gmtlib_plot_C_format (GMT);	/* Update format statement since degree symbol may have changed */
+			error = gmtlib_plot_C_format (GMT);	/* Update format statement since degree symbol may have changed */
 			break;
 		case GMTCASE_BASEMAP_AXES:
 			GMT_COMPAT_TRANSLATE ("MAP_FRAME_AXES");
@@ -10024,7 +10059,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_PS_CHAR_ENCODING:
 			strncpy (GMT->current.setting.ps_encoding.name, value, GMT_LEN64-1);
 			gmtinit_load_encoding (GMT);
-			gmtlib_plot_C_format (GMT);	/* Since a chance in char set chances what is degree, ring, etc. */
+			error = gmtlib_plot_C_format (GMT);	/* Since a chance in char set chances what is degree, ring, etc. */
 			break;
 		case GMTCASE_PS_COLOR:
 			GMT_COMPAT_TRANSLATE ("PS_COLOR_MODEL");
@@ -10552,6 +10587,23 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 
+		case GMTCASE_GMT_DATA_UPDATE_INTERVAL:
+			if (lower_value[0]) {
+				size_t f, k = len - 1;
+				switch (lower_value[k]) {
+					case 'd':	f = 1;	break;
+					case 'w':	f = 7;	break;
+					case 'o':	f = 30;	break;
+					default:	f = 1;	break;
+				}
+				GMT->current.setting.refresh_time = atoi (lower_value) * f;
+				if (GMT->current.setting.refresh_time == 0)
+					error++;
+			}
+			else
+					error++;
+			break;
+
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			if (*value) {
 				if (GMT->session.CUSTOM_LIBS) {
@@ -10661,11 +10713,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("GMT_HISTORY");
 			break;
 		case GMTCASE_GMT_HISTORY:
-			if      (strspn (lower_value, "1t"))
+			if (!strcmp (lower_value, "1") || !strcmp (lower_value, "true"))
 				GMT->current.setting.history = (GMT_HISTORY_READ | GMT_HISTORY_WRITE);
-			else if (strchr (lower_value, 'r'))
+			else if (!strcmp (lower_value, "readonly"))
 				GMT->current.setting.history = GMT_HISTORY_READ;
-			else if (strspn (lower_value, "0f"))
+			else if (!strcmp (lower_value, "0") || !strcmp (lower_value, "false"))
 				GMT->current.setting.history = GMT_HISTORY_OFF;
 			else
 				error = true;
@@ -11823,6 +11875,15 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				snprintf (value, GMT_BUFSIZ, "%" PRIu64 "Gb", (uint64_t)GMT->current.setting.url_size_limit/(1024*1024*1024));
 			break;
 
+		case GMTCASE_GMT_DATA_UPDATE_INTERVAL:
+			if ((GMT->current.setting.refresh_time % 30) == 0)	/* Whole "months" = 30 days */
+				snprintf (value, GMT_BUFSIZ, "%do", GMT->current.setting.refresh_time / 30);
+			else if ((GMT->current.setting.refresh_time % 7) == 0)	/* Whole weeks */
+				snprintf (value, GMT_BUFSIZ, "%dw", GMT->current.setting.refresh_time / 7);
+			else /* Number of days */
+				snprintf (value, GMT_BUFSIZ, "%dd", GMT->current.setting.refresh_time);
+			break;
+
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_BUFSIZ-1);
 			break;
@@ -12132,9 +12193,9 @@ char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 	}
 	if (F->use_pattern) {
 		if (F->pattern_no)
-			snprintf (text, PATH_MAX+GMT_LEN256, "p%d/%d", F->dpi, F->pattern_no);
+			snprintf (text, PATH_MAX+GMT_LEN256, "P%d/%d", F->dpi, F->pattern_no);
 		else
-			snprintf (text, PATH_MAX+GMT_LEN256, "p%d/%s", F->dpi, F->pattern);
+			snprintf (text, PATH_MAX+GMT_LEN256, "P%d/%s", F->dpi, F->pattern);
 	}
 	else if (F->rgb[0] < -0.5)
 		strcpy (text, "-");
@@ -13062,7 +13123,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 			}
 			if ((tmp = GMT_Make_Option (API, 'C', NULL)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
 				return API->error;	/* Failure to make new option -C or append to list */
-			if ((tmp = GMT_Make_Option (API, '-', "GMT_HISTORY=false")) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
+			if ((tmp = GMT_Make_Option (API, '-', "GMT_HISTORY=readonly")) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
 				return API->error;	/* Failure to make new option -- or append to list */
 
 			/* Set up virtual file to hold the result of gmt info */
@@ -13310,6 +13371,7 @@ GMT_LOCAL int gmtinit_set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, stru
 	int error, k;
 	char figure[GMT_LEN128] = {""}, session[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
+	if (options == NULL) return GMT_NOERROR;
 	for (opt = *options; opt; opt = opt->next)	/* Loop over all options */
 		if (opt->option == 'O' || opt->option == 'K') return GMT_NOERROR;	/* Cannot be a one-liner if -O or -K are involved */
 	/* No -O -K present, so go ahead and check */
@@ -13560,6 +13622,20 @@ void gmtinit_complete_RJ (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *
 	}
 }
 
+GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
+	bool quote = false;	/* We are outside any quoted text */
+	size_t k;
+	if (strchr (file, '@') == NULL) return false;	/* No @ anywhere */
+	if (gmt_M_file_is_memory (file)) return false;	/* Not a remote file but a memory reference */
+	if (file[0] == '@') return true;	/* Definitively a remote file */
+	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
+	for (k = 0; k < strlen (file); k++) {
+		if (file[k] == '\"' || file[k] == '\'') quote = !quote;
+		if (file[k] == '@' && !quote) return true;	/* Found an unquoted at-symbol */
+	}
+	return false;	/* Nothing */
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmtinit_begin_module_sub.
@@ -13585,10 +13661,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
 	 */
 
-	bool is_PS, is_psrose = false, is_D_module = false;
+	bool is_PS, is_psrose = false, is_D_module = false, remote_first = true;
 	char *required = (char *)in_required;
 	unsigned int k;
-	static char *D_module[4] = {"gmtlogo", "psimage", "pslegend", "psscale"};	/* These all may take -Dx etc */
+	static char *D_module[4] = {"gmtlogo", "psimage", "pslegend", "psscale"};	/* These all may take -Dx and thus may not need -R -J */
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
@@ -13601,15 +13677,21 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
 
-	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		if (opt->arg[0] != '@') continue;	/* No remote file argument given */
-		gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then tis handles any missing registration _p|_g */
+	if (options) {
+	  for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+		  if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+		  if (remote_first) {
+			  gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
+			  remote_first = false;
+		  }
+		  gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
+		}
 	}
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
 
-	if (options && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && strstr (E->arg, "+g") == NULL && strstr (E->arg, "+p") == NULL) { /* Determine if need for RJ */
+	if (options && !strcmp (mod_name, "pscoast") && (E = GMT_Find_Option (API, 'E', *options)) && strstr (E->arg, "+g") == NULL && strstr (E->arg, "+p") == NULL) { /* Determine if need for RJ */
 		if (!((opt = GMT_Find_Option (API, 'G', *options)) || (opt = GMT_Find_Option (API, 'M', *options)) || (opt = GMT_Find_Option (API, 'W', *options)))) {
 			required = "";
 			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, -R -J not required for pscoast.\n");
@@ -13624,13 +13706,16 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (strchr ("jJg", opt->arg[0])) /* Must turn jr into JR, but will revisit this case later when we know if we have subplots or not */
 			required = "JR";
 	}
-	if (options && strstr (mod_name, "mapproject") && (opt = GMT_Find_Option (API, 'W', *options))) /* Must turn on JR */
+	if (options && !strcmp (mod_name, "mapproject") && (opt = GMT_Find_Option (API, 'W', *options))) /* Must turn on JR */
 		required = "JR";
-
+	if (options && !strcmp (mod_name, "psxy") && (opt = GMT_Find_Option (API, 'T', *options)) && (opt = GMT_Find_Option (API, 'B', *options)) == NULL) { /* Can turn off JR if -T and no -B as long as -X -Y do not contain c */
+		if (!(((opt = GMT_Find_Option (API, 'X', *options)) && opt->arg[0] == 'c') || ((opt = GMT_Find_Option (API, 'Y', *options)) && opt->arg[0] == 'c')))
+			required = "";
+	}
 	if (options && strstr (mod_name, "grdflexure") && (opt = GMT_Find_Option (API, 'Q', *options))) /* Must turn of g */
 		required = "";
 
-	if (options && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
+	if (options && !strcmp (mod_name, "pscoast") && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
 		/* Running pscoast -E without -R: Must make sure any the region-information in -E is added as args to new -R.
 		 * If there are no +r|R in the -E then we consult the history to see if there is an -R in effect. */
 		char r_code[GMT_LEN512] = {""};
@@ -13705,7 +13790,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			gmt_set_geographic (GMT, GMT_IN);	/* Help parsing of -R in case geographic coordinates are given to tools like grdcut */
 	}
 
-	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
+	if (options && GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0, subplot_status = 0, inset_status = 0, n_slashes = 0;
 		int id, fig;
 		bool got_R = false, got_J = false, exceptionb, exceptionp;
@@ -14020,7 +14105,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		bool first_time = true;
 		int k_data;
 		unsigned int srtm_flag;
-		char *list = NULL;
+		char *list = NULL, *c = NULL;
 		double wesn[4];
 		struct GMT_OPTION *opt_J = NULL;
 		struct GMT_DATA_INFO *I = NULL;
@@ -14038,7 +14123,15 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				opt->arg = file;
 				continue;
 			}
-			if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg, &srtm_flag)) == GMT_NOTSET) continue;	/* Argument is not a remote tiled dataset */
+			if ((c = strchr (opt->arg, '+'))) {	/* Maybe have things like -I@earth_relief_30m+d given to grdimage */
+				c[0] = '\0';
+				if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg, &srtm_flag)) == GMT_NOTSET) {
+					c[0] = '+';
+					continue;	/* Argument is not a remote tiled dataset */
+				}
+			}
+			else if ((k_data = gmtlib_remote_file_is_tiled (API, opt->arg, &srtm_flag)) == GMT_NOTSET)
+				continue;	/* Argument is not a remote tiled dataset */
 			/* Here, the argument IS a tiled remote dataset */
 			if (first_time) {
 				/* Replace the magic reference to a tiled remote dataset with a file list of the required tiles.
@@ -14085,7 +14178,15 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			list = gmtlib_get_tile_list (API, wesn, k_data, GMT->current.ps.active, srtm_flag);
 			/* Replace the remote file name with this local list */
 			gmt_M_str_free (opt->arg);
-			opt->arg = list;
+			if (c) {	/* Must append the modifiers */
+				char args[GMT_LEN128] = {""};
+				c[0] = '+';
+				sprintf (args, "%s%s", list, c);
+				opt->arg = strdup (args);
+				gmt_M_str_free (list);
+			}
+			else
+				opt->arg = list;
 		}
 	}
 
@@ -14262,10 +14363,14 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	*/
 	GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;
 
+#ifdef HAVE_GDAL
 	/* Reset these GDAL in/out stuff */
 	gmt_M_memset (&GMT->current.gdal_read_in,  1, struct GMT_GDALREAD_IN_CTRL);
 	gmt_M_memset (&GMT->current.gdal_read_out, 1, struct GMT_GDALREAD_OUT_CTRL);
 	gmt_M_memset (&GMT->current.gdal_write,    1, struct GMT_GDALWRITE_CTRL);
+#endif
+	
+	GMT->parent->cache = false;		/* Otherwise gdalread from externals on Windows would mingle CACHEDIR in fnames */
 
 	gmt_M_str_free (Ccopy);	/* Good riddance */
 }
@@ -15710,7 +15815,7 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
  */
 int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, char *item) {
 
-	int error = 0, i = 0;	/* The i and i+= GMT_more_than_once are there to avoid compiler warnings... */
+	int error = 0, i = 0, q = 0;	/* The i and i+= GMT_more_than_once are there to avoid compiler warnings... */
 
 	if (!list || !strchr (list, option)) return (0);	/* Not a common option we accept */
 
@@ -15726,28 +15831,29 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 	switch (option) {	/* Handle parsing of this option, if allowed here */
 		case 'B':
 			switch (item[0]) {	/* Check for -B[p] and -Bs */
-				case 's': GMT->common.B.active[GMT_SECONDARY] = true; break;
+				case 'p': GMT->common.B.active[GMT_PRIMARY] = true; q = 1; break;
+				case 's': GMT->common.B.active[GMT_SECONDARY] = true; q = 1; break;
 				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
 			if (!error) {
-				if (GMT->current.setting.run_mode == GMT_MODERN && !GMT->current.map.frame.set) {
+				if (GMT->current.setting.run_mode == GMT_MODERN && (!GMT->current.map.frame.set || item[q] == 'z')) {
 					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
-					if (item[0] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
+					if (item[q] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
 					if (c && strchr ("aflLsSu", c[1]))	/* We got the ones suitable for axes that we can chop off */
 						c[0] = '\0';	/* Temporarily chop off these modifiers only */
-					code[0] = item[0]; code[1] = (item[0]) ? item[1] : '\0';
+					code[0] = item[q]; code[1] = (item[q]) ? item[q+1] : '\0';
 					if (c) c[0] = '+';	/* Restore modifiers */
 					if (code[0] == '\0') {	/* Default is -Baf if nothing given */
-						strcpy (args, "af");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "af");	if (c) strcat (args, c);
 					}
 					else if (code[0] == 'x' && code[1] == '\0') {	/* If indicating x we do -Bxaf */
-						strcpy (args, "xaf");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "xaf");	if (c) strcat (args, c);
 					}
 					else if (code[0] == 'y' && code[1] == '\0') {	/* If indicating y we do -Byaf */
-						strcpy (args, "yaf");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "yaf");	if (c) strcat (args, c);
 					}
 					else if (code[0] == 'z' && code[1] == '\0') {	/* If indicating z we do -Bzaf */
-						strcpy (args, "zaf");	if (c) strcat (args, c);
+						if (q) args[0] = item[0]; strcat (args, "zaf");	if (c) strcat (args, c);
 					}
 					else	/* Keep what we got */
 						strcpy (args, item);
@@ -16069,7 +16175,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 's':
-			error += (GMT_more_than_once (GMT, GMT->common.s.active) || gmtinit_parse_s_option (GMT, item));
+			error += (GMT_more_than_once (GMT, GMT->common.s.active) || gmt_parse_s_option (GMT, item));
 			GMT->common.s.active = true;
 			break;
 
@@ -16390,7 +16496,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	GMT->PSL = New_PSL_Ctrl (version);		/* Allocate a PSL control structure */
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  New_PSL_Ctrl\n");
 	if (!GMT->PSL) {
-		GMT_Report (API, GMT_MSG_ERROR, "ould not initialize PSL - Aborting.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Could not initialize PSL - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
@@ -16403,7 +16509,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit : gmt_manage_workflow\n");
 
-	GMT->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
+	GMT->PSL->init.unit = PSL_INCH;		/* We use inches internally in PSL */
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: PSL_beginsession\n");
 	if (PSL_beginsession (GMT->PSL, API->external, GMT->session.SHAREDIR, GMT->session.USERDIR)) {	/* Initializes the session and sets a few defaults */
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
@@ -16469,8 +16575,6 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	gmtlib_fft_initialization (GMT);	/* Determine which FFT algos are available and set pointers */
 
 	gmtinit_set_today (GMT);	/* Determine today's rata die value */
-
-	gmtlib_refresh_server (GMT);	/* Refresh hash and info tables if needed */
 
 	return (GMT);
 }
@@ -17444,7 +17548,9 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 					}
 				}
 			}
-			if (error) return (error);			/* Bail at this point */
+			if (error) return (error);		/* Bail at this point */
+			gmt_reset_history (API->GMT);	/* No old classic history shall affect a new modern mode session */
+
 			gmt_conf (API->GMT);				/* Get the original system defaults */
 			if (!clean_start) gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			snprintf (dir, PATH_MAX, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);	/* Reuse dir string for saving gmt.conf to this dir */
