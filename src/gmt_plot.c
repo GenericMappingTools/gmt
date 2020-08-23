@@ -2653,31 +2653,41 @@ GMT_LOCAL bool gmtplot_is_fancy_boundary (struct GMT_CTRL *GMT) {
 }
 
 GMT_LOCAL void gmtplot_vertical_wall (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int quadrant, double *nesw, bool back, unsigned int mode3d) {
-	int plane = (quadrant + 1) % 2;
+	/* Draws the two vertical walls in the back of the 3-D plot */
+	int plane = (quadrant + 1) % 2;	/* Black magic that gives us GMT_X (for yz plane) or GMT_Y (for xz plane) */
 	double xx[4], yy[4];
 	gmt_plane_perspective (GMT, plane, nesw[quadrant % 4]);
+	/* Assign the coordinates of the four corners of the wall (hence assumed to be rectangular) */
 	xx[0] = xx[1] = nesw[(quadrant+1)%4];	xx[2] = xx[3] = nesw[(quadrant+3)%4];
 	yy[0] = yy[3] = GMT->current.proj.zmin;	yy[1] = yy[2] = GMT->current.proj.zmax;
-	if (mode3d & GMT_3D_WALL && back) {
-		int wplane = 1 - plane;
-		if (GMT->current.map.frame.paint[wplane]) {	/* First paint the back wall */
+	if (mode3d & GMT_3D_WALL && back) {	/* Called for one of the back walls and we wish to draw it */
+		int wplane = 1 - plane;	/* Get integer for the correct plain side */
+		if (GMT->current.map.frame.paint[wplane]) {	/* First paint the back wall, with no outline drawn */
 			PSL_setfill (PSL, GMT->current.map.frame.fill[wplane].rgb, 0);
 			PSL_plotbox (PSL, nesw[(quadrant+1)%4], GMT->current.proj.zmin, nesw[(quadrant+3)%4], GMT->current.proj.zmax);
 		}
-		if (back)
+		if (back)	/* Gridlines was requested, so draw those now */
 			gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane, mode3d, quadrant);
 
-		if (GMT->current.map.frame.draw_wall) {
+		if (GMT->current.map.frame.draw_wall) {	/* We wanted the outline of the back-wall drawn, do now to overwrite any perimeter gridlines */
 			gmt_setpen (GMT, &GMT->current.map.frame.pen);
 			PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
 		}
 	}
-	else if (back)
+	else if (back)	/* Get here if no back-walls were filled our outlined */
 		gmtplot_z_gridlines (GMT, PSL, GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI], plane, mode3d, quadrant);
-	if (mode3d & GMT_3D_BOX) {
-		gmt_setpen (GMT, &GMT->current.map.frame.pen);
-		PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
-	}
+}
+
+GMT_LOCAL void gmtplot_cube_box (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int quadrant, double *nesw) {
+	/* Draws the 3-D cube lines */
+	int plane = (quadrant + 1) % 2;	/* Black magic that gives us GMT_X (for yz plane) or GMT_Y (for xz plane) */
+	double xx[4], yy[4];
+	gmt_plane_perspective (GMT, plane, nesw[quadrant % 4]);
+	/* Assign the coordinates of the four corners of the wall (hence assumed to be rectangular) */
+	xx[0] = xx[1] = nesw[(quadrant+1)%4];	xx[2] = xx[3] = nesw[(quadrant+3)%4];
+	yy[0] = yy[3] = GMT->current.proj.zmin;	yy[1] = yy[2] = GMT->current.proj.zmax;
+	gmt_setpen (GMT, &GMT->current.map.frame.pen);
+	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
 }
 
 GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, unsigned int justify, char *U_label) {
@@ -5602,6 +5612,12 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 		if (back) {
 			gmtplot_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant + 1, nesw, true, GMT->current.map.frame.draw_box);
 			gmtplot_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant + 2, nesw, true, GMT->current.map.frame.draw_box);
+		}
+		if (GMT->current.map.frame.draw_box & GMT_3D_BOX) {
+			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 3, nesw);
+			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant    , nesw);
+			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 1, nesw);
+			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 2, nesw);
 		}
 	}
 
