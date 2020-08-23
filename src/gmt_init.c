@@ -4013,6 +4013,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	unsigned int pos = 0, k, error = 0;
 	char p[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
 	double pole[2];
+	struct GMT_FILL F;
 
 	/* Parsing of -B<framesettings>: -B[<axes>][+b][+g<fill>][+n][+o<lon>/<lat>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>] */
 
@@ -4037,11 +4038,11 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					GMT->current.map.frame.draw_box |= (GMT_3D_BOX|GMT_3D_WALL);
 					break;
 				case 'g':	/* Paint the basemap x-y plane and for 3-D back walls */
-					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_Z])) {
+					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &F)) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +g<fill> argument %s\n", &p[1]);
 						error++;
 					}
-					GMT->current.map.frame.paint[GMT_Z] = did_g = true;
+					did_g = true;
 					break;
 				case 'i':	/* Turn on internal annotation for radial or longitudinal axes when there is no outside place to annotate */
 					GMT->current.map.frame.internal_annot = 1;	/* Longitude/angle */
@@ -4101,20 +4102,20 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					else if (p[1] == 0)	/* Use grid pen as default */
 						gmt_M_memcpy (&GMT->current.map.frame.pen, &GMT->current.setting.map_grid_pen[GMT_PRIMARY], 1, struct GMT_PEN);
 					break;
-				case 'x':	/* Paint the basemap xz-plane for 3-D plots */
-					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_X])) {
+				case 'x':	/* Paint the basemap yz-plane for 3-D plots */
+					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_Y])) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +x<fill> argument %s (or possibly missing)\n", &p[1]);
 						error++;
 					}
-					GMT->current.map.frame.paint[GMT_X] = true;
+					GMT->current.map.frame.paint[GMT_Y] = true;
 					GMT->current.map.frame.draw_box |= GMT_3D_WALL;
 					break;
-				case 'y':	/* Paint the basemap yz-plane for 3-D plots */
-					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_Y])) {
+				case 'y':	/* Paint the basemap xz-plane for 3-D plots */
+					if (p[1] == 0 || gmt_getfill (GMT, &p[1], &GMT->current.map.frame.fill[GMT_X])) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +y<fill> argument %s (or possibly missing)\n", &p[1]);
 						error++;
 					}
-					GMT->current.map.frame.paint[GMT_Y] = true;
+					GMT->current.map.frame.paint[GMT_X] = true;
 					GMT->current.map.frame.draw_box |= GMT_3D_WALL;
 					break;
 				case 'z':	/* Paint the basemap xy-plane for 3-D plots */
@@ -4135,12 +4136,16 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	}
 
 	if (!GMT->current.map.frame.paint[GMT_X] && did_g) {	/* Let +g set all sides not already set */
-		gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_X], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
+		gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_X], &F, 1U, struct GMT_FILL);
 		GMT->current.map.frame.paint[GMT_X] = true;
 	}
 	if (!GMT->current.map.frame.paint[GMT_Y] && did_g) {	/* Let +g set all sides not already set */
-		gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Y], &GMT->current.map.frame.fill[GMT_Z], 1U, struct GMT_FILL);
+		gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Y], &F, 1U, struct GMT_FILL);
 		GMT->current.map.frame.paint[GMT_Y] = true;
+	}
+	if (!GMT->current.map.frame.paint[GMT_Z] && did_g) {	/* Let +g set all sides not already set */
+		gmt_M_memcpy (&GMT->current.map.frame.fill[GMT_Z], &F, 1U, struct GMT_FILL);
+		GMT->current.map.frame.paint[GMT_Z] = true;
 	}
 
 	/* Now parse the frame choices, if any */
@@ -4174,7 +4179,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	 *    		+t<title> as plot title [none].
 	 *    		+w[<pen>] draws the outline of the xz and yz planes [no outline].
 	 *    		of one or more of w,e,s,n,z then only those axes will be drawn.
-	 *    		+x, +y, +z paints the back walls for xz, yz, xy [with +g fill if not specified].
+	 *    		+x, +y, +z paints the back walls for yz, xz, xy [with +g fill if not specified].
 	 *		Upper case letters means the chosen axes also will be annotated.
 	 *		Default is determined by MAP_FRAME_AXES setting [WESN].
 	 * Axis settings:
@@ -6585,7 +6590,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     at which corner(s) to erect the z-axis via a combination of 1,2,3,4; 1 means lower left corner,\n");
 			gmt_message (GMT, "\t     2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis].\n");
 			gmt_message (GMT, "\t     The +w draws the outline of the xz and yz planes [no outlines].\n");
-			gmt_message (GMT, "\t     The +x|y|z[<fill>] paint the xz, yz, xy plane [no fill]. The +g<fill> sets all three planes.\n");
+			gmt_message (GMT, "\t     The +x|y|z[<fill>] paint the yz, xz, xy planes [no fill]. The +g<fill> sets all three planes.\n");
 			gmt_message (GMT, "\t     In addition, +b will erect a 3-D frame box to outline the 3-D domain [no frame box].\n");
 			gmt_message (GMT, "\t   2. Axes settings control the annotation, tick, and grid intervals and labels.\n");
 			gmt_message (GMT, "\t     The full axes specification is\n");
