@@ -86,17 +86,28 @@ GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, 
 
 	if (GMT->session.DCWDIR) {	/* 1. Check in GMT->session.DCWDIR */
 		sprintf (path, "%s/%s%s", GMT->session.DCWDIR, name, suffix);
-		if (access (path, R_OK) == 0) return true;
+		if (access (path, R_OK) == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. DCW: Read the Digital Chart of the World from %s\n", path);
+			return true;
+		}
 		/* Failed, so remove reference to invalid GMT->session.DCWDIR but don't free
 		 * the pointer. this is no leak because the reference still exists
 		 * in the previous copy of the current GMT_CTRL struct. */
 		GMT->session.DCWDIR = NULL;
 	}
-	if (gmt_getsharepath (GMT, "dcw", name, suffix, path, R_OK)) return true;	/* Found it in share or user somewhere */
+	if (gmt_getsharepath (GMT, "dcw", name, suffix, path, R_OK)) {
+		if (access (path, R_OK) == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. DCW: Read the Digital Chart of the World from %s\n", path);
+			return true;	/* Found it in share or user somewhere */
+		}
+	}
 	if (GMT->session.USERDIR) {	/* Check user dir via remote download */
 		char remote_path[PATH_MAX] = {""};
 		sprintf (path, "%s/geography/dcw/%s%s", GMT->session.USERDIR, name, suffix);
-		if (access (path, R_OK) == 0) return true;	/* Found it here */
+		if (access (path, R_OK) == 0) {	/* Previously downloaded */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. DCW: Read the Digital Chart of the World from %s\n", path);
+			return true;	/* Found it here */
+		}
 		/* Must download it the first time */
 		if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to download the Digital Chart of the World for GMT since GMT_AUTO_DOWNLOAD is off\n");
@@ -114,8 +125,10 @@ GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, 
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to obtain remote file %s%s\n", name, suffix);
 			return false;
 		}
-		else
+		else {	/* Successfully downloaded the first time */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. DCW: Read the Digital Chart of the World from %s\n", path);
 			return true;
+		}
 	}
 	return (false);
 }
