@@ -1260,9 +1260,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 								   But what would it take to have a user selected bg color? */
 								double o, t;		/* o - opacity, t = transparency */
 								o = Img_proj->data[node_RGBA] / 255.0;	t = 1 - o;
-								rgb[0] = o * rgb[0] + t * GMT->current.map.frame.fill.rgb[0];
-								rgb[1] = o * rgb[1] + t * GMT->current.map.frame.fill.rgb[1];
-								rgb[2] = o * rgb[2] + t * GMT->current.map.frame.fill.rgb[2];
+								rgb[0] = o * rgb[0] + t * GMT->current.map.frame.fill[GMT_Z].rgb[0];
+								rgb[1] = o * rgb[1] + t * GMT->current.map.frame.fill[GMT_Z].rgb[1];
+								rgb[2] = o * rgb[2] + t * GMT->current.map.frame.fill[GMT_Z].rgb[2];
 								node_RGBA++;
 							}
 						}

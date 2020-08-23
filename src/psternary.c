@@ -426,10 +426,10 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	 * axis arguments.  We also must handle the canvas filling separately.  The three axis are 60 degrees
 	 * relative to each other and we do this directly with PSL calls. */
 
-	if (GMT->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
-		gmt_setfill (GMT, &GMT->current.map.frame.fill, 0);
+	if (GMT->current.map.frame.paint[GMT_Z]) {	/* Paint the inside of the map with specified fill */
+		gmt_setfill (GMT, &GMT->current.map.frame.fill[GMT_Z], 0);
 		PSL_plotpolygon (PSL, tri_x, tri_y, 4);
-		GMT->current.map.frame.paint = false;
+		GMT->current.map.frame.paint[GMT_Z] = false;
 	}
 	/* Count how many of the three sides will be drawn */
 	if (GMT->current.map.frame.side[S_SIDE]) n_sides++;	/* The bottom (a) side */

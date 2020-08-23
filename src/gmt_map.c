@@ -6584,7 +6584,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	double Hmaj[4] = {2.0, 3.0, 6.0, 12.0}, Hsub[4] = {1.0, 1.0, 3.0, 3.0};
 	double Omaj[4] = {3.0, 6.0}, Osub[4] = {1.0, 3.0};
 	double Dmaj[4] = {2.0, 3.0, 7.0, 14.0}, Dsub[4] = {1.0, 1.0, 1.0, 7.0};
-	double d, f, p, *maj = defmaj, *sub = defsub;
+	double d, f, p, sxy = 1.0, sz = 1.0, *maj = defmaj, *sub = defsub;
 	struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[axis];
 	struct GMT_PLOT_AXIS_ITEM *T;
 
@@ -6595,21 +6595,24 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		!(A->item[item+2].active && A->item[item+2].interval == 0.0) &&
 		!(A->item[item+4].active && A->item[item+4].interval == 0.0)) return;
 
+	if (GMT->current.proj.three_D) {	/* Make an approximate adjustment to the "sizes" given a perspective view */
+		sxy = 1.0 - cosd (GMT->current.proj.z_project.view_elevation);
+		sz  = 1.0 - fabs (sind (GMT->current.proj.z_project.view_elevation));
+	}
 	/* f = frame width/height (inch); d = domain width/height (world coordinates) */
 	if (axis == GMT_X) {
-		f = fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
+		f = sxy * fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
 		d = fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
 	}
 	else if (axis == GMT_Y) {
-		f = fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
+		f = sxy * fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
 		d = fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);
 	}
 	else {
-		f = fabs (GMT->current.proj.zmax - GMT->current.proj.zmin);
+		f = sz * fabs (GMT->current.proj.zmax - GMT->current.proj.zmin);
 		d = fabs (GMT->common.R.wesn[ZHI] - GMT->common.R.wesn[ZLO]);
 	}
 	f *= GMT->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
-
 	/* First guess of interval */
 	d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.20));
 
@@ -6678,7 +6681,8 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	/* Finally set grid interval (if annotation set as well, use major, otherwise minor interval) */
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) {
-		T->interval = set_a ? d : f, T->generated = true;
+		T->interval = set_a ? d : f, T->generated = true; /* Commented out because f is too fine for gridline spacing, even if no annotations */
+		// T->interval = d, T->generated = true;
 		snprintf (tmp, GMT_LEN16, "g%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
