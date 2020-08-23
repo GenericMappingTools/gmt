@@ -1668,7 +1668,7 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file) {
 
 /* Functions dealing with the reading of the COE ASCII database */
 
-uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *nt) {
+int64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *nt) {
 	 /* S:		The X2SYS_INFO structure
 	 * dbase:	Name of the crossover data file [NULL for stdin]
 	 * ignorefile:	Name of file with track names to ignore [or NULL if none]
@@ -1695,7 +1695,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open crossover file %s\n", dbase);
 		*nx = 0;
-		return 0;
+		return -GMT_ERROR_ON_FOPEN;
 	}
 
 	n_alloc_p = n_alloc_t = GMT_CHUNK;
@@ -1712,7 +1712,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		if (!strncmp (line, "# Tag:", 6)) {	/* Found the # TAG record */
 			if (strcmp (S->TAG, &line[7])) {	/* -Ttag and this TAG do not match */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", dbase, &line[7], S->TAG);
-				GMT_exit (GMT, GMT_RUNTIME_ERROR);
+				return (-GMT_RUNTIME_ERROR);
 			}
 			continue;	/* Goto next record */
 		}
@@ -1744,12 +1744,12 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 	our_item -= 10;		/* Account for the 10 common items */
 	if (our_item < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Crossover file %s does not have the specified column %s - aborting\n", dbase, fflag);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		return (-GMT_RUNTIME_ERROR);
 	}
 
 	if (ignorefile && (k = x2sys_read_list (GMT, ignorefile, &ignore, &n_ignore)) != X2SYS_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Ignore file %s cannot be read - aborting\n", ignorefile);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		return (-GMT_RUNTIME_ERROR);
 	}
 
 	check_box = (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI]));	/* Specified a rectangular box */
@@ -1772,7 +1772,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		}
 		if (line[0] != '>') {	/* Trouble */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No segment header found [line %" PRIu64 "]\n", rec_no);
-			GMT_exit (GMT, GMT_RUNTIME_ERROR);
+			return (-GMT_RUNTIME_ERROR);
 		}
 		n_items = sscanf (&line[2], "%s %d %s %d %s %s", trk[0], &year[0], trk[1], &year[1], info[0], info[1]);
 		for (k = 0; k < strlen (trk[0]); k++) if (trk[0][k] == '.') trk[0][k] = '\0';
@@ -1833,11 +1833,11 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 			else {
 				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Header time specification tstart%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), start[k], rec_no);
-					GMT_exit (GMT, GMT_RUNTIME_ERROR);
+					return (-GMT_RUNTIME_ERROR);
 				}
 				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Header time specification tstop%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), stop[k], rec_no);
-					GMT_exit (GMT, GMT_RUNTIME_ERROR);
+					return (-GMT_RUNTIME_ERROR);
 				}
 			}
 			P[p].dist[k] = dist[k];
@@ -1878,7 +1878,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 					P[p].COE[k].data[i][COE_T] = GMT->session.d_NaN;
 				else if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time specification t%d (%s) in wrong format [line %" PRIu64 "]\n", (i+1), t_txt[i], rec_no);
-					GMT_exit (GMT, GMT_RUNTIME_ERROR);
+					return (-GMT_RUNTIME_ERROR);
 				}
 			}
 			if (!two_values) {	/* Modify z to return the two values at the crossover point */

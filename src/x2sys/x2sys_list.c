@@ -308,6 +308,7 @@ EXTERN_MSC int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, j, k, one, two, n_items, n_tracks;
 	uint64_t p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
+	int64_t value;
 	unsigned int n_weights = 0, coe_kind, n_output, cmode;
 	int error = 0, id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
@@ -374,7 +375,10 @@ EXTERN_MSC int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	from = (Ctrl->In.file) ? Ctrl->In.file : tofrom[GMT_IN];
 	if (GMT->common.R.active[RSET]) wesn = GMT->common.R.wesn;	/* Passed a sub region request */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Read crossover database from %s...\n", from);
-	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
+	if ((value = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks)) < 0)
+		Return (-value);
+
+	np = (uint64_t)value;
 	GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
