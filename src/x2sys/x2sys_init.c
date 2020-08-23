@@ -38,8 +38,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVj"
 
-EXTERN_MSC void x2sys_set_home (struct GMT_CTRL *GMT);
-
 struct X2SYS_INIT_CTRL {
 	struct X2SYS_INIT_In {	/*  */
 		bool active;
@@ -329,7 +327,9 @@ EXTERN_MSC int GMT_x2sys_init (void *V_API, int mode, void *args) {
 
 	/* Determine the TAG directory */
 
-	x2sys_set_home (GMT);
+	if (x2sys_set_home (GMT))
+		Return (GMT_RUNTIME_ERROR);
+
 	x2sys_path (GMT, Ctrl->In.TAG, path);
 	if (x2sys_access (GMT, Ctrl->In.TAG, R_OK)) {	/* No such dir */
 		if (gmt_mkdir (path)) {

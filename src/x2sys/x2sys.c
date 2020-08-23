@@ -232,27 +232,23 @@ GMT_LOCAL int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
 	return (err);
 }
 
-void x2sys_set_home (struct GMT_CTRL *GMT) {
+int x2sys_set_home (struct GMT_CTRL *GMT) {
 	char *this = NULL;
-#ifdef WIN32
-	static char *par = "%X2SYS_HOME%";
-#else
-	static char *par = "$X2SYS_HOME";
-#endif
 
-	if (X2SYS_HOME) return;	/* Already set elsewhere */
+	if (X2SYS_HOME) return GMT_NOERROR;	/* Already set elsewhere */
 
 	if ((this = getenv ("X2SYS_HOME")) != NULL) {	/* Set user's default path */
 		X2SYS_HOME = gmt_M_memory (GMT, NULL, strlen (this) + 1, char);
 		strcpy (X2SYS_HOME, this);
 	}
 	else {	/* Require user to set this parameters since subdirs will be created and it would be messy to just use . */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s has not been set but is a required parameter\n", par);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Environmental parameter X2SYS_HOME has not been set but is a required parameter\n");
+		return (GMT_RUNTIME_ERROR);
 	}
 #ifdef WIN32
-		gmt_dos_path_fix (X2SYS_HOME);
+	gmt_dos_path_fix (X2SYS_HOME);
 #endif
+	return GMT_NOERROR;
 }
 
 void x2sys_path (struct GMT_CTRL *GMT, char *fname, char *path) {
@@ -324,7 +320,8 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	struct X2SYS_INFO *X = NULL;
 	char line[GMT_BUFSIZ] = {""}, cardcol[80] = {""}, yes_no;
 
-	x2sys_set_home (GMT);
+	if (x2sys_set_home (GMT))
+		return (GMT_RUNTIME_ERROR);
 
 	X = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_INFO);
 	X->TAG = strdup (TAG);
@@ -1108,7 +1105,8 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 
 	if (!TAG) return (X2SYS_TAG_NOT_SET);
 
-	x2sys_set_home (GMT);
+	if (x2sys_set_home (GMT))
+		return (GMT_RUNTIME_ERROR);
 
 	gmt_M_memset (B, 1, struct X2SYS_BIX);
 	gmt_M_memset (unit, 4, char);
@@ -1312,7 +1310,8 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 	else
 		strncpy (s->suffix, sfile, 16);
 
-	x2sys_path_init (GMT, s);		/* Prepare directory paths to data */
+	if (x2sys_path_init (GMT, s))		/* Prepare directory paths to data */
+		return (GMT_DIM_TOO_LARGE);
 
 	*S = s;
 	return (X2SYS_NOERROR);
@@ -1536,11 +1535,12 @@ int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *
  * the data directories (if any) for this TAG.
  */
 
-void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
+int x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 	char file[PATH_MAX] = {""}, line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
-	x2sys_set_home (GMT);
+	if (x2sys_set_home (GMT))
+		return (GMT_RUNTIME_ERROR);
 
 	sprintf (file, "%s/%s/%s_paths.txt", X2SYS_HOME, S->TAG, S->TAG);
 
@@ -1552,7 +1552,7 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "(Will only look in current directory for such files)\n");
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "(mgd77[+] also looks in MGD77_HOME and mgg looks in GMT_SHAREDIR/mgg)\n");
 		}
-		return;
+		return GMT_NOERROR;
 	}
 
 	while (fgets (line, GMT_BUFSIZ, fp) && n_x2sys_paths < MAX_DATA_PATHS) {
@@ -1565,7 +1565,10 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 		x2sys_datadir[n_x2sys_paths] = gmt_M_memory (GMT, NULL, strlen (line)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], line);
 		n_x2sys_paths++;
-		if (n_x2sys_paths == MAX_DATA_PATHS) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Reached maximum directory (%d) count in %s!\n", MAX_DATA_PATHS, file);
+		if (n_x2sys_paths == MAX_DATA_PATHS) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Reached maximum directory (%d) count in %s!\n", MAX_DATA_PATHS, file);
+			return GMT_DIM_TOO_LARGE;
+		}
 	}
 	fclose (fp);
 
@@ -1575,8 +1578,12 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 		x2sys_datadir[n_x2sys_paths] = gmt_M_memory (GMT, NULL, strlen (GMT->session.CACHEDIR)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], GMT->session.CACHEDIR);
 		n_x2sys_paths++;
-		if (n_x2sys_paths == MAX_DATA_PATHS) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Reached maximum directory (%d) count by adding cache dir!\n", MAX_DATA_PATHS);
+		if (n_x2sys_paths == MAX_DATA_PATHS) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Reached maximum directory (%d) count by adding cache dir!\n", MAX_DATA_PATHS);
+			return GMT_DIM_TOO_LARGE;
+		}
 	}
+	return GMT_NOERROR;
 }
 
 /* x2sys_get_data_path takes a track name as argument and returns the full path

@@ -227,6 +227,7 @@ EXTERN_MSC struct MGD77_CONTROL M;
 
 /* Function prototypes.  These can be accessed in user programs */
 
+EXTERN_MSC int x2sys_set_home (struct GMT_CTRL *GMT);
 EXTERN_MSC FILE *x2sys_fopen (struct GMT_CTRL *GMT, char *fname, char *mode);
 EXTERN_MSC int x2sys_access (struct GMT_CTRL *GMT, char *fname, int mode);
 EXTERN_MSC void x2sys_path (struct GMT_CTRL *GMT, char *fname, char *path);
@@ -262,7 +263,7 @@ EXTERN_MSC int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *s,
 EXTERN_MSC int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *j, struct X2SYS_BIX *B, uint64_t *ID);
 EXTERN_MSC int x2sys_bix_free (struct GMT_CTRL *GMT, struct X2SYS_BIX *B);
 
-EXTERN_MSC void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
+EXTERN_MSC int x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, char *suffix);
 EXTERN_MSC int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file);
 
