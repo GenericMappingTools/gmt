@@ -8314,6 +8314,16 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	gmt_M_fill_swap (P->bfn[GMT_BGD].fill, P->bfn[GMT_FGD].fill);
 }
 
+void gmt_undo_log10 (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	unsigned int i;
+	gmt_M_unused(GMT);
+	/* Turn z into 10^z */
+	for (i = 0; i < P->n_colors; i++) {
+		P->data[i].z_low  = pow (10.0, P->data[i].z_low);
+		P->data[i].z_high = pow (10.0, P->data[i].z_high);
+	}
+}
+
 /*! . */
 struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pin, double z[], int nz_in, bool continuous, bool reverse, bool log_mode, bool no_inter) {
 	/* Resamples the current CPT based on new z-array.
