@@ -303,22 +303,10 @@ endif (GMT_USE_THREADS AND NOT GLIB_FOUND)
 
 
 ##
-##	Find GSHHG and DCW data needed by GMT
-##
-# Examples and tests depend on Shorelines
+##	Find pre-downloaded/pre-installed GSHHG and DCW data
+##  Will be automatically downloaded to user directory if not found during installing
 find_package (GSHHG)
-if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
-	message (FATAL_ERROR "Cannot proceed without GSHHG Shorelines. "
-		"Need to either set GSHHG_ROOT or disable tests.")
-endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
-
-# Examples and tests depend on DCW
 find_package (DCW)
-if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
-	message (FATAL_ERROR "Cannot proceed without DCW polygons. "
-		"Need to either set DCW_ROOT or disable tests."
-		"Obtain dcw-gmt-<version>.tar.gz from ftp://ftp.soest.hawaii.edu/gmt and make DCW_ROOT variable point to the directory where you unarchived the files")
-endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
 
 ##
