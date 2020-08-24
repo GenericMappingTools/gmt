@@ -4286,7 +4286,7 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 			/* Here we will read the grid data themselves. */
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
-			if (!I_obj->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
+			if (!I_obj->data && !gmt_M_is_subset (API->GMT, I_obj->header, S_obj->wesn)) {	/* Array is not allocated yet. Allocate now if a subset was not required. If yes allocation is done in gdlaread. We only expect header to have been set correctly */
 				if (I_obj->type <= GMT_UCHAR)
 					I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
 				else if (I_obj->type <= GMT_USHORT)
@@ -4298,8 +4298,8 @@ GMT_LOCAL struct GMT_IMAGE * gmtapi_import_image (struct GMTAPI_CTRL *API, int o
 					return_null (API, GMT_NOT_A_VALID_TYPE);
 				}
 			}
-			else {	/* Already have allocated space; check that it is enough */
-				size = gmtapi_set_grdarray_size (GMT, I_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/
+			else if (I_obj->data) {	/* Already have allocated space; check that it is enough */
+				size = gmtapi_set_grdarray_size (GMT, I_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which includes padding. */
 				if (size > I_obj->header->size) return_null (API, GMT_IMAGE_READ_ERROR);
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Reading image from file %s\n", S_obj->filename);

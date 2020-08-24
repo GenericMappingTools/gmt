@@ -3402,10 +3402,14 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active[RSET]) {
-		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
-		          GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		//snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
+		          //GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", P.wesn[XLO], P.wesn[XHI], P.wesn[YLO], P.wesn[YHI]);
 		to_gdalread->R.region = strR;
-		/*to_gdalread->R.active = true;*/	/* Wait until we really know how to use it */
+		to_gdalread->registration.val = I->header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
+		to_gdalread->registration.x_inc = I->header->inc[GMT_X];
+		to_gdalread->registration.y_inc = I->header->inc[GMT_Y];
+		to_gdalread->R.active = true;	/* Wait until we really know how to use it */
 	}
 
 	if (HH->pocket) {				/* See if we have a band request */
@@ -3413,13 +3417,15 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		to_gdalread->B.bands = HH->pocket;	/* Band parsing and error testing is done in gmt_gdalread */
 	}
 
-	to_gdalread->p.pad = (int)pad[0];	/* Only 'square' padding allowed */
-	to_gdalread->p.active = (pad[0] > 0);
+	to_gdalread->p.pad = (int)P.pad[0];	/* Only 'square' padding allowed */
+	to_gdalread->p.active = (P.pad[0] > 0);
 	to_gdalread->I.active = true;		/* Means that image in I->data will be BIP interleaved */
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
-	to_gdalread->c_ptr.active = true;
-	to_gdalread->c_ptr.grd = I->data;
+	if (I->data) {		/* Otherwise (subregion) memory is allocated in gdalread */
+		to_gdalread->c_ptr.active = true;
+		to_gdalread->c_ptr.grd = I->data;
+	}
 
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading image with gdalread.\n");
@@ -3429,6 +3435,27 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		gmt_M_free (GMT, from_gdalread->band_field_names);
 		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
+	}
+
+	if (!I->data) {
+		if      (from_gdalread->UInt8.active)  I->data = from_gdalread->UInt8.data;
+		//else if (from_gdalread->UInt16.active) I->data = from_gdalread->UInt16.data;
+		//else if (from_gdalread->Int16.active)  I->data = from_gdalread->Int16.data;
+		//else if (from_gdalread->Int32.active)  I->data = from_gdalread->Int32.data;
+		//else if (from_gdalread->UInt32.active) I->data = from_gdalread->UInt32.data;
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading image with gdalread.\n");
+			return (GMT_GRDIO_READ_FAILED);
+		}
+		gmt_M_memcpy (I->header->wesn, from_gdalread->hdr, 4, double);
+		I->header->n_columns = from_gdalread->RasterXsize;
+		I->header->n_rows    = from_gdalread->RasterYsize;
+		I->header->nm = gmt_M_get_nm (GMT, I->header->n_columns, I->header->n_rows);
+		// TEMP while the pad shit is not solved
+		pad[0] = pad[1] = pad[2] = pad[3] = 0;
+		I->header->mx   = I->header->n_columns + pad[0] + pad[1];
+		I->header->my   = I->header->n_rows + pad[2] + pad[3];
+		I->header->size = (size_t)I->header->mx * I->header->my;
 	}
 
 	if (to_gdalread->O.mem_layout[0]) 	/* If a different mem_layout request was applied in gmt_gdalread than we must update */
