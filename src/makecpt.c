@@ -355,8 +355,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	                                   "Options -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
 	                                   "Options -F+c and -Z cannot be used simultaneously\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active && Ctrl->T.T.inc == 0.0,
-	                                   "Option -Q: For logarithmic output the -T argument must specify an increment\n");
+
 	if (!Ctrl->S.active) {
 		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
@@ -569,6 +568,8 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		gmt_stretch_cpt (GMT, Pout, Ctrl->T.T.min, Ctrl->T.T.max);	/* Stretch to given range or use natural range if 0/0 */
 		if (Ctrl->I.mode & GMT_CPT_C_REVERSE)	/* Also flip the colors */
 			gmt_invert_cpt (GMT, Pout);
+		if (Ctrl->Q.mode == 1)
+			gmt_undo_log10 (GMT, Pout);
 	}
 
 	if (Pout == NULL) {	/* Meaning it was not created above */
