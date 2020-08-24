@@ -11482,7 +11482,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	}
 	/* 1o. Check if grdinterpolate is producing grids or datasets */
 	else if (!strncmp (module, "grdinterpolate", 14U)) {
-		type = ((opt = GMT_Find_Option (API, 'S', *head))) ? 'D' : 'G';	/* Giving -S means we change default putput from grid to dataset */
+		type = ((opt = GMT_Find_Option (API, 'S', *head))) ? 'D' : 'G';	/* Giving -S means we change default output from grid to dataset */
 	}
 	/* 1p. Check if grdgdal is reading a dataset */
 	else if (!strncmp (module, "grdgdal", 7U)) {	/* Set input data type based on options */
@@ -11494,6 +11494,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* 1q. Check if gmtget is downloading dataset */
 	else if (!strncmp (module, "gmtget", 6U) && (opt = GMT_Find_Option (API, 'D', *head))) {
 		deactivate_output = true;	/* Download, turn off output */
+	}
+	/* 1r. Check if gmtbinstats is doing hexagonal tiling */
+	else if (!strncmp (module, "gmtbinstats", 11U)) {
+		type = ((opt = GMT_Find_Option (API, 'T', *head)) && opt->arg[0] != 'r') ? 'D' : 'G';	/* Giving -T[h] means we change default output from grid to dataset */
 	}
 
 	/* 2a. Get the option key array for this module */
