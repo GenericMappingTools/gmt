@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** **all** \| **cache** \| **data**\ [=\ *planet*] \| **geography** \| **sessions** \| **settings**
+**gmt clear** **all** \| **cache** \| **data**\ [=\ *planet*] \| **geography**\ [=\ *name*] \| **sessions** \| **settings**
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -45,8 +45,9 @@ Optional Arguments
 
 .. _clear-geography:
 
-**geography**
-    Delete the user's geography directory.
+**geography**\ [=\ *name*]
+    Delete the user's geography directory.  Append either *=gshhg* or *=dcw*
+    if you only want to delete the named data set [both].
 
 .. _clear-sessions:
 

@@ -37,7 +37,7 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data[=<planet>]|geography|sessions|settings [%s]\n\n", name, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data[=<planet>]|geography[=<name>|sessions|settings [%s]\n\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -46,6 +46,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   data      Deletes the user\'s data download directory [%s/server].\n", API->GMT->session.USERDIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t             Append =<planet> to limit removal to such data for a specific <planet> [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   geography Deletes the user\'s geography directory (gshhg, dcw) [%s/geography].\n", API->GMT->session.USERDIR);
+	GMT_Message (API, GMT_TIME_NONE, "\t             Append =<name> to limit removal to such data for gshhg or dcw only [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   sessions  Deletes the user\'s sessions directory [%s].\n", API->session_dir);
 	GMT_Message (API, GMT_TIME_NONE, "\t   settings  Deletes a modern mode session\'s %s file.\n", GMT_SETTINGS_FILE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
@@ -175,7 +176,7 @@ static int clear_sessions (struct GMTAPI_CTRL *API) {
 	return GMT_NOERROR;
 }
 
-static int clear_geography (struct GMTAPI_CTRL *API) {
+static int clear_geography (struct GMTAPI_CTRL *API, char *data) {
 	int d;
 	char geography_dir[PATH_MAX] = {""}, current_dir[PATH_MAX] = {""};
 	char **dir;
@@ -193,6 +194,10 @@ static int clear_geography (struct GMTAPI_CTRL *API) {
 
 	d = 0;
 	while (dir[d]) {	/* Look through geography subdirectories */
+		if (data && strcmp (dir[d], data)) {	/* Not a dataset that we want to delete */
+			d++;
+			continue;
+		}
 		sprintf (current_dir, "%s/%s", geography_dir, dir[d]);	/* E.g., ~/.gmt/server/gshhg */
 		if (gmt_remove_dir (API, current_dir, false)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_dir);
@@ -202,9 +207,11 @@ static int clear_geography (struct GMTAPI_CTRL *API) {
 	}
 	gmtlib_free_dir_list (GMT, &dir);
 
-	if (gmt_remove_dir (API, geography_dir, false)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", geography_dir);
-		return GMT_NOERROR;
+	if (data == NULL) {
+		if (gmt_remove_dir (API, geography_dir, false)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", geography_dir);
+			return GMT_NOERROR;
+		}
 	}
 	return GMT_NOERROR;
 }
@@ -243,7 +250,7 @@ EXTERN_MSC int GMT_clear (void *V_API, int mode, void *args) {
 				error = GMT_RUNTIME_ERROR;
 			if (clear_data (API, NULL))
 				error = GMT_RUNTIME_ERROR;
-			if (clear_geography (API))
+			if (clear_geography (API, NULL)) 
 				error = GMT_RUNTIME_ERROR;
 			if (clear_sessions (API))
 				error = GMT_RUNTIME_ERROR;
@@ -265,7 +272,9 @@ EXTERN_MSC int GMT_clear (void *V_API, int mode, void *args) {
 				error = GMT_RUNTIME_ERROR;
 		}
 		else if (!strcmp (opt->arg, "geography")) {	/* Clear the geography dir */
-			if (clear_geography (API))
+			char *set = strchr (opt->arg, '=');
+			if (set) set++;	/* Skip past the = sign */
+			if (clear_geography (API, set))
 				error = GMT_RUNTIME_ERROR;
 		}
 		else if (!strcmp (opt->arg, "settings") || !strcmp (opt->arg, "defaults") || !strcmp (opt->arg, "conf")) {	/* Clear the default settings in modern mode */
