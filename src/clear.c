@@ -20,7 +20,7 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt clear cleans up by removing files or dirs.
- *	gmt clear [all | cache | data[=<planet>] | geography | sessions | settings ]
+ *	gmt clear [all | cache | data[=<planet>] | geography[=<name>] | sessions | settings ]
  */
 
 #include "gmt_dev.h"
