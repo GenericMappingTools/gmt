@@ -5567,6 +5567,7 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 GMT_LOCAL bool gmtplot_z_axis_side (struct GMT_CTRL *GMT, unsigned int axis, unsigned int quadrant) {
 	bool below;
+	gmt_M_unused(GMT);
 	axis++;	/* 1-4 */
 	switch (axis) {
 		case 1: below = (quadrant == 2);	break;
@@ -6341,7 +6342,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			 * a series if if,elseif,else at the same level then we consult the done[level] array.  This is set to true if we pass a test and actually
 			 * draw something and once that is done none of the other tests at the same level can pass. */
 			if (s->conditional == GMT_BEGIN_BLOCK_IF) {	/* Beginning of a new if branch. If we are inside an earlier branch whose test was false then all inside shall be false */
-				if (level > 0 && skip[level]) 
+				if (level > 0 && skip[level])
 					skip[level+1] = true;
 				else {
 					if ((error = gmtplot_custum_failed_bool_test (GMT, s, size, tr_text, &skip[level+1]))) return (error);
@@ -8889,7 +8890,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 			gap = s[n-1] / (ngap - 1);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given number of front gaps: %d Computed gap: %g\n", ngap, gap);
 	}
-	
+
 	PSL_command (GMT->PSL, "V\n");	/* In case we change the graphic state regarding pens */
 
 	len2 = 0.5 * f->f_len;
