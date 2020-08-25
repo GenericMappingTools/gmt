@@ -5608,17 +5608,25 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 		if (fore) {
 			gmtplot_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant + 3, nesw, false, GMT->current.map.frame.draw_box);
 			gmtplot_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant    , nesw, false, GMT->current.map.frame.draw_box);
+			if (GMT->current.map.frame.draw_box & GMT_3D_BOX) {
+				gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 3, nesw);
+				gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant    , nesw);
+			}
 		}
 		if (back) {
 			gmtplot_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant + 1, nesw, true, GMT->current.map.frame.draw_box);
 			gmtplot_vertical_wall (GMT, PSL, GMT->current.proj.z_project.quadrant + 2, nesw, true, GMT->current.map.frame.draw_box);
+			if (GMT->current.map.frame.draw_box & GMT_3D_BOX) {
+				gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 1, nesw);
+				gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 2, nesw);
+			}
 		}
-		if (GMT->current.map.frame.draw_box & GMT_3D_BOX) {
-			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 3, nesw);
-			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant    , nesw);
-			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 1, nesw);
-			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 2, nesw);
-		}
+//		if (GMT->current.map.frame.draw_box & GMT_3D_BOX) {
+//			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 3, nesw);
+//			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant    , nesw);
+//			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 1, nesw);
+//			gmtplot_cube_box (GMT, PSL, GMT->current.proj.z_project.quadrant + 2, nesw);
+//		}
 	}
 
 	/* Vertical axis */
