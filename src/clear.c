@@ -271,7 +271,7 @@ EXTERN_MSC int GMT_clear (void *V_API, int mode, void *args) {
 			if (clear_sessions (API))
 				error = GMT_RUNTIME_ERROR;
 		}
-		else if (!strcmp (opt->arg, "geography")) {	/* Clear the geography dir */
+		else if (!strncmp (opt->arg, "geography", 9U)) {	/* Clear the geography dir */
 			char *set = strchr (opt->arg, '=');
 			if (set) set++;	/* Skip past the = sign */
 			if (clear_geography (API, set))
