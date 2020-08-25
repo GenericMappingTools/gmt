@@ -6514,7 +6514,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 	}
 	x_noise = GMT_CONV4_LIMIT * info.G->header->inc[GMT_X];	y_noise = GMT_CONV4_LIMIT * info.G->header->inc[GMT_Y];
 	info.dx = gmt_M_memory (GMT, NULL, info.G->header->my, double);
-	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
+	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set, true);
 	info.gshhg_res = Ctrl->D.set;	/* Selected GSHHG resolution, if used */
 	info.A = &Ctrl->A.info;		/* Selected GSHHG flags, if used */
 
