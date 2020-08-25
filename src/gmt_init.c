@@ -6134,7 +6134,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	if (GMT->session.GSHHGDIR)
 		gmt_M_str_free (GMT->session.GSHHGDIR);
 	if (strstr (GSHHG_INSTALL_PATH, "PATH-NOTFOUND")) {	/* Assign download path instead */
-		sprintf (path, "%s/gshhg", GMT->session.USERDIR);
+		sprintf (path, "%s/geography/gshhg", GMT->session.USERDIR);
 		GMT->session.GSHHGDIR = strdup (path);
 	}
 	else
