@@ -238,7 +238,7 @@ GMT_LOCAL void gmtshore_prepare_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c
 	}
 }
 
-GMT_LOCAL char *gmtshore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path, bool reset) {
+GMT_LOCAL char *gmtshore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path, bool reset, bool download) {
 	/* Prepends the appropriate directory to the file name
 	 * and returns path if file is readable, NULL otherwise */
 
@@ -350,7 +350,7 @@ L1:
 
 	/* 4. Try the just-in-time download option from the server */
 
-	if (GMT->session.USERDIR) {	/* Check user dir via remote download */
+	if (download && GMT->session.USERDIR) {	/* Check user dir via remote download */
 		char remote_path[PATH_MAX] = {""};
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: Trying via remote download\n");
 		sprintf (path, "%s/geography/gshhg/%s.nc", GMT->session.USERDIR, stem);
@@ -395,7 +395,7 @@ L1:
 	return (NULL); /* never reached */
 }
 
-GMT_LOCAL void gmtshore_check (struct GMT_CTRL *GMT, bool ok[5]) {
+GMT_LOCAL void gmtshore_check (struct GMT_CTRL *GMT, bool ok[5], bool download) {
 /* Sets ok to true for those resolutions available in share for
  * resolution (f, h, i, l, c) */
 
@@ -408,7 +408,7 @@ GMT_LOCAL void gmtshore_check (struct GMT_CTRL *GMT, bool ok[5]) {
 		for (j = n_found = 0; j < 3; j++) {
 			/* For each data type... */
 			snprintf (stem, GMT_LEN64, "binned_%s_%c", kind[j], res[i]);
-			if (!gmtshore_getpathname (GMT, stem, path, false))
+			if (!gmtshore_getpathname (GMT, stem, path, false, download))
 				/* Failed to find file */
 				continue;
 			n_found++; /* Increment how many found so far for this resolution */
@@ -544,12 +544,12 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 	return (base);
 }
 
-char gmt_shore_adjust_res (struct GMT_CTRL *GMT, char res) {
+char gmt_shore_adjust_res (struct GMT_CTRL *GMT, char res, bool download) {
 	/* Returns the highest available resolution <= to specified resolution */
 	int k, orig;
 	bool ok[5];
 	char *type = "clihf";
-	(void)gmtshore_check (GMT, ok);		/* See which resolutions we have */
+	(void)gmtshore_check (GMT, ok, download);		/* See which resolutions we have */
 	k = orig = gmtshore_res_to_int (res);	/* Get integer value of requested resolution */
 	while (k >= 0 && !ok[k]) --k;		/* Drop down one level to see if we have a lower resolution available */
 	if (k >= 0 && k != orig) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Resolution %c not available, substituting resolution %c\n", res, type[k]);
@@ -568,7 +568,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 
 	snprintf (stem, GMT_LEN64, "binned_GSHHS_%c", res);
 
-	if (!gmtshore_getpathname (GMT, stem, path, true))
+	if (!gmtshore_getpathname (GMT, stem, path, true, true))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
 		/* zap structure (nc_get_att_text does not null-terminate strings!) */
@@ -996,7 +996,7 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	else
 		snprintf (stem, GMT_LEN64, "binned_border_%c", res);
 
-	if (!gmtshore_getpathname (GMT, stem, path, true))
+	if (!gmtshore_getpathname (GMT, stem, path, true, true))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
 	gmt_M_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));

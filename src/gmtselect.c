@@ -618,7 +618,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 	if (do_project) GMT_Report (API, GMT_MSG_WARNING, "-J means all data will be projected before tests are applied\n");
 
 	if (Ctrl->N.active) {	/* Set up GSHHS */
-		if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
+		if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set, true);
 		if (Ctrl->D.active) base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 		if (Ctrl->N.mode) {	/* Post-process -N choice */
 			Ctrl->N.mask[3] = Ctrl->N.mask[1];

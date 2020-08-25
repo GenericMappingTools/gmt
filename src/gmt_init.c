@@ -12108,7 +12108,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 		case GMTCASE_DIR_GSHHG:
 			/* Force update of session.GSHHGDIR before copying the string */
-			gmt_shore_adjust_res (GMT, 'c');
+			gmt_shore_adjust_res (GMT, 'c', false);
 			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_BUFSIZ-1);
 			break;
 
