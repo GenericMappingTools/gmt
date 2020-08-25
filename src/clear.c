@@ -198,7 +198,7 @@ static int clear_geography (struct GMTAPI_CTRL *API, char *data) {
 			d++;
 			continue;
 		}
-		sprintf (current_dir, "%s/%s", geography_dir, dir[d]);	/* E.g., ~/.gmt/server/gshhg */
+		sprintf (current_dir, "%s/%s", geography_dir, dir[d]);	/* E.g., ~/.gmt/geography/gshhg */
 		if (gmt_remove_dir (API, current_dir, false)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_dir);
 			return GMT_NOERROR;
