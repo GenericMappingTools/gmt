@@ -6125,7 +6125,7 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	if (GMT->session.DCWDIR)
 		gmt_M_str_free (GMT->session.DCWDIR);
 	if (strstr (DCW_INSTALL_PATH, "PATH-NOTFOUND")) {	/* Assign download path instead */
-		sprintf (path, "%s/dcw", GMT->session.USERDIR);
+		sprintf (path, "%s/geography/dcw", GMT->session.USERDIR);
 		GMT->session.DCWDIR = strdup (path);
 	}
 	else
