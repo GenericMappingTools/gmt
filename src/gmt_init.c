@@ -5810,6 +5810,7 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 /*! . */
 void gmt_conf (struct GMT_CTRL *GMT) {
 	int i, error = 0;
+	char path[PATH_MAX] = {""};
 	double const pt = 1.0/72.0;	/* points to inch */
 	/* Initialize all the settings to standard SI settings */
 
@@ -6123,11 +6124,21 @@ void gmt_conf (struct GMT_CTRL *GMT) {
 	/* DIR_DCW */
 	if (GMT->session.DCWDIR)
 		gmt_M_str_free (GMT->session.DCWDIR);
-	GMT->session.DCWDIR = strdup (DCW_INSTALL_PATH);
+	if (strstr (DCW_INSTALL_PATH, "PATH-NOTFOUND")) {	/* Assign download path instead */
+		sprintf (path, "%s/dcw", GMT->session.USERDIR);
+		GMT->session.DCWDIR = strdup (path);
+	}
+	else
+		GMT->session.DCWDIR = strdup (DCW_INSTALL_PATH);
 	/* DIR_GSHHG */
 	if (GMT->session.GSHHGDIR)
 		gmt_M_str_free (GMT->session.GSHHGDIR);
-	GMT->session.GSHHGDIR = strdup (GSHHG_INSTALL_PATH);
+	if (strstr (GSHHG_INSTALL_PATH, "PATH-NOTFOUND")) {	/* Assign download path instead */
+		sprintf (path, "%s/gshhg", GMT->session.USERDIR);
+		GMT->session.GSHHGDIR = strdup (path);
+	}
+	else
+		GMT->session.GSHHGDIR = strdup (GSHHG_INSTALL_PATH);
 
 		/* TIME group */
 
