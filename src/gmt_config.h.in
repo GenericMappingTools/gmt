@@ -142,6 +142,7 @@
 #cmakedefine HAVE_STRTOF_
 #cmakedefine HAVE_STRTOK_R
 #cmakedefine HAVE_STRTOK_S
+#cmakedefine HAVE_STRSIGNAL
 #cmakedefine DECLARED_STRDUP
 #cmakedefine DECLARED_STRSEP
 
