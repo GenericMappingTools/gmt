@@ -2901,6 +2901,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 		return (GMT_NOERROR);	/* OK to be unsuccessful in opening this file */
 
 	if (gmt_hash_init (GMT, unique_hashnode, GMT_unique_option, GMT_N_UNIQUE, GMT_N_UNIQUE)) {
+		fclose (fp);
 		return (GMT_NOERROR); /* Cannot do anything without the hash */		
 	}
 
