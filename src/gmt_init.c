@@ -15913,6 +15913,8 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, dest, source);
 				GMT->current.proj.projection      = GMT_PROJ4_PROJS;		/* This now make it use the proj4 lib */
 				GMT->common.J.active = true;
+				if (GMT->current.gdal_read_in.hCT_fwd == NULL || GMT->current.gdal_read_in.hCT_inv == NULL)
+					error = 1;
 			}
 #else
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "PROJ.4 can only be used with GDAL linked GMT.\n");
