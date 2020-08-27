@@ -684,13 +684,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 			case 'T':	/* Tile plot -T[+s][+o<pen>] */
 				Ctrl->T.active = true;	/* Plot as tiles */
 				if (opt->arg[0] && (strchr (opt->arg, '+') || gmt_M_compat_check (GMT, 6))) {	/* New syntax */
-					if (strstr (opt->arg, "+s")) Ctrl->T.skip = true;
-					if ((c = strstr (opt->arg, "+o")) && gmt_getpen (GMT, &c[2], &Ctrl->T.pen)) {
-						gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
-						n_errors++;
+					if (strstr (opt->arg, "+s"))
+						Ctrl->T.skip = true;
+					if ((c = strstr (opt->arg, "+o"))) {
+						if (gmt_getpen (GMT, &c[2], &Ctrl->T.pen)) {
+							gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
+							n_errors++;
+						}
+						else
+							Ctrl->T.outline = true;
 					}
-					else
-						Ctrl->T.outline = true;
 				}
 				else if (opt->arg[0]) {	/* Old-style syntax -T[s][o<pen>] */
 					k = 0;
