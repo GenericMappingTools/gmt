@@ -13260,7 +13260,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 	return GMT_NOERROR;
 }
 
-/*! Add -R<grid> for those modules that may implicitly obtain the region via a grid */
+/*! Add -Rw/e/s/s for those modules that may implicitly obtain the region via a grid */
 GMT_LOCAL int gmtinit_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const char *args, bool exact, struct GMT_OPTION **options) {
 	/* When a module uses -R indirectly via a grid then we need to set that explicitly in the options.
 	 * Modules with this issue have "g" in their THIS_MODULE_NEEDS string.
@@ -13296,7 +13296,7 @@ GMT_LOCAL int gmtinit_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, cons
 	struct GMT_OPTION *opt = NULL;
 	gmt_M_unused(args);
 
-	/* Here we know the module is using a grid to get -R implicitly */
+	/* Here we know the module is using datasets to get -R implicitly */
 	if ((err = gmtinit_get_region_from_data (API, GMT_IS_DATASET, exact, options, wesn)))
 		return err;
 	snprintf (region, GMT_LEN256, "%.16g/%.16g/%.16g/%.16g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
@@ -13309,9 +13309,9 @@ GMT_LOCAL int gmtinit_set_missing_R_from_datasets (struct GMTAPI_CTRL *API, cons
 	return GMT_NOERROR;
 }
 
-/*! Add -R<grid> for those modules that may implicitly obtain the region via a grid */
+/*! Add -Rw/e/s/n for those modules that may implicitly obtain the region via a grid or datasets */
 GMT_LOCAL int gmtinit_determine_R_option_from_data (struct GMTAPI_CTRL *API, const char *args, bool exact, struct GMT_OPTION **options) {
-	/* When a module uses -R indirectly via a grid then we need to set that explicitly in the options.
+	/* When a module uses -R indirectly via a grid or datasets then we need to set that explicitly in the options.
 	 * Modules with this issue have "g" in their THIS_MODULE_NEEDS string.
 	 * Modules that read datasets may have "d" in their THIS_MODULE_NEEDS which forces us to determine the region.
 	 */
