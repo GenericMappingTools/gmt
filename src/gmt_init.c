@@ -8305,7 +8305,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 						gmt_set_column (GMT, GMT_IN, icol, got);
 				}
 				else {	/* Testing this, could we ever get here with sane data? */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not parse %s into Geographical, Cartesian, or Temporal coordinates!", text);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not parse %s into Geographical, Cartesian, or Temporal coordinates!\n", text);
 					error++;
 				}
 			}
