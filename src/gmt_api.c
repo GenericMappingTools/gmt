@@ -5607,7 +5607,7 @@ GMT_LOCAL int gmtapi_write_matrix (struct GMT_CTRL *GMT, void *dest, unsigned in
 			fprintf (fp, "\n");
 		}
 	}
-	GMT->current.setting.io_header[GMT_OUT] = was;
+	if (M->n_headers) GMT->current.setting.io_header[GMT_OUT] = was;  /* Revert to the original setting */
 
 	if (close_file) fclose (fp);
 	return (GMT_NOERROR);
@@ -5764,7 +5764,7 @@ GMT_LOCAL int gmtapi_write_vector (struct GMT_CTRL *GMT, void *dest, unsigned in
 	gmt_M_free (GMT, api_get_val);
 
 	if (close_file) fclose (fp);
-	GMT->current.setting.io_header[GMT_OUT] = was;
+	if (V->n_headers) GMT->current.setting.io_header[GMT_OUT] = was;  /* Revert to the original setting */
 
 	return (GMT_NOERROR);
 }
