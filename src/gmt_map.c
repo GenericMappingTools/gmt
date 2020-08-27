@@ -4977,6 +4977,7 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 			GMT->current.proj.fwd = &gmt_proj4_fwd;
 			GMT->current.proj.inv = &gmt_proj4_inv;
 			GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.proj4_scl;
+			GMT->current.map.n_lon_nodes = 360;	GMT->current.map.n_lat_nodes = 180;
 			if (GMT->common.R.oblique) {
 				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
