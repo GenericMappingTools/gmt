@@ -2062,7 +2062,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						polygon = false;
 						PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
 					}
-					if (change & 4) gmt_setpen (GMT, &current_pen);
+					if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
 				}
 				if (S.G.label_type == GMT_LABEL_IS_HEADER) {	/* Get potential label from segment header */
 					SH = gmt_get_DS_hidden (L);
