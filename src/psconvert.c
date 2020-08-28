@@ -2808,7 +2808,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 
 	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
-		GMT_Report (API, GMT_MSG_ERROR, "gswinXXc.exe does not exist.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Registry registered %s does not exist. Resorting to the one provided in GMT.\n", data);
 		return (GMT_RUNTIME_ERROR);
 	}
 
