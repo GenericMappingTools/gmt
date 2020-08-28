@@ -13314,7 +13314,8 @@ GMT_LOCAL bool gmtinit_is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OP
 	if (!strncmp (module, "pscoupe", 7U)) return true;
 	if (!strncmp (module, "psmeca", 6U)) return true;
 	if (!strncmp (module, "pspolar", 7U)) return true;
-	if (!strncmp (module, "pssac", 5U)) return true;
+	/* pssac: Cartesion by default, unless -S option is used */
+	if (!strncmp (module, "pssac", 5U) && (opt = GMT_Find_Option (GMT->parent, 'S', options)) != NULL) return true;
 	if (!strncmp (module, "psvelo", 6U)) return true;
 	if (!strncmp (module, "mgd77track", 10U)) return true;
 	if (!strncmp (module, "grdpmodeler", 11U)) return true;
