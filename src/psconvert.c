@@ -217,7 +217,7 @@ GMT_LOCAL struct popen2 * psconvert_popen2 (const char *cmdline) {
 		close (pipe_stdout[0]);
 		dup2 (pipe_stdout[1], 1);
 		execl ("/bin/sh", "sh", "-c", cmdline, NULL);
-		perror ("execl"); exit (99);
+		perror ("execl"); return NULL;
 	}
 	/* Return the file handles back via structure */
 	F = calloc (1, sizeof (struct popen2));
