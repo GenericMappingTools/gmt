@@ -2076,9 +2076,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
 				if (Ctrl->W.cpt_effect) {
-					if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
-						gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
-						current_pen = Ctrl->W.pen;
+					if (Ctrl->W.pen.cptmode & 1) {	/* Change current pen color via CPT */
+						gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
 						gmt_setpen (GMT, &current_pen);
 					}
 					if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
