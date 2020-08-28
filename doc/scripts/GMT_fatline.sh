@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This script demonstrates the problem with the basic line rendering
 # algorithm in ghostscript for fat lines.
 # https://github.com/GenericMappingTools/gmt/issues/431
