@@ -19,7 +19,7 @@
 # The movie took ~6 hours to render on a 24-core MacPro 2013.
 
 cat << EOF > pre.sh
-#!/bin/bash
+#!/usr/bin/env bash
 # Pre-script: Runs once to produce files needed for all frames
 gmt begin
 	gmt grdgradient @earth_relief_30s -A90 -Nt2.5 -Gearth_relief_30s+2.5_int.nc
@@ -34,7 +34,7 @@ WIDTH=36
 HEIGHT=34
 EOF
 cat << EOF > main.sh
-#!/bin/bash
+#!/usr/bin/env bash
 # Main frame script that makes a single frame given the location and twist from the data file
 # and the other view parameters from the include file.
 gmt begin

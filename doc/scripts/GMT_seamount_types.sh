@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Plot four different seamount types selectable in grdseamount
 # 1. Conical seamount
 gmt set MAP_VECTOR_SHAPE 0.5
