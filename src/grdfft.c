@@ -889,7 +889,7 @@ EXTERN_MSC int GMT_grdfft (void *V_API, int mode, void *args) {
 			printf ("%g\t%g\n", f, f_info.filter (f, 0));	/* Radial filter */
 			f += 0.01;
 		}
-		exit (-1);
+		Return (GMT_RUNTIME_ERROR);
 	}
 #endif
 
