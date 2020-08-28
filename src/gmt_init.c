@@ -1440,25 +1440,6 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 	if (!text)
 		return (GMT_NOERROR);
 
-	/* print version and exit */
-	if (strcmp (text, "version") == 0) {
-		snprintf (message, GMT_LEN128, "%s\n", GMT_PACKAGE_VERSION_WITH_GIT_REVISION);
-		GMT->parent->print_func (stdout, message);
-		/* cannot call gmt_M_free_options() from here, so we are leaking on exit.
-		 * struct GMTAPI_CTRL *G = GMT->parent;
-		 * if (GMT_Destroy_Session (G))
-		 *   GMT_exit (GMT, GMT_PARSE_ERROR); */
-		GMT_exit (GMT, GMT_NOERROR);
-	}
-
-	/* print GMT folders and exit */
-	if (strcmp (text, "show-datadir") == 0) {
-		snprintf (message, GMT_LEN128, "%s\n", GMT->session.SHAREDIR);
-		GMT->parent->print_func (stdout, message);
-		/* leaking on exit same as above. */
-		GMT_exit (GMT, GMT_NOERROR);
-	}
-
 	if ((this_c = strchr (text, '='))) {
 		/* Got --PAR=VALUE */
 		this_c[0] = '\0';	/* Temporarily remove the '=' character */
@@ -16392,9 +16373,6 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	 * which is called at the start of all GMT modules.  This basically
 	 * performs a save/restore operation so that when the GMT module
 	 * returns the GMT structure is restored to its original values.
-	 *
-	 * Note: We do not call GMT_exit here since API is not given and
-	 * API->do_not_exit have not been modified by external API yet.
 	 */
 
 	struct GMT_CTRL *GMT = NULL;
