@@ -247,9 +247,9 @@ Examples
 To make a minimalistic 2x2 basemap layout called panels.pdf, try::
 
     gmt begin panels pdf
-      gmt subplot begin 2x2 -Fs8c -M5p -A -SCb -SRl -Bwstr
+      gmt subplot begin 2x2 -Fs8c -M5p -A -SCb -SRl -Bwstr -R0/80/0/10
         gmt subplot set
-        gmt basemap -R0/80/0/10
+        gmt basemap
         gmt subplot set
         gmt basemap
         gmt subplot set
