@@ -4854,43 +4854,40 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 }
 
 void psl_got_composite_fontswitch (struct PSL_CTRL *PSL, char *text) {
-	/* If a composite character are taken from two different fonts then we need to flag these.
-	 * E.g., Epsilon time-derivative = @!\277@~145@~
-	 * Here we need to switch to symbol font (from ISOLatin1+) charset in the middle.
+	/* If a composite character is made from two different fonts then we need to flag these.
+	 * E.g., Epsilon time-derivative = @!\277@~145@~ using current and Symbol font.
+	 * Here we need to switch to symbol font for one char, from whatever font we are using.
 	 * We look for such cases and count the occurrences, plus replace the font changing code
 	 * @ (either @~ or @%font% with ASCII escape (27)). */
 	size_t k;
 	int n = 0, step;
 	for (k = 0; k < strlen (text); k++) {
 		if (text[k] != '@') continue;
-		/* Start of escape sequence */
+		/* Start of an escape sequence */
 		k++;
 		if (text[k] != '!') continue;	/* Not a composite character request */
-		k++;	/* Step to start of first character */
+		k++;	/* Step to start of character1 */
 		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular first character */
 		if (text[k] != '@') continue;	/* No font switching in the composite glyph */
-		/* Here we do have such a thing, and we need to avoid the regular string splitting at @ */
+		/* Here we do have such a thing, and we need to avoid the regular string splitting at @ in PSL_plottext and PSL_deftextdim */
 		text[k] = PSL_ASCII_ES;	/* Replace @ with ASCII ESC code for now */
-		k++;	/* Font code type ~ or % */
-		if (text[k] == '~') {
-			k++;
-			step = 1;
+		k++;	/* Font code type is ~ or % */
+		if (text[k] == '~') {	/* Symbol font */
+			k++;	/* Step to character2 */
+			step = 1;	/* Since we will toggle back with @~ */
 		}
-		else {
-			k++;
-			while (text[k] != '%') k++;	/* Skip past the font setting */
-			step = 2;
-			k++;	/* Skip past ending % */
+		else {	/* Some random font switch */
+			k++;	/* Step past first % */
+			while (text[k] != '%') k++;	/* Skip past the font name or number */
+			step = 2;	/* Since we will toggle back with @%% */
+			k++;	/* Step to character2 */
 		}
 		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular second character */
-		if (text[k] != '@') {
+		if (text[k] != '@')	/* Not ideal, user error presumably */
 			PSL_message (PSL, PSL_MSG_WARNING, "Warning: psl_got_composite_fontswitch expected a font-change at end of composite character 2\n");
-		}
-		else {	/* Get passed the font return code */
-			text[k] = PSL_ASCII_ES;	/* Replace @ with ASCII ESC code for now */
-			k += step;
-		}
-		n++;
+		else	/* Get passed the font return code */
+			text[k] = PSL_ASCII_ES;	/* Skip to end of text section */
+		n++;	/* Found one of these cases */
 	}
 	if (n) PSL_message (PSL, PSL_MSG_DEBUG, "psl_got_composite_fontswitch found %d composite characters with different fonts/char sets\n", n);
 }
@@ -4970,7 +4967,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	}
 
 	while (ptr) {
-		if (ptr[0] == '!') {	/* Composite character. Only use one to measure width */
+		if (ptr[0] == '!') {	/* Composite character. Only use the second character to measure width */
 			ptr++;
 			if (ptr[0] == '\\')	/* Octal code */
 				ptr += 4;
@@ -4998,7 +4995,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 				c = ptr[1];
 				ptr[1] = '\0';	/* Temporary chop at end of char */
 			}
-			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);	/* Picked character2 */
 			if (ptr[0] == '\\')	{	/* Octal code */
 				ptr[4] = c;	/* Restore code */
 				ptr += 4;
@@ -5014,7 +5011,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 				else
 					ptr += 2;	/* Move past the %% */
 			}
-			composite = true;
+			composite = true;	/* Flag this case */
 		}
 		else if (ptr[0] == '~') {	/* Symbol font toggle */
 			symbol_on = !symbol_on;
