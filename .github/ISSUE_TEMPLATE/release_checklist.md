@@ -26,6 +26,7 @@ assignees: ''
 - [ ] update changelog
 - [ ] update INSTALL.md
 - [ ] check if there are any warnings when build the documentation
+- [ ] add one new entry in `doc/rst/_static/version_switch.js` if it's a minor release
 - [ ] check/set values in `cmake/ConfigDefault.cmake`
     - [ ] `GMT_VERSION_YEAR` is current year
     - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
