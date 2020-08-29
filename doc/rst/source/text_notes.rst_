@@ -9,6 +9,18 @@ This only applies to text inside a script or that otherwise is processed
 by DOS. Data files that are opened and read by the module do not need
 such duplication.
 
+Composite Characters
+--------------------
+
+If the two characters that are to be combined come from different
+fonts (say, Symbol and Times), then it is allowed for the *second*
+character (but not the first) to be surrounded by escape codes to
+temporarily change the font for that character.  For instance, the
+sequence "@!\\227@~\\145@~" will print the epsilon character (octal code
+\\145 from the Symbol font) with time-derivative indicated by the
+over-printed dot (octal code \\227 from the current font, assuming the
+ISOLatin1 character set).
+
 Limitations
 -----------
 
