@@ -4911,7 +4911,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 
 	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL, previous[BUFSIZ] = {""}, c;
 	int dy, font, font2, sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, last_chr, kase = PSL_LC;
-	bool last_sub = false, last_sup = false, supersub;
+	bool last_sub = false, last_sup = false, supersub, composite;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep;
 
 	if (strlen (text) >= (PSL_BUFSIZ-1)) {
@@ -4949,14 +4949,14 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	piece  = PSL_memory (PSL, NULL, 2 * PSL_BUFSIZ, char);
 	piece2 = PSL_memory (PSL, NULL, PSL_BUFSIZ, char);
 
-	font = old_font = PSL->current.font_no;
+	font = font2 = old_font = PSL->current.font_no;
 	orig_size = size = fontsize;
 	small_size = size * PSL->current.subsupsize;	/* Sub-script/Super-script set at given fraction of font size */
 	scap_size = size * PSL->current.scapssize;	/* Small caps set at given fraction of font size */
 	ustep[PSL_LC] = PSL->current.sup_up[PSL_LC] * size;	/* Super-script baseline raised by given fraction of font size for lower case*/
 	ustep[PSL_UC] = PSL->current.sup_up[PSL_UC] * size;	/* Super-script baseline raised by given fraction of font size for upper case */
 	dstep = PSL->current.sub_down * size;		/* Sub-script baseline lowered by given fraction of font size */
-	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = false;
+	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = composite = false;
 	supersub = (strstr (string, "@-@+") || strstr (string, "@+@-"));	/* Check for sub/super combo */
 	tempstring = PSL_memory (PSL, NULL, strlen(string)+1, char);	/* Since strtok steps on it */
 	strcpy (tempstring, string);
@@ -5014,6 +5014,7 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 				else
 					ptr += 2;	/* Move past the %% */
 			}
+			composite = true;
 		}
 		else if (ptr[0] == '~') {	/* Symbol font toggle */
 			symbol_on = !symbol_on;
@@ -5110,7 +5111,10 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 				PSL_command (PSL, "PSL_last_width 0 G ");	/* Rewind position to orig baseline */
 				last_sub = last_sup = false;
 			}
-			if (ptr) strcat (piece, ptr);
+			if (ptr && composite) {
+				strcat (piece, ptr);
+				composite = false;
+			}
 			PSL_command (PSL, "%d F%d (%s) FP ", psl_ip (PSL, size), font, piece);
 			last_chr = ptr[strlen(piece)-1];
 			if (!super_on && (last_chr > 0 && last_chr < 255)) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
