@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Test gmt pstext with composite characters.
 ps=composite.ps
-
+gmt set PS_CHAR_ENCODING ISOLatin1+
 cat << EOF > tmp
 8	2	Writing @!\227\145 in Times-Roman
 8	6	Writing @!\227@~\145@~ in Symbol
