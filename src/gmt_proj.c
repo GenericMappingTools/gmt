@@ -672,14 +672,14 @@ GMT_LOCAL void gmtproj_merc_sph (struct GMT_CTRL *GMT, double lon, double lat, d
 	if (GMT->current.proj.GMT_convert_latitudes) lat = gmt_M_latg_to_latc (GMT, lat);
 
 	*x = GMT->current.proj.j_x * D2R * lon;
-	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) - GMT->current.proj.j_yc : copysign (DBL_MAX, lat);
+	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) : copysign (DBL_MAX, lat);
 }
 
 GMT_LOCAL void gmtproj_imerc_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Mercator x/y to lon/lat  (GMT->current.proj.EQ_RAD in GMT->current.proj.j_ix) */
 
 	*lon = x * GMT->current.proj.j_ix * R2D + GMT->current.proj.central_meridian;
-	*lat = atand (sinh ((y + GMT->current.proj.j_yc) * GMT->current.proj.j_ix));
+	*lat = atand (sinh (y * GMT->current.proj.j_ix));
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_latc_to_latg (GMT, *lat);
 }
 

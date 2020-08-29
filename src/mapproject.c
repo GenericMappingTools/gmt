@@ -97,9 +97,10 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		unsigned int mode;
 		double lon, lat;	/* Fixed point of reference */
 	} A;
-	struct MAPPROJECT_C {	/* -C[<false_easting>/<false_northing>] */
+	struct MAPPROJECT_C {	/* -C[<false_easting>/<false_northing>][+m] */
 		bool active;
 		bool shift;
+		bool m_origin;	/* True if we want projected Mercator y-values relative to standard latitude [Equator] */
 		double easting, northing;	/* Shifts */
 	} C;
 	struct MAPPROJECT_D {	/* -D<c|i|p> */
@@ -482,12 +483,17 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':
 				Ctrl->C.active = true;
+				if (opt->arg[0] && (p = strstr (opt->arg, "+m"))) {	/* Gave +m for reset relative offsets to Mercator origin */
+					Ctrl->C.m_origin = true;
+					p[0] = '\0';	/* Temporarily chop off modifier */
+				}
 				if (opt->arg[0]) {	/* Also gave shifts */
 					n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->C.easting, &Ctrl->C.northing) != 2,
 					                                 "Option -C: Expected -C[<false_easting>/<false_northing>]\n");
 					Ctrl->C.shift = true;
 				}
 				will_need_RJ = true;	/* Since -C is used with projections only */
+				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 			case 'D':
 				Ctrl->D.active = true;
@@ -752,6 +758,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, ((Ctrl->T.active && GMT->current.proj.datum.h_given) || Ctrl->E.active) &&
 	                                   GMT->common.b.active[GMT_IN] && gmt_get_cols (GMT, GMT_IN) < 3,
 	                                   "For -E or -T, binary input data (-bi) must have at least 3 columns\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.m_origin && GMT->current.proj.projection_GMT != GMT_MERCATOR, "Option -C: Can only give +m for Mercator projection\n");
 
 	if (!(n_errors || GMT->common.R.active[RSET])) {
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;
@@ -777,7 +784,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	uint64_t row, n_read_in_seg, seg, n_read = 0, n = 0, k, n_output = 0;
 
 	double x_in = 0.0, y_in = 0.0, d = 0.0, fwd_scale, inv_scale, xtmp, ytmp, *out = NULL;
-	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, u_scale, y_out_min;
+	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, u_scale, y_out_min, m_standard_y_value = 0.0;
 	double x_in_min, x_in_max, y_in_min, y_in_max, x_out_min, x_out_max, y_out_max;
 	double xnear = 0.0, ynear = 0.0, lon_prev = 0, lat_prev = 0, **data = NULL, *in = NULL;
 	double speed = 0, last_speed = -1.0, extra[MP_COL_N];	/* Max possible extra output columns from -A -G -L -Z */
@@ -1163,8 +1170,13 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	two = (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) ? 3 : 2;	/* # of output points from conversion */
 
 	if (Ctrl->C.shift && Ctrl->F.active) {	/* Use same units in -C and -F */
-		Ctrl->C.easting *= u_scale;
+		Ctrl->C.easting  *= u_scale;
 		Ctrl->C.northing *= u_scale;
+	}
+	if (Ctrl->C.m_origin) {	/* Use same units in -C and -F */
+		m_standard_y_value = GMT->current.proj.j_yc;	/* Special Mercator adjustment for measuring distance relative to standard latitude */
+		if (Ctrl->F.active)	/* Use same units in -C and -F */
+			m_standard_y_value *= fwd_scale;
 	}
 
 	if (Ctrl->L.active)	{	/* Possibly adjust output types */
@@ -1258,6 +1270,8 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				in[GMT_X] -= Ctrl->C.easting;
 				in[GMT_Y] -= Ctrl->C.northing;
 			}
+			if (Ctrl->C.m_origin)	/* Special Mercator adjustment for measuring distance relative to standard latitude */
+				in[GMT_Y] += m_standard_y_value;
 			if (Ctrl->N.active) {
 				out[GMT_X] = in[GMT_X];
 				out[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], lat_mode);
@@ -1366,6 +1380,8 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 					out[GMT_X] += Ctrl->C.easting;
 					out[GMT_Y] += Ctrl->C.northing;
 				}
+				else if (Ctrl->C.m_origin)	/* Special Mercator adjustment for measuring distance relative to standard latitude */
+					out[GMT_Y] -= m_standard_y_value;
 				if (GMT->current.proj.three_D) {
 					double xx = out[GMT_X], yy = out[GMT_Y];
 					gmt_xyz_to_xy (GMT, xx, yy, gmt_z_to_zz (GMT, in[GMT_Z]), &out[GMT_X], &out[GMT_Y]);
